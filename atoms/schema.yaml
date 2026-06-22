@@ -5252,6 +5252,91 @@ blocks:
     name: shadcn/ui
     url: https://github.com/shadcn-ui/ui
     license: MIT
+- type: gradient_hero
+  description: Full-width light/pastel gradient hero with badge, large title, subtitle, and optional CTA. Pure CSS — no images. Works on all surfaces. Use when dark_hero is too heavy.
+  compact_description: light gradient hero — badge, large title, subtitle, CTA button
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    title: string (required, alias heading)
+    subtitle: string (optional, alias subtext)
+    badge: string (optional, label above title)
+    accent: string (optional, hex, default "#6366f1")
+    accent2: string (optional, second gradient hex, default "#8b5cf6")
+    gradient: string (optional, css gradient override)
+    align: string (optional, "left"|"center", default "left")
+    cta_label: string (optional)
+    cta_url: string (optional)
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: icon_list
+  description: List of items each with a colored icon circle, label, and text. More visual than bullet_list. Use for feature lists, how-it-works, benefits.
+  compact_description: icon-circle list — emoji/icon per item, label + text, color per item
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    title: string (optional)
+    accent: string (optional, default hex for all items)
+    size: string (optional, "sm"|"md"|"lg", default "md")
+    items: array (required). Array of {icon (emoji), label (optional), text (optional), color (optional hex)}
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: highlight_box
+  description: A visually rich highlighted box with gradient, solid, or outline style. Richer than callout — no severity system, pure design focus.
+  compact_description: highlight box — gradient/solid/outline style, icon, title, text
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    title: string (optional)
+    text: string (required, markdown)
+    icon: string (optional, emoji)
+    accent: string (optional, hex, default "#6366f1")
+    style: string (optional, "gradient"|"solid"|"outline", default "gradient")
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: two_tone_card
+  description: Card with a solid colored header section (title, subtitle, icon) and a white body that renders atom blocks. Clean, elegant container for any content.
+  compact_description: split card — colored header with icon/title, white body renders atom blocks
+  surfaces:
+    works_on: [web, apps-script-web]
+  fields:
+    title: string (required)
+    subtitle: string (optional)
+    icon: string (optional, emoji)
+    accent: string (optional, hex, default "#6366f1")
+    header_theme: string (optional, "light"|"dark", default "light")
+    blocks: array (optional, atom blocks rendered in white body)
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: metric_row
+  description: Horizontal strip of static metrics — value, label, optional prefix/suffix and trend indicator. Cleaner than animated_counter for non-animated use.
+  compact_description: horizontal metric strip — value, label, prefix/suffix, trend up/down
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    cols: integer (optional, default 4)
+    accent: string (optional, default hex for all metrics)
+    metrics: 'array (required, alias items). Each item: {value, label, prefix?, suffix?, sub?, accent?, trend? ("up"|"down")}'
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: numbered_list
+  description: Numbered list with either large decorative number backgrounds ("large" style) or circular number badges ("badge" style). More visual than steps.
+  compact_description: decorative numbered list — large background numbers or circular badges
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    title: string (optional)
+    accent: string (optional, hex, default "#6366f1")
+    style: string (optional, "large"|"badge", default "large")
+    items: array (required). Array of {label (optional), text (optional)}
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
 - type: page_header
   description: Full-width app-style page header with title, subtitle, icon, accent color, and optional tag badge. Sets the visual tone of a pop-up app or brief. Use as the first block of any page.
   compact_description: app-style page header — title, subtitle, icon, accent, tag badge

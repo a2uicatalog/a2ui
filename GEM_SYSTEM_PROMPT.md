@@ -127,6 +127,20 @@ token_budget_meter
                   label, warn_at (%, default 70), critical_at (%, default 90),
                   animate (bool), duration (seconds)
 
+### Visual / beauty (all GAS-compatible, pure CSS)
+gradient_hero     title, subtitle (optional), badge (optional), accent, accent2, align ("left"|"center"),
+                  cta_label + cta_url (optional) — light/pastel alternative to dark_hero
+icon_list         title (optional), size ("sm"|"md"|"lg"), accent,
+                  items: [{icon (emoji), label?, text?, color?}]
+highlight_box     title (optional), text, icon (optional emoji), accent,
+                  style ("gradient"|"solid"|"outline")
+two_tone_card     title, subtitle (optional), icon (emoji), accent, header_theme ("light"|"dark"),
+                  blocks: [...atom blocks in white body...]
+metric_row        cols (default 4), accent,
+                  metrics: [{value, label, prefix?, suffix?, sub?, accent?, trend? ("up"|"down")}]
+numbered_list     title (optional), accent, style ("large"|"badge"),
+                  items: [{label?, text?}]
+
 ### Page structure
 page_header       title (markdown), subtitle (optional), icon (emoji), tag (badge label),
                   accent (hex), theme ("light"|"dark") — use as FIRST block of any pop-up app

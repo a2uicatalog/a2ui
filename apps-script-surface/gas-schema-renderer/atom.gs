@@ -3571,6 +3571,141 @@ _RENDERERS['linkedin_post_image'] = function(b) {
   return '<div style="color:#9aa0a6;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
 };
 
+// ── Visual / Beauty ──────────────────────────────────────────────────────────
+
+_RENDERERS['gradient_hero'] = function(b) {
+  var uid      = Math.random().toString(36).substr(2, 6);
+  var accent   = b.accent || '#6366f1';
+  var accent2  = b.accent2 || '#8b5cf6';
+  var gradient = b.gradient || ('linear-gradient(135deg,' + accent + '22 0%,' + accent2 + '18 60%,#fff8 100%)');
+  var align    = b.align === 'center' ? 'center' : 'left';
+  return '<style>' +
+    '.gh-' + uid + '{padding:48px 32px;border-radius:16px;background:' + gradient + ';margin:0 0 1.5rem;text-align:' + align + ';}' +
+    '.gh-badge-' + uid + '{display:inline-block;background:' + accent + ';color:#fff;border-radius:99px;padding:3px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;}' +
+    '.gh-title-' + uid + '{font-size:36px;font-weight:900;line-height:1.15;color:#111827;margin-bottom:12px;letter-spacing:-0.02em;}' +
+    '.gh-sub-' + uid + '{font-size:17px;color:#4b5563;line-height:1.6;margin-bottom:20px;max-width:600px;' + (align==='center'?'margin-left:auto;margin-right:auto;':'') + '}' +
+    '.gh-cta-' + uid + '{display:inline-block;background:' + accent + ';color:#fff;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:700;text-decoration:none;}' +
+    '</style>' +
+    '<div class="gh-' + uid + '">' +
+    (b.badge ? '<div class="gh-badge-' + uid + '">' + _esc(b.badge) + '</div>' : '') +
+    '<div class="gh-title-' + uid + '">' + _md(b.title || b.heading || '') + '</div>' +
+    (b.subtitle || b.subtext ? '<div class="gh-sub-' + uid + '">' + _md(b.subtitle || b.subtext) + '</div>' : '') +
+    (b.cta_label && b.cta_url ? '<a class="gh-cta-' + uid + '" href="' + _esc(b.cta_url) + '">' + _esc(b.cta_label) + '</a>' : '') +
+    '</div>';
+};
+
+_RENDERERS['icon_list'] = function(b) {
+  var uid   = Math.random().toString(36).substr(2, 6);
+  var items = b.items || [];
+  var size  = b.size || 'md';
+  var iconSize = size === 'lg' ? '42px' : size === 'sm' ? '28px' : '36px';
+  var fontSize = size === 'lg' ? '15px' : size === 'sm' ? '13px' : '14px';
+  var rowsHtml = items.map(function(item) {
+    var color = item.color || b.accent || '#6366f1';
+    var icon  = item.icon || '•';
+    return '<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">' +
+      '<div style="flex:0 0 ' + iconSize + ';height:' + iconSize + ';border-radius:50%;background:' + color + '18;display:flex;align-items:center;justify-content:center;font-size:' + (size==='lg'?'20px':size==='sm'?'13px':'16px') + ';">' + _esc(icon) + '</div>' +
+      '<div style="flex:1;padding-top:' + (size==='lg'?'10px':'6px') + ';">' +
+      (item.label ? '<div style="font-size:' + fontSize + ';font-weight:700;color:#111827;margin-bottom:2px;">' + _esc(item.label) + '</div>' : '') +
+      (item.text ? '<div style="font-size:' + fontSize + ';color:#4b5563;line-height:1.5;">' + _md(item.text) + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+  return (b.title ? '<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">' + _esc(b.title) + '</div>' : '') +
+    '<div style="margin:1rem 0;">' + rowsHtml + '</div>';
+};
+
+_RENDERERS['highlight_box'] = function(b) {
+  var uid    = Math.random().toString(36).substr(2, 6);
+  var accent = b.accent || '#6366f1';
+  var style  = b.style || 'gradient';
+  var bg = style === 'gradient'
+    ? ('linear-gradient(135deg,' + accent + '18 0%,' + accent + '08 100%)')
+    : style === 'solid' ? accent + '12'
+    : '#fff';
+  var border = style === 'outline' ? '2px solid ' + accent : '1px solid ' + accent + '30';
+  return '<style>' +
+    '.hb-' + uid + '{background:' + bg + ';border:' + border + ';border-radius:12px;padding:24px 28px;margin:1.5rem 0;}' +
+    '.hb-icon-' + uid + '{font-size:28px;margin-bottom:10px;display:block;}' +
+    '.hb-title-' + uid + '{font-size:18px;font-weight:800;color:#111827;margin-bottom:8px;}' +
+    '.hb-text-' + uid + '{font-size:14px;color:#374151;line-height:1.65;}' +
+    '</style>' +
+    '<div class="hb-' + uid + '">' +
+    (b.icon ? '<span class="hb-icon-' + uid + '">' + _esc(b.icon) + '</span>' : '') +
+    (b.title ? '<div class="hb-title-' + uid + '">' + _md(b.title) + '</div>' : '') +
+    '<div class="hb-text-' + uid + '">' + _md(b.text || '') + '</div>' +
+    '</div>';
+};
+
+_RENDERERS['two_tone_card'] = function(b) {
+  var uid    = Math.random().toString(36).substr(2, 6);
+  var accent = b.accent || '#6366f1';
+  var dark   = b.header_theme === 'dark';
+  var headerBg = dark ? '#0f172a' : accent;
+  var headerTc = '#fff';
+  return '<style>' +
+    '.ttc-' + uid + '{border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;margin:1rem 0;}' +
+    '.ttc-head-' + uid + '{background:' + headerBg + ';padding:20px 24px;}' +
+    '.ttc-head-icon-' + uid + '{font-size:24px;margin-bottom:8px;display:block;}' +
+    '.ttc-head-title-' + uid + '{font-size:18px;font-weight:800;color:' + headerTc + ';margin-bottom:4px;}' +
+    '.ttc-head-sub-' + uid + '{font-size:13px;color:' + (dark?'#94a3b8':'rgba(255,255,255,0.8)') + ';}' +
+    '.ttc-body-' + uid + '{background:#fff;padding:20px 24px;}' +
+    '</style>' +
+    '<div class="ttc-' + uid + '">' +
+    '<div class="ttc-head-' + uid + '">' +
+    (b.icon ? '<span class="ttc-head-icon-' + uid + '">' + _esc(b.icon) + '</span>' : '') +
+    '<div class="ttc-head-title-' + uid + '">' + _esc(b.title || '') + '</div>' +
+    (b.subtitle ? '<div class="ttc-head-sub-' + uid + '">' + _esc(b.subtitle) + '</div>' : '') +
+    '</div>' +
+    '<div class="ttc-body-' + uid + '">' + renderAtoms(b.blocks || b.content || []) + '</div>' +
+    '</div>';
+};
+
+_RENDERERS['metric_row'] = function(b) {
+  var uid     = Math.random().toString(36).substr(2, 6);
+  var metrics = b.metrics || b.items || [];
+  var cols    = Math.min(metrics.length, b.cols || 4);
+  var metricsHtml = metrics.map(function(m) {
+    var accent = m.accent || m.color || b.accent || '#6366f1';
+    var trend  = m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '';
+    var trendC = m.trend === 'up' ? '#16a34a' : m.trend === 'down' ? '#dc2626' : '#6b7280';
+    return '<div style="text-align:center;padding:16px 8px;">' +
+      '<div style="font-size:32px;font-weight:900;color:' + accent + ';line-height:1;margin-bottom:4px;">' +
+      (m.prefix ? '<span style="font-size:18px;">' + _esc(m.prefix) + '</span>' : '') +
+      _esc(m.value || '') +
+      (m.suffix ? '<span style="font-size:18px;">' + _esc(m.suffix) + '</span>' : '') +
+      (trend ? '<span style="font-size:16px;color:' + trendC + ';margin-left:4px;">' + trend + '</span>' : '') +
+      '</div>' +
+      '<div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">' + _esc(m.label || '') + '</div>' +
+      (m.sub ? '<div style="font-size:11px;color:#9ca3af;margin-top:2px;">' + _esc(m.sub) + '</div>' : '') +
+      '</div>';
+  }).join('<div style="width:1px;background:#e5e7eb;margin:12px 0;"></div>');
+  return '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin:1.5rem 0;background:#fff;">' +
+    metricsHtml + '</div>';
+};
+
+_RENDERERS['numbered_list'] = function(b) {
+  var uid   = Math.random().toString(36).substr(2, 6);
+  var items = b.items || [];
+  var style = b.style || 'large';
+  var accent = b.accent || '#6366f1';
+  var rowsHtml = items.map(function(item, i) {
+    var num = i + 1;
+    var numEl = style === 'large'
+      ? '<div style="font-size:48px;font-weight:900;color:' + accent + '20;line-height:1;position:absolute;top:-8px;left:0;">' + num + '</div>'
+      : '<div style="flex:0 0 28px;height:28px;border-radius:50%;background:' + accent + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">' + num + '</div>';
+    var wrap = style === 'large'
+      ? 'position:relative;padding-left:44px;margin-bottom:28px;'
+      : 'display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;';
+    return '<div style="' + wrap + '">' + numEl +
+      '<div' + (style==='large'?' style="padding-top:4px;"':'') + '>' +
+      (item.label ? '<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:3px;">' + _esc(item.label) + '</div>' : '') +
+      (item.text  ? '<div style="font-size:14px;color:#4b5563;line-height:1.6;">' + _md(item.text) + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+  return (b.title ? '<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">' + _esc(b.title) + '</div>' : '') +
+    '<div style="margin:1rem 0;">' + rowsHtml + '</div>';
+};
+
 // ── Page structure ───────────────────────────────────────────────────────────
 
 _RENDERERS['page_header'] = function(b) {

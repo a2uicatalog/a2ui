@@ -1575,6 +1575,123 @@ def _render_pricing_tier_group(b: dict) -> str:
     inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pricing_tier_group ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
+def _render_gradient_hero(b: dict) -> str:
+    accent  = b.get("accent", "#6366f1")
+    accent2 = b.get("accent2", "#8b5cf6")
+    grad    = b.get("gradient", f"linear-gradient(135deg,{accent}22 0%,{accent2}18 60%,#fff8 100%)")
+    align   = "center" if b.get("align") == "center" else "left"
+    mx      = "margin-left:auto;margin-right:auto;" if align == "center" else ""
+    return (
+        f'<div style="padding:48px 32px;border-radius:16px;background:{grad};margin:0 0 1.5rem;text-align:{align};">'
+        + (f'<div style="display:inline-block;background:{accent};color:#fff;border-radius:99px;padding:3px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;">{b["badge"]}</div>' if b.get("badge") else "")
+        + f'<div style="font-size:36px;font-weight:900;line-height:1.15;color:#111827;margin-bottom:12px;letter-spacing:-0.02em;">{_md_inline(b.get("title", b.get("heading","")))}</div>'
+        + (f'<div style="font-size:17px;color:#4b5563;line-height:1.6;margin-bottom:20px;max-width:600px;{mx}">{_md_inline(b["subtitle"] if b.get("subtitle") else b.get("subtext",""))}</div>' if b.get("subtitle") or b.get("subtext") else "")
+        + (f'<a href="{b["cta_url"]}" style="display:inline-block;background:{accent};color:#fff;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:700;text-decoration:none;">{b["cta_label"]}</a>' if b.get("cta_label") and b.get("cta_url") else "")
+        + '</div>'
+    )
+
+
+def _render_icon_list(b: dict) -> str:
+    accent   = b.get("accent", "#6366f1")
+    size     = b.get("size", "md")
+    icon_px  = "42px" if size == "lg" else "28px" if size == "sm" else "36px"
+    font_px  = "15px" if size == "lg" else "13px" if size == "sm" else "14px"
+    icon_em  = "20px" if size == "lg" else "13px" if size == "sm" else "16px"
+    pt       = "10px" if size == "lg" else "6px"
+    rows = ""
+    for item in b.get("items", []):
+        color = item.get("color", accent)
+        icon  = item.get("icon", "•")
+        rows += (
+            f'<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">'
+            f'<div style="flex:0 0 {icon_px};height:{icon_px};border-radius:50%;background:{color}18;display:flex;align-items:center;justify-content:center;font-size:{icon_em};">{icon}</div>'
+            f'<div style="flex:1;padding-top:{pt};">'
+            + (f'<div style="font-size:{font_px};font-weight:700;color:#111827;margin-bottom:2px;">{item["label"]}</div>' if item.get("label") else "")
+            + (f'<div style="font-size:{font_px};color:#4b5563;line-height:1.5;">{_md_inline(item["text"])}</div>' if item.get("text") else "")
+            + '</div></div>'
+        )
+    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:14px;">{b["title"]}</div>' if b.get("title") else ""
+    return f'{title_html}<div style="margin:1rem 0;">{rows}</div>'
+
+
+def _render_highlight_box(b: dict) -> str:
+    accent = b.get("accent", "#6366f1")
+    style  = b.get("style", "gradient")
+    bg     = (f"linear-gradient(135deg,{accent}18 0%,{accent}08 100%)" if style == "gradient"
+              else f"{accent}12" if style == "solid" else "#fff")
+    border = f"2px solid {accent}" if style == "outline" else f"1px solid {accent}30"
+    return (
+        f'<div style="background:{bg};border:{border};border-radius:12px;padding:24px 28px;margin:1.5rem 0;">'
+        + (f'<span style="font-size:28px;margin-bottom:10px;display:block;">{b["icon"]}</span>' if b.get("icon") else "")
+        + (f'<div style="font-size:18px;font-weight:800;color:#111827;margin-bottom:8px;">{_md_inline(b["title"])}</div>' if b.get("title") else "")
+        + f'<div style="font-size:14px;color:#374151;line-height:1.65;">{_md_inline(b.get("text",""))}</div>'
+        + '</div>'
+    )
+
+
+def _render_two_tone_card(b: dict) -> str:
+    accent    = b.get("accent", "#6366f1")
+    dark      = b.get("header_theme") == "dark"
+    header_bg = "#0f172a" if dark else accent
+    sub_col   = "#94a3b8" if dark else "rgba(255,255,255,0.8)"
+    inner     = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (b.get("blocks") or b.get("content") or []))
+    return (
+        f'<div style="border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;margin:1rem 0;">'
+        f'<div style="background:{header_bg};padding:20px 24px;">'
+        + (f'<span style="font-size:24px;margin-bottom:8px;display:block;">{b["icon"]}</span>' if b.get("icon") else "")
+        + f'<div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">{b.get("title","")}</div>'
+        + (f'<div style="font-size:13px;color:{sub_col};">{b["subtitle"]}</div>' if b.get("subtitle") else "")
+        + f'</div><div style="background:#fff;padding:20px 24px;">{inner}</div></div>'
+    )
+
+
+def _render_metric_row(b: dict) -> str:
+    metrics = b.get("metrics", b.get("items", []))
+    cols    = min(len(metrics), b.get("cols", 4))
+    cells   = ""
+    for i, m in enumerate(metrics):
+        accent = m.get("accent", m.get("color", b.get("accent", "#6366f1")))
+        trend  = "↑" if m.get("trend") == "up" else "↓" if m.get("trend") == "down" else ""
+        tc     = "#16a34a" if m.get("trend") == "up" else "#dc2626" if m.get("trend") == "down" else "#6b7280"
+        sep    = '<div style="width:1px;background:#e5e7eb;margin:12px 0;"></div>' if i < len(metrics) - 1 else ""
+        cells += (
+            f'<div style="text-align:center;padding:16px 8px;">'
+            f'<div style="font-size:32px;font-weight:900;color:{accent};line-height:1;margin-bottom:4px;">'
+            + (f'<span style="font-size:18px;">{m["prefix"]}</span>' if m.get("prefix") else "")
+            + str(m.get("value",""))
+            + (f'<span style="font-size:18px;">{m["suffix"]}</span>' if m.get("suffix") else "")
+            + (f'<span style="font-size:16px;color:{tc};margin-left:4px;">{trend}</span>' if trend else "")
+            + f'</div><div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">{m.get("label","")}</div>'
+            + (f'<div style="font-size:11px;color:#9ca3af;margin-top:2px;">{m["sub"]}</div>' if m.get("sub") else "")
+            + f'</div>{sep}'
+        )
+    return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin:1.5rem 0;background:#fff;">{cells}</div>'
+
+
+def _render_numbered_list(b: dict) -> str:
+    accent = b.get("accent", "#6366f1")
+    style  = b.get("style", "large")
+    rows   = ""
+    for i, item in enumerate(b.get("items", [])):
+        num = i + 1
+        if style == "large":
+            num_el = f'<div style="font-size:48px;font-weight:900;color:{accent}20;line-height:1;position:absolute;top:-8px;left:0;">{num}</div>'
+            wrap   = "position:relative;padding-left:44px;margin-bottom:28px;"
+            pt     = ' style="padding-top:4px;"'
+        else:
+            num_el = f'<div style="flex:0 0 28px;height:28px;border-radius:50%;background:{accent};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">{num}</div>'
+            wrap   = "display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;"
+            pt     = ""
+        rows += (
+            f'<div style="{wrap}">{num_el}<div{pt}>'
+            + (f'<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:3px;">{item["label"]}</div>' if item.get("label") else "")
+            + (f'<div style="font-size:14px;color:#4b5563;line-height:1.6;">{_md_inline(item["text"])}</div>' if item.get("text") else "")
+            + '</div></div>'
+        )
+    title_html = f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:16px;">{b["title"]}</div>' if b.get("title") else ""
+    return f'{title_html}<div style="margin:1rem 0;">{rows}</div>'
+
+
 def _render_page_header(b: dict) -> str:
     accent = b.get("accent", "#6366f1")
     dark   = b.get("theme") == "dark"
@@ -7152,6 +7269,12 @@ _RENDERERS = {
     "feature_matrix": _render_feature_matrix,
     "pricing_tier_card": _render_pricing_tier_card,
     "pricing_tier_group": _render_pricing_tier_group,
+    "gradient_hero":  _render_gradient_hero,
+    "icon_list":      _render_icon_list,
+    "highlight_box":  _render_highlight_box,
+    "two_tone_card":  _render_two_tone_card,
+    "metric_row":     _render_metric_row,
+    "numbered_list":  _render_numbered_list,
     "page_header":    _render_page_header,
     "back_button":    _render_back_button,
     "section_break":  _render_section_break,
