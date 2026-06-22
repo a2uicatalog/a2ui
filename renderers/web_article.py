@@ -49,17 +49,33 @@ def render(blocks: List[Dict[str, Any]], theme: str = "light") -> str:
     html = "\n\n".join(parts)
     if theme == "dark":
         html = _DARK_OVERRIDES + html
+    # Ensure all external links open in a new tab
+    html = re.sub(
+        r'<a (href="https?://[^"]+")(?![^>]*target=)',
+        r'<a \1 target="_blank" rel="noopener noreferrer"',
+        html,
+    )
     return html
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
+_ABBR_STYLE = (
+    'border-bottom:2px dotted #7c3aed;cursor:help;'
+    'text-decoration:none;font-weight:600;color:inherit;'
+)
+
 def _md_inline(text: str) -> str:
-    """Convert **bold**, *italic*, and `code` inline markdown to HTML."""
+    """Convert **bold**, *italic*, `code`, links, and [term](def:...) abbr tooltips to HTML."""
     text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
     text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
     text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
-    text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', text)
+    # [term](def:definition) → abbr tooltip with dotted purple underline
+    def _abbr(m):
+        term, defn = m.group(1), m.group(2)[4:]  # strip "def:"
+        return f'<abbr title="{defn}" style="{_ABBR_STYLE}">{term}</abbr>'
+    text = re.sub(r'\[([^\]]+)\]\((def:[^)]+)\)', _abbr, text)
+    text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>', text)
     return text
 
 
@@ -148,10 +164,15 @@ def _render_youtube(b: dict) -> str:
     )
 
 
+EMBED_REMOTE_IMAGES = False  # set True to inline remote images as base64 data URIs
+
 def _img_src(url: str) -> str:
-    """Fetch an image URL and return a base64 data URI, falling back to the URL on error."""
+    """Return a base64 data URI for local images; remote URLs pass through unless EMBED_REMOTE_IMAGES is set."""
     if not url or url.startswith("data:"):
         return url
+    if url.startswith("http://") or url.startswith("https://"):
+        if not EMBED_REMOTE_IMAGES:
+            return url
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -193,11 +214,25 @@ def _render_image_pair(b: dict) -> str:
     )
 
 
+_DIAGRAM_CSS = (
+    "<style>"
+    ".tm-diagram{overflow:visible;}"
+    ".tm-diagram img{"
+    "transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.35s ease;"
+    "cursor:zoom-in;transform-origin:center top;border-radius:8px;}"
+    ".tm-diagram img:hover{"
+    "transform:scale(2.2);position:relative;z-index:100;"
+    "box-shadow:0 12px 40px rgba(0,0,0,0.22);border-radius:8px;}"
+    "</style>"
+)
+
 def _render_diagram(b: dict) -> str:
-    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:6px;text-align:center;">{b.get("caption","")}</p>' if b.get("caption") else ""
+    caption = f'<p style="font-size:0.8rem;opacity:0.6;margin-top:8px;text-align:center;">Hover to zoom · {b["caption"]}</p>' if b.get("caption") else '<p style="font-size:0.78rem;opacity:0.5;margin-top:6px;text-align:center;">Hover to zoom</p>'
     return (
-        f'<div style="margin:1.2rem 0;text-align:center;">'
-        f'<img src="{b["url"]}" alt="diagram" style="max-width:100%;height:auto;border-radius:8px;"/>'
+        f'{_DIAGRAM_CSS}'
+        f'<div class="tm-diagram" style="margin:1.5rem 0;padding:20px;background:#f8f9fa;'
+        f'border:1px solid #e0e0e0;border-radius:12px;text-align:center;overflow:visible;">'
+        f'<img src="{b["url"]}" alt="diagram" style="max-width:100%;height:auto;" onclick="return false;"/>'
         f'{caption}</div>'
     )
 
@@ -1386,11 +1421,32 @@ def _render_code_snippet_pair(b: dict) -> str:
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_framed_screenshot(b: dict) -> str:
-    """TODO: Renders an image within a decorative frame, simulating a device (e.g., browser, """
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ framed_screenshot ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
+    url     = b.get("url", "")
+    caption = b.get("caption", "")
+    alt     = b.get("alt", caption or "screenshot")
+    # Browser chrome bar
+    chrome = (
+        '<div style="background:#e8eaed;border-radius:8px 8px 0 0;padding:8px 12px;'
+        'display:flex;align-items:center;gap:6px;border-bottom:1px solid #dadce0;">'
+        '<span style="width:10px;height:10px;border-radius:50%;background:#ea4335;display:inline-block;"></span>'
+        '<span style="width:10px;height:10px;border-radius:50%;background:#fbbc04;display:inline-block;"></span>'
+        '<span style="width:10px;height:10px;border-radius:50%;background:#34a853;display:inline-block;"></span>'
+        '<span style="flex:1;background:#fff;border-radius:4px;height:18px;margin-left:6px;'
+        'border:1px solid #dadce0;"></span>'
+        '</div>'
+    )
+    caption_html = (
+        f'<p style="font-size:0.78rem;color:#5f6368;margin:8px 0 0;text-align:center;">{caption}</p>'
+        if caption else ""
+    )
+    return (
+        f'<div style="margin:1.5rem 0;border:1px solid #dadce0;border-radius:10px;'
+        f'overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
+        f'{chrome}'
+        f'<img src="{url}" alt="{alt}" style="width:100%;height:auto;display:block;"/>'
+        f'</div>'
+        f'{caption_html}'
+    )
 
 def _render_image_with_caption(b: dict) -> str:
     """TODO: Renders a single image with a descriptive caption below it."""
@@ -8918,6 +8974,114 @@ _RENDERERS.update({
     "match_exercise":       _render_match_exercise,
     "hint_reveal":          _render_hint_reveal,
 })
+
+def _render_linkedin_post_image(b: dict) -> str:
+    mode    = b.get("mode", "conviction_card")
+    caption = b.get("caption", "")
+    accent  = b.get("accent", "#7c3aed")
+
+    caption_html = (
+        f'<p style="font-size:0.75rem;color:#5f6368;margin:10px 0 0;text-align:center;">'
+        f'Preview — export as image for LinkedIn</p>'
+    )
+
+    if mode == "conviction_card":
+        quote   = b.get("quote", "")
+        attr    = b.get("attribution", "")
+        attr_html = (
+            f'<div style="margin-top:24px;font-size:0.85rem;color:{accent};'
+            f'font-family:monospace;letter-spacing:0.05em;">{attr}</div>'
+        ) if attr else ""
+        return (
+            f'<div style="aspect-ratio:1.91/1;background:#0f172a;border-radius:12px;'
+            f'display:flex;align-items:center;justify-content:center;padding:48px;'
+            f'position:relative;overflow:hidden;margin:1.5rem 0;">'
+            f'<div style="position:absolute;bottom:0;left:0;right:0;height:4px;'
+            f'background:linear-gradient(90deg,{accent},#3b82f6);"></div>'
+            f'<div style="text-align:center;max-width:80%;">'
+            f'<div style="font-size:clamp(1.1rem,2.5vw,1.8rem);color:#f1f5f9;'
+            f'font-weight:700;line-height:1.4;font-style:italic;">&ldquo;{quote}&rdquo;</div>'
+            f'{attr_html}'
+            f'</div></div>'
+            f'{caption_html}'
+        )
+
+    if mode == "split_screenshot":
+        left  = b.get("left",  {})
+        right = b.get("right", {})
+        def _panel(side, border_right=False):
+            label = side.get("label", "")
+            url   = side.get("url", "")
+            br    = "border-right:1px solid #e0e0e0;" if border_right else ""
+            lbl_html = (
+                f'<div style="padding:8px 12px;font-size:0.72rem;font-weight:600;'
+                f'color:#5f6368;background:#f1f3f4;border-bottom:1px solid #e0e0e0;'
+                f'letter-spacing:0.04em;text-transform:uppercase;">{label}</div>'
+            ) if label else ""
+            img_html = (
+                f'<img src="{url}" alt="{label}" style="width:100%;height:100%;'
+                f'object-fit:cover;object-position:top;display:block;"/>'
+            ) if url else (
+                f'<div style="flex:1;background:#f8f9fa;display:flex;align-items:center;'
+                f'justify-content:center;color:#9aa0a6;font-size:0.8rem;">screenshot</div>'
+            )
+            return (
+                f'<div style="flex:1;display:flex;flex-direction:column;{br}overflow:hidden;">'
+                f'{lbl_html}{img_html}</div>'
+            )
+        inner_caption = (
+            f'<div style="padding:10px 16px;font-size:0.8rem;color:#5f6368;'
+            f'text-align:center;border-top:1px solid #e0e0e0;background:#f8f9fa;">{caption}</div>'
+        ) if caption else ""
+        return (
+            f'<div style="aspect-ratio:1.91/1;border:1px solid #e0e0e0;border-radius:12px;'
+            f'overflow:hidden;display:flex;flex-direction:column;margin:1.5rem 0;'
+            f'box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
+            f'<div style="flex:1;display:flex;overflow:hidden;">'
+            f'{_panel(left, border_right=True)}{_panel(right)}'
+            f'</div>{inner_caption}</div>'
+            f'{caption_html}'
+        )
+
+    if mode == "architecture_diagram":
+        inputs  = b.get("inputs",  [])
+        runtime = b.get("runtime", "Runtime")
+        outputs = b.get("outputs", [])
+        def _boxes(items, fill, border, color):
+            boxes = "".join(
+                f'<div style="background:{fill};border:1.5px solid {border};border-radius:8px;'
+                f'padding:10px 16px;font-size:0.8rem;font-weight:600;color:{color};'
+                f'text-align:center;white-space:nowrap;">{i.get("label","")}</div>'
+                for i in items
+            )
+            return f'<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">{boxes}</div>'
+        arrow = '<div style="text-align:center;font-size:1.2rem;color:#9aa0a6;margin:6px 0;">↓</div>'
+        runtime_box = (
+            f'<div style="background:#1e40af;border:2px solid #3b82f6;border-radius:10px;'
+            f'padding:14px 24px;font-size:0.9rem;font-weight:700;color:#fff;'
+            f'text-align:center;margin:0 auto;max-width:360px;">{runtime}</div>'
+        )
+        caption_bar = (
+            f'<div style="font-size:0.78rem;color:#5f6368;text-align:center;'
+            f'margin-top:12px;font-style:italic;">{caption}</div>'
+        ) if caption else ""
+        return (
+            f'<div style="aspect-ratio:1.91/1;background:#f8f9fa;border:1px solid #e0e0e0;'
+            f'border-radius:12px;display:flex;flex-direction:column;align-items:center;'
+            f'justify-content:center;padding:32px;margin:1.5rem 0;">'
+            f'{_boxes(inputs, "#e8f0fe", "#4285f4", "#1967d2")}'
+            f'{arrow}{runtime_box}{arrow}'
+            f'{_boxes(outputs, "#e6f4ea", "#34a853", "#1e7e34")}'
+            f'{caption_bar}'
+            f'</div>'
+            f'{caption_html}'
+        )
+
+    return f'<div style="color:#9aa0a6;font-style:italic;">Unknown linkedin_post_image mode: {mode}</div>'
+
+
+_RENDERERS["linkedin_post_image"] = _render_linkedin_post_image
+
 
 def _stub(atom_type: str):
     def _r(b: dict) -> str:

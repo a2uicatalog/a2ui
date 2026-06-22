@@ -4954,3 +4954,133 @@ _RENDERERS['magnetic_button'] = function(b) {
   return _animFallback('magnetic button', b.title || b.label || b.text || '');
 };
 
+_RENDERERS['linkedin_post_image'] = function(b) {
+  var mode   = b.mode || 'conviction_card';
+  var accent = b.accent || '#7c3aed';
+  var uid    = 'li' + Math.random().toString(36).slice(2, 8);
+
+  // Hint bar shown below every card
+  var hint = '<div style="margin-top:8px;text-align:center;font-size:0.72rem;color:#9aa0a6;">' +
+    'LinkedIn post image &mdash; screenshot at 1.91:1 ratio</div>';
+
+  // ── conviction_card ─────────────────────────────────────────────────────────
+  if (mode === 'conviction_card') {
+    var quote = b.quote || '';
+    var attr  = b.attribution || '';
+    var attrHtml = attr
+      ? '<div style="margin-top:20px;font-size:0.82rem;letter-spacing:0.06em;' +
+        'font-family:monospace;color:' + _esc(accent) + ';">' + _esc(attr) + '</div>'
+      : '';
+    return '<div id="' + uid + '" style="aspect-ratio:1.91/1;background:#0f172a;border-radius:12px;' +
+      'display:flex;align-items:center;justify-content:center;padding:48px;' +
+      'position:relative;overflow:hidden;margin:1.5rem 0;">' +
+      '<div style="position:absolute;bottom:0;left:0;right:0;height:4px;' +
+      'background:linear-gradient(90deg,' + _esc(accent) + ',#3b82f6);"></div>' +
+      '<div style="text-align:center;max-width:80%;">' +
+      '<div style="font-size:clamp(1rem,3vw,1.7rem);color:#f1f5f9;font-weight:700;' +
+      'line-height:1.45;font-style:italic;">“' + _esc(quote) + '”</div>' +
+      attrHtml + '</div></div>' + hint;
+  }
+
+  // ── split_screenshot ────────────────────────────────────────────────────────
+  if (mode === 'split_screenshot') {
+    var left    = b.left  || {};
+    var right   = b.right || {};
+    var caption = b.caption || '';
+    function _panel(side, borderRight) {
+      var label = side.label || '';
+      var url   = side.url   || '';
+      var br    = borderRight ? 'border-right:1px solid #e0e0e0;' : '';
+      var lbl   = label
+        ? '<div style="padding:7px 12px;font-size:0.68rem;font-weight:700;' +
+          'color:#5f6368;background:#f1f3f4;border-bottom:1px solid #e0e0e0;' +
+          'letter-spacing:0.05em;text-transform:uppercase;">' + _esc(label) + '</div>'
+        : '';
+      var img = url
+        ? '<img src="' + _esc(url) + '" style="width:100%;height:100%;object-fit:cover;' +
+          'object-position:top;display:block;"/>'
+        : '<div style="flex:1;display:flex;align-items:center;justify-content:center;' +
+          'background:#f8f9fa;color:#9aa0a6;font-size:0.8rem;">screenshot</div>';
+      return '<div style="flex:1;display:flex;flex-direction:column;' + br + 'overflow:hidden;">' +
+        lbl + img + '</div>';
+    }
+    var cap = caption
+      ? '<div style="padding:10px 16px;font-size:0.78rem;color:#5f6368;text-align:center;' +
+        'border-top:1px solid #e0e0e0;background:#f8f9fa;">' + _esc(caption) + '</div>'
+      : '';
+    return '<div style="aspect-ratio:1.91/1;border:1px solid #e0e0e0;border-radius:12px;' +
+      'overflow:hidden;display:flex;flex-direction:column;margin:1.5rem 0;' +
+      'box-shadow:0 2px 8px rgba(0,0,0,0.08);">' +
+      '<div style="flex:1;display:flex;overflow:hidden;">' +
+      _panel(left, true) + _panel(right, false) + '</div>' + cap + '</div>' + hint;
+  }
+
+  // ── architecture_diagram ────────────────────────────────────────────────────
+  if (mode === 'architecture_diagram') {
+    var inputs  = b.inputs  || [];
+    var runtime = b.runtime || 'Runtime';
+    var outputs = b.outputs || [];
+    var caption = b.caption || '';
+    function _boxes(items, fill, border, color) {
+      return '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+        items.map(function(i) {
+          return '<div style="background:' + fill + ';border:1.5px solid ' + border + ';' +
+            'border-radius:8px;padding:9px 16px;font-size:0.78rem;font-weight:600;' +
+            'color:' + color + ';text-align:center;white-space:nowrap;">' + _esc(i.label || '') + '</div>';
+        }).join('') + '</div>';
+    }
+    var arrow = '<div style="text-align:center;color:#9aa0a6;font-size:1.1rem;margin:6px 0;">↓</div>';
+    var runtimeBox = '<div style="background:#1e40af;border:2px solid #3b82f6;border-radius:10px;' +
+      'padding:12px 24px;font-size:0.88rem;font-weight:700;color:#fff;' +
+      'text-align:center;margin:0 auto;max-width:340px;">' + _esc(runtime) + '</div>';
+    var capHtml = caption
+      ? '<div style="font-size:0.75rem;color:#5f6368;text-align:center;margin-top:14px;' +
+        'font-style:italic;">' + _esc(caption) + '</div>'
+      : '';
+    return '<div style="aspect-ratio:1.91/1;background:#f8f9fa;border:1px solid #e0e0e0;' +
+      'border-radius:12px;display:flex;flex-direction:column;align-items:center;' +
+      'justify-content:center;padding:32px;margin:1.5rem 0;">' +
+      _boxes(inputs, '#e8f0fe', '#4285f4', '#1967d2') +
+      arrow + runtimeBox + arrow +
+      _boxes(outputs, '#e6f4ea', '#34a853', '#1e7e34') +
+      capHtml + '</div>' + hint;
+  }
+
+  // ── pipeline ────────────────────────────────────────────────────────────────
+  if (mode === 'pipeline') {
+    var steps   = b.steps   || [];
+    var arrows  = b.arrows  || [];
+    var caption = b.caption || '';
+    var parts = [];
+    steps.forEach(function(step, i) {
+      var sublabel = step.sublabel ? '<div style="font-size:0.65rem;font-weight:400;color:' + _esc(accent) + ';margin-top:4px;letter-spacing:0.03em;">' + _esc(step.sublabel) + '</div>' : '';
+      parts.push(
+        '<div style="flex:1;min-width:0;background:#fff;border:2px solid ' + _esc(accent) + ';border-radius:10px;' +
+        'padding:14px 12px;text-align:center;">' +
+        '<div style="font-size:0.82rem;font-weight:700;color:#0f172a;line-height:1.3;">' + _esc(step.label || '') + '</div>' +
+        sublabel + '</div>'
+      );
+      if (i < steps.length - 1) {
+        var arrowLabel = arrows[i] ? '<div style="font-size:0.6rem;color:#9aa0a6;margin-top:3px;white-space:nowrap;">' + _esc(arrows[i]) + '</div>' : '';
+        parts.push(
+          '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+          'padding:0 4px;flex-shrink:0;">' +
+          '<div style="font-size:1.4rem;color:' + _esc(accent) + ';line-height:1;">→</div>' +
+          arrowLabel + '</div>'
+        );
+      }
+    });
+    var capHtml = caption
+      ? '<div style="font-size:0.75rem;color:#5f6368;text-align:center;margin-top:16px;font-style:italic;">' + _esc(caption) + '</div>'
+      : '';
+    return (
+      '<div style="aspect-ratio:1.91/1;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:12px;' +
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;margin:1.5rem 0;">' +
+      '<div style="display:flex;align-items:center;gap:6px;width:100%;">' + parts.join('') + '</div>' +
+      capHtml + '</div>' + hint
+    );
+  }
+
+  return '<div style="color:#9aa0a6;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
+};
+
