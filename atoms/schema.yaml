@@ -5261,7 +5261,7 @@ blocks:
     cols: integer (optional, 2–6, default 2)
     gap: string (optional, css gap value, default "1.5rem")
     align: string (optional, "top"|"center"|"stretch", default "top")
-    items: array (required). Array of {blocks: [...atom blocks...]} — one entry per column.
+    items: 'array (required). Each item is {blocks: [atom blocks]} — one entry per column.'
   source:
     name: a2ui
     url: https://github.com/curtiskrygier/a2ui
