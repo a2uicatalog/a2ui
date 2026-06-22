@@ -12,25 +12,10 @@
 var _CURRENT_NAV_SLUG = '';
 
 function _ga4PageView(nav, p) {
-  try {
-    var clientId = Utilities.getUuid();
-    var pageTitle = nav || (p ? 'payload' : 'home');
-    var payload = JSON.stringify({
-      client_id: clientId,
-      events: [{
-        name: 'page_view',
-        params: {
-          page_title: pageTitle,
-          page_location: ScriptApp.getService().getUrl() + (nav ? '?nav=' + nav : ''),
-          engagement_time_msec: '1'
-        }
-      }]
-    });
-    UrlFetchApp.fetch(
-      'https://www.google-analytics.com/mp/collect?measurement_id=G-QH5DF4GSM3&api_secret=bSfhIsTpSuSS6BbOYQpU5g',
-      { method: 'post', contentType: 'application/json', payload: payload, muteHttpExceptions: true }
-    );
-  } catch(e) {}
+  // Wire up your own GA4 property: set measurement_id and api_secret below,
+  // then uncomment the UrlFetchApp.fetch call.
+  // var GA4_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+  // var GA4_API_SECRET     = 'YOUR_API_SECRET';
 }
 
 function doGet(e) {
@@ -683,7 +668,7 @@ function validateGeminiLMSOutput(pageJson) {
   }
 }
 
-var _GEMINI_PROJECT  = 'weighty-arcadia-196219';
+var _GEMINI_PROJECT  = 'YOUR_GCP_PROJECT_ID';
 var _GEMINI_LOCATION = 'us-central1';
 var _GEMINI_MODEL    = 'gemini-2.5-pro';
 
