@@ -4,7 +4,7 @@
 |---|---|
 | **Source** | https://ui.aceternity.com |
 | **License** | MIT |
-| **Atom count** | 0 (pattern inspiration — atoms are a2ui-catalogue originals) |
+| **Atom count** | 0 (pattern inspiration — atoms are a2ui originals) |
 | **Coverage audit** | 2026-06-13 |
 
 Aceternity UI is a collection of ~60 React + Tailwind CSS copy-paste components, almost all of them animation-first. The components fall into three categories for A2UI purposes: already covered by existing atoms, JS-dependent (cannot be expressed in pure CSS without a runtime), and genuine CSS-achievable gaps.
@@ -15,18 +15,18 @@ Aceternity UI is a collection of ~60 React + Tailwind CSS copy-paste components,
 
 | Aceternity component | A2UI atom | A2UI source | Notes |
 |---|---|---|---|
-| Animated Modal | `css_modal`, `modal` | a2ui-catalogue | Full coverage |
-| Animated Tooltip | `tooltip`, `hover_card` | a2ui-catalogue | Full coverage |
-| Bento Grid | `bento_grid` | a2ui-catalogue | Full coverage |
+| Animated Modal | `css_modal`, `modal` | a2ui | Full coverage |
+| Animated Tooltip | `tooltip`, `hover_card` | a2ui | Full coverage |
+| Bento Grid | `bento_grid` | a2ui | Full coverage |
 | Carousel | `carousel` | Flowbite | Full coverage |
-| Compare (before/after slider) | `before_after` | a2ui-catalogue | Full coverage |
+| Compare (before/after slider) | `before_after` | a2ui | Full coverage |
 | Input | `form_input` | OpenUI / Thesys | Full coverage |
-| Multi-Step Loader | `stepper` | a2ui-catalogue | Structural coverage; no animation |
-| Navbar Menu | `navigation_menu` | a2ui-catalogue | Full coverage |
-| Number Ticker | `animated_counter` | a2ui-catalogue | Full coverage |
-| Skeleton | `loading_skeleton`, `skeleton_stage_card` | a2ui-catalogue | Full coverage |
+| Multi-Step Loader | `stepper` | a2ui | Structural coverage; no animation |
+| Navbar Menu | `navigation_menu` | a2ui | Full coverage |
+| Number Ticker | `animated_counter` | a2ui | Full coverage |
+| Skeleton | `loading_skeleton`, `skeleton_stage_card` | a2ui | Full coverage |
 | Tabs | `tabs`, `tab_bar` | shadcn/ui | Full coverage |
-| Timeline | `timeline` | a2ui-catalogue | Full coverage |
+| Timeline | `timeline` | a2ui | Full coverage |
 
 ---
 

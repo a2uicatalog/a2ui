@@ -213,7 +213,7 @@ function submitQuiz(atomId, selectedIdx) {
 ## Python side (catalogue integration)
 
 The existing `renderers/apps_script_web.py` **is not the runtime renderer** — it is a preview/catalogue tool that simulates what `atom.gs` would output, for use in:
-- The a2ui-catalogue Firestore publish pipeline
+- The a2ui Firestore publish pipeline
 - README compatibility table generation
 - Design-time preview of what atoms look like in the Apps Script surface
 

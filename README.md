@@ -112,94 +112,94 @@ Agents **never** write HTML. They compose from the vocabulary.
 
 | Atom | web | meet-stage | googlechat | email | pdf | Source |
 |---|---|---|---|---|---|---|
-| `intro` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `body` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `heading` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `subheading` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `quote` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `code` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `pipeline` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `bullet_list` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `divider` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `youtube` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `image` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `image_pair` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `diagram` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `github_repo_card` | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `repo_links` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `closing` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `callout` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `steps` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `table` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `tabs` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `key_value` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `before_after` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `api_reference` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `gallery` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `video_pair` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `carousel` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `timeline` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `annotated_code` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `intro` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `body` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `heading` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `subheading` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `quote` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `code` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `pipeline` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `bullet_list` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `divider` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `youtube` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `image` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `image_pair` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `diagram` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `github_repo_card` | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `repo_links` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `closing` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `callout` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `steps` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `table` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `tabs` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `key_value` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `before_after` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `api_reference` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `gallery` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `video_pair` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `carousel` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `timeline` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `annotated_code` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `stat_card` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [UIverse.io community](https://uiverse.io) |
 | `progress_bar` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [UIverse.io community](https://uiverse.io) |
 | `badge_group` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [UIverse.io community](https://uiverse.io) |
 | `sparkline` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
 | `heatmap` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
-| `punch_card` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `sankey_flow` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `cohort_retention` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `punch_card` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `sankey_flow` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `cohort_retention` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `donut_stat` | ✅ | ✅ | ⚠️ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
-| `metric_delta` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `task_list` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `sentiment_summary` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `trend_indicator` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `breadcrumb` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `pagination` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `stepper` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `tab_bar` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `anchor_list` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `faq_accordion` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `glossary_term` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `footnote` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `blockquote_with_avatar` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `pull_stat` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `accordion_item` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `tooltip` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `hover_card` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `collapsible_panel` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `metric_delta` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `task_list` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `sentiment_summary` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `trend_indicator` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `breadcrumb` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `pagination` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `stepper` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `tab_bar` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `anchor_list` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `faq_accordion` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `glossary_term` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `footnote` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `blockquote_with_avatar` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `pull_stat` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `accordion_item` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `tooltip` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `hover_card` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `collapsible_panel` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `css_modal` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
-| `audio_player` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `audio_link` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `pdf_preview` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `document_link` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `video_thumbnail` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `video_card` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `code_diff` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `code_snippet_pair` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `framed_screenshot` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `image_with_caption` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `audio_player` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `audio_link` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `pdf_preview` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `document_link` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `video_thumbnail` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `video_card` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `code_diff` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `code_snippet_pair` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `framed_screenshot` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `image_with_caption` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `alert_banner` | ✅ | ✅ | ⚠️ | ❌ | — | [UIverse.io community](https://uiverse.io) |
 | `toast_notification` | ✅ | ✅ | ❌ | ❌ | — | [UIverse.io community](https://uiverse.io) |
 | `loading_skeleton` | ✅ | ✅ | ❌ | ❌ | — | [UIverse.io community](https://uiverse.io) |
-| `empty_state` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `empty_state` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `spinner` | ✅ | ✅ | ❌ | ❌ | — | [UIverse.io community](https://uiverse.io) |
 | `status_pill` | ✅ | ✅ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io) |
-| `inline_feedback_message` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `inline_feedback_message` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `rating_stars` | ✅ | ✅ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io) |
 | `progress_circle` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [UIverse.io community](https://uiverse.io) |
-| `action_required_card` | ✅ | ✅ | ✅ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `feature_matrix` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `pricing_tier_card` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `pricing_tier_group` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `pros_cons_list` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `side_by_side_spec` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `product_spec_table` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `comparison_grid` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `versus_block` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `rating_comparison` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `capability_checklist` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `action_required_card` | ✅ | ✅ | ✅ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `feature_matrix` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `pricing_tier_card` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `pricing_tier_group` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `pros_cons_list` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `side_by_side_spec` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `product_spec_table` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `comparison_grid` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `versus_block` | ✅ | ✅ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `rating_comparison` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `capability_checklist` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
 | `toggle_switch` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
-| `expandable_text` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `expandable_text` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `flip_card` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
 | `image_hotspots` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
 | `css_dropdown_menu` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
@@ -208,91 +208,91 @@ Agents **never** write HTML. They compose from the vocabulary.
 | `zoomable_image` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
 | `custom_checkbox_group` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
 | `css_slide_panel` | ✅ | ✅ | ❌ | ❌ | ❌ | [UIverse.io community](https://uiverse.io) |
-| `testimonial_card` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `testimonial_card` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `star_rating_display` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [UIverse.io community](https://uiverse.io) |
 | `avatar_group` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [UIverse.io community](https://uiverse.io) |
-| `contributor_list` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `customer_logo_grid` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `contributor_list` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `customer_logo_grid` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `social_proof_banner` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [UIverse.io community](https://uiverse.io) |
-| `media_mention_card` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `expert_endorsement` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `review_callout` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `social_feed_embed` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
-| `terminal_block` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `file_tree` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `tabbed_code` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `http_request_block` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `env_var_list` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `prerequisite_checklist` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `keyboard_shortcut` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `api_param_table` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `version_badge` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `deprecation_notice` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `experimental_banner` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `media_mention_card` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `expert_endorsement` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `review_callout` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `social_feed_embed` | ✅ | ✅ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `terminal_block` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `file_tree` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `tabbed_code` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `http_request_block` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `env_var_list` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `prerequisite_checklist` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `keyboard_shortcut` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `api_param_table` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `version_badge` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `deprecation_notice` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `experimental_banner` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
 | `cli_command` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io/) |
 | `copy_code_button` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io/) |
-| `log_output` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `json_tree_viewer` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `key_takeaways` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `summary_box` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `learning_objectives` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `changelog_entry` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `release_notes` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `further_reading` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `resources_list` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `sidebar_note` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `difficulty_badge` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `caution_block` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `checklist_interactive` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `glossary_inline` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `time_estimate` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `progress_checkpoint` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `log_output` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `json_tree_viewer` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `key_takeaways` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `summary_box` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `learning_objectives` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `changelog_entry` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `release_notes` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `further_reading` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `resources_list` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `sidebar_note` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `difficulty_badge` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `caution_block` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `checklist_interactive` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `glossary_inline` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
+| `time_estimate` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `progress_checkpoint` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
 | `social_share_bar` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io/) |
-| `newsletter_cta` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `author_bio_card` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `related_posts_grid` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `series_overview_card` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `newsletter_cta` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `author_bio_card` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `related_posts_grid` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `series_overview_card` | ✅ | — | ⚠️ | ⚠️ | — | [ui](https://github.com/curtiskrygier/a2ui) |
 | `reaction_group` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io/) |
-| `share_quote` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `follow_cta` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `share_quote` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
+| `follow_cta` | ✅ | — | ⚠️ | ⚠️ | — | [Flowbite](https://github.com/curtiskrygier/a2ui) |
 | `follow_button` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [UIverse.io community](https://uiverse.io/) |
-| `reading_progress_bar` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `table_of_contents` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `article_hero` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `scroll_to_top` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `article_series_nav` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `embed_codepen` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `embed_stackblitz` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `embed_gist` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `embed_tweet` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `embed_google_slides` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `lottie_animation` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `figma_embed` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `color_swatch_grid` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `live_demo_embed` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `benchmark_comparison` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `chartjs_bar` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `chartjs_line` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `data_table_sortable` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `metric_comparison_card` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `mini_sparkline_set` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `status_dashboard` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `uptime_timeline` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `command_palette` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `search_result_card` | ✅ | ✅ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `post_metadata_bar` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `footnote_group` | ✅ | ⚠️ | — | ✅ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `notification_badge` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `expandable_list` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `poll_block` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `abbr_tooltip` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `copy_to_clipboard` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `conversion_funnel` | ✅ | ✅ | ❌ | — | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `gauge_sla` | ✅ | ✅ | ❌ | — | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `stacked_area` | ✅ | ✅ | ❌ | — | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `scatter_trend` | ✅ | ✅ | ❌ | — | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `call_mood_board` | ✅ | ✅ | ❌ | — | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `github_activity_grid` | ✅ | ✅ | ❌ | — | — | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `reading_progress_bar` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `table_of_contents` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `article_hero` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `scroll_to_top` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `article_series_nav` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `embed_codepen` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `embed_stackblitz` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `embed_gist` | ✅ | — | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `embed_tweet` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `embed_google_slides` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `lottie_animation` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `figma_embed` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `color_swatch_grid` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `live_demo_embed` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `benchmark_comparison` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `chartjs_bar` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `chartjs_line` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `data_table_sortable` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `metric_comparison_card` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `mini_sparkline_set` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `status_dashboard` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `uptime_timeline` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `command_palette` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `search_result_card` | ✅ | ✅ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `post_metadata_bar` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `footnote_group` | ✅ | ⚠️ | — | ✅ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `notification_badge` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `expandable_list` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `poll_block` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `abbr_tooltip` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `copy_to_clipboard` | ✅ | ⚠️ | — | ⚠️ | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `conversion_funnel` | ✅ | ✅ | ❌ | — | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `gauge_sla` | ✅ | ✅ | ❌ | — | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `stacked_area` | ✅ | ✅ | ❌ | — | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `scatter_trend` | ✅ | ✅ | ❌ | — | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `call_mood_board` | ✅ | ✅ | ❌ | — | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `github_activity_grid` | ✅ | ✅ | ❌ | — | — | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `form` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
 | `form_input` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
 | `form_select` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
@@ -303,26 +303,26 @@ Agents **never** write HTML. They compose from the vocabulary.
 | `form_date_picker` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
 | `modal` | ✅ | ✅ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
 | `follow_up_chips` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
-| `choicebox_group` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `feedback_prompt` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `entity_list` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `prompt_template` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `model_card` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `conversation_snippet` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `shortcut_legend` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `rating_summary_bar` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `roadmap_card` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `notification_stack` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `inline_alert` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `choicebox_group` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `feedback_prompt` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `entity_list` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `prompt_template` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `model_card` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `conversation_snippet` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `shortcut_legend` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `rating_summary_bar` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `roadmap_card` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `notification_stack` | ✅ | ✅ | ✅ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `inline_alert` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `tag_block` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
 | `variant_selector` | ✅ | ✅ | ❌ | ❌ | ❌ | [ Thesys](https://github.com/thesysdev/openui) |
 | `markdown_block` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
 | `chartjs_pie` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
 | `text_callout` | ✅ | ✅ | ✅ | ✅ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
-| `source_citation` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `llm_comparison_table` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `confidence_bar` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `token_budget_meter` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `source_citation` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `llm_comparison_table` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `confidence_bar` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `token_budget_meter` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `product_thumbnail` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [Shopify Polaris](https://github.com/Shopify/polaris) |
 | `order_status_card` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [Shopify Polaris](https://github.com/Shopify/polaris) |
 | `inventory_table` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [Shopify Polaris](https://github.com/Shopify/polaris) |
@@ -339,46 +339,46 @@ Agents **never** write HTML. They compose from the vocabulary.
 | `otp_input` | ✅ | ⚠️ | ❌ | ❌ | ❌ | [ui](https://github.com/shadcn-ui/ui) |
 | `bento_grid` | ✅ | ⚠️ | ❌ | ⚠️ | ✅ | [ shadcn](https://magicui.design) |
 | `cta_section` | ✅ | ⚠️ | ⚠️ | ✅ | ✅ | [Tailwind UI](https://tailwindui.com) |
-| `animated_counter` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `media_stream_card` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `live_aggregator` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `vote_button_group` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `effect_overlay` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `skeleton_stage_card` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `marquee_strip` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `typewriter_text` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `animated_border_card` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `aurora_background` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `dot_grid_background` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `shimmer_button` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `card_stack` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `meteor_shower` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `blur_fade_in` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `glow_button` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `animated_beam` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `encrypted_reveal` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `word_flip` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `sonar_pulse` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `typewriter` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `number_odometer` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `typing_indicator` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `countdown_timer` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `gradient_text` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `reveal_on_scroll` | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `word_scramble` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `svg_path_draw` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `toast_notification` | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `parallax_card` | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui/catalogue) |
-| `quiz_question` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `fill_in_blank` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `match_exercise` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `hint_reveal` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `achievement_badge` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `score_summary` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `xp_bar` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `lesson_nav` | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `course_progress_card` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `highlighted_text` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
+| `animated_counter` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `media_stream_card` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `live_aggregator` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `vote_button_group` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `effect_overlay` | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `skeleton_stage_card` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `marquee_strip` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `typewriter_text` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `animated_border_card` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `aurora_background` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `dot_grid_background` | ✅ | ✅ | ⚠️ | ❌ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `shimmer_button` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `card_stack` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `meteor_shower` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `blur_fade_in` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `glow_button` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `animated_beam` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `encrypted_reveal` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `word_flip` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `sonar_pulse` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `typewriter` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `number_odometer` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `typing_indicator` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `countdown_timer` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `gradient_text` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `reveal_on_scroll` | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `word_scramble` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `svg_path_draw` | ✅ | ✅ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `toast_notification` | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `parallax_card` | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui/catalogue) |
+| `quiz_question` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `fill_in_blank` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `match_exercise` | ✅ | ⚠️ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `hint_reveal` | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `achievement_badge` | ✅ | ✅ | ⚠️ | ✅ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `score_summary` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `xp_bar` | ✅ | ✅ | ❌ | ❌ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `lesson_nav` | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `course_progress_card` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
+| `highlighted_text` | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 

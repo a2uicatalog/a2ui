@@ -49,15 +49,15 @@ For EACH atom, return ONLY a YAML block in exactly this format — no prose, no 
   fields:
     [field_name]: [type and short description]
   source:
-    name: [UIverse.io community | a2ui-catalogue | shadcn/ui | Flowbite]
-    url: [IMPORTANT: only use a UIverse/shadcn/Flowbite URL if you found the ACTUAL component page — if you cannot find a specific component URL on that platform, set name to a2ui-catalogue and url to https://github.com/curtiskrygier/a2ui-catalogue]
+    name: [UIverse.io community | a2ui | shadcn/ui | Flowbite]
+    url: [IMPORTANT: only use a UIverse/shadcn/Flowbite URL if you found the ACTUAL component page — if you cannot find a specific component URL on that platform, set name to a2ui and url to https://github.com/curtiskrygier/a2ui]
     license: MIT
 
 Rules:
 - works_on must always include "web"
 - If a field accepts an enum, list options inline: e.g. "string: low | medium | high"
 - compact_description is 10 tokens MAX — semantic intent only, no CSS or implementation detail
-- Source URL must be a real direct link to the component — never use a platform homepage as the URL if you don't have the specific component link; fall back to a2ui-catalogue instead
+- Source URL must be a real direct link to the component — never use a platform homepage as the URL if you don't have the specific component link; fall back to a2ui instead
 - Output YAML only — no markdown fences, no prose, no explanations between atoms
 - Process all atoms in the batch — do not stop early
 ```

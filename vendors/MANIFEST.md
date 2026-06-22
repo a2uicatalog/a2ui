@@ -6,7 +6,7 @@ All atoms in the catalogue trace back to one of these sources. The `source` fiel
 
 | Vendor | Atoms | License | Directory |
 |---|---:|---|---|
-| [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) | 137 | MIT | *(original — no vendor dir)* |
+| [a2ui](https://github.com/curtiskrygier/a2ui) | 137 | MIT | *(original — no vendor dir)* |
 | [UIverse.io community](https://uiverse.io) | 31 | MIT | [uiverse/](uiverse/MANIFEST.md) |
 | [OpenUI / Thesys](https://github.com/thesysdev/openui) | 15 | MIT | [openui/](openui/MANIFEST.md) |
 | [Flowbite](https://flowbite.com) | 16 | MIT | [flowbite/](flowbite/MANIFEST.md) |
@@ -15,8 +15,8 @@ All atoms in the catalogue trace back to one of these sources. The `source` fiel
 | [Atlassian Design System](https://atlassian.design) | 3 | Apache-2.0 | [atlassian/](atlassian/MANIFEST.md) |
 | [IBM Carbon Design System](https://github.com/carbon-design-system/carbon) | 3 | Apache-2.0 | [carbon/](carbon/MANIFEST.md) |
 | [ExtendLabs UI](https://github.com/extendlabs/ui) | 0 atoms · 12 stage components | MIT | [extendlabs-ui/](extendlabs-ui/MANIFEST.md) |
-| [Vercel Geist](https://vercel.com/geist/introduction) | 0 | internal | [vercel/](vercel/MANIFEST.md) *(inspiration reference — atoms are a2ui-catalogue originals)* |
-| [Aceternity UI](https://ui.aceternity.com) | 0 | MIT | [aceternity/](aceternity/MANIFEST.md) *(inspiration reference — atoms are a2ui-catalogue originals)* |
+| [Vercel Geist](https://vercel.com/geist/introduction) | 0 | internal | [vercel/](vercel/MANIFEST.md) *(inspiration reference — atoms are a2ui originals)* |
+| [Aceternity UI](https://ui.aceternity.com) | 0 | MIT | [aceternity/](aceternity/MANIFEST.md) *(inspiration reference — atoms are a2ui originals)* |
 | **Total** | **236** | | |
 
 ## Design principle

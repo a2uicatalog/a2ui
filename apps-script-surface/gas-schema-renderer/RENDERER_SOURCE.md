@@ -2211,7 +2211,7 @@ _RENDERERS['gmail_summary'] = function(b) {
     // Fallback/Mock data for preview
     threads = [
       { from: 'Google Apps Script team <dev@google.com>', subject: 'New V8 features available', date: '6/16/2026' },
-      { from: 'GitHub Notification <noreply@github.com>', subject: '[a2ui-catalogue] Pull request #4 merged', date: '6/15/2026' }
+      { from: 'GitHub Notification <noreply@github.com>', subject: '[a2ui] Pull request #4 merged', date: '6/15/2026' }
     ];
   }
 

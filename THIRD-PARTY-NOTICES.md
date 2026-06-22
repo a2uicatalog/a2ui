@@ -1,6 +1,6 @@
 # Third-Party Software Notices
 
-This repository (`curtiskrygier/a2ui-catalogue`) derives atoms from open-source
+This repository (`curtiskrygier/a2ui`) derives atoms from open-source
 component libraries. No vendor source files are stored here — adaptations are
 documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a

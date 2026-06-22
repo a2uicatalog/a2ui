@@ -7,7 +7,7 @@
 
 ## Why
 
-UIverse filled two gaps the original a2ui-catalogue didn't cover: (1) visual micro-components — spinners, skeletons, pills, rating stars — that appear in live product UIs but not in document-style article atoms; (2) interactive CSS-only patterns (toggle, dropdown, slide panel, flip card) where the interactivity is pure CSS and therefore works across surfaces without JS.
+UIverse filled two gaps the original a2ui didn't cover: (1) visual micro-components — spinners, skeletons, pills, rating stars — that appear in live product UIs but not in document-style article atoms; (2) interactive CSS-only patterns (toggle, dropdown, slide panel, flip card) where the interactivity is pure CSS and therefore works across surfaces without JS.
 
 ## Pattern → atom mapping
 
