@@ -141,6 +141,7 @@
 | `related_posts_grid` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `series_overview_card` | ✅ | — | ⚠️ | ⚠️ | — | ✅ | [ui](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `reaction_group` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | ✅ | [UIverse.io community](https://uiverse.io/) |
+| `linkedin_post_image` | ✅ | — | — | — | — | ✅ | [a2ui](https://github.com/curtiskrygier/a2ui) |
 | `share_quote` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | ✅ | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `follow_cta` | ✅ | — | ⚠️ | ⚠️ | — | ✅ | [Flowbite](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `follow_button` | ✅ | ⚠️ | ⚠️ | ⚠️ | — | ✅ | [UIverse.io community](https://uiverse.io/) |
