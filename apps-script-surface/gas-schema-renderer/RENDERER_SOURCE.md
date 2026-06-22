@@ -1,8 +1,8 @@
 # A2UI GAS Renderer — Full Source
 
-**Deployment ID:** `AKfycbxDpNWMnEKmO0M94EiUB8QU3p4gs-cAv3AXhIWO0VtMaTF3BkuOo8FbK69mknE1PAHtSg`
+**Deployment ID:** `YOUR_DEPLOYMENT_ID`
 
-**Generator URL:** `https://script.google.com/macros/s/AKfycbxDpNWMnEKmO0M94EiUB8QU3p4gs-cAv3AXhIWO0VtMaTF3BkuOo8FbK69mknE1PAHtSg/exec`
+**Generator URL:** `https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec`
 
 **Deploy command:** `./deploy.sh "description"`
 
@@ -357,7 +357,7 @@ function exportScript() {
 </div>
 
 <script>
-  var BASE_URL = 'https://script.google.com/macros/s/AKfycbxDpNWMnEKmO0M94EiUB8QU3p4gs-cAv3AXhIWO0VtMaTF3BkuOo8FbK69mknE1PAHtSg/exec';
+  var BASE_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
   var URL_LIMIT = 6000; // chars — stay well under GAS query string limit
 
   function generate() {
