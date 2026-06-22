@@ -2023,21 +2023,6 @@ _RENDERERS['reveal_on_scroll'] = function(b) {
 };
 _RENDERERS['scroll_trigger'] = _RENDERERS['reveal_on_scroll'];
 
-_RENDERERS['tilt_card'] = function(b) {
-  var title = b.title || '';
-  var text  = b.text || b.content || '';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<div id="tilt-' + uid + '" style="border:1px solid #e5e7eb;border-radius:16px;padding:24px;margin:1rem 0;background:#fff;transition:transform 0.12s ease,box-shadow 0.12s ease;cursor:default;">'
-    + (title ? '<div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
-    + (text  ? '<div style="font-size:0.875rem;color:#6b7280;line-height:1.6;">' + _markdownToHtml(text) + '</div>' : '')
-    + '<script>(function(){'
-    + 'var el=document.getElementById("tilt-' + uid + '");'
-    + 'el.addEventListener("mousemove",function(e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-0.5;var y=(e.clientY-r.top)/r.height-0.5;el.style.transform="perspective(600px) rotateY("+(x*14)+"deg) rotateX("+(-y*14)+"deg) scale(1.025)";el.style.boxShadow=(x*10)+"px "+(y*10)+"px 32px rgba(0,0,0,0.13)";});'
-    + 'el.addEventListener("mouseleave",function(){el.style.transform="";el.style.boxShadow="";});'
-    + '})();<\/script>'
-    + '</div>';
-};
-
 _RENDERERS['magnetic_button'] = function(b) {
   var label = b.text || b.label || b.title || 'Click me';
   var color = b.color || '#6366f1';
@@ -2441,21 +2426,6 @@ _RENDERERS['split_reveal'] = function(b) {
     + '</div>';
 };
 
-_RENDERERS['glass_card'] = function(b) {
-  var title = b.title || '';
-  var text  = b.text  || b.content || '';
-  var bg    = b.bg    || 'linear-gradient(135deg,#4f46e5,#7c3aed,#a21caf)';
-  var uid = Math.random().toString(36).substr(2, 6);
-  return '<div style="background:' + _esc(bg) + ';border-radius:20px;padding:32px;margin:1rem 0;position:relative;overflow:hidden;">'
-    + '<div style="position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.1);top:-60px;right:-60px;pointer-events:none;"></div>'
-    + '<div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);bottom:-40px;left:-40px;pointer-events:none;"></div>'
-    + '<div style="position:relative;z-index:1;background:rgba(255,255,255,0.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.22);border-radius:16px;padding:24px;">'
-    + (title ? '<div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
-    + (text  ? '<div style="color:rgba(255,255,255,0.88);line-height:1.7;font-size:0.9rem;">' + _markdownToHtml(text) + '</div>' : '')
-    + '</div>'
-    + '</div>';
-};
-
 _RENDERERS['mesh_gradient'] = function(b) {
   var title  = b.title  || '';
   var text   = b.text   || b.content || '';
@@ -2627,26 +2597,6 @@ _RENDERERS['noise_card'] = function(b) {
     + '</div>'
     + '</div>';
 };
-
-_RENDERERS['cursor_glow'] = function(b) {
-  var color  = b.color  || '#6366f1';
-  var size   = parseInt(b.size || 280, 10);
-  var blur   = parseInt(b.blur || 80, 10);
-  var opacity = parseFloat(b.opacity !== undefined ? b.opacity : 0.18);
-  return '<style>'
-    + '#a2ui-cg{position:fixed;pointer-events:none;border-radius:50%;background:radial-gradient(circle,' + _esc(color) + ',' + _esc(color) + '00 70%);width:' + size + 'px;height:' + size + 'px;transform:translate(-50%,-50%);filter:blur(' + blur + 'px);opacity:' + opacity + ';z-index:9998;transition:opacity 0.3s;}'
-    + '</style>'
-    + '<div id="a2ui-cg"></div>'
-    + '<script>(function(){if(document.getElementById("a2ui-cg-init"))return;var m=document.createElement("meta");m.id="a2ui-cg-init";document.head.appendChild(m);'
-    + 'var el=document.getElementById("a2ui-cg"),cx=0,cy=0,tx=0,ty=0,raf;'
-    + 'document.addEventListener("mousemove",function(e){tx=e.clientX;ty=e.clientY;if(!raf)raf=requestAnimationFrame(loop);});'
-    + 'document.addEventListener("mouseleave",function(){el.style.opacity="0";});'
-    + 'document.addEventListener("mouseenter",function(){el.style.opacity="' + opacity + '";});'
-    + 'function loop(){cx+=(tx-cx)*0.12;cy+=(ty-cy)*0.12;el.style.left=Math.round(cx)+"px";el.style.top=Math.round(cy)+"px";raf=null;if(Math.abs(tx-cx)>0.5||Math.abs(ty-cy)>0.5)raf=requestAnimationFrame(loop);}'
-    + '})();<\/script>';
-};
-
-// ── comparison_morph ─────────────────────────────────────────────────────────
 
 _RENDERERS['comparison_morph'] = function(b) {
   var before = b.before || {};

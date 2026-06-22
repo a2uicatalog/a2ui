@@ -257,6 +257,7 @@ blocks:
   description: GitHub repo card — fetches live star/fork/language/push data from GitHub
     API at render time and embeds as self-contained HTML
   compact_description: live GitHub repo card with stars forks and language
+  status: stub
   surfaces:
     works_on:
     - web
@@ -668,6 +669,7 @@ blocks:
 - type: sparkline
   description: Renders a small, simple line chart without axes or coordinates, showing
   compact_description: inline SVG trend line chart general trends.
+  status: stub
   source: &id003
     name: UIverse.io community
     url: https://uiverse.io
@@ -838,9 +840,9 @@ blocks:
     color: string (hex or named color for the donut segment, e.g., '#2196F3')
     size: string (CSS size value, e.g., '100px')
 - type: metric_delta
+  status: stub
   description: Renders a key performance indicator with its current value and a numerical
   compact_description: big number metric with directional change indicator or percentage
-    change from a previous period, often with an up/down indicator.
   source:
     name: a2ui-catalogue
     url: https://a2ui.dev
@@ -893,6 +895,7 @@ blocks:
     showing positive/negative/neutral mix, sentiment index progress arc, and emotional
     journey area timeline.
   compact_description: meeting sentiment analyzer with index arc and timeline chart
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://github.com/curtiskrygier/a2ui-catalogue
@@ -919,9 +922,9 @@ blocks:
     themes: 'list of dictionaries representing key themes with weights or moods: [{''theme'':
       ''Technical Alignment'', ''mood'': ''Analytical'', ''score'': 85}, ...]'
 - type: trend_indicator
+  status: stub
   description: Renders a simple visual indicator (e.g., arrow, icon) representing
   compact_description: compact inline value with mini trend bar the direction of a
-    trend, often accompanied by a descriptive text.
   source:
     name: a2ui-catalogue
     url: https://a2ui.dev
@@ -1755,9 +1758,9 @@ blocks:
     color: string (optional). Arc stroke colour. Default "#38bdf8".
     size: '"sm" | "md" | "lg"  (optional, default "md"). Circle diameter.'
 - type: action_required_card
+  status: stub
   description: A card highlighting an important status or issue that requires immediate
   compact_description: prominent card prompting a required user action user attention,
-    with a clear call to action.
   source:
     name: a2ui-catalogue
     url: https://a2ui.com/catalogue
@@ -1964,6 +1967,7 @@ blocks:
 - type: rating_comparison
   description: Renders a comparison of multiple items based on star ratings or numerical
   compact_description: multiple items rated across dimensions scores.
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://a2ui.dev/catalogue
@@ -1979,9 +1983,9 @@ blocks:
   fields:
     items: array
 - type: capability_checklist
+  status: stub
   description: Renders a list of capabilities, indicating which items possess each
   compact_description: feature capability tick list per tier capability using checkmarks
-    or similar indicators.
   source:
     name: a2ui-catalogue
     url: https://a2ui.dev/catalogue
@@ -2006,6 +2010,7 @@ blocks:
 - type: toggle_switch
   description: Renders a visual on/off switch.
   compact_description: CSS toggle switch input
+  status: stub
   source: *id003
   surfaces:
     works_on:
@@ -2027,6 +2032,7 @@ blocks:
 - type: expandable_text
   description: Renders a block of text that can be expanded or collapsed to reveal
   compact_description: truncated text with read more expand toggle more content.
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://a2ui.dev
@@ -2076,6 +2082,7 @@ blocks:
 - type: image_hotspots
   description: Renders an image with interactive points that display information on
   compact_description: image with clickable annotated hotspot overlays hover.
+  status: stub
   source: *id003
   surfaces:
     works_on:
@@ -2284,6 +2291,7 @@ blocks:
 - type: avatar_group
   description: Renders a stack or row of small user avatars, often indicating a group
   compact_description: stacked user avatar group with overflow count or community.
+  status: stub
   source: *id003
   surfaces:
     works_on:
@@ -2303,9 +2311,9 @@ blocks:
     total_count: integer
     label: string
 - type: contributor_list
+  status: stub
   description: Renders a list of individuals who have contributed to a project or
   compact_description: list of contributors with avatar and role community, with their
-    names, roles, and optional links or avatars.
   source:
     name: a2ui-catalogue
     url: https://a2ui.com/catalogue
@@ -2328,6 +2336,7 @@ blocks:
 - type: customer_logo_grid
   description: Renders a grid or row of logos from featured customers or partners.
   compact_description: grid of customer or partner logos
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://a2ui.com/catalogue
@@ -2351,6 +2360,7 @@ blocks:
 - type: social_proof_banner
   description: Renders a prominent banner highlighting a key social proof metric or
   compact_description: social proof strip with stats and logos achievement.
+  status: stub
   source: *id003
   surfaces:
     works_on:
@@ -2373,6 +2383,7 @@ blocks:
 - type: media_mention_card
   description: Renders a card showcasing a mention or feature in a media publication.
   compact_description: press or media mention with logo and quote
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://a2ui.com/catalogue
@@ -2399,6 +2410,7 @@ blocks:
 - type: expert_endorsement
   description: Renders an endorsement from an industry expert, including their quote,
   compact_description: expert quote with credentials and photo name, and credentials.
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://a2ui.com/catalogue
@@ -2425,6 +2437,7 @@ blocks:
 - type: review_callout
   description: Renders a short, impactful quote from a customer review, often accompanied
   compact_description: highlighted customer review excerpt by a star rating.
+  status: stub
   source:
     name: a2ui-catalogue
     url: https://a2ui.com/catalogue
@@ -2595,10 +2608,11 @@ blocks:
     url: https://github.com/curtiskrygier/a2ui-catalogue
     license: MIT
 - type: prerequisite_checklist
+  status: stub
   description: Renders a callout box highlighting required tools, knowledge, or setups
     needed before starting a guide.
   compact_description: highlight prerequisite knowledge and system requirements before
-    starting a tutorial
+  status: stub
   surfaces:
     works_on:
     - web
@@ -3216,6 +3230,23 @@ blocks:
     name: UIverse.io community
     url: https://uiverse.io/
     license: MIT
+- type: linkedin_post_image
+  description: Renders a styled LinkedIn post image preview (conviction card, stat card, or carousel slide). Screenshot at 1.91:1 ratio for social sharing.
+  compact_description: LinkedIn post image preview — conviction_card, stat_card, or carousel_slide mode
+  surfaces:
+    works_on: [web, apps-script-web]
+  fields:
+    mode: string (optional, "conviction_card"|"stat_card"|"carousel_slide", default "conviction_card")
+    accent: string (optional, hex, default "#7c3aed")
+    quote: string (conviction_card — main quote text)
+    attribution: string (conviction_card — author/source)
+    value: string (stat_card — big number)
+    label: string (stat_card — metric label)
+    title: string (carousel_slide — slide title)
+    body: string (carousel_slide — slide body)
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
 - type: share_quote
   description: Displays a visually distinct callout showcasing a key phrase designed
     for social clipping.
@@ -3915,6 +3946,7 @@ blocks:
   description: Renders a premium pipeline conversion funnel with tapered glowing step
     bars, percentage conversion rates, and leakage drop-off markers.
   compact_description: pipeline conversion funnel with step tapering and leak markers
+  status: stub
   surfaces:
     works_on:
     - web
@@ -3936,6 +3968,7 @@ blocks:
   description: Renders a semi-circular radial gauge track with high contrast status
     quadrants, a glowing needle tick, and a prominent central KPI readout.
   compact_description: radial SLA gauge with glowing pointer and large metric value
+  status: stub
   surfaces:
     works_on:
     - web
@@ -3959,6 +3992,7 @@ blocks:
   description: Renders cumulative layered area chart trends utilizing overlapping
     translucent gradient fills and glowing series borders.
   compact_description: stacked area chart with overlapping glowing translucent gradients
+  status: stub
   surfaces:
     works_on:
     - web
@@ -3981,6 +4015,7 @@ blocks:
   description: Renders a coordinate scatter grid representing discrete data points
     intersected by a prominent glowing linear regression line.
   compact_description: coordinate scatter plot with regression trend line
+  status: stub
   surfaces:
     works_on:
     - web
@@ -4004,6 +4039,7 @@ blocks:
     detected sentiments, dominant moods with color codings, active themes, and word
     weightings.
   compact_description: visual summary board of call sentiments moods and active themes
+  status: stub
   surfaces:
     works_on:
     - web
@@ -4868,6 +4904,7 @@ blocks:
     SKU, price with optional compare-at strike-through, status badge, and tag chips.
     Adapted from Polaris ResourceItem + Thumbnail patterns.
   compact_description: product card with image, price, status badge, and tags
+  status: stub
   surfaces:
     works_on:
     - web
@@ -4924,6 +4961,7 @@ blocks:
     Rows with available stock below the optional threshold are highlighted amber as
     a low-stock warning. Adapted from Polaris DataTable patterns.
   compact_description: inventory table with SKU, stock levels, and low-stock row highlight
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5028,12 +5066,13 @@ blocks:
     url: https://atlassian.design
     license: Apache-2.0
 - type: data_grid
+  status: stub
   description: IBM Carbon Design System enterprise data grid with typed columns (string/number/status/tag),
     optional row-selection checkboxes, sortable column indicators, zebra-stripe rows,
     and optional pagination footer. More capable than table and data_table_sortable
     for enterprise data-dense layouts. Adapted from IBM Carbon DataTable patterns.
   compact_description: enterprise data grid with typed columns, row selection, and
-    pagination
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5065,6 +5104,7 @@ blocks:
     specific. Expanded/collapsed state set per node. Adapted from IBM Carbon TreeView
     component.
   compact_description: recursive hierarchical tree with expand/collapse per node
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5090,6 +5130,7 @@ blocks:
     (arbitrary x/y grid) and github_activity_grid (year-spanning GitHub-specific format).
     Adapted from IBM Carbon AI Applications data visualisation patterns.
   compact_description: calendar month heatmap with date-value density colouring
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5117,6 +5158,7 @@ blocks:
     user types. Renders with a search icon, chevron, and an open option list for article
     preview. Native <datalist> enables browser-level autocomplete.
   compact_description: searchable filterable dropdown — shadcn/Headless UI pattern
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5203,6 +5245,7 @@ blocks:
   description: Tag/chip style multi-value selector. Displays selected values as removable
     chips above a filtered option list. Shadcn multi-select pattern.
   compact_description: chip-style multi-value select input — shadcn pattern
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5230,6 +5273,7 @@ blocks:
   description: One-time password entry field. Renders N individual digit boxes (default
     6) with filled/unfilled visual state. Shadcn InputOTP pattern.
   compact_description: N-box one-time password digit input — shadcn OTP pattern
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5615,12 +5659,13 @@ blocks:
     url: https://a2ui.dev/catalogue
     license: MIT
 - type: media_stream_card
+  status: stub
   description: Auto-detecting media embed that accepts a raw URL and builds the correct
     iframe for YouTube, Loom, Google Slides, or Vimeo. Displays a labelled card shell
     with a skeleton shimmer while loading. Designed for stage-first delivery where
     the URL is the only payload.
   compact_description: Auto-detecting YouTube/Loom/Slides/Vimeo embed with skeleton
-    loader
+  status: stub
   surfaces:
     works_on:
     - web
@@ -5650,6 +5695,7 @@ blocks:
     bars with optional value labels. Designed for stage-first delivery where items
     update incrementally via fiber.
   compact_description: Real-time comparative bars for votes, counts, or percentages
+  status: stub
   surfaces:
     works_on:
     - web

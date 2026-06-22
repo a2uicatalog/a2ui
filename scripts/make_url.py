@@ -15,12 +15,13 @@ Renderers:
                    knowledge_check, dark_hero, lms atoms, airspace atoms
   main             general a2ui renderer (older, no gzip, no brevet atoms)
 """
-import sys, json, zlib, base64, argparse, subprocess, tempfile
+import sys, json, zlib, base64, argparse, subprocess, tempfile, os
 from urllib.parse import quote
 
+_dep_id = os.environ.get('GAS_DEPLOYMENT_ID', 'YOUR_DEPLOYMENT_ID')
 RENDERERS = {
-    'gem':  'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
-    'main': 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
+    'gem':  f'https://script.google.com/macros/s/{_dep_id}/exec',
+    'main': f'https://script.google.com/macros/s/{_dep_id}/exec',
 }
 
 URL_LIMIT = 8000
