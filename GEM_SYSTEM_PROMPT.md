@@ -127,6 +127,23 @@ token_budget_meter
                   label, warn_at (%, default 70), critical_at (%, default 90),
                   animate (bool), duration (seconds)
 
+### Layout
+columns           cols (2–6, default 2), gap (css, default "1.5rem"), align ("top"|"center"|"stretch"),
+                  items: [{blocks: [...atom blocks...]}] — one per column. Collapses to 1 col on mobile.
+
+### People & scheduling
+person_card       name, role (optional), photo_url (optional), bio (optional, markdown),
+                  email (optional), linkedin (optional), tags (string[], optional), accent (hex)
+                  — use inside columns for team rosters
+agenda_block      title (optional), date (optional), accent (hex),
+                  slots: [{time, title, speaker?, location?, type? ("break"|"keynote"|"workshop"|"panel"|"social"), description?}]
+
+### Risk & actions
+risk_flag         title (optional),
+                  risks: [{level ("critical"|"high"|"medium"|"low"), title, description?, mitigation?}]
+action_items      title (optional),
+                  items: [{action, owner?, due?, status? ("open"|"in_progress"|"done")}]
+
 ### Visual / layout
 
 stat_card         value, label, delta (optional), is_up (bool), accent (hex)

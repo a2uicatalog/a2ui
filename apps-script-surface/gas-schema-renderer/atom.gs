@@ -3571,4 +3571,141 @@ _RENDERERS['linkedin_post_image'] = function(b) {
   return '<div style="color:#9aa0a6;font-style:italic;padding:12px;">Unknown linkedin_post_image mode: ' + _esc(mode) + '</div>';
 };
 
+// ── Layout ────────────────────────────────────────────────────────────────────
+
+_RENDERERS['columns'] = function(b) {
+  var uid  = Math.random().toString(36).substr(2, 6);
+  var cols = Math.min(6, Math.max(2, parseInt(b.cols || b.columns || 2)));
+  var gap  = _esc(b.gap || '1.5rem');
+  var alignMap = { top: 'flex-start', center: 'center', stretch: 'stretch' };
+  var align = alignMap[b.align] || 'flex-start';
+  var items = b.items || [];
+  var colsHtml = '';
+  for (var i = 0; i < items.length; i++) {
+    var colBlocks = items[i].blocks || items[i].content || [];
+    colsHtml += '<div class="col-col-' + uid + '">' + renderAtoms(colBlocks) + '</div>';
+  }
+  return '<style>' +
+    '.col-wrap-' + uid + '{display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:' + gap + ';align-items:' + align + ';margin:1.5rem 0;}' +
+    '@media(max-width:600px){.col-wrap-' + uid + '{grid-template-columns:1fr;}}' +
+    '.col-col-' + uid + '{min-width:0;}' +
+    '</style>' +
+    '<div class="col-wrap-' + uid + '">' + colsHtml + '</div>';
+};
+
+// ── People ────────────────────────────────────────────────────────────────────
+
+_RENDERERS['person_card'] = function(b) {
+  var uid    = Math.random().toString(36).substr(2, 6);
+  var accent = b.accent || '#6366f1';
+  var photo  = b.photo_url || b.photo || '';
+  var tags   = b.tags || [];
+  var tagsHtml = tags.map(function(t) {
+    return '<span style="background:#f3f4f6;color:#374151;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:500;">' + _esc(t) + '</span>';
+  }).join('');
+  var linksHtml = '';
+  if (b.email)    linksHtml += '<a href="mailto:' + _esc(b.email) + '" style="color:' + accent + ';font-size:12px;text-decoration:none;">✉ ' + _esc(b.email) + '</a>';
+  if (b.linkedin) linksHtml += '<a href="' + _esc(b.linkedin) + '" target="_blank" style="color:' + accent + ';font-size:12px;text-decoration:none;margin-left:10px;">in LinkedIn</a>';
+  return '<style>' +
+    '.pc-' + uid + '{border:1px solid #e5e7eb;border-radius:12px;padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#fff;}' +
+    '.pc-avatar-' + uid + '{flex:0 0 56px;height:56px;border-radius:50%;object-fit:cover;background:' + accent + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;overflow:hidden;}' +
+    '.pc-body-' + uid + '{flex:1;min-width:0;}' +
+    '.pc-name-' + uid + '{font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;}' +
+    '.pc-role-' + uid + '{font-size:13px;color:#6b7280;margin-bottom:8px;}' +
+    '.pc-bio-' + uid + '{font-size:13px;color:#374151;line-height:1.5;margin-bottom:8px;}' +
+    '.pc-tags-' + uid + '{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}' +
+    '</style>' +
+    '<div class="pc-' + uid + '">' +
+    '<div class="pc-avatar-' + uid + '">' + (photo ? '<img src="' + _esc(photo) + '" style="width:56px;height:56px;object-fit:cover;" />' : _esc((b.name || '?').charAt(0).toUpperCase())) + '</div>' +
+    '<div class="pc-body-' + uid + '">' +
+    '<div class="pc-name-' + uid + '">' + _esc(b.name || '') + '</div>' +
+    (b.role ? '<div class="pc-role-' + uid + '">' + _esc(b.role) + '</div>' : '') +
+    (b.bio  ? '<div class="pc-bio-'  + uid + '">' + _md(b.bio) + '</div>' : '') +
+    (tagsHtml ? '<div class="pc-tags-' + uid + '">' + tagsHtml + '</div>' : '') +
+    (linksHtml ? '<div>' + linksHtml + '</div>' : '') +
+    '</div></div>';
+};
+
+// ── Agenda ────────────────────────────────────────────────────────────────────
+
+_RENDERERS['agenda_block'] = function(b) {
+  var uid    = Math.random().toString(36).substr(2, 6);
+  var accent = b.accent || '#6366f1';
+  var slots  = b.slots || [];
+  var typeColors = { break: '#f3f4f6', keynote: '#ede9fe', workshop: '#dbeafe', panel: '#d1fae5', social: '#fef3c7' };
+  var slotsHtml = slots.map(function(s) {
+    var bg = typeColors[s.type] || '#fff';
+    return '<div style="display:flex;gap:0;border-bottom:1px solid #f3f4f6;">' +
+      '<div style="flex:0 0 72px;padding:12px 8px;font-size:12px;font-weight:600;color:' + accent + ';border-right:2px solid ' + accent + ';text-align:right;">' + _esc(s.time || '') + '</div>' +
+      '<div style="flex:1;padding:10px 14px;background:' + bg + ';">' +
+      '<div style="font-size:14px;font-weight:600;color:#111827;">' + _esc(s.title || '') + '</div>' +
+      (s.speaker  ? '<div style="font-size:12px;color:#6b7280;margin-top:2px;">👤 ' + _esc(s.speaker) + '</div>' : '') +
+      (s.location ? '<div style="font-size:12px;color:#6b7280;margin-top:2px;">📍 ' + _esc(s.location) + '</div>' : '') +
+      (s.description ? '<div style="font-size:12px;color:#374151;margin-top:4px;">' + _esc(s.description) + '</div>' : '') +
+      (s.type ? '<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af;margin-top:4px;">' + _esc(s.type) + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+  return '<style>.ag-' + uid + '{border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;}</style>' +
+    '<div class="ag-' + uid + '">' +
+    (b.title || b.date ? '<div style="padding:12px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">' +
+      (b.title ? '<span style="font-size:15px;font-weight:700;color:#111827;">' + _esc(b.title) + '</span>' : '<span></span>') +
+      (b.date  ? '<span style="font-size:12px;color:#6b7280;">' + _esc(b.date) + '</span>' : '') +
+      '</div>' : '') +
+    slotsHtml + '</div>';
+};
+
+// ── Risk & Actions ────────────────────────────────────────────────────────────
+
+_RENDERERS['risk_flag'] = function(b) {
+  var uid  = Math.random().toString(36).substr(2, 6);
+  var risks = b.risks || [];
+  var levelCfg = {
+    critical: { bg: '#fef2f2', border: '#ef4444', badge: '#ef4444', label: 'Critical' },
+    high:     { bg: '#fff7ed', border: '#f97316', badge: '#f97316', label: 'High' },
+    medium:   { bg: '#fefce8', border: '#eab308', badge: '#eab308', label: 'Medium' },
+    low:      { bg: '#f0fdf4', border: '#22c55e', badge: '#22c55e', label: 'Low' }
+  };
+  var rowsHtml = risks.map(function(r) {
+    var cfg = levelCfg[r.level] || levelCfg.medium;
+    return '<div style="border-left:4px solid ' + cfg.border + ';background:' + cfg.bg + ';border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+      '<span style="background:' + cfg.badge + ';color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">' + cfg.label + '</span>' +
+      '<span style="font-size:14px;font-weight:600;color:#111827;">' + _esc(r.title || '') + '</span>' +
+      '</div>' +
+      (r.description ? '<div style="font-size:13px;color:#374151;line-height:1.5;">' + _md(r.description) + '</div>' : '') +
+      (r.mitigation  ? '<div style="font-size:12px;color:#6b7280;margin-top:6px;">💡 <em>' + _esc(r.mitigation) + '</em></div>' : '') +
+      '</div>';
+  }).join('');
+  return (b.title ? '<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;margin-bottom:8px;">' + _esc(b.title) + '</div>' : '') + rowsHtml;
+};
+
+_RENDERERS['action_items'] = function(b) {
+  var uid   = Math.random().toString(36).substr(2, 6);
+  var items = b.items || [];
+  var statusCfg = {
+    done:        { icon: '✅', color: '#16a34a', bg: '#f0fdf4' },
+    in_progress: { icon: '🔄', color: '#2563eb', bg: '#eff6ff' },
+    open:        { icon: '⭕', color: '#9ca3af', bg: '#fff' }
+  };
+  var rowsHtml = items.map(function(item, i) {
+    var cfg = statusCfg[item.status] || statusCfg.open;
+    return '<tr style="background:' + (i % 2 === 0 ? '#fff' : '#f9fafb') + ';">' +
+      '<td style="padding:10px 14px;font-size:13px;color:#111827;">' + _md(item.action || '') + '</td>' +
+      '<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">' + _esc(item.owner || '—') + '</td>' +
+      '<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">' + _esc(item.due || '—') + '</td>' +
+      '<td style="padding:10px 14px;text-align:center;white-space:nowrap;"><span style="font-size:12px;color:' + cfg.color + ';background:' + cfg.bg + ';border-radius:99px;padding:2px 10px;font-weight:600;">' + cfg.icon + ' ' + _esc(item.status || 'open') + '</span></td>' +
+      '</tr>';
+  }).join('');
+  return '<div style="margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' +
+    (b.title ? '<div style="padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:700;color:#111827;">' + _esc(b.title) + '</div>' : '') +
+    '<table style="width:100%;border-collapse:collapse;">' +
+    '<thead><tr style="background:#f3f4f6;">' +
+    '<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Action</th>' +
+    '<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Owner</th>' +
+    '<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Due</th>' +
+    '<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Status</th>' +
+    '</tr></thead>' +
+    '<tbody>' + rowsHtml + '</tbody></table></div>';
+};
+
 

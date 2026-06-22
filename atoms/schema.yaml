@@ -5252,6 +5252,71 @@ blocks:
     name: shadcn/ui
     url: https://github.com/shadcn-ui/ui
     license: MIT
+- type: columns
+  description: Generic multi-column layout container. Each column holds an array of atom blocks rendered inline. 2–6 columns; collapses to single column on mobile.
+  compact_description: multi-column layout — 2–6 cols, each column holds atom blocks
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    cols: integer (optional, 2–6, default 2)
+    gap: string (optional, css gap value, default "1.5rem")
+    align: string (optional, "top"|"center"|"stretch", default "top")
+    items: array (required). Array of {blocks: [...atom blocks...]} — one entry per column.
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: person_card
+  description: Individual person card with name, role, optional photo, bio, tags, and contact links. Use inside a columns atom to build team rosters.
+  compact_description: person card — name, role, photo, bio, tags, email, linkedin
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    name: string (required)
+    role: string (optional)
+    photo_url: string (optional, URL)
+    bio: string (optional, markdown)
+    email: string (optional)
+    linkedin: string (optional, URL)
+    tags: string[] (optional)
+    accent: string (optional, hex, default "#6366f1")
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: agenda_block
+  description: Time-slotted schedule view for a day or event. Each slot has a time, title, optional speaker, location, type badge, and description.
+  compact_description: time-slotted agenda — slots with time, title, speaker, location, type
+  surfaces:
+    works_on: [web, apps-script-web]
+  fields:
+    title: string (optional)
+    date: string (optional)
+    accent: string (optional, hex, default "#6366f1")
+    slots: array (required). Array of {time, title, speaker?, location?, type? ("break"|"keynote"|"workshop"|"panel"|"social"), description?}
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: risk_flag
+  description: Structured risk callout list with severity levels, description, and mitigation. For meeting prep, project status, incident reports.
+  compact_description: risk list — critical/high/medium/low with title, description, mitigation
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    title: string (optional)
+    risks: array (required). Array of {level ("critical"|"high"|"medium"|"low"), title, description?, mitigation?}
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
+- type: action_items
+  description: Action items table with owner, due date, and status. For retros, meeting notes, sprint planning, incident reports.
+  compact_description: action items table — action, owner, due date, status
+  surfaces:
+    works_on: [web, apps-script-web, pdf]
+  fields:
+    title: string (optional)
+    items: array (required). Array of {action, owner?, due?, status? ("open"|"in_progress"|"done")}
+  source:
+    name: a2ui
+    url: https://github.com/curtiskrygier/a2ui
 - type: bento_grid
   description: Asymmetric CSS grid of feature tiles. First tile typically spans multiple
     columns for visual emphasis. Supports per-tile icons, titles, descriptions, and

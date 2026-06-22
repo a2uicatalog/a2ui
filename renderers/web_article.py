@@ -1575,6 +1575,142 @@ def _render_pricing_tier_group(b: dict) -> str:
     inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pricing_tier_group ]</em>")
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
+def _render_columns(b: dict) -> str:
+    """Generic multi-column layout container."""
+    cols  = max(2, min(6, int(b.get("cols", b.get("columns", 2)))))
+    gap   = b.get("gap", "1.5rem")
+    align = {"top": "flex-start", "center": "center", "stretch": "stretch"}.get(b.get("align", "top"), "flex-start")
+    items = b.get("items", [])
+    col_html = ""
+    for item in items:
+        blocks = item.get("blocks", item.get("content", []))
+        inner  = "".join(_RENDERERS.get(bl.get("type", ""), _render_unknown)(bl) for bl in blocks)
+        col_html += f'<div style="min-width:0;">{inner}</div>'
+    return (
+        f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap};'
+        f'align-items:{align};margin:1.5rem 0;">'
+        f'{col_html}</div>'
+    )
+
+
+def _render_person_card(b: dict) -> str:
+    """Individual person card with name, role, photo, bio, tags, links."""
+    accent = b.get("accent", "#6366f1")
+    photo  = b.get("photo_url", b.get("photo", ""))
+    name   = b.get("name", "")
+    initial = (name[:1] or "?").upper()
+    avatar = (f'<img src="{photo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" />'
+              if photo else
+              f'<span style="font-size:22px;font-weight:700;color:#fff;">{initial}</span>')
+    tags_html = "".join(
+        f'<span style="background:#f3f4f6;color:#374151;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:500;">{t}</span>'
+        for t in b.get("tags", [])
+    )
+    links_html = ""
+    if b.get("email"):    links_html += f'<a href="mailto:{b["email"]}" style="color:{accent};font-size:12px;text-decoration:none;">✉ {b["email"]}</a>'
+    if b.get("linkedin"): links_html += f'<a href="{b["linkedin"]}" style="color:{accent};font-size:12px;text-decoration:none;margin-left:10px;">in LinkedIn</a>'
+    bio_html = f'<div style="font-size:13px;color:#374151;line-height:1.5;margin-bottom:8px;">{_md_inline(b["bio"])}</div>' if b.get("bio") else ""
+    return (
+        f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;display:flex;gap:16px;align-items:flex-start;margin:0.5rem 0;background:#fff;">'
+        f'<div style="flex:0 0 56px;height:56px;border-radius:50%;background:{accent};display:flex;align-items:center;justify-content:center;overflow:hidden;">{avatar}</div>'
+        f'<div style="flex:1;min-width:0;">'
+        f'<div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:2px;">{name}</div>'
+        + (f'<div style="font-size:13px;color:#6b7280;margin-bottom:8px;">{b["role"]}</div>' if b.get("role") else "")
+        + bio_html
+        + (f'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">{tags_html}</div>' if tags_html else "")
+        + (f'<div>{links_html}</div>' if links_html else "")
+        + '</div></div>'
+    )
+
+
+def _render_agenda_block(b: dict) -> str:
+    """Time-slotted schedule for a day or event."""
+    accent = b.get("accent", "#6366f1")
+    type_colors = {"break": "#f3f4f6", "keynote": "#ede9fe", "workshop": "#dbeafe", "panel": "#d1fae5", "social": "#fef3c7"}
+    slots_html = ""
+    for s in b.get("slots", []):
+        bg = type_colors.get(s.get("type", ""), "#fff")
+        slots_html += (
+            f'<div style="display:flex;border-bottom:1px solid #f3f4f6;">'
+            f'<div style="flex:0 0 72px;padding:12px 8px;font-size:12px;font-weight:600;color:{accent};border-right:2px solid {accent};text-align:right;">{s.get("time","")}</div>'
+            f'<div style="flex:1;padding:10px 14px;background:{bg};">'
+            f'<div style="font-size:14px;font-weight:600;color:#111827;">{s.get("title","")}</div>'
+            + (f'<div style="font-size:12px;color:#6b7280;margin-top:2px;">👤 {s["speaker"]}</div>' if s.get("speaker") else "")
+            + (f'<div style="font-size:12px;color:#6b7280;margin-top:2px;">📍 {s["location"]}</div>' if s.get("location") else "")
+            + (f'<div style="font-size:12px;color:#374151;margin-top:4px;">{s["description"]}</div>' if s.get("description") else "")
+            + (f'<div style="font-size:10px;font-weight:600;text-transform:uppercase;color:#9ca3af;margin-top:4px;">{s["type"]}</div>' if s.get("type") else "")
+            + '</div></div>'
+        )
+    header = ""
+    if b.get("title") or b.get("date"):
+        header = (
+            f'<div style="padding:12px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">'
+            + (f'<span style="font-size:15px;font-weight:700;color:#111827;">{b["title"]}</span>' if b.get("title") else "<span></span>")
+            + (f'<span style="font-size:12px;color:#6b7280;">{b["date"]}</span>' if b.get("date") else "")
+            + '</div>'
+        )
+    return f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.5rem 0;">{header}{slots_html}</div>'
+
+
+def _render_risk_flag(b: dict) -> str:
+    """Structured risk callout list with severity levels."""
+    level_cfg = {
+        "critical": ("#fef2f2", "#ef4444", "Critical"),
+        "high":     ("#fff7ed", "#f97316", "High"),
+        "medium":   ("#fefce8", "#eab308", "Medium"),
+        "low":      ("#f0fdf4", "#22c55e", "Low"),
+    }
+    rows = ""
+    for r in b.get("risks", []):
+        bg, border, label = level_cfg.get(r.get("level", "medium"), level_cfg["medium"])
+        rows += (
+            f'<div style="border-left:4px solid {border};background:{bg};border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;">'
+            f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+            f'<span style="background:{border};color:#fff;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;text-transform:uppercase;">{label}</span>'
+            f'<span style="font-size:14px;font-weight:600;color:#111827;">{r.get("title","")}</span></div>'
+            + (f'<div style="font-size:13px;color:#374151;line-height:1.5;">{_md_inline(r["description"])}</div>' if r.get("description") else "")
+            + (f'<div style="font-size:12px;color:#6b7280;margin-top:6px;">💡 <em>{r["mitigation"]}</em></div>' if r.get("mitigation") else "")
+            + '</div>'
+        )
+    title_html = f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;margin-bottom:8px;">{b["title"]}</div>' if b.get("title") else ""
+    return title_html + rows
+
+
+def _render_action_items(b: dict) -> str:
+    """Action items table with owner, due date, status."""
+    status_cfg = {
+        "done":        ("✅", "#16a34a", "#f0fdf4"),
+        "in_progress": ("🔄", "#2563eb", "#eff6ff"),
+        "open":        ("⭕", "#9ca3af", "#fff"),
+    }
+    rows = ""
+    for i, item in enumerate(b.get("items", [])):
+        icon, color, bg = status_cfg.get(item.get("status", "open"), status_cfg["open"])
+        row_bg = "#fff" if i % 2 == 0 else "#f9fafb"
+        status_label = item.get("status", "open").replace("_", " ")
+        rows += (
+            f'<tr style="background:{row_bg};">'
+            f'<td style="padding:10px 14px;font-size:13px;color:#111827;">{_md_inline(item.get("action",""))}</td>'
+            f'<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">{item.get("owner","—")}</td>'
+            f'<td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">{item.get("due","—")}</td>'
+            f'<td style="padding:10px 14px;text-align:center;"><span style="font-size:12px;color:{color};background:{bg};border-radius:99px;padding:2px 10px;font-weight:600;">{icon} {status_label}</span></td>'
+            '</tr>'
+        )
+    title_html = f'<div style="padding:10px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:700;color:#111827;">{b["title"]}</div>' if b.get("title") else ""
+    return (
+        f'<div style="margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
+        f'{title_html}'
+        f'<table style="width:100%;border-collapse:collapse;">'
+        f'<thead><tr style="background:#f3f4f6;">'
+        f'<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Action</th>'
+        f'<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Owner</th>'
+        f'<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Due</th>'
+        f'<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Status</th>'
+        '</tr></thead>'
+        f'<tbody>{rows}</tbody></table></div>'
+    )
+
+
 def _render_pros_cons_list(b: dict) -> str:
     """TODO: Renders a two-column list itemizing advantages and disadvantages for a single su"""
     label = b.get("label", b.get("title", b.get("name", "")))
@@ -6951,6 +7087,11 @@ _RENDERERS = {
     "feature_matrix": _render_feature_matrix,
     "pricing_tier_card": _render_pricing_tier_card,
     "pricing_tier_group": _render_pricing_tier_group,
+    "columns":        _render_columns,
+    "person_card":    _render_person_card,
+    "agenda_block":   _render_agenda_block,
+    "risk_flag":      _render_risk_flag,
+    "action_items":   _render_action_items,
     "pros_cons_list": _render_pros_cons_list,
     "side_by_side_spec": _render_side_by_side_spec,
     "product_spec_table": _render_product_spec_table,
