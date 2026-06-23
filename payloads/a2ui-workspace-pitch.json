@@ -1,0 +1,149 @@
+{
+  "title": "A2UI — Useful for Humans. Declarative for AI Agents.",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "shimmer_text",
+      "text": "A2UI",
+      "size": "4.5rem",
+      "from": "#6366f1",
+      "via": "#ffffff",
+      "to": "#10b981",
+      "align": "center"
+    },
+    {
+      "type": "shimmer_text",
+      "text": "Useful for Humans.  Declarative for AI Agents.",
+      "size": "1.35rem",
+      "from": "#9ca3af",
+      "via": "#e5e7eb",
+      "to": "#9ca3af",
+      "align": "center"
+    },
+    {
+      "type": "marquee",
+      "title": "Native to Google Workspace",
+      "speed": 20,
+      "gap": 56,
+      "pause_on_hover": true,
+      "color_icons": true,
+      "items": [
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Meet/logo_meet_2026q2_color_2x_web_96dp.png", "label": "Google Meet" },
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Chat/logo_chat_2026q2_color_2x_web_96dp.png", "label": "Google Chat" },
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Apps%20Script/logo_apps_script_192px.png", "label": "Apps Script" }
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#6366f1",
+      "height": 44,
+      "opacity": "0.15"
+    },
+    {
+      "type": "reveal",
+      "animation": "stagger",
+      "stagger_delay": 130,
+      "blocks": [
+        {
+          "type": "columns",
+          "cols": 3,
+          "items": [
+            {
+              "blocks": [{
+                "type": "animated_border",
+                "from": "#6366f1",
+                "to": "#8b5cf6",
+                "via": "#0ea5e9",
+                "speed": "4",
+                "content": "**① Prompt**\n\nDescribe the UI you need in plain language. Any LLM that reads JSON can generate a valid A2UI schema."
+              }]
+            },
+            {
+              "blocks": [{
+                "type": "animated_border",
+                "from": "#10b981",
+                "to": "#6366f1",
+                "via": "#34d399",
+                "speed": "4",
+                "content": "**② Schema**\n\nTyped atoms. Validated structure. The agent proposes — the schema guarantees what can render."
+              }]
+            },
+            {
+              "blocks": [{
+                "type": "animated_border",
+                "from": "#f59e0b",
+                "to": "#10b981",
+                "via": "#fbbf24",
+                "speed": "4",
+                "content": "**③ App**\n\nPaste. Click Open. Shareable URL — live inside Meet, Chat, or any Apps Script surface. No pipeline."
+              }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#10b981",
+      "height": 44,
+      "opacity": "0.12",
+      "flip": true
+    },
+    {
+      "type": "reveal",
+      "animation": "stagger",
+      "stagger_delay": 90,
+      "blocks": [
+        {
+          "type": "metric_row",
+          "metrics": [
+            { "value": "< 60s",  "label": "Prompt to live URL",      "trend": "up" },
+            { "value": "0",      "label": "Lines of HTML",           "trend": "down" },
+            { "value": "85%",    "label": "Fewer tokens than HTML",  "trend": "up" },
+            { "value": "∞",      "label": "Topics",                  "trend": "up" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#8b5cf6",
+      "height": 36,
+      "opacity": "0.10"
+    },
+    {
+      "type": "reveal",
+      "animation": "fade",
+      "blocks": [
+        {
+          "type": "highlight_box",
+          "accent": "#6366f1",
+          "title": "Why now?",
+          "body": "AI agents need UI. HTML is too noisy, too nested, too unpredictable for autonomous pipelines. A2UI gives agents a clean typed schema that renders instantly inside the tools humans already use — no HTML, no frameworks, no deployment pipeline. Just a schema and a URL."
+        }
+      ]
+    },
+    {
+      "type": "marquee",
+      "speed": 16,
+      "direction": "right",
+      "gap": 44,
+      "items": [
+        { "icon": "🤖", "text": "Agent-native schema" },
+        { "icon": "✅", "text": "Validated before render" },
+        { "icon": "🔗", "text": "Shareable URL" },
+        { "icon": "🎨", "text": "Dark & light themes" },
+        { "icon": "📊", "text": "Hub navigation" },
+        { "icon": "⚡", "text": "Zero dependencies" },
+        { "icon": "🔒", "text": "Stays in Workspace" },
+        { "icon": "🌍", "text": "Any language, any topic" }
+      ]
+    },
+    {
+      "type": "confetti_burst",
+      "trigger": "load",
+      "count": 60,
+      "duration": 3000
+    }
+  ]
+}
