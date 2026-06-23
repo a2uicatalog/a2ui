@@ -31,3 +31,4 @@ knowledge-catalogue/TOGAF_GEMINI_BRIEF.md
 knowledge-catalogue/togaf-10.curriculum.md
 knowledge-catalogue/schemas/pro-cert/opengroup/
 payloads/togaf-10.json
+__pycache__/

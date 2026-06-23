@@ -156,6 +156,16 @@ metric_row        cols (default 4), accent,
 numbered_list     title (optional), accent, style ("large"|"badge"),
                   items: [{label?, text?}]
 
+### Utility
+palette           accent, accent2, block_gap — SET ONCE at top of blocks array to establish
+                  the page colour system; all atoms will use --a2ui-accent CSS var as default accent
+print_button      label, align ("left"|"center"|"right"), size ("sm"|"md"|"lg"), icon (bool, default true)
+drive_image       url OR id (Drive file ID or share URL), alt, caption, rounded (bool), width
+maps_embed        q (address or place name), height (px, default 360), zoom (default 14), caption
+sheet_form        title, sheet (sheet tab name), submit_label, accent,
+                  fields: [{label, name, type ("text"|"email"|"textarea"|"select"), placeholder?, required?, hint?, options? (for select), rows? (for textarea)}]
+                  ⚠ Requires the GAS project to be bound to a Spreadsheet. Creates the sheet tab if it doesn't exist.
+
 ### Page structure
 page_header       title (markdown), subtitle (optional), icon (emoji), tag (badge label),
                   accent (hex), theme ("light"|"dark") — use as FIRST block of any pop-up app
@@ -238,13 +248,73 @@ embed_tweet       text, author
 
 ---
 
+## Atom selection guide
+
+**Google icon atoms (CDN — no npm, loads from Google Fonts):**
+
+| Atom | When to use |
+|---|---|
+| `google_icon` | Any time you'd use an emoji as a UI icon — `name: "rocket_launch"` is cleaner than 🚀. Browse 2500+ names at fonts.google.com/icons |
+| `icon_badge` | Icon inside a coloured circle — replaces the `🟢` pattern in stat rows |
+| `icon_row` | Horizontal "feature pills" with icons — replaces bullet lists |
+| `icon_feature_grid` | Feature grid with Material icons instead of emoji — more consistent visual weight |
+| `icon_checklist` | Checklist where items can have different icons and colours |
+| `workspace_logo` | Single Google product logo (SVG from official CDN) — Gmail, Drive, Docs, etc. |
+| `workspace_logo_strip` | "Built on Google Workspace" horizontal logo strip — greyscale default, colour on hover |
+| `workspace_logo_grid` | Full integration catalogue grid — all 20 known Workspace apps |
+
+**Animation atoms (all GAS-safe, no dependencies):**
+
+| Atom | When to use |
+|---|---|
+| `reveal` | Wrap any group of blocks to animate them in on load — use `stagger` for lists |
+| `shimmer_text` | Hero tagline that needs visual punch — replaces `gradient_hero` for short copy |
+| `number_flip` | Slot-machine digit reveal for a single key metric |
+| `animated_counter` | Count-up from 0 to N — use when the journey matters, not just the destination |
+| `progress_ring` | Circular % gauge — use for single KPIs, completion rates |
+| `skill_bars` | Horizontal bars — now animate on load automatically |
+| `confetti_burst` | Achievement unlock, quiz pass, form submitted — celebration moment |
+| `ripple_button` | Any CTA where you want tactile click feedback |
+| `marquee` | Scrolling logo strip, news ticker, social proof; set `pause_on_hover: true` |
+| `floating_badge` | Bobbing icon or emoji — draws attention to CTAs or achievements |
+| `wave_divider` | Animated SVG wave between sections |
+| `pulse_dot` | Live status indicator, notification badge |
+| `loading_dots` | Async wait state, thinking indicator |
+| `typing_indicator` | Chat bubble with three dots — for AI/assistant UI |
+| `countdown_ring` | Circular timer that depletes — for timed exercises or offers |
+| `spotlight_card` | Card with cursor-following glow — makes interactive cards feel premium |
+| `animated_border` | Rotating gradient border — for hero cards or featured content |
+| `skeleton` | Shimmer placeholder while content loads — types: text, card, avatar_row, image, list, table |
+
+**When to use similar-looking atoms:**
+- `bento_grid` — visual tiles with icons/images; use for showcase, product overview, icon-led feature sets
+- `feature_grid` — text-heavy feature descriptions; use for spec lists, capability tables, comparison
+- `columns` — general two/three column layout; use when left/right content doesn't have a shared visual rhythm
+- `split_pane` — two panels with distinct background colors; use for before/after, left-brief/right-content contrast
+- `metric_row` — static numbers strip; use for stats at a glance, no chart needed
+- `icon_stat_row` — emoji + large number + label; use when emotional weight matters (achievements, milestones)
+- `skill_bars` — horizontal progress bars; use for competency profiles, progress breakdowns
+- `highlight_box` — prominent callout with icon; use instead of `callout` when there's no severity/level framing
+
+**Recommended page skeleton (pop-up app):**
+```
+palette             → sets accent colour for the whole page
+page_header         → always first: title, icon, tag, accent
+[step_progress]     → optional: wizard indicator if multi-step
+--- content atoms ---
+cta_button / action_items / sheet_form   → always last if action is needed
+```
+
 ## Rules
 
 1. Output the JSON first — no ```json fences, no preamble. Then follow with the encoded URL as described in "After outputting JSON".
 2. The JSON must parse cleanly — no trailing commas, no comments inside the JSON.
 3. Choose atoms that match the content: use quiz_question for recall checks, hint_reveal for spoilers, xp_bar + achievement_badge for gamified flows, model_card + llm_comparison_table for AI content, animated_counter + stat_card for metrics pages, steps or timeline for processes, bento_grid or feature_grid for overviews, terminal_block for CLI/code walkthroughs, flip_card for Q&A pairs.
 4. A well-structured learning page: learning_objectives → heading → body → content atoms → interactive atoms → key_takeaways → achievement_badge or cta_button.
-5. Never invent atom types not listed above.
+5. Never invent atom types not listed above. Do NOT use atoms marked status: stub in the schema — they have no renderer and will produce a blank.
 6. When the topic matches an ARD knowledge resource, read its schema to determine section structure and atom selection — do not guess at the curriculum.
 7. Always follow the JSON with the encoded URL — see "After outputting JSON" above.
+8. Start every page with a `palette` block to set the accent colour, then `page_header`. This ensures consistent colour and dark-theme support across all atoms.
+9. Use `reveal` with `animation: stagger` to make lists of cards feel alive on load. Wrap `columns`, `bento_grid`, or any block array inside a `reveal` to animate them in.
+10. End achievement pages with `confetti_burst` (trigger: load) and a `floating_badge` — these cost zero deps and dramatically lift perceived quality.
 ```

@@ -1,0 +1,175 @@
+{
+  "title": "Q3 Sprint Review — Platform Team",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "hub",
+      "subjects": [
+        {
+          "id": "overview",
+          "label": "📊 Overview",
+          "color": "#6366f1",
+          "slides": [
+            {
+              "id": "summary",
+              "label": "Sprint Summary",
+              "blocks": [
+                {
+                  "type": "gradient_hero",
+                  "badge": "Sprint 24 · Q3 2026",
+                  "title": "Platform Team — Sprint Review",
+                  "subtitle": "Velocity up. Two features shipped. One risk to watch.",
+                  "accent": "#6366f1",
+                  "accent2": "#8b5cf6",
+                  "align": "center"
+                },
+                {
+                  "type": "metric_row",
+                  "metrics": [
+                    { "label": "Story Points", "value": "84", "sub": "of 80 planned", "trend": "up" },
+                    { "label": "PRs Merged", "value": "23", "sub": "0 reverts", "trend": "up" },
+                    { "label": "P1 Bugs", "value": "1", "sub": "resolved in sprint", "trend": "down" },
+                    { "label": "Test Coverage", "value": "91%", "sub": "+3% vs last sprint", "trend": "up" }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**API gateway v2** shipped to production — latency down 40ms p99",
+                    "**Auth token refresh** completed — eliminates the 24h session drop bug",
+                    "**Data pipeline refactor** carries over — scope was underestimated by ~30%"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shipped",
+          "label": "✅ Shipped",
+          "color": "#10b981",
+          "slides": [
+            {
+              "id": "features",
+              "label": "Features",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "What shipped this sprint",
+                  "subtext": "Two features in production, one dependency resolved.",
+                  "badge": "Sprint 24",
+                  "align": "center"
+                },
+                {
+                  "type": "two_tone_card",
+                  "title": "API Gateway v2",
+                  "subtitle": "Performance",
+                  "accent": "#10b981",
+                  "points": [
+                    "Rate limiting per consumer — replaces global limit",
+                    "Request tracing headers propagated end-to-end",
+                    "p99 latency: 180ms → 140ms in production"
+                  ]
+                },
+                {
+                  "type": "two_tone_card",
+                  "title": "Auth Token Refresh",
+                  "subtitle": "Reliability",
+                  "accent": "#6366f1",
+                  "points": [
+                    "Silent refresh 5 min before expiry",
+                    "Eliminates 24h forced logout for active sessions",
+                    "Deployed behind feature flag — 100% rollout complete"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "risks",
+          "label": "⚠️ Risks",
+          "color": "#f59e0b",
+          "slides": [
+            {
+              "id": "watch",
+              "label": "Watch List",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "One risk to address",
+                  "subtext": "Data pipeline scope needs replan before Sprint 26.",
+                  "badge": "Action required",
+                  "align": "center"
+                },
+                {
+                  "type": "risk_flag",
+                  "risks": [
+                    {
+                      "level": "high",
+                      "title": "Data pipeline carryover",
+                      "detail": "Scope was ~30% larger than estimated. Schema migration not started. Blocks reporting feature in Sprint 26."
+                    },
+                    {
+                      "level": "medium",
+                      "title": "Third-party SDK deprecation",
+                      "detail": "payments-sdk v2 EOL in October. Migration path documented but not scheduled."
+                    },
+                    {
+                      "level": "low",
+                      "title": "Test flakiness in CI",
+                      "detail": "3 intermittently failing tests in integration suite. Not blocking but masking real failures."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "next",
+          "label": "🎯 Next Sprint",
+          "color": "#3b82f6",
+          "slides": [
+            {
+              "id": "plan",
+              "label": "Sprint 25 Plan",
+              "blocks": [
+                {
+                  "type": "gradient_hero",
+                  "badge": "Sprint 25 · starts Monday",
+                  "title": "Next Sprint Priorities",
+                  "subtitle": "Pipeline first. SDK migration scoped. CI hygiene.",
+                  "accent": "#3b82f6",
+                  "accent2": "#6366f1",
+                  "align": "center"
+                },
+                {
+                  "type": "step_progress",
+                  "current": 1,
+                  "accent": "#3b82f6",
+                  "steps": [
+                    { "label": "Pipeline schema" },
+                    { "label": "Migration script" },
+                    { "label": "SDK audit" },
+                    { "label": "CI fix" },
+                    { "label": "Review" }
+                  ]
+                },
+                {
+                  "type": "action_items",
+                  "items": [
+                    { "owner": "ML", "text": "Complete data pipeline schema migration — target Wednesday" },
+                    { "owner": "PK", "text": "Scope payments-sdk v3 migration — estimate by EOW" },
+                    { "owner": "TL", "text": "Fix 3 flaky integration tests before Sprint 25 day 3" },
+                    { "owner": "All", "text": "Definition of Done updated to include migration test coverage" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

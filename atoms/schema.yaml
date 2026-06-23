@@ -9769,6 +9769,10 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+      degraded_on:
+        - surface: web
+          note: Renders a static form preview only — submission requires Apps Script runtime
     fields:
       title: optional form heading
       sheet: sheet tab name to write to (required). Created automatically if it doesn't
@@ -9784,6 +9788,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       animation: fade_up (default), fade_in, slide_left, slide_right, scale_in, stagger
       duration: animation duration in ms (default 500)
@@ -9796,6 +9803,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       type: text (default), card, avatar_row, image, list, table
       rows: number of placeholder rows (default 3)
@@ -9807,6 +9817,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       items: array of {text?, label?, icon?, image_url?, url?}
       title: optional label above the marquee strip
@@ -9823,6 +9836,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       color: dot colour (default
       size: sm, md (default), lg
@@ -9835,6 +9851,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       color: dot colour (default var(--a2ui-accent))
       size: sm, md (default), lg
@@ -9862,6 +9881,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       trigger: button (default) or load
       label: button label (default Celebrate!)
@@ -9875,6 +9897,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       label: button text (required)
       url: optional link target
@@ -9889,6 +9914,8 @@ blocks:
       works_on:
         - gas
         - web
+        - meet-stage
+        - apps-script-web
     fields:
       color: wave fill colour (default var(--a2ui-accent))
       height: wave height in px (default 60)
@@ -9902,6 +9929,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       icon: emoji or character to float (required)
       label: optional caption below
@@ -9915,6 +9945,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       text: the text to render (required)
       size: font-size CSS value (default 2rem)
@@ -9930,6 +9963,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       value: the number or string to display (required)
       prefix: text before the number
@@ -9945,6 +9981,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       blocks: array of child atoms inside the card
       content: markdown string (if no blocks)
@@ -9955,6 +9994,9 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       blocks: array of child atoms inside
       content: markdown string (if no blocks)
@@ -9964,21 +10006,14 @@ blocks:
       speed: rotation speed in seconds (default 3)
       padding: inner padding (default 20px)
       radius: border radius (default 12px)
-  - type: typing_indicator
-    compact_description: Chat-style three-dot typing indicator with optional label.
-      Renders as a rounded speech bubble.
-    surfaces:
-      works_on:
-        - gas
-    fields:
-      label: optional text inside (eg. "Claude is thinking")
-      color: dot and text colour (default
-      bg: bubble background (default var(--surface))
   - type: countdown_ring
     compact_description: Circular SVG countdown that depletes as seconds tick down.
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - apps-script-web
     fields:
       duration_sec: total countdown in seconds (required, default 60)
       size: ring diameter in px (default 80)
@@ -9990,6 +10025,10 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - gas-sidebar
+        - apps-script-web
     fields:
       name: icon ligature name (required, e.g. "home", "check_circle", "rocket_launch")
       size: font-size CSS value (default 24px)
@@ -10005,6 +10044,10 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - gas-sidebar
+        - apps-script-web
     fields:
       name: icon ligature name (required)
       icon_size: icon size in px (default 24)
@@ -10020,6 +10063,10 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - gas-sidebar
+        - apps-script-web
     fields:
       items: array of {name or icon, label or text, color?}
       icon_size: px (default 20)
@@ -10077,6 +10124,10 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - gas-sidebar
+        - apps-script-web
     fields:
       title: optional section heading
       cols: grid columns (default 3)
@@ -10091,6 +10142,10 @@ blocks:
     surfaces:
       works_on:
         - gas
+        - web
+        - meet-stage
+        - gas-sidebar
+        - apps-script-web
     fields:
       title: optional heading
       default_icon: fallback icon for items without one (default check_circle)

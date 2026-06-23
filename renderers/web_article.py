@@ -9541,6 +9541,911 @@ def _render_linkedin_post_image(b: dict) -> str:
 _RENDERERS["linkedin_post_image"] = _render_linkedin_post_image
 
 
+# ─── Animate-pack atoms: web port ─────────────────────────────────────────────
+
+def _render_reveal(b: dict) -> str:
+    import hashlib
+    uid       = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    animation = b.get("animation", "fade_up")
+    dur       = b.get("duration", 500)
+    base_delay = b.get("delay", 0)
+    stagger   = b.get("stagger_delay", 120)
+    blocks    = b.get("blocks") or []
+    kf_map = {
+        "fade_up":    f"@keyframes rv_{uid}{{from{{opacity:0;transform:translateY(20px);}}to{{opacity:1;transform:translateY(0);}}}}",
+        "fade_in":    f"@keyframes rv_{uid}{{from{{opacity:0;}}to{{opacity:1;}}}}",
+        "slide_left": f"@keyframes rv_{uid}{{from{{opacity:0;transform:translateX(-30px);}}to{{opacity:1;transform:translateX(0);}}}}",
+        "slide_right":f"@keyframes rv_{uid}{{from{{opacity:0;transform:translateX(30px);}}to{{opacity:1;transform:translateX(0);}}}}",
+        "scale_in":   f"@keyframes rv_{uid}{{from{{opacity:0;transform:scale(0.9);}}to{{opacity:1;transform:scale(1);}}}}",
+        "stagger":    f"@keyframes rv_{uid}{{from{{opacity:0;transform:translateY(16px);}}to{{opacity:1;transform:translateY(0);}}}}",
+    }
+    kf = kf_map.get(animation, kf_map["fade_up"])
+    parts = []
+    for i, child in enumerate(blocks):
+        d = base_delay + (i * stagger if animation == "stagger" else 0)
+        child_html = _RENDERERS.get(child.get("type", ""), _render_unknown)(child)
+        parts.append(f'<div style="opacity:0;animation:rv_{uid} {dur}ms ease-out {d}ms both;">{child_html}</div>')
+    if not parts:
+        parts = [f'<div style="color:#94a3b8;font-style:italic;padding:8px;">reveal (no blocks)</div>']
+    return f'<style>{kf}</style>{"".join(parts)}'
+
+_RENDERERS["reveal"] = _render_reveal
+
+
+def _render_shimmer_text(b: dict) -> str:
+    import hashlib, html as _html
+    uid  = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    text = _html.escape(b.get("text", ""))
+    size = b.get("size", "2rem")
+    fr   = b.get("from", "#6366f1")
+    to   = b.get("to", "#a855f7")
+    via  = b.get("via", "#ffffff")
+    return (
+        f'<style>'
+        f'@keyframes st_{uid}{{0%{{background-position:200% center;}}100%{{background-position:-200% center;}}}}'
+        f'.st_{uid}{{font-size:{size};font-weight:800;'
+        f'background:linear-gradient(90deg,{fr},{via},{to},{via},{fr});'
+        f'background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+        f'background-clip:text;animation:st_{uid} 3s linear infinite;display:inline-block;}}'
+        f'</style>'
+        f'<div style="margin:1rem 0;"><span class="st_{uid}">{text}</span></div>'
+    )
+
+_RENDERERS["shimmer_text"] = _render_shimmer_text
+
+
+def _render_number_flip(b: dict) -> str:
+    import hashlib, html as _html
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    value  = str(b.get("value", "0"))
+    prefix = _html.escape(b.get("prefix", ""))
+    suffix = _html.escape(b.get("suffix", ""))
+    label  = b.get("label", "")
+    size   = b.get("size", "3rem")
+    keyframes = ""
+    digits_html = ""
+    for i, ch in enumerate(value):
+        d_delay = i * 80
+        if ch.isdigit():
+            target = int(ch)
+            pct = target * 100
+            kf = f"nf{uid}{i}"
+            keyframes += f'@keyframes {kf}{{from{{transform:translateY(0);}}to{{transform:translateY(-{pct}%);}}}} '
+            slots = "".join(f'<span style="display:block;height:1em;line-height:1em;">{d}</span>' for d in range(10))
+            digits_html += (
+                f'<span style="display:inline-flex;overflow:hidden;height:1em;vertical-align:middle;">'
+                f'<span style="display:block;animation:{kf} 0.65s cubic-bezier(.4,0,.2,1) {d_delay}ms both;">'
+                f'{slots}</span></span>'
+            )
+        else:
+            digits_html += f'<span style="display:inline-block;vertical-align:middle;">{_html.escape(ch)}</span>'
+    label_html = f'<div style="font-size:0.8rem;color:#94a3b8;margin-top:6px;">{_html.escape(label)}</div>' if label else ""
+    return (
+        f'<style>{keyframes}</style>'
+        f'<div style="margin:1rem 0;text-align:center;">'
+        f'<div style="font-size:{size};font-weight:700;color:#f1f5f9;line-height:1;font-variant-numeric:tabular-nums;">'
+        f'{prefix}{digits_html}{suffix}</div>{label_html}</div>'
+    )
+
+_RENDERERS["number_flip"] = _render_number_flip
+
+
+def _render_progress_ring(b: dict) -> str:
+    import hashlib, math
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    value = min(100, max(0, float(b.get("value", 0))))
+    size  = int(b.get("size", 100))
+    sw    = int(b.get("stroke_width", 8))
+    color = b.get("color", "var(--a2ui-accent,#6366f1)")
+    track = b.get("track_color", "var(--border,#334155)")
+    label = b.get("label", "")
+    r     = (size - sw) / 2
+    circ  = 2 * math.pi * r
+    dash  = round(circ * value / 100, 2)
+    cx = cy = size / 2
+    label_html = f'<div style="font-size:0.78rem;color:#94a3b8;margin-top:6px;text-align:center;">{label}</div>' if label else ""
+    return (
+        f'<style>'
+        f'@keyframes pr_{uid}{{from{{stroke-dasharray:0 {circ:.2f};}}to{{stroke-dasharray:{dash} {circ:.2f};}}}}'
+        f'</style>'
+        f'<div style="margin:1rem 0;display:flex;flex-direction:column;align-items:center;">'
+        f'<div style="position:relative;width:{size}px;height:{size}px;">'
+        f'<svg width="{size}" height="{size}" style="transform:rotate(-90deg);">'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{track}" stroke-width="{sw}"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="{sw}"'
+        f' stroke-linecap="round" stroke-dasharray="0 {circ:.2f}"'
+        f' style="animation:pr_{uid} 1.2s ease-out 0.1s forwards;"/>'
+        f'</svg>'
+        f'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
+        f'font-size:{size//5}px;font-weight:700;color:#f1f5f9;">{int(value)}%</div>'
+        f'</div>{label_html}</div>'
+    )
+
+_RENDERERS["progress_ring"] = _render_progress_ring
+
+
+def _render_confetti_burst(b: dict) -> str:
+    import hashlib
+    uid     = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    trigger = b.get("trigger", "button")
+    label   = b.get("label", "Celebrate!")
+    count   = int(b.get("count", 80))
+    dur     = int(b.get("duration", 2000))
+    colors  = b.get("colors") or ["#6366f1","#a855f7","#ec4899","#f59e0b","#34d399","#38bdf8"]
+    colors_js = str(colors).replace("'", '"')
+    if trigger == "load":
+        call = f"document.addEventListener('DOMContentLoaded',function(){{_cburst_{uid}();}});"
+        btn_html = ""
+    else:
+        call = ""
+        btn_html = (
+            f'<button onclick="_cburst_{uid}()" style="background:#6366f1;color:#fff;'
+            f'font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;'
+            f'border-radius:10px;cursor:pointer;">{label}</button>'
+        )
+    return (
+        f'<div style="margin:1rem 0;text-align:center;" id="cb_{uid}">'
+        f'{btn_html}'
+        f'<script>function _cburst_{uid}(){{'
+        f'var colours={colors_js};var n={count};var dur={dur};'
+        f'var wrap=document.getElementById("cb_{uid}");'
+        f'var rect=wrap.getBoundingClientRect();'
+        f'var ox=rect.left+rect.width/2;var oy=rect.top+rect.height/2;'
+        f'for(var i=0;i<n;i++){{'
+        f'var el=document.createElement("div");'
+        f'el.style.cssText="position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:9999;"'
+        f'+";background:"+colours[i%colours.length]'
+        f'+";left:"+ox+"px;top:"+oy+"px;";'
+        f'document.body.appendChild(el);'
+        f'var vx=(Math.random()-0.5)*14;var vy=-(Math.random()*14+4);var g=0.4;'
+        f'var t=0;var id=setInterval(function(e,x,y,dx,dy){{'
+        f'dy+=g;x+=dx;y+=dy;e.style.left=x+"px";e.style.top=y+"px";'
+        f'e.style.opacity=Math.max(0,1-t/{dur}*1000);'
+        f't+=16;if(t>{dur}){{clearInterval(id);e.remove();}}'
+        f'}}.bind(null,el,ox,oy,vx,vy),16);'
+        f'}}}}'
+        f'{call}</script></div>'
+    )
+
+_RENDERERS["confetti_burst"] = _render_confetti_burst
+
+
+def _render_ripple_button(b: dict) -> str:
+    import hashlib, html as _html
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    label = _html.escape(b.get("label", "Click me"))
+    url   = b.get("url", "")
+    icon  = b.get("icon", "")
+    accent = b.get("accent", "#6366f1")
+    size_map = {"sm": ("10px 20px", "0.8rem"), "md": ("12px 28px", "0.95rem"), "lg": ("16px 36px", "1.1rem")}
+    pad, fsz = size_map.get(b.get("size", "md"), ("12px 28px", "0.95rem"))
+    icon_html = f'<span style="margin-right:6px;">{icon}</span>' if icon else ""
+    inner = f'{icon_html}{label}'
+    click = (
+        f'var r=document.createElement("span");'
+        f'var rect=this.getBoundingClientRect();'
+        f'var size=Math.max(rect.width,rect.height);'
+        f'r.style.cssText="position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);'
+        f'width:"+size+"px;height:"+size+"px;'
+        f'left:"+(event.clientX-rect.left-size/2)+"px;'
+        f'top:"+(event.clientY-rect.top-size/2)+"px;'
+        f'animation:rpl_{uid} 0.55s ease-out;pointer-events:none;";'
+        f'this.appendChild(r);setTimeout(function(){{r.remove();}},600);'
+    )
+    if url:
+        el = f'<a href="{_html.escape(url)}" onclick="{click}"'
+    else:
+        el = f'<button onclick="{click}"'
+    return (
+        f'<style>'
+        f'@keyframes rpl_{uid}{{from{{transform:scale(0);opacity:1;}}to{{transform:scale(2.5);opacity:0;}}}}'
+        f'</style>'
+        f'<div style="margin:1rem 0;text-align:center;">'
+        f'<{el} style="position:relative;overflow:hidden;display:inline-block;'
+        f'background:{accent};color:#fff;font-weight:700;font-size:{fsz};padding:{pad};'
+        f'border:none;border-radius:10px;cursor:pointer;text-decoration:none;">{inner}'
+        f'</{("a" if url else "button")}></div>'
+    )
+
+_RENDERERS["ripple_button"] = _render_ripple_button
+
+
+def _render_wave_divider(b: dict) -> str:
+    import hashlib
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    color = b.get("color", "var(--a2ui-accent,#6366f1)")
+    h     = int(b.get("height", 60))
+    speed = b.get("speed", 8)
+    opacity = b.get("opacity", 0.15)
+    flip  = b.get("flip", False)
+    xform = "scaleX(-1)" if flip else "none"
+    return (
+        f'<style>'
+        f'@keyframes wv_{uid}{{0%{{transform:{xform} translateX(0);}}100%{{transform:{xform} translateX(-50%);}}}}'
+        f'</style>'
+        f'<div style="overflow:hidden;height:{h}px;margin:0.5rem 0;position:relative;">'
+        f'<div style="display:flex;width:200%;animation:wv_{uid} {speed}s linear infinite;">'
+        f'<svg viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
+        f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{color}" opacity="{opacity}"/>'
+        f'</svg>'
+        f'<svg viewBox="0 0 600 {h}" xmlns="http://www.w3.org/2000/svg" style="width:50%;height:{h}px;flex-shrink:0;">'
+        f'<path d="M0,{h//2} C150,{h//5} 450,{h*4//5} 600,{h//2} L600,{h} L0,{h} Z" fill="{color}" opacity="{opacity}"/>'
+        f'</svg>'
+        f'</div></div>'
+    )
+
+_RENDERERS["wave_divider"] = _render_wave_divider
+
+
+def _render_floating_badge(b: dict) -> str:
+    import hashlib, html as _html
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    icon  = b.get("icon", "⭐")
+    label = b.get("label", "")
+    size_map = {"sm": "1.8rem", "md": "2.8rem", "lg": "4rem"}
+    fsz   = size_map.get(b.get("size", "md"), "2.8rem")
+    speed = b.get("speed", 3)
+    shadow = b.get("shadow", True)
+    shadow_css = (
+        f'0 8px 24px rgba(0,0,0,0.18)' if shadow else 'none'
+    )
+    label_html = f'<div style="font-size:0.78rem;color:#94a3b8;margin-top:6px;">{_html.escape(label)}</div>' if label else ""
+    return (
+        f'<style>'
+        f'@keyframes fb_{uid}{{0%,100%{{transform:translateY(0);box-shadow:{shadow_css};}}'
+        f'50%{{transform:translateY(-10px);box-shadow:0 16px 32px rgba(0,0,0,0.12);}}}}'
+        f'</style>'
+        f'<div style="margin:1rem 0;text-align:center;">'
+        f'<div style="display:inline-block;font-size:{fsz};animation:fb_{uid} {speed}s ease-in-out infinite;">{icon}</div>'
+        f'{label_html}</div>'
+    )
+
+_RENDERERS["floating_badge"] = _render_floating_badge
+
+
+def _render_spotlight_card(b: dict) -> str:
+    import hashlib
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    accent = b.get("accent", "var(--a2ui-accent,#6366f1)")
+    blocks = b.get("blocks") or []
+    content = b.get("content", "")
+    if blocks:
+        inner = "".join(_RENDERERS.get(ch.get("type", ""), _render_unknown)(ch) for ch in blocks)
+    else:
+        import markdown as _md
+        inner = _md.markdown(content) if content else '<p style="color:#94a3b8;">spotlight card content</p>'
+    return (
+        f'<div id="sc_{uid}" style="position:relative;overflow:hidden;border-radius:16px;'
+        f'border:1px solid #334155;background:#0f172a;padding:28px;margin:1rem 0;">'
+        f'<div id="scg_{uid}" style="position:absolute;pointer-events:none;border-radius:50%;'
+        f'width:300px;height:300px;background:radial-gradient(circle,{accent}22 0%,transparent 70%);'
+        f'transform:translate(-50%,-50%);top:50%;left:50%;transition:none;"></div>'
+        f'<div style="position:relative;z-index:1;">{inner}</div>'
+        f'</div>'
+        f'<script>(function(){{'
+        f'var card=document.getElementById("sc_{uid}");'
+        f'var glow=document.getElementById("scg_{uid}");'
+        f'card.addEventListener("mousemove",function(e){{'
+        f'var r=card.getBoundingClientRect();'
+        f'glow.style.left=(e.clientX-r.left)+"px";'
+        f'glow.style.top=(e.clientY-r.top)+"px";'
+        f'}});}})();</script>'
+    )
+
+_RENDERERS["spotlight_card"] = _render_spotlight_card
+
+
+def _render_animated_border(b: dict) -> str:
+    import hashlib
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    fr     = b.get("from", "#6366f1")
+    to     = b.get("to", "#ec4899")
+    via    = b.get("via", "#a855f7")
+    blocks = b.get("blocks") or []
+    content = b.get("content", "")
+    if blocks:
+        inner = "".join(_RENDERERS.get(ch.get("type", ""), _render_unknown)(ch) for ch in blocks)
+    else:
+        import markdown as _md
+        inner = _md.markdown(content) if content else '<p style="color:#94a3b8;">animated border content</p>'
+    return (
+        f'<style>'
+        f'@keyframes ab_{uid}{{0%{{--ab-angle:0deg;}}100%{{--ab-angle:360deg;}}}}'
+        f'.abw_{uid}{{margin:1rem 0;padding:2px;border-radius:14px;'
+        f'background:conic-gradient(from var(--ab-angle,0deg),{fr},{via},{to},{via},{fr});'
+        f'animation:ab_{uid} 4s linear infinite;}}'
+        f'@property --ab-angle{{syntax:"<angle>";initial-value:0deg;inherits:false;}}'
+        f'</style>'
+        f'<div class="abw_{uid}">'
+        f'<div style="background:#0f172a;border-radius:12px;padding:24px;">{inner}</div>'
+        f'</div>'
+    )
+
+_RENDERERS["animated_border"] = _render_animated_border
+
+
+def _render_pulse_dot(b: dict) -> str:
+    import hashlib, html as _html
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    color  = b.get("color", "var(--a2ui-accent,#6366f1)")
+    size_map = {"sm": 8, "md": 12, "lg": 18}
+    sz     = size_map.get(b.get("size", "md"), 12)
+    label  = b.get("label", "")
+    speed  = b.get("speed", 1.8)
+    inline = b.get("inline", True)
+    display = "inline-flex" if inline else "flex"
+    label_html = f'<span style="font-size:0.82rem;color:#94a3b8;margin-left:8px;">{_html.escape(label)}</span>' if label else ""
+    return (
+        f'<style>'
+        f'@keyframes pd_{uid}{{0%,100%{{transform:scale(1);opacity:1;}}'
+        f'50%{{transform:scale(1.5);opacity:0.5;}}}}'
+        f'</style>'
+        f'<span style="display:{display};align-items:center;margin:0.4rem 0;">'
+        f'<span style="width:{sz}px;height:{sz}px;border-radius:50%;background:{color};'
+        f'display:inline-block;animation:pd_{uid} {speed}s ease-in-out infinite;"></span>'
+        f'{label_html}</span>'
+    )
+
+_RENDERERS["pulse_dot"] = _render_pulse_dot
+
+
+def _render_loading_dots(b: dict) -> str:
+    import hashlib, html as _html
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    color = b.get("color", "var(--a2ui-accent,#6366f1)")
+    size_map = {"sm": 6, "md": 9, "lg": 13}
+    sz    = size_map.get(b.get("size", "md"), 9)
+    label = b.get("label", "")
+    align = b.get("align", "flex-start")
+    label_html = f'<span style="font-size:0.82rem;color:#94a3b8;margin-left:8px;">{_html.escape(label)}</span>' if label else ""
+    dots = "".join(
+        f'<span style="width:{sz}px;height:{sz}px;border-radius:50%;background:{color};'
+        f'display:inline-block;animation:ld_{uid} 1.1s ease-in-out {i*0.18:.2f}s infinite;"></span>'
+        for i in range(3)
+    )
+    return (
+        f'<style>'
+        f'@keyframes ld_{uid}{{0%,80%,100%{{transform:scale(0.6);opacity:0.4;}}'
+        f'40%{{transform:scale(1);opacity:1;}}}}'
+        f'</style>'
+        f'<div style="display:flex;align-items:center;gap:5px;justify-content:{align};margin:0.6rem 0;">'
+        f'{dots}{label_html}</div>'
+    )
+
+_RENDERERS["loading_dots"] = _render_loading_dots
+
+
+def _render_countdown_ring(b: dict) -> str:
+    import hashlib, math
+    uid      = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    duration = int(b.get("duration_sec", 60))
+    size     = int(b.get("size", 80))
+    color    = b.get("color", "var(--a2ui-accent,#6366f1)")
+    label    = b.get("label", "")
+    sw       = max(4, size // 12)
+    r        = (size - sw) / 2
+    circ     = round(2 * math.pi * r, 2)
+    cx = cy  = size / 2
+    label_html = f'<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;text-align:center;">{label}</div>' if label else ""
+    return (
+        f'<style>'
+        f'@keyframes cr_{uid}{{from{{stroke-dasharray:{circ} 0;}}to{{stroke-dasharray:0 {circ};}}}}'
+        f'</style>'
+        f'<div style="margin:1rem 0;display:inline-flex;flex-direction:column;align-items:center;">'
+        f'<div style="position:relative;width:{size}px;height:{size}px;">'
+        f'<svg width="{size}" height="{size}" style="transform:rotate(-90deg);">'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#334155" stroke-width="{sw}"/>'
+        f'<circle id="crring_{uid}" cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="{sw}"'
+        f' stroke-linecap="round" stroke-dasharray="{circ} 0"'
+        f' style="animation:cr_{uid} {duration}s linear forwards;"/>'
+        f'</svg>'
+        f'<div id="crtxt_{uid}" style="position:absolute;inset:0;display:flex;align-items:center;'
+        f'justify-content:center;font-size:{size//5}px;font-weight:700;color:#f1f5f9;">{duration}</div>'
+        f'</div>{label_html}</div>'
+        f'<script>(function(){{'
+        f'var t={duration};var el=document.getElementById("crtxt_{uid}");'
+        f'var iv=setInterval(function(){{t--;if(el)el.textContent=t;if(t<=0)clearInterval(iv);}},1000);'
+        f'}})();</script>'
+    )
+
+_RENDERERS["countdown_ring"] = _render_countdown_ring
+
+
+def _render_skeleton(b: dict) -> str:
+    import hashlib
+    uid  = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    kind = b.get("type_", b.get("skeleton_type", "text"))
+    rows = int(b.get("rows", 3))
+    cols = int(b.get("cols", 3))
+    height = b.get("height", "200px")
+    base = (
+        f'<style>'
+        f'@keyframes sk_{uid}{{0%{{background-position:-200% 0;}}100%{{background-position:200% 0;}}}}'
+        f'.skb_{uid}{{background:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);'
+        f'background-size:200% 100%;animation:sk_{uid} 1.6s linear infinite;border-radius:6px;}}'
+        f'</style>'
+    )
+    line = f'<div class="skb_{uid}" style="height:14px;margin:8px 0;border-radius:4px;"></div>'
+    if kind == "card":
+        return base + (
+            f'<div style="border:1px solid #334155;border-radius:12px;padding:20px;margin:1rem 0;">'
+            f'<div class="skb_{uid}" style="height:120px;border-radius:8px;margin-bottom:12px;"></div>'
+            f'<div class="skb_{uid}" style="height:14px;width:70%;margin-bottom:8px;"></div>'
+            f'<div class="skb_{uid}" style="height:12px;width:50%;"></div>'
+            f'</div>'
+        )
+    elif kind == "avatar_row":
+        return base + (
+            f'<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;">'
+            f'<div class="skb_{uid}" style="width:44px;height:44px;border-radius:50%;flex-shrink:0;"></div>'
+            f'<div style="flex:1;">'
+            f'<div class="skb_{uid}" style="height:13px;width:60%;margin-bottom:7px;"></div>'
+            f'<div class="skb_{uid}" style="height:11px;width:40%;"></div>'
+            f'</div></div>'
+        )
+    elif kind == "image":
+        return base + f'<div class="skb_{uid}" style="height:{height};border-radius:10px;margin:1rem 0;"></div>'
+    elif kind == "list":
+        items = "".join(
+            f'<div style="display:flex;gap:10px;align-items:center;margin:8px 0;">'
+            f'<div class="skb_{uid}" style="width:16px;height:16px;border-radius:3px;flex-shrink:0;"></div>'
+            f'<div class="skb_{uid}" style="flex:1;height:12px;"></div>'
+            f'</div>'
+            for _ in range(rows)
+        )
+        return base + f'<div style="margin:1rem 0;">{items}</div>'
+    elif kind == "table":
+        header = "".join(
+            f'<div class="skb_{uid}" style="flex:1;height:14px;margin:0 4px;"></div>'
+            for _ in range(cols)
+        )
+        body_rows = "".join(
+            f'<div style="display:flex;gap:0;margin-top:10px;">' + "".join(
+                f'<div class="skb_{uid}" style="flex:1;height:12px;margin:0 4px;opacity:0.7;"></div>'
+                for _ in range(cols)
+            ) + '</div>'
+            for _ in range(rows)
+        )
+        return base + (
+            f'<div style="margin:1rem 0;">'
+            f'<div style="display:flex;margin-bottom:10px;">{header}</div>'
+            f'{body_rows}</div>'
+        )
+    else:  # text
+        widths = ["100%", "85%", "60%"]
+        lines = "".join(
+            f'<div class="skb_{uid}" style="height:13px;width:{widths[i % 3]};margin:7px 0;"></div>'
+            for i in range(rows)
+        )
+        return base + f'<div style="margin:1rem 0;">{lines}</div>'
+
+_RENDERERS["skeleton"] = _render_skeleton
+
+
+def _render_marquee(b: dict) -> str:
+    import hashlib, html as _html
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    items = b.get("items") or []
+    title = b.get("title", "")
+    speed = b.get("speed", 30)
+    gap   = int(b.get("gap", 48))
+    direction = b.get("direction", "normal")
+    title_html = f'<div style="font-size:0.75rem;font-weight:600;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">{_html.escape(title)}</div>' if title else ""
+    def _item_html(item):
+        if isinstance(item, str):
+            return f'<span style="white-space:nowrap;color:#e2e8f0;font-size:0.9rem;">{_html.escape(item)}</span>'
+        url = item.get("image_url", item.get("url", ""))
+        text = item.get("text", item.get("label", ""))
+        icon = item.get("icon", "")
+        if url and not text and not icon:
+            return f'<img src="{_html.escape(url)}" style="height:28px;object-fit:contain;opacity:0.8;"/>'
+        icon_h = f'<span style="margin-right:5px;">{icon}</span>' if icon else ""
+        text_h = f'<span style="color:#e2e8f0;font-size:0.85rem;">{_html.escape(text)}</span>' if text else ""
+        return f'<span style="display:inline-flex;align-items:center;white-space:nowrap;gap:4px;">{icon_h}{text_h}</span>'
+    strip = f'<span style="display:inline-flex;align-items:center;gap:{gap}px;">'
+    strip += "".join(_item_html(i) for i in items)
+    strip += '</span>'
+    anim_dir = "reverse" if direction == "right" else "normal"
+    return (
+        f'<style>'
+        f'@keyframes mq_{uid}{{from{{transform:translateX(0);}}to{{transform:translateX(-50%);}}}}'
+        f'</style>'
+        f'<div style="margin:1rem 0;">{title_html}'
+        f'<div style="overflow:hidden;border:1px solid #1e293b;border-radius:10px;padding:10px 0;'
+        f'background:#0f172a;">'
+        f'<div style="display:flex;width:max-content;animation:mq_{uid} {speed}s linear infinite;animation-direction:{anim_dir};">'
+        f'<div style="display:inline-flex;align-items:center;gap:{gap}px;padding:0 {gap}px;">'
+        + "".join(_item_html(i) for i in items)
+        + f'</div><div style="display:inline-flex;align-items:center;gap:{gap}px;padding:0 {gap}px;">'
+        + "".join(_item_html(i) for i in items)
+        + f'</div></div></div></div>'
+    )
+
+_RENDERERS["marquee"] = _render_marquee
+
+
+# ─── MagicUI cursor & motion atoms ────────────────────────────────────────────
+
+def _render_cursor_glow(b: dict) -> str:
+    import hashlib
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    color  = b.get("colour", b.get("color", "#6366f1"))
+    size   = int(b.get("size", 380))
+    opacity = float(b.get("opacity", 0.18))
+    speed  = float(b.get("speed", 0.1))
+    blend  = b.get("blend", "screen")
+    return (
+        f'<div id="cg_{uid}" style="position:fixed;pointer-events:none;z-index:9998;'
+        f'width:{size}px;height:{size}px;border-radius:50%;'
+        f'background:radial-gradient(circle,{color} 0%,transparent 70%);'
+        f'opacity:{opacity};mix-blend-mode:{blend};'
+        f'transform:translate(-50%,-50%);top:-999px;left:-999px;transition:none;"></div>'
+        f'<script>(function(){{'
+        f'var el=document.getElementById("cg_{uid}");'
+        f'var tx=0,ty=0,cx=0,cy=0;'
+        f'document.addEventListener("mousemove",function(e){{tx=e.clientX;ty=e.clientY;}});'
+        f'(function loop(){{'
+        f'cx+=(tx-cx)*{speed};cy+=(ty-cy)*{speed};'
+        f'el.style.left=Math.round(cx)+"px";el.style.top=Math.round(cy)+"px";'
+        f'requestAnimationFrame(loop);}})();}})();</script>'
+    )
+
+_RENDERERS["cursor_glow"] = _render_cursor_glow
+
+
+def _render_cursor_trail(b: dict) -> str:
+    import hashlib
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    color  = b.get("colour", b.get("color", "#6366f1"))
+    length = int(b.get("length", 16))
+    size   = int(b.get("size", 10))
+    speed  = float(b.get("speed", 0.35))
+    return (
+        f'<script>(function(){{'
+        f'var n={length},s={speed},col="{color}",dotSz={size};'
+        f'var dots=[];var pts=[];\n'
+        f'for(var i=0;i<n;i++){{'
+        f'var d=document.createElement("div");'
+        f'var scale=1-i/n;'
+        f'd.style.cssText="position:fixed;pointer-events:none;z-index:9997;border-radius:50%;'
+        f'width:"+Math.round(dotSz*scale)+"px;height:"+Math.round(dotSz*scale)+"px;'
+        f'background:"+col+";opacity:"+(1-i/n*0.8)+";transform:translate(-50%,-50%);'
+        f'top:-999px;left:-999px;";'
+        f'document.body.appendChild(d);dots.push(d);pts.push([0,0]);'
+        f'}}'
+        f'var mx=0,my=0;'
+        f'document.addEventListener("mousemove",function(e){{mx=e.clientX;my=e.clientY;}});'
+        f'(function loop(){{'
+        f'pts[0][0]+=(mx-pts[0][0])*s;pts[0][1]+=(my-pts[0][1])*s;'
+        f'for(var j=1;j<n;j++){{'
+        f'pts[j][0]+=(pts[j-1][0]-pts[j][0])*s;'
+        f'pts[j][1]+=(pts[j-1][1]-pts[j][1])*s;'
+        f'}}'
+        f'for(var k=0;k<n;k++){{'
+        f'dots[k].style.left=Math.round(pts[k][0])+"px";'
+        f'dots[k].style.top=Math.round(pts[k][1])+"px";'
+        f'}}'
+        f'requestAnimationFrame(loop);}})();}})();</script>'
+    )
+
+_RENDERERS["cursor_trail"] = _render_cursor_trail
+
+
+def _render_particle_burst(b: dict) -> str:
+    import hashlib
+    uid     = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    count   = int(b.get("count", 14))
+    colours = b.get("colours", b.get("colors")) or ["#6366f1","#a855f7","#ec4899","#f59e0b","#34d399"]
+    size    = int(b.get("size", 8))
+    dur     = int(b.get("duration", 700))
+    gravity = float(b.get("gravity", 1.2))
+    cols_js = str(colours).replace("'", '"')
+    return (
+        f'<script>(function(){{'
+        f'var cols={cols_js},n={count},sz={size},dur={dur},g={gravity};'
+        f'document.addEventListener("click",function(e){{'
+        f'for(var i=0;i<n;i++){{'
+        f'var el=document.createElement("div");'
+        f'el.style.cssText="position:fixed;width:"+sz+"px;height:"+sz+"px;border-radius:50%;'
+        f'pointer-events:none;z-index:9999;background:"+cols[i%cols.length]'
+        f'+";left:"+e.clientX+"px;top:"+e.clientY+"px;";'
+        f'document.body.appendChild(el);'
+        f'var vx=(Math.random()-0.5)*12;var vy=-(Math.random()*10+3);'
+        f'var t=0;var x=e.clientX;var y=e.clientY;'
+        f'var id=setInterval(function(elem,cx,cy,dx,dy){{'
+        f'dy+=g*0.5;cx+=dx;cy+=dy;'
+        f'elem.style.left=cx+"px";elem.style.top=cy+"px";'
+        f'elem.style.opacity=Math.max(0,1-t/dur);'
+        f't+=16;if(t>dur){{clearInterval(id);elem.remove();}}'
+        f'}}.bind(null,el,x,y,vx,vy),16);'
+        f'}}}});}})()</script>'
+    )
+
+_RENDERERS["particle_burst"] = _render_particle_burst
+
+
+def _render_spotlight_cursor(b: dict) -> str:
+    import hashlib
+    uid      = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    radius   = int(b.get("radius", 180))
+    darkness = float(b.get("darkness", 0.82))
+    color    = b.get("colour", b.get("color", "rgba(0,0,0)"))
+    soft     = int(b.get("soft_edge", 60))
+    return (
+        f'<div id="sp_{uid}" style="position:fixed;inset:0;pointer-events:none;z-index:9990;'
+        f'background:radial-gradient(circle {radius}px at -999px -999px,'
+        f'transparent 0%,transparent {radius}px,{color} {radius+soft}px);'
+        f'opacity:{darkness};transition:none;"></div>'
+        f'<script>(function(){{'
+        f'var el=document.getElementById("sp_{uid}");'
+        f'var r={radius},soft={soft};'
+        f'document.addEventListener("mousemove",function(e){{'
+        f'el.style.background="radial-gradient(circle "+r+"px at "+e.clientX+"px "+e.clientY+"px,'
+        f'transparent 0%,transparent "+r+"px,rgba(0,0,0,1) "+(r+soft)+"px)";'
+        f'}});}})();</script>'
+    )
+
+_RENDERERS["spotlight_cursor"] = _render_spotlight_cursor
+
+
+def _render_magnetic_element(b: dict) -> str:
+    import hashlib, html as _html
+    uid      = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    label    = b.get("label", "")
+    content  = b.get("content", "")
+    accent   = b.get("accent", "var(--a2ui-accent,#6366f1)")
+    radius   = int(b.get("radius", 120))
+    strength = float(b.get("strength", 0.4))
+    if content:
+        inner = content
+    elif label:
+        inner = (
+            f'<span style="background:{accent};color:#fff;font-weight:700;'
+            f'font-size:0.9rem;padding:10px 22px;border-radius:9999px;display:inline-block;">'
+            f'{_html.escape(label)}</span>'
+        )
+    else:
+        inner = f'<span style="color:#94a3b8;font-style:italic;">magnetic element</span>'
+    return (
+        f'<div style="margin:1rem 0;text-align:center;">'
+        f'<div id="mag_{uid}" style="display:inline-block;cursor:pointer;transition:transform 0.12s ease-out;">'
+        f'{inner}</div></div>'
+        f'<script>(function(){{'
+        f'var el=document.getElementById("mag_{uid}");'
+        f'var r={radius},s={strength};'
+        f'el.addEventListener("mousemove",function(e){{'
+        f'var rect=el.getBoundingClientRect();'
+        f'var cx=rect.left+rect.width/2;var cy=rect.top+rect.height/2;'
+        f'var dx=e.clientX-cx;var dy=e.clientY-cy;'
+        f'var dist=Math.sqrt(dx*dx+dy*dy);'
+        f'if(dist<r){{el.style.transform="translate("+(dx*s)+"px,"+(dy*s)+"px)";}}}})'
+        f';el.addEventListener("mouseleave",function(){{el.style.transform="translate(0,0)";}});}})();'
+        f'</script>'
+    )
+
+_RENDERERS["magnetic_element"] = _render_magnetic_element
+
+
+def _render_tilt_card(b: dict) -> str:
+    import hashlib
+    uid      = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    title    = b.get("title", "")
+    content  = b.get("content", "")
+    max_tilt = float(b.get("max_tilt", 14))
+    glare    = b.get("glare", True)
+    accent   = b.get("accent", "rgba(255,255,255,0.15)")
+    title_html = f'<div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{title}</div>' if title else ""
+    content_html = f'<div style="font-size:0.88rem;color:#94a3b8;line-height:1.6;">{content}</div>' if content else \
+                   f'<div style="color:#94a3b8;font-style:italic;">Hover to tilt</div>'
+    glare_html = (
+        f'<div id="tg_{uid}" style="position:absolute;inset:0;pointer-events:none;border-radius:12px;'
+        f'background:radial-gradient(circle at 50% 0%,{accent},transparent 70%);opacity:0;transition:opacity 0.2s;"></div>'
+    ) if glare else ""
+    return (
+        f'<div style="margin:1rem 0;perspective:800px;">'
+        f'<div id="tc_{uid}" style="position:relative;border-radius:12px;border:1px solid #334155;'
+        f'background:#0f172a;padding:24px;cursor:pointer;transition:transform 0.1s ease-out;'
+        f'transform-style:preserve-3d;">'
+        f'{glare_html}'
+        f'<div style="position:relative;z-index:1;">{title_html}{content_html}</div>'
+        f'</div></div>'
+        f'<script>(function(){{'
+        f'var card=document.getElementById("tc_{uid}");'
+        f'var glare=document.getElementById("tg_{uid}");'
+        f'var mt={max_tilt};'
+        f'card.addEventListener("mousemove",function(e){{'
+        f'var r=card.getBoundingClientRect();'
+        f'var nx=(e.clientX-r.left)/r.width-0.5;'
+        f'var ny=(e.clientY-r.top)/r.height-0.5;'
+        f'var rx=ny*mt*-2;var ry=nx*mt*2;'
+        f'card.style.transform="rotateX("+rx+"deg) rotateY("+ry+"deg)";'
+        f'if(glare){{glare.style.opacity="1";glare.style.background="radial-gradient(circle at "+(nx+0.5)*100+"% "+(ny+0.5)*100+"%, {accent}, transparent 70%)"}}'
+        f'}});'
+        f'card.addEventListener("mouseleave",function(){{'
+        f'card.style.transform="rotateX(0) rotateY(0)";'
+        f'if(glare)glare.style.opacity="0";}});}})();</script>'
+    )
+
+_RENDERERS["tilt_card"] = _render_tilt_card
+
+
+# ─── MagicUI text & stat atoms ────────────────────────────────────────────────
+
+def _render_word_reveal(b: dict) -> str:
+    import hashlib, html as _html
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    text   = b.get("text", "")
+    color  = b.get("colour", b.get("color", "rgba(255,255,255,0.92)"))
+    grad   = b.get("gradient", "")
+    size   = b.get("size", "clamp(2rem,5vw,3.5rem)")
+    weight = b.get("weight", 800)
+    words  = text.split()
+    spans  = "".join(
+        f'<span style="opacity:0;display:inline-block;'
+        f'animation:wr_{uid} 0.5s ease-out {i*80}ms both;margin:0 0.12em 0 0;">'
+        f'{_html.escape(w)}</span>'
+        for i, w in enumerate(words)
+    )
+    color_css = f"background:{grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" if grad else f"color:{color};"
+    return (
+        f'<style>@keyframes wr_{uid}{{from{{opacity:0;transform:translateY(16px);}}to{{opacity:1;transform:translateY(0);}}}}</style>'
+        f'<div style="font-size:{size};font-weight:{weight};line-height:1.2;margin:1rem 0;{color_css}">{spans}</div>'
+    )
+
+_RENDERERS["word_reveal"] = _render_word_reveal
+
+
+def _render_count_up_stat(b: dict) -> str:
+    import hashlib, html as _html
+    uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    value  = int(b.get("value", 0))
+    label  = b.get("label", "")
+    prefix = b.get("prefix", "")
+    suffix = b.get("suffix", "")
+    color  = b.get("colour", b.get("color", "var(--a2ui-accent,#6366f1)"))
+    label_html = f'<div style="font-size:0.85rem;color:#94a3b8;margin-top:4px;">{_html.escape(label)}</div>' if label else ""
+    return (
+        f'<div style="margin:1rem 0;text-align:center;">'
+        f'<div style="font-size:clamp(2.5rem,6vw,4rem);font-weight:800;color:{color};'
+        f'font-variant-numeric:tabular-nums;">'
+        f'{_html.escape(prefix)}<span id="cu_{uid}">0</span>{_html.escape(suffix)}'
+        f'</div>{label_html}</div>'
+        f'<script>(function(){{'
+        f'var el=document.getElementById("cu_{uid}");'
+        f'var end={value};var dur=1400;var start=performance.now();'
+        f'function ease(t){{return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}}'
+        f'(function frame(now){{'
+        f'var t=Math.min((now-start)/dur,1);'
+        f'el.textContent=Math.round(ease(t)*end);'
+        f'if(t<1)requestAnimationFrame(frame);}})( start);'
+        f'}})();</script>'
+    )
+
+_RENDERERS["count_up_stat"] = _render_count_up_stat
+
+
+def _render_reveal_line(b: dict) -> str:
+    import hashlib, html as _html
+    uid   = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    text  = _html.escape(b.get("text", ""))
+    grad  = b.get("gradient", "linear-gradient(90deg,#6366f1,#ec4899)")
+    size  = b.get("size", "clamp(2.5rem,6vw,4rem)")
+    weight = b.get("weight", 900)
+    dur   = int(b.get("duration", 800))
+    return (
+        f'<style>'
+        f'@keyframes rl_{uid}{{from{{clip-path:inset(0 100% 0 0);}}to{{clip-path:inset(0 0% 0 0);}}}}'
+        f'</style>'
+        f'<div style="font-size:{size};font-weight:{weight};line-height:1.1;margin:1rem 0;'
+        f'background:{grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+        f'background-clip:text;clip-path:inset(0 100% 0 0);'
+        f'animation:rl_{uid} {dur}ms cubic-bezier(.4,0,.2,1) 0.1s forwards;">'
+        f'{text}</div>'
+    )
+
+_RENDERERS["reveal_line"] = _render_reveal_line
+
+
+def _render_gradient_heading(b: dict) -> str:
+    import html as _html
+    text   = _html.escape(b.get("text", ""))
+    grad   = b.get("gradient", "linear-gradient(135deg,#6366f1,#a855f7,#ec4899)")
+    size   = b.get("size", "clamp(1.8rem,4vw,3rem)")
+    weight = b.get("weight", 900)
+    align  = b.get("align", "left")
+    return (
+        f'<div style="font-size:{size};font-weight:{weight};text-align:{align};margin:1rem 0;'
+        f'background:{grad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+        f'background-clip:text;line-height:1.2;">{text}</div>'
+    )
+
+_RENDERERS["gradient_heading"] = _render_gradient_heading
+
+
+def _render_display_quote(b: dict) -> str:
+    import html as _html
+    text   = _html.escape(b.get("text", ""))
+    attr   = b.get("attribution", "")
+    color  = b.get("colour", b.get("color", "var(--a2ui-accent,#6366f1)"))
+    size   = b.get("size", "clamp(1.4rem,3vw,2.2rem)")
+    align  = b.get("align", "center")
+    attr_html = (
+        f'<div style="font-size:0.82rem;letter-spacing:0.06em;font-family:monospace;'
+        f'color:{color};margin-top:16px;">&mdash; {_html.escape(attr)}</div>'
+    ) if attr else ""
+    return (
+        f'<div style="margin:1.5rem 0;text-align:{align};padding:0 1rem;">'
+        f'<div style="font-size:2.5rem;color:{color};line-height:1;margin-bottom:4px;">&ldquo;</div>'
+        f'<div style="font-size:{size};font-weight:700;color:#f1f5f9;line-height:1.45;font-style:italic;">{text}</div>'
+        f'{attr_html}</div>'
+    )
+
+_RENDERERS["display_quote"] = _render_display_quote
+
+
+def _render_split_stat(b: dict) -> str:
+    import html as _html
+    value   = _html.escape(str(b.get("value", "")))
+    prefix  = _html.escape(b.get("prefix", ""))
+    suffix  = _html.escape(b.get("suffix", ""))
+    heading = _html.escape(b.get("heading", ""))
+    body    = _html.escape(b.get("body", ""))
+    color   = b.get("color", b.get("colour", "var(--a2ui-accent,#6366f1)"))
+    heading_html = f'<div style="font-size:1.15rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{heading}</div>' if heading else ""
+    body_html    = f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.6;">{body}</div>' if body else ""
+    return (
+        f'<div style="display:flex;align-items:center;gap:2rem;margin:1.5rem 0;'
+        f'border:1px solid #1e293b;border-radius:14px;padding:28px;background:#0f172a;">'
+        f'<div style="text-align:center;flex-shrink:0;">'
+        f'<div style="font-size:clamp(3rem,8vw,5rem);font-weight:900;line-height:1;'
+        f'color:{color};text-shadow:0 0 40px {color}66;">'
+        f'{prefix}{value}{suffix}</div></div>'
+        f'<div style="flex:1;">{heading_html}{body_html}</div>'
+        f'</div>'
+    )
+
+_RENDERERS["split_stat"] = _render_split_stat
+
+
+def _render_section_label(b: dict) -> str:
+    import html as _html
+    text   = _html.escape(b.get("text", "")).upper()
+    color  = b.get("colour", b.get("color", "var(--a2ui-accent,#6366f1)"))
+    margin = b.get("margin", "24px 0 12px")
+    return (
+        f'<div style="display:inline-flex;align-items:center;gap:8px;margin:{margin};">'
+        f'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;'
+        f'background:{color};box-shadow:0 0 8px {color};"></span>'
+        f'<span style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;'
+        f'text-transform:uppercase;color:{color};">{text}</span>'
+        f'</div>'
+    )
+
+_RENDERERS["section_label"] = _render_section_label
+
+
+def _render_text_highlight(b: dict) -> str:
+    import re, html as _html
+    text   = b.get("text", "")
+    size   = b.get("size", "1.2rem")
+    color  = b.get("colour", b.get("color", "var(--a2ui-accent,#6366f1)"))
+    weight = b.get("weight", 600)
+    align  = b.get("align", "left")
+    def _replace(m):
+        word = _html.escape(m.group(1))
+        return (
+            f'<mark style="background:transparent;color:{color};font-weight:700;'
+            f'border-bottom:2px solid {color};">{word}</mark>'
+        )
+    processed = re.sub(r'\*\*(.+?)\*\*', _replace, _html.escape(text).replace(r'\*\*', '**'))
+    return (
+        f'<p style="font-size:{size};font-weight:{weight};color:#e2e8f0;'
+        f'line-height:1.7;text-align:{align};margin:1rem 0;">{processed}</p>'
+    )
+
+_RENDERERS["text_highlight"] = _render_text_highlight
+
+
 def _stub(atom_type: str):
     def _r(b: dict) -> str:
         label = b.get("title", b.get("name", b.get("label", atom_type)))
@@ -9549,10 +10454,7 @@ def _stub(atom_type: str):
 
 _RENDERERS.update({t: _stub(t) for t in [
     "achievement_badge", "score_summary", "xp_bar", "lesson_nav",
-    "course_progress_card", "highlighted_text", "cursor_glow", "cursor_trail",
-    "particle_burst", "spotlight_cursor", "magnetic_element", "tilt_card",
-    "gradient_heading", "display_quote", "split_stat", "word_reveal",
-    "section_label", "count_up_stat", "text_highlight", "reveal_line",
+    "course_progress_card", "highlighted_text",
     "canvas_plexus", "spring_nodes", "isometric_mesh", "module_map",
     "knowledge_check", "quiz_result_summary", "scenario_branch",
     "completion_gate", "certification_card", "skill_radar", "badge_showcase",
@@ -9642,6 +10544,161 @@ def _render_sheet_form(b: dict) -> str:
             + title_div + field_rows + note + '</div>')
 
 _RENDERERS["sheet_form"] = _render_sheet_form
+
+
+# ─── Material Symbol icon atoms ───────────────────────────────────────────────
+_MS_CSS_OUTLINED = (
+    '<style>'
+    '@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined'
+    ':opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");'
+    '.ms-icon{font-family:"Material Symbols Outlined";font-weight:normal;font-style:normal;'
+    'font-size:inherit;line-height:1;display:inline-block;text-transform:none;'
+    'letter-spacing:normal;word-wrap:normal;white-space:nowrap;direction:ltr;'
+    '-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;'
+    "font-variation-settings:'FILL' var(--ms-fill,0),'wght' var(--ms-w,400),"
+    "'GRAD' var(--ms-g,0),'opsz' var(--ms-o,24);}"
+    '</style>'
+)
+_MS_CSS_ROUNDED = (
+    '<style>'
+    '@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded'
+    ':opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");'
+    '.ms-icon{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;'
+    'font-size:inherit;line-height:1;display:inline-block;text-transform:none;'
+    'letter-spacing:normal;word-wrap:normal;white-space:nowrap;direction:ltr;'
+    '-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;'
+    "font-variation-settings:'FILL' var(--ms-fill,0),'wght' var(--ms-w,400),"
+    "'GRAD' var(--ms-g,0),'opsz' var(--ms-o,24);}"
+    '</style>'
+)
+
+def _ms_font(style: str) -> str:
+    return _MS_CSS_ROUNDED if style == "rounded" else _MS_CSS_OUTLINED
+
+def _ms_vars(fill: int, weight: int, grade: int, opsz: int) -> str:
+    return f"--ms-fill:{fill};--ms-w:{weight};--ms-g:{grade};--ms-o:{opsz}"
+
+
+def _render_google_icon(b: dict) -> str:
+    import html as _h
+    name   = _h.escape(str(b.get("name") or b.get("icon") or "star"))
+    size   = _h.escape(str(b.get("size") or "24px"))
+    color  = b.get("color") or b.get("accent") or "currentColor"
+    fill   = 1 if b.get("filled") else 0
+    weight = int(b.get("weight") or 400)
+    opsz   = int((b.get("size") or "24").replace("px","").strip() or 24)
+    style  = b.get("style") or "outlined"
+    inline = b.get("inline", True) is not False
+    label  = f'<span style="font-size:0.82rem;color:var(--muted,#6b7280);margin-left:6px;">{_h.escape(str(b["label"]))}</span>' if b.get("label") else ""
+    css_vars = _ms_vars(fill, weight, 0, opsz)
+    icon_span = f'<span class="ms-icon" style="{css_vars};font-size:{size};color:{color};" aria-hidden="true">{name}</span>'
+    disp = "inline-flex" if inline else "flex"
+    margin = "" if inline else "margin:var(--a2ui-block-gap,1.25rem) 0;"
+    return _ms_font(style) + f'<span style="display:{disp};align-items:center;{margin}">{icon_span}{label}</span>'
+
+_RENDERERS["google_icon"] = _render_google_icon
+
+
+def _render_icon_badge(b: dict) -> str:
+    import html as _h
+    name   = _h.escape(str(b.get("name") or b.get("icon") or "star"))
+    size   = int(b.get("icon_size") or 24)
+    bg     = b.get("bg") or b.get("accent") or "var(--a2ui-accent,#6366f1)"
+    color  = b.get("color") or "#fff"
+    pad    = _h.escape(str(b.get("padding") or "12px"))
+    radius = _h.escape(str(b.get("radius") or "50%"))
+    fill   = 1 if b.get("filled") else 0
+    weight = int(b.get("weight") or 400)
+    style  = b.get("style") or "outlined"
+    label  = f'<div style="font-size:0.78rem;color:var(--muted,#6b7280);margin-top:4px;text-align:center;">{_h.escape(str(b["label"]))}</div>' if b.get("label") else ""
+    css_vars = _ms_vars(fill, weight, 0, size)
+    return (
+        _ms_font(style)
+        + '<div style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;margin:var(--a2ui-block-gap,1.25rem) 0;">'
+        + f'<div style="display:flex;align-items:center;justify-content:center;background:{bg};padding:{pad};border-radius:{radius};">'
+        + f'<span class="ms-icon" style="{css_vars};font-size:{size}px;color:{color};" aria-hidden="true">{name}</span>'
+        + f'</div>{label}</div>'
+    )
+
+_RENDERERS["icon_badge"] = _render_icon_badge
+
+
+def _render_icon_row(b: dict) -> str:
+    import html as _h
+    items   = b.get("items") or []
+    size    = int(b.get("icon_size") or 20)
+    color   = b.get("color") or b.get("accent") or "var(--a2ui-accent,#6366f1)"
+    fill    = 1 if b.get("filled") else 0
+    style   = b.get("style") or "outlined"
+    gap     = _h.escape(str(b.get("gap") or "12px"))
+    css_base = _ms_vars(fill, 400, 0, size)
+    cells = "".join(
+        '<div style="display:flex;align-items:center;gap:8px;">'
+        + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{item.get("color") or item.get("accent") or color};flex-shrink:0;" aria-hidden="true">{_h.escape(str(item.get("name") or item.get("icon") or "check"))}</span>'
+        + (f'<span style="font-size:0.875rem;color:var(--text,#374151);">{_h.escape(str(item.get("label") or item.get("text") or ""))}</span>' if item.get("label") or item.get("text") else "")
+        + '</div>'
+        for item in items
+    )
+    return _ms_font(style) + f'<div style="display:flex;flex-wrap:wrap;gap:{gap};margin:var(--a2ui-block-gap,1.25rem) 0;">{cells}</div>'
+
+_RENDERERS["icon_row"] = _render_icon_row
+
+
+def _render_icon_feature_grid(b: dict) -> str:
+    import html as _h
+    items  = b.get("items") or []
+    cols   = int(b.get("cols") or 3)
+    size   = int(b.get("icon_size") or 28)
+    fill   = 1 if b.get("filled") else 0
+    style  = b.get("style") or "outlined"
+    accent = b.get("accent") or "var(--a2ui-accent,#6366f1)"
+    css_base = _ms_vars(fill, 400, 0, size)
+    cells = "".join(
+        '<div style="padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+        + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{item.get("color") or item.get("accent") or accent};display:block;margin-bottom:10px;" aria-hidden="true">{_h.escape(str(item.get("icon") or item.get("name") or "star"))}</span>'
+        + (f'<div style="font-size:0.875rem;font-weight:700;color:var(--text,#111827);margin-bottom:4px;">{_h.escape(str(item.get("title") or item.get("label") or ""))}</div>' if item.get("title") or item.get("label") else "")
+        + (f'<div style="font-size:0.8rem;color:var(--muted,#6b7280);line-height:1.5;">{_h.escape(str(item.get("text") or item.get("description") or ""))}</div>' if item.get("text") or item.get("description") else "")
+        + '</div>'
+        for item in items
+    )
+    title_html = f'<div style="font-size:1rem;font-weight:700;color:var(--text,#111827);margin-bottom:12px;">{_h.escape(str(b["title"]))}</div>' if b.get("title") else ""
+    return (
+        _ms_font(style)
+        + f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">{title_html}'
+        + f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);gap:12px;">{cells}</div></div>'
+    )
+
+_RENDERERS["icon_feature_grid"] = _render_icon_feature_grid
+
+
+def _render_icon_checklist(b: dict) -> str:
+    import html as _h
+    items    = b.get("items") or []
+    size     = int(b.get("icon_size") or 20)
+    accent   = b.get("accent") or "var(--a2ui-accent,#6366f1)"
+    fill     = 1 if b.get("filled", True) else 0
+    style    = b.get("style") or "outlined"
+    def_icon = b.get("default_icon") or "check_circle"
+    css_base = _ms_vars(fill, 400, 0, size)
+    rows = []
+    for item in items:
+        if isinstance(item, str):
+            text, icon, c, sub = item, def_icon, accent, ""
+        else:
+            text = item.get("text") or item.get("label") or ""
+            icon = item.get("icon") or def_icon
+            c    = item.get("color") or item.get("accent") or accent
+            sub  = f'<div style="font-size:0.75rem;color:var(--muted,#9ca3af);margin-top:2px;">{_h.escape(str(item["sublabel"]))}</div>' if item.get("sublabel") else ""
+        rows.append(
+            '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border,#f3f4f6);">'
+            + f'<span class="ms-icon" style="{css_base};font-size:{size}px;color:{c};flex-shrink:0;margin-top:1px;" aria-hidden="true">{_h.escape(icon)}</span>'
+            + f'<div><div style="font-size:0.875rem;color:var(--text,#374151);">{_h.escape(text)}</div>{sub}</div>'
+            + '</div>'
+        )
+    title_html = f'<div style="font-size:0.9rem;font-weight:700;color:var(--text,#111827);margin-bottom:8px;">{_h.escape(str(b["title"]))}</div>' if b.get("title") else ""
+    return _ms_font(style) + f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">{title_html}{"".join(rows)}</div>'
+
+_RENDERERS["icon_checklist"] = _render_icon_checklist
 
 
 # ─── atoms_unstub.gs Python companions ────────────────────────────────────────

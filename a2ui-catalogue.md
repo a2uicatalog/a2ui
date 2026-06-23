@@ -457,6 +457,35 @@
 | `nav_bar` | ✅ | ✅ | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
 | `nav_link` | ✅ | ✅ | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
 | `breadcrumb` | ✅ | ✅ | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui) |
+| `palette` | ✅ | — | — | — | — | — | — |
+| `print_button` | ✅ | — | — | — | — | — | — |
+| `drive_image` | ✅ | — | — | — | — | — | — |
+| `maps_embed` | ✅ | — | — | — | — | — | — |
+| `sheet_form` | — | — | — | — | — | — | — |
+| `reveal` | — | — | — | — | — | — | — |
+| `skeleton` | — | — | — | — | — | — | — |
+| `marquee` | — | — | — | — | — | — | — |
+| `pulse_dot` | — | — | — | — | — | — | — |
+| `loading_dots` | — | — | — | — | — | — | — |
+| `progress_ring` | ✅ | — | — | — | — | — | — |
+| `confetti_burst` | — | — | — | — | — | — | — |
+| `ripple_button` | — | — | — | — | — | — | — |
+| `wave_divider` | ✅ | — | — | — | — | — | — |
+| `floating_badge` | — | — | — | — | — | — | — |
+| `shimmer_text` | — | — | — | — | — | — | — |
+| `number_flip` | — | — | — | — | — | — | — |
+| `spotlight_card` | — | — | — | — | — | — | — |
+| `animated_border` | — | — | — | — | — | — | — |
+| `typing_indicator` | — | — | — | — | — | — | — |
+| `countdown_ring` | — | — | — | — | — | — | — |
+| `google_icon` | — | — | — | — | — | — | — |
+| `icon_badge` | — | — | — | — | — | — | — |
+| `icon_row` | — | — | — | — | — | — | — |
+| `workspace_logo` | ✅ | — | — | — | — | — | — |
+| `workspace_logo_strip` | ✅ | — | — | — | — | — | — |
+| `workspace_logo_grid` | ✅ | — | — | — | — | — | — |
+| `icon_feature_grid` | — | — | — | — | — | — | — |
+| `icon_checklist` | — | — | — | — | — | — | — |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 
