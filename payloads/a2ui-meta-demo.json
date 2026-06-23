@@ -56,14 +56,20 @@
                 {
                   "type": "dark_hero",
                   "heading": "Prompt → Schema → App",
-                  "subtext": "One Gemini prompt. The schema comes back. Paste it. Click Open. Done.",
-                  "badge": "< 60 seconds",
+                  "subtext": "Two clips. One prompt to Gemini. One paste into the renderer. Done.",
+                  "badge": "< 60 seconds end to end",
                   "align": "center"
                 },
                 {
-                  "type": "youtube",
-                  "url": "https://www.youtube.com/watch?v=REPLACE_WITH_YOUR_VIDEO_ID",
-                  "caption": "Screen recording: Gemini generates the schema · paste into renderer · click Open · app appears"
+                  "type": "video_pair",
+                  "left": {
+                    "url": "https://www.youtube.com/watch?v=STEP1_VIDEO_ID",
+                    "label": "① Prompt → Schema  —  ask Gemini, get JSON back"
+                  },
+                  "right": {
+                    "url": "https://www.youtube.com/watch?v=STEP2_VIDEO_ID",
+                    "label": "② Schema → App  —  paste, click Open, app appears"
+                  }
                 }
               ]
             }

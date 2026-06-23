@@ -836,23 +836,34 @@ _RENDERERS['diagram'] = function(b) {
 };
 
 _RENDERERS['video_pair'] = function(b) {
-  var videos = b.videos || [];
-  var parts = [];
-  var limit = Math.min(videos.length, 2);
-  for (var i = 0; i < limit; i++) {
-    var v = videos[i];
-    var vid = v.video_id || v.id || '';
-    var url = v.url || (vid ? 'https://www.youtube.com/watch?v=' + vid : '#');
-    var label = _esc(v.label || v.title || 'Watch video');
-    parts.push(
-      '<div style="flex:1;min-width:0">' +
-      '<div class="asw-degraded-card" style="height:100%">' +
-      '<div class="asw-degraded-title">📹 ' + label + '</div>' +
-      '<a href="' + _esc(url) + '" class="asw-btn asw-btn-ghost" style="margin-top:6px;" target="_top">Watch on YouTube →</a>' +
-      '</div></div>'
-    );
+  // Schema format: { left: {url, label}, right: {url, label} }
+  // Legacy format: { videos: [{url, label}] }
+  var sides = b.left && b.right
+    ? [b.left, b.right]
+    : (b.videos || []).slice(0, 2);
+
+  function _ytEmbed(v) {
+    var raw = v.url || '';
+    var m = raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+    var vid = m ? m[1] : '';
+    var label = v.label || v.title || '';
+    var labelHtml = label
+      ? '<p style="margin:6px 0 0;font-size:0.78rem;font-weight:600;color:var(--text);text-align:center">' + _esc(label) + '</p>'
+      : '';
+    if (!vid) return '<div style="flex:1;min-width:0">' +
+      '<div style="background:var(--surface2,#1e1e2e);border-radius:10px;padding:24px;text-align:center;color:var(--muted)">No video URL</div>' +
+      labelHtml + '</div>';
+    var src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&playsinline=1';
+    return '<div style="flex:1;min-width:0">' +
+      '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px">' +
+      '<iframe src="' + src + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" ' +
+      'allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
+      '</div>' + labelHtml + '</div>';
   }
-  return '<div style="display:flex;gap:12px;flex-wrap:wrap">' + parts.join('') + '</div>';
+
+  return '<div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0">' +
+    sides.map(_ytEmbed).join('') +
+    '</div>';
 };
 
 _RENDERERS['live_demo_embed'] = function(b) {
