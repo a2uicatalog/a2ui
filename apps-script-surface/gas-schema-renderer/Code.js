@@ -63,6 +63,8 @@ function doPost(e) {
 
 function _renderFromParam(encoded, from) {
   try {
+    // Normalise to web-safe base64 in case client sent standard base64 (+ and /)
+    encoded = encoded.replace(/\+/g, '-').replace(/\//g, '_');
     // Restore stripped padding
     var padded = encoded;
     while (padded.length % 4 !== 0) padded += '=';
