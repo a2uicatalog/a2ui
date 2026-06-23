@@ -235,7 +235,7 @@
 </div>
 
 <script>
-  var BASE_URL = window.location.href.split('?')[0].split('#')[0];
+  var BASE_URL = '<?= webAppUrl ?>';
   var URL_LIMIT = 6000; // chars — stay well under GAS query string limit
 
   function generate() {
