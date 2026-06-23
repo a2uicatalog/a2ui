@@ -26,16 +26,17 @@
       "speed": 22,
       "gap": 32,
       "pause_on_hover": true,
+      "color_icons": true,
       "items": [
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/gmail_512dp.png", "label": "Gmail" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/drive_512dp.png", "label": "Drive" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/docs_512dp.png", "label": "Docs" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/sheets_512dp.png", "label": "Sheets" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/slides_512dp.png", "label": "Slides" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/meet_512dp.png", "label": "Meet" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/calendar_512dp.png", "label": "Calendar" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/forms_512dp.png", "label": "Forms" },
-        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/chat_512dp.png", "label": "Chat" }
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/gmail_2020q4_512dp.png", "label": "Gmail" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/drive_2020q4_512dp.png", "label": "Drive" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/docs_2020q4_512dp.png", "label": "Docs" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/sheets_2020q4_512dp.png", "label": "Sheets" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/slides_2020q4_512dp.png", "label": "Slides" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/meet_2020q4_512dp.png", "label": "Meet" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/calendar_2020q4_512dp.png", "label": "Calendar" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/forms_2020q4_512dp.png", "label": "Forms" },
+        { "image_url": "https://ssl.gstatic.com/images/branding/product/2x/chat_2020q4_512dp.png", "label": "Chat" }
       ]
     },
     {

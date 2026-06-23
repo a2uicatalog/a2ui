@@ -121,7 +121,10 @@ _RENDERERS['marquee'] = function(b) {
   function renderItem(item) {
     if (typeof item === 'string') return '<span style="font-size:0.875rem;color:var(--text,#374151);">' + _esc(item) + '</span>';
     var inner = '';
-    if (item.image_url) inner += '<img src="' + _esc(item.image_url) + '" alt="' + _esc(item.label||'') + '" style="height:28px;object-fit:contain;opacity:0.6;filter:grayscale(1);">';
+    if (item.image_url) {
+      var imgStyle = 'height:32px;object-fit:contain;' + (b.color_icons ? '' : 'opacity:0.7;filter:grayscale(1);');
+      inner += '<img src="' + _esc(item.image_url) + '" alt="' + _esc(item.label||'') + '" style="' + imgStyle + '">';
+    }
     if (item.icon)      inner += '<span style="font-size:1.1rem;">' + _esc(item.icon) + '</span>';
     if (item.text || item.label) inner += '<span style="font-size:0.875rem;color:var(--text,#374151);white-space:nowrap;">' + _esc(item.text || item.label) + '</span>';
     return item.url
