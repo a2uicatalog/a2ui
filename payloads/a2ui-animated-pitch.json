@@ -24,19 +24,13 @@
       "type": "marquee",
       "title": "Renders across Google Workspace",
       "speed": 22,
-      "gap": 32,
+      "gap": 48,
       "pause_on_hover": true,
       "color_icons": true,
       "items": [
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Gmail/logo_gmail_2026q2_color_2x_web_96dp.png", "label": "Gmail" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Drive/logo_drive_2026q2_color_2x_web_96dp.png", "label": "Drive" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Docs/logo_docs_2026q2_color_2x_web_96dp.png", "label": "Docs" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Sheets/logo_sheets_2026q2_color_2x_web_96dp.png", "label": "Sheets" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Slides/logo_slides_2026q2_color_2x_web_96dp.png", "label": "Slides" },
         { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Meet/logo_meet_2026q2_color_2x_web_96dp.png", "label": "Meet" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Calendar/logo_calendar_2026q2_color_2x_web_96dp.png", "label": "Calendar" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Forms/logo_forms_2026q2_color_2x_web_96dp.png", "label": "Forms" },
-        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Chat/logo_chat_2026q2_color_2x_web_96dp.png", "label": "Chat" }
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Chat/logo_chat_2026q2_color_2x_web_96dp.png", "label": "Chat" },
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Apps%20Script/logo_apps_script_192px.png", "label": "Apps Script" }
       ]
     },
     {
