@@ -8297,14 +8297,6 @@ blocks:
       text: 'string (alias: label, title)'
       color: string (optional, hex background)
     source: *id007
-  - type: confetti_burst
-    description: Auto-firing confetti animation over a dark achievement card
-    compact_description: auto-fire confetti achievement card
-    surfaces:
-      works_on: *id006
-    fields:
-      label: 'string (alias: text, title, default "Achievement Unlocked!")'
-    source: *id007
   - type: confetti_trigger
     description: Button that triggers confetti explosion when clicked
     compact_description: click-to-trigger confetti button

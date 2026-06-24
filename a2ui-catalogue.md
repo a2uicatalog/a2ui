@@ -362,7 +362,6 @@
 | `glitch_text` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `neon_glow` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `magnetic_button` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
-| `confetti_burst` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `confetti_trigger` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `floating_particles` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
 | `parallax_section` | — | — | — | — | — | ✅ | [a2ui-catalogue](https://github.com/curtiskrygier/a2ui-catalogue) |
