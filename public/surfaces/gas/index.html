@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Apps Script (GAS) Atoms — A2UI Catalog</title>
+  <meta name="description" content="28 A2UI atoms for the Apps Script (GAS) surface.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+  <style>
+  .surface-atom{border-bottom:1px solid var(--border);padding:28px 0}
+  .surface-atom:last-child{border-bottom:none}
+  .sa-name{font-size:1.1rem;font-weight:700;color:var(--text);text-decoration:none}
+  .sa-name:hover{color:var(--cyan)}
+  .sa-desc{font-size:14px;color:var(--muted);margin:4px 0 12px}
+  .preview-box{background:#fff;border-radius:8px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+  .preview-box *{max-width:100%}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> / surfaces / gas
+  </nav>
+
+  <h1>Apps Script (GAS)</h1>
+  <p class="desc">28 atoms available on this surface</p>
+
+  
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/palette">Palette</a>
+    <p class="sa-desc">Sets page-level CSS custom properties (accent colours, block gap) for consistent theming across all atoms. Use as the first block in any payload.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkjMSS0pSVXSUVBKTE5OzSsBCUbmlxYpQLlAiaSc_OTs-PTEArgcWEQBJFIbCwACsyyiTQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/print_button">Print Button</a>
+    <p class="sa-desc">A button that triggers window.print() to print or save the current page as PDF.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijKzCuJTyotKcnPU9JRUMpJTErNAUoYANmJOZnpeSBFkfmlRQoQHlC4OLMqFS4K5oDUJien5pUgFEO4QInM5HyQGSVFpam1sQCIX-HeeQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/drive_image">Drive Image</a>
+    <p class="sa-desc">Embeds a Google Drive image by file ID or share URL, converting it to the correct export URL that works inside GAS iframes.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA32MwQqDMBBEfyXsuZi7f1KKSEiWupCYsN1UpfjvZpF69Dbz3jCvH8hWEHoDgemLIyX3RngYqByVTiLl01uLq0slYudzUkvhRrooap-5stHckHdFKM8X_vemONc5oP4JV2xgoSDTtTzbPhxD5bDNqgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/maps_embed">Maps Embed</a>
+    <p class="sa-desc">Embeds a Google Maps location search in an iframe. Suitable for event location, office address, field ops context.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyk0sKI5PzU1KTVHSUVAqBAlF5pcWKRSCuBmpmekZJXAxKBcoUZWfnwsXBnNqYwG6AYTwVQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/sheet_form">Sheet Form</a>
+    <p class="sa-desc">A form that submits data to a named Google Sheet tab via google.script.run. Requires the GAS project to be bound to a Spreadsheet.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKs5ITS2JT8svylXSgfJAwpH5pUUKEB5IuDQpN7MkPicxKTUHIQsWVIAIAhUlJien5iE0Q7m1sQBPYlrwbQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/reveal">Reveal</a>
+    <p class="sa-desc">Wraps child blocks with entrance animations triggered on load. animation choices: fade_up, fade_in, slide_left, slide_right, scale_in, stagger.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkotS03MUdJRUErMy8xNLMnMzwMJR-aXFikgRIDSKaVFqLJwAZBkak5iJUIGzAMKF5ckpqenFsWjSkNFEcqScvKTs4uB8tGxtbEA8ezJY5wAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/skeleton">Skeleton</a>
+    <p class="sa-desc">CSS shimmer loading placeholder. type choices: text, card, avatar_row, image, list, table.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslKIjtVRUCrKLy8Gsg2AzOT8HBgzIzUzPaMEyFGKzC8tUoBya2MBf8BdxD0AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/marquee">Marquee</a>
+    <p class="sa-desc">Infinite horizontal scrolling ticker. Items can be text strings, logos (image_url), or icon+label chips.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA03OQQ6DMAwEwK9YPvOC_qRCCKXNCnIgTp2kEkL9e01RAzfv7B7cb1zWBL4RL05fFeCOOBQs2awfLOQE-H1wl6p0JOPJpYb7beSD4lmCxFacYnVyNWOUOM7yhrbNj0kiHWzDx9RKOw1UavSXJ_75M3wBuPIRVMAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pulse_dot">Pulse Dot</a>
+    <p class="sa-desc">Pulsing status or attention indicator dot. Inline or block display.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijNKU6NT8kvUdJRUErOz8kvAolG5pcWKUB4QOHizKpUuCiYAxIsSE1NQYiCeUDhzLyczDyEaii3NhYA1MakrHMAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/loading_dots">Loading Dots</a>
+    <p class="sa-desc">Three-dot pulsing loader. Use during async content load or as a status indicator.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyslPTMnMS49PyS8pVtJRUErOz8kvAklE5pcWKUB4QOHizKpUuCiYAxRMzMlMz4OLQni1sQBzbyGTXQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/progress_ring">Progress Ring</a>
+    <p class="sa-desc">Animated SVG circular progress gauge. Animates from 0 to value on load.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA1WOUQqAIBAFryL73Qm6SUSIlJQUraxrUdHdsxWSPmfmfbz2Aj68hVqBJxzJhqDJrSNUCjazRCkNRlKZkg7uLFbglUw4W727gacSRaos06jHBemrmZJmMv2s_1FcmYQJd_3_86pyKq6OvyRwdw_P8ero3AAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/confetti_burst">Confetti Burst</a>
+    <p class="sa-desc">JS confetti celebration effect. trigger load fires immediately, trigger button shows a clickable button.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAz2MwQqAIBBEf0X27KFzfxIRYbaJIBrbeojo31utvM2bx8x4AZ87Qq_Aprghs5-XTAeDVsDknUMqckiZ1M-iglkwNPGSLh85stRdzSHRITBOQmsmwz7FtmmFSGMt1t2rPrynBzWICHGeAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/ripple_button">Ripple Button</a>
+    <p class="sa-desc">CTA button with a CSS ripple click effect. Optionally links to a URL.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0XMUQqAIBBF0a0M890K2klESNZUwmBiI1HR3tMM-7znwWsvlMMR1oDeOMekdBBZLVaA3GvitDRr8JArcj8MZKX4l3HYzEmF34g4BWa1m1GWMiWCTOmOzWz_t7fu7gGH7JzumAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/wave_divider">Wave Divider</a>
+    <p class="sa-desc">Animated SVG wave as a decorative section separator.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAz3JSwqAMAwA0auUrD2BNxERCW3UgNpSa0XEuxt_Wc6b-oC0B4LSwIaZWseZHUUoDFg_-niPyq_RvCU8EPdDUv9SxhKInPpbwj6g5bTr-FtWN3JQf0IQZ54wkfrfZ3MBoHlgMKwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/floating_badge">Floating Badge</a>
+    <p class="sa-desc">An emoji or icon that bobs up and down continuously. Great for CTAs and achievement moments.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSsvJTyzJzEuPT0pMSU9V0lFQykzOzwPJROaXFimAOUDB4syqVLggmAMSLEhNTUGIgnkg4YzElPxyhDiEC5RIzMlMRxgN4dXGAgBXm2pnjQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/shimmer_text">Shimmer Text</a>
+    <p class="sa-desc">Headline text with an animated shimmer/gloss sweep across a gradient. Use for hero taglines.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0XNWwqAIBBA0a3IfLeCdhIRITTpQKaovWnvqZV-6T0yY3uBPwxCzcBJUgpt73H3UDFIZ_BGL5b96OjEjCkCjlarjCniuC7DOsJKPEu8x20GcSjrUgXekIQsf38ZHvhEYs7-1t09Bi11PcQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/number_flip">Number Flip</a>
+    <p class="sa-desc">Slot-machine style digit reveal. Each digit flips in from above on load.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0WL0QqDMAxFf6Xk2Qef_ZMhInVLJZDZkpkxFf_ddpX2Leecm_6AdQsInYFF3xPK6JgCNAa-ljX5Nt5B0NHvho-6Cmwn5PT98ComU9rQjsX-IcqnZy_FZor6pWJX8kspRcRomeZaMp3DBdYUTxy2AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/spotlight_card">Spotlight Card</a>
+    <p class="sa-desc">A content card where a radial gradient spotlight follows the cursor. Child blocks or content field.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKi7IL8nJTM8oiU9OLEpR0lFQSsrJT84uBspFxwJ5yfl5Jal5JSClkfmlRQowPlAqMTkZImNQGwsA-Y3VnlIAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/animated_border">Animated Border</a>
+    <p class="sa-desc">Card or section with a rotating conic gradient border. Child blocks or content inside.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAz2KUQ6CQAwFr7LptyfwJoYQU2gxG2W76RYTQry7RaR_b2Zet4GtleGaAEue0ZjugyixwiXB8JLx2Tx2vdMoxbjY_r3JoulkT5PKHP4HLk1C-XTxzhhm365aZaaQB7muSJTLI8LJnhQpLy3KHz_9FypAFIrKAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/countdown_ring">Countdown Ring</a>
+    <p class="sa-desc">Circular SVG countdown that depletes as seconds tick down.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs4vzStJyS_Piy_KzEtX0lFQSiktSizJzM-LL05NBqmIzC8tUoAJKoAEgYqKM6tS4ZJgjg7IrJz8IrgohAcUzklMSs2BC0N4tbEAz8pWYIQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/google_icon">Google Icon</a>
+    <p class="sa-desc">A single Material Symbol icon from Google Fonts CDN. Browse 2500+ icon names at fonts.google.com/icons.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA03MUQqAIBBF0a3IfLeCdhIREWU2MDlRRli09yYT7fOeB6--wPlFQ6nAMBvSLfZsoVBguzlwxfuqQghueGYMIdgz8Zr0K-ERifSQPKYMh0YzuTTEfN-dp999KGG0hDZ7zLt5ABhWB3m8AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_badge">Icon Badge</a>
+    <p class="sa-desc">Material Symbol icon inside a coloured circular badge. Good for stat rows and feature lists.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0WKUQqAIBAFryL77Qm6SUSEtSYLpmL1UdHd28z0783M6y7YjqChEUCTd8Oo0GiQApxakm39HkUCmS8rnbW8RiTDeTTF82QxeetjcR-xDgqRXD3_zCkqpH0tJSOHmazVWELGu38AcapCwcEAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_row">Icon Row</a>
+    <p class="sa-desc">Horizontal strip of Material Symbol icon + label pairs. Good for feature/capability lists.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQykzOz4svyi9X0gGyS1Jzi4GC0bE6UInizCqwqsj80iIFkIgCWAQonZyfk18El4LwgMJpmTk5qSlwcSgXKFFcUpmDMArCAwqnJxbABUHs2lgAXYkY55wAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/workspace_logo">Workspace Logo</a>
+    <p class="sa-desc">A single Google Workspace product logo from Google's official CDN (fonts.gstatic.com). Falls back to coloured letter badge for unknown apps.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKs8vyi4uSExOjc_JT89X0lFQSiwoAElE5pcWKYDYQKHizKpUuBiYAxTMSUxKzYGLQnhA4cy8nMw8hGootzYWAEa9MkF0AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/workspace_logo_strip">Workspace Logo Strip</a>
+    <p class="sa-desc">Horizontal strip of Google Workspace product logos. Greyscale by default, restores colour on hover.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0WNUQqAIBBEryL73Qm6SUiIiYgkubhGWHT3VgP9e_NmYOQDuaCFWcAV006ojVUhuqgoJ48wCdCIxL1cmcnfbbvEM4kWWDqN3VWuKtlCRocxHobrzXXPWD-Cd0d3f3rXD_0cRvWdAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/workspace_logo_grid">Workspace Logo Grid</a>
+    <p class="sa-desc">Grid of Google Workspace product logos with labels. Good for "Integrations" or "Works with" sections.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA03MUQqAIAwG4KvInjtBNwkRMROThIkrxKK7pxLZ2_5v_8Yv2HMwMDJIGDcKShvp0aK00S0wMFAhUFlzUWZyZ6tOeETWQkGNnj5soaCNJpNWvte71EcrJunVbH6n1dhrt3gAIZMkY5kAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_feature_grid">Icon Feature Grid</a>
+    <p class="sa-desc">Feature grid using Material Symbol icons — better than emoji for Workspace UI contexts.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA0XNQQqAIBAF0KsMs-4E3SQiQnQKwTJ0XFh095wSW_7_hvnjhZwPwh7Qar_PCylOgeY1WIMdoPYuCg4-BXhDVy-jPamJNPA2hRfrHJlmNRZQWtPODWosEDm7_9mXZIdpk_VxuqcHse5OjakAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_checklist">Icon Checklist</a>
+    <p class="sa-desc">Checklist where each item has a Material Symbol icon (not just a check mark). Good for capability or requirements lists.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAz2MUQqAIBBEr7LstyfoJhEhsq4kmUZuHxXdPQ3xc96bmelBuXbGAdBTipoWpjX4LKgALTtzBtHV1MaYzgMahB-qNsv-5t6oBH5StPMhsO2uxSIMEUfposV6KLzlwqf5nT9jq9OZnwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+
+  <footer>
+    <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
+  </footer>
+</body>
+</html>

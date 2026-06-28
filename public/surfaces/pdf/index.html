@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>PDF Atoms — A2UI Catalog</title>
+  <meta name="description" content="97 A2UI atoms for the PDF surface.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+  <style>
+  .surface-atom{border-bottom:1px solid var(--border);padding:28px 0}
+  .surface-atom:last-child{border-bottom:none}
+  .sa-name{font-size:1.1rem;font-weight:700;color:var(--text);text-decoration:none}
+  .sa-name:hover{color:var(--cyan)}
+  .sa-desc{font-size:14px;color:var(--muted);margin:4px 0 12px}
+  .preview-box{background:#fff;border-radius:8px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+  .preview-box *{max-width:100%}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> / surfaces / pdf
+  </nav>
+
+  <h1>PDF</h1>
+  <p class="desc">97 atoms available on this surface</p>
+
+  
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/intro">Intro</a>
+    <p class="sa-desc">series link or transparency note at article top</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/body">Body</a>
+    <p class="sa-desc">prose paragraph block</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><p>This is a body paragraph. It supports <strong>bold</strong>, <em>italic</em>, and <code>inline code</code> via lightweight markdown.</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/heading">Heading</a>
+    <p class="sa-desc">H2 section title</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><h2>Section Heading</h2></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/subheading">Subheading</a>
+    <p class="sa-desc">H3 subsection title</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><h3>Subheading text</h3></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/quote">Quote</a>
+    <p class="sa-desc">pull quote or blockquote with attribution</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><blockquote><p>The vocabulary IS the discovery layer.</p><footer>— A2UI</footer></blockquote></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/code">Code</a>
+    <p class="sa-desc">syntax-highlighted fenced code block</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><pre><code class="language-json">{
+  "type": "stat_card",
+  "value": "1B+",
+  "label": "daily executions"
+}</code></pre></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pipeline">Pipeline</a>
+    <p class="sa-desc">left-to-right step flow diagram</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;"><code>schema.yaml</code> ──► <code>generate.py</code> ──► <code>public/</code> ──► <code>Cloudflare Edge</code></p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/bullet_list">Bullet List</a>
+    <p class="sa-desc">unordered list with optional bold label per item</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><ul><li>First item in the list</li><li><strong>Labelled item</strong> with supporting description</li><li>Third item</li></ul></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/divider">Divider</a>
+    <p class="sa-desc">horizontal visual section break</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:2rem 0;"/></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/image">Image</a>
+    <p class="sa-desc">single image with optional caption</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1.2rem 0;text-align:center;"><img src="Example url" alt="Example alt" style="width:100%;height:auto;border-radius:8px;display:block;margin:0 auto;"/></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/image_pair">Image Pair</a>
+    <p class="sa-desc">two images side by side with captions</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/diagram">Diagram</a>
+    <p class="sa-desc">D2 or SVG architecture diagram</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1.2rem 0;text-align:center;"><img src="Example url" alt="diagram" style="max-width:100%;height:auto;border-radius:8px;"/></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/repo_links">Repo Links</a>
+    <p class="sa-desc">styled GitHub repo link list</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/closing">Closing</a>
+    <p class="sa-desc">article closing paragraph with hashtags</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><p>Example text</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/callout">Callout</a>
+    <p class="sa-desc">coloured tip info warning or danger highlight box</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="background:#e8f0fe;border-left:4px solid #1a73e8;border-radius:0 8px 8px 0;padding:16px 20px;margin:1.5rem 0;"><strong style="color:#1a73e8;">ℹ️ </strong><span style="color:#3c4043;line-height:1.6;"></span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/steps">Steps</a>
+    <p class="sa-desc">numbered step-by-step instruction sequence</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><ol style="list-style:none;padding:0;margin:1.5rem 0;"></ol></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/table">Table</a>
+    <p class="sa-desc">data table with header row on mobile</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="overflow-x:auto;margin:1.5rem 0;"><table style="border-collapse:collapse;width:100%;font-size:0.9em;"><caption style="font-size:0.85rem;opacity:0.6;margin-bottom:8px;text-align:left;">Example fields</caption><thead><tr><th style="background:#f1f3f4;border:1px solid #dadce0;padding:10px 14px;text-align:left;font-weight:600;white-space:nowrap;">Field</th><th style="background:#f1f3f4;border:1px solid #dadce0;padding:10px 14px;text-align:left;font-weight:600;white-space:nowrap;">Type</th><th style="background:#f1f3f4;border:1px solid #dadce0;padding:10px 14px;text-align:left;font-weight:600;white-space:nowrap;">Required</th></tr></thead><tbody><tr><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;">value</td><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;">string</td><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;">yes</td></tr><tr><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;background:#f8f9fa;">label</td><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;background:#f8f9fa;">string</td><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;background:#f8f9fa;">yes</td></tr><tr><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;">trend</td><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;">string</td><td style="border:1px solid #dadce0;padding:9px 14px;vertical-align:top;line-height:1.5;">no</td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/key_value">Key Value</a>
+    <p class="sa-desc">label and value pairs in a compact grid</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="overflow-x:auto;margin:1.2rem 0;"><table style="border-collapse:collapse;width:100%;background:#fafafa;border-radius:8px;overflow:hidden;"><tbody></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/api_reference">Api Reference</a>
+    <p class="sa-desc">API endpoint method parameters and response docs returns, example</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin:1.5rem 0;"><div style="background:#e8f0fe;padding:14px 18px;border-bottom:1px solid #e0e0e0;"><code style="font-size:1rem;font-weight:700;color:#1a73e8;">Example name</code><span style="font-size:0.78rem;color:#5f6368;margin-left:10px;text-transform:uppercase;letter-spacing:0.05em;">function</span></div><div style="padding:14px 18px;"><p style="color:#3c4043;margin-bottom:8px;">Example description</p></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/timeline">Timeline</a>
+    <p class="sa-desc">chronological event timeline</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1.5rem 0;padding:20px 20px 0;background:#fafafa;border-radius:10px;border:1px solid #e0e0e0;"><div style="display:flex;gap:0;position:relative;"><div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;"><div style="width:14px;height:14px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 2px #1a73e8;flex:0 0 14px;margin-top:3px;z-index:1;"></div><div style="width:2px;background:#e0e0e0;flex:1;min-height:24px;margin-top:4px;"></div></div><div style="padding-bottom:28px;padding-left:12px;flex:1;min-width:0;"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;"><span style="font-size:0.78rem;font-weight:600;color:#1a73e8;font-family:monospace;letter-spacing:0.04em;">2024</span></div><p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;"></p><p style="color:#5f6368;font-size:0.88rem;line-height:1.6;margin:0;"></p></div></div><div style="display:flex;gap:0;position:relative;"><div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;"><div style="width:14px;height:14px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 2px #1a73e8;flex:0 0 14px;margin-top:3px;z-index:1;"></div><div style="width:2px;background:#e0e0e0;flex:1;min-height:24px;margin-top:4px;"></div></div><div style="padding-bottom:28px;padding-left:12px;flex:1;min-width:0;"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;"><span style="font-size:0.78rem;font-weight:600;color:#1a73e8;font-family:monospace;letter-spacing:0.04em;">2025</span></div><p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;"></p><p style="color:#5f6368;font-size:0.88rem;line-height:1.6;margin:0;"></p></div></div><div style="display:flex;gap:0;position:relative;"><div style="display:flex;flex-direction:column;align-items:center;width:40px;flex:0 0 40px;"><div style="width:14px;height:14px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 2px #1a73e8;flex:0 0 14px;margin-top:3px;z-index:1;"></div></div><div style="padding-bottom:28px;padding-left:12px;flex:1;min-width:0;"><div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;"><span style="font-size:0.78rem;font-weight:600;color:#1a73e8;font-family:monospace;letter-spacing:0.04em;">2026</span></div><p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;"></p><p style="color:#5f6368;font-size:0.88rem;line-height:1.6;margin:0;"></p></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/metric_delta">Metric Delta</a>
+    <p class="sa-desc">big number metric with directional change indicator or percentage</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyk0tKcpMjk9JzSlJVNJRUMpJTErNAUlE5pcWKUB4QOHk0qKi1LyS-LLEnNJUuDRUVAEiClQGNgZNEVgMXQnMeiQVYKHaWADqi5ImnAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/trend_indicator">Trend Indicator</a>
+    <p class="sa-desc">compact inline value with mini trend bar the direction of a</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKilKzUuJz8xLyUxOLMkvUtKBCaVkFqUml2Tm54FUReaXFimAxRUQ4kClOYlJqTlwBRBebSwAJtb5Z18AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/anchor_list">Anchor List</a>
+    <p class="sa-desc">in-page anchor navigation links document or to external URLs.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSsxLzsgvis_JLC5Rqo0FAHtoZ6UZAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/faq_accordion">Faq Accordion</a>
+    <p class="sa-desc">collapsible FAQ question and answer list the question is clicked.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSkssjE9MTs4vSsnMz1PSUVDKLEnNLQbKRMfWxgIAkz2-EigAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/glossary_term">Glossary Term</a>
+    <p class="sa-desc">definition term with explanation more details.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs_JLy5OLKqML0ktylXSUVAC00CJyPzSIgWYYEpqWmZeZklmfh5cCkmoNhYABdklG1EAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/footnote">Footnote</a>
+    <p class="sa-desc">numbered footnote reference at the bottom of a section or page.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSsvPL8nLL0lV0lFQyivNTUotAooaADklqRUlIAWR-aVFCmAOUDAzBS4EZNbGAgA1wCl-SQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/blockquote_with_avatar">Blockquote With Avatar</a>
+    <p class="sa-desc">testimonial quote with avatar and attribution</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSsrJT84uLM0vSY0vzyzJiE8sSyxJLFLSUVACC4KUROaXFilAeEDhxNKSjPyi-LzEXIQkREwBLFYbCwAsmCzyXgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pull_stat">Pull Stat</a>
+    <p class="sa-desc">large display number pulled from prose for emphasis descriptive label.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijNyYkvLkksUdJRUCpLzCkFiRoA2TmJSak5IBWR-aVFChBebSwAS1dg7DoAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/audio_link">Audio Link</a>
+    <p class="sa-desc">styled link to an audio file</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSixNycyPz8nMy1bSgfFKi3JAUpH5pUUKYBEFkAhQOicxKRUhBeEBhTOT8_PiYQaCpUAiCmCR2lgAToPppW0AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/document_link">Document Link</a>
+    <p class="sa-desc">styled link to a downloadable document a document icon.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSslPLs1NzSuJz8nMy1bSQRIoLcoBKYjMLy1SgAkqgASBinISk1IRshAeUDgzOT8vHmYyWAokogAWqY0FAPt6dAB2AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/image_with_caption">Image With Caption</a>
+    <p class="sa-desc">image with styled caption below</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQysxNTE-NL88syYhPTiwoyczPU9KBiZYW5YCUROaXFimARRRAIkDpxJyS-JLUihK4LFBAASwAlIQZA5NDMjYnMy8bxVSQANjQ2lgAmGpuZJQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/feature_matrix">Feature Matrix</a>
+    <p class="sa-desc">features versus plans comparison matrix</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSktNLCktSo3PTSwpyqxQ0lFQKijKTylNLonPS8xNLQYqiY7VgSuD8GtjARvZHF1BAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pricing_tier_card">Pricing Tier Card</a>
+    <p class="sa-desc">single pricing plan card with features list an optional call to action.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA3WMQQrDMAwEv2J8zgv6kxKCUB01Mbh2qsiHUPr3yjYkDaUHHTSzu_3LyraQvRi7sHc-TiCeGBzyaDuFASNEfNTENWU2hZhKutb5UvVT7DIzRbftZgcq70zPfLIHKZpQMtOqth_KFoYAkgCd-BQh4I3CsavSSDJNmiZ_S5n_VorSgl9h9tMc9IRGDQtneg8fMjBcrh8BAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pricing_tier_group">Pricing Tier Group</a>
+    <p class="sa-desc">side-by-side pricing plan comparison different subscription plans.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijKTM7MS48vyUwtik8vyi8tUNJRUALxioHS0bG1sQDVEo8dLQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pros_cons_list">Pros Cons List</a>
+    <p class="sa-desc">two-column pros and cons comparison a single subject.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijKL45Pzs8rjs_JLC5R0lFQKi5NykpNLgFJRuaXFinA-DoQxUDx6FggG6QHzK6NBQD4VMTUTwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/side_by_side_spec">Side By Side Spec</a>
+    <p class="sa-desc">two items compared spec by spec and values side-by-side.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKs5MSY1PqowH08UFqclKOgpKmSWpufGJ8XmJuWA1kfmlRQogMYVEBbAYTEkSFiVJcCUg04qBktGxtbEAoD6BpXIAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/product_spec_table">Product Spec Table</a>
+    <p class="sa-desc">product specifications in a clean table a single product.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijKTylNLokvLkhNji9JTMpJVdJBiOYl5oJVReaXFilABRXAgkBFIC3FQNno2NpYAPjPeh9SAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/comparison_grid">Comparison Grid</a>
+    <p class="sa-desc">multi-item attribute comparison grid often using icons or checkmarks to indicate presence.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs7PLUgsyizOz4tPL8pMUdJRUCooyk8pTS4pBkpHxwL5aamJJaVFqRB-bSwAsT1fVD0AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/rating_comparison">Rating Comparison</a>
+    <p class="sa-desc">multiple items rated across dimensions scores.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkosycxLj0_Ozy1ILMoszs9T0lFQyixJzS0GykbH1sYCACzQUwUsAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/capability_checklist">Capability Checklist</a>
+    <p class="sa-desc">feature capability tick list per tier capability using checkmarks</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSk4sSEzKzMksqYxPzkhNzs7JLC5R0kERz0vMTS0Gqo2OBYpnlqTmQji1sQAu1Y1FRwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/testimonial_card">Testimonial Card</a>
+    <p class="sa-desc">customer testimonial with photo name and quote an optional avatar.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA2XKQQqAIBSE4auI6xatu0lEyKOkBNN4jVFEd08TCmo5_3zNIbHPWlZCQi8wk3eGrOqIe1mktiF9tQ8s7hEjBYyelaNJP19u4m4vgYH9mRxfRCuBWAW2X5kfkZ7ImWDcEE15theYzZU5twAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/star_rating_display">Star Rating Display</a>
+    <p class="sa-desc">read-only star rating with score and count total review count.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKi5JLIovSizJzEuPT8ksLshJrFTSUVCCiAAVGAA5uYkV8SgCRallmanl8cn5pXklIKHaWADpLVxtUgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/avatar_group">Avatar Group</a>
+    <p class="sa-desc">stacked user avatar group with overflow count or community.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSixLLEksik8vyi8tUNKB8YuBUtGxQG5JfkliTnxyfmleCVDIACiSk5iUmgPSGZlfWqQA4dXGAgBloFVeUgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/contributor_list">Contributor List</a>
+    <p class="sa-desc">list of contributors with avatar and role community, with their</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs7PKynKTCotyS-Kz8ksLlHSQRErBqqJjgWKlWSW5IA1ROaXFilAeLWxAHuMXbtJAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/customer_logo_grid">Customer Logo Grid</a>
+    <p class="sa-desc">grid of customer or partner logos</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSi4tLsnPTS2Kz8lPz49PL8pMUdJRUAJxioHS0bFATklmSQ5YbWR-aZEChFcbCwCZy_e-RAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/social_proof_banner">Social Proof Banner</a>
+    <p class="sa-desc">social proof strip with stats and logos achievement.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA13KwQmAMAxA0VVCzk7gJiJSYqlQjE2JVhBxd217EL2-__sTtyM6bAFXsZ7YRBWZzEghOMUGcHGbemt24lS2TpJCRaj4Tkyj4_9U8Zm8lWCSvkMGyPBE9mH-xAwlXsMNALpcyKUAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/media_mention_card">Media Mention Card</a>
+    <p class="sa-desc">press or media mention with logo and quote</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA22MSwrDMAxEryK07glykxKKUW2RCGQ7GHtRSu6exORPljNv3rR_zL-BsQH07ISM55AlBmMpOXwBDuWrYql2gXxdvmNJcAJQwW2ssYumJH0UFggLnKWeyamE43kvZkgpi1W-HK3d5jvKh1vD-JkApLdj_tcAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/expert_endorsement">Expert Endorsement</a>
+    <p class="sa-desc">expert quote with credentials and photo name, and credentials.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA2WLWwqDQAxFtxLy7Qq6kyIigQYZGJNpmik-cO-iAw61n_ecc9sVfU6MD0CeEpv3LC-1D48sjg3gO6uf-qnZoKzmioXGKguDk9XEg8e_psAaqQ0kYSEPKvf2x9ULfcnJ-mzxfigGDrN1O9uB35rhAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/review_callout">Review Callout</a>
+    <p class="sa-desc">highlighted customer review excerpt by a star rating.</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkoty0wtj09OzMnJLy1R0oGLlKRWlIAUROaXFilAxBTAYkAliaUlGflF8XmJualwJRAxBbAYyJTEksy8dKCsAZCTm1gRjyJQUJSfUppcgmoCVBBiRG0sAPWiVO6lAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/entity_list">Entity List</a>
+    <p class="sa-desc">named resource rows with avatar, status badge, and meta</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs0rySypjM_JLC5R0lFQyixJzS0GikfH1sYCACAJdvomAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/prompt_template">Prompt Template</a>
+    <p class="sa-desc">LLM prompt with highlighted {variable} slots and copy button</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijKzy0oiS9JzS3ISSxJVdJRUIKzgdKR-aVFCnCB2lgAftObLToAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/model_card">Model Card</a>
+    <p class="sa-desc">AI model spec card with context window, pricing, and capability badges</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQys1PSc2JT04sSlHSUVDKS8wFi0bmlxYpgDlAweTEgsSkzJzMkszUYqBkdGxtLAADo1MoQQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/conversation_snippet">Conversation Snippet</a>
+    <p class="sa-desc">user prompt and AI response as chat bubbles</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs7PK0stKk4syczPiy_OyywoSC1R0lFQKi1OLQLJR-aXFimAOUDBotTigvy84lS4BFygNhYAXrooZFQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/shortcut_legend">Shortcut Legend</a>
+    <p class="sa-desc">keyboard shortcut cheat-sheet grid with key combos and labels</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKs7ILypJLi2Jz0lNT81LUdJRUMosSc0tBspFx9bGAgBB8j4NKgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/rating_summary_bar">Rating Summary Bar</a>
+    <p class="sa-desc">star rating histogram with percentage bars per star level</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkosycxLjy8uzc1NLKqMT0osUtJRUEosSy1KTAcpMADySvJLEnOg7KSi1MTslPzyPCA_OrY2FgB8fBMtSwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/roadmap_card">Roadmap Card</a>
+    <p class="sa-desc">quarter-based product roadmap with status-tagged milestones</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKspPTMlNLIhPTixKUdJRUCpILcrMTykGSkXH1sYCANMOROwpAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/notification_stack">Notification Stack</a>
+    <p class="sa-desc">persistent notification inbox list with unread indicators</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyssvyUzLTE4syczPiy8uSUzOVtJRUMosSc0tBkqXFJWm1sYCAL0hyCwvAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tag_block">Tag Block</a>
+    <p class="sa-desc">horizontal wrap of neutral content chip labels</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKklMj0_KyU_OVtIBc4qBgtGxtbEATcYl0SMAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/markdown_block">Markdown Block</a>
+    <p class="sa-desc">GFM markdown string rendered to HTML inline</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyk0syk7JL8-LT8rJT85W0lFQSs7PK0nNKwFJRuaXFinA-LWxAFrJtdM3AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/chartjs_pie">Chartjs Pie</a>
+    <p class="sa-desc">multi-slice pie or donut SVG chart with legend</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs5ILCrJKo4vyExV0lFQSkksSQQKR8fWxgIAo5cmpiUAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/text_callout">Text Callout</a>
+    <p class="sa-desc">lightweight tinted inline tip or note block no icon</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkmtKIlPTszJyS8tUdJRUCpLLMpMzCsBSUXmlxYpwPhAqZLMkpxUuASEBxROSS1OLsosKMnMz4NLIovVxgIAJn8RuW8AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/source_citation">Source Citation</a>
+    <p class="sa-desc">numbered RAG source card with title excerpt and URL</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKs4vLUpOjU_OLEksyczPU9KBCRUDZQ1qYwGzf94mKwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/llm_comparison_table">Llm Comparison Table</a>
+    <p class="sa-desc">side-by-side multi-model output comparison table</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQysnJjU_Ozy1ILMoszs-LL0lMyklV0lFQys1PSc0pBqqIjq2NBQC6z2fwMAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/confidence_bar">Confidence Bar</a>
+    <p class="sa-desc">labelled probability bar with colour-coded confidence fill</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs7PS8tMSc1LTo1PSixS0lFQyklMSs0BSUXmlxYpQHhA4bLEnFKQDoPaWAAog5v6PwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/token_budget_meter">Token Budget Meter</a>
+    <p class="sa-desc">context window token usage meter with capacity warning colours</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKsnPTs2LTypNSU8tic9NLUktUtJRUCotTk0ByhrogBSUJOaA2LWxAD8olz83AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/product_thumbnail">Product Thumbnail</a>
+    <p class="sa-desc">product card with image, price, status badge, and tags</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKijKTylNLokvySjNTcpLzMxR0lFQKsksyQHLRuaXFilAeDogtZnJCGEIrzYWACGcxW5NAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/order_status_card">Order Status Card</a>
+    <p class="sa-desc">e-commerce order card with status badge and line item list</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyi9KSS2KLy5JLCktjk9OLEpR0oEJ5pXmJqUWgRRF5pcWKYAFFaCCQEUQPXBpKLc2FgBy-5plXQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/inventory_table">Inventory Table</a>
+    <p class="sa-desc">inventory table with SKU, stock levels, and low-stock row highlight</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyswrS80ryS-qjC9JTMpJVdIBCpWk5hYD5aJja2MBkJbhXCoAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/jira_ticket">Jira Ticket</a>
+    <p class="sa-desc">Jira issue card with type icon, status lozenge, priority, and assignee</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQysosSowvyUzOTi1R0lFQyk6tBIlG5pcWKYDYQKHi0tzcxCKEMIxfGwsATGZ11UcAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/sprint_board">Sprint Board</a>
+    <p class="sa-desc">kanban sprint board with named columns and compact issue cards</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKi4oyswriU_KTyxKUdJRUErOzynNzSsGSkXH1sYCAAFDXLopAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/lozenge">Lozenge</a>
+    <p class="sa-desc">Atlassian-semantic status pill with defined appearance variants</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQysmvSs1LT1XSUVAqSa0oAQlF5pcWKYA5tbEA0-9TpioAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/data_grid">Data Grid</a>
+    <p class="sa-desc">enterprise data grid with typed columns, row selection, and</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSkksSYxPL8pMUdJRUErOzynNzSsGihsAeUX55SBmdGxtLABTverTMQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tree_view">Tree View</a>
+    <p class="sa-desc">recursive hierarchical tree with expand/collapse per node</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKilKTY0vy0wtV9JRUMrLT0ktBopGx9bGAgA4Xt-IJAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/heatmap_calendar">Heatmap Calendar</a>
+    <p class="sa-desc">calendar month heatmap with date-value density colouring</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQykhNLMlNLIhPTsxJzUtJLFLSUVBKSSxJBMpFx9bGAgCwQBD_KgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/feature_grid">Feature Grid</a>
+    <p class="sa-desc">icon + title + description feature grid — Tailwind UI pattern</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSktNLCktSo1PL8pMUaqNBQBBH9EOGgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/skill_bars">Skill Bars</a>
+    <p class="sa-desc">labeled horizontal progress bars list — percent fill, per-bar color</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKs7OzMmJT0osKlbSgfKKgeLRsbWxACdedkgmAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_stat_row">Icon Stat Row</a>
+    <p class="sa-desc">icon + big number + label stat strip — more visual than metric_row</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQykzOz4svLkksiS_KL1fSUVACsYuBMtGxtbEA12Qh3SgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tag_cloud">Tag Cloud</a>
+    <p class="sa-desc">weighted tag cloud — variable size by weight, wrap layout</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKklMj0_OyS9NUdIBc4qBgtGxtbEARLTNiiMAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/step_progress">Step Progress</a>
+    <p class="sa-desc">horizontal step progress — numbered circles, connecting lines, current step highlighted</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKi5JLYgvKMpPL0otLlbSUVBKLi0qSs0rAcoZ6ECki4Hs6NjaWADkI_fyNgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/gradient_hero">Gradient Hero</a>
+    <p class="sa-desc">light gradient hero — badge, large title, subtitle, CTA button</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSi9KTMlMzSuJz0gtylfSUVAqySzJActE5pcWKUB4tbEAHVQHEDIAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/icon_list">Icon List</a>
+    <p class="sa-desc">icon-circle list — emoji/icon per item, label + text, color per item</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQykzOz4vPySwuUaqNBQDWHWOdFwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/highlight_box">Highlight Box</a>
+    <p class="sa-desc">highlight box — gradient/solid/outline style, icon, title, text</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyshMz8gB4pL4pPwKJR0FpZLUihKQRGR-aZECmFMbCwBPzzLqMAAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/metric_row">Metric Row</a>
+    <p class="sa-desc">horizontal metric strip — value, label, prefix/suffix, trend up/down</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyk0tKcpMji_KL1fSgfGKgRLRsbWxAPyKj48nAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/numbered_list">Numbered List</a>
+    <p class="sa-desc">decorative numbered list — large background numbers or circular badges</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyivNTUotSk2Jz8ksLlGqjQUAnMAcwBsAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/page_header">Page Header</a>
+    <p class="sa-desc">app-style page header — title, subtitle, icon, accent, tag badge</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkhMT43PSE1MSS1S0lFQKsksyQGLR-aXFilAeLWxAPwonf4wAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/section_break">Section Break</a>
+    <p class="sa-desc">section divider — optional centered label, solid/dashed/dots style</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKk5NLsnMz4tPKkpNzFaqjQUASYw3zBsAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/columns">Columns</a>
+    <p class="sa-desc">multi-column layout — 2–6 cols, each column holds atom blocks</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs7PKc3NK1bSUVDKLEnNLQaKRcfWxgIA6wyXjSIAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/person_card">Person Card</a>
+    <p class="sa-desc">person card — name, role, photo, bio, tags, email, linkedin</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKkgtKs7Pi09OLEpR0lFQykvMBQtH5pcWKYA5tbEAiXDl6S4AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/risk_flag">Risk Flag</a>
+    <p class="sa-desc">risk list — critical/high/medium/low with title, description, mitigation</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKsoszo5Py0lMV9KBcIqBotGxtbEAWhPUHyQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/action_items">Action Items</a>
+    <p class="sa-desc">action items table — action, owner, due date, status</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSkwuyczPi88sSc0tVtJRUIIwrBSiY2tjAZUsS8YnAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/bento_grid">Bento Grid</a>
+    <p class="sa-desc">asymmetric bento-box feature tile grid — MagicUI/shadcn pattern</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSkrNK8mPTy_KTFGqjQUA0yd4OxgAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/cta_section">Cta Section</a>
+    <p class="sa-desc">full-width CTA banner with headline and buttons — Tailwind UI pattern</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACAz2MWwqAIBAAryL7HfnvTSJCTJcU8oFukER3T4P6nBmY-QKqCUEw0KRkQU0uBhgYWFTGha2XKR6ZfdzSGk39_QtNpuy8ylW2TW-WKBXBOZ7Kpx1HHT3cywNLHoyJbwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/dot_grid_background">Dot Grid Background</a>
+    <p class="sa-desc">CSS repeating dot or grid pattern panel background</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSskviU8vykyJT0pMzk4vyi_NS1GqjQUA8j74lyEAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/achievement_badge">Achievement Badge</a>
+    <p class="sa-desc">unlockable achievement badge with locked/unlocked state and optional date</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSkzOyEwtS81NzSuJT0pMSU9V0lFQKsksyQHLRuaXFilAeLWxAKC9_5A2AAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/score_summary">Score Summary</a>
+    <p class="sa-desc">end-of-exercise score card with correct/total, percentage, grade, and CTA</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQKk7OL0qNLy7NzU0sqlTSUVAC8otSk0uAcgZAXkl-SWIOiF0bCwCx5H6lNQAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/course_progress_card">Course Progress Card</a>
+    <p class="sa-desc">course-level progress card with per-module bars and aggregate completion ring</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQSs4vLSpOjS8oyk8vSi0ujk9OLEpR0oGLl2SW5IDVRQL5ChBBBYggUFFufkppTmoxUN6gNhYA1DpUv1UAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/highlighted_text">Highlighted Text</a>
+    <p class="sa-desc">highlighted text passage with optional hover margin annotation note</p>
+  </div>
+  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA4uuViqpLEhVslJQyshMz8gB4pLUlPiS1IoSJR0FJTANlIvMLy1SAHNqYwG4j2sJMwAAAA" target="_blank" rel="noopener">Try it live →</a>
+</div>
+
+  <footer>
+    <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
+  </footer>
+</body>
+</html>

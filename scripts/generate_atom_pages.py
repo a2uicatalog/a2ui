@@ -238,8 +238,11 @@ def render_page(atom):
     desc         = atom.get("description", "")
     compact      = atom.get("compact_description", "")
     display_name = atom_type.replace("_", " ").title()
-    preview      = live_preview(atom)
-    renderer_url = make_renderer_url(atom)
+    is_web_article = atom_type in _RENDERER_TYPES
+    preview        = live_preview(atom)
+    try_btn        = "" if is_web_article else (
+        f'<a class="try-btn" href="{make_renderer_url(atom)}" target="_blank" rel="noopener">Try it live →</a>'
+    )
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -285,7 +288,7 @@ def render_page(atom):
   </div>
 
   <a class="back" href="https://{DOMAIN}/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="{renderer_url}" target="_blank" rel="noopener">Try it live →</a>
+  {try_btn}
 
   <footer>
     <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
@@ -371,7 +374,7 @@ def generate_index(atoms):
 
     filter_pills = '<button class="filter active" data-surface="all">All</button>'
     for s in sorted(all_surfaces):
-        filter_pills += f'<button class="filter" data-surface="{s}">{s}</button>'
+        filter_pills += f'<a class="filter" href="/surfaces/{s}" data-surface="{s}">{s}</a>'
 
     cards_html = ""
     for atom in atoms:
@@ -422,6 +425,83 @@ def generate_index(atoms):
 </html>"""
 
 
+SURFACE_NAMES = {
+    "web":              "Web",
+    "meet-stage":       "Google Meet Stage",
+    "apps-script-web":  "Apps Script Web",
+    "googlechat":       "Google Chat",
+    "gas":              "Apps Script (GAS)",
+    "gas-sidebar":      "Apps Script Sidebar",
+    "email":            "Email",
+    "pdf":              "PDF",
+}
+
+GAS_SURFACES = {"meet-stage", "apps-script-web", "googlechat", "gas", "gas-sidebar"}
+
+
+def generate_surface_page(surface, atoms):
+    display = SURFACE_NAMES.get(surface, surface)
+    is_gas  = surface in GAS_SURFACES
+
+    items_html = ""
+    for atom in atoms:
+        atom_type    = atom.get("type", "")
+        desc         = atom.get("compact_description") or atom.get("description", "")
+        display_name = atom_type.replace("_", " ").title()
+        has_preview  = atom_type in _RENDERER_TYPES and _web_renderer is not None
+
+        if has_preview and not is_gas:
+            preview_html = live_preview(atom)
+            action = preview_html
+        else:
+            url    = make_renderer_url(atom)
+            action = f'<a class="try-btn" href="{url}" target="_blank" rel="noopener">Try it live →</a>'
+
+        items_html += f"""
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/{atom_type}">{display_name}</a>
+    <p class="sa-desc">{desc}</p>
+  </div>
+  {action}
+</div>"""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{display} Atoms — A2UI Catalog</title>
+  <meta name="description" content="{len(atoms)} A2UI atoms for the {display} surface.">
+  {PAGE_CSS}
+  <style>
+  .surface-atom{{border-bottom:1px solid var(--border);padding:28px 0}}
+  .surface-atom:last-child{{border-bottom:none}}
+  .sa-name{{font-size:1.1rem;font-weight:700;color:var(--text);text-decoration:none}}
+  .sa-name:hover{{color:var(--cyan)}}
+  .sa-desc{{font-size:14px;color:var(--muted);margin:4px 0 12px}}
+  .preview-box{{background:#fff;border-radius:8px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}}
+  .preview-box *{{max-width:100%}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="https://{DOMAIN}">A2UI Catalog</a> / surfaces / {surface}
+  </nav>
+
+  <h1>{display}</h1>
+  <p class="desc">{len(atoms)} atoms available on this surface</p>
+
+  {items_html}
+
+  <footer>
+    <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
+  </footer>
+</body>
+</html>"""
+
+
 def main():
     with open(SCHEMA) as f:
         raw = yaml.safe_load(f)
@@ -451,7 +531,21 @@ def main():
     index_path = ROOT / "public" / "index.html"
     index_path.write_text(generate_index(unique))
 
+    # Surface pages
+    surfaces_dir = ROOT / "public" / "surfaces"
+    surfaces_dir.mkdir(parents=True, exist_ok=True)
+    surface_map: dict[str, list] = {}
+    for atom in unique:
+        for s in (atom.get("surfaces") or {}).get("works_on") or []:
+            surface_map.setdefault(s, []).append(atom)
+
+    for surface, surface_atoms in surface_map.items():
+        sdir = surfaces_dir / surface
+        sdir.mkdir(parents=True, exist_ok=True)
+        (sdir / "index.html").write_text(generate_surface_page(surface, surface_atoms))
+
     print(f"✓ {count} atom pages → {OUTPUT_DIR}")
+    print(f"✓ {len(surface_map)} surface pages → {surfaces_dir}")
     print(f"✓ index → {index_path}")
 
 
