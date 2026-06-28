@@ -24,6 +24,10 @@ OUTPUT_DIR = ROOT / "public" / "atoms"
 DOMAIN     = "a2uicatalog.ai"
 GAS_RENDERER = "https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec"
 
+# Surfaces present in schema + ARD manifest but hidden from the human-facing
+# filter UI — visible to agents querying the catalog, not shown as filter pills.
+HIDDEN_SURFACES = {"gas-fakes"}
+
 sys.path.insert(0, str(ROOT / "web-article"))
 try:
     import renderer as _web_renderer
@@ -126,6 +130,8 @@ def surface_badges(atom):
     degraded  = {d["surface"] for d in (surfaces.get("degraded_on") or [])}
     badges = []
     for s in works_on:
+        if s in HIDDEN_SURFACES:
+            continue
         cls = "bd" if s in degraded else "bs"
         suffix = " ⚠" if s in degraded else ""
         badges.append(f'<span class="badge {cls}">{s}{suffix}</span>')
@@ -664,7 +670,8 @@ def generate_index(atoms):
 
     filter_pills = '<button class="filter active" data-surface="all">All</button>'
     for s in sorted(all_surfaces):
-        filter_pills += f'<a class="filter" href="/surfaces/{s}" data-surface="{s}">{s}</a>'
+        if s not in HIDDEN_SURFACES:
+            filter_pills += f'<a class="filter" href="/surfaces/{s}" data-surface="{s}">{s}</a>'
 
     cards_html = ""
     for atom in atoms:
@@ -673,11 +680,12 @@ def generate_index(atoms):
         surfaces  = (atom.get("surfaces") or {}).get("works_on") or []
         degraded  = {d["surface"] for d in ((atom.get("surfaces") or {}).get("degraded_on") or [])}
         display   = atom_type.replace("_", " ").title()
+        visible_surfaces = [s for s in surfaces if s not in HIDDEN_SURFACES]
         badges    = "".join(
             f'<span class="badge {"bd" if s in degraded else "bs"}">{s}</span>'
-            for s in surfaces
+            for s in visible_surfaces
         )
-        surfaces_str = " ".join(surfaces)
+        surfaces_str = " ".join(visible_surfaces)
         cards_html += (
             f'<a class="atom-card" href="/atoms/{atom_type}" '
             f'data-name="{atom_type}" data-desc="{desc.lower()}" data-surfaces="{surfaces_str}">'
