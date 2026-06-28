@@ -1,7 +1,7 @@
 {
   "specVersion": "1.0",
   "host": {
-    "displayName": "A2UI Atom Catalog",
+    "displayName": "A2UI Atomic Catalog",
     "identifier": "did:web:a2uicatalog.ai"
   },
   "entries": [

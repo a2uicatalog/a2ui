@@ -338,7 +338,7 @@ def render_page(atom):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>{display_name} — A2UI Atom Reference</title>
+  <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{desc or compact}">
   {PAGE_CSS}
 </head>
@@ -380,7 +380,7 @@ def render_page(atom):
   {try_btn}
 
   <footer>
-    <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span>MIT License</span>
   </footer>
 </body>
@@ -490,13 +490,13 @@ def generate_index(atoms):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>A2UI Atom Catalog</title>
+  <title>A2UI Atomic Catalog</title>
   <meta name="description" content="467 typed UI atoms for web, Google Meet, Apps Script, and Chat. ARD-compliant catalog.">
   {INDEX_CSS}
 </head>
 <body>
   <header>
-    <h1>A2UI Atom Catalog</h1>
+    <h1>A2UI Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
     <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
     <div class="controls">
@@ -508,7 +508,7 @@ def generate_index(atoms):
   <div class="grid">
 {cards_html}  </div>
   <footer>
-    <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   {INDEX_JS}
@@ -561,7 +561,7 @@ def generate_surface_page(surface, atoms):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>{display} Atoms — A2UI Catalog</title>
+  <title>{display} Atoms — A2UI Atomic Catalog</title>
   <meta name="description" content="{len(atoms)} A2UI atoms for the {display} surface.">
   {PAGE_CSS}
   <style>
@@ -585,7 +585,7 @@ def generate_surface_page(surface, atoms):
   {items_html}
 
   <footer>
-    <span>A2UI Atom Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
 </body>

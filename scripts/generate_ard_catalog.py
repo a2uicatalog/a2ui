@@ -131,7 +131,7 @@ def main():
     catalog = {
         "specVersion": "1.0",
         "host": {
-            "displayName": "A2UI Atom Catalog",
+            "displayName": "A2UI Atomic Catalog",
             "identifier": f"did:web:{domain}",
         },
         "entries": entries,
