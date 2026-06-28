@@ -17,6 +17,7 @@ catalogue_web_preview.html
 apps-script-surface/gas-schema-renderer/.clasp.json
 apps-script-surface/gas-schema-renderer/Code.private.js
 apps-script-surface/gas-schema-renderer-private/
+# gas-fakes-schema-renderer-private/ excluded — personal GAS scopes, not for public repo
 apps-script-surface/gas-schema-renderer/*.old
 apps-script-surface/gas-schema-renderer/BREVET_2026_*.md
 apps-script-surface/gas-schema-renderer/MULTIPAGE_NAV_ISSUE.md
@@ -25,7 +26,7 @@ apps-script-surface/gas-schema-renderer/playbooks/
 apps-script-surface/gas-schema-renderer/source_*.pdf
 apps-script-surface/gas-schema-renderer/source_*.txt
 apps-script-surface/gas-schema-renderer/togaf_page.gs
-articles/
+# articles/ tracked — blog post source files
 web-article/
 ROAST-*.md
 knowledge-catalogue/TOGAF_GEMINI_BRIEF.md
