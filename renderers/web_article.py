@@ -17328,3 +17328,2432 @@ def _render_scenario_branch(b: dict) -> str:
         f'{context_html}{btns}{results}</div>{js}'
     )
 _RENDERERS["scenario_branch"] = _render_scenario_branch
+# ── Batch 4a: Simple typography & layout ──────────────────────────────────────
+
+def _render_paragraph(b: dict) -> str:
+    text = _md_inline(b.get('text', ''))
+    return f'<p style="margin:1em 0;line-height:1.7;color:var(--text,#374151);">{text}</p>'
+_RENDERERS["paragraph"] = _render_paragraph
+
+
+def _render_text_block(b: dict) -> str:
+    text = _md_inline(b.get('text', ''))
+    return f'<div style="margin:1em 0;line-height:1.7;color:var(--text,#374151);">{text}</div>'
+_RENDERERS["text_block"] = _render_text_block
+
+
+def _render_spacer(b: dict) -> str:
+    h = _esc(str(b.get('height', '32px')))
+    return f'<div style="height:{h};"></div>'
+_RENDERERS["spacer"] = _render_spacer
+
+
+def _render_inline_code(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    return ('<code style="background:#f3f4f6;color:#1e293b;padding:2px 7px;border-radius:4px;'
+            'font-size:0.875em;font-family:ui-monospace,monospace;">' + text + '</code>')
+_RENDERERS["inline_code"] = _render_inline_code
+
+
+def _render_blockquote(b: dict) -> str:
+    text = _md_inline(b.get('text', ''))
+    attr = b.get('attribution', '')
+    attr_html = ('<footer style="margin-top:8px;font-size:0.82rem;color:var(--muted,#6b7280);">— '
+                 + _esc(attr) + '</footer>') if attr else ''
+    return ('<blockquote style="margin:1.5em 0;padding:14px 20px;border-left:4px solid #6366f1;'
+            'background:#f5f3ff;border-radius:0 8px 8px 0;font-style:italic;'
+            'color:var(--text,#374151);line-height:1.7;">' + text + attr_html + '</blockquote>')
+_RENDERERS["blockquote"] = _render_blockquote
+
+
+def _render_code_block(b: dict) -> str:
+    lang = _esc(b.get('language', ''))
+    content = _esc(b.get('content', ''))
+    lang_bar = ('<div style="padding:6px 14px;background:#0d1117;border-radius:8px 8px 0 0;'
+                'font-size:0.72rem;color:#6b7280;font-family:ui-monospace,monospace;">'
+                + lang + '</div>') if lang else ''
+    radius = '0 0 8px 8px' if lang else '8px'
+    return (lang_bar + '<pre style="margin:0 0 1.5em;background:#0d1117;color:#cdd6f4;'
+            'padding:16px 18px;border-radius:' + radius + ';overflow-x:auto;font-size:0.875em;'
+            'font-family:ui-monospace,monospace;line-height:1.6;"><code>' + content + '</code></pre>')
+_RENDERERS["code_block"] = _render_code_block
+
+
+def _render_tag_chip(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    return ('<span style="display:inline-block;padding:3px 12px;border-radius:99px;font-size:0.78rem;'
+            'font-weight:600;background:' + color + '18;color:' + color + ';border:1px solid '
+            + color + '44;">' + text + '</span>')
+_RENDERERS["tag_chip"] = _render_tag_chip
+
+
+def _render_badge(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    return ('<span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:0.72rem;'
+            'font-weight:700;background:' + color + ';color:#fff;letter-spacing:0.04em;">'
+            + text + '</span>')
+_RENDERERS["badge"] = _render_badge
+
+
+def _render_info_card(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);'
+                  'margin-bottom:6px;">' + title + '</div>') if title else ''
+    return ('<div style="margin:1.25rem 0;padding:16px 20px;border:1px solid #e5e7eb;'
+            'border-radius:10px;background:#f9fafb;">' + title_html
+            + '<div style="font-size:0.875rem;line-height:1.65;color:var(--text,#374151);">'
+            + text + '</div></div>')
+_RENDERERS["info_card"] = _render_info_card
+
+
+def _render_link_button(b: dict) -> str:
+    url = _esc(b.get('url', '#'))
+    label = _esc(b.get('label', 'Link'))
+    return ('<div style="margin:1rem 0;"><a href="' + url + '" target="_blank" rel="noopener noreferrer" '
+            'style="display:inline-block;padding:10px 24px;border-radius:8px;background:#6366f1;'
+            'color:#fff;font-weight:600;font-size:0.9rem;text-decoration:none;">'
+            + label + '</a></div>')
+_RENDERERS["link_button"] = _render_link_button
+
+
+def _render_cta_button(b: dict) -> str:
+    url = _esc(b.get('url', '#'))
+    label = _esc(b.get('label', 'Get started'))
+    color = _esc(b.get('color', '#6366f1'))
+    return ('<div style="margin:1.5rem 0;text-align:center;">'
+            '<a href="' + url + '" target="_blank" rel="noopener noreferrer" '
+            'style="display:inline-block;padding:14px 36px;border-radius:100px;background:' + color + ';'
+            'color:#fff;font-weight:700;font-size:1rem;text-decoration:none;'
+            'box-shadow:0 4px 16px ' + color + '55;">' + label + '</a></div>')
+_RENDERERS["cta_button"] = _render_cta_button
+
+
+def _render_next_step_strip(b: dict) -> str:
+    steps = b.get('steps', [])
+    accent = _esc(b.get('accent', '#6366f1'))
+    items = ''
+    for i, s in enumerate(steps):
+        if isinstance(s, str):
+            label, url = _esc(s), ''
+        else:
+            label, url = _esc(s.get('label', '')), s.get('url', '')
+        inner = ('<a href="' + _esc(url) + '" style="text-decoration:none;color:inherit;">'
+                 + label + '</a>') if url else label
+        items += ('<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;'
+                  'border-radius:8px;background:#f9fafb;border:1px solid #e5e7eb;">'
+                  '<span style="width:24px;height:24px;border-radius:50%;background:' + accent + ';'
+                  'color:#fff;font-size:0.75rem;font-weight:700;display:flex;align-items:center;'
+                  'justify-content:center;flex-shrink:0;">' + str(i + 1) + '</span>'
+                  '<span style="font-size:0.875rem;font-weight:600;color:var(--text,#374151);">'
+                  + inner + '</span></div>')
+    return '<div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:8px;">' + items + '</div>'
+_RENDERERS["next_step_strip"] = _render_next_step_strip
+
+
+def _render_flow_connector(b: dict) -> str:
+    frm = _esc(b.get('from', ''))
+    to = _esc(b.get('to', ''))
+    label = _esc(b.get('label', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    mid = ('→ ' + label + ' →') if label else '→'
+    return ('<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
+            '<span style="padding:6px 14px;border-radius:6px;background:' + color + '18;color:'
+            + color + ';font-weight:600;font-size:0.875rem;border:1px solid ' + color + '44;">'
+            + frm + '</span>'
+            '<span style="color:#9ca3af;font-size:0.82rem;">' + mid + '</span>'
+            '<span style="padding:6px 14px;border-radius:6px;background:' + color + '18;color:'
+            + color + ';font-weight:600;font-size:0.875rem;border:1px solid ' + color + '44;">'
+            + to + '</span></div>')
+_RENDERERS["flow_connector"] = _render_flow_connector
+
+
+def _render_focus_lens(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    title_div = ('<div style="font-weight:700;font-size:1rem;color:#4338ca;margin-bottom:8px;">'
+                 '🔍 ' + title + '</div>') if title else ''
+    return ('<div style="margin:1.5rem 0;padding:20px 24px;border-radius:12px;'
+            'background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #c7d2fe;">'
+            + title_div
+            + '<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div></div>')
+_RENDERERS["focus_lens"] = _render_focus_lens
+
+
+def _render_take_away_card(b: dict) -> str:
+    headline = _esc(b.get('headline', ''))
+    sub = _md_inline(b.get('sub', ''))
+    accent = _esc(b.get('accent', '#6366f1'))
+    size = _esc(b.get('size', '1.4rem'))
+    gradient = b.get('gradient', '')
+    if gradient:
+        h_style = ('background:' + gradient + ';-webkit-background-clip:text;'
+                   '-webkit-text-fill-color:transparent;background-clip:text;')
+    else:
+        h_style = 'color:' + accent + ';'
+    sub_div = ('<div style="font-size:0.9rem;line-height:1.6;color:#6b7280;">' + sub + '</div>') if sub else ''
+    return ('<div style="margin:2rem 0;padding:28px 32px;border-radius:16px;background:linear-gradient('
+            '135deg,' + accent + '0d,' + accent + '1a);border:1px solid ' + accent + '33;text-align:center;">'
+            '<div style="font-size:' + size + ';font-weight:800;line-height:1.2;margin-bottom:10px;'
+            + h_style + '">' + headline + '</div>' + sub_div + '</div>')
+_RENDERERS["take_away_card"] = _render_take_away_card
+
+
+def _render_counter_group(b: dict) -> str:
+    stats = b.get('stats', [])
+    items = ''
+    for s in stats:
+        val = _esc(str(s.get('value', '')))
+        label = _esc(s.get('label', ''))
+        color = _esc(s.get('color', '#6366f1'))
+        items += ('<div style="text-align:center;padding:16px;">'
+                  '<div style="font-size:2.2rem;font-weight:900;color:' + color + ';line-height:1;">'
+                  + val + '</div>'
+                  '<div style="font-size:0.78rem;color:#6b7280;margin-top:4px;text-transform:uppercase;'
+                  'letter-spacing:0.08em;">' + label + '</div></div>')
+    return ('<div style="margin:1.5rem 0;display:flex;flex-wrap:wrap;justify-content:center;'
+            'gap:8px;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;">'
+            + items + '</div>')
+_RENDERERS["counter_group"] = _render_counter_group
+
+
+def _render_status_timeline(b: dict) -> str:
+    events = b.get('events', [])
+    title = b.get('title', '')
+    title_html = ('<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);'
+                  'margin-bottom:14px;">' + _esc(title) + '</div>') if title else ''
+    status_map = {
+        'done':    ('#10b981', '✓'),
+        'active':  ('#6366f1', '●'),
+        'pending': ('#9ca3af', '○'),
+        'error':   ('#ef4444', '✗'),
+    }
+    items = ''
+    for e in events:
+        status = e.get('status', 'pending')
+        color, icon = status_map.get(status, ('#9ca3af', '○'))
+        label = _esc(e.get('label', ''))
+        ts = _esc(e.get('timestamp', ''))
+        desc = _esc(e.get('description', ''))
+        ts_span = ('<span style="margin-left:8px;font-size:0.72rem;color:#9ca3af;font-weight:400;">'
+                   + ts + '</span>') if ts else ''
+        desc_div = ('<div style="font-size:0.8rem;color:#6b7280;margin-top:2px;">'
+                    + desc + '</div>') if desc else ''
+        items += ('<div style="display:flex;gap:12px;padding:8px 0;">'
+                  '<div style="display:flex;flex-direction:column;align-items:center;">'
+                  '<span style="width:24px;height:24px;border-radius:50%;background:' + color + ';'
+                  'color:#fff;font-size:0.75rem;font-weight:700;display:flex;align-items:center;'
+                  'justify-content:center;flex-shrink:0;">' + icon + '</span>'
+                  '<div style="width:2px;flex:1;background:#e5e7eb;margin:3px 0;"></div></div>'
+                  '<div style="flex:1;padding-bottom:12px;">'
+                  '<div style="font-weight:600;font-size:0.875rem;color:var(--text,#111827);">'
+                  + label + ts_span + '</div>' + desc_div + '</div></div>')
+    return ('<div style="margin:1.5rem 0;padding:16px 20px;border:1px solid #e5e7eb;'
+            'border-radius:10px;background:#fff;">' + title_html + items + '</div>')
+_RENDERERS["status_timeline"] = _render_status_timeline
+
+
+def _render_user_greeting(b: dict) -> str:
+    prefix = _esc(b.get('prefix', 'Welcome back'))
+    return ('<div style="margin:1rem 0;padding:16px 20px;border-radius:10px;'
+            'background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #c7d2fe;">'
+            '<div style="font-size:1.1rem;font-weight:700;color:#4338ca;">'
+            + prefix + ', <span id="a2ui-greeting-name">there</span>! 👋</div>'
+            '<script>(function(){'
+            'var n=document.getElementById("a2ui-greeting-name");'
+            'if(n&&window.a2uiUser)n.textContent=window.a2uiUser.name||"there";'
+            '})();</script></div>')
+_RENDERERS["user_greeting"] = _render_user_greeting
+
+
+def _render_user_profile_card(b: dict) -> str:
+    name = _esc(b.get('name', 'User'))
+    email = _esc(b.get('email', ''))
+    subtitle = _esc(b.get('subtitle', ''))
+    accent = _esc(b.get('accent', '#6366f1'))
+    raw_name = b.get('name', 'U')
+    initials = ''.join(w[0].upper() for w in raw_name.split()[:2]) or 'U'
+    sub_div = ('<div style="font-size:0.82rem;color:#6b7280;">' + subtitle + '</div>') if subtitle else ''
+    email_div = ('<div style="font-size:0.78rem;color:#9ca3af;">' + email + '</div>') if email else ''
+    return ('<div style="margin:1rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:12px;'
+            'background:#fff;display:flex;align-items:center;gap:16px;">'
+            '<div style="width:52px;height:52px;border-radius:50%;background:' + accent + ';'
+            'color:#fff;display:flex;align-items:center;justify-content:center;'
+            'font-size:1.1rem;font-weight:700;flex-shrink:0;">' + _esc(initials) + '</div>'
+            '<div><div style="font-weight:700;font-size:1rem;color:#111827;">' + name + '</div>'
+            + sub_div + email_div + '</div></div>')
+_RENDERERS["user_profile_card"] = _render_user_profile_card
+
+
+def _render_decision_tree(b: dict) -> str:
+    title = b.get('title', '')
+    nodes = b.get('nodes', [])
+    title_html = ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:12px;">'
+                  + _esc(title) + '</div>') if title else ''
+    node_map = {n['id']: n for n in nodes if 'id' in n}
+    all_child_ids = set()
+    for n in nodes:
+        for c in n.get('children', []):
+            if 'next' in c:
+                all_child_ids.add(c['next'])
+
+    def render_node(node_id, depth=0):
+        n = node_map.get(node_id)
+        if not n or depth > 8:
+            return ''
+        indent = depth * 24
+        label = _esc(n.get('label', ''))
+        ntype = n.get('type', 'question')
+        if ntype == 'leaf':
+            bg, border = '#f0fdf4', '#86efac'
+        elif ntype == 'question':
+            bg, border = '#eff6ff', '#93c5fd'
+        else:
+            bg, border = '#fef3c7', '#fde68a'
+        children = n.get('children', [])
+        children_html = ''
+        for c in children:
+            clabel = _esc(c.get('label', ''))
+            children_html += ('<div style="padding-left:' + str(indent + 16) + 'px;">'
+                              '<div style="font-size:0.72rem;color:#9ca3af;padding:2px 0;">↳ '
+                              + clabel + '</div>' + render_node(c.get('next', ''), depth + 1) + '</div>')
+        return ('<div style="padding-left:' + str(indent) + 'px;margin:4px 0;">'
+                '<div style="display:inline-block;padding:6px 14px;border-radius:8px;background:'
+                + bg + ';border:1px solid ' + border + ';font-size:0.82rem;font-weight:600;'
+                'color:#374151;">' + label + '</div></div>' + children_html)
+
+    roots = [n for n in nodes if n.get('id') not in all_child_ids]
+    tree_html = ''.join(render_node(r['id']) for r in roots[:3])
+    return ('<div style="margin:1.5rem 0;padding:16px;border:1px solid #e5e7eb;'
+            'border-radius:10px;background:#fff;overflow-x:auto;">'
+            + title_html + tree_html + '</div>')
+_RENDERERS["decision_tree"] = _render_decision_tree
+
+
+def _render_chat_sequence(b: dict) -> str:
+    messages = b.get('messages', [])
+    items = ''
+    for msg in messages:
+        role = msg.get('role', 'user')
+        text = _esc(msg.get('text', msg.get('content', '')))
+        name = _esc(msg.get('name', role.capitalize()))
+        is_ai = role in ('assistant', 'ai', 'bot')
+        align = 'flex-start' if is_ai else 'flex-end'
+        bg = '#f3f4f6' if is_ai else '#6366f1'
+        color = '#374151' if is_ai else '#fff'
+        radius = '12px 12px 12px 2px' if is_ai else '12px 12px 2px 12px'
+        name_align = 'left' if is_ai else 'right'
+        items += ('<div style="display:flex;justify-content:' + align + ';margin-bottom:10px;">'
+                  '<div style="max-width:80%;">'
+                  '<div style="font-size:0.72rem;color:#9ca3af;margin-bottom:3px;text-align:'
+                  + name_align + ';">' + name + '</div>'
+                  '<div style="padding:10px 14px;border-radius:' + radius + ';background:' + bg + ';'
+                  'color:' + color + ';font-size:0.875rem;line-height:1.6;">' + text + '</div>'
+                  '</div></div>')
+    return '<div style="margin:1.5rem 0;padding:16px;">' + items + '</div>'
+_RENDERERS["chat_sequence"] = _render_chat_sequence
+# ── Batch 4b: Google Workspace & data atoms ───────────────────────────────────
+
+def _render_data_source(b: dict) -> str:
+    name = _esc(b.get('name', ''))
+    url = _esc(b.get('url', ''))
+    fmt = _esc(b.get('format', ''))
+    refresh = _esc(str(b.get('refresh', '')))
+    url_a = ('<a href="' + url + '" style="color:#6366f1;font-size:0.78rem;">' + url + '</a>') if url else ''
+    meta = ' · '.join(x for x in [fmt, ('refresh: ' + refresh) if refresh else ''] if x)
+    return ('<div style="margin:1rem 0;padding:10px 14px;border:1px dashed #d1d5db;border-radius:8px;'
+            'background:#f9fafb;display:flex;align-items:center;gap:10px;">'
+            '<span style="font-size:1rem;">🗄️</span>'
+            '<div><div style="font-size:0.82rem;font-weight:600;color:#374151;">' + name + '</div>'
+            + (url_a + '<br>' if url_a else '')
+            + ('<div style="font-size:0.72rem;color:#9ca3af;">' + meta + '</div>' if meta else '')
+            + '</div></div>')
+_RENDERERS["data_source"] = _render_data_source
+
+
+def _render_drive_file_card(b: dict) -> str:
+    name = _esc(b.get('name', 'Untitled'))
+    mime = b.get('mime', '')
+    url = _esc(b.get('url', '#'))
+    desc = _esc(b.get('description', ''))
+    icons = {'application/vnd.google-apps.document': '📝',
+             'application/vnd.google-apps.spreadsheet': '📊',
+             'application/vnd.google-apps.presentation': '📽️',
+             'application/pdf': '📄'}
+    icon = icons.get(mime, '📁')
+    return ('<div style="margin:0.5rem 0;padding:12px 16px;border:1px solid #e5e7eb;border-radius:10px;'
+            'background:#fff;display:flex;align-items:center;gap:12px;">'
+            '<span style="font-size:1.4rem;">' + icon + '</span>'
+            '<div style="flex:1;min-width:0;">'
+            '<a href="' + url + '" target="_blank" rel="noopener noreferrer" '
+            'style="font-weight:600;font-size:0.875rem;color:#6366f1;text-decoration:none;">'
+            + name + '</a>'
+            + ('<div style="font-size:0.78rem;color:#6b7280;margin-top:2px;">' + desc + '</div>' if desc else '')
+            + '</div></div>')
+_RENDERERS["drive_file_card"] = _render_drive_file_card
+
+
+def _render_drive_file_list(b: dict) -> str:
+    folder_id = _esc(b.get('folder_id', ''))
+    max_r = int(b.get('max_results', 10))
+    note = ('Folder ID: ' + folder_id) if folder_id else 'No folder_id set'
+    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;'
+            'background:#f9fafb;">'
+            '<div style="font-size:0.75rem;color:#9ca3af;font-style:italic;">'
+            '🗂️ Drive file list — ' + note + ' (max ' + str(max_r) + ' results). '
+            'Live data requires server-side auth.</div></div>')
+_RENDERERS["drive_file_list"] = _render_drive_file_list
+
+
+def _render_drive_folder_contents(b: dict) -> str:
+    title = _esc(b.get('title', 'Folder Contents'))
+    items = b.get('items', [])
+    icons = {'doc': '📝', 'sheet': '📊', 'slide': '📽️', 'pdf': '📄', 'folder': '📁'}
+    rows = ''
+    for item in items:
+        icon = icons.get(item.get('type', ''), '📄')
+        name = _esc(item.get('name', ''))
+        url = _esc(item.get('url', '#'))
+        rows += ('<div style="display:flex;align-items:center;gap:8px;padding:6px 0;'
+                 'border-bottom:1px solid #f3f4f6;">'
+                 '<span>' + icon + '</span>'
+                 '<a href="' + url + '" target="_blank" rel="noopener noreferrer" '
+                 'style="font-size:0.875rem;color:#374151;text-decoration:none;">' + name + '</a>'
+                 '</div>')
+    empty = '<div style="color:#9ca3af;font-size:0.82rem;font-style:italic;">No items</div>'
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">'
+            + title + '</div>'
+            + (rows if rows else empty) + '</div>')
+_RENDERERS["drive_folder_contents"] = _render_drive_folder_contents
+
+
+def _render_drive_recent_files(b: dict) -> str:
+    title = _esc(b.get('title', 'Recent Files'))
+    items = b.get('items', [])
+    accent = _esc(b.get('accent', '#6366f1'))
+    icons = {'doc': '📝', 'sheet': '📊', 'slide': '📽️', 'pdf': '📄'}
+    rows = ''
+    for item in items:
+        icon = icons.get(item.get('type', ''), '📄')
+        name = _esc(item.get('name', ''))
+        ts = _esc(item.get('modified', item.get('timestamp', '')))
+        url = _esc(item.get('url', '#'))
+        rows += ('<div style="display:flex;align-items:center;gap:10px;padding:8px 0;'
+                 'border-bottom:1px solid #f3f4f6;">'
+                 '<span style="font-size:1.1rem;">' + icon + '</span>'
+                 '<div style="flex:1;min-width:0;">'
+                 '<a href="' + url + '" style="font-size:0.875rem;font-weight:600;color:#374151;'
+                 'text-decoration:none;">' + name + '</a>'
+                 + ('<div style="font-size:0.72rem;color:#9ca3af;">' + ts + '</div>' if ts else '')
+                 + '</div></div>')
+    empty = '<div style="color:#9ca3af;font-size:0.82rem;font-style:italic;">No recent files</div>'
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:' + accent + ';margin-bottom:10px;">'
+            + title + '</div>'
+            + (rows if rows else empty) + '</div>')
+_RENDERERS["drive_recent_files"] = _render_drive_recent_files
+
+
+def _render_drive_storage_usage(b: dict) -> str:
+    label = _esc(b.get('label', 'Drive Storage'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    used = float(b.get('used_gb', 0))
+    total = float(b.get('total_gb', 15))
+    pct = min(100, round(used / total * 100)) if total else 0
+    color = '#ef4444' if pct > 85 else '#f59e0b' if pct > 65 else accent
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="display:flex;justify-content:space-between;font-size:0.875rem;'
+            'color:#374151;margin-bottom:8px;">'
+            '<span style="font-weight:600;">' + label + '</span>'
+            '<span style="color:#6b7280;">' + str(used) + ' GB / ' + str(total) + ' GB</span></div>'
+            '<div style="background:#f3f4f6;border-radius:6px;height:10px;">'
+            '<div style="width:' + str(pct) + '%;height:100%;border-radius:6px;background:' + color + ';'
+            'transition:width 0.4s;"></div></div>'
+            '<div style="font-size:0.72rem;color:#9ca3af;margin-top:4px;">' + str(pct) + '% used</div></div>')
+_RENDERERS["drive_storage_usage"] = _render_drive_storage_usage
+
+
+def _render_gmail_inbox(b: dict) -> str:
+    title = _esc(b.get('title', 'Inbox'))
+    items = b.get('items', [])
+    accent = _esc(b.get('accent', '#6366f1'))
+    rows = ''
+    for msg in items:
+        sender = _esc(msg.get('from', msg.get('sender', '')))
+        subject = _esc(msg.get('subject', '(no subject)'))
+        snippet = _esc(msg.get('snippet', ''))
+        ts = _esc(msg.get('date', msg.get('timestamp', '')))
+        unread = msg.get('unread', False)
+        weight = '700' if unread else '400'
+        rows += ('<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+                 '<div style="display:flex;justify-content:space-between;align-items:baseline;">'
+                 '<span style="font-size:0.875rem;font-weight:' + weight + ';color:#111827;">'
+                 + sender + '</span>'
+                 '<span style="font-size:0.72rem;color:#9ca3af;">' + ts + '</span></div>'
+                 '<div style="font-size:0.82rem;font-weight:' + weight + ';color:#374151;">'
+                 + subject + '</div>'
+                 + ('<div style="font-size:0.78rem;color:#9ca3af;white-space:nowrap;overflow:hidden;'
+                    'text-overflow:ellipsis;">' + snippet + '</div>' if snippet else '')
+                 + '</div>')
+    empty = '<div style="color:#9ca3af;font-size:0.82rem;font-style:italic;padding:8px 0;">No messages</div>'
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:' + accent + ';margin-bottom:10px;">'
+            + title + '</div>'
+            + (rows if rows else empty) + '</div>')
+_RENDERERS["gmail_inbox"] = _render_gmail_inbox
+
+
+def _render_gmail_summary(b: dict) -> str:
+    query = _esc(b.get('query', ''))
+    max_r = int(b.get('max_results', 5))
+    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;'
+            'background:#f9fafb;">'
+            '<div style="font-size:0.82rem;color:#374151;">'
+            '📧 Gmail summary — query: <code style="background:#e5e7eb;padding:1px 6px;border-radius:3px;">'
+            + query + '</code>, max ' + str(max_r) + ' results.'
+            ' Live data requires server-side auth.</div></div>')
+_RENDERERS["gmail_summary"] = _render_gmail_summary
+
+
+def _render_gmail_unread_count(b: dict) -> str:
+    title = _esc(b.get('title', 'Unread'))
+    counts = b.get('counts', {})
+    accent = _esc(b.get('accent', '#6366f1'))
+    items = ''
+    for label, count in counts.items():
+        items += ('<div style="display:flex;justify-content:space-between;align-items:center;'
+                  'padding:6px 0;border-bottom:1px solid #f3f4f6;">'
+                  '<span style="font-size:0.875rem;color:#374151;">' + _esc(str(label)) + '</span>'
+                  '<span style="padding:2px 10px;border-radius:12px;background:' + accent + ';'
+                  'color:#fff;font-size:0.78rem;font-weight:700;">' + _esc(str(count)) + '</span></div>')
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:' + accent + ';margin-bottom:10px;">'
+            '📧 ' + title + '</div>'
+            + (items if items else '<div style="color:#9ca3af;font-size:0.82rem;">No data</div>')
+            + '</div>')
+_RENDERERS["gmail_unread_count"] = _render_gmail_unread_count
+
+
+def _render_tasks_today(b: dict) -> str:
+    title = _esc(b.get('title', "Today's Tasks"))
+    items = b.get('items', [])
+    rows = ''
+    for task in items:
+        text = _esc(task.get('title', task.get('text', '')) if isinstance(task, dict) else str(task))
+        done = task.get('done', task.get('status') == 'completed') if isinstance(task, dict) else False
+        icon = '✅' if done else '⬜'
+        style = 'text-decoration:line-through;color:#9ca3af;' if done else 'color:#374151;'
+        rows += ('<div style="display:flex;align-items:center;gap:8px;padding:6px 0;">'
+                 '<span>' + icon + '</span>'
+                 '<span style="font-size:0.875rem;' + style + '">' + text + '</span></div>')
+    empty = '<div style="color:#9ca3af;font-size:0.82rem;font-style:italic;">No tasks</div>'
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">'
+            '✅ ' + title + '</div>'
+            + (rows if rows else empty) + '</div>')
+_RENDERERS["tasks_today"] = _render_tasks_today
+
+
+def _render_sheet_preview(b: dict) -> str:
+    sid = _esc(b.get('spreadsheet_id', ''))
+    sheet = _esc(b.get('sheet_name', 'Sheet1'))
+    rng = _esc(b.get('range', 'A1:E10'))
+    url = ('https://docs.google.com/spreadsheets/d/' + sid) if sid else '#'
+    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;">'
+            '<div style="font-size:0.82rem;color:#374151;">'
+            '📊 Sheets preview — <a href="' + url + '" target="_blank" rel="noopener noreferrer" '
+            'style="color:#6366f1;">' + (sid[:20] + '…' if len(sid) > 20 else sid) + '</a>'
+            ' · ' + sheet + ' · ' + rng + '. Live data requires server-side auth.</div></div>')
+_RENDERERS["sheet_preview"] = _render_sheet_preview
+
+
+def _render_sheet_stats(b: dict) -> str:
+    label = _esc(b.get('label', 'Sheet Stats'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;">'
+            '<div style="font-size:0.82rem;color:#374151;">📊 ' + label
+            + ' — live stats require server-side auth.</div></div>')
+_RENDERERS["sheet_stats"] = _render_sheet_stats
+
+
+def _render_sheet_form_submit(b: dict) -> str:
+    title = _esc(b.get('title', 'Submit Form'))
+    fields = b.get('fields', [])
+    submit_label = _esc(b.get('submit_label', 'Submit'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    sid = _esc(b.get('spreadsheet_id', ''))
+    inputs = ''
+    for fld in fields:
+        if isinstance(fld, str):
+            fname, ftype, flabel = fld, 'text', fld
+        else:
+            fname = _esc(fld.get('name', ''))
+            ftype = _esc(fld.get('type', 'text'))
+            flabel = _esc(fld.get('label', fname))
+        inputs += ('<div style="margin-bottom:12px;">'
+                   '<label style="display:block;font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;">'
+                   + flabel + '</label>'
+                   '<input type="' + ftype + '" name="' + fname + '" '
+                   'style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;'
+                   'font-size:0.875rem;box-sizing:border-box;"></div>')
+    return ('<div style="margin:1rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:14px;">' + title + '</div>'
+            '<form onsubmit="event.preventDefault();">' + inputs
+            + '<button type="submit" style="padding:10px 24px;background:' + accent + ';color:#fff;'
+            'border:none;border-radius:8px;font-weight:600;font-size:0.875rem;cursor:pointer;">'
+            + submit_label + '</button>'
+            + ('<div style="font-size:0.72rem;color:#9ca3af;margin-top:8px;">Linked to spreadsheet '
+               + sid + '</div>' if sid else '')
+            + '</form></div>')
+_RENDERERS["sheet_form_submit"] = _render_sheet_form_submit
+
+
+def _render_copy_prompt(b: dict) -> str:
+    prompt = _esc(b.get('prompt', ''))
+    label = _esc(b.get('label', 'Copy prompt'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    raw_prompt = b.get('prompt', '').replace("'", "\\'").replace('\n', '\\n')
+    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid ' + accent + '44;'
+            'border-radius:10px;background:' + accent + '08;">'
+            '<div style="font-size:0.82rem;color:#374151;margin-bottom:10px;font-style:italic;">'
+            + prompt + '</div>'
+            '<button onclick="navigator.clipboard.writeText(\'' + raw_prompt + '\').then(function(){'
+            'this.textContent=\'Copied!\';}.bind(this))" '
+            'style="padding:6px 16px;background:' + accent + ';color:#fff;border:none;border-radius:6px;'
+            'font-size:0.82rem;font-weight:600;cursor:pointer;">' + label + '</button></div>')
+_RENDERERS["copy_prompt"] = _render_copy_prompt
+
+
+def _render_gemini_prompt(b: dict) -> str:
+    placeholder = _esc(b.get('placeholder', 'Ask Gemini…'))
+    label = _esc(b.get('label', 'Gemini'))
+    accent = _esc(b.get('accent', '#1a73e8'))
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid ' + accent + '44;'
+            'border-radius:12px;background:' + accent + '08;">'
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+            '<span style="font-size:1.1rem;">✨</span>'
+            '<span style="font-weight:700;font-size:0.875rem;color:' + accent + ';">' + label + '</span></div>'
+            '<div style="display:flex;gap:8px;">'
+            '<input type="text" placeholder="' + placeholder + '" '
+            'style="flex:1;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:0.875rem;">'
+            '<button style="padding:10px 18px;background:' + accent + ';color:#fff;border:none;'
+            'border-radius:8px;font-weight:600;font-size:0.875rem;cursor:pointer;">Ask</button>'
+            '</div></div>')
+_RENDERERS["gemini_prompt"] = _render_gemini_prompt
+
+
+def _render_prompt_to_schema(b: dict) -> str:
+    prompt = _esc(b.get('prompt', ''))
+    schema_text = _esc(str(b.get('schema', '')))
+    output = _esc(str(b.get('output', '')))
+    labels = b.get('labels', {})
+    accent = _esc(b.get('accent', '#6366f1'))
+    prompt_label = _esc(labels.get('prompt', 'Prompt'))
+    schema_label = _esc(labels.get('schema', 'Schema'))
+    output_label = _esc(labels.get('output', 'Output'))
+    rows = ''
+    for lbl, val in [(prompt_label, prompt), (schema_label, schema_text), (output_label, output)]:
+        if val:
+            rows += ('<div style="margin-bottom:10px;">'
+                     '<div style="font-size:0.72rem;font-weight:700;color:' + accent + ';'
+                     'letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px;">' + lbl + '</div>'
+                     '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;'
+                     'padding:8px 12px;font-size:0.82rem;color:#374151;">' + val + '</div></div>')
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid ' + accent + '33;'
+            'border-radius:10px;background:' + accent + '06;">' + rows + '</div>')
+_RENDERERS["prompt_to_schema"] = _render_prompt_to_schema
+
+
+def _render_script_run_button(b: dict) -> str:
+    label = _esc(b.get('label', 'Run'))
+    fn = _esc(b.get('function_name', ''))
+    arg = _esc(str(b.get('argument', '')))
+    return ('<div style="margin:1rem 0;">'
+            '<button onclick="if(window.google&&google.script){'
+            'google.script.run.' + fn + '(' + (arg if arg else '') + ')}'
+            'else{alert(\'GAS runtime required\')}"'
+            ' style="padding:10px 24px;background:#1a73e8;color:#fff;border:none;border-radius:8px;'
+            'font-weight:600;font-size:0.875rem;cursor:pointer;">'
+            '▶ ' + label + '</button></div>')
+_RENDERERS["script_run_button"] = _render_script_run_button
+
+
+def _render_doc_ai_summary(b: dict) -> str:
+    title = _esc(b.get('title', 'AI Summary'))
+    prompt = _esc(b.get('prompt', ''))
+    model = _esc(b.get('model', 'gemini'))
+    accent = _esc(b.get('accent', '#1a73e8'))
+    doc_id = _esc(b.get('doc_id', ''))
+    return ('<div style="margin:1rem 0;padding:16px 20px;border:1px solid ' + accent + '33;'
+            'border-radius:12px;background:' + accent + '08;">'
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+            '<span style="font-size:1.1rem;">✨</span>'
+            '<span style="font-weight:700;font-size:0.9rem;color:' + accent + ';">' + title + '</span>'
+            '<span style="font-size:0.72rem;color:#9ca3af;margin-left:auto;">' + model + '</span></div>'
+            + ('<div style="font-size:0.82rem;color:#6b7280;font-style:italic;">' + prompt + '</div>' if prompt else '')
+            + '<div style="font-size:0.78rem;color:#9ca3af;margin-top:8px;">'
+            'Live AI summary requires server-side auth.'
+            + (' Doc: ' + doc_id if doc_id else '') + '</div></div>')
+_RENDERERS["doc_ai_summary"] = _render_doc_ai_summary
+
+
+def _render_multi_doc_ai_brief(b: dict) -> str:
+    docs = b.get('docs', [])
+    default_prompt = _esc(b.get('default_prompt', ''))
+    model = _esc(b.get('model', 'gemini'))
+    accent = _esc(b.get('accent', '#1a73e8'))
+    doc_items = ''
+    for d in docs:
+        if isinstance(d, str):
+            doc_items += '<div style="font-size:0.82rem;color:#374151;padding:3px 0;">📄 ' + _esc(d) + '</div>'
+        else:
+            doc_items += ('<div style="font-size:0.82rem;color:#374151;padding:3px 0;">📄 '
+                          + _esc(d.get('name', d.get('doc_id', ''))) + '</div>')
+    return ('<div style="margin:1rem 0;padding:16px 20px;border:1px solid ' + accent + '33;'
+            'border-radius:12px;background:' + accent + '08;">'
+            '<div style="font-weight:700;font-size:0.9rem;color:' + accent + ';margin-bottom:8px;">'
+            '✨ Multi-doc AI Brief <span style="font-size:0.72rem;color:#9ca3af;font-weight:400;">'
+            + model + '</span></div>'
+            + (doc_items if doc_items else '<div style="color:#9ca3af;font-size:0.82rem;">No docs specified</div>')
+            + (('<div style="font-size:0.82rem;font-style:italic;color:#6b7280;margin-top:8px;">'
+                + default_prompt + '</div>') if default_prompt else '')
+            + '<div style="font-size:0.72rem;color:#9ca3af;margin-top:8px;">Live briefs require server-side auth.</div>'
+            '</div>')
+_RENDERERS["multi_doc_ai_brief"] = _render_multi_doc_ai_brief
+
+
+def _render_ai_build_trace(b: dict) -> str:
+    model = _esc(b.get('model', ''))
+    prompt_tok = int(b.get('prompt_tokens', 0))
+    think_tok = int(b.get('thinking_tokens', 0))
+    output_tok = int(b.get('output_tokens', 0))
+    total_tok = int(b.get('total_tokens', prompt_tok + think_tok + output_tok))
+    stats = [
+        ('Model', model),
+        ('Prompt tokens', f'{prompt_tok:,}'),
+        ('Thinking tokens', f'{think_tok:,}'),
+        ('Output tokens', f'{output_tok:,}'),
+        ('Total', f'{total_tok:,}'),
+    ]
+    rows = ''
+    for k, v in stats:
+        if v and v != '0':
+            rows += ('<div style="display:flex;justify-content:space-between;padding:4px 0;'
+                     'border-bottom:1px solid #f3f4f6;font-size:0.82rem;">'
+                     '<span style="color:#6b7280;">' + k + '</span>'
+                     '<span style="font-weight:600;color:#374151;">' + _esc(str(v)) + '</span></div>')
+    return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;'
+            'background:#f9fafb;">'
+            '<div style="font-size:0.72rem;font-weight:700;color:#9ca3af;letter-spacing:0.1em;'
+            'text-transform:uppercase;margin-bottom:8px;">🤖 AI Build Trace</div>'
+            + rows + '</div>')
+_RENDERERS["ai_build_trace"] = _render_ai_build_trace
+
+
+def _render_feed_status(b: dict) -> str:
+    name = _esc(b.get('name', b.get('label', 'Feed')))
+    size = _esc(str(b.get('size', '')))
+    return ('<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;'
+            'border-radius:20px;background:#f0fdf4;border:1px solid #86efac;">'
+            '<span style="width:8px;height:8px;border-radius:50%;background:#10b981;'
+            'animation:pulse 2s infinite;display:inline-block;"></span>'
+            '<span style="font-size:0.78rem;font-weight:600;color:#065f46;">' + name + '</span>'
+            + ('<span style="font-size:0.72rem;color:#9ca3af;">' + size + '</span>' if size else '')
+            + '</div>')
+_RENDERERS["feed_status"] = _render_feed_status
+
+
+def _render_firestore_read(b: dict) -> str:
+    name = _esc(b.get('name', ''))
+    collection = _esc(b.get('collection', ''))
+    doc_id = _esc(b.get('doc_id', ''))
+    project = _esc(b.get('project', ''))
+    path = (collection + '/' + doc_id) if (collection and doc_id) else (collection or doc_id)
+    return ('<div style="margin:1rem 0;padding:12px 16px;border:1px dashed #d1d5db;border-radius:8px;'
+            'background:#f9fafb;font-size:0.82rem;color:#374151;">'
+            '🔥 Firestore — <strong>' + (name or path) + '</strong>'
+            + (' · ' + project if project else '')
+            + ' · Live reads require server-side auth.</div>')
+_RENDERERS["firestore_read"] = _render_firestore_read
+
+
+def _render_metar_feed(b: dict) -> str:
+    station = _esc(b.get('station', b.get('name', '')))
+    return ('<div style="margin:1rem 0;padding:12px 16px;border:1px solid #dbeafe;border-radius:8px;'
+            'background:#eff6ff;font-size:0.82rem;color:#1d4ed8;">'
+            '✈️ METAR — <strong>' + station + '</strong>'
+            ' · Live weather data requires server-side fetch.</div>')
+_RENDERERS["metar_feed"] = _render_metar_feed
+
+
+def _render_adsb_feed(b: dict) -> str:
+    name = _esc(b.get('name', 'ADS-B Feed'))
+    return ('<div style="margin:1rem 0;padding:12px 16px;border:1px solid #dbeafe;border-radius:8px;'
+            'background:#eff6ff;font-size:0.82rem;color:#1d4ed8;">'
+            '📡 ' + name + ' · Live ADS-B data requires server-side fetch.</div>')
+_RENDERERS["adsb_feed"] = _render_adsb_feed
+
+
+def _render_calendar_today(b: dict) -> str:
+    title = _esc(b.get('title', "Today's Calendar"))
+    max_r = int(b.get('max_results', 5))
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">'
+            '📅 ' + title + '</div>'
+            '<div style="color:#9ca3af;font-size:0.82rem;font-style:italic;">'
+            'Live calendar events require Google Calendar auth (max ' + str(max_r) + ').</div></div>')
+_RENDERERS["calendar_today"] = _render_calendar_today
+
+
+def _render_calendar_upcoming(b: dict) -> str:
+    max_r = int(b.get('max_results', 5))
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">📅 Upcoming Events</div>'
+            '<div style="color:#9ca3af;font-size:0.82rem;font-style:italic;">'
+            'Live calendar events require Google Calendar auth (max ' + str(max_r) + ').</div></div>')
+_RENDERERS["calendar_upcoming"] = _render_calendar_upcoming
+# ── Batch 4c: Visual effects & dark-theme atoms ───────────────────────────────
+
+def _render_dark_hero(b: dict) -> str:
+    heading = _esc(b.get('heading', 'Build something beautiful'))
+    subtext = _esc(b.get('subtext', ''))
+    badge = _esc(b.get('badge', ''))
+    gradient = b.get('gradient', 'linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#ec4899 100%)')
+    cta_label = _esc(b.get('cta_label', ''))
+    cta_url = _esc(b.get('cta_url', '#'))
+    align = _esc(b.get('align', 'center'))
+    badge_html = ('<div style="display:inline-block;margin-bottom:18px;padding:5px 14px;'
+                  'border:1px solid rgba(255,255,255,0.18);border-radius:99px;font-size:0.72rem;'
+                  'color:rgba(255,255,255,0.55);letter-spacing:0.1em;text-transform:uppercase;">'
+                  + badge + '</div><br>') if badge else ''
+    sub_html = ('<p style="margin:0 0 28px;font-size:1rem;color:rgba(255,255,255,0.5);line-height:1.7;'
+                'max-width:560px;' + ('margin-left:auto;margin-right:auto;' if align == 'center' else '') + '">'
+                + subtext + '</p>') if subtext else ''
+    cta_html = ('<a href="' + cta_url + '" target="_blank" rel="noopener noreferrer" '
+                'style="display:inline-block;padding:13px 30px;border-radius:100px;background:' + gradient + ';'
+                'color:#fff;font-weight:700;font-size:0.9rem;text-decoration:none;">'
+                + cta_label + '</a>') if cta_label else ''
+    return ('<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;">'
+            + badge_html
+            + '<h1 style="margin:0 0 18px;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;'
+            'background:' + gradient + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+            'background-clip:text;">' + heading + '</h1>'
+            + sub_html + cta_html + '</div>')
+_RENDERERS["dark_hero"] = _render_dark_hero
+
+
+def _render_glowing_stat(b: dict) -> str:
+    value = _esc(str(b.get('value', '—')))
+    label = _esc(b.get('label', ''))
+    colour = _esc(b.get('colour', b.get('color', '#6366f1')))
+    size = _esc(b.get('size', '4.5rem'))
+    prefix = _esc(b.get('prefix', ''))
+    suffix = _esc(b.get('suffix', ''))
+    glow = b.get('glow', True)
+    glow_style = ('text-shadow:0 0 20px ' + colour + ',0 0 60px ' + colour + '66,0 0 100px '
+                  + colour + '33;') if glow else ''
+    prefix_html = ('<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">'
+                   + prefix + '</span>') if prefix else ''
+    suffix_html = ('<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:3px;">'
+                   + suffix + '</span>') if suffix else ''
+    bar_html = ('<div style="width:80px;height:4px;margin:12px auto 0;border-radius:99px;background:'
+                + colour + ';box-shadow:0 0 20px ' + colour + ',0 0 40px ' + colour + '66;"></div>') if glow else ''
+    label_html = ('<div style="margin-top:12px;font-size:0.78rem;color:rgba(255,255,255,0.4);'
+                  'text-transform:uppercase;letter-spacing:0.12em;">' + label + '</div>') if label else ''
+    return ('<div style="text-align:center;padding:36px 20px;">'
+            '<div style="' + glow_style + 'font-size:' + size + ';font-weight:900;line-height:1;'
+            'color:#fff;letter-spacing:-0.02em;">'
+            + prefix_html + value + suffix_html + '</div>'
+            + bar_html + label_html + '</div>')
+_RENDERERS["glowing_stat"] = _render_glowing_stat
+
+
+def _render_glass_card(b: dict) -> str:
+    content = b.get('content', '')
+    title = _esc(b.get('title', ''))
+    blur = int(b.get('blur', 18))
+    bg = _esc(b.get('bg', 'rgba(255,255,255,0.05)'))
+    border = _esc(b.get('border', 'rgba(255,255,255,0.1)'))
+    padding = _esc(b.get('padding', '28px'))
+    radius = _esc(b.get('radius', '16px'))
+    title_html = ('<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.9);'
+                  'margin-bottom:14px;">' + title + '</div>') if title else ''
+    return ('<div style="background:' + bg + ';backdrop-filter:blur(' + str(blur) + 'px);'
+            '-webkit-backdrop-filter:blur(' + str(blur) + 'px);border:1px solid ' + border + ';'
+            'border-radius:' + radius + ';padding:' + padding + ';position:relative;overflow:hidden;">'
+            + title_html + content + '</div>')
+_RENDERERS["glass_card"] = _render_glass_card
+
+
+def _render_gradient_border_card(b: dict) -> str:
+    content = b.get('content', '')
+    title = _esc(b.get('title', ''))
+    colours = b.get('colours', ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'])
+    bg = _esc(b.get('bg', '#0c0e1a'))
+    angle = int(b.get('angle', 135))
+    padding = _esc(b.get('padding', '24px'))
+    radius = _esc(b.get('radius', '14px'))
+    grad = 'linear-gradient(' + str(angle) + 'deg,' + ','.join(_esc(c) for c in colours) + ')'
+    title_html = ('<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.92);'
+                  'margin-bottom:12px;">' + title + '</div>') if title else ''
+    return ('<div style="padding:1.5px;border-radius:' + radius + ';background:' + grad + ';">'
+            '<div style="background:' + bg + ';border-radius:calc(' + radius + ' - 1.5px);padding:' + padding + ';">'
+            + title_html + content + '</div></div>')
+_RENDERERS["gradient_border_card"] = _render_gradient_border_card
+
+
+def _render_floating_orbs(b: dict) -> str:
+    orbs = b.get('orbs', [
+        {'colour': '#6366f1', 'size': 500, 'x': 10, 'y': 15},
+        {'colour': '#8b5cf6', 'size': 350, 'x': 75, 'y': 55},
+        {'colour': '#ec4899', 'size': 280, 'x': 45, 'y': 85},
+    ])
+    blur = int(b.get('blur', 80))
+    opacity = float(b.get('opacity', 0.22))
+    animate = b.get('animate', True)
+    import hashlib
+    uid = 'orb' + hashlib.md5(str(orbs).encode()).hexdigest()[:5]
+    kf = ('@keyframes ' + uid + '{'
+          '0%,100%{transform:translate(-50%,-50%) scale(1);}'
+          '33%{transform:translate(calc(-50% + 30px),calc(-50% - 24px)) scale(1.06);}'
+          '66%{transform:translate(calc(-50% - 20px),calc(-50% + 28px)) scale(0.94);}}'
+          ) if animate else ''
+    orb_divs = ''
+    for i, o in enumerate(orbs):
+        sz = int(o.get('size', 300))
+        col = _esc(o.get('colour', o.get('color', '#6366f1')))
+        dur = f'{7 + i * 2.3:.1f}s'
+        dly = f'{i * 1.8:.1f}s'
+        anim = ('animation:' + uid + ' ' + dur + ' ease-in-out ' + dly + ' infinite;') if animate else ''
+        orb_divs += ('<div style="position:absolute;pointer-events:none;width:' + str(sz) + 'px;height:'
+                     + str(sz) + 'px;left:' + str(o.get('x', 50)) + '%;top:' + str(o.get('y', 50))
+                     + '%;transform:translate(-50%,-50%);background:radial-gradient(circle at 40% 40%,'
+                     + col + ' 0%,transparent 68%);filter:blur(' + str(blur) + 'px);opacity:'
+                     + str(opacity) + ';' + anim + '"></div>')
+    return ('<style>' + kf + '</style>'
+            '<div style="position:relative;height:0;overflow:visible;pointer-events:none;z-index:0;">'
+            + orb_divs + '</div>') if animate else ('<div style="position:relative;height:0;overflow:visible;pointer-events:none;z-index:0;">' + orb_divs + '</div>')
+_RENDERERS["floating_orbs"] = _render_floating_orbs
+
+
+def _render_dark_divider(b: dict) -> str:
+    colour = _esc(b.get('colour', b.get('color', '#6366f1')))
+    margin = _esc(b.get('margin', '32px'))
+    height = int(b.get('height', 1))
+    return ('<div style="height:' + str(height) + 'px;margin:' + margin + ' 0;'
+            'background:linear-gradient(90deg,transparent 0%,' + colour + ' 30%,' + colour
+            + ' 70%,transparent 100%);opacity:0.4;border-radius:99px;"></div>')
+_RENDERERS["dark_divider"] = _render_dark_divider
+
+
+def _render_dark_feature_grid(b: dict) -> str:
+    features = b.get('features', [])
+    cols = int(b.get('columns', 3))
+    accent = _esc(b.get('accent', '#6366f1'))
+    cards = ''
+    for f in features:
+        colour = _esc(f.get('colour', f.get('color', accent)))
+        icon = _esc(f.get('icon', '◆'))
+        title = _esc(f.get('title', ''))
+        desc = _esc(f.get('description', ''))
+        cards += ('<div style="background:#0f1117;border:1px solid rgba(255,255,255,0.07);'
+                  'border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;">'
+                  '<div style="width:40px;height:40px;border-radius:10px;background:linear-gradient('
+                  '135deg,' + colour + '33,' + colour + '11);border:1px solid ' + colour + '33;'
+                  'display:flex;align-items:center;justify-content:center;font-size:1.2rem;">'
+                  + icon + '</div>'
+                  '<div style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.9);">' + title + '</div>'
+                  '<div style="font-size:0.8rem;color:rgba(255,255,255,0.45);line-height:1.6;">' + desc + '</div>'
+                  '</div>')
+    return ('<div style="display:grid;grid-template-columns:repeat(' + str(cols) + ',1fr);gap:14px;">'
+            + cards + '</div>')
+_RENDERERS["dark_feature_grid"] = _render_dark_feature_grid
+
+
+def _render_neon_text(b: dict) -> str:
+    text = _esc(b.get('text', 'Neon'))
+    colour = _esc(b.get('colour', b.get('color', '#a78bfa')))
+    size = _esc(b.get('size', '2rem'))
+    weight = int(b.get('weight', 800))
+    align = _esc(b.get('align', 'center'))
+    flicker = b.get('flicker', False)
+    import hashlib
+    uid = 'nx' + hashlib.md5(text.encode()).hexdigest()[:5]
+    if flicker:
+        kf = ('@keyframes ' + uid + 'flk{'
+              '0%,19%,21%,23%,25%,54%,56%,100%{'
+              'text-shadow:0 0 4px #fff,0 0 10px ' + colour + ',0 0 20px ' + colour + ',0 0 50px ' + colour + ';}'
+              '20%,24%,55%{text-shadow:none;}}'
+              )
+        glow = 'animation:' + uid + 'flk 3s infinite alternate;'
+        style_tag = '<style>' + kf + '</style>'
+    else:
+        glow = ('text-shadow:0 0 4px #fff,0 0 10px ' + colour + ',0 0 24px ' + colour
+                + ',0 0 50px ' + colour + '66,0 0 80px ' + colour + '33;')
+        style_tag = ''
+    return (style_tag + '<div style="text-align:' + align + ';padding:20px 0;">'
+            '<span style="font-size:' + size + ';font-weight:' + str(weight) + ';color:#fff;'
+            'letter-spacing:0.04em;' + glow + '">' + text + '</span></div>')
+_RENDERERS["neon_text"] = _render_neon_text
+
+
+def _render_neon_glow(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    color = _esc(b.get('color', b.get('colour', '#a78bfa')))
+    size = _esc(b.get('size', '2rem'))
+    glow = ('text-shadow:0 0 4px #fff,0 0 10px ' + color + ',0 0 24px ' + color
+            + ',0 0 50px ' + color + '66;')
+    return ('<div style="text-align:center;padding:16px 0;">'
+            '<span style="font-size:' + size + ';font-weight:800;color:#fff;' + glow + '">'
+            + text + '</span></div>')
+_RENDERERS["neon_glow"] = _render_neon_glow
+
+
+def _render_ambient_gradient(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    return ('<div style="margin:1rem 0;padding:32px 28px;border-radius:16px;'
+            'background:linear-gradient(135deg,#eff6ff 0%,#f5f3ff 40%,#fdf2f8 100%);">'
+            + ('<h2 style="margin:0 0 12px;font-size:1.5rem;font-weight:800;'
+               'background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;'
+               '-webkit-text-fill-color:transparent;background-clip:text;">' + title + '</h2>' if title else '')
+            + ('<p style="margin:0;font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</p>' if text else '')
+            + '</div>')
+_RENDERERS["ambient_gradient"] = _render_ambient_gradient
+
+
+def _render_mesh_gradient(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    bg = _esc(b.get('bg', '#0a0a0f'))
+    colors = b.get('colors', ['#6366f1', '#8b5cf6', '#ec4899', '#06b6d4'])
+    stops = ', '.join(_esc(c) for c in colors[:4])
+    return ('<div style="margin:1rem 0;padding:36px 28px;border-radius:16px;background:' + bg + ';'
+            'background-image:radial-gradient(at 20% 30%,' + _esc(colors[0]) + '44 0px,transparent 50%),'
+            'radial-gradient(at 80% 10%,' + _esc(colors[1]) + '44 0px,transparent 50%),'
+            'radial-gradient(at 60% 80%,' + _esc(colors[2] if len(colors) > 2 else colors[0]) + '33 0px,transparent 50%);'
+            'position:relative;overflow:hidden;">'
+            + ('<div style="font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:12px;'
+               'background:linear-gradient(135deg,' + stops + ');-webkit-background-clip:text;'
+               '-webkit-text-fill-color:transparent;background-clip:text;">' + title + '</div>' if title else '')
+            + ('<p style="margin:0;font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">' + text + '</p>' if text else '')
+            + '</div>')
+_RENDERERS["mesh_gradient"] = _render_mesh_gradient
+
+
+def _render_noise_card(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    bg = _esc(b.get('bg', '#1e1e2e'))
+    color = _esc(b.get('color', '#c4c9ff'))
+    return ('<div style="margin:1rem 0;padding:28px;border-radius:14px;background:' + bg + ';'
+            'position:relative;overflow:hidden;">'
+            '<div style="position:absolute;inset:0;opacity:0.04;'
+            'background-image:url(\'data:image/svg+xml,<svg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'200\\\' height=\\\'200\\\'><filter id=\\\'n\\\'><feTurbulence type=\\\'fractalNoise\\\' baseFrequency=\\\'0.9\\\'/></filter><rect width=\\\'200\\\' height=\\\'200\\\' filter=\\\'url(%23n)\\\'/></svg>\');'
+            'pointer-events:none;"></div>'
+            + ('<div style="font-weight:700;font-size:1rem;color:' + color + ';margin-bottom:8px;'
+               'position:relative;">' + title + '</div>' if title else '')
+            + ('<p style="margin:0;font-size:0.875rem;color:rgba(255,255,255,0.6);line-height:1.7;'
+               'position:relative;">' + text + '</p>' if text else '')
+            + '</div>')
+_RENDERERS["noise_card"] = _render_noise_card
+
+
+def _render_stripe_background(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    c1 = _esc(b.get('color1', '#6366f1'))
+    c2 = _esc(b.get('color2', '#8b5cf6'))
+    import hashlib
+    uid = 'str' + hashlib.md5((c1 + c2).encode()).hexdigest()[:5]
+    kf = ('@keyframes ' + uid + 'mv{'
+          'from{background-position:0 0;}'
+          'to{background-position:60px 60px;}}')
+    return ('<style>' + kf + '</style>'
+            '<div style="margin:1rem 0;padding:32px 28px;border-radius:14px;'
+            'background:repeating-linear-gradient(45deg,' + c1 + ' 0px,' + c1 + ' 10px,'
+            + c2 + ' 10px,' + c2 + ' 20px);'
+            'animation:' + uid + 'mv 2s linear infinite;background-size:60px 60px;">'
+            + ('<div style="font-weight:800;font-size:1.4rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.4);">'
+               + title + '</div>' if title else '')
+            + ('<p style="margin:8px 0 0;color:rgba(255,255,255,0.85);">' + text + '</p>' if text else '')
+            + '</div>')
+_RENDERERS["stripe_background"] = _render_stripe_background
+
+
+def _render_pattern_background(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    bg = _esc(b.get('bg', '#0f172a'))
+    size = int(b.get('size', 24))
+    return ('<div style="margin:1rem 0;padding:32px 28px;border-radius:14px;background:' + bg + ';'
+            'background-image:radial-gradient(' + color + '22 1px,transparent 1px);'
+            'background-size:' + str(size) + 'px ' + str(size) + 'px;">'
+            + ('<div style="font-weight:800;font-size:1.3rem;color:#fff;margin-bottom:10px;">'
+               + title + '</div>' if title else '')
+            + ('<p style="margin:0;color:rgba(255,255,255,0.7);">' + text + '</p>' if text else '')
+            + '</div>')
+_RENDERERS["pattern_background"] = _render_pattern_background
+
+
+def _render_glitch_text(b: dict) -> str:
+    text = _esc(b.get('text', 'GLITCH'))
+    size = _esc(b.get('size', '3rem'))
+    import hashlib
+    uid = 'gl' + hashlib.md5(text.encode()).hexdigest()[:5]
+    kf = ('@keyframes ' + uid + '{'
+          '0%,100%{clip-path:none;transform:none;}'
+          '20%{clip-path:polygon(0 10%,100% 10%,100% 40%,0 40%);transform:translateX(-4px);}'
+          '40%{clip-path:polygon(0 55%,100% 55%,100% 75%,0 75%);transform:translateX(4px);}'
+          '60%{clip-path:polygon(0 25%,100% 25%,100% 50%,0 50%);transform:translateX(-2px);}'
+          '80%{clip-path:none;transform:none;}}')
+    return ('<style>' + kf + '</style>'
+            '<div style="padding:20px 0;text-align:center;position:relative;">'
+            '<span style="font-size:' + size + ';font-weight:900;color:#fff;position:relative;">'
+            + text +
+            '<span style="position:absolute;left:0;top:0;font-size:' + size + ';font-weight:900;'
+            'color:#ff2d78;animation:' + uid + ' 2s infinite;opacity:0.7;">' + text + '</span>'
+            '<span style="position:absolute;left:0;top:0;font-size:' + size + ';font-weight:900;'
+            'color:#00f0ff;animation:' + uid + ' 2s 0.1s infinite;opacity:0.7;">' + text + '</span>'
+            '</span></div>')
+_RENDERERS["glitch_text"] = _render_glitch_text
+
+
+def _render_floating_particles(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    import hashlib
+    uid = 'fp' + hashlib.md5(title.encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + '{0%{transform:translateY(0) scale(1);opacity:0.6;}100%{transform:translateY(-120px) scale(0.3);opacity:0;}}'
+    particles = ''
+    for i in range(12):
+        left = (i * 8 + 4) % 100
+        dur = 3 + (i % 5) * 0.8
+        dly = (i * 0.4) % 4
+        size = 4 + (i % 4) * 2
+        colors = ['#6366f1', '#8b5cf6', '#ec4899', '#06b6d4']
+        col = colors[i % 4]
+        particles += ('<div style="position:absolute;left:' + str(left) + '%;bottom:0;width:' + str(size)
+                      + 'px;height:' + str(size) + 'px;border-radius:50%;background:' + col + ';'
+                      'opacity:0.6;animation:' + uid + ' ' + f'{dur:.1f}' + 's ' + f'{dly:.1f}' + 's ease-in infinite;"></div>')
+    return ('<style>' + kf + '</style>'
+            '<div style="position:relative;height:120px;overflow:hidden;border-radius:12px;background:#0f172a;">'
+            + particles
+            + ('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
+               'font-weight:700;font-size:1.2rem;color:#fff;">' + title + '</div>' if title else '')
+            + '</div>')
+_RENDERERS["floating_particles"] = _render_floating_particles
+
+
+def _render_parallax_section(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    return ('<div style="margin:1rem 0;padding:40px 28px;border-radius:14px;overflow:hidden;position:relative;'
+            'background:linear-gradient(135deg,#0f172a,#1e1b4b);">'
+            '<div style="position:absolute;inset:0;background-image:'
+            'radial-gradient(circle at 20% 50%,#6366f155 0%,transparent 50%),'
+            'radial-gradient(circle at 80% 50%,#ec489955 0%,transparent 50%);"></div>'
+            + ('<div style="position:relative;font-size:clamp(1.5rem,4vw,2.5rem);font-weight:900;'
+               'text-align:center;background:linear-gradient(135deg,#6366f1,#ec4899);'
+               '-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">'
+               + title + '</div>' if title else '')
+            + '</div>')
+_RENDERERS["parallax_section"] = _render_parallax_section
+
+
+def _render_depth_stack(b: dict) -> str:
+    cards = b.get('cards', [])
+    count = int(b.get('count', len(cards) or 3))
+    items = cards[:count] if cards else [{}] * min(count, 3)
+    stack_html = ''
+    for i, card in enumerate(reversed(items)):
+        offset = i * 8
+        scale = 1 - i * 0.04
+        opacity = 1 - i * 0.15
+        title = _esc(card.get('title', '') if isinstance(card, dict) else '')
+        text = _esc(card.get('text', '') if isinstance(card, dict) else '')
+        stack_html = ('<div style="position:absolute;top:' + str(offset) + 'px;left:' + str(offset) + 'px;'
+                      'right:' + str(offset) + 'px;padding:20px;border-radius:12px;background:#fff;'
+                      'border:1px solid #e5e7eb;box-shadow:0 4px 12px rgba(0,0,0,0.08);'
+                      'transform:scale(' + str(scale) + ');opacity:' + str(opacity) + ';'
+                      'transform-origin:top center;">'
+                      + ('<div style="font-weight:700;color:#111827;">' + title + '</div>' if title else '')
+                      + ('<div style="font-size:0.875rem;color:#6b7280;">' + text + '</div>' if text else '')
+                      + '</div>') + stack_html
+    height = 80 + len(items) * 40
+    return ('<div style="position:relative;height:' + str(height) + 'px;margin:2rem 0;">'
+            + stack_html + '</div>')
+_RENDERERS["depth_stack"] = _render_depth_stack
+# ── Batch 4d: Animation & interactive atoms ───────────────────────────────────
+
+def _render_big_reveal(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    sub = _esc(b.get('sub', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    size = _esc(b.get('size', 'clamp(2.5rem,8vw,5rem)'))
+    delay = float(b.get('delay', 0))
+    import hashlib
+    uid = 'br' + hashlib.md5(text.encode()).hexdigest()[:5]
+    dly = f'{delay:.2f}s'
+    kf = '@keyframes ' + uid + '{from{opacity:0;transform:scale(0.8) translateY(20px);}to{opacity:1;transform:none;}}'
+    return ('<style>' + kf + '</style>'
+            '<div style="padding:40px 20px;text-align:center;">'
+            '<div style="font-size:' + size + ';font-weight:900;line-height:1.1;color:' + color + ';'
+            'animation:' + uid + ' 0.7s cubic-bezier(0.22,1,0.36,1) ' + dly + ' both;">'
+            + text + '</div>'
+            + ('<div style="font-size:1rem;color:#6b7280;margin-top:14px;">' + sub + '</div>' if sub else '')
+            + '</div>')
+_RENDERERS["big_reveal"] = _render_big_reveal
+
+
+def _render_split_reveal(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    text = _md_inline(b.get('text', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    delay = float(b.get('delay', 0))
+    import hashlib
+    uid = 'sr' + hashlib.md5(title.encode()).hexdigest()[:5]
+    dly = f'{delay:.2f}s'
+    kf = '@keyframes ' + uid + '{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0% 0 0);}}'
+    return ('<style>' + kf + '</style>'
+            '<div style="margin:2rem 0;padding:4px 0;overflow:hidden;">'
+            '<div style="font-size:clamp(1.8rem,5vw,3rem);font-weight:900;line-height:1.1;color:' + color + ';'
+            'animation:' + uid + ' 0.8s cubic-bezier(0.77,0,0.18,1) ' + dly + ' both;">'
+            + title + '</div>'
+            + ('<p style="margin:12px 0 0;font-size:0.9rem;line-height:1.7;color:#6b7280;">'
+               + text + '</p>' if text else '')
+            + '</div>')
+_RENDERERS["split_reveal"] = _render_split_reveal
+
+
+def _render_text_reveal_mask(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    size = _esc(b.get('size', '2rem'))
+    color = _esc(b.get('color', '#6366f1'))
+    delay = float(b.get('delay', 0))
+    import hashlib
+    uid = 'trm' + hashlib.md5(text.encode()).hexdigest()[:5]
+    dly = f'{delay:.2f}s'
+    kf = '@keyframes ' + uid + '{from{mask-size:0% 100%;-webkit-mask-size:0% 100%;}to{mask-size:100% 100%;-webkit-mask-size:100% 100%;}}'
+    return ('<style>' + kf + '</style>'
+            '<div style="overflow:hidden;padding:8px 0;">'
+            '<span style="font-size:' + size + ';font-weight:800;color:' + color + ';display:inline-block;'
+            'mask-image:linear-gradient(90deg,#000 0%,#000 100%);-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 100%);'
+            'mask-size:0% 100%;-webkit-mask-size:0% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat;'
+            'animation:' + uid + ' 0.8s cubic-bezier(0.77,0,0.18,1) ' + dly + ' forwards;">'
+            + text + '</span></div>')
+_RENDERERS["text_reveal_mask"] = _render_text_reveal_mask
+
+
+def _render_highlight_sweep(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    delay = float(b.get('delay', 0))
+    size = _esc(b.get('size', '1.5rem'))
+    import hashlib
+    uid = 'hs' + hashlib.md5(text.encode()).hexdigest()[:5]
+    dly = f'{delay:.2f}s'
+    kf = '@keyframes ' + uid + '{from{background-size:0% 40%;}to{background-size:100% 40%;}}'
+    return ('<style>' + kf + '</style>'
+            '<span style="font-size:' + size + ';font-weight:700;'
+            'background-image:linear-gradient(' + color + '44,' + color + '44);'
+            'background-repeat:no-repeat;background-position:0 85%;background-size:0% 40%;'
+            'animation:' + uid + ' 0.6s ease ' + dly + 's forwards;display:inline;">'
+            + text + '</span>')
+_RENDERERS["highlight_sweep"] = _render_highlight_sweep
+
+
+def _render_scramble_reveal(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    title = _esc(b.get('title', ''))
+    import hashlib
+    uid = 'scr' + hashlib.md5((text + title).encode()).hexdigest()[:5]
+    raw = b.get('text', b.get('title', 'Hello'))
+    raw_esc = raw.replace("'", "\\'")
+    return ('<div style="padding:16px 0;">'
+            + ('<div style="font-size:0.82rem;font-weight:700;color:#9ca3af;margin-bottom:6px;">'
+               + title + '</div>' if title else '')
+            + '<div id="' + uid + '" style="font-size:1.4rem;font-weight:700;font-family:ui-monospace,monospace;'
+            'color:#6366f1;min-height:1.6em;"></div>'
+            '<script>(function(){'
+            "var el=document.getElementById('" + uid + "');"
+            "var target='" + raw_esc + "';"
+            'var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";'
+            'var iter=0,max=target.length*6;'
+            '(function tick(){'
+            'el.textContent=target.split("").map(function(c,i){'
+            'if(i<Math.floor(iter/6))return c;'
+            'return chars[Math.floor(Math.random()*chars.length)];'
+            '}).join("");'
+            'if(iter++<max)requestAnimationFrame(tick);'
+            'else el.textContent=target;'
+            '})();'
+            '})();</script></div>')
+_RENDERERS["scramble_reveal"] = _render_scramble_reveal
+
+
+def _render_kinetic_headline(b: dict) -> str:
+    text = _esc(b.get('text', ''))
+    size = _esc(b.get('size', 'clamp(2rem,5vw,3.5rem)'))
+    color = _esc(b.get('color', b.get('colour', '#6366f1')))
+    stagger = float(b.get('stagger', 0.05))
+    style = b.get('style', 'fade-up')
+    import hashlib
+    uid = 'kh' + hashlib.md5(text.encode()).hexdigest()[:5]
+    raw = b.get('text', '')
+    words = raw.split()
+    kf = '@keyframes ' + uid + 'u{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}'
+    spans = ''
+    for i, w in enumerate(words):
+        dly = f'{i * stagger:.2f}s'
+        spans += ('<span style="display:inline-block;opacity:0;animation:' + uid + 'u 0.45s ease '
+                  + dly + ' forwards;">' + _esc(w) + '&nbsp;</span>')
+    return ('<style>' + kf + '</style>'
+            '<div style="padding:24px 0;font-size:' + size + ';font-weight:900;line-height:1.2;color:' + color + ';">'
+            + spans + '</div>')
+_RENDERERS["kinetic_headline"] = _render_kinetic_headline
+
+
+def _render_confetti_trigger(b: dict) -> str:
+    label = _esc(b.get('label', '🎉 Celebrate!'))
+    import hashlib
+    uid = 'cf' + hashlib.md5(label.encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + 'f{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(-150px) rotate(720deg);opacity:0;}}'
+    return ('<style>' + kf + '</style>'
+            '<div style="text-align:center;padding:16px;position:relative;">'
+            '<button id="' + uid + 'btn" onclick="(function(){'
+            "var btn=document.getElementById('" + uid + "btn');"
+            'var colors=["#6366f1","#ec4899","#f59e0b","#10b981","#06b6d4"];'
+            'for(var i=0;i<30;i++){'
+            'var el=document.createElement("div");'
+            'el.style.cssText="position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;left:"'
+            '+(30+Math.random()*40)+"%;top:50%;background:"+colors[i%5]+";"'
+            '+"animation:' + uid + 'f '+(0.8+Math.random()*0.6).toFixed(2)+'s "+(Math.random()*0.3).toFixed(2)+"s ease forwards;";'
+            'btn.parentNode.appendChild(el);'
+            'setTimeout(function(e){e.remove();},1500,el);}'
+            '})()" '
+            'style="padding:12px 28px;background:#6366f1;color:#fff;border:none;border-radius:100px;'
+            'font-weight:700;font-size:1rem;cursor:pointer;">' + label + '</button></div>')
+_RENDERERS["confetti_trigger"] = _render_confetti_trigger
+
+
+def _render_liquid_button(b: dict) -> str:
+    text = _esc(b.get('text', 'Click me'))
+    color = _esc(b.get('color', '#6366f1'))
+    import hashlib
+    uid = 'lb' + hashlib.md5(text.encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + 'rp{from{transform:scale(0);opacity:0.4;}to{transform:scale(4);opacity:0;}}'
+    return ('<style>' + kf + ' #' + uid + '{position:relative;overflow:hidden;}</style>'
+            '<div style="margin:1rem 0;">'
+            '<button id="' + uid + '" onclick="var r=document.createElement(\'span\');r.style.cssText='
+            '"\'position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);pointer-events:none;width:40px;height:40px;margin-top:-20px;margin-left:-20px;animation:' + uid + 'rp 0.6s linear;top:\'+event.offsetY+\'px;left:\'+event.offsetX+\'px;\''
+            ';this.appendChild(r);setTimeout(function(){r.remove();},600);" '
+            'style="padding:12px 28px;background:' + color + ';color:#fff;border:none;border-radius:8px;'
+            'font-weight:600;font-size:0.9rem;cursor:pointer;position:relative;overflow:hidden;">'
+            + text + '</button></div>')
+_RENDERERS["liquid_button"] = _render_liquid_button
+
+
+def _render_magnetic_button(b: dict) -> str:
+    text = _esc(b.get('text', 'Hover me'))
+    color = _esc(b.get('color', '#6366f1'))
+    return ('<div style="margin:1rem 0;">'
+            '<button onmousemove="var r=this.getBoundingClientRect();'
+            'var x=(event.clientX-r.left-r.width/2)*0.3;'
+            'var y=(event.clientY-r.top-r.height/2)*0.3;'
+            'this.style.transform=\'translate(\'+x+\'px,\'+y+\'px) scale(1.06)\';" '
+            'onmouseleave="this.style.transform=\'\';" '
+            'style="padding:12px 28px;background:' + color + ';color:#fff;border:none;border-radius:8px;'
+            'font-weight:600;font-size:0.9rem;cursor:pointer;transition:transform 0.15s ease;">'
+            + text + '</button></div>')
+_RENDERERS["magnetic_button"] = _render_magnetic_button
+
+
+def _render_scroll_progress(b: dict) -> str:
+    color = _esc(b.get('color', '#6366f1'))
+    height = int(b.get('height', 4))
+    return ('<div id="a2ui-scroll-prog" style="position:fixed;top:0;left:0;height:' + str(height)
+            + 'px;background:' + color + ';width:0%;z-index:9999;transition:width 0.1s;">'
+            '</div>'
+            '<script>(function(){'
+            'var bar=document.getElementById("a2ui-scroll-prog");'
+            'window.addEventListener("scroll",function(){'
+            'var s=document.documentElement;'
+            'var pct=(s.scrollTop/(s.scrollHeight-s.clientHeight))*100;'
+            'if(bar)bar.style.width=Math.min(100,pct)+"%";'
+            '});'
+            '})();</script>')
+_RENDERERS["scroll_progress"] = _render_scroll_progress
+
+
+def _render_scroll_trigger(b: dict) -> str:
+    text = _md_inline(b.get('text', ''))
+    title = _esc(b.get('title', ''))
+    delay = float(b.get('delay', 0))
+    direction = b.get('direction', 'up')
+    import hashlib
+    uid = 'st' + hashlib.md5((text + title).encode()).hexdigest()[:5]
+    tx = {'up': '0,24px', 'down': '0,-24px', 'left': '-24px,0', 'right': '24px,0'}.get(direction, '0,24px')
+    return ('<div id="' + uid + '" style="opacity:0;transform:translate(' + tx + ');transition:opacity 0.6s ease '
+            + f'{delay:.2f}' + 's,transform 0.6s ease ' + f'{delay:.2f}' + 's;margin:1rem 0;">'
+            + ('<div style="font-weight:700;font-size:1rem;margin-bottom:6px;">' + title + '</div>' if title else '')
+            + ('<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div>' if text else '')
+            + '</div>'
+            '<script>(function(){'
+            "var el=document.getElementById('" + uid + "');"
+            'if(!el)return;'
+            'var obs=new IntersectionObserver(function(entries){'
+            'if(entries[0].isIntersecting){'
+            'el.style.opacity="1";el.style.transform="none";obs.disconnect();}'
+            '},{threshold:0.2});'
+            'obs.observe(el);'
+            '})();</script>')
+_RENDERERS["scroll_trigger"] = _render_scroll_trigger
+
+
+def _render_live_clock(b: dict) -> str:
+    label = _esc(b.get('label', ''))
+    fmt = b.get('format', 'HH:MM:SS')
+    tz = _esc(b.get('timezone', ''))
+    import hashlib
+    uid = 'lc' + hashlib.md5((label + tz).encode()).hexdigest()[:5]
+    tz_js = ('"' + tz + '"') if tz else '"UTC"'
+    return ('<div style="text-align:center;padding:20px;">'
+            + ('<div style="font-size:0.78rem;color:#9ca3af;margin-bottom:4px;">' + label + '</div>' if label else '')
+            + '<div id="' + uid + '" style="font-size:2.5rem;font-weight:700;font-family:ui-monospace,monospace;'
+            'color:#6366f1;letter-spacing:0.05em;">--:--:--</div>'
+            + ('<div style="font-size:0.72rem;color:#9ca3af;margin-top:4px;">' + tz + '</div>' if tz else '')
+            + '</div>'
+            '<script>(function(){'
+            'function tick(){'
+            'var now=new Date();'
+            'var s=now.toLocaleTimeString("en-GB",{timeZone:' + tz_js + ',hour12:false});'
+            'var el=document.getElementById("' + uid + '");if(el)el.textContent=s;}'
+            'tick();setInterval(tick,1000);'
+            '})();</script>')
+_RENDERERS["live_clock"] = _render_live_clock
+
+
+def _render_deadline_ticker(b: dict) -> str:
+    target = _esc(b.get('target_date', ''))
+    label = _esc(b.get('label', 'Countdown'))
+    import hashlib
+    uid = 'dt' + hashlib.md5(target.encode()).hexdigest()[:5]
+    return ('<div style="text-align:center;padding:20px;">'
+            '<div style="font-size:0.78rem;font-weight:700;color:#9ca3af;letter-spacing:0.1em;'
+            'text-transform:uppercase;margin-bottom:8px;">' + label + '</div>'
+            '<div id="' + uid + '" style="font-size:2rem;font-weight:700;font-family:ui-monospace,monospace;'
+            'color:#6366f1;">Loading…</div>'
+            '<div style="font-size:0.72rem;color:#9ca3af;margin-top:4px;">' + target + '</div>'
+            '</div>'
+            '<script>(function(){'
+            "var target=new Date('" + target + "');"
+            'function tick(){'
+            'var diff=target-Date.now();'
+            'if(diff<=0){document.getElementById("' + uid + '").textContent="Done!";return;}'
+            'var d=Math.floor(diff/86400000);'
+            'var h=Math.floor((diff%86400000)/3600000);'
+            'var m=Math.floor((diff%3600000)/60000);'
+            'var s=Math.floor((diff%60000)/1000);'
+            'var el=document.getElementById("' + uid + '");'
+            'if(el)el.textContent=d+"d "+String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s";}'
+            'tick();setInterval(tick,1000);'
+            '})();</script>')
+_RENDERERS["deadline_ticker"] = _render_deadline_ticker
+
+
+def _render_live_metric(b: dict) -> str:
+    start = float(b.get('start', 0))
+    value = float(b.get('value', 100))
+    duration = int(b.get('duration', 1800))
+    prefix = _esc(b.get('prefix', ''))
+    suffix = _esc(b.get('suffix', ''))
+    label = _esc(b.get('label', ''))
+    decimals = int(b.get('decimals', 0))
+    import hashlib
+    uid = 'lm' + hashlib.md5(str(value).encode()).hexdigest()[:5]
+    return ('<div style="text-align:center;padding:28px 20px;">'
+            '<div style="font-size:3rem;font-weight:900;color:#6366f1;line-height:1;">'
+            '<span>' + prefix + '</span><span id="' + uid + '">' + str(int(start)) + '</span>'
+            '<span>' + suffix + '</span></div>'
+            + ('<div style="font-size:0.78rem;color:#9ca3af;margin-top:8px;">' + label + '</div>' if label else '')
+            + '</div>'
+            '<script>(function(){'
+            'var el=document.getElementById("' + uid + '");'
+            'if(!el)return;'
+            'var from=' + str(start) + ',to=' + str(value) + ',dur=' + str(duration) + ',dec=' + str(decimals) + ';'
+            'var start=null;'
+            'function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}'
+            'requestAnimationFrame(function tick(ts){'
+            'if(!start)start=ts;'
+            'var prog=Math.min(1,(ts-start)/dur);'
+            'el.textContent=(from+(to-from)*ease(prog)).toFixed(dec);'
+            'if(prog<1)requestAnimationFrame(tick);'
+            '});'
+            '})();</script>')
+_RENDERERS["live_metric"] = _render_live_metric
+
+
+def _render_speed_counter(b: dict) -> str:
+    label = _esc(b.get('label', ''))
+    sub = _esc(b.get('sub', ''))
+    accent = _esc(b.get('accent', '#6366f1'))
+    import hashlib
+    uid = 'sc' + hashlib.md5(label.encode()).hexdigest()[:5]
+    return ('<div style="text-align:center;padding:28px 20px;">'
+            '<div id="' + uid + '" style="font-size:3.5rem;font-weight:900;color:' + accent + ';line-height:1;'
+            'font-family:ui-monospace,monospace;">0</div>'
+            + ('<div style="font-weight:700;font-size:0.875rem;color:#374151;margin-top:8px;">' + label + '</div>' if label else '')
+            + ('<div style="font-size:0.78rem;color:#9ca3af;margin-top:4px;">' + sub + '</div>' if sub else '')
+            + '</div>'
+            '<script>(function(){'
+            'var el=document.getElementById("' + uid + '");'
+            'if(!el)return;'
+            'var n=0,step=Math.floor(Math.random()*900+100);'
+            'setInterval(function(){n+=step;el.textContent=n.toLocaleString();},100);'
+            '})();</script>')
+_RENDERERS["speed_counter"] = _render_speed_counter
+
+
+def _render_live_edit(b: dict) -> str:
+    placeholder = _esc(b.get('placeholder', 'Type something…'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    return ('<div style="margin:1rem 0;padding:16px;border:2px solid ' + accent + '33;border-radius:10px;">'
+            '<div contenteditable="true" style="min-height:80px;outline:none;font-size:0.9rem;'
+            'line-height:1.7;color:#374151;" '
+            'oninput="this.nextElementSibling.textContent=this.innerText.length+\' chars\';" '
+            'placeholder="' + placeholder + '" '
+            'onfocus="this.parentNode.style.borderColor=\'' + accent + '\';" '
+            'onblur="this.parentNode.style.borderColor=\'' + accent + '33\';">'
+            '</div>'
+            '<div style="font-size:0.72rem;color:#9ca3af;margin-top:6px;text-align:right;">0 chars</div>'
+            '</div>')
+_RENDERERS["live_edit"] = _render_live_edit
+
+
+def _render_progress_reveal(b: dict) -> str:
+    value = int(b.get('value', 0))
+    label = _esc(b.get('label', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    suffix = _esc(b.get('suffix', '%'))
+    height = int(b.get('height', 10))
+    import hashlib
+    uid = 'pr' + hashlib.md5(label.encode()).hexdigest()[:5]
+    return ('<div style="margin:1rem 0;">'
+            + ('<div style="display:flex;justify-content:space-between;font-size:0.82rem;'
+               'color:#374151;margin-bottom:6px;">'
+               '<span>' + label + '</span>'
+               '<span style="font-weight:700;">' + str(value) + suffix + '</span></div>' if label else '')
+            + '<div style="background:#f3f4f6;border-radius:99px;height:' + str(height) + 'px;overflow:hidden;">'
+            '<div id="' + uid + '" style="width:0%;height:100%;border-radius:99px;background:' + color + ';'
+            'transition:width 0.8s cubic-bezier(0.22,1,0.36,1);"></div></div></div>'
+            '<script>(function(){'
+            'var el=document.getElementById("' + uid + '");'
+            'if(!el)return;'
+            'var obs=new IntersectionObserver(function(entries){'
+            'if(entries[0].isIntersecting){el.style.width="' + str(min(100, value)) + '%";obs.disconnect();}'
+            '},{threshold:0.3});'
+            'obs.observe(el.parentNode.parentNode);'
+            '})();</script>')
+_RENDERERS["progress_reveal"] = _render_progress_reveal
+
+
+def _render_progress_store(b: dict) -> str:
+    course_id = _esc(b.get('course_id', 'default'))
+    import hashlib
+    uid = 'ps' + hashlib.md5(course_id.encode()).hexdigest()[:5]
+    return ('<div id="' + uid + '" style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;'
+            'border-radius:10px;background:#f9fafb;">'
+            '<div style="display:flex;justify-content:space-between;font-size:0.82rem;'
+            'color:#374151;margin-bottom:6px;">'
+            '<span>Progress</span><span id="' + uid + 'pct">—</span></div>'
+            '<div style="background:#e5e7eb;border-radius:99px;height:8px;">'
+            '<div id="' + uid + 'bar" style="width:0%;height:100%;border-radius:99px;background:#6366f1;'
+            'transition:width 0.4s;"></div></div></div>'
+            '<script>(function(){'
+            "var key='a2ui_prog_" + course_id + "';"
+            'var pct=parseFloat(localStorage.getItem(key)||0);'
+            'var bar=document.getElementById("' + uid + 'bar");'
+            'var lbl=document.getElementById("' + uid + 'pct");'
+            'if(bar)bar.style.width=pct+"%";'
+            'if(lbl)lbl.textContent=Math.round(pct)+"%";'
+            '})();</script>')
+_RENDERERS["progress_store"] = _render_progress_store
+
+
+def _render_stagger_list(b: dict) -> str:
+    items = b.get('items', [])
+    direction = b.get('direction', 'up')
+    stagger = float(b.get('stagger', 0.08))
+    tx = {'up': '0,16px', 'down': '0,-16px', 'left': '-16px,0', 'right': '16px,0'}.get(direction, '0,16px')
+    import hashlib
+    uid = 'sl' + hashlib.md5(str(items[:3]).encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + '{from{opacity:0;transform:translate(' + tx + ');}to{opacity:1;transform:none;}}'
+    rows = ''
+    for i, item in enumerate(items):
+        text = _esc(str(item) if isinstance(item, str) else item.get('text', item.get('label', '')))
+        dly = f'{i * stagger:.2f}s'
+        rows += ('<div style="opacity:0;animation:' + uid + ' 0.4s ease ' + dly + ' forwards;'
+                 'padding:8px 0;font-size:0.9rem;color:#374151;border-bottom:1px solid #f3f4f6;">'
+                 + text + '</div>')
+    return '<style>' + kf + '</style><div style="margin:1rem 0;">' + rows + '</div>'
+_RENDERERS["stagger_list"] = _render_stagger_list
+
+
+def _render_step_reveal_sequence(b: dict) -> str:
+    steps = b.get('steps', [])
+    import hashlib
+    uid = 'srs' + hashlib.md5(str(steps[:2]).encode()).hexdigest()[:5]
+    rows = ''
+    for i, step in enumerate(steps):
+        title = _esc(step.get('title', '') if isinstance(step, dict) else str(step))
+        text = _esc(step.get('text', '') if isinstance(step, dict) else '')
+        dly = f'{i * 0.15:.2f}s'
+        rows += ('<div style="opacity:0;transform:translateX(-16px);'
+                 'animation:' + uid + 'sl 0.4s ease ' + dly + ' forwards;'
+                 'display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+                 '<div style="width:28px;height:28px;border-radius:50%;background:#6366f1;'
+                 'color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;'
+                 'justify-content:center;flex-shrink:0;">' + str(i + 1) + '</div>'
+                 '<div><div style="font-weight:600;font-size:0.875rem;color:#111827;">' + title + '</div>'
+                 + ('<div style="font-size:0.82rem;color:#6b7280;margin-top:2px;">' + text + '</div>' if text else '')
+                 + '</div></div>')
+    return ('<style>@keyframes ' + uid + 'sl{from{opacity:0;transform:translateX(-16px);}to{opacity:1;transform:none;}}</style>'
+            '<div style="margin:1.5rem 0;">' + rows + '</div>')
+_RENDERERS["step_reveal_sequence"] = _render_step_reveal_sequence
+
+
+def _render_quiz_set(b: dict) -> str:
+    title = _esc(b.get('title', 'Quiz'))
+    questions = b.get('questions', [])
+    accent = _esc(b.get('accent', '#6366f1'))
+    import hashlib
+    uid = 'qz' + hashlib.md5(title.encode()).hexdigest()[:5]
+    q_html = ''
+    for qi, q in enumerate(questions):
+        qtext = _esc(q.get('question', q.get('text', '')))
+        opts = q.get('options', [])
+        correct = q.get('correct', q.get('answer', ''))
+        opt_html = ''
+        for oi, opt in enumerate(opts):
+            opt_text = _esc(str(opt) if isinstance(opt, str) else opt.get('text', opt.get('label', '')))
+            opt_val = str(opt) if isinstance(opt, str) else opt.get('value', opt.get('text', str(oi)))
+            is_correct = str(opt_val) == str(correct) or str(opt_text) == str(correct)
+            opt_html += ('<button onclick="(function(btn,correct){'
+                         'var parent=btn.closest(\'.a2ui-q\');'
+                         'parent.querySelectorAll(\'button\').forEach(function(b){b.disabled=true;});'
+                         'btn.style.background=correct?\'#d1fae5\':\'#fee2e2\';'
+                         'btn.style.borderColor=correct?\'#10b981\':\'#ef4444\';'
+                         '})(this,' + ('true' if is_correct else 'false') + ')" '
+                         'style="display:block;width:100%;text-align:left;padding:8px 14px;'
+                         'margin:4px 0;border:1px solid #e5e7eb;border-radius:6px;background:#fff;'
+                         'font-size:0.875rem;cursor:pointer;">' + opt_text + '</button>')
+        q_html += ('<div class="a2ui-q" style="margin-bottom:16px;">'
+                   '<div style="font-weight:600;font-size:0.875rem;color:#111827;margin-bottom:8px;">'
+                   + str(qi + 1) + '. ' + qtext + '</div>'
+                   + opt_html + '</div>')
+    return ('<div style="margin:1.5rem 0;padding:20px;border:1px solid ' + accent + '33;'
+            'border-radius:12px;background:' + accent + '06;">'
+            '<div style="font-weight:700;font-size:1rem;color:' + accent + ';margin-bottom:14px;">'
+            + title + '</div>' + q_html + '</div>')
+_RENDERERS["quiz_set"] = _render_quiz_set
+
+
+def _render_live_vote(b: dict) -> str:
+    question = _esc(b.get('question', 'Your vote?'))
+    options = b.get('options', [])
+    accent = _esc(b.get('accent', '#6366f1'))
+    import hashlib
+    uid = 'lv' + hashlib.md5(question.encode()).hexdigest()[:5]
+    opt_html = ''
+    for opt in options:
+        text = _esc(str(opt) if isinstance(opt, str) else opt.get('label', opt.get('text', '')))
+        opt_html += ('<button onclick="(function(btn){'
+                     'var parent=btn.closest(\'.a2ui-lv\');'
+                     'parent.querySelectorAll(\'button\').forEach(function(b){b.style.opacity=\'0.5\';b.disabled=true;});'
+                     'btn.style.opacity=\'1\';btn.style.background=\'' + accent + '\';btn.style.color=\'#fff\';'
+                     '})(this)" '
+                     'style="flex:1;padding:10px 14px;border:2px solid ' + accent + ';border-radius:8px;'
+                     'background:#fff;color:' + accent + ';font-weight:600;font-size:0.875rem;cursor:pointer;">'
+                     + text + '</button>')
+    return ('<div class="a2ui-lv" style="margin:1.5rem 0;padding:20px;border:1px solid #e5e7eb;'
+            'border-radius:12px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:14px;">'
+            + question + '</div>'
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + opt_html + '</div>'
+            '<div style="font-size:0.72rem;color:#9ca3af;margin-top:10px;">'
+            'Live tallying requires write_url / sheet_url.</div></div>')
+_RENDERERS["live_vote"] = _render_live_vote
+
+
+def _render_raise_hand(b: dict) -> str:
+    question = _esc(b.get('question', 'Raise your hand'))
+    label = _esc(b.get('label', '✋ Raise Hand'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    import hashlib
+    uid = 'rh' + hashlib.md5(question.encode()).hexdigest()[:5]
+    return ('<div style="margin:1.5rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;">'
+            '<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:12px;">'
+            + question + '</div>'
+            '<button id="' + uid + '" onclick="this.textContent=\'✅ Noted!\';this.disabled=true;'
+            'this.style.background=\'#d1fae5\';this.style.borderColor=\'#10b981\';this.style.color=\'#065f46\';" '
+            'style="padding:10px 24px;background:' + accent + ';color:#fff;border:none;border-radius:8px;'
+            'font-weight:600;cursor:pointer;">' + label + '</button>'
+            '<div style="font-size:0.72rem;color:#9ca3af;margin-top:10px;">'
+            'Live tallying requires write_url / sheet_url.</div></div>')
+_RENDERERS["raise_hand"] = _render_raise_hand
+
+
+def _render_reaction_shower(b: dict) -> str:
+    reactions = b.get('reactions', ['👍', '❤️', '🎉', '💡', '🔥'])
+    accent = _esc(b.get('accent', '#6366f1'))
+    import hashlib
+    uid = 'rs' + hashlib.md5(str(reactions).encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + 'fly{0%{transform:translateY(0);opacity:1;}100%{transform:translateY(-80px);opacity:0;}}'
+    buttons = ''
+    for r in reactions:
+        r_esc = _esc(str(r))
+        buttons += ('<button onclick="(function(btn){'
+                    'var el=document.createElement(\'span\');'
+                    'el.textContent=btn.textContent;'
+                    'el.style.cssText=\'position:absolute;font-size:1.4rem;animation:' + uid + 'fly 0.8s ease forwards;pointer-events:none;\';'
+                    'btn.parentNode.appendChild(el);setTimeout(function(){el.remove();},800);'
+                    '})(this)" '
+                    'style="font-size:1.4rem;padding:6px 10px;border:none;background:transparent;'
+                    'cursor:pointer;border-radius:8px;transition:transform 0.1s;" '
+                    'onmousedown="this.style.transform=\'scale(1.3)\'" '
+                    'onmouseup="this.style.transform=\'\'">'
+                    + r_esc + '</button>')
+    return ('<style>' + kf + '</style>'
+            '<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;'
+            'position:relative;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">'
+            + buttons
+            + '<div style="font-size:0.72rem;color:#9ca3af;margin-left:auto;">'
+            'Live tally requires write_url.</div></div>')
+_RENDERERS["reaction_shower"] = _render_reaction_shower
+# ── Batch 4e: Complex, canvas & meta atoms ────────────────────────────────────
+
+def _render_terminal_boot(b: dict) -> str:
+    lines = b.get('lines', ['$ initializing…', '> loading…', '✓ ready'])
+    title = _esc(b.get('title', ''))
+    speed = int(b.get('speed', 60))
+    import hashlib
+    uid = 'tb' + hashlib.md5(str(lines[:2]).encode()).hexdigest()[:5]
+    lines_js = '[' + ','.join('"' + _esc(str(l)).replace('"', '\\"') + '"' for l in lines) + ']'
+    return ('<div style="margin:1rem 0;border-radius:10px;overflow:hidden;background:#0d1117;">'
+            '<div style="background:#1c1c1c;padding:8px 14px;display:flex;align-items:center;gap:6px;">'
+            '<span style="width:12px;height:12px;border-radius:50%;background:#ff5f56;"></span>'
+            '<span style="width:12px;height:12px;border-radius:50%;background:#febc2e;"></span>'
+            '<span style="width:12px;height:12px;border-radius:50%;background:#27c93f;"></span>'
+            + ('<span style="font-size:0.72rem;color:#6b7280;margin-left:8px;">' + title + '</span>' if title else '')
+            + '</div>'
+            '<div id="' + uid + '" style="padding:16px 20px;font-family:ui-monospace,monospace;'
+            'font-size:0.82rem;line-height:1.8;color:#cdd6f4;min-height:80px;"></div></div>'
+            '<script>(function(){'
+            'var el=document.getElementById("' + uid + '");'
+            'var lines=' + lines_js + ';'
+            'var i=0,j=0;'
+            '(function tick(){'
+            'if(i>=lines.length)return;'
+            'if(j<=lines[i].length){'
+            'el.innerHTML+=(j===0?"<div>":"")+lines[i][j-1]||"";'
+            'j++;setTimeout(tick,' + str(speed) + ');'
+            '}else{'
+            'el.innerHTML+="</div>";'
+            'i++;j=0;setTimeout(tick,200);}'
+            '})();'
+            '})();</script>')
+_RENDERERS["terminal_boot"] = _render_terminal_boot
+
+
+def _render_word_cloud(b: dict) -> str:
+    words = b.get('words', [])
+    palette = b.get('palette', ['#6366f1', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981', '#f59e0b'])
+    placeholder = _esc(b.get('placeholder', 'Word cloud'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    if not words:
+        return ('<div style="margin:1rem 0;padding:20px;border:1px dashed #d1d5db;border-radius:10px;'
+                'background:#f9fafb;text-align:center;color:#9ca3af;font-style:italic;">'
+                + placeholder + '</div>')
+    cloud = ''
+    for i, w in enumerate(words):
+        if isinstance(w, dict):
+            text = _esc(w.get('text', w.get('word', '')))
+            count = int(w.get('count', w.get('weight', 5)))
+        else:
+            text = _esc(str(w))
+            count = 5
+        size = max(0.75, min(2.5, 0.75 + count / 8))
+        color = _esc(palette[i % len(palette)])
+        cloud += ('<span style="display:inline-block;padding:3px 8px;font-size:' + f'{size:.2f}' + 'rem;'
+                  'font-weight:' + ('700' if count > 8 else '500') + ';color:' + color + ';'
+                  'margin:3px;opacity:0.85;cursor:default;" title="' + str(count) + '">'
+                  + text + '</span>')
+    return ('<div style="margin:1rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:12px;'
+            'background:#fff;text-align:center;line-height:1.6;">' + cloud + '</div>')
+_RENDERERS["word_cloud"] = _render_word_cloud
+
+
+def _render_orbit_diagram(b: dict) -> str:
+    center = _esc(b.get('center', ''))
+    nodes = b.get('nodes', [])
+    color = _esc(b.get('color', '#6366f1'))
+    speed = float(b.get('speed', 1.0))
+    import hashlib
+    uid = 'od' + hashlib.md5(center.encode()).hexdigest()[:5]
+    n = len(nodes) or 1
+    kf = '@keyframes ' + uid + 'rot{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}'
+    node_html = ''
+    for i, nd in enumerate(nodes):
+        label = _esc(str(nd) if isinstance(nd, str) else nd.get('label', ''))
+        icon = _esc(nd.get('icon', '') if isinstance(nd, dict) else '')
+        angle = (360 / n) * i
+        dur = f'{(8 / speed):.1f}s'
+        dly = f'{-(8 / speed / n * i):.2f}s'
+        node_html += ('<div style="position:absolute;width:100%;height:100%;'
+                      'animation:' + uid + 'rot ' + dur + ' linear ' + dly + ' infinite;">'
+                      '<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);">'
+                      '<div style="background:' + color + ';color:#fff;padding:3px 10px;border-radius:99px;'
+                      'font-size:0.72rem;font-weight:700;white-space:nowrap;">'
+                      + (icon + ' ' if icon else '') + label + '</div></div></div>')
+    return ('<style>' + kf + '</style>'
+            '<div style="margin:1.5rem auto;width:200px;height:200px;position:relative;">'
+            '<div style="position:absolute;inset:30px;border-radius:50%;border:1px dashed ' + color + '55;"></div>'
+            '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
+            'z-index:2;"><div style="padding:8px 16px;border-radius:99px;background:' + color + ';'
+            'color:#fff;font-weight:700;font-size:0.82rem;white-space:nowrap;">' + center + '</div></div>'
+            + node_html + '</div>')
+_RENDERERS["orbit_diagram"] = _render_orbit_diagram
+
+
+def _render_globe_3d(b: dict) -> str:
+    size = int(b.get('size', 300))
+    color = _esc(b.get('color', b.get('colour', '#6366f1')))
+    speed = float(b.get('speed', 0.5))
+    theme = b.get('theme', 'dark')
+    bg = '#0a0a1a' if theme == 'dark' else '#f0f4ff'
+    import hashlib
+    uid = 'g3d' + hashlib.md5(color.encode()).hexdigest()[:5]
+    return ('<div style="display:flex;justify-content:center;margin:1rem 0;">'
+            '<canvas id="' + uid + '" width="' + str(size) + '" height="' + str(size) + '" '
+            'style="border-radius:50%;background:' + bg + ';display:block;cursor:grab;"></canvas></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'if(!c)return;'
+            'var x=c.getContext("2d"),W=c.width,H=c.height,cx=W/2,cy=H/2,r=W*0.42;'
+            'var spd=' + f'{speed:.2f}' + ',t=0,drag=false,lx=0,ly=0,rx=0,ry=0;'
+            'var pts=[];'
+            'for(var i=0;i<200;i++){'
+            'var lat=(Math.random()-0.5)*Math.PI;'
+            'var lon=Math.random()*Math.PI*2;'
+            'pts.push([lat,lon]);}'
+            'c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});'
+            'window.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});'
+            'window.addEventListener("mousemove",function(e){'
+            'if(!drag)return;rx+=(e.clientX-lx)*0.005;ry+=(e.clientY-ly)*0.005;lx=e.clientX;ly=e.clientY;});'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'if(!drag)rx+=spd*0.01;'
+            'x.clearRect(0,0,W,H);'
+            'x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);'
+            'var grd=x.createRadialGradient(cx-r*0.3,cy-r*0.3,0,cx,cy,r);'
+            'grd.addColorStop(0,"' + color + '66");grd.addColorStop(1,"' + color + '11");'
+            'x.fillStyle=grd;x.fill();'
+            'pts.forEach(function(p){'
+            'var lat=p[0]+ry,lon=p[1]+rx;'
+            'var cosLat=Math.cos(lat);'
+            'var px3=cosLat*Math.sin(lon);'
+            'var py3=Math.sin(lat);'
+            'var pz3=cosLat*Math.cos(lon);'
+            'if(pz3<0)return;'
+            'var px=cx+r*px3,py=cy-r*py3;'
+            'var alpha=0.3+pz3*0.7;'
+            'x.beginPath();x.arc(px,py,1.5,0,Math.PI*2);'
+            'x.fillStyle="' + color + '";x.globalAlpha=alpha;x.fill();x.globalAlpha=1;'
+            '});'
+            't+=0.01;'
+            '})();'
+            '})();</script>')
+_RENDERERS["globe_3d"] = _render_globe_3d
+
+
+def _render_spring_nodes(b: dict) -> str:
+    nodes = b.get('nodes', [])
+    edges = b.get('edges', [])
+    colour = _esc(b.get('colour', b.get('color', '#6366f1')))
+    bg = _esc(b.get('bg', '#0f172a'))
+    height = int(b.get('height', 340))
+    import hashlib, json
+    uid = 'sn' + hashlib.md5(str(nodes[:2]).encode()).hexdigest()[:5]
+    nodes_js = json.dumps(nodes)
+    edges_js = json.dumps(edges)
+    return ('<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
+            'background:' + bg + ';display:block;cursor:grab;"></canvas>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=' + str(height) + ';'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var nodeDefs=' + nodes_js + ';'
+            'var edgeDefs=' + edges_js + ';'
+            'var ns=nodeDefs.map(function(d,i){'
+            'return{id:d.id||String(i),label:d.label||"",x:(0.1+Math.random()*0.8)*W,'
+            'y:(0.1+Math.random()*0.8)*H,vx:0,vy:0,r:d.size||22,pinned:false};});'
+            'var idx={};ns.forEach(function(n,i){idx[n.id]=i;});'
+            'var drag=-1,lx=0,ly=0;'
+            'function ptOn(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}'
+            'function hit(px,py){for(var i=0;i<ns.length;i++){var n=ns[i],dx=px-n.x,dy=py-n.y;if(dx*dx+dy*dy<n.r*n.r)return i;}return -1;}'
+            'c.addEventListener("mousedown",function(e){var p=ptOn(e);drag=hit(p.x,p.y);if(drag>=0){ns[drag].pinned=true;c.style.cursor="grabbing";}});'
+            'window.addEventListener("mouseup",function(){if(drag>=0)ns[drag].pinned=false;drag=-1;c.style.cursor="grab";});'
+            'window.addEventListener("mousemove",function(e){if(drag<0)return;var p=ptOn(e);ns[drag].x=p.x;ns[drag].y=p.y;ns[drag].vx=0;ns[drag].vy=0;});'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'for(var i=0;i<ns.length;i++){for(var j=i+1;j<ns.length;j++){'
+            'var a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;'
+            'var rep=1200/(d*d);if(!a.pinned){a.vx-=dx*rep/d;a.vy-=dy*rep/d;}if(!b.pinned){b.vx+=dx*rep/d;b.vy+=dy*rep/d;}}}'
+            'edgeDefs.forEach(function(e){'
+            'var ai=idx[e.source||e.from],bi=idx[e.target||e.to];'
+            'if(ai===undefined||bi===undefined)return;'
+            'var a=ns[ai],b=ns[bi],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;'
+            'var rl=e.rest_length||120,f=(d-rl)*0.04;'
+            'if(!a.pinned){a.vx+=dx/d*f;a.vy+=dy/d*f;}if(!b.pinned){b.vx-=dx/d*f;b.vy-=dy/d*f;}});'
+            'ns.forEach(function(n){'
+            'if(n.pinned)return;'
+            'n.vx=(n.vx+(W/2-n.x)*0.001)*0.85;n.vy=(n.vy+(H/2-n.y)*0.001)*0.85;'
+            'n.x=Math.max(n.r,Math.min(W-n.r,n.x+n.vx));n.y=Math.max(n.r,Math.min(H-n.r,n.y+n.vy));});'
+            'x.clearRect(0,0,W,H);'
+            'x.strokeStyle="' + colour + '44";x.lineWidth=1.5;'
+            'edgeDefs.forEach(function(e){'
+            'var ai=idx[e.source||e.from],bi=idx[e.target||e.to];'
+            'if(ai===undefined||bi===undefined)return;'
+            'x.beginPath();x.moveTo(ns[ai].x,ns[ai].y);x.lineTo(ns[bi].x,ns[bi].y);x.stroke();});'
+            'ns.forEach(function(n){'
+            'x.beginPath();x.arc(n.x,n.y,n.r,0,Math.PI*2);'
+            'x.fillStyle="' + colour + '22";x.fill();'
+            'x.strokeStyle="' + colour + '";x.lineWidth=2;x.stroke();'
+            'x.fillStyle="#fff";x.font="bold 11px system-ui";x.textAlign="center";x.textBaseline="middle";'
+            'x.fillText(n.label.substr(0,12),n.x,n.y);});'
+            '})();'
+            '})();</script>')
+_RENDERERS["spring_nodes"] = _render_spring_nodes
+
+
+def _render_geo_mercator_radar(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    color = _esc(b.get('color', '#00f2ff'))
+    height = int(b.get('height', 340))
+    nodes = b.get('nodes', [])
+    links = b.get('links', [])
+    import hashlib, json
+    uid = 'gmr' + hashlib.md5(title.encode()).hexdigest()[:5]
+    nodes_js = json.dumps(nodes)
+    links_js = json.dumps(links)
+    return ('<div style="position:relative;">'
+            + ('<div style="font-size:0.72rem;font-weight:700;color:' + color + ';'
+               'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + title + '</div>' if title else '')
+            + '<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=' + str(height) + ';'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var NODES=' + nodes_js + ';var LINKS=' + links_js + ';'
+            'var col="' + color + '";'
+            'function toScreen(lat,lon){'
+            'return{x:((lon+180)/360)*W,y:((90-lat)/180)*H};}'
+            'function draw(){'
+            'x.clearRect(0,0,W,H);'
+            'x.strokeStyle=col+"22";x.lineWidth=1;'
+            'for(var lat=-60;lat<=60;lat+=30){var p=toScreen(lat,0);x.beginPath();x.moveTo(0,p.y);x.lineTo(W,p.y);x.stroke();}'
+            'for(var lon=-180;lon<=180;lon+=30){var p=toScreen(0,lon);x.beginPath();x.moveTo(p.x,0);x.lineTo(p.x,H);x.stroke();}'
+            'x.strokeStyle=col+"55";x.lineWidth=1.5;'
+            'LINKS.forEach(function(l){'
+            'var a=NODES.find(function(n){return n.id===l.source||n.id===l.from;});'
+            'var b=NODES.find(function(n){return n.id===l.target||n.id===l.to;});'
+            'if(!a||!b)return;'
+            'var pa=toScreen(a.lat,a.lon),pb=toScreen(b.lat,b.lon);'
+            'x.beginPath();x.moveTo(pa.x,pa.y);x.lineTo(pb.x,pb.y);x.stroke();});'
+            'NODES.forEach(function(n){'
+            'var p=toScreen(n.lat||0,n.lon||0);'
+            'x.beginPath();x.arc(p.x,p.y,5,0,Math.PI*2);'
+            'x.fillStyle=col;x.fill();'
+            'if(n.label){x.fillStyle=col;x.font="11px system-ui";x.fillText(n.label,p.x+7,p.y+4);}});}'
+            'draw();'
+            '})();</script>')
+_RENDERERS["geo_mercator_radar"] = _render_geo_mercator_radar
+
+
+def _render_geo_contour_waves(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    color = _esc(b.get('color', '#6366f1'))
+    height = int(b.get('height', 280))
+    intensity = float(b.get('intensity', 1.0))
+    import hashlib
+    uid = 'gcw' + hashlib.md5(title.encode()).hexdigest()[:5]
+    return ('<div style="position:relative;">'
+            + ('<div style="font-size:0.72rem;font-weight:700;color:' + color + ';'
+               'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">' + title + '</div>' if title else '')
+            + '<canvas id="' + uid + '" style="width:100%;height:' + str(height) + 'px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=' + str(height) + ';'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var col="' + color + '",inten=' + f'{intensity:.2f}' + ',t=0;'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'x.clearRect(0,0,W,H);'
+            'var rows=12;'
+            'for(var r=0;r<rows;r++){'
+            'var y0=H*(r/rows);'
+            'var amp=inten*20*(1-r/rows);'
+            'x.beginPath();x.moveTo(0,y0);'
+            'for(var px=0;px<=W;px+=4){'
+            'var wave=Math.sin(px/60+t+r*0.4)*amp+Math.sin(px/30-t*1.3+r)*amp*0.5;'
+            'x.lineTo(px,y0+wave);}'
+            'x.strokeStyle=col;x.globalAlpha=0.08+r*(0.06/rows);x.lineWidth=1.5;x.stroke();x.globalAlpha=1;}'
+            't+=0.02;'
+            '})();'
+            '})();</script>')
+_RENDERERS["geo_contour_waves"] = _render_geo_contour_waves
+
+
+def _render_geo_europe_airspace(b: dict) -> str:
+    title = _esc(b.get('title', 'European Airspace'))
+    import hashlib
+    uid = 'gea' + hashlib.md5(title.encode()).hexdigest()[:5]
+    airports = b.get('airports', [
+        {'id': 'LHR', 'lat': 51.47, 'lon': -0.46},
+        {'id': 'CDG', 'lat': 49.01, 'lon': 2.55},
+        {'id': 'AMS', 'lat': 52.31, 'lon': 4.76},
+        {'id': 'FRA', 'lat': 50.03, 'lon': 8.57},
+        {'id': 'MAD', 'lat': 40.49, 'lon': -3.57},
+    ])
+    import json
+    apt_js = json.dumps(airports)
+    return ('<div style="position:relative;margin:1rem 0;">'
+            '<div style="font-size:0.72rem;font-weight:700;color:#00f2ff;letter-spacing:0.1em;'
+            'text-transform:uppercase;margin-bottom:6px;">' + title + '</div>'
+            '<canvas id="' + uid + '" style="width:100%;height:320px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=320;'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var APTS=' + apt_js + ';'
+            'var lat0=35,lat1=60,lon0=-15,lon1=35;'
+            'function sc(lat,lon){return{x:(lon-lon0)/(lon1-lon0)*W,y:(lat1-lat)/(lat1-lat0)*H};}'
+            'function draw(){'
+            'x.clearRect(0,0,W,H);'
+            'x.strokeStyle="#00f2ff22";x.lineWidth=1;'
+            'for(var la=36;la<60;la+=4){var p=sc(la,0);x.beginPath();x.moveTo(0,p.y);x.lineTo(W,p.y);x.stroke();}'
+            'for(var lo=-12;lo<36;lo+=5){var p=sc(0,lo);x.beginPath();x.moveTo(p.x,0);x.lineTo(p.x,H);x.stroke();}'
+            'APTS.forEach(function(a){'
+            'var p=sc(a.lat,a.lon);'
+            'x.beginPath();x.arc(p.x,p.y,5,0,Math.PI*2);'
+            'x.fillStyle="#00f2ff";x.fill();'
+            'x.fillStyle="#fff";x.font="bold 11px system-ui";x.fillText(a.id,p.x+7,p.y+4);});}'
+            'draw();'
+            '})();</script>')
+_RENDERERS["geo_europe_airspace"] = _render_geo_europe_airspace
+
+
+def _render_geo_iso_takeoff(b: dict) -> str:
+    title = _esc(b.get('title', 'Takeoff'))
+    airline = _esc(b.get('airline', ''))
+    import hashlib
+    uid = 'git' + hashlib.md5(title.encode()).hexdigest()[:5]
+    return ('<div style="position:relative;margin:1rem 0;">'
+            '<canvas id="' + uid + '" style="width:100%;height:260px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas>'
+            '<div style="position:absolute;bottom:12px;left:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);">'
+            + airline + ' ' + title + '</div></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=260;'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var t=0,py=H*0.75;'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'x.clearRect(0,0,W,H);'
+            'x.strokeStyle="#1e40af";x.lineWidth=2;'
+            'x.beginPath();x.moveTo(0,H*0.8);x.lineTo(W,H*0.8);x.stroke();'
+            'var px=W*0.2+t*120%W;py=H*0.75-Math.pow(t*0.15,2)*H*0.6;py=Math.max(H*0.1,py);'
+            'var angle=-Math.atan2(H*0.75-py,120*0.016)*0.3;'
+            'x.save();x.translate(px,py);x.rotate(angle);'
+            'x.fillStyle="#e0e7ff";'
+            'x.beginPath();x.ellipse(0,0,20,6,0,0,Math.PI*2);x.fill();'
+            'x.fillStyle="#c7d2fe";'
+            'x.beginPath();x.moveTo(-5,-6);x.lineTo(10,0);x.lineTo(-5,0);x.closePath();x.fill();'
+            'x.restore();'
+            't+=0.016;if(t>2.5)t=0;'
+            '})();'
+            '})();</script>')
+_RENDERERS["geo_iso_takeoff"] = _render_geo_iso_takeoff
+
+
+def _render_geo_iso_fleet(b: dict) -> str:
+    airline = _esc(b.get('airline', 'Fleet'))
+    import hashlib
+    uid = 'gif' + hashlib.md5(airline.encode()).hexdigest()[:5]
+    return ('<div style="position:relative;margin:1rem 0;">'
+            '<canvas id="' + uid + '" style="width:100%;height:260px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas>'
+            '<div style="position:absolute;bottom:12px;left:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);">'
+            + airline + '</div></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=260;'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var planes=Array.from({length:6},function(_,i){'
+            'return{x:Math.random()*W,y:H*0.15+i*(H*0.65/6),spd:0.4+Math.random()*0.6};});'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'x.clearRect(0,0,W,H);'
+            'planes.forEach(function(p){'
+            'p.x+=p.spd;if(p.x>W+30)p.x=-30;'
+            'x.save();x.translate(p.x,p.y);'
+            'x.fillStyle="#e0e7ff";x.beginPath();x.ellipse(0,0,16,5,0,0,Math.PI*2);x.fill();'
+            'x.fillStyle="#c7d2fe";x.beginPath();x.moveTo(-4,-5);x.lineTo(8,0);x.lineTo(-4,0);x.closePath();x.fill();'
+            'x.restore();});'
+            '})();'
+            '})();</script>')
+_RENDERERS["geo_iso_fleet"] = _render_geo_iso_fleet
+
+
+def _render_geo_iso_heli_hover(b: dict) -> str:
+    title = _esc(b.get('title', 'Helicopter'))
+    import hashlib
+    uid = 'gih' + hashlib.md5(title.encode()).hexdigest()[:5]
+    return ('<div style="position:relative;margin:1rem 0;">'
+            '<canvas id="' + uid + '" style="width:100%;height:220px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=220;'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var t=0;'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'x.clearRect(0,0,W,H);'
+            'var hy=H/2+Math.sin(t*2)*8;'
+            'x.save();x.translate(W/2,hy);'
+            'x.fillStyle="#e0e7ff";x.beginPath();x.ellipse(0,0,28,12,0,0,Math.PI*2);x.fill();'
+            'var ra=t*6;'
+            'x.strokeStyle="#94a3b8";x.lineWidth=2;'
+            'x.beginPath();x.moveTo(-35*Math.cos(ra),-2+(-35)*Math.sin(ra)*0.3);'
+            'x.lineTo(35*Math.cos(ra),-2+35*Math.sin(ra)*0.3);x.stroke();'
+            'x.restore();'
+            't+=0.016;'
+            '})();'
+            '})();</script>')
+_RENDERERS["geo_iso_heli_hover"] = _render_geo_iso_heli_hover
+
+
+def _render_geo_iso_rocket_launch(b: dict) -> str:
+    title = _esc(b.get('title', 'Launch'))
+    import hashlib
+    uid = 'gir' + hashlib.md5(title.encode()).hexdigest()[:5]
+    return ('<div style="position:relative;margin:1rem 0;">'
+            '<canvas id="' + uid + '" style="width:100%;height:300px;border-radius:12px;'
+            'background:#0a1628;display:block;"></canvas></div>'
+            '<script>(function(){'
+            'var c=document.getElementById("' + uid + '");'
+            'c.width=c.offsetWidth||600;c.height=300;'
+            'var W=c.width,H=c.height,x=c.getContext("2d");'
+            'var t=0;'
+            '(function loop(){'
+            'requestAnimationFrame(loop);'
+            'x.clearRect(0,0,W,H);'
+            'var ry=H-40-Math.pow(t,1.4)*60;ry=Math.max(30,ry);'
+            'x.save();x.translate(W/2,ry);'
+            'x.fillStyle="#e0e7ff";x.beginPath();x.moveTo(0,-25);x.lineTo(10,10);x.lineTo(-10,10);x.closePath();x.fill();'
+            'x.fillStyle="#f87171";'
+            'for(var fi=0;fi<6;fi++){'
+            'var fa=Math.random()*0.4-0.2;var fl=8+Math.random()*10;'
+            'x.beginPath();x.moveTo(0,10);x.lineTo(fl*Math.sin(fa),10+fl*Math.cos(fa));x.strokeStyle="#fbbf24";x.lineWidth=3;x.stroke();}'
+            'x.restore();'
+            't+=0.016;if(t>2.8)t=0;'
+            '})();'
+            '})();</script>')
+_RENDERERS["geo_iso_rocket_launch"] = _render_geo_iso_rocket_launch
+
+
+def _render_airspace_command_deck(b: dict) -> str:
+    chyron_title = _esc(b.get('chyron_title', 'ATC'))
+    chyron_sub = _esc(b.get('chyron_subtitle', ''))
+    ticker = _esc(b.get('ticker_text', ''))
+    import hashlib
+    uid = 'acd' + hashlib.md5(chyron_title.encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + 'tk{from{transform:translateX(100%);}to{transform:translateX(-100%);}}'
+    return ('<style>' + kf + '</style>'
+            '<div style="margin:1rem 0;background:#0a1628;border-radius:12px;overflow:hidden;border:1px solid #1e40af;">'
+            '<div style="padding:16px 20px;border-bottom:1px solid #1e3a5f;">'
+            '<div style="font-size:1.2rem;font-weight:900;color:#00f2ff;letter-spacing:0.06em;">'
+            + chyron_title + '</div>'
+            + ('<div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:2px;">' + chyron_sub + '</div>' if chyron_sub else '')
+            + '</div>'
+            + ('<div style="overflow:hidden;background:#060d1a;padding:8px 0;">'
+               '<div style="white-space:nowrap;animation:' + uid + 'tk 18s linear infinite;'
+               'font-size:0.78rem;color:#00f2ff;font-family:ui-monospace,monospace;">'
+               + ticker + '</div></div>' if ticker else '')
+            + '</div>')
+_RENDERERS["airspace_command_deck"] = _render_airspace_command_deck
+
+
+def _render_multi_surface(b: dict) -> str:
+    title = _esc(b.get('title', ''))
+    nodes = b.get('nodes', [])
+    rows = ''
+    for n in nodes:
+        label = _esc(n.get('label', ''))
+        surface = _esc(n.get('surface', ''))
+        icon = {'web': '🌐', 'meet-stage': '📽️', 'apps-script-web': '⚙️',
+                'googlechat': '💬', 'email': '📧', 'pdf': '📄'}.get(surface, '●')
+        rows += ('<div style="display:flex;align-items:center;gap:10px;padding:8px 0;'
+                 'border-bottom:1px solid #f3f4f6;">'
+                 '<span style="font-size:1rem;">' + icon + '</span>'
+                 '<div><div style="font-size:0.875rem;font-weight:600;color:#374151;">' + label + '</div>'
+                 '<div style="font-size:0.72rem;color:#9ca3af;">' + surface + '</div></div></div>')
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            + ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:10px;">' + title + '</div>' if title else '')
+            + rows + '</div>')
+_RENDERERS["multi_surface"] = _render_multi_surface
+
+
+def _render_atom_anatomy(b: dict) -> str:
+    label = _esc(b.get('label', 'atom'))
+    schema_data = b.get('schema', {})
+    accent = _esc(b.get('accent', '#6366f1'))
+    fields = schema_data.get('fields', {}) if isinstance(schema_data, dict) else {}
+    field_rows = ''
+    for k, v in list(fields.items())[:8]:
+        field_rows += ('<div style="display:flex;justify-content:space-between;padding:4px 0;'
+                       'border-bottom:1px solid #f3f4f6;font-size:0.82rem;">'
+                       '<span style="font-weight:600;color:#374151;font-family:ui-monospace,monospace;">'
+                       + _esc(k) + '</span>'
+                       '<span style="color:#9ca3af;">' + _esc(str(v)) + '</span></div>')
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid ' + accent + '33;'
+            'border-radius:10px;background:' + accent + '06;">'
+            '<div style="font-size:0.72rem;font-weight:700;color:' + accent + ';'
+            'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">'
+            '⬡ ' + label + '</div>'
+            + field_rows + '</div>')
+_RENDERERS["atom_anatomy"] = _render_atom_anatomy
+
+
+def _render_schema_reveal(b: dict) -> str:
+    title = _esc(b.get('title', 'Schema'))
+    accent = _esc(b.get('accent', '#6366f1'))
+    return ('<div style="margin:1rem 0;padding:16px 20px;border:1px solid ' + accent + '33;'
+            'border-radius:10px;background:' + accent + '08;">'
+            '<div style="font-weight:700;font-size:0.9rem;color:' + accent + ';margin-bottom:8px;">'
+            '🔬 ' + title + '</div>'
+            '<div style="font-size:0.78rem;color:#6b7280;">Schema viewer — pass a block JSON to inspect fields.</div>'
+            '</div>')
+_RENDERERS["schema_reveal"] = _render_schema_reveal
+
+
+def _render_schema_qr(b: dict) -> str:
+    url = _esc(b.get('url', ''))
+    label = _esc(b.get('label', ''))
+    sub = _esc(b.get('sub', ''))
+    size = int(b.get('size', 160))
+    qr_src = ('https://api.qrserver.com/v1/create-qr-code/?size=' + str(size) + 'x' + str(size)
+              + '&data=' + url) if url else ''
+    return ('<div style="text-align:center;margin:1rem 0;">'
+            + ('<img src="' + qr_src + '" alt="QR" width="' + str(size) + '" height="' + str(size)
+               + '" style="border-radius:8px;border:1px solid #e5e7eb;">' if qr_src else
+               '<div style="width:' + str(size) + 'px;height:' + str(size) + 'px;margin:0 auto;'
+               'border:1px dashed #d1d5db;border-radius:8px;display:flex;align-items:center;'
+               'justify-content:center;font-size:0.78rem;color:#9ca3af;">QR</div>')
+            + ('<div style="font-size:0.875rem;font-weight:600;color:#374151;margin-top:8px;">' + label + '</div>' if label else '')
+            + ('<div style="font-size:0.78rem;color:#9ca3af;">' + sub + '</div>' if sub else '')
+            + '</div>')
+_RENDERERS["schema_qr"] = _render_schema_qr
+
+
+def _render_renderer_stats(b: dict) -> str:
+    stats = b.get('stats', [])
+    sub = _esc(b.get('sub', ''))
+    accent = _esc(b.get('accent', '#6366f1'))
+    items = ''
+    for s in stats:
+        val = _esc(str(s.get('value', '')))
+        label = _esc(s.get('label', ''))
+        items += ('<div style="text-align:center;padding:12px 16px;">'
+                  '<div style="font-size:2rem;font-weight:900;color:' + accent + ';">' + val + '</div>'
+                  '<div style="font-size:0.72rem;color:#9ca3af;">' + label + '</div></div>')
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid ' + accent + '33;'
+            'border-radius:10px;background:' + accent + '06;">'
+            '<div style="display:flex;flex-wrap:wrap;justify-content:center;">' + items + '</div>'
+            + ('<div style="text-align:center;font-size:0.78rem;color:#9ca3af;">' + sub + '</div>' if sub else '')
+            + '</div>')
+_RENDERERS["renderer_stats"] = _render_renderer_stats
+
+
+def _render_surface_map(b: dict) -> str:
+    title = _esc(b.get('title', 'Surface Map'))
+    surfaces = b.get('surfaces', [])
+    accent = _esc(b.get('accent', '#6366f1'))
+    surface_icons = {'web': '🌐', 'meet-stage': '📽️', 'apps-script-web': '⚙️',
+                     'googlechat': '💬', 'email': '📧', 'pdf': '📄'}
+    items = ''
+    for s in surfaces:
+        name = _esc(str(s) if isinstance(s, str) else s.get('name', ''))
+        raw_name = str(s) if isinstance(s, str) else s.get('name', '')
+        icon = surface_icons.get(raw_name, '●')
+        items += ('<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;'
+                  'border-radius:20px;border:1px solid ' + accent + '33;background:' + accent + '08;'
+                  'font-size:0.78rem;color:' + accent + ';margin:3px;">'
+                  + icon + ' ' + name + '</span>')
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+            + ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:10px;">' + title + '</div>' if title else '')
+            + '<div>' + items + '</div></div>')
+_RENDERERS["surface_map"] = _render_surface_map
+
+
+def _render_surface_unlocked(b: dict) -> str:
+    icon = _esc(b.get('icon', '🌐'))
+    surface = _esc(b.get('surface', ''))
+    sub = _esc(b.get('sub', ''))
+    accent = _esc(b.get('accent', '#6366f1'))
+    import hashlib
+    uid = 'su' + hashlib.md5(surface.encode()).hexdigest()[:5]
+    kf = '@keyframes ' + uid + 'pop{0%{transform:scale(0.5);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}'
+    return ('<style>' + kf + '</style>'
+            '<div style="text-align:center;padding:28px;animation:' + uid + 'pop 0.6s cubic-bezier(0.22,1,0.36,1);">'
+            '<div style="font-size:3rem;margin-bottom:8px;">' + icon + '</div>'
+            '<div style="font-weight:800;font-size:1.1rem;color:' + accent + ';">✓ ' + surface + ' unlocked</div>'
+            + ('<div style="font-size:0.82rem;color:#6b7280;margin-top:4px;">' + sub + '</div>' if sub else '')
+            + '</div>')
+_RENDERERS["surface_unlocked"] = _render_surface_unlocked
+
+
+def _render_url_anatomy(b: dict) -> str:
+    accent = _esc(b.get('accent', '#6366f1'))
+    example = 'https://renderer.example.com/api/render?payload=base64…&theme=light'
+    parts = [
+        ('https://', '#10b981', 'Protocol'),
+        ('renderer.example.com', '#6366f1', 'Host'),
+        ('/api/render', '#8b5cf6', 'Path'),
+        ('?payload=…', '#f59e0b', 'Query'),
+    ]
+    url_html = ''
+    legend = ''
+    for text, color, label in parts:
+        url_html += '<span style="color:' + color + ';font-weight:700;">' + _esc(text) + '</span>'
+        legend += ('<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:0.72rem;">'
+                   '<span style="width:8px;height:8px;border-radius:50%;background:' + color + ';display:inline-block;"></span>'
+                   + _esc(label) + '</span>')
+    return ('<div style="margin:1rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;">'
+            '<div style="font-family:ui-monospace,monospace;font-size:0.85rem;word-break:break-all;'
+            'background:#0d1117;color:#cdd6f4;padding:12px 16px;border-radius:8px;margin-bottom:10px;">'
+            + url_html + '</div>'
+            '<div style="display:flex;flex-wrap:wrap;">' + legend + '</div></div>')
+_RENDERERS["url_anatomy"] = _render_url_anatomy
+
+
+def _render_playbook(b: dict) -> str:
+    slides = b.get('slides', [])
+    transition = _esc(b.get('transition', 'slide'))
+    import hashlib
+    uid = 'pb' + hashlib.md5(str(slides[:1]).encode()).hexdigest()[:5]
+    if not slides:
+        return '<div style="color:#9ca3af;font-style:italic;padding:12px;">No slides</div>'
+    slide_html = ''
+    for i, s in enumerate(slides):
+        title = _esc(s.get('title', ''))
+        text = _md_inline(s.get('text', s.get('body', '')))
+        display = 'block' if i == 0 else 'none'
+        slide_html += ('<div id="' + uid + 's' + str(i) + '" style="display:' + display + ';padding:24px;'
+                       'min-height:120px;">'
+                       + ('<div style="font-size:1.2rem;font-weight:700;color:#111827;margin-bottom:8px;">' + title + '</div>' if title else '')
+                       + ('<div style="font-size:0.9rem;line-height:1.7;color:#374151;">' + text + '</div>' if text else '')
+                       + '</div>')
+    n = len(slides)
+    return ('<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:12px;background:#fff;overflow:hidden;">'
+            + slide_html
+            + '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;'
+            'background:#f9fafb;border-top:1px solid #e5e7eb;">'
+            '<button onclick="(function(){'
+            'var cur=parseInt(document.getElementById(\'' + uid + 'n\').dataset.n||0);'
+            'var next=Math.max(0,cur-1);'
+            'document.getElementById(\'' + uid + 's\'+cur).style.display=\'none\';'
+            'document.getElementById(\'' + uid + 's\'+next).style.display=\'block\';'
+            'document.getElementById(\'' + uid + 'n\').textContent=(next+1)+\'/' + str(n) + '\';'
+            'document.getElementById(\'' + uid + 'n\').dataset.n=next;'
+            '})()" style="padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;">← Prev</button>'
+            '<span id="' + uid + 'n" data-n="0" style="font-size:0.82rem;color:#9ca3af;">1/' + str(n) + '</span>'
+            '<button onclick="(function(){'
+            'var cur=parseInt(document.getElementById(\'' + uid + 'n\').dataset.n||0);'
+            'var next=Math.min(' + str(n - 1) + ',cur+1);'
+            'document.getElementById(\'' + uid + 's\'+cur).style.display=\'none\';'
+            'document.getElementById(\'' + uid + 's\'+next).style.display=\'block\';'
+            'document.getElementById(\'' + uid + 'n\').textContent=(next+1)+\'/' + str(n) + '\';'
+            'document.getElementById(\'' + uid + 'n\').dataset.n=next;'
+            '})()" style="padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;">Next →</button>'
+            '</div></div>')
+_RENDERERS["playbook"] = _render_playbook
+
+
+def _render_before_after_stack(b: dict) -> str:
+    items = b.get('items', [])
+    before_label = _esc(b.get('before_label', 'Before'))
+    after_label = _esc(b.get('after_label', 'After'))
+    result = _esc(b.get('result', ''))
+    accent = _esc(b.get('accent', '#6366f1'))
+    before_items = [it for it in items if it.get('type') == 'before']
+    after_items = [it for it in items if it.get('type') == 'after']
+    def render_items(lst):
+        return ''.join('<div style="padding:6px 0;font-size:0.875rem;color:#374151;">• '
+                       + _esc(it.get('text', '')) + '</div>' for it in lst)
+    return ('<div style="margin:1.5rem 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+            '<div style="padding:16px;border-radius:10px;background:#fee2e2;border:1px solid #fca5a5;">'
+            '<div style="font-size:0.75rem;font-weight:700;color:#dc2626;margin-bottom:8px;">' + before_label + '</div>'
+            + render_items(before_items) + '</div>'
+            '<div style="padding:16px;border-radius:10px;background:#d1fae5;border:1px solid #6ee7b7;">'
+            '<div style="font-size:0.75rem;font-weight:700;color:#059669;margin-bottom:8px;">' + after_label + '</div>'
+            + render_items(after_items) + '</div>'
+            + ('<div style="grid-column:1/-1;padding:12px 16px;border-radius:8px;background:' + accent + '0d;'
+               'border:1px solid ' + accent + '33;font-size:0.875rem;font-weight:600;color:' + accent + ';">'
+               '✓ ' + result + '</div>' if result else '')
+            + '</div>')
+_RENDERERS["before_after_stack"] = _render_before_after_stack
+
+
+def _render_comparison_morph(b: dict) -> str:
+    before = _esc(b.get('before', ''))
+    after = _esc(b.get('after', ''))
+    title = _esc(b.get('title', ''))
+    import hashlib
+    uid = 'cm' + hashlib.md5((before + after).encode()).hexdigest()[:5]
+    return ('<div style="margin:1.5rem 0;">'
+            + ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:10px;">' + title + '</div>' if title else '')
+            + '<div style="position:relative;background:#f3f4f6;border-radius:10px;overflow:hidden;height:8px;margin-bottom:12px;">'
+            '<div id="' + uid + 'sl" style="position:absolute;left:50%;top:0;bottom:0;width:3px;background:#6366f1;cursor:col-resize;"></div>'
+            '</div>'
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'
+            '<div style="padding:14px;border-radius:8px;background:#f9fafb;border:1px solid #e5e7eb;">'
+            '<div style="font-size:0.72rem;font-weight:700;color:#9ca3af;margin-bottom:6px;">BEFORE</div>'
+            '<div style="font-size:0.875rem;color:#374151;">' + before + '</div></div>'
+            '<div style="padding:14px;border-radius:8px;background:#f0fdf4;border:1px solid #86efac;">'
+            '<div style="font-size:0.72rem;font-weight:700;color:#059669;margin-bottom:6px;">AFTER</div>'
+            '<div style="font-size:0.875rem;color:#374151;">' + after + '</div></div>'
+            '</div></div>')
+_RENDERERS["comparison_morph"] = _render_comparison_morph
+
+def _render_tooltip_glossary(b: dict) -> str:
+    terms = b.get('terms', {})
+    text = b.get('text', '')
+    for term, defn in terms.items():
+        text = text.replace(
+            term,
+            ('<abbr title="' + _esc(str(defn)) + '" style="border-bottom:2px dotted #6366f1;'
+             'cursor:help;text-decoration:none;font-weight:600;color:inherit;">'
+             + _esc(term) + '</abbr>')
+        )
+    return ('<div style="margin:1rem 0;line-height:1.7;font-size:0.9rem;color:#374151;">'
+            + text + '</div>')
+_RENDERERS["tooltip_glossary"] = _render_tooltip_glossary
