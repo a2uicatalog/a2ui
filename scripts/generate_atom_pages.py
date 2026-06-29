@@ -536,10 +536,10 @@ def render_page(atom):
     display_name = atom_type.replace("_", " ").title()
     preview  = live_preview(atom)
     _surfaces = atom.get("surfaces", {}).get("works_on", [])
-    _has_gas  = "google-apps-script-web" in _surfaces
-    try_btn  = "" if (atom_type in _RENDERER_TYPES and not _has_gas) else (
+    _gas_only = _surfaces == ["google-apps-script-web"]
+    try_btn  = (
         f'<a class="try-btn" href="{make_renderer_url(atom)}" target="_blank" rel="noopener">Try it live →</a>'
-    )
+    ) if _gas_only else ""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
