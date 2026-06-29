@@ -721,6 +721,7 @@ def generate_index(atoms):
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Atomic Catalog</title>
   <meta name="description" content="467 typed UI atoms for web, Google Meet, Apps Script, and Chat. ARD-compliant catalog.">
+  <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json">
   {INDEX_CSS}
 </head>
 <body>

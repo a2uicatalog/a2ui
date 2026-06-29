@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Agentmap: /.well-known/ai-catalog.json
