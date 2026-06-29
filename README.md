@@ -7,8 +7,8 @@
 **A component vocabulary for agent-driven interfaces.**  
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
-[![Atoms](https://img.shields.io/badge/atoms-467-00f2ff?style=flat-square&labelColor=04060f)](atoms/)
-[![GAS atoms](https://img.shields.io/badge/GAS_renderer-480_atoms-7c3aed?style=flat-square&labelColor=04060f)](apps-script-surface/)
+[![Atoms](https://img.shields.io/badge/atoms-450%2B-00f2ff?style=flat-square&labelColor=04060f)](atoms/)
+[![GAS atoms](https://img.shields.io/badge/GAS_renderer-450%2B_atoms-7c3aed?style=flat-square&labelColor=04060f)](apps-script-surface/)
 [![Surfaces](https://img.shields.io/badge/surfaces-5-a78bfa?style=flat-square&labelColor=04060f)](spec/)
 [![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=04060f)](LICENSE)
 [![A2UI](https://img.shields.io/badge/spec-v0.9_draft-f472b6?style=flat-square&labelColor=04060f)](spec/)
@@ -33,7 +33,7 @@ A2UI        68 tok  ████
 
 ## Google Apps Script renderer — try it live
 
-**480 atoms running natively in Google Apps Script.** No CDN, no dependencies, no server. Paste a JSON block list, get a rendered page.
+**450+ atoms running natively in Google Apps Script.** No CDN, no dependencies, no server. Paste a JSON block list, get a rendered page.
 
 ```json
 {
@@ -41,7 +41,7 @@ A2UI        68 tok  ████
   "theme": "light",
   "blocks": [
     { "type": "heading", "level": 1, "text": "My first A2UI page" },
-    { "type": "callout", "icon": "💡", "text": "Built with 480 atoms in Google Apps Script." },
+    { "type": "callout", "icon": "💡", "text": "Built with 450+ atoms in Google Apps Script." },
     { "type": "chartjs_bar", "title": "Quick chart", "bar_color": "#6366f1",
       "data": [{ "label": "A", "value": 80 }, { "label": "B", "value": 45 }, { "label": "C", "value": 62 }] }
   ]
@@ -52,7 +52,7 @@ A2UI        68 tok  ████
 
 | Feature | Detail |
 |---|---|
-| **480 registered atoms** | Apps Script surface — superset of the web article renderer |
+| **450+ atoms, growing** | Apps Script surface — superset of the web article renderer |
 | **CSS-only interactions** | Tabs, carousel, gallery lightbox, modals, accordions — zero JS required |
 | **Inline SVG charts** | Bar, line, pie, donut, heatmap, punch card, sankey, cohort retention, GitHub activity grid |
 | **8 form input types** | text, email, select, radio, checkbox, switch, slider, date — native HTML controls |
@@ -97,9 +97,9 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 | Directory | Contents |
 |---|---|
-| `atoms/` | Atom schema definitions (467 atoms, `schema.yaml`) |
+| `atoms/` | Atom schema definitions (`schema.yaml`) |
 | `renderers/` | Surface renderers — `web_article.py` is the canonical web renderer |
-| `apps-script-surface/` | **GAS renderer** — `atom.gs` + `atoms_charts.gs` (480 atoms, no CDN) |
+| `apps-script-surface/` | **GAS renderer** — `atom.gs` + atom files (450+ atoms, no CDN) |
 | `components/` | Lit Web Components for the meet-stage surface |
 | `scripts/` | Publishing pipeline to Firestore |
 | `vendors/` | Landscape analysis of 9 UI libraries mapped to A2UI atoms |
@@ -110,7 +110,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 ---
 
-## 467 atoms across 5 surfaces
+## 450+ atoms across 5 surfaces
 
 Atoms declare which surfaces they support at the schema level. An agent picks an atom by name, supplies parameters, and the renderer handles the rest.
 
@@ -137,7 +137,7 @@ Agents **never** write HTML. They compose from the vocabulary.
 | — | Not applicable |
 
 <details>
-<summary><strong>View full compatibility matrix (467 atoms)</strong></summary>
+<summary><strong>View full compatibility matrix</strong></summary>
 
 | Atom | web | meet-stage | googlechat | email | pdf | Source |
 |---|---|---|---|---|---|---|
