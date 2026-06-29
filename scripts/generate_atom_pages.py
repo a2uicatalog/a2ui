@@ -28,13 +28,13 @@ GAS_RENDERER = "https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpX
 # filter UI — visible to agents querying the catalog, not shown as filter pills.
 HIDDEN_SURFACES = {"gas-fakes"}
 
-sys.path.insert(0, str(ROOT / "web-article"))
+sys.path.insert(0, str(ROOT / "renderers"))
 try:
-    import renderer as _web_renderer
+    import web_article as _web_renderer
     _RENDERER_TYPES = set(_web_renderer._RENDERERS.keys())
-except Exception:
-    _web_renderer = None
-    _RENDERER_TYPES = set()
+except Exception as e:
+    print(f"ERROR: failed to import web_article renderer: {e}", file=sys.stderr)
+    sys.exit(1)
 
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.

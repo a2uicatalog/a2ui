@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="display:flex;justify-content:center;margin:1rem 0;"><canvas id="g3d8dcbc" width="300" height="300" style="border-radius:50%;background:#0a0a1a;display:block;cursor:grab;"></canvas></div><script>(function(){var c=document.getElementById("g3d8dcbc");if(!c)return;var x=c.getContext("2d"),W=c.width,H=c.height,cx=W/2,cy=H/2,r=W*0.42;var spd=0.50,t=0,drag=false,lx=0,ly=0,rx=0,ry=0;var pts=[];for(var i=0;i<200;i++){var lat=(Math.random()-0.5)*Math.PI;var lon=Math.random()*Math.PI*2;pts.push([lat,lon]);}c.addEventListener("mousedown",function(e){drag=true;lx=e.clientX;ly=e.clientY;c.style.cursor="grabbing";});window.addEventListener("mouseup",function(){drag=false;c.style.cursor="grab";});window.addEventListener("mousemove",function(e){if(!drag)return;rx+=(e.clientX-lx)*0.005;ry+=(e.clientY-ly)*0.005;lx=e.clientX;ly=e.clientY;});(function loop(){requestAnimationFrame(loop);if(!drag)rx+=spd*0.01;x.clearRect(0,0,W,H);x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);var grd=x.createRadialGradient(cx-r*0.3,cy-r*0.3,0,cx,cy,r);grd.addColorStop(0,"#6366f166");grd.addColorStop(1,"#6366f111");x.fillStyle=grd;x.fill();pts.forEach(function(p){var lat=p[0]+ry,lon=p[1]+rx;var cosLat=Math.cos(lat);var px3=cosLat*Math.sin(lon);var py3=Math.sin(lat);var pz3=cosLat*Math.cos(lon);if(pz3<0)return;var px=cx+r*px3,py=cy-r*py3;var alpha=0.3+pz3*0.7;x.beginPath();x.arc(px,py,1.5,0,Math.PI*2);x.fillStyle="#6366f1";x.globalAlpha=alpha;x.fill();x.globalAlpha=1;});t+=0.01;})();})();</script></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -95,7 +99,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQcs_JT0pVMHZR0lFQKslIzQULpiQWZYMEknLyk7OLgSLR1UollQVguXSQhnjjFKXa2FoAEhlNyEgAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

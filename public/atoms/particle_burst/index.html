@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><script>(function(){var cols=["#6366f1", "#a855f7", "#ec4899", "#f59e0b", "#34d399"],n=14,sz=8,dur=700,g=1.2;document.addEventListener("click",function(e){for(var i=0;i<n;i++){var el=document.createElement("div");el.style.cssText="position:fixed;width:"+sz+"px;height:"+sz+"px;border-radius:50%;pointer-events:none;z-index:9999;background:"+cols[i%cols.length]+";left:"+e.clientX+"px;top:"+e.clientY+"px;";document.body.appendChild(el);var vx=(Math.random()-0.5)*12;var vy=-(Math.random()*10+3);var t=0;var x=e.clientX;var y=e.clientY;var id=setInterval(function(elem,cx,cy,dx,dy){dy+=g*0.5;cx+=dx;cy+=dy;elem.style.left=cx+"px";elem.style.top=cy+"px";elem.style.opacity=Math.max(0,1-t/dur);t+=16;if(t>dur){clearInterval(id);elem.remove();}}.bind(null,el,x,y,vx,vy),16);}});})()</script></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -97,7 +101,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCkgsKslMzklVcCotKi5R0lFQKslIzQVLpSQWZYMEknLyk7OLgSLR1UollQVguQKotvgksLba2FoAhsIwzlQAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

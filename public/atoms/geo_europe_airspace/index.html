@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="position:relative;margin:1rem 0;"><div style="font-size:0.72rem;font-weight:700;color:#00f2ff;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">European Airspace</div><canvas id="geaa2790" style="width:100%;height:320px;border-radius:12px;background:#0a1628;display:block;"></canvas></div><script>(function(){var c=document.getElementById("geaa2790");c.width=c.offsetWidth||600;c.height=320;var W=c.width,H=c.height,x=c.getContext("2d");var APTS=[{"id": "LHR", "lat": 51.47, "lon": -0.46}, {"id": "CDG", "lat": 49.01, "lon": 2.55}, {"id": "AMS", "lat": 52.31, "lon": 4.76}, {"id": "FRA", "lat": 50.03, "lon": 8.57}, {"id": "MAD", "lat": 40.49, "lon": -3.57}];var lat0=35,lat1=60,lon0=-15,lon1=35;function sc(lat,lon){return{x:(lon-lon0)/(lon1-lon0)*W,y:(lat1-lat)/(lat1-lat0)*H};}function draw(){x.clearRect(0,0,W,H);x.strokeStyle="#00f2ff22";x.lineWidth=1;for(var la=36;la<60;la+=4){var p=sc(la,0);x.beginPath();x.moveTo(0,p.y);x.lineTo(W,p.y);x.stroke();}for(var lo=-12;lo<36;lo+=5){var p=sc(0,lo);x.beginPath();x.moveTo(p.x,0);x.lineTo(p.x,H);x.stroke();}APTS.forEach(function(a){var p=sc(a.lat,a.lon);x.beginPath();x.arc(p.x,p.y,5,0,Math.PI*2);x.fillStyle="#00f2ff";x.fill();x.fillStyle="#fff";x.font="bold 11px system-ui";x.fillText(a.id,p.x+7,p.y+4);});}draw();})();</script></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -95,7 +99,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQck_NV3AtLcovSFVwzCwqLkhMTlXSUVAqyUjNBcunJBZlgwSScvKTs4uBItHVSiWVBWC59NT8-FSw3vhEmN7a2FoAeqUUq14AAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

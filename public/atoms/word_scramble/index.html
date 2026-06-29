@@ -66,6 +66,10 @@ footer a{color:var(--cyan);text-decoration:none}
 </div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:12px;padding:18px 22px;margin:1.5rem 0;text-align:center;"><div style="font-size:0.82rem;color:#9ca3af;margin-bottom:8px;">Unscramble:</div><div style="font-size:1.6rem;font-weight:900;letter-spacing:0.15em;color:#6366f1;margin-bottom:12px;"></div><form onsubmit="event.preventDefault();var a=this.querySelector('input').value.trim().toUpperCase();this.innerHTML=a===''?'<span style=color:#10b981;font-weight:700;>✅ Correct! The word is </span>':'<span style=color:#ef4444;font-weight:700;>❌ Try again: '+a+'</span>'"><input type="text" placeholder="Your answer" style="border:1.5px solid #e5e7eb;border-radius:6px;padding:7px 12px;font-size:0.9rem;font-weight:600;letter-spacing:0.08em;margin-right:8px;outline:none;"><button type="submit" style="padding:7px 16px;background:#6366f1;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;">Check</button></form></div></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -102,7 +106,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA03MMQqAMAyF4auEzOIB3DyDg4OIaBuxqI20ARXp3U2dXP-P9x4UJxthBdhysNCYMO6ThgJQFto_sWNYc5g2NmvU0j0o9_HZqash_ld0SYYaDHvjIoEldXeIYw88g95mEvJSYurTC05so6uDAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="width:100%;height:280px;background:#0a0f1d;border-radius:10px;overflow:hidden;position:relative;"><canvas id="plx5ef364" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("plx5ef364"),x=c.getContext("2d"),W,H,nodes=[];function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();window.addEventListener("resize",resize);for(var i=0;i<80;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.7,vy:(Math.random()-0.5)*0.7});(function loop(){requestAnimationFrame(loop);x.fillStyle="#0a0f1d";x.fillRect(0,0,W,H);nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;x.beginPath();x.arc(n.x,n.y,2.5,0,Math.PI*2);x.fillStyle="#6366f1";x.fill();});for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(nodes[i].x,nodes[i].y);x.lineTo(nodes[j].x,nodes[j].y);x.strokeStyle="rgba(99,102,241,"+(1-d/110)+")";x.lineWidth=0.6;x.stroke();}}})();})();</script></div></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -97,7 +101,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQck7MK0ssVgjISa0oLVbSUVAqyUjNBcukJBZlgwSScvKTs4uBItHVSiWVBWC5ZLCu-AKIrtrYWgDAV_SOUgAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><canvas id="snd7517" style="width:100%;height:340px;border-radius:12px;background:#0f172a;display:block;cursor:grab;"></canvas><script>(function(){var c=document.getElementById("snd7517");c.width=c.offsetWidth||600;c.height=340;var W=c.width,H=c.height,x=c.getContext("2d");var nodeDefs=[];var edgeDefs=[];var ns=nodeDefs.map(function(d,i){return{id:d.id||String(i),label:d.label||"",x:(0.1+Math.random()*0.8)*W,y:(0.1+Math.random()*0.8)*H,vx:0,vy:0,r:d.size||22,pinned:false};});var idx={};ns.forEach(function(n,i){idx[n.id]=i;});var drag=-1,lx=0,ly=0;function ptOn(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}function hit(px,py){for(var i=0;i<ns.length;i++){var n=ns[i],dx=px-n.x,dy=py-n.y;if(dx*dx+dy*dy<n.r*n.r)return i;}return -1;}c.addEventListener("mousedown",function(e){var p=ptOn(e);drag=hit(p.x,p.y);if(drag>=0){ns[drag].pinned=true;c.style.cursor="grabbing";}});window.addEventListener("mouseup",function(){if(drag>=0)ns[drag].pinned=false;drag=-1;c.style.cursor="grab";});window.addEventListener("mousemove",function(e){if(drag<0)return;var p=ptOn(e);ns[drag].x=p.x;ns[drag].y=p.y;ns[drag].vx=0;ns[drag].vy=0;});(function loop(){requestAnimationFrame(loop);for(var i=0;i<ns.length;i++){for(var j=i+1;j<ns.length;j++){var a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;var rep=1200/(d*d);if(!a.pinned){a.vx-=dx*rep/d;a.vy-=dy*rep/d;}if(!b.pinned){b.vx+=dx*rep/d;b.vy+=dy*rep/d;}}}edgeDefs.forEach(function(e){var ai=idx[e.source||e.from],bi=idx[e.target||e.to];if(ai===undefined||bi===undefined)return;var a=ns[ai],b=ns[bi],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;var rl=e.rest_length||120,f=(d-rl)*0.04;if(!a.pinned){a.vx+=dx/d*f;a.vy+=dy/d*f;}if(!b.pinned){b.vx-=dx/d*f;b.vy-=dy/d*f;}});ns.forEach(function(n){if(n.pinned)return;n.vx=(n.vx+(W/2-n.x)*0.001)*0.85;n.vy=(n.vy+(H/2-n.y)*0.001)*0.85;n.x=Math.max(n.r,Math.min(W-n.r,n.x+n.vx));n.y=Math.max(n.r,Math.min(H-n.r,n.y+n.vy));});x.clearRect(0,0,W,H);x.strokeStyle="#6366f144";x.lineWidth=1.5;edgeDefs.forEach(function(e){var ai=idx[e.source||e.from],bi=idx[e.target||e.to];if(ai===undefined||bi===undefined)return;x.beginPath();x.moveTo(ns[ai].x,ns[ai].y);x.lineTo(ns[bi].x,ns[bi].y);x.stroke();});ns.forEach(function(n){x.beginPath();x.arc(n.x,n.y,n.r,0,Math.PI*2);x.fillStyle="#6366f122";x.fill();x.strokeStyle="#6366f1";x.lineWidth=2;x.stroke();x.fillStyle="#fff";x.font="bold 11px system-ui";x.textAlign="center";x.textBaseline="middle";x.fillText(n.label.substr(0,12),n.x,n.y);});})();})();</script></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -97,7 +101,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCi4oysxLV_DLT0ktVtJRUCrJSM0FS6QkFmWDBJJy8pOzi4Ei0dVKJZUFYLlisKb4PLCm2thaAAi-2uJQAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;perspective:800px;"><div id="tc_5a195f" style="position:relative;border-radius:12px;border:1px solid #334155;background:#0f172a;padding:24px;cursor:pointer;transition:transform 0.1s ease-out;transform-style:preserve-3d;"><div id="tg_5a195f" style="position:absolute;inset:0;pointer-events:none;border-radius:12px;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,0.15),transparent 70%);opacity:0;transition:opacity 0.2s;"></div><div style="position:relative;z-index:1;"><div style="color:#94a3b8;font-style:italic;">Hover to tilt</div></div></div></div><script>(function(){var card=document.getElementById("tc_5a195f");var glare=document.getElementById("tg_5a195f");var mt=14.0;card.addEventListener("mousemove",function(e){var r=card.getBoundingClientRect();var nx=(e.clientX-r.left)/r.width-0.5;var ny=(e.clientY-r.top)/r.height-0.5;var rx=ny*mt*-2;var ry=nx*mt*2;card.style.transform="rotateX("+rx+"deg) rotateY("+ry+"deg)";if(glare){glare.style.opacity="1";glare.style.background="radial-gradient(circle at "+(nx+0.5)*100+"% "+(ny+0.5)*100+"%, rgba(255,255,255,0.15), transparent 70%)"}});card.addEventListener("mouseleave",function(){card.style.transform="rotateX(0) rotateY(0)";if(glare)glare.style.opacity="0";});})();</script></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -97,7 +101,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCsnMKVFwTixKUdJRUCrJSM0Fi6YkFmWDBJJy8pOzi4Ei0dVKJZUFYLkSoI74ZJCO2thaAKVwV-9KAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

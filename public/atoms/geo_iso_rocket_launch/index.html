@@ -62,6 +62,10 @@ footer a{color:var(--cyan);text-decoration:none}
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="position:relative;margin:1rem 0;"><canvas id="gir9506f" style="width:100%;height:300px;border-radius:12px;background:#0a1628;display:block;"></canvas></div><script>(function(){var c=document.getElementById("gir9506f");c.width=c.offsetWidth||600;c.height=300;var W=c.width,H=c.height,x=c.getContext("2d");var t=0;(function loop(){requestAnimationFrame(loop);x.clearRect(0,0,W,H);var ry=H-40-Math.pow(t,1.4)*60;ry=Math.max(30,ry);x.save();x.translate(W/2,ry);x.fillStyle="#e0e7ff";x.beginPath();x.moveTo(0,-25);x.lineTo(10,10);x.lineTo(-10,10);x.closePath();x.fill();x.fillStyle="#f87171";for(var fi=0;fi<6;fi++){var fa=Math.random()*0.4-0.2;var fl=8+Math.random()*10;x.beginPath();x.moveTo(0,10);x.lineTo(fl*Math.sin(fa),10+fl*Math.cos(fa));x.strokeStyle="#fbbf24";x.lineWidth=3;x.stroke();}x.restore();t+=0.016;if(t>2.8)t=0;})();})();</script></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -95,7 +99,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQck_NV_AszlcIyk_OTi1R8EkszUvOUNJRUCrJSM0Fq0hJLMoGCSTlAJUUA0Wiq5VKKgvAcump-fGZxfnxRWDd8TkQ3bWxtQD8YKP5YgAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
