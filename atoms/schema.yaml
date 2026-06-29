@@ -1005,7 +1005,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: googlechat
@@ -1464,7 +1464,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: googlechat
@@ -1585,7 +1585,7 @@ blocks:
   surfaces:
     works_on:
     - web
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: meet-stage
@@ -1749,7 +1749,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: pdf
@@ -5936,7 +5936,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: pdf
@@ -6175,7 +6175,7 @@ blocks:
     - meet-stage
     - apps-script-web
     degraded_on:
-    - surface: gas-sidebar
+    - surface: apps-script-side-panel
       note: Use direction "none" — translation offsets can clip against the 300px
         iframe edge. Opacity-only fade works correctly.
     - surface: pdf
@@ -6215,7 +6215,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: pdf
@@ -6253,7 +6253,7 @@ blocks:
     - meet-stage
     - apps-script-web
     degraded_on:
-    - surface: gas-sidebar
+    - surface: apps-script-side-panel
       note: SVG width is constrained to 300px; use short from_label/to_label (≤6 chars)
         to avoid node text overflow.
     - surface: pdf
@@ -6328,7 +6328,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: pdf
@@ -6367,7 +6367,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: pdf
@@ -6461,7 +6461,7 @@ blocks:
     works_on:
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
     degraded_on:
     - surface: pdf
@@ -6639,7 +6639,7 @@ blocks:
   surfaces:
     works_on:
     - web
-    - gas-sidebar
+    - apps-script-side-panel
     degraded_on:
     - surface: meet-stage
       note: Renders as a flat dark card; mouse events may not propagate through Meet
@@ -9401,8 +9401,9 @@ blocks:
     gap) for consistent theming across all atoms. Use as the first block in any payload.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     accent: hex colour string. Sets --a2ui-accent CSS var used by all atoms as default
       accent.
@@ -9415,8 +9416,9 @@ blocks:
     current page as PDF.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     label: string (default "Print this page")
     align: left, center, or right
@@ -9428,8 +9430,9 @@ blocks:
     it to the correct export URL that works inside GAS iframes.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     url: Drive share URL OR file ID
     id: alias for url
@@ -9437,25 +9440,31 @@ blocks:
     caption: caption text shown below image
     rounded: boolean (default true) — rounded corners
     width: CSS width string (default "max-width:100%")
+  connectors:
+  - drive
 - type: maps_embed
   compact_description: Embeds a Google Maps location search in an iframe. Suitable
     for event location, office address, field ops context.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     q: address or place name to search (required)
     height: iframe height in px (default 360)
     zoom: map zoom level 1-20 (default 14)
     caption: optional caption below the map
+  connectors:
+  - maps
 - type: sheet_form
   compact_description: A form that submits data to a named Google Sheet tab via google.script.run.
     Requires the GAS project to be bound to a Spreadsheet.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
     degraded_on:
     - surface: web
       note: Renders a static form preview only — submission requires Apps Script runtime
@@ -9467,15 +9476,17 @@ blocks:
     accent: hex colour for submit button
     fields: array (required). Each item has label, name (optional), type (text/email/textarea/select),
       placeholder, required, hint, options (for select), rows (for textarea)
+  connectors:
+  - sheets
 - type: reveal
   compact_description: 'Wraps child blocks with entrance animations triggered on load.
     animation choices: fade_up, fade_in, slide_left, slide_right, scale_in, stagger.'
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     animation: fade_up (default), fade_in, slide_left, slide_right, scale_in, stagger
     duration: animation duration in ms (default 500)
@@ -9487,10 +9498,10 @@ blocks:
     avatar_row, image, list, table.'
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     type: text (default), card, avatar_row, image, list, table
     rows: number of placeholder rows (default 3)
@@ -9501,10 +9512,10 @@ blocks:
     logos (image_url), or icon+label chips.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     items: array of {text?, label?, icon?, image_url?, url?}
     title: optional label above the marquee strip
@@ -9520,10 +9531,10 @@ blocks:
     display.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     color: dot colour (default
     size: sm, md (default), lg
@@ -9535,10 +9546,10 @@ blocks:
     as a status indicator.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     color: dot colour (default var(--a2ui-accent))
     size: sm, md (default), lg
@@ -9549,8 +9560,9 @@ blocks:
     on load.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     value: numeric value 0-100 (required)
     size: ring diameter in px (default 100)
@@ -9565,10 +9577,10 @@ blocks:
     trigger button shows a clickable button.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     trigger: button (default) or load
     label: button label (default Celebrate!)
@@ -9581,10 +9593,10 @@ blocks:
     to a URL.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     label: button text (required)
     url: optional link target
@@ -9597,10 +9609,10 @@ blocks:
   compact_description: Animated SVG wave as a decorative section separator.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     color: wave fill colour (default var(--a2ui-accent))
     height: wave height in px (default 60)
@@ -9613,10 +9625,10 @@ blocks:
     for CTAs and achievement moments.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     icon: emoji or character to float (required)
     label: optional caption below
@@ -9629,10 +9641,10 @@ blocks:
     gradient. Use for hero taglines.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     text: the text to render (required)
     size: font-size CSS value (default 2rem)
@@ -9647,10 +9659,10 @@ blocks:
     on load.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     value: the number or string to display (required)
     prefix: text before the number
@@ -9665,10 +9677,10 @@ blocks:
     cursor. Child blocks or content field.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     blocks: array of child atoms inside the card
     content: markdown string (if no blocks)
@@ -9678,10 +9690,10 @@ blocks:
     blocks or content inside.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     blocks: array of child atoms inside
     content: markdown string (if no blocks)
@@ -9695,10 +9707,10 @@ blocks:
   compact_description: Circular SVG countdown that depletes as seconds tick down.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
     - apps-script-web
+    - apps-script-side-panel
   fields:
     duration_sec: total countdown in seconds (required, default 60)
     size: ring diameter in px (default 80)
@@ -9709,10 +9721,9 @@ blocks:
     2500+ icon names at fonts.google.com/icons.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
   fields:
     name: icon ligature name (required, e.g. "home", "check_circle", "rocket_launch")
@@ -9728,10 +9739,9 @@ blocks:
     for stat rows and feature lists.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
   fields:
     name: icon ligature name (required)
@@ -9747,10 +9757,9 @@ blocks:
     for feature/capability lists.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
   fields:
     items: array of {name or icon, label or text, color?}
@@ -9764,8 +9773,9 @@ blocks:
     CDN (fonts.gstatic.com). Falls back to coloured letter badge for unknown apps.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     app: app name (required) — gmail, drive, docs, sheets, slides, calendar, meet,
       forms, chat, classroom, keep, sites, vault, groups, tasks, contacts, jamboard,
@@ -9779,8 +9789,9 @@ blocks:
     by default, restores colour on hover.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     apps: array of app names (default gmail, drive, docs, sheets, slides, meet)
     title: optional label above the strip
@@ -9794,8 +9805,9 @@ blocks:
     "Integrations" or "Works with" sections.
   surfaces:
     works_on:
-    - gas
     - web
+    - apps-script-web
+    - apps-script-side-panel
   fields:
     apps: array of app names (default all 20 known apps)
     title: optional section heading
@@ -9808,10 +9820,9 @@ blocks:
     for Workspace UI contexts.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
   fields:
     title: optional section heading
@@ -9826,10 +9837,9 @@ blocks:
     a check mark). Good for capability or requirements lists.
   surfaces:
     works_on:
-    - gas
     - web
     - meet-stage
-    - gas-sidebar
+    - apps-script-side-panel
     - apps-script-web
   fields:
     title: optional heading

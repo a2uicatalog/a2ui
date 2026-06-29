@@ -1,0 +1,2284 @@
+Projet de programmes de physiquechimie du cycle 4
+
+Juillet 2025
+
+Ce projet de programmes n’engage pas, à ce stade, le ministère de l’Éducation nationale.
+
+Sommaire
+Table des matières
+Préambule .............................................................................................................................................. 4
+Contenus disciplinaires ........................................................................................................................... 8
+Contenus transversaux .................................................................................................................................................... 8
+Variabilité de la mesure ................................................................................................................................................... 8
+Connaissances épistémiques ........................................................................................................................................... 9
+
+Contenus thématiques.......................................................................................................................... 10
+ORGANISATION ET TRANSFORMATIONS DE LA MATIÈRE ....................................................................... 10
+Classe de cinquième....................................................................................................................................................... 10
+Propriétés de la matière ............................................................................................................................................ 10
+Constitution et organisation de la matière ................................................................................................................ 12
+Transformations de la matière................................................................................................................................... 12
+Classe de quatrième....................................................................................................................................................... 13
+Propriétés de la matière ............................................................................................................................................ 13
+Constitution et organisation de la matière ................................................................................................................ 14
+Transformations de la matière................................................................................................................................... 15
+Classe de troisième ........................................................................................................................................................ 15
+Propriétés de la matière ............................................................................................................................................ 15
+Constitution et organisation de la matière ................................................................................................................ 16
+Transformations de la matière................................................................................................................................... 17
+
+MOUVEMENT ET INTERACTIONS ........................................................................................................... 18
+Classe de cinquième....................................................................................................................................................... 19
+Mesure du temps et mouvement .............................................................................................................................. 19
+Classe de quatrième....................................................................................................................................................... 20
+Mouvement................................................................................................................................................................ 20
+Interactions ................................................................................................................................................................ 21
+Classe de troisième ........................................................................................................................................................ 22
+Mouvement................................................................................................................................................................ 22
+Interactions ................................................................................................................................................................ 22
+
+L’ÉNERGIE : STOCKS, TRANSFERTS, CONVERSIONS................................................................................. 24
+Classe de cinquième....................................................................................................................................................... 24
+Stocks et transferts d’énergie .................................................................................................................................... 24
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+2
+
+Électricité ................................................................................................................................................................... 25
+Classe de quatrième....................................................................................................................................................... 26
+Puissance d’un transfert d’énergie entre deux systèmes .......................................................................................... 26
+Puissance électrique .................................................................................................................................................. 27
+Classe de troisième ........................................................................................................................................................ 28
+Conversions d’énergie : enjeux environnementaux de la production d’électricité et de la consommation électrique
+.................................................................................................................................................................................... 28
+
+ONDES ET SIGNAUX .............................................................................................................................. 30
+Classe de cinquième....................................................................................................................................................... 30
+Signaux sonores ......................................................................................................................................................... 30
+Signaux lumineux ....................................................................................................................................................... 30
+Classe de quatrième....................................................................................................................................................... 31
+Des ondes pour propager des signaux ....................................................................................................................... 31
+Classe de troisième ........................................................................................................................................................ 32
+Des signaux pour mesurer ......................................................................................................................................... 32
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+3
+
+Préambule
+Finalités de l’enseignement
+Le programme de physique-chimie du cycle 4 se situe dans la continuité des programmes de sciences et technologie du
+cycle 2 et du cycle 3, tant pour les notions de physique et de chimie qui y sont abordées que pour ce qui relève de la
+découverte et de l’apprentissage de la démarche scientifique.
+Les connaissances et les compétences de physique-chimie acquises au collège ont le double objectif de fournir à tous
+les élèves des éléments scientifiques et rationnels constitutifs d’une culture commune indispensable au développement
+de leur esprit critique de citoyens en devenir et, d’autre part, de poser les bases des notions et méthodes qui seront
+mobilisées par celles et ceux qui s’orienteront vers des parcours scientifiques.
+L’enseignement de la physique-chimie au cycle 4 obéit donc à de multiples finalités :
+−
+
+initier tous les élèves aux concepts centraux de la physique et de la chimie, pour décrire, analyser et, dans
+certains cas, prévoir les phénomènes naturels et artificiels ;
+
+−
+
+former tous les élèves à la démarche scientifique, ses forces et ses limites, les initier à ce mode de
+construction des savoirs (pratiques et méthodes partagées par les communautés scientifiques, histoire des
+sciences, etc.) ;
+
+−
+
+apprendre aux élèves à conduire des démarches de modélisation des phénomènes qui utilisent et
+renforcent les compétences mathématiques des élèves tout en leur permettant d’expliquer et de prévoir
+le résultat d’expériences ;
+
+−
+
+motiver des élèves à une poursuite d’études dans les domaines scientifiques mobilisant la physique ou la
+chimie afin de les engager dans les formations scientifiques dont le pays a besoin.
+
+Les activités expérimentales jouent un rôle central dans la formation en physique-chimie et constituent un support
+privilégié pour favoriser la compréhension des concepts mis en jeu. Il est essentiel que les élèves mettent en œuvre des
+expériences, selon des protocoles qu’ils peuvent être amenés à concevoir eux-mêmes. Ils apprennent ainsi à interpréter
+des observations et des résultats expérimentaux en les reliant à des lois générales, à tester expérimentalement des
+représentations modélisées de la réalité, à valider ou invalider des hypothèses, etc. Le professeur ne doit pas hésiter à
+recourir fréquemment à des expériences de démonstration dont on sait qu’elles intéressent et motivent les élèves. Ces
+derniers sont rendus actifs en les associant à la description de ce qu’ils ont observé et à l’interprétation qu’il est possible
+d’en faire, ce qui renforce par ailleurs leurs compétences langagières orales ou écrites.
+Les concepts sont introduits ou illustrés par des exemples tirés de la vie quotidienne et connus des élèves, par des objets
+technologiques ou encore par des phénomènes naturels de toutes échelles et de toutes natures. En lien avec l’éducation
+au développement durable, les notions et connaissances de physique-chimie sont régulièrement exploitées par les
+élèves dans l’analyse scientifique des difficultés auxquelles le monde est aujourd’hui confronté dans les domaines
+énergétique, climatique et environnemental, tant du point de vue de leurs causes que de celui de leurs possibles
+solutions. Elles éclairent ainsi les élèves sur les décisions publiques et les comportements personnels et collectifs
+adoptés pour faire face à ces défis.
+
+Les compétences de la démarche scientifique travaillées en physique-chimie
+Les compétences retenues pour caractériser la démarche scientifique telle qu’elle s’incarne dans les enseignements du
+cycle 4 en physique-chimie visent à structurer la formation et l’évaluation des élèves. L’ordre de leur présentation ne
+préjuge en rien de celui dans lequel les compétences sont mobilisées par l’élève dans le cadre d’activités. Quelques
+exemples de capacités associées précisent les contours de chaque compétence, l’ensemble n’ayant pas vocation à
+constituer un cadre rigide.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+4
+
+Compétences
+
+Exemples de capacités associées
+−
+−
+−
+−
+
+Analyser/Raisonner
+
+−
+−
+Réaliser
+
+Observer et décrire un phénomène, par exemple en réalisant un schéma de situation.
+Identifier les grandeurs physiques utiles à l’analyse d’une situation.
+Rechercher, extraire et organiser l’information pour résoudre un problème scientifique.
+Mobiliser ses connaissances pour élaborer des hypothèses fondées qui peuvent être
+éprouvées.
+Proposer une stratégie pour résoudre un problème scientifique.
+Choisir ou proposer un dispositif expérimental ou un protocole simple pour répondre à
+une question scientifique.
+
+− Mettre en œuvre une stratégie pour résoudre un problème scientifique.
+− Utiliser des modes de représentations conventionnels (modèle moléculaire, circuit
+électrique, etc.).
+
+− Mettre en œuvre un protocole en utilisant un équipement adapté, en respectant les
+règles de sécurité adéquates.
+Mesurer des grandeurs physiques.
+Effectuer des calculs, représenter des données.
+Exploiter des observations, des mesures en tenant compte de la variabilité des mesures.
+Valider ou invalider une hypothèse, une information.
+Vérifier la vraisemblance du résultat d’un calcul, ou d’une mesure.
+Vérifier la vraisemblance d’une affirmation en s’appuyant sur ses connaissances ou sur
+des sources fiables.
+
+Valider
+
+−
+−
+−
+−
+−
+−
+
+Communiquer
+
+− Utiliser des codes de la communication scientifique à l’écrit ou à l’oral.
+− À l’écrit comme à l’oral, réaliser une présentation des étapes de son travail de manière
+−
+−
+
+synthétique, organisée, cohérente et compréhensible.
+Interagir à l’oral lors d’un travail de groupe.
+Argumenter dans le cadre d’un débat scientifique.
+
+Les compétences d’ordre psychologique et social développées dans les enseignements de
+physique-chimie
+Les enseignements de physique-chimie contribuent au développement de plusieurs attitudes relevant de compétences
+d’ordre psychologique ou social.
+Dans le champ émotionnel :
+−
+
+La formation à la démarche scientifique, la structuration des savoirs, le développement du raisonnement
+et de l’argumentation, le caractère universel et partagé des lois de la physique permettent d’adopter une
+posture rationnelle qui peut aider à réguler ses émotions au cours de débats contradictoires. Ces éléments
+peuvent aussi aider l’élève à surmonter les conflits de loyauté que ces apprentissages peuvent générer
+face aux préconceptions liées à son expérience individuelle et à ses convictions.
+
+−
+
+La démarche scientifique, dans laquelle les hypothèses peuvent être contredites par l’expérience est de
+nature à dédramatiser l’erreur personnelle de l’élève dans ses apprentissages.
+
+−
+
+La pratique expérimentale et les objets étudiés en physique-chimie, de l’infiniment grand à l’infiniment
+petit, sont de nature à susciter le plaisir de la manipulation et du geste, de même que la curiosité et
+l’émerveillement.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+5
+
+Dans le champ cognitif :
+−
+
+Le développement de la compétence « valider » fournit un soutien à la confiance que l’on peut, ou non,
+avoir en ses propres conceptions. Ce développement aide à construire l’honnêteté intellectuelle. Les
+situations contre-intuitives, nombreuses en physique-chimie, aident l’élève à savoir penser contre luimême.
+
+−
+
+Les activités expérimentales et la résolution de problèmes se prêtent au développement de l’autonomie
+des élèves, de leur créativité, de leur inventivité tout en mobilisant leurs acquis.
+
+−
+
+La compréhension de la nature et de la construction du savoir scientifique conduit les élèves à distinguer
+savoirs, croyances et opinions et à identifier les sources d’information dignes de confiance.
+
+Dans le domaine des relations sociales :
+−
+
+−
+
+Les activités expérimentales, recherches documentaires, projets scientifiques, tâches simples ou
+complexes, conduits en classe de sciences offrent des contextes pédagogiques adaptés aux activités
+collectives. Engagés dans ces activités collaboratives, les élèves apprennent à surmonter leurs a priori, à
+s’écouter, à s’organiser, à affirmer leurs points de vue en argumentant et plus largement, à atteindre
+ensemble un objectif partagé.
+Plus largement, les mécanismes de construction des connaissances au sein de la communauté scientifique
+internationale montrent aux élèves comment ces démarches collectives garantissent autant la robustesse
+que le caractère évolutif des savoirs scientifiques.
+
+Repères pour l’enseignement
+L’enseignant doit avant tout être attentif à l’égalité de traitement entre tous les élèves, et particulièrement entre
+les filles et les garçons. Ainsi, il veille à instaurer les conditions permettant à chaque élève de comprendre que les
+sciences et la technologie sont accessibles à tous et à toutes, quels que soient le sexe ou le milieu social, et que
+les compétences en sciences et technologie se développent progressivement par le travail et la régularité dans les
+apprentissages. Cet objectif suppose une attention particulière aux éléments suivants :
+−
+−
+−
+−
+−
+
+au regard porté sur chaque élève, qu’il s’agisse d’une fille ou d’un garçon, et à la valorisation équitable
+des stratégies de recherche mises en œuvre ainsi que des progrès accomplis ;
+à une répartition équivalente des tâches et des responsabilités confiées à chacun. En particulier filles et
+garçons doivent avoir autant l’occasion de manipuler ;
+à la sollicitation équilibrée des filles et des garçons à l’oral, tout en régulant équitablement les prises de
+parole ;
+aux retours oraux et écrits qu’il fournit aux élèves, en mettant en avant les réussites et en proposant des
+pistes d’amélioration, sans recourir à des stéréotypes implicites;
+aux occasions offertes à chaque élève de s’exprimer en classe, que ce soit individuellement ou dans un
+groupe, en évitant les asymétries genrées dans la prise de parole.
+
+Afin de modifier les représentations sociales et d’encourager une identification positive, il est donc essentiel de
+proposer des situations évitant la reproduction, même implicite, de stéréotypes de genres, et de mettre en avant
+le travail et les réalisations de femmes scientifiques. En effet, la projection sur un « modèle » participe, dès le plus
+jeune âge, à modifier les représentations sociales et celles liées aux genres.
+Le professeur est de plus invité à :
+−
+−
+−
+−
+−
+
+varier les activités proposées aux élèves ;
+privilégier la mise en activité des élèves, tout en procédant régulièrement à des synthèses récapitulatives ;
+valoriser l’approche expérimentale en lien avec la démarche scientifique ;
+aborder les modèles et les notions scientifiques de façon progressive, en partant de l’observation et de la
+description d’exemples concrets choisis avec soin ;
+tisser des liens aussi bien entre les notions du programme de physique-chimie qu’avec les autres
+enseignements notamment les mathématiques, les sciences de la vie et de la Terre et la technologie ;
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+6
+
+−
+−
+−
+−
+
+favoriser l'acquisition d'automatismes et développer l'autonomie des élèves en proposant des temps de
+travail personnel ou en groupe, dans et hors la classe ;
+familiariser les élèves avec les ordres de grandeurs des valeurs de grandeurs physiques et chimiques
+fréquemment rencontrées dans la vie courante et/ou porteuses d’enjeux ;
+mettre en place une différenciation pédagogique pour adapter son enseignement à tous les élèves ;
+évaluer les élèves de façon à prendre en compte les multiples activités réalisées (évaluations de
+productions écrites et orales, de travaux de groupes, des compétences expérimentales) ;
+mettre en œuvre une évaluation par compétences lorsque c’est adapté, notamment lors des activités
+expérimentales ou lors de tâches complexes à l’écrit ou à l’oral (résolution de problème, analyse
+documentaire).
+
+Place du numérique, de l’intelligence artificielle et de la pensée informatique dans les
+enseignements
+Les outils numériques sont mobilisés lorsqu’ils apportent une véritable plus-value à l’enseignement (plus-value que
+l’enseignant est encouragé à évaluer lui-même à partir d’éléments observables concrets). De telles situations sont
+nombreuses, notamment dans la collecte, la représentation et l’analyse de données expérimentales ou encore dans
+l’usage de logiciels de simulation. Les outils numériques peuvent aussi être mobilisés dans le cadre de l’évaluation des
+élèves.
+Les enseignements de physique-chimie peuvent être enrichis de liens avec la pensée informatique telle qu’elle est
+notamment développée en mathématiques. Par exemple, les élèves prennent l’habitude de décomposer une résolution
+de problèmes en blocs simples articulés de façon logique. De plus, ils apprennent à décider si la résolution d’un problème
+ou la réalisation et l’exploitation d’une activité expérimentale, peuvent bénéficier de l’apport du numérique.
+L’intelligence artificielle peut être utilisée, mais elle ne saurait se substituer à l’élève pour réaliser des activités
+constitutives de son apprentissage (résolution d’exercices, écriture de comptes rendus d’activités, mise en forme de
+résultats d’observation, etc.). L’analyse de productions erronées d’une intelligence artificielle générative peut être
+mobilisée comme exercice de l’esprit critique des élèves. Les enseignants sont encouragés dans le cadre de leur
+enseignement de physique-chimie à présenter des exemples où l’intelligence artificielle non générative est exploitée
+dans le domaine scientifique (reconnaissance d’images ou de formes, identification de régularités statistiques, etc.).
+L’usage des outils numériques et de l’intelligence artificielle par les enseignants dans les phases de préparation des cours
+ou des exercices qu’ils proposent à leurs élèves relève de leur entière liberté pédagogique.
+
+Relation du programme au Socle commun de connaissances, de compétences et de culture
+Les enseignements de physique-chimie tels qu’ils sont décrits dans ce programme ne constituent pas un ensemble isolé
+mais s’inscrivent dans le cadre du Socle commun de connaissances, de compétences et de culture, qui expose
+l’architecture d’ensemble de la scolarité obligatoire et qui rend manifeste la contribution de l’ensemble des
+enseignements à l’acquisition par les élèves d’une culture à la fois personnelle et partagée.
+Les enseignements de physique-chimie contribuent, par certains de leurs apports spécifiques identifiés dans le Socle, à
+l’acquisition et à la consolidation des compétences fondamentales de français (« écouter et comprendre », « prendre la
+parole », « écrire », « lire » , « comprendre, interpréter, apprécier ») et de mathématiques (« utiliser les nombres,
+calculer », « mesurer et utiliser les grandeurs », « se repérer dans l’espace et dans le temps », « représenter, traiter
+interpréter des données », « construire un raisonnement logique, résoudre des problèmes »).
+Le Socle commun de connaissances, de compétences et de culture rend également compte de la manière dont les
+objectifs d’apprentissage de physique-chimie participent à la constitution progressive des éléments de culture
+commune suivants :
+−
+
+acquérir et mobiliser les démarches et les gestes fondamentaux de l’apprentissage ;
+
+−
+
+raisonner, définir, démontrer et prouver, avoir le sens de la vérité et savoir suspendre son jugement ;
+
+−
+
+faire preuve d’esprit critique ;
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+7
+
+−
+
+se situer dans l’espace et dans le temps naturel ou historique ;
+
+−
+
+être curieux de la pluralité des langages et des langues et s’ouvrir aux richesses des autres cultures ;
+
+−
+
+imaginer, fabriquer, créer, expérimenter avec habileté ;
+
+−
+
+découvrir, observer, décrire et questionner le monde ;
+
+−
+
+comprendre et interroger rationnellement les transformations environnementale, climatique, énergétique et
+leurs conséquences ;
+
+−
+
+disposer d’une culture du numérique, en maîtriser les usages et en apprécier les enjeux.
+
+Organisation du programme
+Le programme explicite, pour chaque classe du cycle 4, les « objectifs d’apprentissage » (ce que l’élève doit savoir ou
+savoir-faire) et des « exemples de réussite » qui précisent les attendus de formation et délimitent ce qui est exigible
+des élèves dans le cadre des évaluations auxquelles ils sont soumis, en contrôle continu ou au diplôme national du
+brevet.
+Les contenus disciplinaires enseignés sont organisés en deux catégories :
+−
+−
+
+des contenus transversaux portant sur la « variabilité de la mesure » et sur les « connaissances
+épistémiques » ;
+des contenus thématiques, articulés en quatre domaines, que les élèves retrouveront dans la suite
+de leur cursus : « Organisation et transformations de la matière », « Mouvement et interactions »,
+« L’énergie : stocks, transferts, conversions », « Ondes et signaux ».
+
+Les contenus transversaux sont abordés sur l’ensemble du cycle 4, sans progression imposée. Les attendus de formation
+doivent être pris en compte par les enseignants de chaque niveau, dans les contextes qu’ils jugent les plus adaptés.
+Certains de ces contextes sont explicitement signalés dans la partie thématique : ils constituent alors des attendus pour
+la classe où ils sont mentionnés. Les contextes se prêtant à l’analyse de la « variabilité de la mesure » sont indiqués en
+caractères italiques gras, ceux qui relèvent des « connaissances épistémiques » sont précédés d’un astérisque (*).
+Les contenus scientifiques sont présentés par thèmes, selon une progression précisant les attendus à la fin de chacune
+des trois classes constituant le cycle 4. À chaque niveau, l’enseignant est libre d’aborder les différents contenus du
+programme dans l’ordre qui lui convient.
+
+Contenus disciplinaires
+Contenus transversaux
+Variabilité de la mesure
+La notion d’incertitude de mesures est un élément central de la démarche scientifique, notamment lorsqu’il s’agit de
+valider une hypothèse par l’expérimentation. L’objectif principal de ce programme est de sensibiliser l'élève, à partir
+d'exemples simples et démonstratifs, à la variabilité des valeurs obtenues dans le cadre d’une série de mesures
+indépendantes d’une grandeur physique et à poser les premières bases de l’évaluation quantitative de cette variabilité.
+Les professeurs peuvent s’appuyer sur les connaissances développées en mathématiques dans les domaines des
+statistiques et de la notation scientifique des nombres. Pour rendre ces idées concrètes, il est conseillé de mettre en
+place, à chaque niveau de classe, au moins une activité collective menée par l’ensemble de la classe, illustrant la
+variabilité de la mesure. Des contextes favorables à ce type d’activité sont signalés dans les contenus thématiques en
+caractères italiques gras.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+8
+
+Variabilité de la mesure
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Savoir que la mesure d’une grandeur
+physique présente toujours une variabilité
+due à l’instrument de mesure, à son
+utilisation et à la variation de facteurs non
+contrôlés.
+
+L’élève sait qu’un instrument gradué (règle, rapporteur,
+instrument digital, etc.) ne fournit qu’une valeur approchée.
+
+− Qualifier la précision d’un processus de
+mesure à partir d’une série de mesures
+indépendantes.
+− Savoir que la moyenne d’une série de
+mesures indépendantes est le meilleur
+estimateur de la grandeur étudiée.
+− Utiliser un indicateur de dispersion pour
+estimer quantitativement la variabilité
+d’un ensemble de valeurs mesurées.
+− Connaître et utiliser la notion de nombre
+de chiffres significatifs dans l’écriture
+d’une valeur numérique.
+− Savoir écrire le résultat d’une mesure en
+utilisant un nombre de chiffres significatifs
+adapté à la précision des outils de mesure.
+
+À partir d’un tableau de valeurs, il calcule les effectifs
+correspondant à des mesures appartenant à des intervalles de
+valeurs donnés. Il interprète ou représente un diagramme en
+barre.
+Il calcule la moyenne d’une série de valeurs, éventuellement à
+l’aide d’un outil numérique.
+À partir de la classe de quatrième, il détermine l’étendue de la
+série de valeurs et l’utilise comme indicateur de dispersion.
+L’élève sait que la réalisation d’une série de mesures est un moyen
+de caractériser l’incertitude du protocole de mesure : il sait qu’une
+mesure réalisée ultérieurement a une probabilité élevée de se
+trouver dans l’intervalle centré sur la moyenne et de largeur égale
+à l’étendue déterminée.
+À partir de la classe de quatrième, l’élève sait que l’écriture d’une
+valeur numérique avec un nombre donné de chiffres significatifs
+correspond en fait à un encadrement de la valeur, donc à une
+incertitude sur celle-ci.
+
+Connaissances épistémiques
+Il s’agit, avec ce thème, de présenter aux élèves de manière explicite un éclairage sur la nature du savoir scientifique,
+son mode de construction collectif, ses limites et ses forces, à partir de situations en lien avec la physique ou la chimie.
+Les objectifs d’apprentissage sont modestes ; il ne s’agit pas d’aborder la philosophie des sciences ni d’énoncer des
+critères de scientificité, mais de fournir, au travers de quelques exemples, des repères sur le fonctionnement de la
+science et sur les spécificités du savoir scientifique. Les enseignements de physique et de chimie s’inscrivent ainsi dans
+le cadre plus large de la formation à la démarche scientifique, ensemble de pratiques et de valeurs aujourd’hui partagées
+par tous les domaines de la recherche, que ce soit en sciences expérimentales ou en sciences humaines.
+Une attention particulière est portée au mode de diffusion et de validation du savoir scientifique. Les règles de la
+publication scientifique peuvent servir de référence pour analyser la fiabilité de sources d’information et peuvent être
+mises en rapport avec les enseignements d’éducation aux médias et à l’information.
+Les contenus thématiques identifient quelques situations importantes permettant d’illustrer ces idées, comme la
+controverse entre la représentation héliocentrique et géocentrique ou l’élaboration du tableau périodique des éléments
+et les découvertes qu’elle a permis de réaliser. Les contextes qui relèvent des « connaissances épistémiques » sont
+précédés d’un astérisque (*) dans les contenus thématiques.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+9
+
+Connaissances épistémiques
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Avoir conscience de l’importance des
+découvertes scientifiques dans la société.
+
+L’élève sait qu’en physique-chimie l’ambition est de disposer de
+lois et de concepts à portée universelle qui permettent d’expliquer
+et de prévoir le monde. Il peut citer des exemples de notions de
+physique-chimie qui ont donné lieu à des applications utiles pour
+la société.
+
+− Savoir que la validation d’une hypothèse
+scientifique passe par sa confrontation au
+monde réel.
+− Avoir conscience du caractère évolutif du
+savoir scientifique.
+
+L’élève sait que les lois physiques et chimiques ne sont validées
+que si les prédictions qui en découlent sont compatibles avec
+l’observation du monde.
+
+− Savoir que les progrès des instruments de
+mesure et d’observation jouent un rôle
+essentiel dans l’évolution des
+connaissances scientifiques.
+
+L’élève connaît le rôle de l’expérimentation pour mettre à
+l’épreuve des hypothèses ou des théories et réalise des
+expériences dans cet objectif.
+
+− Savoir que la construction du savoir
+scientifique est collective et que toute
+nouvelle affirmation est soumise à
+l’examen critique de l’ensemble du monde
+scientifique.
+− Connaître le processus de validation par
+les pairs qui sous-tend toute publication
+dans une revue scientifique et garantit la
+fiabilité des informations ainsi diffusées.
+
+Il connaît au moins un exemple où les progrès des instruments
+d’observation (microscope, télescope, lunette astronomique…)
+ont fait progresser les connaissances scientifiques.
+L’élève connaît dans ses grandes lignes le fonctionnement de la
+communauté scientifique (appui sur les travaux antérieurs,
+explicitation des procédures, reproductibilité des études,
+communication et collaboration entre scientifiques, évaluation
+par les pairs).
+
+Contenus thématiques
+ORGANISATION ET TRANSFORMATIONS DE LA MATIÈRE
+Cette thématique s’inscrit dans une logique de progressivité conceptuelle, aussi bien dans les notions enseignées que
+dans le passage de la description macroscopique à la description microscopique.
+En classe de cinquième, l’approche est uniquement macroscopique ; l’accent est mis sur des approches
+phénoménologiques et qualitatives des notions, fondées principalement sur l’observation et l’expérimentation non
+quantitative, même si la réalisation de quelques mesures est ponctuellement présente (masse, volume, température,
+pression). Il s’agit principalement pour l’élève de décrire et expliquer les observations en utilisant le vocabulaire
+scientifique adapté, et de donner du sens aux grandeurs physiques manipulées.
+Dans les classes de quatrième et de troisième les approches quantitatives sont progressivement développées,
+notamment avec l’introduction de grandeurs physiques sous forme de grandeurs quotients, comme la masse volumique.
+L’approche microscopique, introduite dès la classe de quatrième par la représentation des atomes et des molécules est
+poursuivie en classe de troisième avec la présentation du tableau périodique.
+
+Classe de cinquième
+Propriétés de la matière
+En fin de cycle 3, l’élève décrit un échantillon de matière à l’aide de grandeurs physiques, telles que la masse, le volume
+et la température, qu’il sait mesurer et exprimer dans différentes unités. Il compare des corps de masses différentes
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+10
+
+mais de volume identique, et inversement. Il distingue des matières par certaines de leurs propriétés physiques
+(conductivité électrique, opacité, solubilité, miscibilité).
+En classe de cinquième, les savoirs et savoir-faire acquis au cycle 3 sur les notions de masse, volume, température et
+sur les changements d’état sont réactivés et approfondis. L’élève connaît les trois états physiques de la matière (solide,
+liquide, gazeux), ainsi que plusieurs changements d’état, a minima : solidification, fusion, vaporisation et liquéfaction
+(ou condensation). À l’échelle macroscopique, il différencie les trois états physiques en fonction de leurs
+caractéristiques.
+La notion de pression est introduite à travers sa mesure et son unité, sans nécessiter d’interprétation à l’échelle
+microscopique.
+Les mesures de grandeurs physiques (masse, volume, température) sont l’occasion d’aborder la notion de variabilité
+des mesures expérimentales.
+L’eau, en tant qu’exemple de corps pur, peut servir de support principal aux expérimentations, offrant ainsi une
+opportunité de sensibilisation à son importance en tant que ressource vitale, en lien avec les enjeux du développement
+durable et du réchauffement climatique.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Savoir caractériser un échantillon de
+matière par sa masse, son volume, sa
+température, sa pression.
+
+L’élève sait que la pression est un paramètre nécessaire pour
+caractériser un échantillon de matière, notamment à l’état gazeux
+ou liquide. Il connaît son unité, le pascal (Pa).
+
+− Connaître les unités usuelles et les unités
+du système international de la masse, du
+volume, de la température et de la
+pression.
+
+L’élève sait mesurer la pression au sein d’un gaz ou d’un liquide
+à l’aide d’un appareil de mesure adapté (manomètre ou
+baromètre).
+L’élève connaît des ordres de grandeur de masse, de volume,
+de température et de pression, associés à la vie quotidienne.
+L’élève exprime la valeur d’un volume dans différentes unités.
+
+L’élève participe à une activité de mesure collective de masse
+ou de volume permettant d’illustrer la variabilité de la
+mesure.
+− Savoir que, lors d’un changement d’état
+physique, la masse d’un échantillon de
+matière ne change pas mais que le volume
+peut varier.
+− Savoir que, pour un corps pur, la
+température reste constante lors d’un
+changement d’état physique, à pression
+constante.
+− Savoir que la température de changement
+d’état physique d’un corps pur est une
+caractéristique de celui-ci à une pression
+donnée.
+− Distinguer différents corps purs par leur
+température de fusion ou d’ébullition.
+
+L’élève connaît les températures de solidification et
+d’ébullition de l’eau à la pression atmosphérique.
+L’élève sait qu’une température de changement d’état
+physique, en particulier l’ébullition, dépend de la pression
+atmosphérique.
+L’élève réalise des expériences simples mettant en évidence la
+conservation de la masse et la non-conservation du volume
+d’un échantillon de matière lors d’un changement d’état
+physique.
+L’élève compare des graphiques représentant l’évolution de la
+température en fonction du temps pour différents échantillons
+de matière et distingue ceux qui peuvent correspondre à des
+corps purs.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+11
+
+L’élève détermine l’état physique d’un échantillon de matière
+en comparant la température à ses températures de
+changement d’état fournies.
+L’élève exploite des expériences simples ou des documents
+relatifs à la fonte des glaces terrestres en raison du
+réchauffement climatique et son influence sur l’élévation du
+niveau des océans.
+
+Constitution et organisation de la matière
+Les techniques de séparation solide-liquide (tamisage, décantation, filtration) et de séparation de deux liquides non
+miscibles sont abordées dès le cycle 3, de même qu’un critère permettant de prévoir les positions relatives de deux
+couches liquides non miscibles.
+L’expérience de dissolution d’un solide dans l’eau est réalisée au cycle 3. Le phénomène de saturation lors du mélange
+d’un solide dans l’eau, la possibilité de récupérer certains solides dissous par évaporation, ainsi que la conservation de
+la masse au cours d’une dissolution sont également traités au cycle 3.
+En classe de cinquième, il s’agit de qualifier les différents types de mélanges et d’assoir le vocabulaire associé à la
+dissolution et la miscibilité. La dissolution d’un solide dans l’eau et la dissolution d’un gaz dans l’eau sont introduites.
+
+Objectifs d’apprentissage
+− Savoir que la matière est constituée
+d’espèces chimiques.
+− Savoir qu’un corps pur est constitué d’une
+seule espèce chimique et qu’un mélange
+est constitué d’au moins deux espèces
+chimiques.
+− Distinguer un mélange homogène d’un
+mélange hétérogène.
+− Savoir que l’air est un mélange constitué
+principalement de diazote et de dioxygène
+mais aussi d’autres gaz en plus faibles
+proportions, comme le dioxyde de
+carbone et la vapeur d’eau.
+− Connaître et appliquer le vocabulaire
+associé à la dissolution : solvant, soluté
+(solide, gaz), solution.
+
+Exemples de réussite
+L’élève réalise et étudie des mélanges, entre espèces
+chimiques liquides, solides et gazeuses, en s’appuyant sur des
+contextes variés (alimentation, santé, etc.), et en déduit le
+caractère homogène ou hétérogène de ces mélanges.
+L’élève exploite des données sur la composition de l’air,
+collectées par des organismes officiels, pour apprécier sa
+qualité. Il discute des bonnes pratiques et connaît quelques
+gestes quotidiens pour réduire la pollution de l’air extérieur et
+intérieur.
+L’élève conçoit et/ou met en œuvre une expérience de
+dissolution d’un solide dans l’eau et de dissolution d’un gaz
+(dioxyde de carbone, etc.) dans l’eau.
+L’élève cite au moins un exemple de mélange de liquides
+miscibles ou non-miscibles.
+
+− Connaître et appliquer le vocabulaire
+associé au mélange de deux liquides :
+miscibilité ou non-miscibilité.
+
+Transformations de la matière
+Au cycle 3, les élèves observent des changements d’état physique. Les transformations chimiques ne sont pas abordées
+lors de ce cycle.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+12
+
+En classe de cinquième, la distinction entre transformation chimique et transformation physique est présentée. Il s’agit
+d’introduire une première approche qualitative des transformations chimiques, en caractérisant un système chimique
+et son évolution, au travers d’expérimentations : transformations chimiques entre un métal et une solution ionique
+(solutions d’ions métalliques, solutions d’acides) ou entre deux solutions ioniques conduisant à une précipitation.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Savoir qu’un échantillon de matière peut
+subir une transformation au cours de
+laquelle certaines de ses caractéristiques
+(état physique, couleur, masse, volume,
+pression, température) évoluent.
+
+L’élève décrit un système chimique à l’aide de différentes
+caractéristiques (état physique, couleur, masse, volume,
+pression, température).
+
+− Savoir que lors d’une transformation
+chimique, les espèces chimiques présentes
+sont modifiées.
+− Savoir que lors d’une transformation
+physique, les espèces chimiques présentes
+ne sont pas modifiées.
+
+L’élève décrit l’évolution au cours du temps d’un système
+chimique par l’évolution de certaines de ses caractéristiques,
+dans le cas de transformations physiques et chimiques.
+L’élève caractérise, de façon macroscopique, l’état initial, l’état
+final et l’évolution du système chimique.
+L’élève étudie expérimentalement des transformations
+chimiques impliquant une modification des espèces chimiques
+présentes et identifie la formation ou la disparition d’espèces
+chimiques.
+
+Classe de quatrième
+Propriétés de la matière
+Au cycle 3, la chimie est abordée à l’échelle macroscopique. L’approche macroscopique des changements d’état
+physique et de leurs propriétés est approfondie en classe de cinquième. En classe de quatrième, une première
+modélisation microscopique est introduite pour interpréter les propriétés macroscopiques des différents états
+physiques de la matière et ses changements d’état.
+L’observation de la dissolution de certains solides dans l’eau et la conservation de la masse lors de cette dissolution ont
+été étudiées au cycle 3. Dans la continuité, en classe de cinquième, la distinction entre corps pur et mélange, les types
+de mélange (homogène/hétérogène), ainsi que le vocabulaire associé à la dissolution (solvant, soluté, solution) et à la
+miscibilité de deux liquides ont été abordés. L’étude qualitative et quantitative de la solubilité est approfondie en classe
+de quatrième et consolide la distinction entre corps pur et mélange.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Savoir qu’il existe deux échelles de
+description fondamentale de la matière :
+l’échelle macroscopique et l’échelle
+microscopique.
+
+L’élève connaît les ordres de grandeur des dimensions des
+entités chimiques. Il sait qu’une entité chimique n’est pas
+observable au microscope optique, contrairement à une cellule.
+
+− Savoir qu’à l’échelle microscopique la
+matière est décrite par un ensemble
+d’entités chimiques.
+− Décrire et distinguer les trois états
+physiques de la matière à l’aide d’un
+
+À l’échelle microscopique, l’élève sait :
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+13
+
+modèle microscopique : compactordonné ; compact-désordonné ; dispersédésordonné.
+
+- qu’à l’état solide, les entités chimiques sont fortement liées entre
+elles et qu’elles forment un ensemble compact et ordonné dans
+lequel elles se déplacent très peu ;
+
+− Expliquer la conservation de la masse lors
+d’un changement d’état physique à l’aide
+du modèle microscopique.
+
+- qu’à l’état liquide, les entités chimiques sont liées entre elles et se
+déplacent de manière désordonnée tout en formant un ensemble
+compact qui épouse la forme du récipient ;
+- qu’à l’état gazeux, les entités chimiques sont très faiblement liées
+entre elles et se déplacent de manière désordonnée dans tout
+l’espace disponible.
+L’élève sait que lors d’un changement d’état physique
+l’organisation à l’échelle microscopique des entités chimiques
+change, mais que le nombre et la nature des entités chimiques
+ne changent pas.
+
+− Connaître la définition de la solubilité d’un
+soluté dissous dans un solvant.
+− Savoir que la solubilité d’un corps pur
+dépend de ce corps pur et du solvant.
+− Calculer la valeur de la solubilité d’un
+soluté dans un solvant donné à l’aide de
+données expérimentales.
+− Savoir que la solubilité d’un soluté dans un
+solvant donné dépend de la température.
+
+L’élève propose un protocole expérimental et mesure la masse
+maximale d’un soluté soluble dans un volume donné d’eau, pour
+en déduire la solubilité de ce soluté dans l’eau.
+L’élève utilise la solubilité comme une caractéristique permettant
+d’identifier un corps pur.
+L’élève met en œuvre une expérience permettant de décrire
+l’influence de la température sur la solubilité.
+
+Constitution et organisation de la matière
+Cette partie introduit les notions d’atomes et de molécules, et précise ainsi les concepts d’entité chimique et de corps
+pur. Elle constitue une opportunité pour aborder la notion de modèle, en tant que représentation simplifiée de la réalité.
+Les ions seront abordés en classe de troisième.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Savoir que la matière est constituée d’atomes et de
+molécules.
+
+L’élève exploite des documents relatifs à
+l’évolution historique de la description atomique
+de la matière au travers des contributions de
+penseurs majeurs, de Démocrite à Jean Perrin en
+passant par John Dalton.
+
+− (*) Comprendre le mode de construction du savoir
+scientifique à partir de l’exemple de la description
+atomique de la matière.
+− Savoir qu’il existe dans la nature un peu plus d’une
+centaine de types d’atomes différents.
+− Savoir qu’à chaque type d’atome est associé un
+symbole chimique.
+− Connaître le symbole des atomes suivants :
+hydrogène, carbone, oxygène, azote.
+− Savoir qu’une molécule est un assemblage d’atomes,
+associé à une formule chimique.
+
+L’élève définit le mot « atome » grâce à son
+étymologie.
+L’élève utilise le terme adapté parmi atome et
+molécule pour qualifier une entité chimique à
+partir d’une formule chimique donnée.
+L’élève relie la formule d’une molécule à la nature
+et au nombre d’atomes qui la constitue.
+L’élève explique comment certains noms (par
+exemple : diazote, dihydrogène, dioxygène,
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+14
+
+− Connaître les formules chimiques des molécules
+suivantes : dioxygène, dihydrogène, diazote, eau,
+dioxyde de carbone, méthane.
+− Connaître les enjeux environnementaux ou sanitaires
+du méthane, du dioxyde de carbone, du dihydrogène
+et du protoxyde d’azote.
+
+dioxyde de carbone) renseignent sur la formule de
+la molécule.
+L’élève sait que toute la matière existant sur Terre
+est constituée à partir d’un nombre pratiquement
+invariable de chaque type d’atomes.
+
+Transformations de la matière
+En classe de cinquième, la description qualitative d’un système chimique a été introduite. L’élève sait qu’un échantillon
+de matière peut subir une transformation au cours de laquelle ses caractéristiques (apparence, forme, état physique,
+température) changent, et que lors d’une transformation chimique, les espèces chimiques initiales sont modifiées.
+En classe de quatrième, la description quantitative (masse, volume, composition, etc.) d’un système chimique et de son
+évolution entre un état initial et un état final est introduite, à travers l’étude de transformations chimiques simples.
+L’écriture formelle d’une équation de réaction n’est pas attendue à ce stade du cycle 4.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Caractériser une transformation chimique
+et distinguer les réactifs des produits.
+− Savoir qu’il y a conservation de la masse
+lors d’une transformation chimique.
+
+L’élève sait qu’une transformation chimique est une
+transformation au cours de laquelle des espèces chimiques
+disparaissent (les réactifs) et de nouvelles se forment (les
+produits).
+L’élève rédige une phrase
+transformation chimique.
+
+décrivant le
+
+bilan
+
+d’une
+
+L’élève met en évidence expérimentalement la conservation
+de la masse lors d’une transformation chimique, par
+comparaison entre l’état final et l’état initial.
+L’élève sait que la conservation de la masse implique que la
+masse des réactifs ayant disparu est égale à la masse des
+produits formés au cours d’une transformation chimique.
+
+Classe de troisième
+Propriétés de la matière
+Au cycle 3, l’élève exploite la relation de proportionnalité entre la masse et le volume d’un corps homogène.
+En classe de cinquième, un échantillon de matière est caractérisé par différentes grandeurs physiques : masse, volume,
+température, pression. L’élève connaît les unités usuelles de volume et sait les convertir.
+En classe de troisième, la notion de masse volumique est introduite par la relation littérale "ρ = " "m" /"V". L’influence
+de la température sur la masse volumique est également abordée.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Connaître et exploiter littéralement la
+m
+relation ρ= V entre la masse volumique,
+
+L’élève explique que la masse 𝑚 d’un échantillon de matière
+homogène est proportionnelle à son volume 𝑉, le coefficient
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+15
+
+la masse et le volume d’un échantillon de
+matière.
+− Savoir que la masse volumique permet de
+caractériser un matériau.
+− Savoir que la masse volumique de la
+plupart des matériaux diminue lorsque la
+température augmente du fait de la
+dilatation thermique.
+
+m
+
+de proportionnalité s’écrit ρ= V , ρ étant la masse volumique
+de l’échantillon ; il exploite cette relation.
+L’élève propose un protocole expérimental et le met en œuvre
+pour déterminer la masse volumique d’un solide, d’un liquide
+ou d’un gaz.
+L’élève sait que le réchauffement climatique entraîne une
+dilatation thermique de l’eau des océans, et que c’est une
+cause de l’élévation de leur niveau.
+
+Constitution et organisation de la matière
+En classe de quatrième, les notions d’atome et de molécule ont été introduites. L’élève distingue un atome d’une
+molécule et interprète une formule chimique en termes atomiques.
+La description de la constitution de l’atome, incluant la structure interne du noyau, est traitée dans cette partie. Elle
+permet de travailler les puissances de dix et l’écriture scientifique en lien avec les mathématiques.
+Dans la continuité de la classe de quatrième, le tableau périodique est présenté comme un outil de classement et de
+repérage des atomes constitutifs de la matière, sans insister sur la notion d'élément chimique.
+Cette partie constitue également une occasion privilégiée d’évoquer l’histoire des sciences, de faire comprendre aux
+élèves la construction du savoir scientifique et d’aborder le fonctionnement de la communauté scientifique.
+Enfin, cette partie du programme permet d’aborder la question de la limitation des ressources et l’enjeu du recyclage,
+en lien avec le développement durable, et les interactions entre sciences et société.
+Après les atomes et les molécules, la notion d’ion est introduite comme un troisième type d’entité chimique. Les ions
+sont abordés par une approche expérimentale, sans passer par le modèle de perte ou de gain d’électrons.
+Enfin, dans la continuité de la classe de quatrième où les solutions ont été traitées sous l’angle de la solubilité, les
+mélanges et solutions sont étudiés ici à travers l’analyse chimique : tests d’identification et reconnaissance du caractère
+acide ou basique d’une solution.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Connaître les constituants de l’atome
+(noyau et électrons) et la structure d’un
+noyau atomique (nucléons : protons et
+neutrons).
+
+L’élève sait qu’un atome est constitué d’un noyau central autour
+duquel se déplacent un ou plusieurs électrons. Il sait que le
+noyau est constitué de nucléons, qui sont de deux types, les
+protons et les neutrons.
+
+− Savoir qu’un atome est électriquement
+neutre.
+
+L’élève détermine le nombre de protons, de neutrons et
+d’électrons d’un atome, connaissant le symbole AZX de son noyau
+et la neutralité électrique de l’atome.
+
+− Déterminer la composition d’un atome
+connaissant le symbole AZX de son noyau.
+− (*) Comprendre le mode de construction
+du savoir scientifique à partir de l’exemple
+de la construction du tableau périodique
+des éléments chimiques par Dmitri
+Mendeleïev.
+− Connaître la structure du tableau
+périodique des éléments chimiques.
+
+L’élève sait que le tableau périodique est organisé par colonne
+d’éléments ayant des propriétés chimiques analogues, les
+éléments des colonnes et des lignes étant ordonnés par valeur
+croissante de leur masse.
+L’élève exploite le tableau périodique pour obtenir des
+informations sur des éléments : il associe le symbole, le nom
+et le nombre de protons de l’élément.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+16
+
+(*) L’élève extrait et exploite des informations de documents
+présentant la construction historique de la classification
+périodique des éléments chimiques (masse croissante et
+périodicité des propriétés chimiques).
+(*) L’élève extrait et exploite des informations de documents
+sur la prédiction de l’existence du germanium par Dmitri
+Mendeleïev mettant ainsi en évidence la portée universelle et
+le caractère prédictif de la connaissance scientifique.
+L’élève exploite des documents relatifs aux enjeux
+environnementaux liés à l’épuisement des ressources
+naturelles de certains éléments (métaux rares, uranium).
+− Savoir qu’il existe des entités chimiques
+chargées : les ions.
+
+Parmi une liste de formules d’entités chimiques, l’élève
+reconnaît un atome, une molécule et un ion.
+
+− Connaître les ions suivants : H+, OH-, Na+
+
+L’élève détermine expérimentalement si une solution conduit
+ou pas le courant électrique.
+
+et Cl-.
+− Savoir qu’une solution conduit le courant
+électrique lorsqu’elle contient des ions.
+
+L’élève sait que la présence d’ions rend une solution
+conductrice.
+
+− Analyser la composition qualitative d’un
+échantillon de matière à partir de tests
+caractéristiques donnés.
+
+L’élève sait que des tests caractéristiques permettent
+d’identifier certains ions ou molécules.
+
+− Identifier le caractère acide ou basique
+d’une solution, à partir de la valeur du pH.
+− Associer le caractère acide ou basique
+d’une solution à la présence majoritaire
+d’ions H+ ou OH- dans cette solution.
+− Connaître des exemples de solutions
+acides et basiques utilisées
+quotidiennement (vinaigre, acide
+chlorhydrique, soude, ammoniaque).
+
+L’élève exploite des résultats de tests, pour identifier la
+présence d’ions dans une solution, à partir d’un tableau
+donnant les réactifs caractéristiques et les observations
+caractéristiques en cas de tests positifs.
+L’élève réalise des tests caractéristiques de quelques ions (Fe2+,
+Fe3+, Cu2+, Ag+) ou molécules (test de l’eau, du dioxyde de
+carbone, du dioxygène, du dihydrogène).
+L’élève reconnaît expérimentalement si une solution est acide,
+basique ou neutre, en utilisant du papier pH.
+La valeur du pH d’une solution ou d’un produit commercial
+étant donnée, l’élève identifie son caractère acide ou basique
+ou neutre.
+L’élève exploite des documents relatifs aux applications
+quotidiennes de solutions acides et basiques et aux contraintes
+de sécurité liées à leur utilisation, ainsi qu’aux conséquences
+de ces solutions sur l’environnement.
+
+Transformations de la matière
+Les transformations chimiques sont introduites en début de cycle 4 pour caractériser qualitativement puis
+quantitativement un système chimique et son évolution. En classe de troisième, il s’agit de modéliser une
+transformation chimique comme une redistribution des atomes, à l’échelle microscopique, et de s’intéresser au bilan
+de cette transformation à l’échelle macroscopique.
+L’écriture et l’ajustement d’équations de réaction ne sont pas attendus en classe de troisième ; ces compétences seront
+acquises en classe de seconde.
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+17
+
+Des transformations chimiques à impact environnemental sont étudiées : combustions, réactions entre acides et
+métaux, réactions d’oxydation des métaux par le dioxygène de l’air. Ces transformations sont abordées
+expérimentalement et à l’aide de documents.
+Enfin, une approche expérimentale et documentaire de la synthèse chimique vise à montrer l’intérêt de la chimie pour
+répondre à des problématiques concrètes en synthétisant des molécules de manière artificielle, en particulier dans les
+domaines de la santé et de l’agro-alimentaire.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+− Savoir qu’une transformation chimique
+s’interprète comme une redistribution des
+atomes à l’échelle microscopique.
+
+L’élève utilise des modèles moléculaires pour expliquer à
+l’échelle microscopique la redistribution des atomes lors d’une
+transformation chimique.
+
+− Exploiter une équation de réaction.
+
+L’élève identifie expérimentalement les réactifs et les produits
+lors d’une transformation chimique à partir de l’observation
+de l’état initial et de l’état final.
+L’élève écrit le bilan d’une transformation chimique à l’aide des
+noms des réactifs et des produits.
+L’élève utilise une équation de réaction ajustée pour décrire
+une transformation chimique.
+
+− Connaître les transformations chimiques
+suivantes :
+•
+•
+•
+
+combustions dans l’air ;
+réactions entre des acides et des
+métaux ;
+réactions entre le dioxygène de l’air et
+les métaux ;
+
+et leur impact sur l’environnement.
+− Savoir que les combustions
+d’hydrocarbures génèrent des gaz à effet
+de serre qui sont l’une des causes du
+réchauffement climatique.
+− Savoir qu’une transformation chimique
+peut aboutir à la synthèse de molécules
+d’intérêt pour la société.
+
+L’élève réalise expérimentalement au moins une des
+transformations chimiques suivantes : combustions dans
+l’air, réactions entre des acides et des métaux, réactions
+entre le dioxygène de l’air et les métaux.
+L’élève comprend les conséquences de ces transformations
+chimiques sur l’économie et l’environnement (pluies acides,
+corrosion d’un métal, prévention et défis de la chimie pour
+limiter la corrosion).
+L’élève suit un protocole expérimental pour réaliser la
+synthèse d’un arôme en respectant les conditions de sécurité.
+L’élève extrait et analyse des informations portant sur la
+synthèse chimique de molécules d’intérêt pour la santé ou
+l’agro-alimentaire.
+
+MOUVEMENT ET INTERACTIONS
+La caractérisation des mouvements est étudiée dans toutes les classes du cycle 4 ; les interactions sont abordées à partir
+de la classe de quatrième. La construction des savoirs et des savoir-faire se fait principalement à partir d’observations
+et d’expérimentations, notamment à partir de chronophotographies ou d’enregistrements.
+En classe de cinquième, le mouvement est caractérisé par la trajectoire et les savoirs et savoir-faire acquis au cycle 3 sur
+les notions de vitesse sont réactivés. À partir de la classe de quatrième, la notion de vitesse est abordée de manière
+quantitative et la notion d’interaction entre objets est introduite. Les aimants et l’interaction magnétique sont présentés
+à titre d’exemple.
+En classe de troisième, la notion de vecteur étudiée en mathématiques est mobilisée pour caractériser des mouvements
+ainsi que pour représenter les forces. Le lien entre le poids et la masse est établi par une approche expérimentale. La
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+18
+
+notion d’équilibre est interprétée à partir de l’exploitation des forces, elle permet d’expliquer des situations de la vie
+courante.
+
+Classe de cinquième
+Mesure du temps et mouvement
+À la fin du cycle 3, l’élève est capable de mesurer des distances et des durées, et d’effectuer des conversions des unités
+correspondantes. Il sait identifier les trajectoires rectilignes et circulaires, ainsi que des situations où la vitesse d’un objet
+a une valeur constante ou variable par rapport à un observateur. Il a étudié de matière qualitative la relation entre
+distance parcourue, durée du parcours et vitesse d’un objet. Il est initié au caractère relatif du mouvement.
+En classe de cinquième, on caractérise le mouvement de points d’un objet en exploitant des enregistrements pour
+déterminer la nature de leur trajectoire. Les savoirs et savoir-faire acquis au cycle 3 sur les notions de distance, de durée
+et de relativité du mouvement par rapport à un observateur sont réactivées, ainsi que les connaissances acquises
+portant sur le lien entre la durée du jour ou de l’année et le mouvement de la Terre.
+Les mesures des grandeurs distance et temps sont particulièrement propices à l’étude de la variabilité de la mesure.
+L'élève découvre que certains phénomènes périodiques, dont les mouvements terrestres rencontrés au cycle 3, sont
+utilisés pour la mesure de durées. Il aborde, dans la continuité, la construction historique de l’unité du temps : la
+seconde.
+
+Objectifs d’apprentissage
+−
+−
+
+−
+
+Savoir qu’une année correspond au
+temps mis par la Terre pour effectuer une
+révolution autour du Soleil.
+Savoir qu’une journée correspond au
+temps mis par la Terre pour effectuer une
+rotation complète autour de l’axe des
+pôles.
+(*) Savoir que la seconde est l’une des
+unités du système international des
+unités.
+
+Exemples de réussite
+(*) À partir de l’exemple de la seconde, l’élève sait que les
+unités de mesure sont définies par un consensus collectif de la
+communauté scientifique pour garantir la stabilité et
+l’universalité de l’unité.
+L’élève comprend que l’évolution de la définition d’une unité
+de mesure est rendue nécessaire par les progrès réalisés dans
+la précision des mesures.
+(*) L’élève sait que la communauté scientifique s’entend pour
+définir un système d’unités commun qui facilite la
+communication scientifique. Il sait que la définition de la
+seconde a évolué au cours du temps et qu’elle est aujourd’hui
+définie par une durée associée à une propriété de la matière.
+
+−
+
+Décrire le mouvement d’un point d’un
+objet en précisant la nature de sa
+trajectoire.
+
+L’élève exploite des données, des chronophotographies ou des
+vidéos, pour identifier la nature de la trajectoire d’un point d’un
+objet en mouvement.
+
+−
+
+Savoir que la nature du mouvement se
+décrit par rapport à un observateur.
+
+L’élève utilise le vocabulaire adapté pour décrire le mouvement
+d’un point d’un objet : rectiligne, circulaire, curviligne.
+L’élève caractérise la nature du mouvement d’un point d’un
+objet par rapport à différents observateurs.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+19
+
+Classe de quatrième
+Mouvement
+Dans la continuité des apprentissages de la classe de cinquième, l’élève caractérise les mouvements d’un point par sa
+trajectoire et sa vitesse. Il calcule des valeurs de vitesse en prenant appui sur des exemples de la vie quotidienne. La
+relation mathématique liant la vitesse d’un point d’un objet à la distance et à la durée nécessaire pour parcourir cette
+distance est précisée. Au collège, la vitesse est entendue comme une vitesse moyenne évaluée entre 2 instants. La
+notion de vitesse instantanée sera abordée au lycée.
+L’élève illustre la relativité du mouvement en comparant les valeurs de la vitesse d’un point d’un objet en mouvement
+vu depuis deux observateurs différents.
+Des exemples de mouvements de corps célestes sont étudiés, ils donnent l’occasion d’initier l’élève au mode de
+construction du savoir scientifique en étudiant la controverse opposant la description géocentrique à la description
+héliocentrique du système solaire.
+
+−
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Connaître et exploiter littéralement la
+d
+relation v = t entre la vitesse d’un point
+d’un objet, la distance parcourue et la
+durée du parcours.
+
+L’élève utilise la relation qui lie la vitesse d’un point d’un objet à la
+distance parcourue et à la durée du parcours, pour calculer, avec
+les unités appropriées :
+•
+•
+•
+
+la distance parcourue par ce point pendant une durée
+donnée ;
+la durée nécessaire au parcours, par ce point, d’une
+distance donnée ;
+la valeur de la vitesse de ce point.
+
+L’élève exprime la valeur d’une vitesse en m/s.
+−
+
+Décrire le mouvement d’un point d’un
+objet en précisant la nature de sa
+trajectoire et l’évolution de la valeur de
+sa vitesse.
+
+L’élève exploite des chronophotographies ou des vidéos et
+utilise le vocabulaire adapté pour décrire le mouvement d’un
+point d’un objet : uniforme, accéléré, décéléré ainsi que
+rectiligne, circulaire, curviligne.
+
+−
+
+Connaître des exemples de mouvements
+approximativement circulaires et
+uniformes en astronomie.
+
+L’élève connaît des exemples d’objets célestes dont les
+mouvements par rapport au Soleil peuvent être modélisés par des
+mouvements circulaires uniformes.
+
+−
+
+(*) Connaître des éléments historiques de
+la controverse entre les descriptions
+héliocentrique et géocentrique du
+système solaire.
+
+L’élève utilise des données pour déterminer la vitesse d’un objet
+céleste.
+(*) L’élève analyse des documents qui comparent les
+conséquences des descriptions héliocentrique et géocentrique du
+système solaire. Il comprend comment la démarche scientifique
+permet de départager deux représentations concurrentes du
+monde réel. Il connaît, dans ses grandes lignes, le rôle de Galilée
+dans ce débat.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+20
+
+Interactions
+En classe de quatrième, l’élève découvre les interactions entre objets ainsi que les effets de ces interactions sur le
+mouvement d’un objet. Il apprend à distinguer l’objet étudié des objets avec lesquels il interagit. La notion de force est
+introduite pour modéliser l’action exercée par un objet sur un autre. L’exemple de l’interaction magnétique permet de
+présenter quelques propriétés et caractéristiques des aimants.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Savoir identifier l’existence d’une
+interaction entre deux objets.
+
+−
+
+Savoir distinguer les interactions à
+distance et les interactions de contact.
+
+L’élève définit un objet comme système d’étude et identifie les
+interactions dans lesquelles il est engagé dans des situations
+contextualisées simples.
+
+−
+
+−
+
+Savoir que le mouvement d’un objet est
+influencé par l’ensemble des
+interactions dans lesquelles cet objet
+est engagé.
+
+L’élève reconnaît l’existence d’une interaction entre deux objets à
+partir d’une expérience ou de l’analyse de documents.
+L’élève distingue, pour une interaction entre deux objets, s’il s’agit
+d’une interaction à distance ou de contact.
+
+Savoir que l’action exercée sur un objet
+par un autre objet avec lequel il est en
+interaction peut être modélisée par une
+force caractérisée par son point
+d’application, sa direction, son sens et
+sa valeur (exprimée en newton).
+Connaître un instrument de mesure de
+la valeur d’une force et savoir l’utiliser.
+
+L’élève identifie une action exercée sur un objet étudié, la
+modélise par une force et en donne ses caractéristiques dans des
+situations simples.
+
+−
+
+Savoir qu’un aimant attire certains
+métaux.
+
+L’élève sait qu’un aimant attire le fer et ses alliages mais pas le
+cuivre, ni l’aluminium.
+
+−
+
+Savoir qu’un aimant possède toujours
+deux pôles : un pôle nord et un pôle
+sud.
+
+L’élève, avec une boussole ou un autre aimant dont les pôles sont
+repérés, identifie les pôles d’un aimant.
+
+−
+
+Savoir que, lorsqu’on utilise deux
+aimants, deux pôles de natures
+différentes s’attirent et deux pôles de
+mêmes natures se repoussent.
+
+−
+
+Savoir que la Terre a des propriétés
+magnétiques analogues à celles d’un
+aimant.
+
+−
+
+Savoir qu’une aiguille aimantée pointe
+vers le pôle magnétique qui est
+approximativement le pôle nord
+géographique.
+
+−
+
+L’élève mesure des valeurs de force à l’aide d’un instrument de
+mesure.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+21
+
+Classe de troisième
+Mouvement
+En classe de quatrième, l’élève caractérise le mouvement d’un point par sa trajectoire et sa vitesse, toujours entendue
+comme une vitesse moyenne évaluée entre 2 instants. L’élève connaît et utilise la relation mathématique liant la vitesse
+d’un point d’un objet à la distance et à la durée nécessaire pour parcourir cette distance.
+En classe de troisième, l’élève apprend à représenter la vitesse d’un point par un vecteur. Il relie les caractéristiques du
+vecteur vitesse au mouvement de ce point.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Caractériser la vitesse d’un point par un
+vecteur.
+
+L’élève sait que le vecteur vitesse est caractérisé par sa valeur, sa
+direction et son sens.
+
+−
+
+Caractériser le vecteur vitesse dans le cas
+de mouvements rectiligne et circulaire
+uniforme.
+
+L’élève exploite des chronophotographies ou des vidéos pour
+représenter le vecteur vitesse d’un point d’un objet en
+mouvement.
+L’élève sait que :
+•
+
+lors d’un mouvement rectiligne la direction et le
+sens du vecteur vitesse ne changent pas ;
+
+•
+
+lors d’un mouvement circulaire uniforme le vecteur
+vitesse garde la même valeur et le même sens,
+mais sa direction change à tout instant ;
+
+•
+
+lors d’un mouvement quelconque la direction et la
+valeur du vecteur vitesse peuvent changer.
+
+Interactions
+À l’issue de la classe de quatrième, l’élève sait que le mouvement d’un objet est influencé par l’ensemble des
+interactions dans lesquelles cet objet est engagé. Il sait que l’action exercée sur un objet peut être modélisée par une
+force dont il précise les caractéristiques. Il connaît quelques propriétés des aimants.
+En classe de troisième, l’élève apprend et exploite la relation mathématique liant le poids à la masse. Il comprend que
+les forces exercées sur un objet en équilibre se compensent.
+Le principe d’inertie, ou première loi de Newton, sera abordé au lycée.
+Les mesures de grandeurs physiques, poids et masse, sont particulièrement propices à l’étude de la variabilité de la
+mesure.
+
+Objectifs d’apprentissage
+−
+−
+−
+
+Définir le poids d’un objet comme la force
+exercée par la Terre sur cet objet.
+Connaître la direction et le sens du poids.
+Connaître et exploiter littéralement la
+relation P = m x g entre le poids d’un
+
+Exemples de réussite
+L’élève sait que le poids est dirigé vers le centre de la Terre.
+L’élève fait la distinction entre le poids d’un objet et sa masse.
+L’élève utilise la relation liant le poids d’un objet à sa masse et à
+l’intensité de la pesanteur, pour calculer :
+•
+•
+
+la valeur du poids ;
+la masse de l’objet ;
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+22
+
+objet, sa masse et l’intensité de la
+pesanteur.
+
+•
+
+l’intensité de la pesanteur.
+
+L’élève réalise une série de mesures pour valider une
+relation de proportionnalité entre le poids et la masse d’un
+objet et la relie à l’expression du poids.
+
+−
+
+Savoir que l’on peut représenter une
+force par un vecteur.
+
+L’élève détermine les caractéristiques d’un vecteur force à partir
+d’une représentation graphique.
+
+−
+
+Savoir qu’un objet est à l’équilibre si la
+vitesse de tous les points de cet objet est
+nulle.
+
+L’élève représente une force à l’aide d’un vecteur à partir de ses
+caractéristiques.
+
+−
+
+Savoir que lorsqu’un objet est en
+équilibre, alors la somme des vecteurs
+forces auxquels il est soumis est nulle.
+
+L’élève exploite le fait que les forces agissant sur l’objet se
+compensent dans des situations simples d’équilibres statiques en
+se limitant à deux forces.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+23
+
+L’ÉNERGIE : STOCKS, TRANSFERTS, CONVERSIONS
+L’énergie est ici définie par ses propriétés de stockage, de transfert et de de conservation, progressivement introduites
+tout au long du cycle 4. Le programme propose de distinguer dans un premier temps la notion de stock et de transfert
+d’énergie sur des exemples simples de systèmes mettant en jeu des transformations observables. Par la suite, les
+différents modes de transfert d’énergie entre deux systèmes sont explicités en introduisant la notion de puissance d’un
+transfert ou d’un flux d’énergie. L’électricité est présentée selon une approche énergétique permettant de donner du
+sens aux grandeurs de tension et d’intensité électriques introduites, et de sensibiliser les élèves aux risques électriques.
+Les enjeux environnementaux liés à la consommation électrique et la production d’électricité sont abordés par l’étude
+des convertisseurs d’énergie, notamment ceux qui permettent d’obtenir un flux d’énergie sous forme électrique suivant
+un processus carboné ou non. L’introduction de la loi de conservation de l’énergie permet d’effectuer des bilans
+quantitatifs d’énergie et d’aborder la notion de rendement d’un convertisseur, elle-même étroitement reliée à la notion
+d’énergie utile. Elle permet aussi d’effectuer des bilans sur d’autres systèmes, comme le système Terre-atmosphère et
+de faire le lien avec le réchauffement climatique.
+
+Classe de cinquième
+Stocks et transferts d’énergie
+En classe de cinquième, il s’agit de poser les bases d’une analyse rigoureuse des chaînes de transfert énergétique en
+distinguant les notions de stock et de transfert d’énergie. L’analyse de situations concrètes que l’élève apprend à
+schématiser, à l’aide d’expériences diverses ou d’études documentaires, permet d’exemplifier les notions introduites.
+L’exemple du fonctionnement de certains objets technologiques permet d’illustrer, quant à lui, la nécessité d’un
+transfert d’énergie vers ces derniers depuis une source d’énergie.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Savoir que tout système stocke de
+l’énergie, grandeur exprimée en joule.
+
+L’élève interprète des situations de la vie quotidienne au cours
+desquelles le stock d’énergie d’un système varie.
+
+−
+
+Savoir que la variation d’énergie d’un
+système se traduit par une transformation
+observable.
+
+−
+
+Savoir que l’énergie stockée par un
+système ne peut changer que s’il y a un
+transfert d’énergie vers ou depuis ce
+système.
+
+À partir d’un document, l’élève identifie les caractéristiques
+physiques ou chimiques (température, vitesse, altitude,
+composition chimique) qui peuvent varier lorsqu’un système
+donne ou reçoit de l’énergie.
+
+−
+
+Savoir que le fonctionnement de la
+plupart des objets technologiques requiert
+un transfert d’énergie vers l’objet.
+
+L’élève connaît et compare quelques ordres de grandeurs de
+l’énergie mise en jeu dans des situations courantes où le stock
+d’énergie d’un système varie (élévation d’une hauteur connue
+d’un objet de masse connue, décharge d’une pile de capacité
+connue, élévation de température d’un certain volume d’eau à
+température ambiante jusqu’à l’ébullition, augmentation de la
+vitesse d’un véhicule, etc.).
+L’élève identifie l’origine de l’énergie reçue par un objet
+technologique (voiture thermique, trottinette électrique,
+téléviseur, etc.).
+L’élève sait que la consommation en énergie d’un objet
+technologique est l’énergie qui doit lui être transférée pour
+assurer son fonctionnement, pour une utilisation donnée.
+
+−
+
+Définir une source d’énergie et citer des
+exemples de la vie courante (pile
+
+L’élève sait qu’une source d’énergie est un système dont le
+stock d’énergie diminue lorsqu’il fournit de l’énergie.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+24
+
+électrique, système subissant une
+combustion, Soleil).
+
+Électricité
+Au cycle 3, l’élève réalise des circuits électriques simples à une seule boucle, notamment pour identifier le caractère
+conducteur ou isolant d’un matériau. Il sait que l’inversion des composants dans de tels circuits électriques ne modifie
+pas leur fonctionnement et il découvre leur représentation schématique normalisée.
+En classe de cinquième, l'élève explore le fonctionnement des circuits électriques simples : il maîtrise leur représentation
+schématique normalisée et apprend à distinguer les associations en série et en dérivation. Il comprend que le
+fonctionnement d’un dipôle se caractérise par la tension électrique à ses bornes et par l’intensité du courant électrique
+qui le parcourt. Il est également sensibilisé aux risques électriques et aux moyens de s’en protéger.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Reconnaître si une boucle de courant est
+ouverte ou fermée.
+
+−
+
+Utiliser la représentation schématique
+normalisée d’un circuit électrique.
+
+L’élève met en œuvre un protocole expérimental simple visant
+à réaliser un circuit électrique avec des dipôles usuels :
+générateurs (piles), récepteurs (lampes, moteurs).
+
+−
+
+Identifier, dans un circuit électrique, des
+dipôles associés en série et des dipôles
+associés en dérivation.
+
+L’élève exploite les symboles normalisés de dipôles électriques
+usuels.
+L’élève réalise des circuits pour lesquels les dipôles sont
+associés en série ou en dérivation.
+L’élève compare les propriétés de circuits pour lesquels les
+lampes sont associées en série ou en dérivation.
+
+−
+
+−
+
+−
+
+Savoir que l’existence d’un courant
+électrique dans une portion de circuit
+nécessite que celle-ci soit insérée dans
+une boucle de courant fermée
+comportant également un générateur.
+Savoir que le fonctionnement d’un dipôle
+est caractérisé par la tension électrique à
+ses bornes (en volt) et par l’intensité du
+courant électrique qui le parcourt (en
+ampère).
+Connaître et exploiter l’unicité de
+l’intensité dans un circuit constitué
+uniquement de dipôles associés en série.
+
+L’élève sait que la tension électrique aux bornes d’un dipôle
+(valeur en volt) se mesure avec un voltmètre, connecté en
+dérivation.
+L’élève sait que l’intensité du courant électrique qui circule
+dans un dipôle (valeur en ampère) se mesure avec un
+ampèremètre, connecté en série.
+Dans un circuit constitué uniquement de dipôles associés en
+série, l’élève constate expérimentalement, que :
+•
+
+la valeur de l’intensité du courant électrique est la
+même en tout point d’un circuit ;
+
+•
+
+la valeur de l’intensité du courant électrique ne
+dépend pas de la place des différents dipôles dans le
+circuit ;
+
+•
+
+la valeur de la tension électrique mesurée aux bornes
+d’un dipôle ne dépend pas de sa place dans le circuit.
+
+L’élève sait que l’appareil de mesure ne fournit qu’une valeur
+approchée et engage une réflexion sur la notion d’incertitude de
+mesures.
+−
+
+Connaître des dangers liés à l’électricité et
+savoir s’en prémunir.
+
+L’élève respecte les règles de sécurité électrique lors des
+manipulations.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+25
+
+L’élève est sensibilisé aux risques électriques domestiques. En
+particulier, il sait que la tension électrique de 230 V aux bornes
+des prises électriques présente un danger alors que ce n’est pas
+le cas de la tension électrique aux bornes des piles, généralement
+inférieure à 12 V.
+L’élève identifie une situation de court-circuit et sait en expliquer
+les risques.
+Il connaît un dispositif de protection des risques électriques (prise
+de terre).
+
+Classe de quatrième
+Puissance d’un transfert d’énergie entre deux systèmes
+En fin de cinquième, l’élève distingue la notion de stock d’énergie d’un système de celle de transfert d’énergie vers ou
+depuis un système. Il sait que le fonctionnement de certains objets technologiques nécessite un transfert d’énergie
+depuis une source.
+En classe de quatrième, les différents modes de transfert d’énergie entre deux systèmes sont introduits : par électricité,
+transfert thermique, rayonnement et par action mécanique. L’élève est sensibilisé au fait qu’un transfert d’énergie
+prend du temps et s’effectue toujours selon une certaine durée, ce qui permet de définir la puissance d’un transfert. La
+notion de flux d’énergie est introduite lorsque qu’un transfert d’énergie s’effectue de manière continue.
+
+−
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Connaître les principaux modes de
+transfert d’énergie entre deux systèmes :
+
+Dans une situation donnée, l’élève est capable d’identifier le ou
+les modes de transfert d’énergie mis en jeu.
+
+•
+•
+•
+•
+
+transfert électrique ;
+transfert thermique ;
+transfert par rayonnement ;
+transfert par action mécanique.
+
+L’élève sait qu’un transfert électrique d’énergie peut se produire
+entre deux systèmes appartenant à un même circuit électrique.
+L’élève sait qu’un transfert d’énergie par transfert thermique se
+produit quand les deux systèmes ne sont pas à la même
+température. Il sait que le transfert s’effectue du système de
+température la plus élevée vers le système de température la plus
+basse.
+L’élève sait qu’un transfert d’énergie par rayonnement (aussi
+appelé transfert radiatif) s’effectue lorsqu’un système émet un
+rayonnement et que l’autre l’absorbe. Il sait que c’est sous cette
+forme que le Soleil transfère de l’énergie à la Terre. Il sait
+également que la Terre émet de l’énergie vers l’espace par le biais
+d’un rayonnement invisible pour l’œil humain.
+L’élève sait qu’un transfert d’énergie par action mécanique se
+produit lorsque la vitesse ou l’altitude d’un objet change par
+interaction avec un autre système.
+
+− Savoir qu’un transfert d’énergie prend du
+temps.
+− Connaître et exploiter la relation liant la
+puissance du transfert, l’énergie
+transférée et la durée du transfert
+
+L’élève sait que tout transfert d’énergie peut être caractérisé par
+une puissance, dont la valeur est exprimée en watt, et calculée en
+divisant la valeur de l’énergie transférée, exprimée en joule, par
+la valeur de la durée, exprimée en seconde, nécessaire à ce
+transfert.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+26
+
+(P = E/ t), exprimées dans les unités
+adéquates.
+− Utiliser la notion de flux d’énergie.
+
+Il établit qu’un transfert d’énergie donné prend moins de
+temps quand la puissance du transfert est plus grande.
+L’élève sait que certains dispositifs (lampe allumée, radiateur
+en fonctionnement, etc.) peuvent transférer de l’énergie de
+manière continue et que l’on décrit ce transfert comme un flux
+d’énergie. Il sait que la valeur de la puissance exprimée en watt
+est égale à la valeur de l’énergie, exprimée en joule, transférée
+par seconde dans un tel flux.
+L’élève connaît des ordres de grandeur de puissances associées à
+des transferts d’énergie utiles dans la vie quotidienne (éclairage,
+chauffage, rayonnement solaire reçu sur Terre par unité de
+surface, etc.).
+
+Puissance électrique
+À la fin de la classe de cinquième, l’élève maîtrise la représentation schématique normalisée d’un circuit électrique,
+distingue les associations en série et en dérivation, et mesure des valeurs d’intensité et de tension électriques.
+En classe de quatrième, il découvre la notion de puissance électrique, en lien avec l’étude plus générale de la puissance
+d’un transfert d’énergie entre deux systèmes. Il mobilise les acquis de la classe de cinquième pour mesurer
+indirectement, dans un circuit électrique, des valeurs de puissance, et constate que la puissance fournie par le
+générateur correspond à la somme des puissances reçues par les dipôles.
+
+−
+
+−
+
+−
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Connaître et exploiter la relation
+permettant de calculer la puissance
+électrique transférée entre deux dipôles
+(P = U x I), en utilisant les unités
+adaptées.
+Savoir que, dans un circuit, la puissance
+fournie par le générateur est égale à la
+somme des puissances reçues par les
+dipôles.
+
+L’élève calcule la valeur de la puissance électrique (exprimée
+en watt) reçue ou fournie par un dipôle en multipliant la valeur
+de la tension électrique, exprimée en volt, et la valeur de
+l’intensité, exprimée en ampère.
+
+Comprendre que l’association de
+nombreux appareils en dérivation sur le
+secteur peut conduire à une surintensité.
+
+L’élève constate expérimentalement qu’à tension constante,
+ajouter des récepteurs en dérivation dans un circuit augmente
+la puissance fournie par le générateur.
+
+L’élève constate expérimentalement par des mesures
+d’intensités et de tensions électriques que, dans un circuit
+électrique, la puissance fournie par le générateur est égale à
+la somme des puissances reçues par chacun des autres
+dipôles.
+
+L’élève est sensibilisé aux dangers de l’utilisation incontrôlée
+des multiprises sans précaution et à l’intérêt des dispositifs de
+protection.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+27
+
+Classe de troisième
+Conversions d’énergie : enjeux environnementaux de la production d’électricité et de la
+consommation électrique
+En fin de classe de quatrième, l’élève identifie les différents modes de transfert d’énergie entre deux systèmes et il
+connaît la notion de puissance. Il exploite la relation permettant de calculer la puissance électrique transférée entre
+deux dipôles.
+En classe de troisième, les convertisseurs d’énergie sont introduits, notamment l’alternateur et la cellule photovoltaïque
+qui permettent d’interpréter la « production » d’électricité comme l’obtention d’un flux d’énergie sous forme électrique
+à partir d’un flux d’une autre nature. La représentation schématique d’une chaîne de transfert énergétique est un
+objectif d’apprentissage.
+L’élève identifie les modes d’obtention carbonés d’un flux d’énergie sous forme électrique et il connaît différentes
+ressources primaires en énergie, renouvelables ou non. Les notions de flux d’énergie utile et de rendement d’un
+convertisseur sont introduites. À l’aide de la loi de conservation de l’énergie, des bilans énergétiques sont effectués.
+En classe de troisième, l’élève conduit un calcul de consommation électrique relatif à une situation de la vie courante et
+il est sensibilisé aux enjeux d’économies d’énergie pour développer des comportements responsables.
+Le réchauffement climatique global est interprété à l’aide d’un bilan d’énergie effectué sur le système Terreatmosphère.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Caractériser un convertisseur d’énergie.
+
+−
+
+Connaître les principaux dispositifs qui
+permettent d’obtenir un flux d’énergie
+sous forme électrique à partir d’un flux
+d’autre nature : alternateur et cellule
+photovoltaïque.
+
+L’élève sait qu’un convertisseur d’énergie est un système qui
+reçoit et fournit de l’énergie selon des modes de transfert qui
+peuvent être différents et qu’il identifie. L’élève connaît les
+conversions réalisées par un alternateur et une cellule
+photovoltaïque.
+
+−
+
+Distinguer qualitativement des ressources
+primaires en énergie selon qu’elles sont
+renouvelables ou non renouvelables.
+
+−
+
+Identifier les modes carbonés et non
+carbonés d’obtention d’un flux d’énergie
+sous forme électrique.
+
+L’élève interprète la « production » d’électricité comme une
+suite de conversions et de transferts d’énergie, aboutissant à
+un flux d’énergie sous forme électrique dans le réseau de
+distribution.
+L’élève cite différentes ressources primaires en énergie : Soleil,
+eau en mouvement, vent, pétrole, bois, charbon, dihydrogène,
+combustible nucléaire (uranium), etc. Il précise, pour chacune, si
+elle est renouvelable ou non à l’échelle temporelle de la vie
+humaine. Il sait que les ressources primaires en énergie non
+renouvelables sont en quantité finie sur Terre.
+L’élève identifie les modes d’obtention d’un flux d’énergie sous
+forme électrique mettant en jeu une combustion produisant du
+dioxyde de carbone CO2.
+
+−
+
+Représenter schématiquement une
+chaîne de transfert énergétique.
+
+L’élève représente schématiquement une chaîne énergétique
+modélisant une situation de la vie quotidienne : lampe allumée,
+moteur électrique en fonctionnement, résistance chauffante,
+etc. Il identifie les stocks d’énergie, l’environnement, les
+convertisseurs, les flux d’énergie, leur sens et le mode de
+transfert associé.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+28
+
+−
+
+Connaître et exploiter la relation
+permettant de calculer l’énergie
+transférée à un appareil électrique
+(E = P x t).
+
+L’élève relie l’énergie transférée à un appareil électrique à la
+puissance électrique et à la durée d’utilisation de cet appareil.
+Il calcule la valeur de cette énergie en mobilisant des systèmes
+d’unités différents (joule ou watt-seconde, kilowatt-heure).
+L’élève conduit un calcul de consommation électrique relatif à
+une situation de la vie courante (fonctionnement d’un appareil
+électrique, utilisation du numérique en particulier le recours à
+l’intelligence artificielle générative, etc.). Il calcule la puissance
+électrique reçue par un appareil électrique connaissant la
+valeur de la tension et de l’intensité et appliquant la relation
+P = U x I.
+L’élève est sensibilisé aux enjeux d’économies d’énergie pour
+développer des comportements responsables.
+
+−
+
+Connaître et exploiter la loi de
+conservation de l’énergie pour réaliser un
+bilan.
+
+L’élève réalise le bilan énergétique d’un système et déduit la
+variation d’énergie stockée connaissant l’énergie reçue et
+l’énergie fournie par le système.
+Il sait que le stock d’énergie d’un système qui fournit autant
+d’énergie qu’il en reçoit est constant.
+
+−
+
+Faire le lien entre le réchauffement
+climatique et un bilan d’énergie du
+système Terre-atmosphère.
+
+L’élève sait que le réchauffement climatique global
+actuellement observé provient du fait que le système Terreatmosphère reçoit du Soleil plus d’énergie qu’il n’en transfère
+vers l’espace. Il sait que l’augmentation de l’énergie stockée par
+la Terre se traduit par une augmentation de sa température.
+L’élève sait que l’augmentation de la quantité de gaz à effet de
+serre dans l’atmosphère se traduit par une diminution de la
+puissance transférée par rayonnement par le système Terreatmosphère vers l’espace.
+
+−
+
+Identifier le flux d’énergie utile fourni par
+un convertisseur d’énergie.
+
+L’élève sait qu’un convertisseur en fonctionnement reçoit
+autant d’énergie qu’il en fournit.
+
+−
+
+Savoir que l’énergie utile fournie par un
+convertisseur est toujours inférieure à
+l’énergie nécessaire à son
+fonctionnement.
+
+−
+
+Définir le rendement d’un convertisseur
+d’énergie.
+
+L’élève réalise le bilan énergétique d’un convertisseur
+d’énergie en fonctionnement. Il sait que l’énergie fournie par le
+convertisseur comporte une partie utile, car souhaitée par
+l’utilisateur, et une partie inutile, car inexploitable
+(généralement transférée à l’environnement par transfert
+thermique).
+L’élève sait que le rendement correspond au rapport entre
+l’énergie utile obtenue et l’énergie totale initialement
+impliquée.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+29
+
+ONDES ET SIGNAUX
+Au cycle 3, l'élève identifie des objets transparents, opaques à la lumière ou translucides. Il produit et interprète des
+ombres en lien avec la position des objets opaques et des sources lumineuses.
+Au cycle 4, il s’agit d’enrichir les notions en introduisant l’étude des signaux sonores et des signaux lumineux, puis celle
+des ondes qui permettent la transmission de ces signaux. L’élève exploite alors la relation entre vitesse, distance et
+durée (en introduction ou en réinvestissement si elle a été vue dans la partie « Mouvement et interactions »). Il découvre
+que ces ondes peuvent se réfléchir sur certains objets, et que la mesure d’une durée, entre l’émission et la réception
+d’une onde, est à la base des dispositifs de télémétrie. Il comprend également qu’observer les objets lointains,
+notamment les astres, fournit des informations sur leur état dans le passé.
+
+Classe de cinquième
+Signaux sonores
+L’étude des sons ne figure pas au programme du cycle 3. En classe de cinquième, l’élève découvre les grandeurs
+associées à la perception des signaux sonores, telles que la fréquence et le niveau d’intensité sonore. Il est sensibilisé
+aux risques pour la santé liés aux sons d’intensité sonore élevée.
+
+Objectifs d’apprentissage
+−
+
+−
+−
+
+Savoir qu’un signal sonore est
+notamment caractérisée par sa fréquence
+(exprimée en hertz) et son niveau
+d’intensité sonore (exprimé en décibel).
+Connaître les domaines de fréquence des
+sons audibles par l’oreille humaine, des
+infrasons et des ultrasons.
+Relier qualitativement la fréquence d’un
+son audible à sa hauteur.
+
+Exemples de réussite
+L’élève sait que plus la fréquence d’un son audible est élevée, plus
+ce son est aigu, et inversement.
+L’élève représente et exploite le spectre en fréquences des
+signaux sonores (infrasons, sons audibles, ultrasons).
+L’élève sait que l’oreille humaine est capable d’entendre les sons
+caractérisés par des fréquences approximativement comprises
+entre 20 Hz et 20 kHz.
+L’élève connaît quelques ordres de grandeur du niveau d’intensité
+sonore de quelques situations de la vie courante.
+Il est sensibilisé aux risques liés aux sons d’intensité sonore
+élevée : risques auditifs et, plus globalement, risques pour la
+santé.
+
+Signaux lumineux
+À la fin du cycle 3, l’élève distingue les objets transparents des objets opaques. Il utilise un objet opaque pour produire
+une ombre et différencier ombre propre et ombre portée. Il est également en mesure de produire des ombres et de
+relier leur position et leur taille à celles de la source lumineuse et de l’objet.
+En classe de cinquième, l'élève explore les notions de source lumineuse et de propagation rectiligne dans un milieu
+homogène et transparent. Il exploite le modèle du rayon lumineux pour expliquer des phénomènes d’ombres.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+30
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Distinguer une source primaire de
+lumière d’un objet diffusant.
+
+L’élève distingue les sources primaires de lumière et les objets
+diffusants rencontrés dans la vie courante.
+
+−
+
+Savoir que la lumière se propage en ligne
+droite dans le vide et dans les milieux
+homogènes et transparents.
+
+−
+
+Modéliser la propagation de la lumière
+par le modèle du rayon lumineux et
+utiliser ce modèle.
+
+L’élève observe expérimentalement la propagation rectiligne de la
+lumière dans l’air (ou dans un milieu homogène transparent). Il
+utilise le modèle du rayon lumineux, par exemple pour expliquer
+des phénomènes d’ombres, en particulier les éclipses.
+
+−
+
+Savoir qu’il existe des signaux lumineux
+invisibles à l’œil nu.
+
+L’élève est sensibilisé aux risques d’emploi de certaines sources
+lumineuses (laser par exemple).
+L’élève sait que certains animaux perçoivent des signaux lumineux
+auxquels l’œil humain n’est pas sensible. Il connaît l’existence de
+caméras permettant de détecter des signaux invisibles pour l’œil
+humain.
+
+Classe de quatrième
+Des ondes pour propager des signaux
+En classe de quatrième, l'élève découvre que la transmission des signaux sonores et lumineux étudiés en classe de
+cinquième s’appuie sur la propagation d’une onde. Il constate que la propagation d’une onde ne peut être instantanée,
+et étudie les différences qui existent entre la propagation des ondes sonores et celle des ondes lumineuses.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Savoir que la transmission d’un signal
+s’appuie sur la propagation d’une onde.
+
+L’élève observe des propagations d’ondes et comprend qu’elles se
+font sans transport de matière.
+
+−
+
+Savoir que la propagation d’une onde
+s’effectue sans transport de matière.
+
+−
+
+Savoir que la propagation d’une onde
+n’est pas instantanée et qu’elle implique
+un retard.
+
+L’élève comprend que la propagation d’une onde implique un
+retard entre le signal émis et le signal reçu, en observant des
+phénomènes ondulatoires de différentes natures.
+
+−
+
+Connaître et utiliser la relation v = t liant
+la vitesse de propagation d’une onde, la
+distance et la durée de propagation.
+
+d
+
+L’élève calcule, dans l’unité appropriée, la valeur de la vitesse de
+propagation d’une onde en mesurant la distance parcourue par
+une onde et la durée nécessaire pour parcourir cette distance.
+L’élève utilise la relation qui lie la vitesse de propagation d’une
+onde à la distance parcourue par cette onde et à la durée
+nécessaire pour parcourir cette distance, pour calculer :
+•
+
+la distance parcourue pendant une durée donnée ;
+
+•
+
+la durée nécessaire pour parcourir une distance
+donnée ;
+
+•
+
+la valeur d’une vitesse de propagation à partir des
+données nécessaires.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+31
+
+L’élève relie distances et durées de propagation en s’appuyant
+sur des mesures expérimentales.
+−
+
+Savoir que les ondes sonores se
+propagent uniquement dans les milieux
+matériels alors que les ondes lumineuses
+peuvent se propager dans le vide et dans
+les milieux transparents.
+
+−
+
+Connaître, en ordre de grandeur, les
+valeurs de la vitesse de propagation du
+son dans l’air et de la lumière dans le
+vide.
+
+−
+
+Savoir qu’aucun signal ne peut se
+propager à une vitesse supérieure à celle
+de la vitesse de la lumière dans le vide.
+
+L’élève interprète l’expérience de la cloche à vide.
+L’élève sait qu’en astronomie, l’observation des astres est possible
+depuis la Terre ou depuis l’espace grâce à la propagation des
+ondes lumineuses dans le vide.
+Il comprend les décalages de perceptions sonore et visuelle de
+certains phénomènes de la vie quotidienne (éclair et tonnerre, feu
+d’artifice, etc.). Il calcule la distance approximative d’un éclair à
+partir du délai de propagation des ondes sonores créées par
+l’éclair.
+(*) L’élève sait qu’une des hypothèses de base de la physique est
+le fait qu’aucun signal ne peut se propager à une vitesse
+supérieure à celle de la vitesse de la lumière dans le vide. Il sait
+que cette hypothèse est due aux travaux d’Albert Einstein au
+début du XXème siècle.
+
+Classe de troisième
+Des signaux pour mesurer
+En classe de quatrième, l’élève comprend que la relation entre la vitesse de propagation d’une onde, la distance
+parcourue et la durée permet, par la mesure d’un intervalle de temps, de déterminer une distance. En classe de
+troisième, cette approche est enrichie par la découverte de dispositifs de télémétrie.
+Une attention particulière est portée à la transmission des signaux en cosmologie, afin que l’élève établisse un lien entre
+la distance d’un objet céleste et le temps mis par la lumière pour nous parvenir. Il comprend alors qu’un objet lointain
+est observé tel qu’il était au moment où la lumière a été émise.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+−
+
+Savoir que les ondes peuvent se réfléchir
+sur certains objets.
+
+−
+
+Exploiter la propagation des signaux pour
+déterminer des distances.
+
+L’élève détermine des distances à partir de dispositifs de
+télémétrie (écholocation, sonar, échographie, radar de recul,
+mesure de la distance Terre-Lune).
+
+−
+
+Savoir que l’année-lumière est une unité
+de distance.
+
+L’élève sait que l’année-lumière est la distance parcourue dans le
+vide par la lumière durant une année. Il calcule la valeur d’une
+année-lumière, dans une unité usuelle de distance.
+
+−
+
+Comprendre que voir loin, c’est voir dans
+le passé.
+
+L’élève sait que lorsqu’on analyse la lumière en provenance d’un
+astre lointain, cette lumière a été émise il y a longtemps. Plus
+l’objet est lointain, plus la lumière analysée a été émise dans le
+passé.
+L’élève comprend que pour étudier l’histoire de l’Univers, il est
+nécessaire d’observer des objets cosmiques à différentes
+distances.
+
+Projet de programmes de physique-chimie – Cycle 4 – juillet 2025
+
+32
+
+

@@ -1,0 +1,66 @@
+[
+  {
+    "type": "playbook",
+    "transition": "fade",
+    "shared_blocks": [
+      {
+        "type": "adsb_feed",
+        "name": "live",
+        "center_lat": 43.629,
+        "center_lon": 1.363,
+        "radius_nm": 40,
+        "refresh": 15,
+        "filter_ground": true
+      },
+      {
+        "type": "metar_feed",
+        "name": "wx",
+        "station": "LFBO",
+        "refresh": 60
+      }
+    ],
+    "slides": [
+      {
+        "id": "takeoff",
+        "label": "TAKEOFF",
+        "accent": "#009ace",
+        "blocks": [
+          {
+            "type": "geo_iso_takeoff",
+            "title": "LFBO RWY 14L — A321neo DEPARTURE",
+            "airline": "AIB",
+            "aircraft_type": "A21N",
+            "auto_next": "live_traffic",
+            "auto_next_ms": 4000
+          }
+        ]
+      },
+      {
+        "id": "live_traffic",
+        "label": "RADAR",
+        "accent": "#00f2ff",
+        "blocks": [
+          {
+            "type": "airspace_command_deck",
+            "height": "fullscreen",
+            "chyron_title": "TOULOUSE TMA — LIVE TRAFFIC",
+            "chyron_subtitle": "LFBO · {{weather.wind}} · {{weather.temp}} · {{weather.pressure}}",
+            "ticker_text": "LIVE ADS-B — TOULOUSE-BLAGNAC TMA — 40NM RADIUS — REFRESH 15s — LFBO APPROACH ACTIVE — RUNWAY 14L/R IN USE",
+            "ticker_speed": 20,
+            "zoom": 40,
+            "spotlight": true,
+            "spotlight_count": 10,
+            "data_source": "live",
+            "weather_source": "wx",
+            "poll_question": "Is this demo cool?",
+            "poll_question_id": "atc_cool",
+            "poll_options": [
+              {"value": "yes", "label": "This is cool", "emoji": "🔥"},
+              {"value": "no",  "label": "Not for me",   "emoji": "🤷"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

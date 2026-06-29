@@ -1,0 +1,2689 @@
+Projet de programmes de sciences de la
+vie et de la Terre du cycle 4
+
+Juillet 2025
+
+Ce projet de programmes n’engage pas, à ce stade, le ministère de l’Éducation nationale.
+
+Sommaire
+Table des matières
+Préambule .............................................................................................................................................. 3
+Niveau d’enseignement : classe de cinquième....................................................................................... 10
+Partie : Nature des pratiques et des savoirs scientifiques en SVT ................................................................................. 10
+Partie : Terre et vivant ................................................................................................................................................... 11
+Thème : La Terre, planète habitable .......................................................................................................................... 11
+Thème : La Terre, planète dynamique ....................................................................................................................... 12
+Thème : Les interactions Terre - vivant...................................................................................................................... 13
+Partie : Corps humain et santé....................................................................................................................................... 15
+Thème : L’activité physique ....................................................................................................................................... 15
+Thème : Virus, micro-organismes et interactions avec l’être humain. ...................................................................... 16
+Thème : Procréation humaine ................................................................................................................................... 17
+
+Niveau d’enseignement : classe de quatrième....................................................................................... 19
+Partie : Nature des pratiques et des savoirs scientifiques en SVT ................................................................................. 19
+Partie : Terre et vivant ................................................................................................................................................... 19
+Thème : La Terre, planète habitable .......................................................................................................................... 19
+Thème : La Terre, planète dynamique ....................................................................................................................... 20
+Thème : Les interactions Terre-vivant ....................................................................................................................... 22
+Partie : Corps humain et santé....................................................................................................................................... 25
+Thème : Le fonctionnement de l’organisme .............................................................................................................. 25
+Thème : Virus, micro-organismes et interactions avec l’être humain. ...................................................................... 28
+Thème : Procréation humaine ................................................................................................................................... 29
+
+Niveau d’enseignement : classe de troisième ........................................................................................ 31
+Partie : Nature des pratiques et des savoirs scientifiques en SVT ................................................................................. 31
+Partie : Terre et vivant ................................................................................................................................................... 32
+Thème : La Terre, planète dynamique ....................................................................................................................... 32
+Thème : Les interactions Terre-vivant ....................................................................................................................... 35
+Partie : Corps humain et santé....................................................................................................................................... 38
+Thème : le fonctionnement de l’organisme ............................................................................................................... 38
+Thème : Virus, micro-organismes et interactions avec l’être humain. ...................................................................... 40
+Thème : Procréation humaine ................................................................................................................................... 40
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+2
+
+Préambule
+Finalités et ambitions du programme
+Le programme de cycle 4 des sciences de la vie et de la Terre complète des connaissances scientifiques déjà abordées
+en cycle 3 et construit de nouveaux concepts. Ceux-ci sont choisis de manière à ce que les élèves aient, à la fin de leur
+scolarité obligatoire, un bagage scientifique naturaliste suffisant pour comprendre les grands mécanismes qui touchent
+à la biologie et aux géosciences et soient aguerris à la diversité des démarches scientifiques qui peuvent être mises en
+œuvre.
+
+Enjeux contemporains et citoyenneté
+Les concepts scientifiques travaillés en SVT amènent les élèves à saisir des enjeux liés à la santé individuelle et collective,
+à celle des écosystèmes ainsi qu’à celle des populations humaines, mais aussi à la compréhension des mécanismes à
+l’origine du réchauffement climatique, à la pertinence des solutions construites pour réussir la transition écologique.
+L’ambition est également de montrer comment les sciences de la vie et de la Terre contribuent à l’élaboration des
+politiques publiques, en intégrant d’autres dimensions que la seule dimension scientifique. Les élèves peuvent ainsi se
+construire un cadre de référence leur permettant de prendre des décisions raisonnées dont ils peuvent mesurer les
+conséquences comme tout citoyen éclairé.
+
+L’égalité entre tous les élèves, et particulièrement entre les filles et les garçons.
+Les professeurs veillent à instaurer les conditions permettant à chaque élève de comprendre que les sciences de la vie
+et de la Terre sont accessibles à tous et à toutes, quels que soient le sexe ou le milieu social.
+Cette démarche suppose une attention particulière des professeurs à plusieurs éléments :
+−
+−
+−
+−
+−
+
+au regard porté sur chacun des élèves, en valorisant la mise en œuvre de stratégies de recherche
+et les progrès de manière équitable ;
+à la répartition des tâches et des responsabilités confiées à chacun : les filles tout comme les
+garçons doivent pouvoir manipuler et, réciproquement, les garçons tout comme les filles doivent
+contribuer aux traces écrites ;
+à la sollicitation équilibrée des filles et des garçons à l’oral et à la régulation des prises des paroles ;
+aux retours oraux et écrits qu’il fournit aux élèves, en insistant sur leurs réussites et en leur
+proposant des pistes d’amélioration ;
+aux occasions offertes à chaque élève de s’exprimer individuellement ou d’interagir au sein d’un
+groupe.
+
+Afin de modifier les représentations sociales et d’encourager une identification positive, il est essentiel de veiller à
+proposer des situations évitant la reproduction, même implicite de stéréotypes de genres, et de mettre en avant le
+travail et les réalisations de femmes scientifiques dans le domaine des biogéosciences (Rachel Carlson, Rosalind Franklin,
+Lynn Margulis, Françoise Barré-Sinoussi, Emmanuelle Charpentier, Katia Kraft, Marie Tharp, etc.). En effet, la projection
+sur un « modèle » participe, dès le plus jeune âge, à modifier les représentations sociales et celles liées aux genres.
+
+Organisation des enseignements
+Thématiques structurantes
+À tous les niveaux d’enseignement du cycle 4, les objets d’étude des sciences de la vie et de la Terre, qui sont des sciences
+du complexe, s’articulent autour de deux thématiques : « Terre et vivant » et « Corps humain et santé ». Cet
+enseignement permet aux élèves de renforcer la connaissance de leur environnement dans ses dimensions scientifiques,
+mais aussi sensible, esthétique et éthique, ce qui implique une relation directe au « réel de terrain ». Il contribue ainsi à
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+3
+
+questionner leur rapport à la nature et peut avoir un effet bénéfique sur leur santé. Enfin, les élèves peuvent pratiquer
+différentes approches qui mettent en avant la complexité des objets de ces disciplines, leur permettant de mobiliser les
+compétences acquises pour appréhender des concepts scientifiques exigeants.
+Approche progressive et spiralaire
+À partir du collège, la modélisation des phénomènes, qui se fonde sur le réel et le concret, permet d’articuler des
+mécanismes à des échelles de temps et d’espace variées. Les échelles cellulaires et moléculaires sont introduites. La
+génétique et les mécanismes de l’évolution biologique fournissent des clés de compréhension de l’unité et de la diversité
+du vivant. Le corps humain est étudié dans une logique d’intégration des différentes fonctions biologiques au sein de
+l’organisme. Cette étude est associée à des enjeux liés à la santé individuelle et collective ainsi qu’à la santé publique.
+Les élèves acquièrent des repères sur la Terre, une planète active issue d’une longue histoire et singulière dans le système
+solaire en raison de son habitabilité. Ils comprennent les grands équilibres de notre planète (biodiversité et
+environnement, climat de la Terre, cycles de l’eau, du carbone et des roches) et les effets des activités humaines. Ils
+établissent le lien entre la géodynamique (interne et externe) et les risques naturels.
+La plupart des concepts sont abordés à plusieurs moments des programmes sur un même niveau de classe ou d’une
+année à l’autre. Cette programmation des apprentissages permet l’étude de certains mécanismes en variant les niveaux
+explicatifs. Elle amène à réinvestir des notions distinctes qui, mises en synergie, permettent de construire d’autres
+systèmes explicatifs, stabilisent les connaissances et les compétences et engage les élèves dans des situations où ils
+peuvent mobiliser leurs aptitudes dans des démarches scientifiques inédites. Cela permet également de ne pas aborder
+une seule fois une notion, mais de la revoir plusieurs fois, ce qui est bénéfique à la mémorisation à long terme.
+
+Démarches scientifiques et développement de l’esprit critique
+Diversité des démarches scientifiques
+Au cours du cycle, les élèves, en pratiquant cette diversité de démarches scientifiques, identifient les méthodes qui
+fondent une science. Ainsi, ils apprennent à différencier un concept scientifique, d’opinions ou des croyances. À la fin du
+collège, l’élève connaît les principales modalités de l’élaboration collective du savoir scientifique et de sa diffusion, et il
+est en mesure de distinguer ce qui constitue un savoir scientifique éprouvé de ce qui relève, soit d’une opinion non
+prouvée, soit d’une croyance.
+Les démarches scientifiques mises en œuvre sont diversifiées et adaptées aux objets d’étude. Il peut s’agir de démarches
+inductives, déductives ou abductives. Elles peuvent prendre appui sur des observations, des expérimentations, des
+modélisations. À l’issue de la classe de troisième, l’élève doit être en mesure d’investir ces différentes formes de
+raisonnement en prenant appui sur une diversité de modalités de résolution des problèmes posés. Il importe de
+différencier les relations de causalité des relations de corrélations, surtout quand il s’agit de développer l’esprit critique
+des élèves.
+
+Stratégies pédagogiques
+Diversité des démarches pédagogiques
+L’une des formes de démarches pédagogiques, la démarche scientifique, permet de développer les capacités qui lui sont
+liées : construire un questionnement scientifique, construire une ou des hypothèses, en déduire les conséquences
+testables ou vérifiables, concevoir et mettre en œuvre des expériences ou d’autres stratégies pour éprouver la
+robustesse des hypothèses, utiliser des instruments d’observation, de mesure et des techniques de préparation et de
+collecte, interpréter des résultats et en tirer des conclusions.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+4
+
+L’enseignement explicite est une autre des modalités possibles, qui, au même titre que les autres formes d’enseignement
+(cours magistral, démarche d’investigation, etc.) doivent être mises en œuvre quand le cadre de l’étude les rend les plus
+opérantes (première mise en œuvre d’une forme de raisonnement, étude plus difficile qui nécessite un
+accompagnement plus appuyé de l’enseignant, etc.). Cette remarque vaut pour toutes les formes de démarche ou
+d’enseignement (classe inversée, classe renversée, organisation des travaux de groupes, etc.).
+Accompagnement des apprentissages par l’évaluation
+Dans ce cadre et pour que les apprentissages soient pleinement efficaces, un suivi précis des niveaux de maîtrise des
+différentes compétences possédées par les élèves est nécessaire. Les compétences d’observation des élèves en classe,
+leur capacité à investir une démarche, l’investissement dont ils font preuve est un premier niveau informatif. Des
+évaluations en cours d’apprentissage, qui ne sont pas prises en compte dans les moyennes trimestrielles, complètent
+ces observations directes. Il s’agit, à travers des activités ciblées, de mesurer individuellement les apprentissages
+effectifs. Ce type d’évaluation permet à la fois d’ajuster les progressions dans le cas où les apprentissages sont
+différenciés chez les élèves (plus lents ou plus rapides que ce qui est prévu par l’enseignant), mais également d’opérer
+une différenciation en accompagnant les élèves qui éprouvent plus de difficulté ou en permettant à ceux qui réussissent
+d’aller plus loin.
+L’évaluation diagnostique, lorsqu’elle est mise en place, permet de mesurer les niveaux de maîtrise en amont des
+apprentissages. Dans une dynamique d’approche spiralaire de construction des concepts, ce type d’évaluation est
+particulièrement utile pour s’assurer individuellement du niveau de maîtrise des compétences avant les
+approfondissements envisagés. Si elle est mise en œuvre, elle va de pair avec une adaptation des progressions qui
+doivent être en cohérence avec ce qui a été mesuré chez les collégiens.
+Les évaluations sommatives, qui n’excèdent pas 10 % des temps d’enseignement, sont construites à partir des
+compétences qu’une majorité d’élèves maîtrise au moins de façon satisfaisante.
+
+La place centrale du réel et du concret
+Fondements épistémologiques et modalités pratiques
+Les sciences de la vie et de la Terre construisent leurs modèles explicatifs du monde à partir de l’observation et de
+l’analyse d’objets réels et concrets. À partir du moment où le système explicatif construit est à l’épreuve des faits, c’està-dire qu’il rend bien compte des observations et des analyses conduites, alors il est réputé robuste jusqu’à ce qu’une
+nouvelle observation amène à le modifier, à le compléter ou même à l’abandonner.
+Dans ce processus de construction des connaissances, la place des objets réels est essentielle. Les élèves doivent être
+confrontés à leur analyse directe dans les démarches qui sont mises en œuvre. L’introduction de supports
+complémentaires, comme des photographies, des vidéogrammes ou des logiciels de simulation ne doit survenir que
+dans des cas particuliers où l’accès au réel n’est pas possible ou pour compléter des observations qui seraient à elles
+seules insuffisantes.
+Il ne s’agit pas de donner à voir le réel et le concret systématiquement dans toutes les séances, mais de le faire dès que
+cela est possible et d’être explicite auprès des élèves dans les constructions qui sont menées lorsque le réel n’est pas
+présent. Les programmes sont construits de manière à faciliter ce travail d’appropriation du réel.
+Activités pratiques et expérimentales
+La réalisation d’activités pratiques, associées à l’investigation du réel, doit faire partie des activités récurrentes en classe.
+Les conditions d’enseignement peuvent amener à des organisations de classe où une partie seulement des élèves
+manipule le réel pendant que le reste de la classe effectue d’autres activités. Il est possible également de réaliser des
+postes de démonstration, à la paillasse du professeur, où les élèves peuvent réaliser ces activités face à leurs camarades,
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+5
+
+afin d’investiguer sur le réel. L’organisation annuelle des apprentissages doit permettre à tous les élèves, à différents
+moments de l’année, de réaliser ces activités pratiques.
+Dans la classe, les élèves sont amenés à pratiquer concrètement la science, notamment en concevant et en mettant en
+œuvre des protocoles expérimentaux lors de travaux individuels ou en groupes.
+Le professeur peut être amené à réaliser une démonstration expérimentale ou une modélisation dans le cadre de courts
+temps collectifs. Des élevages, des cultures peuvent enrichir la classe dans le respect de la réglementation et des
+principes éthiques.
+La classe sur le terrain
+La « classe de terrain » est un moyen efficace pour intéresser les élèves au réel. Il s’agit d’investir les espaces extérieurs
+du collège ou ses abords immédiats. De nombreuses notions sont identifiées dans le programme et permettent ce type
+de travail. Il est ainsi possible de conduire tout ou partie d’une démarche scientifique : construire des questionnements
+en observant des objets ; construire des hypothèses en identifiant des relations de corrélation probables entre différents
+éléments ; conduire des mesures ; mener des expérimentations à long terme dans les espaces disponibles ou construire
+des bases de données à partir des observations réalisées et mutualisées entre différents élèves, classes ou
+établissements.
+Le terrain s’entend comme tout espace en dehors des bâtiments scolaires où les élèves sont amenés à découvrir le
+monde naturel, ses composantes et ses fonctionnements. Ces espaces peuvent être dans l’enceinte du collège, dans des
+rues proches ou des jardins, parcs, exploitations agricoles, zones naturelles facilement accessibles.
+Ces travaux sur le terrain sont l’occasion de sensibiliser les élèves à leur environnement, et ainsi de développer les
+compétences visées dans le programme : observer, comparer, argumenter, justifier. Il s’agit également de pratiquer
+d’autres démarches que celles réalisées au cours des activités classiques, comme l’échantillonnage, l’identification
+d’êtres vivants ou d’objets géologiques, le dénombrement des espèces ou des populations. C’est l’occasion d’utiliser des
+outils d’intelligence artificielle, comme d’autres outils numériques mobiles qui sont au service de projets individuels ou
+collectifs.
+C’est avant tout l’occasion pour tout élève d’investir et de comprendre la complexité du réel biologique et géologique.
+Les élèves sont ici amenés à pratiquer les démarches propres aux sciences de la vie et de la Terre, construisant ainsi des
+systèmes explicatifs à l’épreuve des faits. Ces sorties sur le terrain sont également un moyen de sensibiliser les élèves au
+respect nécessaire des règles élémentaires de sécurité et des comportements citoyens lors de sorties.
+
+L’utilisation des outils numériques et de l’intelligence artificielle
+Enjeux pédagogiques et complémentarité avec le réel
+L’intégration des outils numériques représente un enjeu pédagogique majeur. Les supports numériques peuvent
+constituer un complément avantageux à l’étude du réel, voire une alternative lorsque l’observation directe s’avère
+impossible, en contribuant à la visualisation et à la compréhension des phénomènes étudiés.
+Outils de mesure et de traitement
+Les microcontrôleurs constituent une ressource moins onéreuse qu’un montage ExAO et offrent le double avantage de
+la collecte de données et de la programmation de celle-ci, permettant un premier niveau de compréhension du
+fonctionnement des appareils numériques utilisés en sciences. Le traitement des données, à l’aide d’un tableur ou de
+systèmes d’information géographique (SIG), familiarise les élèves à l’utilisation de ces logiciels et développent leur esprit
+critique.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+6
+
+La production de comptes rendus sera également l’occasion de renforcer les compétences numériques des élèves dans
+l’utilisation de logiciels de traitement de texte ou de présentation. Lorsque c’est possible, dans le cadre réglementaire
+des établissements, les outils numériques (dont éventuellement les équipements des élèves) peuvent être utilisés à des
+fins pédagogiques comme outils de mesure, d’enregistrement, d’identification d’éléments de l’environnement ou
+comme moyens d’accès aux ressources numériques, et favoriser ainsi leur usage responsable et raisonné.
+Intelligence artificielle : usages pédagogiques et développement de l’esprit critique
+Le recours aux intelligences artificielles doit être l’occasion de permettre aux élèves d’en comprendre le fonctionnement
+et l’intérêt, mais aussi d’en mesurer les limites (biais, travail de l’esprit critique et coût environnemental) afin d’apprendre
+à les utiliser à bon escient. On peut envisager différentes modalités d’exploitation :
+−
+−
+−
+−
+−
+−
+−
+
+Utiliser la génération d’images pour représenter un paysage inaccessible dans l’espace ou dans le temps, puis
+discuter de la pertinence des résultats obtenus.
+Construire des outils de mémorisation (flashcards, explicitation de notions non comprises, génération de
+questions sur un sujet, chansons pour réviser, etc.).
+Travailler l’argumentation au travers d’un dialogue avec une IA générative de texte.
+Utiliser et/ou programmer des IA d’identification d’objets naturels ou d’organismes vivants pour aider à en
+comprendre le fonctionnement.
+Recourir à des assistants virtuels spécialisés pour assister les élèves dans un apprentissage spécifique.
+Exploiter une IA générative pour produire tout ou partie d’un code.
+Comparer les avantages et inconvénients en termes d’efficacité et dans le coût écologique d’une recherche
+internet classique et d’une question posée à une IA.
+
+Protection des données
+Il est crucial de sensibiliser les élèves à la protection de leurs données personnelles et à l’importance du cadre offert par
+le règlement général sur la protection des données (RGPD). L’enseignant est garant de cette protection, quelle que soit
+l’activité numérique pratiquée.
+
+Développement de l’esprit critique et éducation aux médias et à l’information
+Les sciences de la vie et de la Terre offrent de multiples occasions de développer l’esprit critique des élèves. Ils peuvent
+ainsi être invités à questionner :
+−
+−
+−
+−
+
+la qualité des preuves (analyse des résultats expérimentaux ou de données, conception et critique d’une
+expérimentation ou d’une modélisation) ;
+la fiabilité des sources et la plausibilité de l’information donnée (documents étudiés, actualité ou diffusion sur
+les réseaux sociaux, intelligence artificielle) ;
+la qualité d’une argumentation (histoire des sciences, question socialement vive ou débat) ;
+le degré de fiabilité de leur propre jugement (état émotionnel, niveau de compétence, contexte).
+
+Ces questionnements constituent autant de domaines complémentaires qui permettront aux élèves d’évaluer leur
+degré de confiance face à la diversité des informations, opinions et arguments auxquels ils sont ou seront exposés, afin
+de réagir de façon adaptée.
+Cette approche critique s’accompagne du développement de compétences informationnelles : sélectionner des sources
+fiables en privilégiant celles des organismes scientifiques reconnus (CNRS, INRAE, INSERM, etc.) ; faire preuve de recul
+critique et analyser la validité d’une information en croisant les données issues de plusieurs publications. Le programme
+de troisième permet de comprendre comment se construit une publication scientifique : résultats argumentés d’une
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+7
+
+recherche, soumis à un comité des pairs et reflétant l’état de la science à un moment donné. C’est aussi l’occasion de
+travail avec le professeur documentaliste et les ressources du CDI.
+
+Maîtrise des langages
+L’enseignement des sciences de la vie et de la Terre contribue à la maîtrise des langages. Il permet de développer des
+compétences langagières partagées avec les enseignements de français et de mathématiques, mais aussi de pratiquer
+des formes langagières spécifiques (avec l’acquisition de lexiques ou de méthodologies propres aux exigences de la
+discipline).
+L’écrit scientifique
+Les scénarios pédagogiques mis en œuvre intègrent la réalisation de tâches ciblées pour permettre l’acquisition de
+l’ensemble de ces compétences. La trace écrite est un moyen pour l’élève de conserver la démarche mise en œuvre pour
+répondre aux questions ou problèmes scientifiques posés pendant les séances ainsi que les erreurs effectuées pendant
+la réalisation des activités. À ce titre, elle peut être comparée à un cahier de recherche et permettre aux élèves de faire
+des sciences.
+La construction des bilans de séance ou d’une réponse à une consigne peut être un moment privilégié au cours duquel
+l’élève travaille ces compétences langagières. Différentes activités pédagogiques d’une séquence permettent aux élèves
+de travailler les différentes formes d’écrits : le texte de synthèse, le texte argumenté, le texte descriptif, la légende de
+schémas. La création de contenus scientifiques sous divers formats (rapports, posters, présentations numériques, vidéos
+documentaires, etc.) amène les élèves à prendre en compte les règles de la propriété intellectuelle et à veiller au respect
+des lois et des personnes (en intégrant les principes de confidentialité et de droit à l’image dans leurs productions, par
+exemple). Les sciences de la vie et de la Terre peuvent aussi être un support de travail en langue vivante étrangère, à
+partir de documents scientifiques authentiques (articles scientifiques, vidéos, podcasts ou capsule audio, etc.).
+La pratique de l’oral
+L’enseignement des sciences de la vie et de la Terre permet aussi de travailler la communication orale selon deux formes :
+oral en continu et oral en interaction. Des modalités variées s’y prêtent : prise de parole en classe, écoute de l’autre,
+entraînement à la formulation (arguments ou contre-arguments, hypothèses, analyse, etc.), présentation de travaux ou
+de résultats, débat.
+Le travail personnel
+L’acquisition des compétences travaillées en sciences de la vie et de la Terre nécessite un travail personnel de l’élève en
+dehors de la classe. Pour cela, l’enseignant met en place une organisation qui favorise la mémorisation des concepts et
+notions vus en classe et permet de réinvestir les compétences travaillées. La sensibilisation des élèves au
+fonctionnement de l’intelligence artificielle leur permet de développer leur esprit critique en ce qui concerne leurs choix
+d’utilisation. L’enseignant peut s’engager dans des dispositifs d’accompagnement du travail des élèves en dehors de la
+classe et faciliter l’appropriation par les élèves des outils disponibles dans les environnements numériques de travail.
+La découverte des métiers et des parcours de formation
+Tout au long du cycle 4, les élèves doivent développer leurs compétences à s’orienter (cf. le référentiel sur le site de
+l’ONISEP) et construire progressivement leur projet d’orientation. À de nombreuses reprises le programme de cycle 4
+donne des pistes pour que les enseignants de sciences de la vie et de la Terre y contribuent. Il importe d’accompagner
+d’abord les élèves dans l’identification de leurs préférences en termes d’environnement professionnel (préférence pour
+travailler en grand groupe ou pas, préférence pour travailler à l’extérieur ou pas, préférence pour prendre des décisions
+ou pas, etc.) puis de les accompagner pour identifier des domaines professionnels qui correspondraient à ces conditions
+d’exercices et enfin d’identifier la diversité des métiers qui sont exercés dans ces domaines. Il importe également de
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+8
+
+montrer aux élèves les parcours de formation, leur diversité et les niveaux de qualification associés. Les sciences de la
+vie et de la Terre sont au cœur des enjeux économiques de notre nation et de nombreux métiers en tension sont
+directement liés à cette discipline.
+
+Compétences attendues en fin de cycle
+À la fin du collège, l’élève dispose d’un niveau de maîtrise des compétences nécessaires pour expliquer des phénomènes
+biologiques et géologiques à différentes échelles spatiale et temporelle. Il est capable de questionner et pratiquer des
+démarches scientifiques - notamment expérimentales - d’évaluer certaines modélisations scientifiques et d’interpréter
+les données et les preuves de manière critique. Il est capable de pratiquer les langages scientifiques appropriés aux
+sciences du vivant, d’utiliser des outils numériques au service des pratiques scientifiques, d’examiner ses choix en
+matière de santé et d’environnement en les associant à des arguments scientifiques.
+Les sciences de la vie permettent également de donner les bases biologiques d’une partie des compétences
+psychosociales qu’un élève doit acquérir au cours de sa scolarité et de les mettre en œuvre dans les différentes
+dimensions des apprentissages.
+L’ensemble de ces compétences permet à l’élève de comprendre comment les sciences biologiques et les géosciences
+contribuent à appréhender les grands enjeux planétaires contemporains et, par exemple, à éclairer les politiques
+publiques en matière de transition écologique et de santé.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+9
+
+Niveau d’enseignement : classe de cinquième
+Partie : Nature des pratiques et des savoirs scientifiques en SVT
+Faire des sciences
+Objectifs d’apprentissage
+Appréhender la nature de la science et comment elle se
+construit :
+− La science met en œuvre des démarches
+d’explication de l’organisation et du
+fonctionnement du monde réel, qui s’appuient
+sur des faits établis et un raisonnement
+rationnel.
+− Faire des sciences consiste à observer,
+comparer, questionner, expérimenter,
+modéliser, en réponse à des problèmes
+scientifiques identifiés.
+− Le savoir scientifique est une construction
+collective qui s’enrichit au fur et à mesure de la
+découverte de nouveaux faits.
+− Le développement et l’utilisation des sciences et
+des technologies ont modifié des conditions de
+vie des êtres humains (alimentation, santé,
+environnement, etc.) et sont l’une des clés
+permettant de répondre aux grands enjeux du
+XXIe siècle.
+
+Exemples de réussite
+L’élève sait :
+−
+−
+−
+
+Distinguer une démarche scientifique d’une
+démarche qui ne l’est pas.
+Distinguer un savoir scientifique, une croyance et
+une opinion.
+Identifier les apports des sciences et technologies
+du vivant et de la Terre dans son quotidien.
+
+Notions fondamentales : science, démarches
+scientifiques, savoir scientifique, croyance, opinion.
+
+Précisions et limites :
+Pour lui donner du sens, cette partie sera traitée au sein des autres parties du programme et non pas comme un chapitre
+indépendant. Le professeur choisira un exemple concret pour les élèves, dans le cadre historique (vaccination, digestion,
+reproduction, climat, évolution, etc.), en parallèle d’un exemple plus récent.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+10
+
+Partie : Terre et vivant
+Thème : La Terre, planète habitable
+Dans ce thème, il s’agit de faire appréhender aux élèves les éléments contribuant à l’habitabilité de la planète Terre, par
+comparaison avec une autre planète tellurique. Les caractéristiques de l'hydrosphère et le cycle de l'eau permettent de
+construire une première approche d'un cycle biogéochimique.
+La Terre, planète habitable
+Objectifs d’apprentissage
+Connaître la structure concentrique de la Terre :
+− Les enveloppes concentriques de la Terre ont
+des caractéristiques différentes par leurs
+dimensions et leurs propriétés (masse
+volumique, nature chimique).
+Identifier des paramètres et des conditions permettant
+l’habitabilité de la Terre :
+− La composition chimique de l’atmosphère (dont
+la teneur atmosphérique en gaz à effet de
+serre) et des océans ;
+− La pression moyenne et la température
+moyenne qui permettent la présence d’eau
+liquide.
+− La combinaison de ces caractéristiques
+planétaires permet d’avoir de l’eau liquide en
+surface terrestre depuis au moins 4,4 Ga et
+d’héberger la vie depuis 3,5 Ga.
+− La planète Mars a eu de l’eau liquide à sa
+surface, qu’elle a ensuite perdu du fait d’une
+histoire géologique différente.
+Identifier les éléments caractéristiques du cycle de
+l’eau :
+− Les réservoirs, flux et temps de résidence dans
+les réservoirs.
+
+−
+
+−
+
+Ces caractéristiques expliquent la sensibilité de
+certains réservoirs à la pollution et la durabilité
+des réservoirs.
+Le cycle de l’eau permet l’apport continu de
+nutriments des continents aux océans,
+contribuant à l’habitabilité.
+
+Exemples de réussite
+
+L’élève sait :
+− Nommer les différentes enveloppes
+concentriques de la Terre et en identifier les
+principales caractéristiques.
+− Comparer les océans et continents en termes de
+surface et d’altitude.
+− Mettre en relation les paramètres déterminant
+l’habitabilité de la planète et la présence du
+vivant.
+− Identifier des conditions de vie extrêmes
+(sources hydrominérales, fonds océaniques,
+etc.) et les flores et faunes associées.
+− Identifier les preuves scientifiques de la
+présence passée d’eau sur Mars.
+
+−
+−
+−
+
+−
+
+Identifier les composantes du cycle de l’eau, au
+niveau local comme au niveau global.
+Utiliser un tableur pour calculer les temps de
+résidence.
+Expliquer comment une pollution locale de l’eau
+peut se diffuser dans différents réservoirs avec
+des impacts différents en fonction du temps de
+résidence dans les réservoirs.
+Mettre en relation l’abondance d’êtres vivants
+dans les océans et les apports de nutriments
+continentaux (exemple de blooms
+planctoniques, etc.).
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+11
+
+Notions fondamentales : habitabilité, hydrosphère,
+atmosphère, lithosphère, manteau, noyau, éléments
+d’un cycle biogéochimique (réservoirs, flux, temps de
+résidence).
+
+Précisions et limites :
+La biosphère peut être introduite comme l’enveloppe du vivant dans cette partie du programme ou dans le thème « Les interactions
+Terre-vivant » en fonction des objectifs pédagogiques. Pour les altitudes, il s’agit de présenter les reliefs continentaux (plaines,
+chaînes de montagne) et les reliefs sous-marins (plateaux continentaux, fosses abyssales et dorsales). On approche la composition
+des enveloppes de la Terre avec au moins deux roches représentatives parmi : granite, basalte et péridotite. On impose l’existence
+du noyau et sa composition. On montre la part importante des océans à la surface du globe.
+L’étude des planètes telluriques ne doit pas être exhaustive, Mars pouvant apporter les éléments pour la comparaison . Le professeur
+se limite aux grands paramètres conditionnant l’habitabilité de la planète. Le professeur peut présenter l’utilisation de données
+issues de missions spatiales qui permettent de montrer aux élèves comment ce type de missions complète des modèles.
+Pour le cycle de l’eau, un seul réservoir est à expliciter, au choix du professeur. Les autres sont présentés. Les élèves n’ont pas à
+connaître les valeurs et les temps précis mais doivent avoir une connaissance des ordres de grandeurs mis en jeu.
+
+Thème : La Terre, planète dynamique
+Cette partie est une première étape pour montrer les dynamiques existantes entre les différentes enveloppes de la
+Terre, cette notion de dynamique se construisant dans d'autres parties du programme et tout au long du cycle 4.
+La Terre, planète dynamique
+Objectifs d’apprentissage
+
+Distinguer la météorologie du climat, du local au global.
+
+Identifier les mouvements de l’atmosphère et de
+l’hydrosphère :
+− La circulation atmosphérique se traduit par de
+grands mouvements de masses d’air, les vents, et
+les phénomènes météorologiques associées.
+− Les océans ont aussi une circulation caractérisée
+par des courants de surface et de profondeur.
+− Cette double circulation détermine les grandes
+zones climatiques terrestres.
+Identifier l’origine des mouvements de l’hydrosphère et
+de l’atmosphère :
+− L’inégale répartition de l’énergie solaire sur le
+globe induit la circulation atmosphérique et
+océanique.
+
+Exemples de réussite
+L’élève sait :
+− Identifier la différence entre un phénomène
+météorologique et un phénomène climatique,
+tant à l’échelle locale (en mobilisant ses acquis du
+cycle 3) qu’à l’échelle globale.
+− Caractériser les circulations atmosphérique et
+océanique (vitesse, direction) à partir d’images et
+de données satellitaires.
+− Mettre en œuvre une modélisation analogique
+simple expliquant la mise en mouvement des
+enveloppes fluides de la Terre.
+−
+
+Utiliser des bases de données océaniques ou
+atmosphériques et identifier leur source.
+
+−
+
+Expliquer que les mouvements atmosphériques
+ou océaniques sont en lien avec l’inégale
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+12
+
+−
+
+Les courants atmosphériques entraînent la mise
+en place de courants de surface dans les océans,
+illustrant le couplage océan/atmosphère.
+
+−
+
+Notions fondamentales : circulations des enveloppes
+fluides ; origine des mouvements des enveloppes
+fluides.
+
+distribution du rayonnement solaire à la surface
+de la planète.
+Mettre en relation les mouvements des masses
+d'air (vents) et des masses d'eau (courants
+océaniques) afin d'identifier un couplage et ses
+effets sur les climats.
+
+Précisions et limites :
+Il s’agit d’abord dans cette partie de caractériser les mouvements des enveloppes externes fluides avant d’en identifier le moteur
+et les conséquences. Cette partie se prête à l’utilisation d’images et de données spatiales, dont celles de bouées dérivantes.
+Les notions de cellules atmosphériques et l’influence de la force de Coriolis dans l’étude des mouvements atmosphériques ne seront
+pas abordées. Cette partie du programme permet de découvrir des domaines d’activités professionnelles en lien avec la
+météorologie et la climatologie.
+
+Thème : Les interactions Terre - vivant
+Cette partie permet de caractériser la biosphère et de préciser des éléments d'organisation fonctionnelle des êtres
+vivants, notamment en lien avec la respiration comme exemple de métabolisme.
+Les êtres vivants dans leur environnement
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Connaître la répartition du vivant sur la Terre :
+− Le vivant n’est présent que dans une pellicule de
+quelques kilomètres d’épaisseur aux interfaces
+des enveloppes externes : atmosphère, océans,
+croûtes continentales et océaniques.
+− La biosphère regroupe une grande diversité
+biologique ; elle se distribue dans des milieux de
+vie divers par leurs caractéristiques physicochimiques.
+
+L’élève sait :
+− Localiser la biosphère et identifier ses dimensions
+(surface, épaisseur).
+
+−
+Caractériser les grands types d’organisation des êtres
+vivants :
+− Les unicellulaires et les pluricellulaires ont la
+cellule
+comme
+unité
+d’organisation
+fondamentale.
+− Chez les unicellulaires, la cellule assure toutes les
+fonctions de l’organisme.
+− Les pluricellulaires ont des cellules spécialisées
+assurant une fonction spécifique.
+− Les pluricellulaires sont très souvent associés à
+un microbiote (bactéries, champignons, autres
+
+−
+
+−
+
+−
+
+Mobiliser des outils d’observation pour observer
+les cellules de différents organismes.
+Identifier des organismes uni et pluricellulaires
+en mobilisant notamment les acquis des cycles
+antérieurs.
+Identifier les cellules spécialisées aux différents
+niveaux d’organisation d’un être pluricellulaire :
+tissus, organes, appareils.
+Identifier la nature du microbiote associé à un
+organisme (autre que l’humain) et ses effets sur
+la vie de celui-ci.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+13
+
+pluricellulaires) qui est indispensable à leur
+fonctionnement.
+
+Identifier le métabolisme d’un organisme :
+− Tous les êtres vivants ont un métabolisme, qui se
+définit comme l’ensemble de transformations
+chimiques se déroulant à l'intérieur de chaque
+cellule et lui permettent d’assurer ses fonctions.
+− La respiration aérobie est un exemple de
+métabolisme où la cellule convertit l’énergie
+chimique du glucose, en utilisant du dioxygène,
+en énergie chimique utilisable pour son activité
+cellulaire. Les réactions de cette conversion
+produisent du dioxyde de carbone et de l’eau.
+− Selon le milieu de vie, les êtres vivants
+pluricellulaires qui respirent, prélèvent le
+dioxygène du milieu par des structures
+anatomiques dédiées. Chez certains organismes,
+le dioxygène capté est distribué aux cellules par
+un système circulatoire.
+
+−
+
+Mettre en œuvre des expériences permettant
+d’identifier et de mesurer la respiration chez un
+être vivant.
+
+−
+
+Représenter de manière synthétique le bilan
+général du métabolisme respiratoire aérobie.
+
+−
+
+Mettre en relation le lieu d’approvisionnement
+en dioxygène, le système de transport et le lieu
+où se réalise le métabolisme respiratoire aérobie.
+
+Notions fondamentales : biosphère, métabolisme,
+conversion chimique, appareil respiratoire.
+
+Précisions et limites :
+Cette partie se prête à l’expérimentation et à l’observation microscopique. Elle peut mobiliser les acquis naturalistes des élèves des
+cycles antérieurs. La respiration n’est présentée que dans sa globalité sans précision des mécanismes intracellulaires.
+Le couplage avec la partie « Corps humain et santé » peut être envisagé, notamment en utilisant l’être humain comme exemple
+pour la mise en évidence du métabolisme et de la respiration pulmonaire. Le professeur se limitera à « poumons » et « branchies »
+comme exemple de structures assurant le prélèvement du dioxygène dans le milieu de vie.
+L’exemple du microbiote humain est abordé en classe de quatrième. Le professeur choisit un système circulatoire autre que l’humain
+qui est par ailleurs au programme de la classe de cinquième.
+
+Cette partie permet d’aborder des mécanismes assurant la multiplication des êtres vivants dans les écosystèmes.
+
+Multiplication des êtres vivants au sein des espèces
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Caractériser la multiplication asexuée :
+L’élève sait :
+− La multiplication asexuée produit des organismes − Mettre en relation à partir d’observations la
+issus d’un seul individu par des multiplications
+multiplication asexuée et la production d’un
+cellulaires successives. Elle permet la colonisation
+groupe d’individus avec des caractéristiques
+rapide des milieux.
+identiques.
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+14
+
+−
+−
+
+Les modalités variées de la multiplication asexuée
+chez les végétaux sont exploitées dans
+l’agriculture
+(bouturage,
+marcottage,
+multiplication in vitro, etc.).
+
+Notions fondamentales : multiplication asexuée,
+multiplication cellulaire, clone.
+
+−
+
+−
+
+−
+
+Associer la multiplication asexuée à des
+multiplications cellulaires
+Mettre en relation la multiplication asexuée et la
+colonisation des milieux en s’appuyant sur des
+observations de terrain.
+Expliquer l’intérêt de différents modes de
+multiplication asexuée pour les productions
+agricoles.
+Mettre en œuvre une modalité de multiplication
+asexuée.
+
+Précisions et limites :
+Il n’est pas attendu ici une description des caractéristiques cytologiques et génétiques de la multiplication cellulaire concernée
+(mitose), l’essentiel étant de montrer que les cellules (et au-delà les organismes) issues de ce mode de multiplication sont
+initialement identiques à celle de la cellule mère (à l’organisme parental).
+Cette partie peut s’appuyer notamment sur des exemples horticoles et agricoles locaux, ou/et des milieux particuliers. Elle se prête
+à une mise en activité pratique des élèves, notamment dans le cas de présence d’un jardin au sein du collège ou à une visite dans
+une exploitation agricole/horticole.
+Cette partie permet de découvrir des domaines d’activités professionnelles en lien avec l’agriculture, l’horticulture et l’agronomie.
+
+Partie : Corps humain et santé
+Thème : L’activité physique
+Cette partie du programme permet de comprendre les bases physiologiques humaines en s’intéressant à l’activité
+physique et aux systèmes cardiovasculaire et respiratoire. Elle permet également d’aborder le troisième objectif de
+développement durable des Nations unies « Bonne santé et bien-être ».
+
+L’activité physique
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer le fonctionnement de l’organisme lors d’une L’élève sait :
+activité physique :
+− Les centres nerveux commandent les activités des
+− Identifier le cerveau et la moelle épinière comme
+muscles.
+éléments impliqués dans la commande du
+mouvement.
+− Lors d’un effort physique, le fonctionnement des − Interpréter les comparaisons de paramètres
+appareils respiratoire et cardiovasculaire se
+physiologiques au repos et lors d’un effort
+modifie afin de satisfaire les besoins des muscles
+musculaire.
+en dioxygène et en nutriments.
+
+Identifier l’intérêt d’une activité physique raisonnée :
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+15
+
+−
+
+Un entraînement raisonné permet d’améliorer les
+capacités physiques tout en limitant les risques,
+dont celui de blessures.
+
+−
+
+−
+
+−
+
+−
+
+Le dopage est une pratique qui consiste à
+augmenter les capacités de l’organisme mais qui
+présente des risques pour la santé.
+L’absence d’activité physique régulière augmente
+le risque de détérioration de la santé.
+
+Notions fondamentales : rythme cardiaque, rythme
+respiratoire, centres nerveux (cerveau et moelle
+épinière), nerfs, cœur, poumons, vaisseaux sanguins,
+dopage.
+
+Mettre en relation le fonctionnement du
+système cardiorespiratoire et une bonne hygiène
+de vie en termes d’alimentation, d’hydratation et
+de qualité de sommeil.
+Identifier les capacités et les limites de
+l’organisme.
+
+−
+
+Identifier les effets d’un produit dopant sur les
+capacités et son degré de dangerosité.
+
+−
+
+Argumenter de l’intérêt d’adapter l’intensité de
+l’effort aux capacités de l’organisme par
+opposition au danger du surentraînement.
+
+L’élève découvre la diversité des professions dans le
+domaine de la santé.
+
+Précisions et limites :
+On entend par « capacité » le fonctionnement optimal d’un organisme et par « limite » son fonctionnement maximal. Les deux
+éléments peuvent être modifiés par un entraînement physique responsable.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa (École
+promotrice de santé). Elle se prête à un travail commun avec l’EPS. L’étude des appareils respiratoire et cardiovasculaire est réservée
+à la classe de quatrième.
+Cette partie du programme permet de découvrir des domaines d’activités professionnelles en lien avec le sport et la santé.
+
+Thème : Virus, micro-organismes et interactions avec l’être humain.
+Cette partie du programme permet de comprendre les relations bénéfiques ou non entre le monde microbien et
+l’espèce humaine. Elle permet également de construire progressivement le concept « une seule santé (One Health) »
+qui met en relation la santé humaine, la santé animale et celle des écosystèmes et fait ainsi le lien entre l'écologie et la
+médecine humaine et vétérinaire.
+
+Diversité du monde microbien en interaction avec l’être humain
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier la nature des interactions bénéfiques ou non L’élève sait :
+entre les micro-organismes et l’être humain :
+− Un agent pathogène (virus ou microorganisme)
+− Identifier la nature d’une interaction entre un
+peut contaminer un être humain en franchissant
+micro-organisme et un être humain et ses effets
+ses barrières naturelles, se multiplier à l’intérieur
+sur celui-ci.
+de son hôte et provoquer des symptômes.
+− Distinguer contamination et infection par un
+agent pathogène.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+16
+
+Expliquer comment agissent les méthodes actuelles de
+lutte contre la contamination et l’infection :
+− L’asepsie et l’antisepsie sont des méthodes
+préventives pour lutter contre la contamination
+microbienne.
+− Il existe des médicaments antiviraux qui
+permettent de lutter contre certaines infections
+virales.
+− Les antibiotiques permettent de lutter
+uniquement contre des infections bactériennes.
+− La vaccination est un moyen efficace de
+protection individuelle et collective contre une
+épidémie. Un vaccin contient des éléments de
+l’agent pathogène qui stimulent la protection
+naturelle de l’organisme.
+
+−
+
+Choisir entre asepsie et antisepsie dans un
+contexte donné.
+
+−
+
+Mettre en relation le type d’infection avec le
+traitement médical prescrit par un praticien de la
+santé.
+
+−
+
+Expliquer le bénéfice d’une campagne de
+vaccination pour lutter contre une épidémie.
+Distinguer les bénéfices de la vaccination pour
+l’individu qui se vaccine et pour la population.
+
+−
+
+Notions fondamentales : contamination, infection,
+symptômes, asepsie, antisepsie, antibiotiques, vaccins,
+épidémie.
+
+Précisions et limites :
+Le professeur précisera aux élèves que l’infection et la présence de symptômes ne sont pas systématiques à la suite d’une
+contamination.
+L’essentiel des infections virales dans la vie courante (rhume, angine, gastro-entérite, etc.) guérissent le plus souvent sans traitement
+mais un traitement par des médicaments récents de type antiviraux, qui permettent d’empêcher la multiplication de certains virus,
+sera présenté.
+Les mécanismes cellulaires expliquant l’efficacité de la vaccination seront traités en classe de quatrième.
+L’exemple de la vaccination contre le virus du papillonavirus humain (« HPV ») est à traiter en lien avec la campagne nationale
+vaccinale.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa et du parcours
+citoyen.
+Cette partie du programme permet de découvrir des domaines d’activité professionnelle en lien avec la santé.
+
+Thème : Procréation humaine
+Cette partie du programme permet de comprendre les composantes biologiques du fonctionnement des appareils
+reproducteurs et de la rencontre des cellules sexuelles. Le lien est établi avec le programme de sciences et technologie
+de cycle 3 ainsi qu’avec le programme d’éducation à la vie affective, relationnelle et à la sexualité (EVARS). La
+compréhension des mécanismes de la procréation permet de construire un premier niveau d’éducation au choix d’avoir
+ou non un enfant.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+17
+
+Procréation humaine
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer
+le
+fonctionnement
+des
+appareils L’élève sait :
+reproducteurs :
+− À partir de la puberté et tout au long de la vie,
+− Situer la production des cellules sexuelles dans les
+l’appareil sexuel masculin produit des
+testicules et les ovaires.
+spermatozoïdes, cellules sexuelles mâles. Avec le
+vieillissement, la qualité du sperme diminue.
+− À partir de la puberté, l’appareil sexuel féminin
+entre en fonctionnement cyclique. À chaque − Calculer le moment de l’ovulation dans le cycle,
+cycle, un ovaire libère un ovule, cellule sexuelle
+14 jours avant le début des règles.
+femelle et la paroi de l’utérus s’épaissit puis se
+détache, ce qui constitue les règles. Ces cycles
+cessent au moment de la ménopause.
+
+Expliquer les mécanismes à l’origine d’une cellule-œuf :
+− Dans le cas d’un rapport sexuel avec pénétration
+vaginale, les cellules sexuelles peuvent se
+rencontrer. L’ovule et un spermatozoïde
+fusionnent : c’est la fécondation. La cellule-œuf
+qui en résulte est la première cellule d’un futur
+embryon.
+
+−
+−
+
+Reconstituer le trajet des cellules sexuelles et
+situer le lieu de la fécondation.
+Légender les appareils sexuels masculins et
+féminins.
+
+Notions fondamentales : puberté, cellules sexuelles,
+cycles, ovulation, fécondation, cellule-œuf, clitoris,
+ovaire, vagin, utérus, trompe, pénis, testicule, canal
+déférent, prostate
+
+Précisions et limites :
+Le professeur privilégiera les termes « cellules sexuelles » plutôt que « cellules reproductrices » afin de ne pas sous-entendre une
+idée de reproduction à l’identique. Par souci de simplification, on n’utilisera pas le terme « gamète ».
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa et d’EVARS
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+18
+
+Niveau d’enseignement : classe de quatrième
+Partie : Nature des pratiques et des savoirs scientifiques en SVT
+Faire des sciences
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Appréhender la nature de la science et comment elle se L’élève sait :
+construit :
+− La science est un outil d’explication de
+− Distinguer une démarche scientifique d’une
+l’organisation et du fonctionnement du monde,
+démarche pseudo-scientifique.
+qui se fonde sur des faits établis et un
+− Distinguer un savoir scientifique, une croyance et
+raisonnement rationnel.
+une opinion.
+− Faire des sciences consiste à observer, comparer,
+− Identifier les apports des sciences et technologies
+questionner, expérimenter et modéliser.
+du vivant et de la Terre dans son quotidien.
+− Le savoir scientifique est une construction
+collective qui s’enrichit au fur et à mesure de la
+découverte de nouveaux faits.
+− Le développement et l’utilisation des sciences et
+des technologies ont modifié des conditions de
+vie des êtres humains (alimentation, santé,
+environnement, etc.) et sont l’une des clés
+permettant de répondre aux grands enjeux du
+XXIe siècle.
+
+Notions fondamentales : science, démarches
+scientifiques, savoir scientifique, croyance, opinion.
+
+Précisions et limites :
+Pour lui donner du sens, cette partie sera traitée au sein des autres parties du programme et non pas comme un chapitre
+indépendant. Le professeur choisira un exemple concret pour les élèves, dans le cadre historique (vaccination, digestion,
+reproduction, climat, évolution, etc.), en parallèle d’un exemple plus récent.
+
+Partie : Terre et vivant
+Thème : La Terre, planète habitable
+En prolongement du cycle de l’eau, cette partie introduit le cycle du carbone dans ses composantes et grandeurs
+caractéristiques de façon à comprendre les enjeux des perturbations actuelles de ce cycle et de leurs incidences en
+termes climatiques.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+19
+
+La Terre, planète habitable
+Objectifs d’apprentissage
+Identifier les principales caractéristiques du cycle du
+carbone et les liens avec le réchauffement climatique :
+− Le carbone se trouve sous différentes formes
+chimiques
+dans
+les
+différents
+réservoirs (hydrosphère,
+biosphère,
+atmosphère, lithosphère).
+− Les temps de résidence dans les différents
+réservoirs ainsi que les flux entre eux sont très
+variables ce qui implique que certains ont une
+importance différente selon les échelles de
+temps considérées.
+− Le réchauffement climatique actuel s’explique
+par un apport anthropique de gaz à effet de serre
+vers l’atmosphère.
+
+Exemples de réussite
+L’élève sait :
+−
+
+Réaliser une manipulation permettant de mettre
+en évidence la présence de carbone dans un
+réservoir.
+
+−
+
+Donner des ordres de grandeur temporelles pour
+les temps de résidence du carbone dans
+différents réservoirs ainsi que pour les flux entre
+les principaux réservoirs et l’atmosphère.
+
+−
+
+Faire le lien entre le cycle du carbone et les
+variations de la quantité de dioxyde de carbone
+dans l’atmosphère depuis le début de la période
+industrielle.
+Mettre en relation la quantité de gaz à effet de
+serre dans l’atmosphère et le réchauffement
+actuel.
+
+−
+
+Notions fondamentales : cycle biogéochimique du
+carbone, réchauffement climatique.
+
+Précisions et limites :
+Le professeur illustrera les différentes formes du carbone dans son cycle en identifiant un composant principal dans les réservoirs :
+CO2 gazeux ou méthane (CH4) dans l’atmosphère, calcaire solide dans la lithosphère, matière organique dans la biosphère,
+bicarbonates en solution dans l’hydrosphère.
+La connaissance des mécanismes de l’effet de serre n’est pas attendue.
+Cette partie prend toute sa place dans le cadre de l’éducation au développement durable, en établissant les relations entre le taux
+de gaz à effet de serre atmosphérique et le réchauffement climatique actuel.
+Cette partie du programme permet d’approfondir la découverte des métiers en lien avec la météorologie, la climatologie,
+l’élaboration de bilan carbone, etc.
+
+Thème : La Terre, planète dynamique
+Cette partie décrit les mouvements de la lithosphère mis en évidence par des phénomènes géologiques caractéristiques
+(séismes, volcans), après l’étude des mouvements atmosphériques et océaniques vus dans la classe précédente. Elle
+permet d’aborder la notion de risque en lien avec les dynamiques internes et externes de la Terre.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+20
+
+La Terre, planète dynamique
+Objectifs d’apprentissage
+Identifier et caractériser la dynamique des plaques
+lithosphériques en lien avec la prévention des risques :
+− L’activité sismique se concentre principalement
+aux frontières des plaques lithosphériques. Un
+séisme correspond à la libération brutale
+d’énergie convertie en ondes sismiques qui se
+propagent et provoquent des mouvements du
+sous-sol.
+− À la frontière entre deux plaques lithosphériques
+sont mis en évidence des mouvements de
+convergence et de divergence de l’ordre de
+quelques centimètres par an.
+
+Exemples de réussite
+L’élève sait :
+− Donner des ordres de grandeurs des différents
+phénomènes et mécanismes étudiés dans la
+dynamique de la planète Terre.
+− Comparer les sismogrammes d’un même séisme
+pour en déduire certaines propriétés.
+
+−
+
+−
+
+−
+−
+
+−
+
+Le volcanisme explosif est essentiellement
+associé aux zones en convergence ; le
+volcanisme effusif est essentiellement lié aux
+zones en divergence.
+La répartition des aléas à la surface du globe
+amène à la mise en place de politiques publiques
+prenant en compte les risques liés à la
+géodynamique externe et interne. Des plans de
+protection
+permettent
+d’éduquer
+les
+populations à l’intérêt de comportements
+responsables
+ainsi
+que
+d’adapter
+les
+constructions d’infrastructures.
+
+Identifier et caractériser les risques liés aux
+mouvements des enveloppes atmosphériques et
+océaniques (tempêtes, inondations, submersions,
+cyclones, etc.) :
+− Des outils permettent de prédire certains risques
+et de prendre des mesures pour les réduire :
+prévention,
+protection,
+adaptation,
+ou
+atténuation.
+
+Identifier une frontière de plaques et
+caractériser les mouvements respectifs des deux
+plaques qui la bordent en exploitant des
+techniques d’études (GPS, répartition des
+séismes et du volcanisme, etc.)
+Modéliser le lien entre le mouvement des
+plaques lithosphériques, l’accumulation de
+tensions au niveau des failles et la survenue d’un
+séisme lors de la libération brutale d’énergie
+accumulée.
+Distinguer les caractéristiques des volcanismes
+explosifs et effusifs.
+
+−
+
+Faire le lien entre le risque lié à la géodynamique
+d’une région du globe et les plans de protection
+mis en place (risque sismique et volcanique).
+
+−
+
+Distinguer aléa, vulnérabilité et risque.
+
+−
+
+Analyser des exemples locaux d’événements
+météorologiques.
+
+−
+
+Utiliser des données météorologiques pour
+prévoir un événement à court terme.
+Se référer à une échelle de risques et de vigilance
+ou à un plan particulier de mise en sûreté
+(PPMS).
+
+−
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+21
+
+−
+
+Le réchauffement climatique amplifie l’intensité
+et la fréquence des événements climatiques
+extrêmes.
+
+Notions fondamentales : aléa, vulnérabilité, risques,
+prévention, protection, adaptation, atténuation,
+séismes, failles, plaque lithosphérique, roches
+volcaniques et roches magmatiques, cyclones.
+
+−
+
+Identifier les enjeux sociétaux liés aux risques et
+les mettre en relation avec les politiques
+publiques.
+
+−
+
+Identifier des solutions de préservation ou de
+restauration de l’environnement compatibles
+avec des modes de vie qui cherchent à mieux
+respecter les équilibres naturels.
+
+Précisions et limites :
+Les mouvements entre les plaques lithosphériques sont mis en évidence uniquement par des observations actuelles. L’approche
+historique n’est pas au programme. On définira une plaque lithosphérique comme un fragment de la lithosphère, elle-même définie
+comme l’enveloppe rigide la plus superficielle de notre planète. L’étude d’un PPMS peut constituer un support pertinent. Cette
+partie se prête bien à l’étude de séismes ou d’éruptions volcaniques, à la réalisation de modèles et à la critique des résultats obtenus.
+Elle est l’occasion de comparer les vitesses et les durées caractéristiques des mouvements de différentes enveloppes de la Terre
+(atmosphère, hydrosphère, lithosphère) ainsi que celles des mécanismes et risques associés.
+Un risque au choix sera étudié, si possible en lien avec le contexte local ou l’actualité. La notion de risque est aussi à mobiliser,
+notamment en lien avec les changements globaux actuels.
+Cette partie du programme est l’occasion de présenter des domaines d’activités professionnelles en lien avec les géosciences :
+recherche en géosciences, géotechniques et prévention des risques.
+
+Thème : Les interactions Terre-vivant
+En prolongation des acquis de la classe de cinquième concernant la respiration aérobie, cette partie présente d’abord
+les caractéristiques d'un autre métabolisme : la photosynthèse. Elle en identifie les caractéristiques et son importance
+dans le monde vivant. Elle précise ensuite la notion de biodiversité à différentes échelles et dans la dynamique des
+écosystèmes.
+Les organismes photosynthétiques
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier les caractéristiques de la photosynthèse :
+− Production de glucides au niveau des cellules
+chlorophylliennes à partir de molécules d’eau et
+de dioxyde de carbone et en utilisant l’énergie
+lumineuse.
+
+L’élève sait :
+− Réaliser des manipulations pour mettre en
+évidence la photosynthèse, ses conditions de
+réalisation et ses produits.
+− Caractériser la photosynthèse comme un
+mécanisme de conversion de l’énergie lumineuse
+en énergie chimique.
+
+Identifier les flux de matière au sein d’un végétal
+chlorophyllien :
+− Absorption de l’eau et des sels minéraux au
+niveau racinaire avec des associations
+symbiotiques.
+− Circulation des sèves brutes et élaborées dans le
+végétal.
+
+−
+
+Mettre en évidence les échanges de matière
+minérale et organique dans une plante et les
+structures qui les permettent.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+22
+
+−
+
+Transfert de matière entre les lieux de
+production de la matière organique et ses lieux
+d’utilisation et de stockage.
+
+Associer les organismes photosynthétiques à la
+production de matière organique à partir de matière
+minérale et montrer leur place unique dans les réseaux
+trophiques.
+
+−
+
+Identifier les organismes photosynthétiques et
+leurs
+diversités
+(cyanobactéries,
+algues,
+angiospermes, gymnospermes, etc.) en utilisant
+ses connaissances sur l’organisation et le
+fonctionnement du vivant.
+
+Notions fondamentales : photosynthèse, matières
+organique et minérale, sèves, vaisseaux conducteurs,
+symbiose.
+
+Précisions et limites :
+Le professeur définira la photosynthèse à partir d’une angiosperme avant de montrer, y compris lors de visites de terrain, d’autres
+types d’organismes photosynthétiques. L’approvisionnement d’une angiosperme en matières minérales est l’occasion de montrer
+les interrelations avec des micro-organismes du sol. Il convient de diversifier, autant que possible, notamment dans une sortie de
+terrain, les exemples pour montrer la variété des organismes photosynthétiques.
+
+En continuité avec la classe de cinquième, cette partie vise à identifier des mécanismes contribuant à l’origine et au
+maintien de la biodiversité dans les écosystèmes.
+
+Multiplication des êtres vivants au sein des espèces
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Montrer que la diversité du vivant résulte :
+L’élève sait :
+− De la diversité des patrimoines génétiques des
+individus au sein des espèces.
+− Comparer des caryotypes de cellules sexuelles, de
+− D’associations avec d’autres êtres vivants et de
+cellules mères et de cellule œuf.
+traits
+culturels
+transmis (chants,
+− Identifier l’ADN comme constituant des
+comportements).
+chromosomes et l’associer au support de
+l’information génétique.
+Identifier les mécanismes de la reproduction sexuée qui − Expliquer la diversité et l’héritabilité de
+caractères par le brassage de l’information
+induisent la diversité du vivant :
+génétique associé à la production des cellules
+− La reproduction sexuée est assurée par la
+sexuelles et à la fécondation.
+production des cellules sexuelles et la
+fécondation donnant une cellule œuf.
+− La reproduction sexuée permet le brassage de
+l’information génétique.
+Notions fondamentales : reproduction sexuée,
+fécondation, cellules sexuelles, ADN porteur du
+patrimoine génétique.
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+23
+
+Précisions et limites :
+Il convient de se limiter pour la production des gamètes à une comparaison des caryotypes (cellule mère, cellule sexuelle et cellule
+œuf) sans aborder les mécanismes de la méiose ni ceux de la fécondation qui ne sont pas au programme ici.
+Le brassage génétique est défini comme l’association, qui n’existait pas chez les parents, de nouvelles combinaisons de caractères
+dans les individus et leurs descendances. Ne sont pas étudiés ici les mécanismes de la méiose au niveau cellulaire.
+Sont présentés deux exemples de diversité du vivant non génétique.
+
+Il s’agit ici de présenter le rôle central du vivant et de sa diversité dans le fonctionnement de la planète Terre. L’élève
+est amené à découvrir différents niveaux de la biodiversité, puis à appréhender le caractère dynamique d’un
+écosystème, y compris en lien avec l’activité humaine.
+Biodiversité et dynamique écosystémique
+Objectifs d’apprentissage
+Investir un exemple local pour identifier des
+composantes de
+la
+biodiversité (diversité
+des
+écosystèmes, diversité spécifique et diversité génétique
+au sein d’une espèce) ainsi que la diversité des
+interactions des êtres vivants avec leur milieu et entre
+eux (dont la communication) :
+− Une diversité d’interactions caractérise le
+fonctionnement d’un écosystème qu’il soit dans
+un état stationnaire ou qu’il subisse des
+perturbations,
+dont
+certaines
+d’origines
+anthropiques.
+
+Notions fondamentales : biotope, biocénose,
+biodiversité, dynamique de l’écosystème, types
+d’interactions (prédation, compétition, coopération,
+symbiose), producteurs, consommateurs,
+décomposeurs, communications inter et
+intraspécifiques.
+
+Exemples de réussite
+L’élève sait :
+−
+
+−
+
+Utiliser des IA qui permettent d’identifier des
+organismes (Pl@ntnet, Birdnet, Merlin, etc.) en
+en identifiant les limites.
+Mettre en évidence la diversité du vivant dans un
+écosystème grâce à des clés de détermination
+utilisant
+l’intelligence
+artificielle
+(logiciels/applications
+de
+reconnaissances
+d’organismes)
+
+−
+
+Identifier des éléments au sein de l’écosystème
+qui permettent de définir les différents niveaux
+de la biodiversité
+
+−
+
+Identifier différents types d’interactions dans un
+écosystème.
+Caractériser des modifications, au cours du
+temps, de l’organisation et du fonctionnement
+de l’écosystème en lien avec certaines actions
+humaines.
+Identifier des comportements liés aux
+interactions intra ou interspécifiques.
+
+−
+
+−
+Précisions et limites :
+
+Seront privilégiés l’étude d’un écosystème naturel proche du collège avant de prendre d’autres exemples montrant leurs variétés.
+Ce chapitre vise à montrer qu’un écosystème est une unité fonctionnelle du vivant, qui inclut, mais n’est pas limitée à, la
+biodiversité qu’on y trouve. C’est aussi l’occasion de montrer que des modifications d’origine humaine peuvent avoir des effets
+positifs sur certaines composantes (ex. productivité primaire dans un espace agricole intensif) mais négatifs sur d’autres (ex.
+abondance et diversité des espèces sauvages dans le même écosystème). Sont choisis au moins deux exemples d’interactions
+dont un est centré sur la communication. Parmi les autres exemples possibles, on peut traiter des réactions ou comportements
+qui révèlent les interactions entre êtres vivants (comportements de fuite, de protection, réaction de défense (synthèse de
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+24
+
+composés chez les plantes) ou de groupe et sociaux ou les communications associées) ; des relations trophiques, de parasitisme,
+de mutualisme ou de compétition ; des relations avec le biotope (construction, peuplement, etc.). Les communications au sein
+d’un écosystème sont abordées pour montrer le rôle qu’elles jouent dans les interactions entre les êtres vivants.
+La diversité intra-spécifique s’appuie sur l’identification de caractères quantifiables dans l’espèce choisie (taille, poids, coloration,
+chants, etc.).
+Les réactions ou comportements peuvent être traités chez divers êtres vivants mais les animaux peuvent être privilégiés pour
+faciliter l’appropriation des concepts par les élèves. Il n’est pas attendu de traiter de façon exhaustive la variété des
+comportements, ni de leur mise en œuvre, mais de montrer en quoi ceux-ci interviennent ou conditionnent les relations entre les
+êtres vivants.
+Cette partie du programme permet de présenter les domaines d’activités professionnelles en lien avec la biodiversité et les
+écosystèmes.
+
+Partie : Corps humain et santé
+Thème : Le fonctionnement de l’organisme
+Cette partie du programme permet de traiter les fonctions de nutrition chez l’être humain. L’échelle cellulaire et
+moléculaire est investie et complète ainsi les acquis de la classe de cinquième.
+
+Origine et rôle des nutriments
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer l’origine des nutriments et leur rôle dans le L’élève sait :
+fonctionnement des cellules :
+− Les nutriments du sang proviennent de la
+− Expliquer le devenir des aliments dans le tube
+digestion qui transforme les aliments par des
+digestif (enzymes issues des glandes digestives et
+actions mécaniques et chimiques.
+du microbiote).
+− Les enzymes digestives sont produites par des
+− Expliquer l’importance des micro-organismes
+cellules humaines et par le microbiote de
+dans la digestion.
+l’appareil digestif.
+− Expliquer que l’intestin grêle est une surface
+d’échange.
+− L’absorption intestinale permet le passage des − Légender un schéma de l’appareil digestif.
+nutriments vers le sang à partir de l’intestin grêle. – Interpréter les résultats d’une expérience
+testant les effets du microbiote sur le
+fonctionnement du tube digestif.
+– Les excréments sont constitués des éléments non
+–
+Comparer des régimes alimentaires et identifier
+digérés (dont les fibres) et de cellules du
+des régimes équilibrés en quantité et qualité.
+microbiote.
+– Une alimentation équilibrée en quantité et
+qualité contribue à la santé de l’individu.
+
+Notions fondamentales : bouche, glandes salivaires,
+œsophage, estomac, intestin grêle, colon, rectum, anus,
+foie, pancréas, microbiote, digestion, enzyme,
+absorption intestinale.
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+25
+
+Précisions et limites :
+Cette partie peut faire l’objet d’un travail sur l’éducation au goût dans le cadre d’un projet à l’échelle de l’établissement.
+Le terme santé s’entend comme défini par l’OMS : un état de complet bien-être physique, mental et social et pas seulement une
+absence de maladie.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa.
+
+Les organes interagissent au sein de l’organisme
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer l’origine du dioxygène nécessaire à la L’élève sait :
+respiration cellulaire :
+− Le dioxygène du sang provient de celui contenu
+− Localiser le trajet du dioxygène depuis l’air vers le
+dans l’appareil respiratoire. Il est renouvelé par la
+sang.
+ventilation.
+− Relier les mouvements ventilatoires aux trajets de
+− Le passage du dioxygène depuis l’air vers le sang
+l’air
+se fait au niveau des alvéoles pulmonaires.
+
+Expliquer le rôle de la circulation générale :
+− Le sang permet le transport des nutriments et du
+dioxygène vers toutes les cellules de l’organisme.
+− Le cœur assure la mise en mouvement du sang
+dans l’organisme.
+
+−
+
+−
+Expliquer comment sont évacués les déchets produits par
+le fonctionnement des cellules :
+− Le dioxyde de carbone produit par la respiration
+cellulaire est évacué lors de l’expiration par
+l’appareil respiratoire.
+− Les cellules en fonctionnement produisent des
+déchets azotés libérés dans le sang qui sont
+ensuite filtrés par les reins et éliminés hors de
+l’organisme dans l’urine.
+
+Comprendre l’importance du don d’organes :
+− En France, le don d'organes et de tissus permet
+des transplantations afin d’améliorer la vie de
+patients malades.
+
+−
+−
+−
+
+−
+
+Relier la circulation générale et la distribution des
+nutriments ou du dioxygène dans tout
+l’organisme pour couvrir les besoins des cellules.
+Identifier les différents types de vaisseaux
+sanguins.
+
+Décrire le trajet du dioxyde de carbone depuis son
+lieu de production jusqu’à l’air expiré.
+Compléter un schéma des appareils respiratoire
+et excréteur.
+Identifier le rôle des différents organes de
+l’appareil excréteur.
+Identifier les situations légales dans lesquelles un
+don d’organe et de sang est possible.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+26
+
+Notions fondamentales : pharynx, larynx, poumons,
+trachée, bronches, bronchioles, alvéoles pulmonaires,
+circulation générale, cœur, sang, artères, veines,
+capillaires, rein, uretère, urètre, vessie, urine.
+
+Précisions et limites :
+L’étude de la double circulation sanguine n’est pas attendue.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa et du parcours
+citoyen.
+
+Le fonctionnement du système nerveux
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier comment les centres nerveux permettent de
+L'élève sait :
+percevoir l’environnement :
+− Identifier le stimulus, le récepteur, le nerf sensitif
+− Un stimulus est transformé par un récepteur en
+et le centre nerveux dans une situation mettant
+message nerveux électrique qui est transmis à la
+en jeu l’ensemble de ces éléments.
+moelle épinière ou au cerveau grâce à un nerf − Distinguer la réception de l’intégration des
+sensitif.
+messages nerveux.
+− Les nerfs sont constitués des axones des − Identifier les éléments intervenant dans un
+neurones.
+message nerveux moteur.
+− Le cerveau reçoit et intègre les messages issus de − Identifier le rôle des centres nerveux dans
+l’intérieur et de l’extérieur de l’organisme.
+l’intégration d’informations provenant de
+− Lors d’un mouvement, les centres nerveux
+plusieurs sources (externes et internes).
+élaborent un message nerveux transporté par un − Réaliser une dissection mettant en évidence le
+nerf moteur qui déclenche la contraction d’un
+nerf entre un récepteur et un centre nerveux.
+muscle.
+− Légender un neurone.
+
+Justifier l’intérêt des politiques publiques en faveur de
+la santé :
+− Des stimuli de trop grande intensité ou de trop
+longue durée portent atteinte à l’intégrité des
+récepteurs sensoriels, souvent de façon
+irréversible.
+
+−
+
+Faire le lien entre une politique publique et les
+enjeux liés aux comportements individuels et
+collectifs (bruit, lumière, équipements de
+protection individuels).
+
+Notions fondamentales : récepteur sensoriel, message
+nerveux, centres nerveux, cerveau, moelle épinière, nerf,
+neurone, corps cellulaire, axone, terminaison nerveuse.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+27
+
+Précisions et limites :
+Le professeur s’appuiera sur un exemple au choix pour illustrer l’intérêt des politiques publiques en faveur de la santé.
+La dissection peut être réalisée sur un poisson ou un criquet.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSA, du parcours
+citoyen et à l’éducation à la prévention des risques.
+
+Thème : Virus, micro-organismes et interactions avec l’être humain.
+Cette partie du programme permet de comprendre le rôle du microbiote, du système immunitaire ainsi que les bases
+biologiques de la vaccination. Elle participe à la construction du concept « une seule santé » (One Health) et place l’être
+humain au cœur d’interactions continues avec les micro-organismes.
+
+Diversité du monde microbien en interaction avec l’être humain
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Mettre en relation la santé d’un être humain et la qualité L’élève sait :
+de ses microbiotes :
+− L’organisme
+humain
+abrite
+différents
+− Identifier les différents microbiotes humains.
+microbiotes. La santé humaine dépend de la
+− Expliquer en quoi un microbiote diversifié est
+constitution de ces microbiotes.
+bénéfique à l’organisme humain.
+Identifier les rôles du système immunitaire dans la
+protection de l’être humain contre l’infection par des
+micro-organismes pathogènes :
+− Lors d’une infection, le système immunitaire
+permet de reconnaître et de neutraliser les agents
+pathogènes.
+
+Identifier différentes réactions immunitaires :
+− Des leucocytes permettent d’ingérer et digérer
+des micro-organismes.
+− Des leucocytes produisent des anticorps :
+molécules spécifiques des agents pathogènes qui
+participent à leur neutralisation.
+
+Expliquer le principe de la vaccination :
+− La vaccination permet de déclencher la
+production de leucocytes mémoires et
+d’anticorps dirigés contre un agent pathogène
+spécifique.
+
+−
+
+Attribuer au système immunitaire un rôle de
+protection contre les agents pathogènes.
+
+−
+
+Identifier les différentes phases de la
+phagocytose.
+Mettre en relation les anticorps avec leur
+propriété à neutraliser un agent pathogène.
+Comparer les cellules d’un frottis sanguin d’une
+personne saine et d’une personne atteinte d’une
+maladie infectieuse.
+
+−
+−
+
+−
+
+Expliquer le bénéfice de la production de
+leucocytes mémoires dans le cadre de la
+vaccination.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+28
+
+Identifier les enjeux liés à l’infection au virus de
+l'immunodéficience humaine (VIH):
+− Le syndrome d'immunodéficience acquise
+(SIDA) est une infection sexuellement
+transmissible causée par le VIH qui met en
+échec le système immunitaire.
+− Depuis les années 1980, des recherches sont en
+cours pour trouver et améliorer des traitements
+parallèlement aux politiques de prévention.
+
+−
+−
+
+−
+
+−
+
+Notions
+fondamentales :
+microbiote,
+antigène,
+anticorps,
+leucocyte,
+mémoire
+immunitaire,
+phagocytose, SIDA, VIH.
+
+Mettre en relation les acronymes SIDA et VIH
+avec leur signification.
+Mettre en relation l’efficacité du système
+immunitaire et la charge virale dans le cadre du
+SIDA.
+L’élève est capable d’expliquer les politiques
+publiques menées au sujet du SIDA
+Représenter l’ensemble des interactions de l’être
+humain avec les micro-organismes pathogènes ou
+non pathogènes sous forme d’un schéma
+fonctionnel.
+
+Précisions et limites :
+En ce qui concerne le VIH, le professeur rappellera aux élèves l’importance du préservatif.
+L’inventaire des organes et des cellules impliqués dans la réaction immunitaire ne sont pas attendus.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa, du parcours
+citoyen et de l’éducation à la prévention des risques.
+Cette partie du programme permet de présenter les domaines d’activités professionnelles liés à la connaissance des métiers de la
+santé.
+
+Thème : Procréation humaine
+Cette partie du programme permet de comprendre les enjeux autour de la sexualité ainsi que les choix qu’elle implique.
+Les mécanismes biologiques du contrôle des appareils reproducteurs permettent de comprendre le fonctionnement de
+certains contraceptifs.
+
+Procréation humaine
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer le contrôle hormonal de l’appareil L’élève sait :
+reproducteur :
+− Certaines zones du cerveau produisent des
+− Mettre en relation une hormone avec son lieu de
+hormones qui permettent de contrôler le
+production, sa diffusion dans l’organisme et son
+fonctionnement de l’appareil reproducteur en
+lieu d’action.
+induisant la production de testostérone chez
+l’homme et la production d’œstrogènes et de
+− Compléter un schéma fonctionnel où figurent
+progestérone chez la femme.
+cerveau et appareil reproducteur.
+Identifier l’origine du plaisir sexuel :
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+29
+
+−
+
+Les zones érogènes, dont le clitoris et le pénis,
+sont sensibles grâce à leurs nombreuses
+terminaisons nerveuses qui communiquent avec
+les régions du cerveau impliquées dans le plaisir.
+
+Relier la contraception au fonctionnement des appareils
+reproducteurs :
+− Utiliser un moyen de contraception permet
+d’avoir un rapport sexuel sans initier de
+grossesse, seul le préservatif protège aussi des
+infections sexuellement transmissibles.
+
+−
+
+Situer la sensation de plaisir dans le cerveau.
+
+−
+
+Identifier le
+contraceptif.
+
+−
+
+Identifier des situations où s’exprime le respect.
+
+mode
+
+d’action
+
+d’un
+
+moyen
+
+Comprendre l’importance du respect dans la sexualité :
+−
+
+Vivre sa sexualité consiste à satisfaire ses désirs
+dans le respect de l’autre.
+
+Notions fondamentales : hormone, plaisir,
+contraception, respect.
+
+Précisions et limites :
+Le terme de procréation est à privilégier par rapport au terme de reproduction qui induit l’idée de produire de l’identique.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa (École
+promotrice de santé), du programme EVARS, du parcours citoyen et à l’éducation à la prévention des risques.
+Cette partie du programme permet de présenter les domaines d’activités professionnelles liés à la connaissance des métiers de la
+santé.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+30
+
+Niveau d’enseignement : classe de troisième
+Partie : Nature des pratiques et des savoirs scientifiques en SVT
+Faire des sciences
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Appréhender la nature de la science et comment elle se L’élève sait :
+construit :
+− La science met en œuvre des démarches
+− Distinguer une démarche scientifique d’une
+d’explication
+de
+l’organisation
+et
+du
+démarche qui ne l’est pas.
+fonctionnement du monde réel, qui s’appuient
+− Distinguer un savoir scientifique, une croyance et
+sur des faits établis et un raisonnement rationnel.
+une opinion.
+− Faire des sciences consiste à observer, comparer,
+− Identifier les apports des sciences et technologies
+questionner,
+expérimenter,
+modéliser, en
+du vivant et de la Terre dans son quotidien.
+réponse à des problèmes scientifiques identifiés.
+− Le savoir scientifique est une construction
+collective qui s’enrichit au fur et à mesure de la
+découverte de nouveaux faits.
+− Ce savoir est diffusé au travers de publications
+rédigées par des scientifiques, dans lesquelles
+sont consignées les résultats des travaux de
+recherche et leurs interprétations, ensuite
+évaluées par leurs pairs.
+− Le développement et l’utilisation des sciences et
+des technologies ont modifié des conditions de
+vie des êtres humains (alimentation, santé,
+environnement, etc.) et sont l’une des clés
+permettant de répondre aux grands enjeux du
+XXIe siècle.
+
+Notions fondamentales : science, démarches
+scientifiques, savoir scientifique, croyance, opinion.
+
+Précisions et limites :
+Pour lui donner du sens, cette partie sera traitée au sein des autres parties du programme et non pas comme un chapitre
+indépendant. Le professeur choisira un exemple concret pour les élèves, dans le cadre historique (vaccination, digestion,
+reproduction, climat, évolution, etc.), en parallèle d’un exemple plus récent.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+31
+
+Partie : Terre et vivant
+Thème : La Terre, planète dynamique
+Les élèves découvrent ici la variété des roches de leur environnement proche en identifiant certaines de leurs
+caractéristiques avec des observations et expérimentations simples
+Initiation à la diversité des roches terrestres
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier la nature des roches à partir d’exemples
+locaux :
+− Les roches présentent différentes propriétés en
+lien avec leur composition minéralogique ou
+chimique et leur origine.
+
+L’élève sait :
+− Identifier une roche en référence à un document
+qui donne les principales caractéristiques des
+roches terrestres.
+− Réaliser des manipulations simples pour
+caractériser au moins deux roches et leur
+contenu minéralogique.
+
+Notions fondamentales : types de roches
+(sédimentaire ou métamorphique ou magmatique).
+
+Précisions et limites :
+Les roches prises en exemple proviennent de l’environnement proche du collège. Elles peuvent être celles qui affleurent mais
+également celles utilisées dans la construction des bâtiments, l’aménagement, la réalisation d’œuvre d’art, etc. Une classe sur le
+terrain dans la proximité immédiate du collège peut être menée. Les manipulations pour caractériser les roches peuvent être : la
+recherche de carbonate de calcium avec un acide peu concentré, le test de la dureté des minéraux, des mesures de densité, porosité,
+perméabilité, des observations à la loupe des minéraux, etc.).
+
+En lien avec les cycles de l’eau et du carbone étudiés dans les classes précédentes, il s’agit ici de présenter la dynamique
+des roches de la lithosphère à partir de l’exemple des roches sédimentaires avant de généraliser le cycle à tous les types
+de roches.
+Le cycle des roches
+Objectifs d’apprentissage
+Décrire les interactions entre le cycle d’une roche et les
+cycles de l’eau et du carbone :
+− Toute roche exposée à la dynamique des
+enveloppes externes subit une dégradation.
+− Les produits de dégradation vont à leur tour être
+transportés vers des zones de sédimentation.
+
+Exemples de réussite
+L’élève sait :
+−
+−
+
+Expliquer l’origine des produits de dégradation
+des roches.
+Décrire les étapes de formation d’une roche
+sédimentaire.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+32
+
+−
+
+−
+
+−
+
+−
+
+−
+
+Les produits dissous issus de l’érosion
+constituent une source importante de
+nutriments pour la biosphère.
+Les roches sédimentaires se forment par
+enfouissement et compaction de sédiments
+associés à une perte d’eau.
+La circulation de l’eau amène des éléments en
+solution qui cristallisent et contribuent à la
+solidification de la roche.
+Des organismes morts, leurs squelettes/coquilles
+ou encore des traces de leur activité peuvent être
+préservés dans les roches sédimentaires et
+constituent des fossiles.
+Toutes les roches ont un cycle qui interfère avec
+les cycles de l’eau et celui du carbone.
+
+Notions fondamentales : transport, sédimentation,
+fossile, interactions avec les cycles biogéochimiques.
+
+−
+−
+
+Repérer des indices de dégradation des roches
+Expliquer l’origine de certains éléments
+minéraux essentiels aux organismes.
+
+−
+
+Expliquer la fossilisation.
+
+−
+
+Présenter le cycle d’une roche.
+
+Précisions et limites :
+Le cycle des roches sédimentaires est l’occasion de travaux de terrain à proximité du collège et d’expérimentation en classe.
+Le concept de cycle de roche est abordé à partir de la roche sédimentaire et est ensuite généralisé.
+Le travail sur les roches volcaniques qui a été mené en classe de quatrième permet de compléter les cycles des roches.
+Les roches métamorphiques sont présentées comme le résultat des réactions lors d’une augmentation de pression et de
+température au cours de l’enfouissement d’une roche.
+À ce niveau d’apprentissage on assimile l’érosion à la « dégradation » des roches
+
+Il s’agit ici de sensibiliser les élèves aux ressources, renouvelables ou pas, et de montrer leur importance ou leurs
+influences dans leur vie courante.
+Les ressources et leurs utilisations
+Objectifs d’apprentissage
+Identifier la diversité des ressources géologiques
+naturelles locales utiles à l’être humain.
+
+Identifier si une ressource est renouvelable ou non en
+s’appuyant sur les durées et les conditions de
+formation, en comparaison avec leur rythme
+d’utilisation par l’être humain :
+
+Exemples de réussite
+L’élève sait :
+−
+−
+−
+
+Distinguer différents types de ressources.
+Identifier des ressources géologiques mobilisées
+dans sa vie courante.
+Mettre en lien le temps de formation d’une
+ressource et la vitesse d’exploitation par l’être
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+33
+
+−
+−
+−
+
+Les réserves des ressources non renouvelables
+correspondent à leur partie exploitable.
+Les ressources géologiques sont inégalement
+réparties sur le globe.
+L’exploitation des réserves est encadrée par les
+politiques publiques afin d’en limiter les impacts
+environnementaux ou sociétaux.
+
+−
+
+−
+
+humain pour en déduire le caractère
+renouvelable ou pas.
+Relier la formation d’une ressource avec le cycle
+de l’eau et/ou le cycle des roches et/ou le cycle
+du carbone.
+Identifier des mesures limitant les impacts sur
+l’environnement (aménagements en amont, en
+cours et après les exploitations).
+
+Notions fondamentales : ressources renouvelable et
+non renouvelable, réserve, utilisation raisonnée des
+ressources.
+
+Précisions et limites :
+Un exemple au choix est à traiter pour une ressource renouvelable (bois, biomasse, vent, soleil, marée, etc.) et une non renouvelable
+(le pétrole, le charbon, le lithium, des exemples de terres rares, etc.). Le lien entre les ressources et leurs usages dans le quotidien
+des élèves doit être fait. La comparaison entre les durées de formation de la ressource, leurs ampleurs et la vitesse d’exploitation
+par l’être humain est à faire.
+
+Lors d’une focale sur l’utilisation des ressources carbonées, les élèves sont amenés à identifier les conséquences de leur
+utilisation sur l’environnement et les politiques publiques d’atténuation ou d’adaptation pour en limiter les impacts.
+Ressources carbonées et changement climatique
+Objectifs d’apprentissage
+
+Exemples de réussite
+L’élève sait :
+
+Relier l’exploitation de réserves carbonées avec le
+changement climatique d’origine humaine à l’échelle
+globale :
+− L’utilisation par l’être humain de réserves
+carbonées (pétrole, charbon, gaz) libère de très
+grandes quantités de dioxyde de carbone, gaz à
+effet de serre, dont une partie s’accumule dans
+l’atmosphère.
+− Le réchauffement global augmente la quantité
+d’énergie thermique des océans et de
+l’atmosphère ce qui modifie la fréquence et
+l’intensité des phénomènes météorologiques.
+− La limitation du rejet des gaz à effet de serre
+(atténuation) doit permettre de limiter
+l’élévation des températures compatibles avec
+l’habitabilité de nombreuses espèces dont l’être
+humain.
+− Des stratégies d’adaptation permettent de
+limiter les effets du réchauffement climatique.
+
+−
+
+Remobiliser le cycle du carbone et en particulier
+les flux entre les réservoirs et les vitesses
+d’alimentation du réservoir atmosphérique en
+lien avec les activités humaines.
+
+−
+
+Corréler l’augmentation du dioxyde de carbone
+atmosphérique
+et
+l’augmentation
+des
+températures à l’échelle globale
+Distinguer les lieux d’accumulation de
+l’énergie thermique, océan et atmosphère, et
+leurs interrelations.
+
+−
+
+−
+
+Proposer des actions à mener pour limiter le
+rejet des gaz à effet de serre.
+
+−
+
+Proposer des actions à mener pour limiter les
+effets du réchauffement climatique.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+34
+
+Notions fondamentales : modifications des flux de
+carbone dans le cycle du carbone, gaz à effet de serre,
+atténuation et adaptation.
+
+Précisions et limites :
+Des expériences permettent de mettre en évidence la production de dioxyde de carbone lors de la combustion de matière carbonée.
+La remobilisation du cycle du carbone permet de montrer les déséquilibres entre les réservoirs provoqués par les activités
+anthropiques. Les mécanismes de l’effet de serre ne sont pas au programme. Cette partie du programme permet d’approfondir la
+découverte des métiers en lien avec la météorologie, la climatologie, l’élaboration de bilan carbone, etc.
+
+Thème : Les interactions Terre-vivant
+Les modifications de la biodiversité dues aux activités humaines sont questionnées au regard de celles observées dans
+le passé géologique de notre planète.
+Histoire de la Terre et modifications de la biodiversité
+Objectifs d’apprentissage
+
+Exemples de réussite
+L’élève sait :
+
+Montrer que les environnements ont changé tout au
+long de l’histoire géologique de la Terre :
+− L’étude des archives fossiles témoigne des
+modifications continues de la biodiversité.
+− Les actions humaines actuelles ont des effets
+délétères inédits sur la biodiversité en termes de
+rapidité d’extinction des espèces et de densité
+des populations.
+− D’autres crises biologiques sont survenues au
+cours de l’histoire de la Terre avec des causes et
+des conséquences variées.
+
+Notions fondamentales : apparition, disparition,
+raréfaction d’espèces ; crise biologique ; équilibre des
+écosystèmes ; biodiversité.
+
+−
+
+−
+
+Comparer
+une
+succession
+de
+paléoenvironnements à partir d’indices (fossiles,
+roches, formations géologiques).
+Utiliser une IA pour inventorier la biodiversité
+d’un milieu ou utiliser une IA générative pour
+reconstituer un paléoenvironnement.
+
+−
+
+Identifier des indices des conséquences d’actions
+humaines sur la biodiversité.
+
+−
+
+Identifier les causes et conséquences d’une crise.
+
+Précisions et limites :
+Cette partie du programme est l’occasion de définir ou de remobiliser la biodiversité à l’échelle des espèces qui peuplent un milieu.
+Il convient de s’appuyer sur les études menées en quatrième sur les écosystèmes qui sont présentés comme des systèmes
+dynamiques et qui peuvent se modifier et retrouver un état stationnaire après une perturbation. Les perturbations anthropiques et
+leurs effets sont soulignés. Parmi les changements actuels le professeur peut s’appuyer sur un ou des exemples locaux de perte de
+biodiversité en lien avec la destruction des habitats, le changement climatique, la pollution, les espèces invasives, etc. La notion de
+crise biologique du passé géologique de notre planète est à étudier à partir d’un seul exemple.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+35
+
+Les modifications de la biodiversité s’expliquent par les mécanismes de l’évolution. Il s’agit ici d’un premier niveau
+d’étude fondé sur les caractéristiques des populations.
+L’évolution des êtres vivants
+Objectifs d’apprentissage
+Identifier des faits d’évolution et les mettre en relation
+avec des mécanismes explicatifs :
+− Au sein d’une espèce, les individus présentent
+des associations de caractères singulières,
+expliquées par le brassage de l’information
+génétique lors de la reproduction sexuée.
+− Dans une population, d’une génération à l’autre,
+les fréquences des caractères changent.
+− Lors d’une modification des conditions du milieu,
+certains organismes qui portent une association
+particulière de caractères sont plus aptes à se
+reproduire que d’autres.
+− L’isolement de populations peut conduire à des
+modifications qui limitent ou empêchent la
+reproduction entre les individus de ces
+populations, c’est un exemple de mécanismes de
+spéciation.
+− Ces mécanismes, à long terme, font partie des
+moteurs importants pour générer de la
+biodiversité.
+
+Exemples de réussite
+L’élève sait :
+−
+
+Expliquer l’origine des associations de caractères
+chez un organisme qui diffèrent de celles de ses
+deux parents.
+
+−
+
+Anticiper un changement de la fréquence d’un
+caractère dans une génération à venir.
+Faire le lien entre la diversité des individus d’une
+population et l’impact d’un changement du
+milieu sur certains d’entre eux.
+
+−
+
+−
+
+Expliquer le lien entre les caractères de certains
+individus et la probabilité plus forte qu’ils ont de
+se reproduire que d’autres.
+
+−
+
+Identifier les facteurs à l’origine de l’évolution
+d’une population à partir d’un exemple.
+
+Notions fondamentales : évolution des êtres vivants,
+dynamique des populations, sélection naturelle,
+spéciation
+
+Précisions et limites :
+Cette partie du programme est l’occasion de définir la biodiversité à l’échelle des caractères des individus ainsi qu’à l’échelle des
+populations. Les exemples explicites sont à privilégier (populations bactériennes résistantes aux antibiotiques, souris de Madère,
+pinsons des Galapagos, moustiques de Londres, etc.).
+Le lien peut être établi avec le thème « Procréation » pour expliquer le brassage génétique.
+
+À partir de fondements scientifiques, des politiques publiques sont mises en œuvre pour protéger la biodiversité, se
+révélant bénéfiques pour les sociétés humaines.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+36
+
+L’être humain indissociable de son environnement
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Mettre en lien des politiques de protection de la
+biodiversité avec les mécanismes qui expliquent la
+dynamique des populations :
+− Des politiques de protection de la biodiversité
+permettent de protéger certaines espèces ou
+certains milieux et d’éviter leur fragmentation.
+
+L’élève sait mobiliser ses connaissances sur les
+mécanismes de la dynamique des populations pour
+argumenter sur les politiques publiques mises en place.
+
+Mettre en lien la bonne santé des écosystèmes et la
+santé des populations humaines :
+− Le fonctionnement des écosystèmes apporte des
+effets positifs aux sociétés humaines.
+− La perturbation des écosystèmes peut avoir en
+retour des conséquences sur la santé des
+populations humaines.
+
+Notions fondamentales : politiques publiques, « une
+seule santé » (One Health).
+
+Précisions et limites :
+Les aires protégées, les trames vertes, bleues et noires sont des exemples de politiques pertinentes à analyser et à mettre en lien
+avec les mécanismes qui assurent la dynamique des populations. Cette partie du programme permet de présenter les domaines
+d’activités professionnelles liés à la connaissance des métiers de la biodiversité et du développement durable.
+
+Cette partie permet de mobiliser les connaissances des élèves pour comprendre les domaines d’activités humaines en
+lien avec les connaissances en biologie.
+La connaissance du vivant au service de l’humanité
+Objectifs d’apprentissage
+Appréhender en quoi la connaissance du vivant dans
+toutes ses dimensions (organisationnelle, fonctionnelle,
+évolutive, etc.) permet de répondre aux besoins de
+l’humanité dans le cadre de la transition écologique.
+− Dans
+le
+domaine
+de
+la
+production
+agroalimentaire (en élevage et en production
+végétale en utilisant les acquis sur le
+fonctionnement
+des
+écosystèmes,
+des
+métabolismes, de la reproduction des
+organismes, etc.).
+− Dans le domaine de la santé (en utilisant les
+connaissances sur le corps, son fonctionnement
+
+Exemples de réussite
+L’élève sait :
+
+−
+
+−
+
+Identifier des biotechnologies ou des solutions
+fondées sur la nature dans différents domaines
+de l’activité humaine.
+Identifier les connaissances mises en œuvre dans
+des applications biologiques et d’abord celles de
+la vie courante (en production alimentaire et en
+santé).
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+37
+
+−
+
+−
+
+et les interactions avec les autres organismes,
+etc.).
+Dans le domaine des biotechnologies
+(production de produits à haute valeur ajoutée :
+antibiotiques,
+anticorps,
+hormones,
+biomédicaments, etc.).
+Dans le domaine des solutions fondées sur la
+nature et l’ingénierie écologique pour lutter
+contre le réchauffement climatique, contre
+l’érosion de la biodiversité, pour reconstituer des
+écosystèmes fonctionnels, etc.
+
+−
+
+Mettre en œuvre une comparaison critique de
+solutions classiques et de solutions fondées sur
+la nature.
+
+Notions fondamentales : sciences biologiques
+appliquées, biotechnologie, solutions fondées sur la
+nature
+
+Précisions et limites :
+Le professeur s’appuiera sur deux exemples au choix, notamment à partir d’exemples locaux d’entreprises ou de laboratoires. Des
+exemples dans le domaine de la santé permettront d’illustrer le concept « une seule santé ». Cette partie est l’occasion de visiter
+des exploitations agricoles ou sylvicoles, d’industries agroalimentaires mais également de découvrir les domaines professionnels
+associés.
+
+Partie : Corps humain et santé
+Thème : le fonctionnement de l’organisme
+La compréhension du fonctionnement du système nerveux permet d’expliquer les mécanismes de l’apprentissage. Il
+s’agit aussi de comprendre comment le préserver. Cette partie du programme donne une approche biologique des
+émotions en lien étroit avec la compréhension de certaines compétences psychosociales.
+
+Le fonctionnement de l’organisme
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer le fonctionnement d’une synapse :
+L’élève sait :
+− La jonction entre deux neurones ou entre un − Expliquer la communication cellules nerveuses /
+neurone et une cellule effectrice est une synapse.
+cellules nerveuses et cellules nerveuses / cellules
+musculaires.
+− Dans une synapse, des neurotransmetteurs
+assurent la transmission du message entre les
+deux cellules.
+
+Expliquer le fonctionnement du cerveau qui apprend et
+qui change :
+− Lors de l’acquisition d’une nouvelle connaissance,
+un réseau se constitue par l’établissement de
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+38
+
+−
+
+nouvelles synapses entre des neurones. Les
+processus de mémorisation stabilisent ce réseau
+pour des durées variables.
+Un sommeil de qualité et de durée adaptée aide
+à consolider les apprentissages.
+
+Expliquer l’origine biologique des émotions :
+− Une émotion a pour origine l’expression d’un
+besoin interne. Elle est déclenchée par un
+événement et se traduit par une réponse
+corporelle. Elle est associée à un ressenti interne
+et des manifestations externes. Elle a une valence
+agréable ou désagréable et une intensité.
+− Identifier ses émotions permet de les réguler.
+
+Identifier l’intérêt d’une hygiène de vie raisonnée en
+lien avec des risques pour la santé :
+− Les drogues sont constituées de molécules qui
+interfèrent avec les neurotransmetteurs,
+perturbent le fonctionnement du système
+nerveux, et peuvent créer un phénomène de
+dépendance.
+− Les conduites addictives résultent des mêmes
+modifications cérébrales que celles induites par
+des drogues.
+− Des troubles de conduites alimentaires
+apparaissent plus fréquemment à l’adolescence.
+
+Notions fondamentales : synapse, neurotransmetteur,
+émotion, hygiène de vie, dépendance, addiction.
+
+−
+−
+
+−
+−
+
+Mettre
+en
+relation
+apprentissage
+et
+fonctionnement du cerveau.
+Faire le lien entre la répétition d’un geste
+nouveau et l’augmentation de l’efficacité dans sa
+réalisation.
+
+Identifier différentes émotions et leurs
+manifestations en fonction d’un contexte.
+Identifier des composantes externes d’une
+émotion : observation de visages, langage paraverbal.
+
+−
+
+Expliquer l’intérêt de lois limitant l’exposition des
+individus à des facteurs de conduites addictives :
+drogues, alcool, tabac, exposition aux écrans, jeux
+d’argent, réseaux sociaux, etc.
+
+−
+
+Relier une conduite addictive (sport, jeux,
+substances psychoactives) aux risques sur le
+cerveau.
+
+−
+
+Argumenter l’intérêt de politiques de prévention
+liées à l’alimentation en matière de préservation
+de la santé.
+
+Précisions et limites :
+Le terme « connaissances » utilisé dans cette partie n’est pas limité aux connaissances purement scolaires.
+Le professeur veillera à ne pas concevoir le cerveau comme divisé en une zone pour apprendre et une zone pour les émotions.
+En ce qui concerne les émotions, il conviendra de veiller à ne pas limiter l’étude au stress et à l’anxiété et à s’appuyer également sur
+des émotions agréables.
+En ce qui concerne les troubles des conduites alimentaires, sera privilégié un travail à l’échelle de l’étude de la population, et non
+pas une approche individuelle.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa, du parcours
+citoyen et à l’éducation à la prévention des risques et favoriser un travail avec les personnels médicaux.
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+39
+
+Thème : Virus, micro-organismes et interactions avec l’être humain.
+Cette partie du programme présente certains traitements des pathologies. Elle permet de comprendre le rôle des
+antibiotiques mais également de mesurer les limites de leur utilisation. Elle est l’occasion d’évoquer le rôle de la
+recherche dans la mise au point de nouveaux traitements.
+
+Diversité du monde microbien en interaction avec l’être humain
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer la nécessité d’une utilisation raisonnée des L’élève sait :
+antibiotiques :
+− Les antibiotiques sont des molécules limitant la
+prolifération bactérienne.
+− Un antibiogramme permet de mesurer l’efficacité
+d’antibiotiques.
+− Interpréter un antibiogramme.
+− L’usage excessif des antibiotiques depuis le milieu
+du XXe siècle a sélectionné des bactéries
+résistantes qui constituent un enjeu de santé − Relier antibiorésistance et sélection naturelle.
+publique.
+− L’utilisation raisonnée des antibiotiques comme − Retracer l’origine de contamination d’un
+de tout médicament permet d’en limiter les
+écosystème par les antibiotiques.
+impacts sur les écosystèmes.
+− Relier l’utilisation raisonnée des antibiotiques au
+respect de la prescription médicale et au
+recyclage des antibiotiques non consommés.
+Expliquer le lien entre les infections par les HPV, le
+développement de certains cancers et l’intérêt de la
+vaccination :
+− Le cancer est une maladie qui correspond à une
+multiplication incontrôlée de cellules anormales.
+− Mettre en relation les taux de certains cancers
+− Les HPV peuvent modifier des cellules et être à
+avec la couverture vaccinale dans des pays aux
+l’origine d’un cancer.
+politiques vaccinales différentes.
+Notions fondamentales : antibiogramme,
+antibiorésistance, cancer.
+
+Précisions et limites : La connaissance du mode d’action des antibiotiques n’est pas attendue.
+Une approche historique de la découverte des antibiotiques peut être menée.
+Cette partie peut être mise en lien avec les objectifs de l’éducation à la santé dans le cadre de la mise en œuvre d’EPSa, du parcours
+citoyen et à l’éducation à la prévention des risques. Ce travail peut être mené en collaboration avec les personnels de santé de
+l’établissement.
+
+Thème : Procréation humaine
+Cette partie du programme permet de comprendre les enjeux autour de la grossesse et de la parentalité. Elle pose les
+bases de l’hérédité chromosomique et amène les élèves à réfléchir sur les notions de procréation médicalement assistée
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+40
+
+et de consentement. Cette partie du programme fait suite au programme de cinquième dont il faudra s’assurer de la
+bonne mobilisation par les élèves.
+
+Comprendre et vivre sa sexualité
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Expliquer comment toutes les cellules somatiques de L’élève sait :
+l’organisme possèdent la même information génétique :
+− La croissance de l’embryon repose sur la
+− Représenter le comportement des chromosomes
+multiplication de ses cellules, chacune conservant
+lors de la multiplication cellulaire.
+les mêmes chromosomes que la cellule-œuf dont
+elles proviennent.
+− Pour chaque paire de chromosomes, un
+chromosome provient de l’ovule de la mère et
+l’autre du spermatozoïde du père.
+− Donner les caractéristiques d’un caryotype
+− La formule chromosomique dans l’espèce
+humain sans anomalie.
+humaine est de 46 chromosomes, soit 23 paires.
+
+Expliquer le devenir de l’embryon :
+− L’embryon s’implante dans l’utérus.
+− Douze semaines après la fécondation, l’embryon
+devient un fœtus qui se développe grâce aux
+échanges effectués avec le sang maternel par
+l’intermédiaire du placenta.
+− Pendant la grossesse, les substances chimiques
+comme la nicotine, l’alcool et certains
+médicaments passent dans le sang fœtal et
+peuvent perturber le développement du fœtus.
+
+Identifier les caractéristiques de l’accouchement :
+− Neuf mois après la fécondation, des changements
+hormonaux
+dans
+l’organisme
+maternel
+provoquent les contractions utérines à l’origine
+de l’accouchement.
+
+Identifier les techniques médicales associées à la
+parentalité :
+− Des
+techniques
+médicales
+permettent
+d’accompagner le choix d’avoir ou non un enfant.
+− Le cadre légal définit les techniques médicales
+associées à la parentalité autorisées (PMA) en
+France : procréation médicalement assistée,
+contraception, pilule d’urgence, interruption
+volontaire de grossesse (IVG).
+
+–
+
+Décrire des échanges qui ont lieu au niveau du
+placenta.
+
+−
+
+Identifier des conduites à risque pour le
+développement du fœtus.
+
+−
+
+Relier les variations de
+hormonales et l’accouchement.
+
+−
+
+Proposer une technique médicale permettant
+d’apporter une réponse à une situation concrète
+liée à la procréation.
+
+concentrations
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+41
+
+−
+
+Le dépistage prénatal d’une anomalie
+chromosomique peut amener à la décision d’une
+interruption médicale de grossesse.
+
+Prendre en compte le consentement dans la sexualité :
+− Il convient de s’assurer du consentement
+préalable du partenaire lors d’une activité
+sexuelle.
+
+Notions fondamentales : chromosome, caryotype,
+multiplication cellulaire, embryon, fœtus, placenta,
+accouchement, fertilité, pilule d’urgence, IVG, IMG,
+consentement.
+
+−
+
+Mettre
+en
+évidence
+des
+chromosomiques sur un caryotype.
+
+−
+
+Identifier des situations où le consentement est
+absent ou n’est pas valide.
+
+anomalies
+
+Précisions et limites :
+Le terme de multiplication cellulaire sera privilégié, en effet le mot « division » a un autre sens qui peut induire des difficultés de
+compréhension pour les élèves. On entend par « placenta » l’ensemble placenta et cordon ombilical.
+Cette partie se prête à un travail en lien avec le personnel de santé dans le cadre de la démarche EPSa, de la mise en œuvre du
+programme EVARS et du parcours d’éducation à la citoyenneté.
+Cette partie du programme permet de présenter les domaines d’activités professionnelles liés à la connaissance des métiers de la
+santé
+
+Projet de programmes de sciences de la vie et de la Terre – Cycle 4 – juillet 2025
+
+42
+
+

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base target="_top">
+  <title><?= title ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Mono&display=swap" rel="stylesheet">
+  <?!= include('AtomStyles') ?>
+  <? if (navSlug) { ?>
+  <style>
+  .a2ui-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(5,7,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    z-index: 1000;
+    padding: 0 16px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .a2ui-nav-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .a2ui-nav-back:hover {
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    border-color: rgba(255,255,255,0.14);
+  }
+  .a2ui-nav-title {
+    flex: 1;
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 16px;
+  }
+  .a2ui-nav-home {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .a2ui-nav-home:hover {
+    background: rgba(99,102,241,0.12);
+    color: #818cf8;
+    border-color: rgba(99,102,241,0.22);
+  }
+  .a2ui-nav-has-header .asw-page {
+    padding-top: 64px !important;
+  }
+  </style>
+  <? } ?>
+</head>
+<body class="<?= theme === 'dark' ? 'asw-dark-theme' : '' ?><?= navSlug ? ' a2ui-nav-has-header' : '' ?>">
+
+  <? if (navSlug) { ?>
+  <nav class="a2ui-nav">
+    <? if (fromSlug) { ?>
+    <a href="<?= webAppUrl ?>?nav=<?= fromSlug ?>" target="_top" class="a2ui-nav-back">← Back</a>
+    <? } else { ?>
+    <a href="<?= webAppUrl ?>" target="_top" class="a2ui-nav-back">← Home</a>
+    <? } ?>
+    <span class="a2ui-nav-title"><?= title ?></span>
+    <a href="<?= webAppUrl ?>?mode=builder" target="_top" class="a2ui-nav-home">⬡ Builder</a>
+  </nav>
+  <? } ?>
+
+  <div class="asw-page <?= sidebar ? 'sidebar' : '' ?>">
+    <? if (title && !navSlug) { ?>
+      <h1><?= title ?></h1>
+    <? } ?>
+
+    <!-- _A2UI_NAV must be set before atom content so runtime JS can read it -->
+    <script>
+    window._A2UI_NAV = {
+      slug:   '<?= navSlug ?>',
+      from:   '<?= fromSlug ?>',
+      url:    '<?= webAppUrl ?>',
+      title:  <?= JSON.stringify(title) ?>
+    };
+    </script>
+
+    <!-- Rendered Atom Components Content -->
+    <?!= content ?>
+  </div>
+
+  <?!= include('AtomScripts') ?>
+  <script>
+    window.__A2UI_SCHEMA__ = <?!= schemaJson ?>;
+    setTheme(<?= JSON.stringify(theme || 'light') ?>);
+  </script>
+</body>
+</html>

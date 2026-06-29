@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "1.0",
+  "type": "a2ui_wired_surface",
+  "surfaceId": "budget-request-wizard",
+  "surfaceCompatibility": "apps-script-web",
+  "stepBinding": "#wizard.activeIndex",
+  "state_primitives": [
+    {
+      "primitive": "ValueStore",
+      "id": "search_mem",
+      "props": { "initialValue": "" }
+    },
+    {
+      "primitive": "ValueStore",
+      "id": "amount_mem",
+      "props": { "initialValue": "" }
+    },
+    {
+      "primitive": "ValueStore",
+      "id": "confirm_mem",
+      "props": { "initialValue": false }
+    },
+    {
+      "primitive": "ArrayFilter",
+      "id": "budget_filter",
+      "props": {
+        "filterKey": "name",
+        "source": [
+          { "id": "BL-001", "name": "Office Supplies",        "remaining": 1200 },
+          { "id": "BL-002", "name": "Travel & Accommodation", "remaining": 3400 },
+          { "id": "BL-003", "name": "Software Licences",      "remaining": 800  },
+          { "id": "BL-004", "name": "Training & Development", "remaining": 2100 },
+          { "id": "BL-005", "name": "Marketing & Events",     "remaining": 5000 }
+        ]
+      },
+      "wire": {
+        "query": "#search_mem.value"
+      }
+    },
+    {
+      "primitive": "StringValidator",
+      "id": "amount_check",
+      "props": {
+        "source": "#amount_mem.value",
+        "pattern": "^\\d+(\\.\\d{0,2})?$",
+        "errorMessage": "Enter a valid amount, e.g. 125.50"
+      }
+    },
+    {
+      "primitive": "NumericThreshold",
+      "id": "approval_gate",
+      "props": {
+        "source": "#amount_mem.value",
+        "threshold": 500,
+        "operator": "gte"
+      }
+    },
+    {
+      "primitive": "StepNavigator",
+      "id": "wizard",
+      "props": { "totalSteps": 2 }
+    }
+  ],
+  "layout": [
+    {
+      "atom": "heading",
+      "props": { "text": "Budget Request", "level": 2 }
+    },
+
+    {
+      "atom": "text_input",
+      "id": "search-field",
+      "step": 0,
+      "props": {
+        "label": "Search budget lines",
+        "placeholder": "e.g. Travel"
+      },
+      "wire": {
+        "onChange": "#search_mem.setValue",
+        "value":    "#search_mem.value"
+      }
+    },
+    {
+      "atom": "data_table",
+      "id": "budget-table",
+      "step": 0,
+      "props": {
+        "columns": ["name", "remaining"],
+        "emptyMessage": "No budget lines match your search."
+      },
+      "wire": {
+        "rows":       "#budget_filter.output",
+        "onRowClick": "#search_mem.setValue"
+      }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "next-btn",
+      "step": 0,
+      "props": { "label": "Next →" },
+      "wire": {
+        "onClick": "#wizard.next"
+      }
+    },
+
+    {
+      "atom": "text_input",
+      "id": "amount-field",
+      "step": 1,
+      "props": {
+        "label": "Amount (£)",
+        "placeholder": "e.g. 125.50",
+        "inputType": "text"
+      },
+      "wire": {
+        "onChange": "#amount_mem.setValue",
+        "value":    "#amount_mem.value"
+      }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "format-warning",
+      "step": 1,
+      "props": { "type": "error" },
+      "wire": {
+        "visible": "#amount_check.isInvalid",
+        "text":    "#amount_check.errorMessage"
+      }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "approval-warning",
+      "step": 1,
+      "props": {
+        "type": "warning",
+        "text": "Amounts ≥ £500 require line manager sign-off before processing."
+      },
+      "wire": {
+        "visible": "#approval_gate.isTriggered"
+      }
+    },
+    {
+      "atom": "toggle_switch",
+      "id": "confirm-toggle",
+      "step": 1,
+      "props": { "label": "I confirm the details above are correct" },
+      "wire": {
+        "onToggle": "#confirm_mem.setValue",
+        "checked":  "#confirm_mem.value"
+      }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "submit-btn",
+      "step": 1,
+      "props": { "label": "Submit Request" },
+      "wire": {
+        "disabled": "#amount_check.isInvalid"
+      }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "back-btn",
+      "step": 1,
+      "props": { "label": "← Back", "variant": "ghost" },
+      "wire": {
+        "onClick": "#wizard.prev"
+      }
+    }
+  ]
+}

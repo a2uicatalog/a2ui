@@ -1,0 +1,8 @@
+local_serve.js
+Code.js
+node_modules/**
+*.md
+*.pdf
+*.txt
+deploy.sh
+playbooks/**

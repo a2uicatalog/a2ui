@@ -10,7 +10,7 @@ CATALOGUE_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(CATALOGUE_ROOT))
 
 SCHEMA_PATH = CATALOGUE_ROOT / "atoms" / "schema.yaml"
-SURFACES = ["web", "meet-stage", "googlechat", "email", "pdf", "apps-script-web", "gas-sidebar"]
+SURFACES = ["web", "meet-stage", "googlechat", "email", "pdf", "apps-script-web", "apps-script-side-panel"]
 
 
 @pytest.fixture(scope="session")

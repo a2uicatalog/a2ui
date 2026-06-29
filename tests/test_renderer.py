@@ -882,7 +882,7 @@ def test_word_flip_steps_timing(renderer):
     assert "steps(2,end)" in html
 
 def test_word_flip_gas_sidebar_surface(atoms):
-    assert "gas-sidebar" in atoms["word_flip"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["word_flip"]["surfaces"]["works_on"]
 
 def test_word_flip_source_inspiration(atoms):
     assert "Magic UI" in atoms["word_flip"]["source_inspiration"]["name"]
@@ -917,7 +917,7 @@ def test_sonar_pulse_label(renderer):
     assert "LIVE" in html
 
 def test_sonar_pulse_gas_sidebar_surface(atoms):
-    assert "gas-sidebar" in atoms["sonar_pulse"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["sonar_pulse"]["surfaces"]["works_on"]
 
 # ── progress_circle (proper SVG implementation) ───────────────────────────────
 
@@ -947,25 +947,25 @@ def test_progress_circle_custom_color(renderer):
     assert "#f59e0b" in html
 
 def test_progress_circle_gas_sidebar_surface(atoms):
-    assert "gas-sidebar" in atoms["progress_circle"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["progress_circle"]["surfaces"]["works_on"]
 
 # ── gas-sidebar surface backfill ──────────────────────────────────────────────
 
 def test_blur_fade_in_gas_sidebar_degraded(atoms):
     surfaces = atoms["blur_fade_in"]["surfaces"]
     degraded_surfaces = [d["surface"] for d in surfaces.get("degraded_on", [])]
-    assert "gas-sidebar" in degraded_surfaces
+    assert "apps-script-side-panel" in degraded_surfaces
 
 def test_glow_button_gas_sidebar_works(atoms):
-    assert "gas-sidebar" in atoms["glow_button"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["glow_button"]["surfaces"]["works_on"]
 
 def test_animated_beam_gas_sidebar_degraded(atoms):
     surfaces = atoms["animated_beam"]["surfaces"]
     degraded_surfaces = [d["surface"] for d in surfaces.get("degraded_on", [])]
-    assert "gas-sidebar" in degraded_surfaces
+    assert "apps-script-side-panel" in degraded_surfaces
 
 def test_typewriter_text_gas_sidebar_works(atoms):
-    assert "gas-sidebar" in atoms["typewriter_text"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["typewriter_text"]["surfaces"]["works_on"]
 
 # ── stepper ───────────────────────────────────────────────────────────────────
 
@@ -1014,7 +1014,7 @@ def test_stepper_heading(renderer):
     assert "Pipeline" in html
 
 def test_stepper_gas_sidebar_surface(atoms):
-    assert "gas-sidebar" in atoms["stepper"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["stepper"]["surfaces"]["works_on"]
 
 # ── code_diff ─────────────────────────────────────────────────────────────────
 
@@ -1056,4 +1056,4 @@ def test_code_diff_old_text_alias(renderer):
     assert "fca5a5" in html or "6ee7b7" in html  # some diff rendered
 
 def test_code_diff_gas_sidebar_surface(atoms):
-    assert "gas-sidebar" in atoms["code_diff"]["surfaces"]["works_on"]
+    assert "apps-script-side-panel" in atoms["code_diff"]["surfaces"]["works_on"]
