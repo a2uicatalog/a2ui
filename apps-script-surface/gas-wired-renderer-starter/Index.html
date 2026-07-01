@@ -251,15 +251,10 @@
   // Pre-encoded toulouse-atc-demo.json (takeoff → live traffic playbook)
   var ATC_ENCODED = 'H4sIAAAAAAACA21TTU4bMRS-ijXdAs0PRYJN5YSkRA0JmiRFFaosx_OGceOxp7YHSFGkHoJ9N-0Z2PcoPUGPUNvJhAygmY2_9_u9972r-8guC4hOUFQIupwrtYj2UGQ1lYZbrqS3pDQBj5qMakjIXCi2MM5w9RRMEzMnKUDi_STNAyj4TYhjIC1oIqh16GH74Kh1vIOGGs2D9lHbgZomvDRE5t6z4QFINZjMu7xzz5QLH3StVSkTB1pdwmoPPTWSg6X6RSe3d6F_SytKw35nHNXSHzVWX7yP4AlsyHFfIbJ0ASpNvbegcxAem-KPvXG_7zHKPBEPvmk0jikLjF8b0TUowo0iO_kstwKqdlB8-Rk1D4fo748HhNutpgSFTnsXOJ7O4l4oxbXgMgTgQWeDME1TS6oiuNUcBUNpFZFwZ6s9ELfSNOWsZiS5CXNuOO5himvGz_23tGN8iuMXpNPWms2ruuDaFG4ohKk8pzIhCbCgsAz4dRYypKUQhmkAGbSSLbWSZDuZ6Xg2HM8mPTQ9x2Eyw8En94hxvz_o7gSYcl6f5p9HdH9_C9RmoA9uuUxWqzpmIS-eY4UTgyk1rFbr9bCFE5vdjDFUxqeT_U5opOpsvzPEH0a4u-3wsDE6R25Ug9kkvONeP-5NzpyAzZqBbw9fXMRj3D1DuDv1eYPjbHSJgwbexmgwQi75Thum8KI-QS1_Ft-V2p5IQi0lRpWa1a5uw2nHsr6CQglBvpVgqlsYGGQzblACuUJMKfH-hRtZC4NaRrzD1q4Kb93s_IaKMtRZugOqXYvP7v4q1NX5yr3h38-H31EQ3jZWqlroSFmUKo1yeBb46zFymg3ffzMGYgLEBAAA';
 
-  // Fetch the public exec URL from the server — the only reliable source in GAS context
-  google.script.run
-    .withSuccessHandler(function(url) {
-      BASE_URL = url || '';
-      var atcLink = document.getElementById('atc-demo-link');
-      if (atcLink && BASE_URL) atcLink.href = BASE_URL + '?p=' + ATC_ENCODED;
-    })
-    .withFailureHandler(function() {})
-    .getWebAppUrl();
+  // Derive base URL from current location — reliable across all deployment types
+  BASE_URL = window.location.href.split('?')[0];
+  var atcLink = document.getElementById('atc-demo-link');
+  if (atcLink) atcLink.href = BASE_URL + '?p=' + ATC_ENCODED;
 
   function generate() {
     var raw = document.getElementById('json-input').value.trim();
