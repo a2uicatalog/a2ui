@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base target="_top">
+  <title>A2UI — Page Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --bg:     #04060f;
+      --bg2:    #090d1a;
+      --bg3:    #0f1626;
+      --border: rgba(255,255,255,0.08);
+      --text:   #e2e8f0;
+      --muted:  #64748b;
+      --cyan:   #00f2ff;
+      --green:  #34d399;
+      --red:    #f87171;
+      --mono:   'JetBrains Mono', monospace;
+    }
+    html, body {
+      height:100%; background:var(--bg); color:var(--text);
+      font-family:'Inter',system-ui,sans-serif;
+    }
+    .page {
+      max-width:780px; margin:0 auto; padding:48px 24px 80px;
+    }
+
+    /* ── Header ── */
+    .eyebrow {
+      font-size:10px; font-weight:700; letter-spacing:0.2em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:14px;
+    }
+    h1 {
+      font-size:clamp(28px,5vw,44px); font-weight:800; line-height:1.15;
+      margin-bottom:12px;
+    }
+    h1 span { color:var(--cyan); }
+    .sub {
+      font-size:15px; color:var(--muted); line-height:1.7; max-width:560px;
+      margin-bottom:40px;
+    }
+
+    /* ── Step pills ── */
+    .steps {
+      display:flex; gap:10px; flex-wrap:wrap; margin-bottom:36px;
+    }
+    .step {
+      display:flex; align-items:center; gap:8px;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:8px; padding:8px 14px;
+      font-size:12px; font-weight:500; color:var(--muted);
+    }
+    .step-num {
+      width:20px; height:20px; border-radius:50%;
+      background:rgba(0,242,255,0.12); color:var(--cyan);
+      font-size:10px; font-weight:800; display:flex;
+      align-items:center; justify-content:center; flex-shrink:0;
+    }
+
+    /* ── Textarea section ── */
+    .section-label {
+      font-size:11px; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:8px;
+    }
+    textarea {
+      width:100%; height:280px;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:10px; padding:16px; color:var(--text);
+      font-family:var(--mono); font-size:12px; line-height:1.6;
+      resize:vertical; outline:none; transition:border-color .15s;
+    }
+    textarea:focus { border-color:rgba(0,242,255,0.4); }
+    textarea::placeholder { color:var(--muted); }
+
+    /* ── Buttons ── */
+    .btn-row { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .btn {
+      padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600;
+      cursor:pointer; border:none; font-family:inherit; transition:all .15s;
+    }
+    .btn-primary {
+      background:var(--cyan); color:#04060f;
+    }
+    .btn-primary:hover { opacity:.88; }
+    .btn-ghost {
+      background:transparent; color:var(--muted);
+      border:1px solid var(--border);
+    }
+    .btn-ghost:hover { color:var(--text); border-color:rgba(255,255,255,0.2); }
+
+    /* ── URL output ── */
+    #url-row { display:none; margin-top:16px; }
+    .url-box {
+      display:flex; align-items:center; gap:8px;
+      background:var(--bg3); border:1px solid rgba(0,242,255,0.25);
+      border-radius:8px; padding:10px 14px;
+    }
+    .url-text {
+      flex:1; font-family:var(--mono); font-size:11px;
+      color:var(--cyan); overflow:hidden; text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .copy-btn {
+      padding:4px 12px; border-radius:5px; background:rgba(0,242,255,0.1);
+      border:1px solid rgba(0,242,255,0.3); color:var(--cyan);
+      font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;
+      flex-shrink:0; transition:all .15s;
+    }
+    .copy-btn:hover { background:rgba(0,242,255,0.2); }
+    .open-btn {
+      padding:4px 12px; border-radius:5px; background:var(--cyan);
+      border:none; color:#04060f;
+      font-size:11px; font-weight:700; cursor:pointer; font-family:inherit;
+      flex-shrink:0; text-decoration:none; display:inline-block;
+    }
+
+    /* ── Error ── */
+    #error-msg {
+      display:none; margin-top:10px; padding:10px 14px;
+      background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3);
+      border-radius:8px; color:var(--red); font-size:12px; font-family:var(--mono);
+    }
+
+    /* ── Divider ── */
+    hr { border:none; border-top:1px solid var(--border); margin:40px 0; }
+
+    /* ── Gem tip ── */
+    .tip-card {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:12px; padding:20px 24px;
+    }
+    .tip-card h3 { font-size:13px; font-weight:700; margin-bottom:10px; color:var(--text); }
+    .tip-card p  { font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:8px; }
+    .tip-card code {
+      font-family:var(--mono); font-size:11px;
+      background:var(--bg3); border:1px solid var(--border);
+      padding:1px 6px; border-radius:3px; color:var(--cyan);
+    }
+    .gem-link {
+      display:inline-flex; align-items:center; gap:6px;
+      margin-top:12px; padding:7px 16px; border-radius:7px;
+      background:rgba(0,242,255,0.08); border:1px solid rgba(0,242,255,0.2);
+      color:var(--cyan); font-size:12px; font-weight:600;
+      text-decoration:none; transition:all .15s;
+    }
+    .gem-link:hover { background:rgba(0,242,255,0.14); }
+
+    /* ── Sample ── */
+    .sample-toggle {
+      font-size:11px; color:var(--muted); cursor:pointer;
+      border:none; background:none; font-family:inherit; padding:0;
+      text-decoration:underline; text-decoration-style:dotted;
+      margin-top:6px; display:block;
+    }
+    .sample-toggle:hover { color:var(--text); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">A2UI · Page Generator</div>
+  <h1>Paste blocks.<br><span>Get a page.</span></h1>
+  <p class="sub">
+    Use the A2UI Gemini Gem to describe a page in plain language.
+    Copy the JSON it generates, paste it below, and click <strong style="color:var(--text)">Generate</strong>
+    to get a shareable URL.
+  </p>
+
+  <div class="steps">
+    <div class="step"><span class="step-num">1</span> Open the A2UI Gem in Gemini</div>
+    <div class="step"><span class="step-num">2</span> Describe the page you want</div>
+    <div class="step"><span class="step-num">3</span> Copy the JSON output</div>
+    <div class="step"><span class="step-num">4</span> Paste below → Generate</div>
+  </div>
+
+  <div class="section-label">Your A2UI JSON</div>
+  <textarea id="json-input" placeholder='{
+  "title": "My Page",
+  "theme": "light",
+  "blocks": [
+    { "type": "heading", "level": 1, "text": "Hello World" },
+    { "type": "body", "text": "This page was generated by **A2UI**." },
+    { "type": "callout", "icon": "💡", "text": "Paste your Gem output here." }
+  ]
+}'></textarea>
+
+  <button class="sample-toggle" onclick="loadSample()">Load a sample →</button>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="generate()">Generate Page</button>
+    <button class="btn btn-ghost"   onclick="clearAll()">Clear</button>
+    <button class="btn btn-ghost"   onclick="exportScript()" id="export-btn">Export to Drive ↗</button>
+  </div>
+
+  <div id="export-row" style="display:none;margin-top:12px;">
+    <div class="url-box">
+      <span class="url-text" id="export-text"></span>
+      <a class="open-btn" id="export-link" href="#" target="_top">Open in Apps Script →</a>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;">
+      In Apps Script: <strong style="color:var(--text)">File → Make a copy</strong> to save the renderer to your own Drive.
+    </p>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <div id="url-row">
+    <div class="url-box">
+      <span class="url-text" id="url-text"></span>
+      <button class="copy-btn" onclick="copyUrl()">Copy</button>
+      <a class="open-btn" id="open-link" href="#" target="_top">Open →</a>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="tip-card">
+    <h3>🚀 Air Traffic Control Demo</h3>
+    <p>
+      Live ADS-B radar for the <strong style="color:var(--text)">Toulouse TMA</strong> — 60fps canvas, real flights, METAR weather, conflict detection, and a 3D isometric takeoff. Built entirely on Apps Script.
+    </p>
+    <a class="gem-link" id="atc-demo-link" href="#" target="_top">
+      ✦ Launch ATC Demo →
+    </a>
+  </div>
+
+  <div class="tip-card">
+    <h3>🤖 Don't have the Gem yet?</h3>
+    <p>
+      The <strong style="color:var(--text)">A2UI Page Builder</strong> Gem knows the full atom schema.
+      Ask it to build any page in plain language — it returns a JSON block list ready to paste here.
+    </p>
+    <p>
+      Try: <code>"a 3-module ITIL 5 learning summary with a quiz and an XP bar"</code>
+    </p>
+    <a class="gem-link" href="https://gemini.google.com/gems/view/a2ui-page-builder" target="_top">
+      ✦ Open A2UI Gem in Gemini →
+    </a>
+  </div>
+
+</div>
+
+<script>
+  var BASE_URL = '';
+  var URL_LIMIT = 6000; // chars — stay well under GAS query string limit
+
+  // Pre-encoded toulouse-atc-demo.json (takeoff → live traffic playbook)
+  var ATC_ENCODED = 'H4sIAAAAAAACA21TTU4bMRS-ijXdAs0PRYJN5YSkRA0JmiRFFaosx_OGceOxp7YHSFGkHoJ9N-0Z2PcoPUGPUNvJhAygmY2_9_u9972r-8guC4hOUFQIupwrtYj2UGQ1lYZbrqS3pDQBj5qMakjIXCi2MM5w9RRMEzMnKUDi_STNAyj4TYhjIC1oIqh16GH74Kh1vIOGGs2D9lHbgZomvDRE5t6z4QFINZjMu7xzz5QLH3StVSkTB1pdwmoPPTWSg6X6RSe3d6F_SytKw35nHNXSHzVWX7yP4AlsyHFfIbJ0ASpNvbegcxAem-KPvXG_7zHKPBEPvmk0jikLjF8b0TUowo0iO_kstwKqdlB8-Rk1D4fo748HhNutpgSFTnsXOJ7O4l4oxbXgMgTgQWeDME1TS6oiuNUcBUNpFZFwZ6s9ELfSNOWsZiS5CXNuOO5himvGz_23tGN8iuMXpNPWms2ruuDaFG4ohKk8pzIhCbCgsAz4dRYypKUQhmkAGbSSLbWSZDuZ6Xg2HM8mPTQ9x2Eyw8En94hxvz_o7gSYcl6f5p9HdH9_C9RmoA9uuUxWqzpmIS-eY4UTgyk1rFbr9bCFE5vdjDFUxqeT_U5opOpsvzPEH0a4u-3wsDE6R25Ug9kkvONeP-5NzpyAzZqBbw9fXMRj3D1DuDv1eYPjbHSJgwbexmgwQi75Thum8KI-QS1_Ft-V2p5IQi0lRpWa1a5uw2nHsr6CQglBvpVgqlsYGGQzblACuUJMKfH-hRtZC4NaRrzD1q4Kb93s_IaKMtRZugOqXYvP7v4q1NX5yr3h38-H31EQ3jZWqlroSFmUKo1yeBb46zFymg3ffzMGYgLEBAAA';
+
+  // Fetch the public exec URL from the server — the only reliable source in GAS context
+  google.script.run
+    .withSuccessHandler(function(url) {
+      BASE_URL = url || '';
+      var atcLink = document.getElementById('atc-demo-link');
+      if (atcLink && BASE_URL) atcLink.href = BASE_URL + '?p=' + ATC_ENCODED;
+    })
+    .withFailureHandler(function() {})
+    .getWebAppUrl();
+
+  function generate() {
+    var raw = document.getElementById('json-input').value.trim();
+    var err = document.getElementById('error-msg');
+    err.style.display = 'none';
+
+    if (!BASE_URL) { showError('URL not ready yet — wait a moment and try again.'); return; }
+    if (!raw) { showError('Paste your JSON first.'); return; }
+
+    var sanitized = raw.replace(/"(?:[^"\\]|\\.)*"/g, function(m) {
+      return m.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+    });
+
+    var parsed;
+    try {
+      parsed = JSON.parse(sanitized);
+    } catch (e) {
+      showError('Invalid JSON: ' + e.message); return;
+    }
+
+    try {
+      var clean   = JSON.stringify(parsed);
+      // Produce URL-safe base64 (- and _ instead of + and /) — matches server's base64DecodeWebSafe
+      var encoded = btoa(unescape(encodeURIComponent(clean)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      var url     = BASE_URL + '?p=' + encoded;
+
+      if (url.length <= URL_LIMIT) {
+        // Small schema — shareable URL
+        showUrl(url, true);
+      } else {
+        // Large schema — POST to avoid URL length limit
+        showUrl(null, false);
+        _postRender(clean);
+      }
+    } catch (e) {
+      showError('Encoding failed: ' + e.message);
+    }
+  }
+
+  function _postRender(json) {
+    var form = document.createElement('form');
+    form.method = 'post';
+    form.action = BASE_URL;
+    form.target = '_blank';
+    var inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = 'p';
+    inp.value = json;
+    form.appendChild(inp);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+  }
+
+  function showUrl(url, shareable) {
+    var row = document.getElementById('url-row');
+    if (url) {
+      document.getElementById('url-text').textContent = url;
+      document.getElementById('open-link').href = url;
+      document.getElementById('open-link').style.display = 'inline-block';
+      document.querySelector('.copy-btn').style.display = 'inline-block';
+    } else {
+      document.getElementById('url-text').textContent = 'Large schema — opening via POST (not shareable as URL)';
+      document.getElementById('open-link').style.display = 'none';
+      document.querySelector('.copy-btn').style.display = 'none';
+    }
+    row.style.display = 'block';
+    row.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function copyUrl() {
+    var url = document.getElementById('url-text').textContent;
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+    });
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function clearAll() {
+    document.getElementById('json-input').value = '';
+    document.getElementById('url-row').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'none';
+  }
+
+  var SAMPLE = JSON.stringify({
+    "title": "Cloud Certification Prep",
+    "theme": "light",
+    "blocks": [
+      { "type": "heading", "level": 1, "text": "GCP Professional Cloud Architect" },
+      { "type": "body", "text": "A structured **5-day sprint** to clear the certification. Focus on high-weight domains first." },
+      { "type": "alert_banner", "variant": "info", "text": "Exam is 2 hours · 60 questions · 70% to pass" },
+      { "type": "xp_bar", "level_label": "Week 1 — Core Infrastructure", "xp_current": 3, "xp_next": 5 },
+      { "type": "bullet_list", "items": [
+          { "label": "Day 1", "text": "Compute Engine, GKE, Cloud Run — know when to use each" },
+          { "label": "Day 2", "text": "VPC, firewall rules, load balancing, Cloud Armor" },
+          { "label": "Day 3", "text": "Storage: GCS, Bigtable, Spanner, Firestore decision tree" },
+          { "label": "Day 4", "text": "IAM, service accounts, org policies, CMEK" },
+          { "label": "Day 5", "text": "Case studies — practice all 4 official ones" }
+      ]},
+      { "type": "quiz_question",
+        "question": "A client needs a relational database that scales horizontally across regions with strong consistency. Which product?",
+        "options": ["Cloud SQL", "Bigtable", "Cloud Spanner", "Firestore"],
+        "correct": 2,
+        "explanation": "Cloud Spanner is the only globally distributed, strongly consistent relational database on GCP." },
+      { "type": "hint_reveal", "label": "Remember the decision tree", "hint": "SQL + global + strong consistency = Spanner. SQL + regional = Cloud SQL. NoSQL + wide column = Bigtable. NoSQL + document = Firestore." },
+      { "type": "achievement_badge", "title": "Domain 1 Complete", "icon": "🏗️", "color": "#1a73e8", "description": "Core infrastructure foundations locked in" },
+      { "type": "cta_button", "label": "Take the practice exam →", "url": "https://cloud.google.com/certification/cloud-architect" }
+    ]
+  }, null, 2);
+
+  function loadSample() {
+    document.getElementById('json-input').value = SAMPLE;
+    document.getElementById('url-row').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'none';
+  }
+
+  function exportScript() {
+    var btn = document.getElementById('export-btn');
+    btn.textContent = 'Exporting…';
+    btn.disabled = true;
+    google.script.run
+      .withSuccessHandler(function(res) {
+        btn.textContent = 'Export to Drive ↗';
+        btn.disabled = false;
+        if (res.error) { showError('Export failed: ' + res.error); return; }
+        var row = document.getElementById('export-row');
+        document.getElementById('export-text').textContent = 'Saved to "a2ui apps script exports" → ' + res.name;
+        document.getElementById('export-link').href = res.url;
+        row.style.display = 'block';
+        row.scrollIntoView({ behavior: 'smooth' });
+      })
+      .withFailureHandler(function(err) {
+        btn.textContent = 'Export to Drive ↗';
+        btn.disabled = false;
+        showError('Export failed: ' + err.message);
+      })
+      .exportScript();
+  }
+</script>
+</body>
+</html>

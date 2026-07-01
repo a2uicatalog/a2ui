@@ -1,0 +1,1264 @@
+<script>
+// ─── A2UI State Engine ────────────────────────────────────────────────────────
+// Client-side reactive state graph. Injected only for a2ui_wired_surface payloads.
+
+var VALID_ID = /^[a-zA-Z0-9_-]+$/;
+var MAX_PATTERN_LENGTH = 200;
+var OUTPUT_WIRE_PROPS = { onChange: 1, onClick: 1, onToggle: 1, onRowClick: 1, onFlightClick: 1, onSearch: 1, onAssign: 1, setDone: 1 };
+
+function A2UIStateEngine(spec) {
+  this.nodes     = {};
+  this.listeners = {};
+  this._initPrimitives(spec.state_primitives || []);
+  this._initActions(spec.actions || []);
+  this._resolveWires(spec.state_primitives || [], spec.actions || []);
+}
+
+A2UIStateEngine.prototype._validateId = function(id) {
+  if (!VALID_ID.test(id)) throw new Error('[A2UI] Invalid node ID: "' + id + '"');
+};
+
+A2UIStateEngine.prototype._parseWire = function(expr) {
+  var inner = expr.slice(1);
+  var dot = inner.indexOf('.');
+  if (dot === -1) { console.warn('[A2UI] Malformed wire: "' + expr + '"'); return null; }
+  return { nodeId: inner.slice(0, dot), property: inner.slice(dot + 1) };
+};
+
+A2UIStateEngine.prototype._set = function(nodeId, property, value) {
+  var node = this.nodes[nodeId];
+  if (!node) return;
+  node[property] = value;
+  var key = nodeId + ':' + property;
+  var cbs = this.listeners[key] || [];
+  for (var i = 0; i < cbs.length; i++) cbs[i](value);
+  // Auto-unpack plain objects — fires sub-property events so #node.callsign / #action.meetLink etc. work
+  if ((property === 'value' || property === 'result') && value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    var self = this;
+    Object.keys(value).forEach(function(k) {
+      node[k] = value[k];
+      var subKey = nodeId + ':' + k;
+      var subCbs = self.listeners[subKey] || [];
+      for (var j = 0; j < subCbs.length; j++) subCbs[j](value[k]);
+    });
+  }
+};
+
+A2UIStateEngine.prototype.registerListener = function(nodeId, property, callback) {
+  var node = this.nodes[nodeId];
+  if (!node) { console.warn('[A2UI] Wire target "' + nodeId + '" not found'); return; }
+  // Property may not exist yet (e.g. object sub-properties set later via setValue)
+  if (!(property in node)) { console.warn('[A2UI] Node "' + nodeId + '" has no property "' + property + '" yet'); }
+  var key = nodeId + ':' + property;
+  if (!this.listeners[key]) this.listeners[key] = [];
+  this.listeners[key].push(callback);
+  if (property in node) callback(node[property]);
+};
+
+A2UIStateEngine.prototype.trigger = function(nodeId, inputName, value) {
+  var node = this.nodes[nodeId];
+  if (!node) { console.warn('[A2UI] Wire target "' + nodeId + '" not found'); return; }
+  var handler = node['_' + inputName];
+  if (typeof handler !== 'function') { console.warn('[A2UI] "' + nodeId + '" has no input "' + inputName + '"'); return; }
+  handler(value);
+};
+
+A2UIStateEngine.prototype.compileWires = function(layoutEl, domBridge) {
+  if (!layoutEl.wire || !layoutEl.id) return;
+  var self = this;
+  var wire = layoutEl.wire;
+  Object.keys(wire).forEach(function(propName) {
+    if (OUTPUT_WIRE_PROPS[propName]) return;
+    var wireExpr = wire[propName];
+    if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+    var parsed = self._parseWire(wireExpr);
+    if (!parsed) return;
+    self.registerListener(parsed.nodeId, parsed.property, function(val) {
+      var safeVal = typeof val === 'string' ? _a2uiSanitize(val) : val;
+      domBridge.setProp(layoutEl.id, propName, safeVal);
+    });
+  });
+};
+
+A2UIStateEngine.prototype.bindOutput = function(wireExpr, eventValue) {
+  if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) { console.warn('[A2UI] Malformed output wire: "' + wireExpr + '"'); return; }
+  var parsed = this._parseWire(wireExpr);
+  if (!parsed) return;
+  this.trigger(parsed.nodeId, parsed.property, eventValue);
+};
+
+// ─── Primitives ───────────────────────────────────────────────────────────────
+
+A2UIStateEngine.prototype._initPrimitives = function(primitives) {
+  var self = this;
+  primitives.forEach(function(p) {
+    self._validateId(p.id);
+    switch (p.primitive) {
+      case 'ValueStore':       self._initValueStore(p);       break;
+      case 'ArrayFilter':      self._initArrayFilter(p);      break;
+      case 'StringValidator':  self._initStringValidator(p);  break;
+      case 'NumericThreshold': self._initNumericThreshold(p); break;
+      case 'StepNavigator':    self._initStepNavigator(p);    break;
+      case 'Computed':         self._initComputed(p);         break;
+      case 'Timer':            self._initTimer(p);            break;
+      case 'DerivedStore':    self._initDerivedStore(p);     break;
+      default: console.warn('[A2UI] Unknown primitive: "' + p.primitive + '"');
+    }
+  });
+};
+
+A2UIStateEngine.prototype._resolveWires = function(primitives, actions) {
+  var self = this;
+
+  primitives.forEach(function(p) {
+    var node = self.nodes[p.id];
+    if (!node) return;
+
+    if (typeof (p.props && p.props.source) === 'string' && p.props.source.startsWith('#')) {
+      var parsed = self._parseWire(p.props.source);
+      if (parsed) {
+        self.registerListener(parsed.nodeId, parsed.property, function(val) {
+          if (node._recompute) node._recompute(val);
+        });
+      }
+    }
+
+    // Timer outbound wires — when tick fires, trigger the target node's input
+    if (p.primitive === 'Timer' && p.wire) {
+      Object.keys(p.wire).forEach(function(myProp) {
+        var wireExpr = p.wire[myProp];
+        if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+        var parsed = self._parseWire(wireExpr);
+        if (!parsed) return;
+        self.registerListener(p.id, myProp, function(val) {
+          self.trigger(parsed.nodeId, parsed.property, val);
+        });
+      });
+      return;
+    }
+
+    if (p.primitive === 'Computed' && p.props && p.props.inputs) {
+      var inputSpec = p.props.inputs;
+      Object.keys(inputSpec).forEach(function(varName) {
+        var wireExpr = inputSpec[varName];
+        if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+        var parsed = self._parseWire(wireExpr);
+        if (!parsed) return;
+        self.registerListener(parsed.nodeId, parsed.property, function(val) {
+          node._vars[varName] = isNaN(Number(val)) ? 0 : Number(val);
+          node._recompute();
+        });
+      });
+    }
+
+    if (p.wire) {
+      Object.keys(p.wire).forEach(function(inputName) {
+        var wireExpr = p.wire[inputName];
+        if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+        var parsed = self._parseWire(wireExpr);
+        if (!parsed) return;
+        self.registerListener(parsed.nodeId, parsed.property, function(val) {
+          if (p.primitive === 'ArrayFilter') {
+            if (inputName === 'query')  { node._query = val;                          node._recompute(); }
+            if (inputName === 'source') { node._sourceData = Array.isArray(val) ? val : []; node._recompute(); }
+          } else {
+            self.trigger(p.id, inputName, val);
+          }
+        });
+      });
+    }
+  });
+
+  // Route action output wires into the state graph
+  (actions || []).forEach(function(p) {
+    if (!p.wire) return;
+    var node = self.nodes[p.id];
+    if (!node) return;
+    Object.keys(p.wire).forEach(function(outputProp) {
+      var wireExpr = p.wire[outputProp];
+      if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+      var parsed = self._parseWire(wireExpr);
+      if (!parsed) return;
+      var targetNode = self.nodes[parsed.nodeId];
+      if (!targetNode) { console.warn('[A2UI] Action wire target "' + parsed.nodeId + '" not found'); return; }
+      self.registerListener(p.id, outputProp, function(val) {
+        if (val === null || val === undefined) return;
+        if (parsed.property === 'source' && typeof targetNode._recompute === 'function') {
+          targetNode._sourceData = Array.isArray(val) ? val : [];
+          targetNode._recompute();
+        } else {
+          self.trigger(parsed.nodeId, parsed.property, val);
+        }
+      });
+    });
+  });
+};
+
+A2UIStateEngine.prototype._initValueStore = function(p) {
+  var self = this;
+  var init = (p.props && p.props.initialValue !== undefined) ? p.props.initialValue : null;
+  var node = { value: init, _initialValue: init };
+  node._setValue = function(val) { self._set(p.id, 'value', val); };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initArrayFilter = function(p) {
+  var self = this;
+  var filterKey = (p.props && p.props.filterKey) || 'label';
+  var staticSrc = (p.props && Array.isArray(p.props.source)) ? p.props.source : [];
+  var node = { output: staticSrc.slice(), _sourceData: staticSrc, _query: '' };
+  node._recompute = function() {
+    var q   = (node._query || '').toLowerCase().trim();
+    var src = Array.isArray(node._sourceData) ? node._sourceData : [];
+    var result = q
+      ? src.filter(function(item) { return String(item[filterKey] || '').toLowerCase().indexOf(q) !== -1; })
+      : src.slice();
+    self._set(p.id, 'output', result);
+  };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initStringValidator = function(p) {
+  var self   = this;
+  var raw    = (p.props && p.props.pattern) || '';
+  var errMsg = (p.props && p.props.errorMessage) || 'Invalid value';
+  var pattern;
+  if (raw.length > MAX_PATTERN_LENGTH) {
+    console.warn('[A2UI] StringValidator "' + p.id + '" pattern too long — using passthrough');
+    pattern = /.*/;
+  } else {
+    try { pattern = new RegExp(raw); } catch(e) {
+      console.warn('[A2UI] StringValidator "' + p.id + '" bad pattern — using passthrough');
+      pattern = /.*/;
+    }
+  }
+  // isInvalid: typed something that doesn't match (show format error)
+  // isNotValid: empty OR invalid (gate submit button)
+  var node = { isValid: false, isNotValid: true, isInvalid: false, errorMessage: '' };
+  node._recompute = function(source) {
+    var notEmpty = typeof source === 'string' && source.length > 0;
+    var valid    = notEmpty && pattern.test(source);
+    var invalid  = notEmpty && !pattern.test(source);
+    self._set(p.id, 'isValid',       valid);
+    self._set(p.id, 'isNotValid',    !valid);
+    self._set(p.id, 'isInvalid',     invalid);
+    self._set(p.id, 'errorMessage',  invalid ? errMsg : '');
+  };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initNumericThreshold = function(p) {
+  var self = this;
+  var ops  = { gt: function(a,b){return a>b;}, gte: function(a,b){return a>=b;},
+               lt: function(a,b){return a<b;}, lte: function(a,b){return a<=b;},
+               eq: function(a,b){return a===b;} };
+  var compare   = ops[(p.props && p.props.operator)] || ops.gte;
+  var threshold = (p.props && p.props.threshold !== undefined) ? p.props.threshold : 0;
+  var node = { isTriggered: false, isNotTriggered: true };
+  node._recompute = function(source) {
+    var triggered = compare(Number(source), threshold);
+    self._set(p.id, 'isTriggered',    triggered);
+    self._set(p.id, 'isNotTriggered', !triggered);
+  };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initStepNavigator = function(p) {
+  var self  = this;
+  var total = (p.props && p.props.totalSteps) || 2;
+  var node  = { activeIndex: 0 };
+  node._next   = function()  { if (node.activeIndex < total-1) self._set(p.id, 'activeIndex', node.activeIndex+1); };
+  node._prev   = function()  { if (node.activeIndex > 0)       self._set(p.id, 'activeIndex', node.activeIndex-1); };
+  node._jumpTo = function(i) { if (i >= 0 && i < total)        self._set(p.id, 'activeIndex', i); };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initTimer = function(p) {
+  var self     = this;
+  var interval = (p.props && p.props.interval) || 10000;
+  var node     = { tick: 0 };
+  this.nodes[p.id] = node;
+  // Start after one event-loop tick so all nodes exist before first fire
+  setTimeout(function() {
+    setInterval(function() { self._set(p.id, 'tick', ++node.tick); }, interval);
+  }, 0);
+};
+
+A2UIStateEngine.prototype._initDerivedStore = function(p) {
+  var self     = this;
+  var props    = p.props || {};
+  var fromRef  = props.from  || '';   // e.g. "#incidents_query.result"
+  var expr     = props.expr  || '';
+  var addCols  = props.add   || [];   // for augment_rows
+  var interval = props.interval || 0;
+
+  var node = expr === 'scalar'
+    ? { result: [], elapsed_sec: 0, elapsed_fmt: '0s', sla_state: 'ok' }
+    : { result: [] };
+  this.nodes[p.id] = node;
+
+  // Parse #store.field reference
+  function parseRef(ref) {
+    var m = String(ref).match(/^#([^.]+)\.(.+)$/);
+    return m ? { store: m[1], field: m[2] } : null;
+  }
+
+  // ── Sub-op helpers ──────────────────────────────────────────────────────────
+  function opElapsedSeconds(row, colDef) {
+    var raw = row[colDef.field];
+    if (!raw) return 0;
+    var t = new Date(raw).getTime();
+    if (isNaN(t)) return 0;
+    return Math.floor((Date.now() - t) / 1000);
+  }
+
+  function opFormatDuration(row, colDef) {
+    var sec = row[colDef.src];
+    if (typeof sec !== 'number' || sec < 0) return '--';
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    if (h > 0) return h + 'h ' + m + 'm';
+    if (m > 0) return m + 'm ' + s + 's';
+    return s + 's';
+  }
+
+  function opThresholdByField(row, colDef) {
+    var sec        = row[colDef.src];
+    var keyField   = colDef.key;
+    var keyVal     = row[keyField];
+    var thresholds = (colDef.thresholds || {})[keyVal] || {};
+    var warn   = thresholds.warn   || Infinity;
+    var breach = thresholds.breach || Infinity;
+    if (typeof sec !== 'number') return 'ok';
+    if (sec >= breach) return 'breach';
+    if (sec >= warn)   return 'warn';
+    return 'ok';
+  }
+
+  // ── scalar: elapsed time from app load — no source array needed ────────────
+  var startMs = Date.now();
+  function scalarDuration(sec) {
+    var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return h > 0 ? h + 'h ' + m + 'm' : m > 0 ? m + 'm ' + s + 's' : s + 's';
+  }
+  function recomputeScalar() {
+    var sec     = Math.floor((Date.now() - startMs) / 1000);
+    var thresh  = props.thresholds || {};
+    var warn    = thresh.warn   || Infinity;
+    var breach  = thresh.breach || Infinity;
+    var state   = sec >= breach ? 'breach' : sec >= warn ? 'warn' : 'ok';
+    self._set(p.id, 'elapsed_sec', sec);
+    self._set(p.id, 'elapsed_fmt', scalarDuration(sec));
+    self._set(p.id, 'sla_state',   state);
+  }
+
+  // ── augment_rows: enrich each row with computed columns ─────────────────────
+  function recompute() {
+    if (expr === 'scalar') { recomputeScalar(); return; }
+
+    var ref = parseRef(fromRef);
+    if (!ref) return;
+    var srcNode = self.nodes[ref.store];
+    if (!srcNode) return;
+    var rows = srcNode[ref.field];
+    if (!Array.isArray(rows)) return;
+
+    var enriched = rows.map(function(row) {
+      var r = Object.assign({}, row);
+      addCols.forEach(function(colDef) {
+        switch (colDef.op) {
+          case 'elapsed_seconds':    r[colDef.col] = opElapsedSeconds(r, colDef);   break;
+          case 'format_duration':    r[colDef.col] = opFormatDuration(r, colDef);   break;
+          case 'threshold_by_field': r[colDef.col] = opThresholdByField(r, colDef); break;
+        }
+      });
+      return r;
+    });
+    self._set(p.id, 'result', enriched);
+  }
+
+  // Recompute when source changes
+  var ref = parseRef(fromRef);
+  if (ref) {
+    setTimeout(function() {
+      self.registerListener(ref.store, ref.field, function() { recompute(); });
+    }, 0);
+  }
+
+  // Interval-driven refresh (for time-dependent exprs like elapsed_seconds)
+  if (interval > 0) {
+    setTimeout(function() {
+      setInterval(function() { recompute(); }, interval);
+    }, 0);
+  }
+};
+
+A2UIStateEngine.prototype._initComputed = function(p) {
+  var self   = this;
+  var expr   = (p.props && p.props.expr)   || '0';
+  var fmt    = (p.props && p.props.format) || '';
+  var inputs = (p.props && p.props.inputs) || {};
+  var vars   = {};
+  Object.keys(inputs).forEach(function(k) { vars[k] = 0; });
+  var node = { value: 0, display: _a2uiFormatValue(0, fmt), _vars: vars };
+  node._recompute = function() {
+    var result = _a2uiSafeExpr(expr, vars);
+    if (result === null || isNaN(result)) return;
+    self._set(p.id, 'value',   result);
+    self._set(p.id, 'display', _a2uiFormatValue(result, fmt));
+  };
+  this.nodes[p.id] = node;
+};
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
+A2UIStateEngine.prototype._initActions = function(actions) {
+  var self = this;
+  actions.forEach(function(p) {
+    self._validateId(p.id);
+    self._initAction(p);
+  });
+};
+
+A2UIStateEngine.prototype._initAction = function(p) {
+  var self = this;
+  var node = {
+    status: 'idle', isPending: false, isSuccess: false, isError: false,
+    result: null, total: 0, error: null
+  };
+  var lastGen = 0;
+
+  node._run = function() {
+    var thisGen = ++lastGen;
+    var collected = {};
+    var cs = (p.props && p.props.collect) || {};
+    Object.keys(cs).forEach(function(key) {
+      var expr = cs[key];
+      if (typeof expr === 'string' && expr.startsWith('#')) {
+        var par = self._parseWire(expr);
+        if (par) collected[key] = (self.nodes[par.nodeId] || {})[par.property];
+      } else if (expr === '{{now}}') {
+        collected[key] = new Date().toISOString().slice(0, 10);
+      } else {
+        collected[key] = expr;
+      }
+    });
+
+    var config = {};
+    var cp = p.props || {};
+    Object.keys(cp).forEach(function(k) { if (k !== 'collect') config[k] = cp[k]; });
+
+    self._set(p.id, 'status',    'pending');
+    self._set(p.id, 'isPending', true);
+    self._set(p.id, 'isSuccess', false);
+    self._set(p.id, 'isError',   false);
+
+    google.script.run
+      .withSuccessHandler(function(r) {
+        if (thisGen !== lastGen) { console.log('[A2UI] stale', p.id, thisGen, lastGen); return; }
+        if (!r) { console.error('[A2UI] null response for', p.id, '— server returned nothing'); self._set(p.id, 'isPending', false); self._set(p.id, 'isError', true); self._set(p.id, 'error', 'Server returned null'); return; }
+        console.log('[A2UI]', p.id, 'ok='+r.ok, 'rows='+(r.data?r.data.length:'null'), r.error||'');
+        self._set(p.id, 'isPending', false);
+        self._set(p.id, 'status',    r.ok ? 'success' : 'error');
+        self._set(p.id, 'isSuccess', r.ok);
+        self._set(p.id, 'isError',   !r.ok);
+        self._set(p.id, 'result',    r.data  || null);
+        self._set(p.id, 'total',     r.total !== undefined ? r.total : (r.data ? r.data.length : 0));
+        self._set(p.id, 'error',     r.error || null);
+        if (r.ok && p.onSuccess) {
+          p.onSuccess.forEach(function(aid) {
+            var n = self.nodes[aid];
+            if (n && n._run) n._run();
+          });
+        }
+        if (r.ok && p.clearOnSuccess) {
+          p.clearOnSuccess.forEach(function(nid) {
+            var n = self.nodes[nid];
+            if (n && n._setValue) n._setValue(n._initialValue !== undefined ? n._initialValue : '');
+          });
+        }
+      })
+      .withFailureHandler(function(e) {
+        if (thisGen !== lastGen) return;
+        console.error('[A2UI] failure', p.id, e && (e.message || JSON.stringify(e)));
+        self._set(p.id, 'isPending', false);
+        self._set(p.id, 'status',   'error');
+        self._set(p.id, 'isSuccess', false);
+        self._set(p.id, 'isError',   true);
+        self._set(p.id, 'error',     (e && e.message) || 'Unknown error');
+      })
+      .a2uiAction(p.type, { data: collected, config: config, appConfig: (window.__A2UI_SCHEMA__ || {}).app || {} });
+  };
+
+  this.nodes[p.id] = node;
+};
+
+function _a2uiSafeExpr(expr, vars) {
+  if (!/^[a-zA-Z0-9_\s\+\-\*\/\(\)\.]+$/.test(expr)) {
+    console.warn('[A2UI] Computed: unsafe expression chars');
+    return null;
+  }
+  try {
+    var keys = Object.keys(vars);
+    var vals = keys.map(function(k) { return vars[k]; });
+    var fn = new Function(keys.join(','), 'return (' + expr + ')');
+    return fn.apply(null, vals);
+  } catch(e) {
+    console.warn('[A2UI] Computed eval error: ' + e.message);
+    return null;
+  }
+}
+
+function _a2uiFormatValue(val, fmt) {
+  if (!fmt)                        return String(Math.round(val * 100) / 100);
+  if (fmt === 'integer')           return String(Math.round(val));
+  if (fmt === 'percent')           return Math.round(val) + '%';
+  if (fmt.startsWith('decimal:')) {
+    var dp = parseInt(fmt.split(':')[1], 10) || 2;
+    return val.toFixed(dp);
+  }
+  if (fmt.startsWith('currency:')) {
+    var sym = { GBP: '£', USD: '$', EUR: '€' }[fmt.split(':')[1]] || fmt.split(':')[1];
+    return sym + val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  return String(val);
+}
+
+function _a2uiSanitize(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ─── DOM Bridge ───────────────────────────────────────────────────────────────
+
+var _a2uiBridge = {
+  setProp: function(id, prop, val) {
+    var el = document.getElementById('a2ui-' + id);
+    if (!el) { console.warn('[A2UI] DOM element not found: a2ui-' + id); return; }
+
+    if (prop === 'visible') {
+      el.style.display = val ? '' : 'none';
+    } else if (prop === 'text') {
+      var spans = el.querySelectorAll('span');
+      var textSpan = spans.length >= 2 ? spans[spans.length - 1] : spans[0];
+      if (textSpan) {
+        textSpan.textContent = val;
+      } else {
+        var textEl = el.querySelector('h1,h2,h3,h4,h5,h6,p');
+        if (textEl) textEl.textContent = val;
+      }
+    } else if (prop === 'value') {
+      var inp = el.querySelector('input:not([type=checkbox]),textarea');
+      if (inp) inp.value = val;
+    } else if (prop === 'disabled') {
+      var btn = el.querySelector('button');
+      if (btn) btn.disabled = !!val;
+      var finp = el.querySelector('input:not([type=checkbox])');
+      if (finp) finp.disabled = !!val;
+    } else if (prop === 'checked') {
+      var chk = el.querySelector('input[type=checkbox]');
+      if (chk) chk.checked = !!val;
+    } else if (prop === 'rows') {
+      console.log('[A2UI] setProp rows', id, Array.isArray(val) ? val.length : val);
+      var ccBody = el.querySelector('[data-cc-body]');
+      if (ccBody) {
+        _a2uiUpdateChatCard(el, val);
+      } else {
+        _a2uiUpdateTableRows(el, val);
+      }
+    } else if (prop === 'elapsed_fmt') {
+      var timeEl = el.querySelector('[data-sla-time]');
+      if (timeEl) timeEl.textContent = val;
+    } else if (prop === 'sla_state') {
+      var badge = el.querySelector('[data-sla-badge]');
+      if (badge) {
+        var stateColors = { ok: '#22c55e', warn: '#f97316', breach: '#ef4444' };
+        var stateLabels = { ok: 'OK', warn: 'WARN', breach: 'BREACH' };
+        badge.textContent = stateLabels[val] || val;
+        badge.style.background = stateColors[val] || '#6b7280';
+        badge.style.animation  = val === 'breach' ? 'a2ui-pulse 1s infinite' : 'none';
+      }
+      var bar = el.querySelector('[data-sla-bar]');
+      if (bar) {
+        bar.style.background = val === 'breach' ? '#ef4444' : val === 'warn' ? '#f97316' : '#22c55e';
+      }
+    } else if (prop === 'pct') {
+      var bar2 = el.querySelector('[data-sla-bar]');
+      if (bar2) bar2.style.width = Math.min(Math.max(0, parseFloat(val) || 0), 100) + '%';
+    } else if (prop === 'flights') {
+      if (typeof window._a2uiInboundFlights === 'function') {
+        window._a2uiInboundFlights(Array.isArray(val) ? val : []);
+      }
+    } else if (prop === 'href') {
+      var a = el.tagName === 'A' ? el : el.querySelector('a');
+      if (a) { a.href = String(val); a.style.pointerEvents = val ? '' : 'none'; a.style.opacity = val ? '' : '0.4'; }
+    } else if (prop === 'meetLink') {
+      var createBtn = el.querySelector('[data-meet-create]');
+      var joinLink  = el.querySelector('[data-meet-join]');
+      if (val) {
+        if (createBtn) createBtn.style.display = 'none';
+        if (joinLink)  { joinLink.href = String(val); joinLink.style.display = ''; }
+      } else {
+        if (createBtn) createBtn.style.display = '';
+        if (joinLink)  joinLink.style.display = 'none';
+      }
+    } else if (prop === 'calLink') {
+      var calLink = el.querySelector('[data-meet-cal]');
+      if (calLink) { calLink.href = String(val); calLink.style.display = val ? '' : 'none'; }
+    } else if (prop === 'spaceUrl') {
+      var chatCreate = el.querySelector('[data-chat-create]');
+      var chatJoin   = el.querySelector('[data-chat-join]');
+      if (val) {
+        if (chatCreate) chatCreate.style.display = 'none';
+        if (chatJoin)   { chatJoin.href = String(val); chatJoin.style.display = ''; }
+      } else {
+        if (chatCreate) chatCreate.style.display = '';
+        if (chatJoin)   chatJoin.style.display = 'none';
+      }
+    } else if (prop === 'results') {
+      var ppDrop = el.querySelector('[data-pp-drop]');
+      if (!ppDrop) return;
+      var ppArr = Array.isArray(val) ? val : [];
+      ppDrop.innerHTML = '';
+      if (ppArr.length === 0) { ppDrop.style.display = 'none'; return; }
+      ppArr.forEach(function(r) {
+        var item = document.createElement('div');
+        item.style.cssText = 'padding:8px 12px;cursor:pointer;display:flex;gap:8px;align-items:center;border-bottom:1px solid #f3f4f6;transition:background 0.1s;';
+        item.onmouseover = function() { this.style.background = '#f8fafc'; };
+        item.onmouseout  = function() { this.style.background = ''; };
+        var photoHtml = r.photoUrl
+          ? '<img src="' + _a2uiSanitize(r.photoUrl) + '" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+          : '<div style="width:28px;height:28px;border-radius:50%;background:' + _a2uiHashColor(r.email||r.name||'') + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">' + _a2uiSanitize(_a2uiInitials(r.name||r.email||'?')) + '</div>';
+        item.innerHTML = photoHtml
+          + '<div><div style="font-size:0.84rem;font-weight:600;color:#111827;">' + _a2uiSanitize(r.name||'') + '</div>'
+          + '<div style="font-size:0.72rem;color:#6b7280;">' + _a2uiSanitize(r.email||'') + '</div></div>';
+        item.addEventListener('click', function() { _a2uiAssignPerson(el, r); });
+        ppDrop.appendChild(item);
+      });
+      ppDrop.style.display = '';
+    } else if (prop === 'isPending') {
+      var csbBtn = el.querySelector('[data-csb]');
+      if (!csbBtn) return;
+      var csbIco = csbBtn.querySelector('[data-csb-ico]');
+      var csbTxt = csbBtn.querySelector('[data-csb-txt]');
+      if (val) {
+        csbBtn.disabled = true;
+        csbBtn.style.opacity = '0.7';
+        if (csbTxt) csbTxt.textContent = csbBtn.getAttribute('data-label-busy') || 'Sending…';
+        if (csbIco) csbIco.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:csb-spin 0.7s linear infinite;"></span>';
+      } else {
+        csbBtn.disabled = false;
+        csbBtn.style.opacity = '';
+        if (csbTxt) csbTxt.textContent = csbBtn.getAttribute('data-label') || '';
+        if (csbIco) csbIco.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+        csbBtn.style.background = csbBtn.getAttribute('data-accent') || '#1a73e8';
+      }
+    } else if (prop === 'isSuccess') {
+      if (!val) return;
+      var csbBtn2 = el.querySelector('[data-csb]');
+      if (!csbBtn2) return;
+      var csbIco2 = csbBtn2.querySelector('[data-csb-ico]');
+      var csbTxt2 = csbBtn2.querySelector('[data-csb-txt]');
+      csbBtn2.style.background = '#16a34a';
+      csbBtn2.style.opacity    = '';
+      if (csbIco2) csbIco2.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+      if (csbTxt2) {
+        var now2 = new Date();
+        var ts = String(now2.getHours()).padStart(2,'0') + ':' + String(now2.getMinutes()).padStart(2,'0');
+        csbTxt2.textContent = (csbBtn2.getAttribute('data-label-ok') || 'Sent ✓') + ' ' + ts;
+      }
+      setTimeout(function() {
+        csbBtn2.style.background = csbBtn2.getAttribute('data-accent') || '#1a73e8';
+        if (csbIco2) csbIco2.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+        if (csbTxt2) csbTxt2.textContent = csbBtn2.getAttribute('data-label') || '';
+      }, 4000);
+    } else if (prop === 'isError') {
+      if (!val) return;
+      var csbBtn3 = el.querySelector('[data-csb]');
+      if (!csbBtn3) return;
+      var csbTxt3 = csbBtn3.querySelector('[data-csb-txt]');
+      var csbIco3 = csbBtn3.querySelector('[data-csb-ico]');
+      csbBtn3.style.background = '#dc2626';
+      csbBtn3.disabled = false;
+      csbBtn3.style.opacity = '';
+      if (csbIco3) csbIco3.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+      if (csbTxt3) csbTxt3.textContent = csbBtn3.getAttribute('data-label-err') || 'Send failed';
+      setTimeout(function() {
+        csbBtn3.style.background = csbBtn3.getAttribute('data-accent') || '#1a73e8';
+        if (csbIco3) csbIco3.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+        if (csbTxt3) csbTxt3.textContent = csbBtn3.getAttribute('data-label') || '';
+      }, 4000);
+    } else if (prop === 'done') {
+      var cb = el.querySelector('[data-cs-done]');
+      if (cb) cb.checked = !!val;
+      var lbl = cb ? cb.parentElement.querySelector('span') : null;
+      if (lbl) { lbl.textContent = val ? 'Done' : 'Mark as done'; lbl.style.color = val ? '#22c55e' : '#94a3b8'; lbl.style.fontWeight = val ? '600' : '400'; }
+      var cmdBlock = el.querySelector('[style*="opacity"]');
+      if (cmdBlock) cmdBlock.style.opacity = val ? '0.5' : '1';
+    } else if (prop === 'count') {
+      var countEl = el.querySelector('[data-count]');
+      if (countEl) countEl.textContent = val;
+    } else if (prop === 'users') {
+      var presEl = el.querySelector('[data-a2ui-presence]');
+      if (!presEl) return;
+      var usersArr = Array.isArray(val) ? val : [];
+      var html = '';
+      usersArr.forEach(function(u, i) {
+        var name = u.name || u.email || '?';
+        var ml = i === 0 ? '0' : '-6px';
+        if (u.photoUrl) {
+          html += '<img src="' + _a2uiSanitize(u.photoUrl) + '" title="' + _a2uiSanitize(name) + '"'
+               + ' style="width:28px;height:28px;border-radius:50%;border:2px solid #1e293b;margin-left:' + ml + ';object-fit:cover;">';
+        } else {
+          var initials = _a2uiInitials(name);
+          var color    = _a2uiHashColor(u.email || name);
+          html += '<div title="' + _a2uiSanitize(name) + '"'
+               + ' style="width:28px;height:28px;border-radius:50%;border:2px solid #1e293b;margin-left:' + ml + ';'
+               + 'background:' + color + ';display:inline-flex;align-items:center;justify-content:center;'
+               + 'font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">'
+               + _a2uiSanitize(initials) + '</div>';
+        }
+      });
+      presEl.innerHTML = html;
+    }
+  }
+};
+
+function _a2uiAssignPerson(el, person) {
+  var ppDrop = el.querySelector('[data-pp-drop]');
+  var ppInput = el.querySelector('[data-pp-input]');
+  var ppChip  = el.querySelector('[data-pp-chip]');
+  var ppSearch = el.querySelector('[data-pp-search]');
+  if (ppDrop)  ppDrop.style.display = 'none';
+  if (ppInput) { ppInput.value = ''; ppInput.style.display = 'none'; }
+  if (ppSearch) ppSearch.style.display = 'none';
+  if (ppChip) {
+    var accent = el.getAttribute('data-pp-accent') || '#1a73e8';
+    var bg = accent + '18';
+    ppChip.innerHTML = '<div style="display:inline-flex;align-items:center;gap:6px;background:' + bg + ';border:1px solid ' + accent + '44;border-radius:999px;padding:4px 10px 4px 4px;max-width:100%;">'
+      + (person.photoUrl ? '<img src="' + _a2uiSanitize(person.photoUrl) + '" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0;">'
+          : '<div style="width:22px;height:22px;border-radius:50%;background:' + accent + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;">' + _a2uiSanitize(_a2uiInitials(person.name||'?')) + '</div>')
+      + '<span style="font-size:0.82rem;font-weight:600;color:' + accent + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _a2uiSanitize(person.name||person.email||'') + '</span>'
+      + '<button onclick="_a2uiClearPicker(\'' + el.id.replace('a2ui-','') + '\')" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:0;line-height:1;font-size:1rem;flex-shrink:0;" title="Remove">×</button>'
+      + '</div>';
+    ppChip.style.display = '';
+  }
+  // Fire onAssign into the engine
+  var elId = el.id.replace('a2ui-', '');
+  var schema = window.__A2UI_SCHEMA__;
+  if (schema && window._a2uiEngine) {
+    var layoutEl;
+    for (var i = 0; i < (schema.layout||[]).length; i++) {
+      if (schema.layout[i].id === elId) { layoutEl = schema.layout[i]; break; }
+    }
+    if (layoutEl && layoutEl.wire && layoutEl.wire.onAssign) {
+      var ref = window._a2uiEngine._parseWire(layoutEl.wire.onAssign);
+      if (ref) window._a2uiEngine._set(ref.nodeId, ref.property, person);
+    }
+  }
+}
+
+function _a2uiClearPicker(elId) {
+  var el = document.getElementById('a2ui-' + elId);
+  if (!el) return;
+  var ppChip   = el.querySelector('[data-pp-chip]');
+  var ppInput  = el.querySelector('[data-pp-input]');
+  var ppSearch = el.querySelector('[data-pp-search]');
+  if (ppChip)  { ppChip.innerHTML = ''; ppChip.style.display = 'none'; }
+  if (ppInput) ppInput.style.display = '';
+  if (ppSearch) ppSearch.style.display = '';
+  var elSchema = window.__A2UI_SCHEMA__;
+  if (elSchema && window._a2uiEngine) {
+    var lEl;
+    for (var j = 0; j < (elSchema.layout||[]).length; j++) {
+      if (elSchema.layout[j].id === elId) { lEl = elSchema.layout[j]; break; }
+    }
+    if (lEl && lEl.wire && lEl.wire.onAssign) {
+      var r = window._a2uiEngine._parseWire(lEl.wire.onAssign);
+      if (r) window._a2uiEngine._set(r.nodeId, r.property, null);
+    }
+  }
+}
+
+function _a2uiRenderSurfaceAvatars(container, users, surfaceId, guardSheet) {
+  var html = '';
+  users.forEach(function(u, i) {
+    var name     = u.name || u.email || '?';
+    var hasAccess = u.hasAccess !== false; // default true if not set
+    var ml       = i === 0 ? '0' : (hasAccess ? '-6px' : '0');
+
+    if (hasAccess) {
+      // Normal avatar
+      if (u.photoUrl) {
+        html += '<img src="' + _a2uiSanitize(u.photoUrl) + '" title="' + _a2uiSanitize(name) + '" style="width:28px;height:28px;border-radius:50%;border:2px solid #1e293b;margin-left:' + ml + ';object-fit:cover;">';
+      } else {
+        var initials = _a2uiInitials(name);
+        var color    = _a2uiHashColor(u.email || name);
+        html += '<div title="' + _a2uiSanitize(name + (u.email ? ' · ' + u.email : '')) + '"'
+             + ' style="width:28px;height:28px;border-radius:50%;border:2px solid #1e293b;margin-left:' + ml + ';'
+             + 'background:' + color + ';display:inline-flex;align-items:center;justify-content:center;'
+             + 'font-size:11px;font-weight:700;color:#fff;flex-shrink:0;cursor:default;">'
+             + _a2uiSanitize(_a2uiInitials(name)) + '</div>';
+      }
+    } else {
+      // No-access pill: avatar + name + ⚠ + Grant button
+      var initials = _a2uiInitials(name);
+      var color    = _a2uiHashColor(u.email || name);
+      var safeEmail = _a2uiSanitize(u.email || '');
+      var safeName  = _a2uiSanitize(name);
+      html += '<div style="display:inline-flex;align-items:center;gap:5px;background:#fef3c7;border:1px solid #f59e0b;border-radius:20px;padding:2px 8px 2px 3px;font-size:11px;">'
+            + '<div style="width:22px;height:22px;border-radius:50%;background:' + color + ';display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;">' + _a2uiSanitize(initials) + '</div>'
+            + '<span style="color:#92400e;font-weight:500;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + safeEmail + '">' + safeName + '</span>'
+            + '<span style="color:#f59e0b;font-size:13px;" title="No sheet access">⚠</span>'
+            + '<button data-grant-email="' + safeEmail + '" data-grant-surface="' + _a2uiSanitize(surfaceId || '') + '" data-grant-sheet="' + _a2uiSanitize(guardSheet || '') + '"'
+            + ' style="background:#f59e0b;color:#fff;border:none;border-radius:10px;padding:2px 7px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;">Grant access</button>'
+            + '</div>';
+    }
+  });
+  container.innerHTML = html;
+
+  // Wire Grant buttons
+  container.querySelectorAll('button[data-grant-email]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var email   = btn.getAttribute('data-grant-email');
+      var surface = btn.getAttribute('data-grant-surface');
+      var sheet   = btn.getAttribute('data-grant-sheet');
+      btn.disabled = true;
+      btn.textContent = '…';
+      google.script.run
+        .withSuccessHandler(function(r) {
+          btn.textContent = r && r.ok ? '✓' : '✗';
+          setTimeout(function() {
+            // Re-query to refresh the pill state
+            google.script.run
+              .withSuccessHandler(function(qr) {
+                if (qr && qr.ok) _a2uiRenderSurfaceAvatars(container, qr.data || [], surface, sheet);
+              })
+              .a2uiSurfacePresence('query', { surface_id: surface, threshold: 90 });
+          }, 1200);
+        })
+        .withFailureHandler(function() { btn.textContent = '✗'; btn.disabled = false; })
+        .a2uiSurfacePresence('grant', { surface_id: surface, email: email, sheet: sheet });
+    });
+  });
+}
+
+function _a2uiInitials(name) {
+  var parts = name.trim().split(/[\s@._-]+/).filter(Boolean);
+  return (parts[0] ? parts[0][0].toUpperCase() : '?') + (parts[1] ? parts[1][0].toUpperCase() : '');
+}
+
+function _a2uiHashColor(str) {
+  var palette = ['#6366f1','#8b5cf6','#ec4899','#f97316','#14b8a6','#06b6d4','#3b82f6','#ef4444'];
+  var h = 0;
+  for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) & 0xfffffff;
+  return palette[h % palette.length];
+}
+
+function _a2uiUpdateTableRows(el, rows) {
+  console.log('[A2UI] updateTableRows', el && el.id, rows && rows.length);
+  var tbody = el.querySelector('tbody');
+  if (!tbody) { console.warn('[A2UI] no tbody in', el && el.id); return; }
+  var colsAttr = el.getAttribute('data-a2ui-columns');
+  var cols;
+  try { cols = colsAttr ? JSON.parse(colsAttr) : []; } catch(e) { cols = []; }
+  if (!cols.length && rows && rows.length) cols = Object.keys(rows[0]).map(function(k) { return { key: k, label: k }; });
+  var emptyMsg = el.getAttribute('data-a2ui-empty') || 'No results.';
+
+  if (!rows || !rows.length) {
+    var colCount = cols.length || 1;
+    tbody.innerHTML = '<tr><td colspan="' + colCount + '" style="padding:16px;text-align:center;color:#94a3b8;font-style:italic;">' + _a2uiSanitize(emptyMsg) + '</td></tr>';
+    return;
+  }
+  var html = '';
+  rows.forEach(function(row) {
+    var rowJson = _a2uiSanitize(JSON.stringify(row));
+    html += '<tr style="cursor:pointer;" data-row-json="' + rowJson + '">';
+    cols.forEach(function(col) {
+      var key = typeof col === 'string' ? col : col.key;
+      if (key === '_delete') {
+        var delKey     = col.delete_key    || 'id';
+        var actNode    = col.action_node   || 'delete_row';
+        var keyMemNode = col.key_mem_node  || 'delete_key_mem';
+        var rawKv = String(row[delKey] !== undefined ? row[delKey] : '');
+        var safeKv = rawKv.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+        html += '<td style="padding:4px 8px;border-bottom:1px solid #f1f5f9;text-align:center;">'
+          + '<button data-kv="' + safeKv + '" data-an="' + actNode + '" data-km="' + keyMemNode + '" '
+          + 'title="Delete row" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:1.1rem;line-height:1;padding:2px 4px;">🗑</button>'
+          + '</td>';
+      } else if (key === '_claim') {
+        var claimKey   = col.claim_key   || 'id';
+        var emailKey   = col.email_key   || 'owner_email';
+        var nameKey    = col.name_key    || 'owner_name';
+        var actNode    = col.action_node  || 'claim_action';
+        var keyMemNode = col.key_mem_node || 'incident_id_mem';
+        var ownerEmail = String(row[emailKey] || '');
+        var ownerName  = String(row[nameKey]  || '');
+        var kv = String(row[claimKey] !== undefined ? row[claimKey] : '');
+        var safeKv = kv.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+        if (ownerEmail || ownerName) {
+          var dname    = ownerName || ownerEmail;
+          var initials = _a2uiInitials(dname);
+          var color    = _a2uiHashColor(ownerEmail || ownerName);
+          html += '<td style="padding:6px 12px;border-bottom:1px solid #f1f5f9;">'
+            + '<div style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+            + '<div title="' + _a2uiSanitize(dname + (ownerEmail ? ' · ' + ownerEmail : '')) + '"'
+            + ' style="width:24px;height:24px;border-radius:50%;background:' + color + ';display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;">' + _a2uiSanitize(initials) + '</div>'
+            + '<span style="font-size:0.8rem;color:#334155;">' + _a2uiSanitize(dname) + '</span>'
+            + '<button data-kv="' + safeKv + '" data-an="' + _a2uiSanitize(actNode) + '" data-km="' + _a2uiSanitize(keyMemNode) + '" data-coltype="claim"'
+            + ' title="Transfer ownership to me"'
+            + ' style="background:transparent;color:#94a3b8;border:1px solid #e2e8f0;border-radius:4px;padding:2px 8px;font-size:0.65rem;font-weight:600;cursor:pointer;white-space:nowrap;"'
+            + ' onmouseover="this.style.borderColor=\'#6366f1\';this.style.color=\'#6366f1\'"'
+            + ' onmouseout="this.style.borderColor=\'#e2e8f0\';this.style.color=\'#94a3b8\'">⇄ Transfer</button>'
+            + '</div></td>';
+        } else {
+          html += '<td style="padding:6px 12px;border-bottom:1px solid #f1f5f9;">'
+            + '<span style="color:#94a3b8;font-size:0.72rem;margin-right:6px;">Unclaimed</span>'
+            + '<button data-kv="' + safeKv + '" data-an="' + _a2uiSanitize(actNode) + '" data-km="' + _a2uiSanitize(keyMemNode) + '" data-coltype="claim"'
+            + ' style="background:#6366f1;color:#fff;border:none;border-radius:4px;padding:3px 10px;font-size:0.72rem;font-weight:600;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Claim</button>'
+            + '</td>';
+        }
+      } else if (key === '_resolve') {
+        var resolveKey = col.resolve_key  || 'id';
+        var statusKey  = col.status_key   || 'status';
+        var actNode2   = col.action_node   || 'resolve_action';
+        var keyMem2    = col.key_mem_node  || 'resolve_id_mem';
+        var rowStatus  = String(row[statusKey] || '');
+        var kv2 = String(row[resolveKey] !== undefined ? row[resolveKey] : '');
+        var safeKv2 = kv2.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+        if (rowStatus === 'Resolved') {
+          html += '<td style="padding:6px 12px;border-bottom:1px solid #f1f5f9;">'
+            + '<span style="color:#22c55e;font-size:0.72rem;font-weight:600;">✓ Resolved</span>'
+            + '</td>';
+        } else {
+          html += '<td style="padding:6px 12px;border-bottom:1px solid #f1f5f9;">'
+            + '<button data-kv="' + safeKv2 + '" data-an="' + _a2uiSanitize(actNode2) + '" data-km="' + _a2uiSanitize(keyMem2) + '" data-coltype="resolve"'
+            + ' style="background:transparent;color:#22c55e;border:1px solid #22c55e55;border-radius:4px;padding:3px 10px;font-size:0.72rem;font-weight:600;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">Resolve</button>'
+            + '</td>';
+        }
+      } else if (col.type === 'badge') {
+        var val = row[key];
+        var txt = val === null || val === undefined ? '' : String(val);
+        var colorsMap = col.colors || {};
+        var bg  = colorsMap[txt] || '#6b7280';
+        html += '<td style="padding:6px 12px;border-bottom:1px solid #f1f5f9;">'
+              + '<span style="display:inline-block;background:' + bg + ';color:#fff;padding:2px 9px;border-radius:99px;font-size:0.75rem;font-weight:700;">'
+              + _a2uiSanitize(txt) + '</span></td>';
+      } else if (col.type === 'sla_badge') {
+        var state   = String(row[key] || 'ok');
+        var timeVal = col.time_key ? String(row[col.time_key] || '--') : '';
+        var slaBg   = state === 'breach' ? '#ef4444' : state === 'warn' ? '#f97316' : '#22c55e';
+        var slaLbl  = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
+        html += '<td style="padding:6px 12px;border-bottom:1px solid #f1f5f9;">'
+              + '<div style="display:inline-flex;align-items:center;gap:5px;">'
+              + '<span style="display:inline-block;background:' + slaBg + ';color:#fff;padding:2px 8px;border-radius:99px;font-size:0.7rem;font-weight:800;letter-spacing:0.04em;">' + slaLbl + '</span>'
+              + (timeVal ? '<span style="font-size:0.78rem;color:#64748b;font-variant-numeric:tabular-nums;">' + _a2uiSanitize(timeVal) + '</span>' : '')
+              + '</div></td>';
+      } else {
+        var val = row[key];
+        html += '<td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;color:#334155;">'
+              + _a2uiSanitize(val === null || val === undefined ? '' : String(val)) + '</td>';
+      }
+    });
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+  // Wire delete buttons via JS (avoids onclick attribute parsing issues in GAS iframes)
+  tbody.querySelectorAll('button[data-kv]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Optimistic: remove row immediately so delete feels instant
+      var tr = btn.closest('tr');
+      if (tr) {
+        tr.style.transition = 'opacity 0.12s';
+        tr.style.opacity = '0';
+        setTimeout(function() { if (tr.parentNode) tr.parentNode.removeChild(tr); }, 120);
+      }
+      var kv = btn.getAttribute('data-kv');
+      var an = btn.getAttribute('data-an');
+      var km = btn.getAttribute('data-km');
+      if (window._a2uiEngine) {
+        window._a2uiEngine.trigger(km, 'setValue', kv);
+        var n = window._a2uiEngine.nodes[an];
+        if (n && n._run) n._run();
+      }
+    });
+  });
+  // Claim / Resolve buttons
+  tbody.querySelectorAll('button[data-coltype="claim"], button[data-coltype="resolve"]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var kv = btn.getAttribute('data-kv');
+      var an = btn.getAttribute('data-an');
+      var km = btn.getAttribute('data-km');
+      btn.disabled = true; btn.style.opacity = '0.5';
+      if (window._a2uiEngine) {
+        window._a2uiEngine.trigger(km, 'setValue', kv);
+        var n = window._a2uiEngine.nodes[an];
+        if (n && n._run) n._run();
+      }
+    });
+  });
+
+  _a2uiBindRowClicks(el);
+}
+
+function _a2uiUpdateChatCard(el, rows) {
+  var body = el.querySelector('[data-cc-body]');
+  var foot = el.querySelector('[data-cc-foot]');
+  var sub  = el.querySelector('[data-cc-sub]');
+  if (!body) return;
+  var arr = Array.isArray(rows) ? rows : [];
+  var sevIco = function(s) { return s==='P1'?'🔴':s==='P2'?'🟠':s==='P3'?'🟡':'⚪'; };
+  var stIco  = function(s) { return s==='Claimed'?'🔧':s==='Resolved'?'✅':'🆕'; };
+  var sevCol = { P1:'#fef2f2', P2:'#fff7ed', P3:'#fefce8', P4:'#f8fafc' };
+  var stCol  = { New:'#eef2ff', Claimed:'#fff7ed', Resolved:'#f0fdf4' };
+  var stText = { New:'#4f46e5', Claimed:'#ea580c', Resolved:'#16a34a' };
+  var active   = arr.filter(function(r){ return r.status !== 'Resolved'; });
+  var resolved = arr.filter(function(r){ return r.status === 'Resolved'; });
+
+  // Update subtitle timestamp
+  if (sub) {
+    var now = new Date();
+    var ts = String(now.getDate()).padStart(2,'0') + ' '
+      + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()]
+      + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    sub.textContent = 'Live · ' + ts;
+  }
+
+  // Build section HTML
+  var html = '';
+  if (active.length === 0) {
+    html += '<div style="padding:16px 18px;text-align:center;color:#16a34a;font-size:0.88rem;font-weight:600;">✅ All incidents resolved</div>';
+  } else {
+    html += '<div style="padding:8px 18px 4px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Active Incidents (' + active.length + ')</div>';
+    active.forEach(function(r) {
+      var bg = sevCol[r.severity] || '#f8fafc';
+      html += '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-bottom:1px solid #f3f4f6;background:' + bg + ';">'
+        + '<div style="font-size:1.1rem;margin-top:2px;flex-shrink:0;">' + sevIco(r.severity) + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:0.72rem;color:#6b7280;font-weight:600;margin-bottom:2px;">'
+            + (r.severity || '') + ' · <span style="font-family:monospace;">' + (r.id || '') + '</span>'
+          + '</div>'
+          + '<div style="font-size:0.85rem;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _a2uiSanitize(String(r.title||'')) + '</div>'
+          + '<div style="margin-top:4px;display:flex;align-items:center;gap:6px;">'
+            + '<span style="font-size:0.72rem;padding:2px 8px;border-radius:999px;background:' + (stCol[r.status]||'#f3f4f6') + ';color:' + (stText[r.status]||'#374151') + ';font-weight:600;">' + stIco(r.status) + ' ' + (r.status||'') + '</span>'
+            + (r.owner_name ? '<span style="font-size:0.72rem;color:#6b7280;">👤 ' + _a2uiSanitize(String(r.owner_name)) + '</span>' : '<span style="font-size:0.72rem;color:#9ca3af;font-style:italic;">Unassigned</span>')
+          + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+  if (resolved.length > 0) {
+    html += '<div style="padding:6px 18px 4px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-top:4px;">Resolved (' + resolved.length + ')</div>';
+    resolved.forEach(function(r) {
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid #f3f4f6;opacity:0.6;">'
+        + '<div style="font-size:1rem;flex-shrink:0;">✅</div>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<div style="font-size:0.72rem;color:#9ca3af;font-family:monospace;">' + (r.id||'') + '</div>'
+          + '<div style="font-size:0.82rem;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _a2uiSanitize(String(r.title||'')) + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+  body.innerHTML = html;
+  if (foot) {
+    foot.innerHTML = '📊 Active: <strong>' + active.length + '</strong> &nbsp;·&nbsp; Resolved: <strong>' + resolved.length + '</strong> &nbsp;·&nbsp; Total: <strong>' + arr.length + '</strong>';
+  }
+}
+
+function _a2uiBindRowClicks(wrapEl) {
+  var elId   = wrapEl.id.replace('a2ui-', '');
+  var schema = window.__A2UI_SCHEMA__;
+  if (!schema) return;
+  var layoutEl;
+  for (var i = 0; i < (schema.layout || []).length; i++) {
+    if (schema.layout[i].id === elId) { layoutEl = schema.layout[i]; break; }
+  }
+  if (!layoutEl || !layoutEl.wire || !layoutEl.wire.onRowClick) return;
+  var wireExpr = layoutEl.wire.onRowClick;
+  wrapEl.querySelectorAll('tbody tr').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var rowData = {};
+      try { rowData = JSON.parse(this.getAttribute('data-row-json') || '{}'); } catch(e) {}
+      window._a2uiEngine.bindOutput(wireExpr, rowData);
+    });
+  });
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', function() {
+  var schema = window.__A2UI_SCHEMA__;
+  if (!schema || schema.type !== 'a2ui_wired_surface') return;
+
+  window._a2uiSchema  = schema;
+  window._a2uiEngine = new A2UIStateEngine(schema);
+
+  // Input wires: state → DOM props
+  (schema.layout || []).forEach(function(el) {
+    if (!el.id || !el.wire) return;
+    window._a2uiEngine.compileWires(el, _a2uiBridge);
+  });
+
+  // Output wires: DOM events → state
+  (schema.layout || []).forEach(function(el) {
+    if (!el.id || !el.wire) return;
+    var domEl = document.getElementById('a2ui-' + el.id);
+    if (!domEl) return;
+    var wire = el.wire;
+
+    Object.keys(wire).forEach(function(prop) {
+      var wireExpr = wire[prop];
+      if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+
+      if (prop === 'setDone') {
+        var csDoneEl = domEl.querySelector('[data-cs-done]');
+        if (csDoneEl) csDoneEl.addEventListener('change', function(e) {
+          window._a2uiEngine.bindOutput(wireExpr, e.target.checked);
+        });
+      } else if (prop === 'onChange') {
+        var inp = domEl.querySelector('input:not([type=checkbox]),textarea');
+        if (inp) inp.addEventListener('input', function(e) {
+          window._a2uiEngine.bindOutput(wireExpr, e.target.value);
+        });
+      } else if (prop === 'onClick') {
+        var btn = domEl.querySelector('button');
+        if (btn) btn.addEventListener('click', function() {
+          window._a2uiEngine.bindOutput(wireExpr, null);
+        });
+      } else if (prop === 'onToggle') {
+        var chk = domEl.querySelector('input[type=checkbox]');
+        if (chk) chk.addEventListener('change', function(e) {
+          window._a2uiEngine.bindOutput(wireExpr, e.target.checked);
+        });
+      } else if (prop === 'onRowClick') {
+        _a2uiBindRowClicks(domEl);
+      } else if (prop === 'onSearch') {
+        var ppSearchBtn = domEl.querySelector('[data-pp-search]');
+        if (ppSearchBtn) ppSearchBtn.addEventListener('click', function() {
+          window._a2uiEngine.bindOutput(wireExpr, null);
+        });
+        var ppInputEl = domEl.querySelector('[data-pp-input]');
+        if (ppInputEl) ppInputEl.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') window._a2uiEngine.bindOutput(wireExpr, null);
+        });
+      }
+    });
+  });
+
+  // Step binding: StepNavigator.activeIndex → show/hide elements
+  if (schema.stepBinding) {
+    var stepParsed = typeof schema.stepBinding === 'string' && schema.stepBinding.startsWith('#')
+      ? (function() {
+          var inner = schema.stepBinding.slice(1);
+          var dot = inner.indexOf('.');
+          return dot === -1 ? null : { nodeId: inner.slice(0, dot), property: inner.slice(dot+1) };
+        })()
+      : null;
+
+    if (stepParsed) {
+      window._a2uiEngine.registerListener(stepParsed.nodeId, stepParsed.property, function(idx) {
+        document.querySelectorAll('[data-a2ui-step]').forEach(function(el) {
+          el.style.display = (parseInt(el.getAttribute('data-a2ui-step'), 10) === idx) ? '' : 'none';
+        });
+      });
+    }
+  }
+
+  // Fire onLoad actions
+  (schema.actions || []).forEach(function(a) {
+    if (a.trigger === 'onLoad') {
+      var node = window._a2uiEngine.nodes[a.id];
+      if (node && node._run) node._run();
+    }
+  });
+
+  // Wire live_refresh atoms: poll named action on a timer
+  document.querySelectorAll('[data-a2ui-live-refresh]').forEach(function(el) {
+    var actionId = el.getAttribute('data-a2ui-live-refresh');
+    var interval = parseInt(el.getAttribute('data-interval'), 10) || 30000;
+    if (!actionId) return;
+    setInterval(function() {
+      var node = window._a2uiEngine && window._a2uiEngine.nodes[actionId];
+      if (node && node._run) node._run();
+    }, interval);
+  });
+
+  // presence_surface molecules — self-contained heartbeat + avatar render
+  // Identity is passed from the client (set by the me atom scan below) to avoid
+  // unreliable Session.getActiveUser() in USER_DEPLOYING+ANYONE mode.
+  window._a2uiPingFns = window._a2uiPingFns || [];
+  document.querySelectorAll('[data-a2ui-presence-surface]').forEach(function(el) {
+    var surfaceId  = el.getAttribute('data-surface-id')  || 'default';
+    var threshold  = parseInt(el.getAttribute('data-threshold')  || '90',  10);
+    var queryMs    = parseInt(el.getAttribute('data-query-ms')   || '30000', 10);
+    var pingMs     = parseInt(el.getAttribute('data-ping-ms')    || '60000', 10);
+    var guardSheet = el.getAttribute('data-guard-sheet') || '';
+    var avatarEl   = el.querySelector('[data-psurf-avatars]');
+
+    function doPing() {
+      var me = window._a2uiMe || {};
+      var payload = { surface_id: surfaceId, email: me.email || '', name: me.name || '', photoUrl: me.photoUrl || '' };
+      if (guardSheet) payload.guard_sheet = guardSheet;
+      google.script.run.a2uiSurfacePresence('ping', payload);
+    }
+    function doQuery() {
+      var qp = { surface_id: surfaceId, threshold: threshold };
+      if (guardSheet) qp.guard_sheet = guardSheet;
+      google.script.run
+        .withSuccessHandler(function(r) {
+          if (r && r.ok && avatarEl) _a2uiRenderSurfaceAvatars(avatarEl, r.data || [], surfaceId, guardSheet);
+        })
+        .a2uiSurfacePresence('query', qp);
+    }
+    window._a2uiPingFns.push(doPing);
+    doPing(); doQuery();
+    setInterval(doPing, pingMs);
+    setInterval(doQuery, queryMs);
+  });
+
+  // me atom — resolve current user identity client-side
+  document.querySelectorAll('[data-a2ui-me]').forEach(function(el) {
+    var pos      = el.getAttribute('data-position') || 'inline';
+    var showName = el.getAttribute('data-show-name') !== '0';
+    google.script.run
+      .withSuccessHandler(function(r) {
+        if (!r || !r.ok || !r.email) return;
+        var name  = r.name || r.email;
+        var email = r.email;
+        // Store identity globally so presence pings can use it
+        window._a2uiMe = { email: email, name: name, photoUrl: r.photoUrl || '' };
+        // Re-ping immediately now that identity is known
+        (window._a2uiPingFns || []).forEach(function(fn) { fn(); });
+        var initials = name.trim().split(/\s+/).filter(Boolean).map(function(p) { return p[0]; }).join('').toUpperCase().slice(0, 2) || '?';
+        var color = _a2uiHashColor(email);
+        var wrapStyle = pos === 'top-right'
+          ? 'display:inline-flex;align-items:center;gap:8px;'
+          : 'display:inline-flex;align-items:center;gap:8px;';
+        var returnUrl = (window._a2uiSchema && window._a2uiSchema._fullUrl) || window.location.href;
+        var switchUrl = 'https://accounts.google.com/AccountChooser?continue=' + encodeURIComponent(returnUrl);
+        el.innerHTML = '<div title="' + _a2uiSanitize(name + ' · ' + email) + '\nClick to switch account"'
+          + ' data-switch-url="' + switchUrl.replace(/"/g, '&quot;') + '"'
+          + ' style="width:32px;height:32px;border-radius:50%;background:' + _a2uiSanitize(color) + ';display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.8\'" onmouseout="this.style.opacity=\'1\'" onclick="window.top.location.href=this.getAttribute(\'data-switch-url\')">'
+          + _a2uiSanitize(initials) + '</div>'
+          + (showName ? '<span style="font-size:0.8rem;color:#64748b;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _a2uiSanitize(name) + '</span>' : '');
+        el.style.display = 'inline-flex';
+        el.style.alignItems = 'center';
+        el.style.gap = '8px';
+      })
+      .a2uiGetMe();
+  });
+
+  // Source atom bridge — canvas calls this global directly (same page context, no postMessage needed)
+  window._a2uiFlightClick = function(detail) {
+    var s = window._a2uiSchema;
+    if (!s || !s.layout) return;
+    s.layout.forEach(function(el) {
+      if (el.wire && el.wire.onFlightClick) {
+        window._a2uiEngine.bindOutput(el.wire.onFlightClick, detail);
+      }
+    });
+  };
+});
+</script>
