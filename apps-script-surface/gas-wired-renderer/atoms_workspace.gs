@@ -840,6 +840,86 @@ _RENDERERS['command_step'] = function(b) {
   '</div>';
 };
 
+_RENDERERS['scenario_case'] = function(b) {
+  var id        = b.id || ('sc_' + Math.random().toString(36).slice(2, 8));
+  var domain    = b.domain     || '';
+  var diff      = b.difficulty || '';
+  var scenario  = b.scenario   || '';
+  var question  = b.question   || '';
+  var options   = Array.isArray(b.options) ? b.options : [];
+  var rationale = b.rationale  || '';
+
+  var maxScore = 0;
+  options.forEach(function(o) { if ((Number(o.score) || 0) > maxScore) maxScore = Number(o.score) || 0; });
+
+  var optHtml = '';
+  options.forEach(function(opt, i) {
+    var letter    = String.fromCharCode(65 + i);
+    var oid       = _esc(opt.id || letter.toLowerCase());
+    var score     = Number(opt.score) || 0;
+    var isBest    = score === maxScore;
+    var isPartial = !isBest && score >= maxScore - 1;
+    var dotColor  = isBest ? '#16a34a' : isPartial ? '#d97706' : '#ef4444';
+    var lbl       = isBest ? 'Best answer' : isPartial ? 'Partial credit' : 'Avoid';
+
+    var dots = '';
+    for (var d = 1; d <= maxScore; d++) {
+      dots += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:2px;background:' + (d <= score ? dotColor : '#e2e8f0') + ';"></span>';
+    }
+
+    var selFn = '(function(btn){' +
+      'var w=btn.closest(\'[data-sc-wrap]\');' +
+      'w.querySelectorAll(\'[data-opt-id]\').forEach(function(b){' +
+        'b.removeAttribute(\'data-selected\');' +
+        'b.style.background=\'#f8fafc\';b.style.borderColor=\'#e2e8f0\';b.style.color=\'#1e293b\';' +
+      '});' +
+      'btn.setAttribute(\'data-selected\',\'true\');' +
+      'btn.style.background=\'#ede9fe\';btn.style.borderColor=\'#6366f1\';btn.style.color=\'#4338ca\';' +
+    '})(this)';
+
+    optHtml +=
+      '<button data-opt-id="' + oid + '" data-opt-score="' + score + '" onclick="' + selFn + '" ' +
+        'style="display:flex;flex-direction:column;width:100%;text-align:left;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;font-size:14px;color:#1e293b;line-height:1.5;">' +
+        '<div style="display:flex;align-items:flex-start;gap:10px;">' +
+          '<span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;">' + letter + '</span>' +
+          '<span>' + _esc(opt.text || '') + '</span>' +
+        '</div>' +
+        '<div data-sc-score style="display:none;margin-top:8px;padding-left:34px;align-items:center;gap:6px;">' +
+          dots + '<span style="font-size:11px;font-weight:700;color:' + dotColor + ';">' + lbl + '</span>' +
+        '</div>' +
+      '</button>';
+  });
+
+  var revealFn = '(function(btn){' +
+    'var w=btn.closest(\'[data-sc-wrap]\');' +
+    'if(!w.querySelector(\'[data-selected]\'))return;' +
+    'w.querySelectorAll(\'[data-sc-score]\').forEach(function(d){d.style.display=\'flex\';});' +
+    'w.querySelectorAll(\'[data-opt-id]\').forEach(function(o){' +
+      'o.style.opacity=o.hasAttribute(\'data-selected\')?\'1\':\'0.55\';' +
+      'o.style.pointerEvents=\'none\';' +
+    '});' +
+    'var rat=w.querySelector(\'[data-sc-rat]\');if(rat)rat.style.display=\'block\';' +
+    'btn.style.display=\'none\';' +
+  '})(this)';
+
+  return '<div id="a2ui-' + _esc(id) + '" data-atom="scenario_case" data-sc-wrap style="margin:0 0 28px;font-family:system-ui,sans-serif;">' +
+    '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">' +
+      (domain ? '<span style="background:#ede9fe;color:#6d28d9;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;">' + _esc(domain) + '</span>' : '') +
+      (diff   ? '<span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:500;">'   + _esc(diff)   + '</span>' : '') +
+    '</div>' +
+    '<div style="border-left:3px solid #6366f1;padding:14px 18px;background:#fafaf9;border-radius:0 6px 6px 0;margin-bottom:18px;">' +
+      '<p style="margin:0;font-size:14px;line-height:1.75;color:#374151;">' + _esc(scenario) + '</p>' +
+    '</div>' +
+    '<p style="font-size:15px;font-weight:600;color:#0f172a;margin:0 0 12px;">' + _esc(question) + '</p>' +
+    optHtml +
+    '<button onclick="' + revealFn + '" style="margin-top:6px;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;">Check answer</button>' +
+    '<div data-sc-rat style="display:none;margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;">' +
+      '<p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.06em;">Rationale</p>' +
+      '<p style="margin:0;font-size:14px;line-height:1.65;color:#166534;">' + _esc(rationale) + '</p>' +
+    '</div>' +
+  '</div>';
+};
+
 _RENDERERS['sla_timer_display'] = function(b) {
   var title     = b.title     || 'SLA Timer';
   var severity  = b.severity  || 'P0';
