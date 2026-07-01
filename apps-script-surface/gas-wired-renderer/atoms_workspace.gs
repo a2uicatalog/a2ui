@@ -780,3 +780,92 @@ _RENDERERS['drive_file_card'] = function(b) {
     '</div>'
   );
 };
+
+// ── sla_timer_display ─────────────────────────────────────────────────────────
+// Live SLA countdown — elapsed time from app load with threshold state badge.
+// Wire: elapsed_fmt → "#store.elapsed_fmt", sla_state → "#store.sla_state", pct → "#store.elapsed_sec"
+_RENDERERS['jump_nav'] = function(b) {
+  var links = Array.isArray(b.links) ? b.links : [];
+  var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px;">';
+  links.forEach(function(link) {
+    var label  = link.label  || '';
+    var target = link.target || '';
+    html += '<button onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
+          + ' style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
+          + ' onmouseover="this.style.background=\'#e2e8f0\'" onmouseout="this.style.background=\'#f1f5f9\'">'
+          + _esc(label)
+          + '</button>';
+  });
+  html += '</div>';
+  return html;
+};
+
+_RENDERERS['command_step'] = function(b) {
+  var cmd   = b.command || '';
+  var label = b.label   || '';
+  var hint  = b.hint    || '';
+  var done  = b.done === true || b.done === 'true';
+  var id    = 'cs_' + Math.random().toString(36).slice(2, 8);
+
+  var checkColor  = done ? '#22c55e' : '#cbd5e1';
+  var checkBg     = done ? '#f0fdf4' : '#f8fafc';
+  var cmdOpacity  = done ? '0.5' : '1';
+
+  return '<div style="font-family:system-ui,sans-serif;margin:8px 0;">' +
+    (label ? '<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
+    '<div style="display:flex;align-items:stretch;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;opacity:' + cmdOpacity + ';">' +
+      '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">' +
+        '<span style="color:#64748b;user-select:none;">$ </span>' + _esc(cmd) +
+      '</div>' +
+      '<button id="' + id + '_copy" data-cmd="' + _esc(cmd) + '" onclick="(function(b){' +
+        'navigator.clipboard.writeText(b.getAttribute(\'data-cmd\'));' +
+        'b.textContent=\'✓\';b.style.background=\'#22c55e\';' +
+        'setTimeout(function(){b.textContent=\'Copy\';b.style.background=\'#1e293b\';},1500);' +
+      '})(this)" style="background:#1e293b;color:#94a3b8;border:none;padding:0 16px;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">' +
+        'Copy' +
+      '</button>' +
+    '</div>' +
+    '<label style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;user-select:none;">' +
+      '<input type="checkbox" data-cs-done ' + (done ? 'checked' : '') + ' ' +
+        'onchange="(function(el){' +
+          'var w=el.closest(\'[data-atom-id]\');' +
+          'if(w&&w._a2uiWire&&w._a2uiWire.setDone){w._a2uiWire.setDone(el.checked);}' +
+        '})(this)" ' +
+        'style="width:16px;height:16px;accent-color:#22c55e;cursor:pointer;">' +
+      '<span style="font-size:0.8rem;color:' + (done ? '#22c55e' : '#94a3b8') + ';font-weight:' + (done ? '600' : '400') + ';">' +
+        (done ? 'Done' : 'Mark as done') +
+      '</span>' +
+    '</label>' +
+    (hint ? '<div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;padding-left:2px;">' + _esc(hint) + '</div>' : '') +
+  '</div>';
+};
+
+_RENDERERS['sla_timer_display'] = function(b) {
+  var title     = b.title     || 'SLA Timer';
+  var severity  = b.severity  || 'P0';
+  var sla_label = b.sla_label || '3 min SLA';
+  var elapsed   = b.elapsed_fmt || '0s';
+  var state     = b.sla_state   || 'ok';
+  var pct       = Math.min(Math.max(0, parseFloat(b.pct) || 0), 100);
+
+  var stateColor = state === 'breach' ? '#ef4444' : state === 'warn' ? '#f97316' : '#22c55e';
+  var stateLabel = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
+  var pulse      = state === 'breach' ? 'animation:a2ui-pulse 1s infinite;' : '';
+
+  return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;padding:28px 32px;font-family:system-ui,sans-serif;">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">' +
+      '<div>' +
+        '<span style="display:inline-block;background:#ef4444;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _esc(severity) + '</span>' +
+        '<span style="color:#94a3b8;font-size:0.85rem;font-weight:500;">' + _esc(title) + '</span>' +
+      '</div>' +
+      '<span data-sla-badge style="display:inline-block;background:' + stateColor + ';color:#fff;font-size:0.72rem;font-weight:800;letter-spacing:0.08em;padding:4px 14px;border-radius:99px;' + pulse + '">' + stateLabel + '</span>' +
+    '</div>' +
+    '<div data-sla-time style="font-size:3.5rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.03em;line-height:1;margin-bottom:20px;font-variant-numeric:tabular-nums;">' + _esc(elapsed) + '</div>' +
+    '<div style="display:flex;align-items:center;gap:10px;">' +
+      '<div style="flex:1;height:6px;background:#1e293b;border-radius:99px;overflow:hidden;">' +
+        '<div data-sla-bar style="height:100%;width:' + pct + '%;background:' + stateColor + ';border-radius:99px;transition:width 0.9s linear,background 0.4s;"></div>' +
+      '</div>' +
+      '<span style="color:#64748b;font-size:0.72rem;white-space:nowrap;">' + _esc(sla_label) + '</span>' +
+    '</div>' +
+  '</div>';
+};

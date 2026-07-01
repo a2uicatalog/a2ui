@@ -1,121 +1,903 @@
 {
   "schemaVersion": "1.0",
   "type": "a2ui_wired_surface",
-  "title": "Incident Log",
-  "theme": "dark",
+  "title": "Major Incident Response",
+  "theme": "light",
   "app": {
     "id": "incident-log",
-    "storage": { "type": "my_drive", "sheet": "Incident_Log" },
-    "auth":    { "mode": "publisher" },
-    "data":    { "isolation": "none" }
+    "storage": {
+      "type": "my_drive",
+      "sheet": "MajorIncidents"
+    },
+    "auth": {
+      "mode": "publisher"
+    },
+    "data": {
+      "isolation": "none"
+    }
   },
   "state_primitives": [
-    { "id": "update_mem",   "primitive": "ValueStore",      "props": { "initialValue": "" } },
-    { "id": "severity_mem", "primitive": "ValueStore",      "props": { "initialValue": "P2" } },
-    { "id": "update_valid", "primitive": "StringValidator", "props": {
-        "source": "#update_mem.value",
-        "pattern": ".{10,}",
-        "errorMessage": "Update must be at least 10 characters"
-    }},
-    { "id": "incident_filter", "primitive": "ArrayFilter", "props": {} },
-    { "id": "update_count",    "primitive": "ValueStore",   "props": { "initialValue": 0 } }
+    {
+      "id": "incident_id_mem",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "resolve_id_mem",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "comms_to_mem",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "comms_msg_mem",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "ic_query",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "comms_query",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "tech_query",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "ic_assign",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": null
+      }
+    },
+    {
+      "id": "comms_assign",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": null
+      }
+    },
+    {
+      "id": "tech_assign",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": null
+      }
+    },
+    {
+      "id": "refresh_5s",
+      "primitive": "Timer",
+      "props": {
+        "interval": 5000
+      },
+      "wire": {
+        "tick": "#incidents_query.run"
+      }
+    },
+    {
+      "id": "refresh_kpi_open",
+      "primitive": "Timer",
+      "props": {
+        "interval": 30000
+      },
+      "wire": {
+        "tick": "#kpi_open_query.run"
+      }
+    },
+    {
+      "id": "refresh_kpi_claimed",
+      "primitive": "Timer",
+      "props": {
+        "interval": 30000
+      },
+      "wire": {
+        "tick": "#kpi_claimed_query.run"
+      }
+    },
+    {
+      "id": "refresh_kpi_resolved",
+      "primitive": "Timer",
+      "props": {
+        "interval": 30000
+      },
+      "wire": {
+        "tick": "#kpi_resolved_query.run"
+      }
+    },
+    {
+      "id": "webhook_url_mem",
+      "primitive": "ValueStore",
+      "props": {
+        "initialValue": ""
+      }
+    },
+    {
+      "id": "incidents_enriched",
+      "primitive": "DerivedStore",
+      "props": {
+        "from": "#incidents_query.result",
+        "expr": "augment_rows",
+        "interval": 5000,
+        "add": [
+          {
+            "col": "elapsed_sec",
+            "op": "elapsed_seconds",
+            "field": "opened_at"
+          },
+          {
+            "col": "elapsed_fmt",
+            "op": "format_duration",
+            "src": "elapsed_sec"
+          },
+          {
+            "col": "sla_state",
+            "op": "threshold_by_field",
+            "src": "elapsed_sec",
+            "key": "severity",
+            "thresholds": {
+              "P1": {
+                "warn": 900,
+                "breach": 7200
+              },
+              "P2": {
+                "warn": 1800,
+                "breach": 14400
+              },
+              "P3": {
+                "warn": 3600,
+                "breach": 28800
+              },
+              "P4": {
+                "warn": 7200,
+                "breach": 86400
+              }
+            }
+          }
+        ]
+      }
+    }
   ],
   "actions": [
     {
-      "id": "load_updates",
+      "id": "incidents_query",
       "type": "gas:sheet_query",
       "trigger": "onLoad",
       "props": {
-        "sheet":    "Incident_Log",
-        "order_by": [{ "column": "logged_at", "dir": "desc" }],
-        "limit":    50
-      },
-      "wire": { "result": "#incident_filter.source" }
+        "sheet": "MajorIncidents",
+        "order_by": [
+          {
+            "column": "opened_at",
+            "dir": "desc"
+          }
+        ]
+      }
     },
     {
-      "id": "post_update",
-      "type": "gas:sheet_append",
+      "id": "kpi_open_query",
+      "type": "gas:sheet_query",
+      "trigger": "onLoad",
       "props": {
-        "sheet": "Incident_Log",
+        "sheet": "MajorIncidents",
+        "where": {
+          "status": {
+            "ne": "Resolved"
+          }
+        }
+      }
+    },
+    {
+      "id": "kpi_claimed_query",
+      "type": "gas:sheet_query",
+      "trigger": "onLoad",
+      "props": {
+        "sheet": "MajorIncidents",
+        "where": {
+          "status": "Claimed"
+        }
+      }
+    },
+    {
+      "id": "kpi_resolved_query",
+      "type": "gas:sheet_query",
+      "trigger": "onLoad",
+      "props": {
+        "sheet": "MajorIncidents",
+        "where": {
+          "status": "Resolved"
+        }
+      }
+    },
+    {
+      "id": "claim_action",
+      "type": "gas:sheet_upsert",
+      "props": {
+        "sheet": "MajorIncidents",
+        "key_column": "id",
         "collect": {
-          "responder": "{{app.user.name}}",
-          "email":     "{{app.user.email}}",
-          "severity":  "#severity_mem.value",
-          "update":    "#update_mem.value",
-          "logged_at": "{{datetime}}"
+          "key_value": "#incident_id_mem.value",
+          "status": "Claimed",
+          "owner_name": "{{app.user.name}}",
+          "owner_email": "{{app.user.email}}",
+          "updated_at": "{{datetime}}"
         }
       },
-      "onSuccess": ["load_updates"]
+      "onSuccess": [
+        "incidents_query",
+        "kpi_open_query",
+        "kpi_claimed_query",
+        "kpi_resolved_query"
+      ]
     },
     {
-      "id": "send_summary",
+      "id": "create_sheet_action",
+      "type": "gas:sheet_create",
+      "props": {
+        "sheet": "MajorIncidents",
+        "headers": [
+          "id",
+          "severity",
+          "title",
+          "status",
+          "owner_name",
+          "owner_email",
+          "opened_at",
+          "updated_at"
+        ],
+        "seed_rows": [
+          [
+            "INC0001042",
+            "P1",
+            "Payment gateway \u2014 checkout failures in EU region",
+            "New",
+            "",
+            "",
+            "{{datetime}}",
+            ""
+          ],
+          [
+            "INC0001041",
+            "P2",
+            "Auth service latency spike \u2014 p99 > 8s",
+            "New",
+            "",
+            "",
+            "{{datetime}}",
+            ""
+          ],
+          [
+            "INC0001040",
+            "P2",
+            "Notification pipeline backed up \u2014 45 min delay",
+            "New",
+            "",
+            "",
+            "{{datetime}}",
+            ""
+          ],
+          [
+            "INC0001039",
+            "P3",
+            "Report export timing out for large date ranges",
+            "New",
+            "",
+            "",
+            "{{datetime}}",
+            ""
+          ],
+          [
+            "INC0001038",
+            "P3",
+            "Dashboard tiles not loading for Safari users",
+            "New",
+            "",
+            "",
+            "{{datetime}}",
+            ""
+          ]
+        ]
+      },
+      "onSuccess": [
+        "incidents_query",
+        "kpi_open_query",
+        "kpi_claimed_query",
+        "kpi_resolved_query"
+      ]
+    },
+    {
+      "id": "create_chat_space",
+      "type": "gas:chat_space_create",
+      "props": {
+        "name": "MIM War Room",
+        "space_type": "SPACE",
+        "external_users": true,
+        "initial_message": "War Room open. This space is for live incident coordination.",
+        "collect": {
+          "members": "#comms_to_mem.value"
+        }
+      }
+    },
+    {
+      "id": "send_update_action",
       "type": "gas:email_send",
       "props": {
-        "to":      "{{app.user.email}}",
-        "subject": "Incident timeline as of {{datetime}}",
-        "body":    "Incident timeline requested by {{app.user.name}} at {{datetime}}.",
-        "is_html": false
+        "subject": "[MIM WAR ROOM] Incident Status Update",
+        "body": "{{comms_msg}}\n\n---\nSent from MIM War Room by {{app.user.name}} ({{app.user.email}})",
+        "collect": {
+          "to": "#comms_to_mem.value",
+          "comms_msg": "#comms_msg_mem.value"
+        }
+      }
+    },
+    {
+      "id": "create_war_room",
+      "type": "gas:calendar_meet",
+      "props": {
+        "title": "MIM War Room \u2014 Major Incident Response",
+        "duration_minutes": 60,
+        "description": "Live incident command session. Track, claim and resolve active incidents."
+      }
+    },
+    {
+      "id": "ic_search",
+      "type": "gas:directory_search",
+      "props": {
+        "collect": {
+          "query": "#ic_query.value"
+        }
+      }
+    },
+    {
+      "id": "comms_search",
+      "type": "gas:directory_search",
+      "props": {
+        "collect": {
+          "query": "#comms_query.value"
+        }
+      }
+    },
+    {
+      "id": "tech_search",
+      "type": "gas:directory_search",
+      "props": {
+        "collect": {
+          "query": "#tech_query.value"
+        }
+      }
+    },
+    {
+      "id": "chat_status_send",
+      "type": "gas:chat_message_send",
+      "props": {
+        "sheet": "MajorIncidents",
+        "collect": {
+          "context": "#comms_msg_mem.value"
+        }
+      }
+    },
+    {
+      "id": "resolve_action",
+      "type": "gas:sheet_upsert",
+      "props": {
+        "sheet": "MajorIncidents",
+        "key_column": "id",
+        "collect": {
+          "key_value": "#resolve_id_mem.value",
+          "status": "Resolved",
+          "updated_at": "{{datetime}}"
+        }
+      },
+      "onSuccess": [
+        "incidents_query",
+        "kpi_open_query",
+        "kpi_claimed_query",
+        "kpi_resolved_query"
+      ]
+    },
+    {
+      "id": "save_webhook_action",
+      "type": "gas:save_property",
+      "props": {
+        "key": "CHAT_WEBHOOK_URL",
+        "collect": {
+          "value": "#webhook_url_mem.value"
+        }
       }
     }
   ],
   "layout": [
     {
-      "atom": "heading",
-      "props": { "text": "Incident Log", "level": 2 }
-    },
-    {
-      "atom": "sheet_badge",
-      "props": {}
-    },
-    {
-      "atom": "data_table",
-      "id": "incident-table",
+      "atom": "me",
       "props": {
-        "columns":      ["logged_at", "responder", "severity", "update"],
-        "emptyMessage": "No updates logged yet."
-      },
-      "wire": { "rows": "#incident_filter.output" }
-    },
-    {
-      "atom": "heading",
-      "props": { "text": "Log an update", "level": 3 }
-    },
-    {
-      "atom": "text_input",
-      "id": "severity-field",
-      "props": {
-        "label": "Severity",
-        "placeholder": "P1 / P2 / P3",
-        "value": "P2"
-      },
-      "wire": { "onChange": "#severity_mem.setValue" }
-    },
-    {
-      "atom": "text_input",
-      "id": "update-field",
-      "props": { "label": "Update", "placeholder": "What's happening? What did you just do?" },
-      "wire": { "onChange": "#update_mem.setValue" }
-    },
-    {
-      "atom": "inline_feedback_message",
-      "id": "update-error",
-      "props": { "type": "error", "text": "Update must be at least 10 characters" },
-      "wire": { "visible": "#update_valid.isInvalid" }
-    },
-    {
-      "atom": "ripple_button",
-      "id": "post-btn",
-      "props": { "label": "Log update", "accent": "#ff4444" },
-      "wire": {
-        "onClick":  "#post_update.run",
-        "disabled": "#update_valid.isNotValid"
+        "position": "top-right",
+        "show_name": false
       }
     },
     {
+      "atom": "dark_hero",
+      "props": {
+        "heading": "Major Incident Response",
+        "subtext": "Live incident tracking \u00b7 Claim ownership \u00b7 Drive to resolution",
+        "badge": "MIM WAR ROOM",
+        "align": "left",
+        "gradient": "linear-gradient(135deg,#ef4444 0%,#dc2626 40%,#7c3aed 100%)"
+      }
+    },
+    {
+      "atom": "presence_surface",
+      "props": {
+        "surface_id": "incident-log",
+        "label": "Responders online",
+        "interval": 5,
+        "ping_every": 60,
+        "threshold": 90,
+        "guard_sheet": "MajorIncidents"
+      }
+    },
+    {
+      "atom": "row_open",
+      "props": {
+        "gap": "20px",
+        "align": "center",
+        "style": "margin:28px 0 8px;"
+      }
+    },
+    {
+      "id": "kpi-open",
+      "atom": "glowing_stat",
+      "props": {
+        "value": "\u2014",
+        "label": "Active",
+        "colour": "#ef4444",
+        "size": "3.5rem"
+      },
+      "wire": {
+        "count": "#kpi_open_query.total"
+      },
+      "container_style": "flex:1;"
+    },
+    {
+      "id": "kpi-claimed",
+      "atom": "glowing_stat",
+      "props": {
+        "value": "\u2014",
+        "label": "Claimed",
+        "colour": "#f97316",
+        "size": "3.5rem"
+      },
+      "wire": {
+        "count": "#kpi_claimed_query.total"
+      },
+      "container_style": "flex:1;"
+    },
+    {
+      "id": "kpi-resolved",
+      "atom": "glowing_stat",
+      "props": {
+        "value": "\u2014",
+        "label": "Resolved",
+        "colour": "#22c55e",
+        "size": "3.5rem"
+      },
+      "wire": {
+        "count": "#kpi_resolved_query.total"
+      },
+      "container_style": "flex:1;"
+    },
+    {
+      "atom": "row_close"
+    },
+    {
+      "atom": "row_open",
+      "props": {
+        "gap": "12px",
+        "align": "center",
+        "style": "margin:20px 0 4px;"
+      }
+    },
+    {
+      "id": "war-room-meet-btn",
+      "atom": "meet_button",
+      "props": {
+        "label": "Create War Room",
+        "join_label": "Join War Room",
+        "accent": "#4285f4"
+      },
+      "wire": {
+        "onClick": "#create_war_room.run",
+        "meetLink": "#create_war_room.meetLink",
+        "calLink": "#create_war_room.calLink"
+      }
+    },
+    {
+      "id": "sn-import",
+      "atom": "csv_import",
+      "props": {
+        "label": "Import from ServiceNow",
+        "sheet": "MajorIncidents",
+        "mapping": "servicenow",
+        "accent": "#0ea5e9"
+      }
+    },
+    {
+      "id": "create-sheet-btn",
       "atom": "ripple_button",
-      "id": "email-btn",
-      "props": { "label": "Email me the timeline", "accent": "#6366f1" },
-      "wire": { "onClick": "#send_summary.run" }
+      "props": {
+        "label": "Create MajorIncidents sheet + seed data",
+        "accent": "#6366f1"
+      },
+      "wire": {
+        "onClick": "#create_sheet_action.run"
+      }
+    },
+    {
+      "id": "create-sheet-ok",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "success",
+        "text": "Sheet created with 5 demo incidents. Reloading..."
+      },
+      "wire": {
+        "visible": "#create_sheet_action.isSuccess"
+      }
+    },
+    {
+      "id": "create-sheet-err",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "error",
+        "text": "Could not create sheet \u2014 check Drive permissions."
+      },
+      "wire": {
+        "visible": "#create_sheet_action.isError"
+      }
+    },
+    {
+      "atom": "row_close"
+    },
+    {
+      "atom": "divider",
+      "props": {}
+    },
+    {
+      "atom": "subheading",
+      "props": {
+        "text": "War Room Roles"
+      }
+    },
+    {
+      "id": "ic-picker",
+      "atom": "people_picker",
+      "props": {
+        "role": "Incident Commander",
+        "placeholder": "Search name or email\u2026",
+        "accent": "#ef4444"
+      },
+      "wire": {
+        "onChange": "#ic_query.setValue",
+        "onSearch": "#ic_search.run",
+        "results": "#ic_search.results",
+        "onAssign": "#ic_assign.setValue"
+      }
+    },
+    {
+      "id": "comms-picker",
+      "atom": "people_picker",
+      "props": {
+        "role": "Comms Lead",
+        "placeholder": "Search name or email\u2026",
+        "accent": "#0ea5e9"
+      },
+      "wire": {
+        "onChange": "#comms_query.setValue",
+        "onSearch": "#comms_search.run",
+        "results": "#comms_search.results",
+        "onAssign": "#comms_assign.setValue"
+      }
+    },
+    {
+      "id": "tech-picker",
+      "atom": "people_picker",
+      "props": {
+        "role": "Tech Lead",
+        "placeholder": "Search name or email\u2026",
+        "accent": "#8b5cf6"
+      },
+      "wire": {
+        "onChange": "#tech_query.setValue",
+        "onSearch": "#tech_search.run",
+        "results": "#tech_search.results",
+        "onAssign": "#tech_assign.setValue"
+      }
+    },
+    {
+      "atom": "divider",
+      "props": {}
+    },
+    {
+      "atom": "subheading",
+      "props": {
+        "text": "Chat Card Preview"
+      }
+    },
+    {
+      "id": "chat-card-preview",
+      "atom": "chat_card",
+      "props": {
+        "title": "MIM War Room Status",
+        "subtitle": "Live"
+      },
+      "wire": {
+        "rows": "#incidents_query.result"
+      }
+    },
+    {
+      "atom": "divider",
+      "props": {}
+    },
+    {
+      "atom": "subheading",
+      "props": {
+        "text": "Stakeholder Comms"
+      }
+    },
+    {
+      "id": "comms-to-field",
+      "atom": "form_input",
+      "props": {
+        "label": "To (email)",
+        "placeholder": "stakeholders@company.com, vp-eng@company.com",
+        "type": "email"
+      },
+      "wire": {
+        "onChange": "#comms_to_mem.setValue"
+      }
+    },
+    {
+      "id": "comms-msg-field",
+      "atom": "form_textarea",
+      "props": {
+        "label": "Update message / context for Chat",
+        "placeholder": "Current status: the payment gateway team has identified the root cause and a fix is being deployed. ETA to resolution: 30 minutes.",
+        "rows": 3
+      },
+      "wire": {
+        "onChange": "#comms_msg_mem.setValue"
+      }
+    },
+    {
+      "id": "chat-space-btn",
+      "atom": "chat_space_button",
+      "props": {
+        "label": "Create Chat Space",
+        "join_label": "Open Chat Space",
+        "accent": "#1a73e8"
+      },
+      "wire": {
+        "onClick": "#create_chat_space.run",
+        "spaceUrl": "#create_chat_space.spaceUrl"
+      }
+    },
+    {
+      "id": "chat-space-ok",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "success",
+        "text": "Chat space created."
+      },
+      "wire": {
+        "visible": "#create_chat_space.isSuccess"
+      }
+    },
+    {
+      "id": "chat-space-err",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "error"
+      },
+      "wire": {
+        "visible": "#create_chat_space.isError",
+        "text": "#create_chat_space.error"
+      }
+    },
+    {
+      "atom": "subheading",
+      "props": {
+        "text": "Chat Webhook URL"
+      }
+    },
+    {
+      "id": "webhook-url-field",
+      "atom": "form_input",
+      "props": {
+        "label": "Webhook URL",
+        "placeholder": "https://chat.googleapis.com/v1/spaces/.../messages?key=...&token=...",
+        "hint": "Space \u2192 Apps & Integrations \u2192 Add webhooks \u2192 copy URL"
+      },
+      "wire": {
+        "onChange": "#webhook_url_mem.setValue"
+      }
+    },
+    {
+      "id": "save-webhook-btn",
+      "atom": "ripple_button",
+      "props": {
+        "label": "Save webhook URL",
+        "accent": "#6b7280"
+      },
+      "wire": {
+        "onClick": "#save_webhook_action.run"
+      }
+    },
+    {
+      "id": "save-webhook-ok",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "success",
+        "text": "Webhook URL saved."
+      },
+      "wire": {
+        "visible": "#save_webhook_action.isSuccess"
+      }
+    },
+    {
+      "id": "save-webhook-err",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "error"
+      },
+      "wire": {
+        "visible": "#save_webhook_action.isError",
+        "text": "#save_webhook_action.error"
+      }
+    },
+    {
+      "id": "chat-status-send-btn",
+      "atom": "chat_send_button",
+      "props": {
+        "label": "Send Status to Chat",
+        "accent": "#059669"
+      },
+      "wire": {
+        "onClick": "#chat_status_send.run",
+        "isPending": "#chat_status_send.isPending",
+        "isSuccess": "#chat_status_send.isSuccess",
+        "isError": "#chat_status_send.isError"
+      }
+    },
+    {
+      "id": "chat-send-err",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "error"
+      },
+      "wire": {
+        "visible": "#chat_status_send.isError",
+        "text": "#chat_status_send.error"
+      }
+    },
+    {
+      "id": "send-update-btn",
+      "atom": "ripple_button",
+      "props": {
+        "label": "Send stakeholder email",
+        "accent": "#0ea5e9"
+      },
+      "wire": {
+        "onClick": "#send_update_action.run"
+      }
+    },
+    {
+      "id": "send-update-ok",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "success",
+        "text": "Update sent."
+      },
+      "wire": {
+        "visible": "#send_update_action.isSuccess"
+      }
+    },
+    {
+      "id": "send-update-err",
+      "atom": "inline_feedback_message",
+      "props": {
+        "type": "error",
+        "text": "Failed to send \u2014 check the To address."
+      },
+      "wire": {
+        "visible": "#send_update_action.isError"
+      }
+    },
+    {
+      "atom": "divider",
+      "props": {}
+    },
+    {
+      "id": "incidents-table",
+      "atom": "data_table",
+      "props": {
+        "columns": [
+          {
+            "key": "severity",
+            "label": "Sev",
+            "type": "badge",
+            "colors": {
+              "P1": "#ef4444",
+              "P2": "#f97316",
+              "P3": "#eab308",
+              "P4": "#94a3b8"
+            }
+          },
+          {
+            "key": "id",
+            "label": "INC #"
+          },
+          {
+            "key": "title",
+            "label": "Description"
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "type": "badge",
+            "colors": {
+              "New": "#6366f1",
+              "Claimed": "#f97316",
+              "Resolved": "#22c55e"
+            }
+          },
+          {
+            "key": "sla_state",
+            "label": "SLA",
+            "type": "sla_badge",
+            "time_key": "elapsed_fmt"
+          },
+          {
+            "key": "_claim",
+            "label": "Owner",
+            "claim_key": "id",
+            "email_key": "owner_email",
+            "name_key": "owner_name",
+            "action_node": "claim_action",
+            "key_mem_node": "incident_id_mem"
+          },
+          {
+            "key": "_resolve",
+            "label": "",
+            "resolve_key": "id",
+            "status_key": "status",
+            "action_node": "resolve_action",
+            "key_mem_node": "resolve_id_mem"
+          }
+        ],
+        "emptyMessage": "No incidents found. Create the MajorIncidents sheet with columns: id, severity, title, status, owner_name, owner_email, opened_at, updated_at"
+      },
+      "wire": {
+        "rows": "#incidents_enriched.result"
+      }
     }
   ]
 }

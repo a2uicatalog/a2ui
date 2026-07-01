@@ -17,7 +17,8 @@ catalogue_web_preview.html
 apps-script-surface/gas-schema-renderer/.clasp.json
 apps-script-surface/gas-schema-renderer/Code.private.js
 apps-script-surface/gas-schema-renderer-private/
-# gas-fakes-schema-renderer-private/ excluded — personal GAS scopes, not for public repo
+apps-script-surface/gas-wired-renderer/Code.private.gs
+apps-script-surface/gas-fakes-schema-renderer-private/
 apps-script-surface/gas-schema-renderer/*.old
 apps-script-surface/gas-schema-renderer/BREVET_2026_*.md
 apps-script-surface/gas-schema-renderer/MULTIPAGE_NAV_ISSUE.md

@@ -282,6 +282,7 @@ _RENDERERS['ripple_button'] = function(b) {
     + '#' + uid + '{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;'
     + 'background:' + accent + ';color:#fff;border:none;border-radius:10px;'
     + 'padding:10px 24px;font-size:' + size + ';font-weight:700;cursor:pointer;font-family:inherit;' + full + '}'
+    + '#' + uid + ':disabled{opacity:0.4;cursor:not-allowed;}'
     + '.' + uid + '-r{position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);'
     + 'transform:scale(0);animation:' + uid + '-rip 0.5s linear;pointer-events:none;}'
     + '</style>';
@@ -302,6 +303,67 @@ _RENDERERS['ripple_button'] = function(b) {
   var icon = b.icon ? _esc(b.icon) + ' ' : '';
   return css + '<div style="display:flex;justify-content:' + align + ';margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + '<button id="' + uid + '">' + icon + label + '</button></div>' + script;
+};
+
+// ─── live_refresh ─────────────────────────────────────────────────────────────
+// Behaviour atom: polls a named action on a timer. Boot code in A2UIState.html
+// wires the interval automatically from data-a2ui-live-refresh / data-interval.
+// Optional pulsing "● Live" badge (show: false to hide).
+_RENDERERS['live_refresh'] = function(b) {
+  var actionId = b.action || '';
+  var interval = Math.max(5, parseInt(b.interval || 30, 10)) * 1000;
+  var show     = b.show !== false;
+  var color    = b.color || '#22c55e';
+  var label    = b.label || 'Live';
+  var uid      = 'lr' + Math.random().toString(36).substr(2, 5);
+
+  var badge = show
+    ? '<style>'
+        + '@keyframes ' + uid + '{0%,100%{opacity:1}50%{opacity:0.35}}'
+        + '.' + uid + '{display:inline-flex;align-items:center;gap:5px;font-size:0.75rem;font-weight:600;color:' + color + ';margin:0.4rem 0;}'
+        + '.' + uid + ' .dot{width:7px;height:7px;border-radius:50%;background:' + color + ';animation:' + uid + ' 2s ease-in-out infinite;}'
+        + '</style>'
+        + '<div class="' + uid + '"><div class="dot"></div>' + _esc(label) + '</div>'
+    : '';
+
+  return '<div data-a2ui-live-refresh="' + _esc(actionId) + '" data-interval="' + interval + '">' + badge + '</div>';
+};
+
+// ─── presence_surface ─────────────────────────────────────────────────────────
+// Self-contained heartbeat molecule. No wiring needed — boot code manages ping
+// and query via google.script.run.a2uiSurfacePresence() directly.
+_RENDERERS['presence_surface'] = function(b) {
+  var surfaceId  = b.surface_id || b.id || 'default';
+  var label      = b.label !== undefined ? b.label : 'On this page';
+  var threshold  = parseInt(b.threshold  || 90,  10);
+  var queryMs    = Math.max(10, parseInt(b.interval  || 30, 10)) * 1000;
+  var pingMs     = Math.max(30, parseInt(b.ping_every || 60, 10)) * 1000;
+  var guardSheet = b.guard_sheet || '';
+  return '<div data-a2ui-presence-surface'
+       + ' data-surface-id="'  + _esc(surfaceId)  + '"'
+       + ' data-threshold="'   + threshold + '"'
+       + ' data-query-ms="'    + queryMs   + '"'
+       + ' data-ping-ms="'     + pingMs    + '"'
+       + (guardSheet ? ' data-guard-sheet="' + _esc(guardSheet) + '"' : '')
+       + ' style="display:inline-flex;align-items:center;gap:8px;min-height:32px;margin:0.3rem 0;">'
+    + (label ? '<span style="font-size:0.75rem;color:#64748b;font-weight:500;">' + _esc(label) + '</span>' : '')
+    + '<div data-psurf-avatars style="display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;padding-left:6px;min-height:28px;"></div>'
+    + '</div>';
+};
+
+// ─── me ───────────────────────────────────────────────────────────────────────
+// Renders a placeholder server-side; identity resolved client-side via
+// google.script.run.a2uiGetMe() to avoid server-side Session issues.
+_RENDERERS['me'] = function(b) {
+  var pos       = b.position || 'inline';
+  var showName  = b.show_name !== false;
+  var wrapStyle = pos === 'top-right'
+    ? 'position:fixed;top:12px;right:16px;z-index:200;'
+    : 'display:inline-flex;align-items:center;gap:8px;margin:0.3rem 0;';
+  return '<div data-a2ui-me'
+    + ' data-position="' + _esc(pos) + '"'
+    + ' data-show-name="' + (showName ? '1' : '0') + '"'
+    + ' style="' + wrapStyle + '"></div>';
 };
 
 // ─── wave_divider ─────────────────────────────────────────────────────────────
@@ -490,6 +552,205 @@ _RENDERERS['typing_indicator'] = function(b) {
 
 // ─── countdown_ring ───────────────────────────────────────────────────────────
 // Circular countdown that depletes. duration_sec sets total seconds.
+// File picker that reads a CSV client-side and calls gas:sheet_import_csv via google.script.run.
+_RENDERERS['csv_import'] = function(b) {
+  var uid     = 'ci' + Math.random().toString(36).substr(2, 6);
+  var label   = b.label   || 'Import CSV';
+  var sheet   = b.sheet   || '';
+  var mapping = b.mapping || 'servicenow';
+  var accent  = b.accent  || '#0ea5e9';
+  var btnBase = 'border:none;border-radius:8px;padding:9px 18px;font-size:0.875rem;font-weight:600;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;';
+  var upIco   = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5v-2z"/></svg>';
+
+  var html = '<div style="display:flex;flex-direction:column;gap:6px;">'
+    + '<div style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;">'
+    + '<label id="' + uid + '-lbl" style="background:' + _esc(accent) + ';color:#fff;' + btnBase + 'cursor:pointer;">'
+      + upIco + _esc(label)
+      + '<input type="file" id="' + uid + '-file" accept=".csv,.txt" style="display:none;">'
+    + '</label>'
+    + '<button id="' + uid + '-btn" disabled style="background:#94a3b8;color:#fff;' + btnBase + 'cursor:not-allowed;">Import</button>'
+    + '<span id="' + uid + '-name" style="font-size:0.8rem;color:#64748b;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
+    + '</div>'
+    + '<span id="' + uid + '-status" style="font-size:0.8rem;min-height:1.1em;"></span>'
+    + '</div>';
+
+  var js = '<script>(function(){'
+    + 'var fi=document.getElementById("' + uid + '-file");'
+    + 'var btn=document.getElementById("' + uid + '-btn");'
+    + 'var nm=document.getElementById("' + uid + '-name");'
+    + 'var st=document.getElementById("' + uid + '-status");'
+    + 'fi.addEventListener("change",function(){'
+      + 'nm.textContent=fi.files.length?fi.files[0].name:"";'
+      + 'btn.disabled=!fi.files.length;'
+      + 'btn.style.background=fi.files.length?"' + _esc(accent) + '":"#94a3b8";'
+      + 'btn.style.cursor=fi.files.length?"pointer":"not-allowed";'
+    + '});'
+    + 'btn.addEventListener("click",function(){'
+      + 'var f=fi.files[0];if(!f)return;'
+      + 'btn.disabled=true;btn.style.background="#94a3b8";st.style.color="#64748b";st.textContent="Reading…";'
+      + 'var r=new FileReader();'
+      + 'r.onload=function(e){'
+        + 'st.textContent="Importing…";'
+        + 'google.script.run'
+          + '.withSuccessHandler(function(res){'
+            + 'if(res&&res.ok){'
+              + 'var d=res.data;'
+              + 'st.textContent=d.imported+" imported \xb7 "+d.updated+" updated \xb7 "+d.skipped+" skipped";'
+              + 'st.style.color="#16a34a";'
+            + '}else{st.textContent="Error: "+(res&&res.error||"unknown");st.style.color="#ef4444";}'
+            + 'btn.disabled=false;btn.style.background="' + _esc(accent) + '";btn.style.cursor="pointer";'
+            + 'fi.value="";nm.textContent="";'
+          + '})'
+          + '.withFailureHandler(function(err){'
+            + 'st.textContent="Failed: "+(err&&err.message||"unknown");st.style.color="#ef4444";'
+            + 'btn.disabled=false;btn.style.background="' + _esc(accent) + '";btn.style.cursor="pointer";'
+          + '})'
+          + '.a2uiAction("gas:sheet_import_csv",{data:{csv:e.target.result},config:{sheet:"' + _esc(sheet) + '",mapping:"' + _esc(mapping) + '"},appConfig:(window.__A2UI_SCHEMA__||{}).app||{}});'
+      + '};'
+      + 'r.readAsText(f);'
+    + '});'
+    + '})();<\/script>';
+
+  return html + js;
+};
+
+// People picker with domain directory typeahead for role assignment.
+// Wire: onChange→query ValueStore, onSearch→directory_search.run,
+//       results→#search.results, onAssign→assign ValueStore
+_RENDERERS['people_picker'] = function(b) {
+  var role   = _esc(b.role        || 'Role');
+  var ph     = _esc(b.placeholder || 'Search name or email…');
+  var accent = b.accent || '#1a73e8';
+  var bgLite = accent + '18';
+  return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;" data-pp-accent="' + _esc(accent) + '">'
+    + '<span style="min-width:148px;padding:4px 10px;border-radius:999px;background:' + bgLite + ';border:1px solid ' + accent + '44;font-size:0.73rem;font-weight:700;color:' + accent + ';letter-spacing:.04em;flex-shrink:0;text-align:center;">' + role + '</span>'
+    + '<div style="flex:1;position:relative;">'
+      + '<div data-pp-chip style="display:none;margin-bottom:4px;"></div>'
+      + '<div style="display:flex;gap:6px;align-items:center;">'
+        + '<input data-pp-input type="text" placeholder="' + ph + '" autocomplete="off" style="flex:1;border:1px solid #d1d5db;border-radius:8px;padding:7px 12px;font-size:0.84rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor=\'' + accent + '\'" onblur="this.style.borderColor=\'#d1d5db\'">'
+        + '<button data-pp-search type="button" style="display:flex;align-items:center;gap:5px;padding:7px 14px;background:' + accent + ';color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;white-space:nowrap;">'
+          + '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>'
+          + 'Search</button>'
+      + '</div>'
+      + '<div data-pp-drop style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:999;max-height:220px;overflow-y:auto;"></div>'
+    + '</div>'
+    + '</div>';
+};
+
+// Button that posts the current incident status table to an existing Chat space.
+// Wires: onClick→action.run, isPending/isSuccess/isError→visual state transitions.
+// Renders a Google Chat Card v2-style preview panel on the A2UI surface.
+// Wire: rows → #incidents_query.result  (array of row objects)
+// Props: title, subtitle, show_resolved (bool)
+_RENDERERS['chat_card'] = function(b) {
+  var title      = _esc(b.title    || 'MIM War Room Status');
+  var subtitle   = _esc(b.subtitle || '');
+  var sevColors  = { P1: '#dc2626', P2: '#f97316', P3: '#eab308', P4: '#94a3b8' };
+  var stColors   = { New: '#6366f1', Claimed: '#f97316', Resolved: '#22c55e' };
+  function sevIco(s) { return s==='P1'?'🔴':s==='P2'?'🟠':s==='P3'?'🟡':'⚪'; }
+  function stIco(s)  { return s==='Claimed'?'🔧':s==='Resolved'?'✅':'🆕'; }
+
+  var hdr = '<div style="background:#1f2937;border-radius:12px 12px 0 0;padding:14px 18px;display:flex;align-items:center;gap:12px;">'
+    + '<div style="width:38px;height:38px;background:#ef4444;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🚨</div>'
+    + '<div>'
+      + '<div style="font-size:0.95rem;font-weight:700;color:#f9fafb;">' + title + '</div>'
+      + (subtitle ? '<div style="font-size:0.75rem;color:#9ca3af;margin-top:1px;" data-cc-sub>' + subtitle + '</div>' : '<div style="font-size:0.75rem;color:#9ca3af;" data-cc-sub></div>')
+    + '</div>'
+    + '</div>';
+
+  return '<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;font-family:\'Google Sans\',sans-serif;max-width:520px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
+    + hdr
+    + '<div data-cc-body style="background:#fff;padding:0;"></div>'
+    + '<div data-cc-foot style="background:#f9fafb;border-top:1px solid #f3f4f6;padding:10px 18px;font-size:0.78rem;color:#6b7280;"></div>'
+    + '</div>';
+};
+
+// Self-managing: no separate feedback atoms needed.
+_RENDERERS['chat_send_button'] = function(b) {
+  var label     = b.label      || 'Send Status to Chat';
+  var labelBusy = b.label_busy || 'Sending…';
+  var labelOk   = b.label_ok   || 'Sent ✓';
+  var labelErr  = b.label_err  || 'Send failed';
+  var accent    = b.accent     || '#1a73e8';
+  var base = 'border:none;border-radius:8px;padding:10px 20px;font-size:0.875rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background 0.3s,opacity 0.2s;color:#fff;';
+  var sendSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+  var checkSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+  var warnSvg  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+  var spin = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:csb-spin 0.7s linear infinite;"></span>'
+    + '<style>@keyframes csb-spin{to{transform:rotate(360deg);}}</style>';
+  return '<button data-csb'
+    + ' data-accent="'     + _esc(accent)    + '"'
+    + ' data-label="'      + _esc(label)     + '"'
+    + ' data-label-busy="' + _esc(labelBusy) + '"'
+    + ' data-label-ok="'   + _esc(labelOk)   + '"'
+    + ' data-label-err="'  + _esc(labelErr)  + '"'
+    + ' style="background:' + _esc(accent) + ';' + base + '">'
+    + '<span data-csb-ico>' + sendSvg + '</span>'
+    + '<span data-csb-txt>' + _esc(label) + '</span>'
+    + '</button>';
+};
+
+// Button that creates a Google Chat Space, adds members, posts first message.
+// Wire onClick → action run; spaceUrl prop shows Join link when space is created.
+_RENDERERS['chat_space_button'] = function(b) {
+  var createLabel = b.label      || 'Create Chat Space';
+  var joinLabel   = b.join_label || 'Open Chat Space';
+  var accent      = b.accent     || '#1a73e8';
+  var btnBase = 'border:none;border-radius:8px;padding:9px 18px;font-size:0.875rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:opacity 0.15s;';
+  var chatIco = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">'
+    + '<path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>';
+  return '<div style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;">'
+    + '<button data-chat-create style="background:' + _esc(accent) + ';color:#fff;' + btnBase + '">'
+      + chatIco + _esc(createLabel)
+    + '</button>'
+    + '<a data-chat-join href="#" target="_blank" rel="noopener" style="display:none;background:#34a853;color:#fff;text-decoration:none;' + btnBase + '">'
+      + chatIco + _esc(joinLabel)
+    + '</a>'
+    + '</div>';
+};
+
+// Textarea input that fires onChange wire on every keystroke.
+_RENDERERS['form_textarea'] = function(b) {
+  var uid   = 'ta' + Math.random().toString(36).substr(2, 6);
+  var label = b.label       || '';
+  var ph    = b.placeholder || '';
+  var rows  = parseInt(b.rows || 4, 10);
+  return '<div style="display:flex;flex-direction:column;gap:4px;width:100%;">'
+    + (label ? '<label style="font-size:0.8rem;font-weight:600;color:#374151;">' + _esc(label) + '</label>' : '')
+    + '<textarea id="' + uid + '" rows="' + rows + '" placeholder="' + _esc(ph) + '"'
+    + ' style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;'
+    + 'font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;'
+    + 'transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#6366f1\'" onblur="this.style.borderColor=\'#d1d5db\'">'
+    + '</textarea>'
+    + '</div>';
+};
+
+// Button that creates a Google Calendar event with a Meet link.
+// Wire onClick → action run; meetLink prop toggles create↔join states; calLink shows calendar shortcut.
+_RENDERERS['meet_button'] = function(b) {
+  var createLabel = b.label      || 'Create Meeting';
+  var joinLabel   = b.join_label || 'Join Meeting';
+  var accent      = b.accent     || '#4285f4';
+  var btnBase = 'border:none;border-radius:8px;padding:9px 18px;font-size:0.875rem;font-weight:600;cursor:pointer;'
+    + 'display:inline-flex;align-items:center;gap:7px;transition:opacity 0.15s;white-space:nowrap;';
+  var calIco  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">'
+    + '<path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>';
+  var meetIco = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;">'
+    + '<path d="M15 8v8H5V8h10m1-2H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4V7a1 1 0 00-1-1z"/></svg>';
+
+  return '<div style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;">'
+    + '<button data-meet-create style="background:' + _esc(accent) + ';color:#fff;' + btnBase + '">'
+      + calIco + _esc(createLabel)
+    + '</button>'
+    + '<a data-meet-join href="#" target="_blank" rel="noopener" style="display:none;background:#16a34a;color:#fff;text-decoration:none;' + btnBase + '">'
+      + meetIco + _esc(joinLabel)
+    + '</a>'
+    + '<a data-meet-cal href="#" target="_blank" rel="noopener" style="display:none;font-size:0.75rem;color:#64748b;text-decoration:none;">'
+      + 'view in Calendar ↗'
+    + '</a>'
+    + '</div>';
+};
+
 _RENDERERS['countdown_ring'] = function(b) {
   var uid   = 'cr' + Math.random().toString(36).substr(2, 5);
   var dur   = parseInt(b.duration_sec || 60, 10);

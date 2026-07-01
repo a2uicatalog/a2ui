@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transfo Gallery — A2UI Atom Catalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070910;
+  --surface:rgba(255,255,255,0.04);
+  --surface-hover:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);
+  --text:#f1f5f9;
+  --muted:#64748b;
+  --dim:#334155;
+  font-family:'Google Sans',system-ui,sans-serif;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text)}
+
+/* background mesh */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 20% -5%,rgba(99,102,241,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 80% 110%,rgba(16,185,129,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+/* header */
+.gal-header{
+  position:fixed;top:0;left:0;right:0;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:rgba(7,9,16,0.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+}
+.gal-logo{
+  display:flex;align-items:center;gap:10px;
+  font-size:.78rem;font-weight:700;color:#94a3b8;letter-spacing:.06em;text-transform:uppercase;
+}
+.gal-logo-mark{
+  width:26px;height:26px;border-radius:7px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+}
+.gal-counter{
+  font-size:.72rem;font-weight:600;color:var(--muted);
+  background:var(--surface);border:1px solid var(--border);
+  padding:4px 10px;border-radius:20px;letter-spacing:.04em;
+}
+
+/* stage */
+.gal-stage{
+  position:fixed;inset:52px 0 0;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* card */
+.gal-card{
+  position:absolute;
+  width:min(560px,88vw);
+  background:rgba(12,14,22,0.9);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 38px 32px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset;
+  transition:transform .38s cubic-bezier(.4,0,.2,1),opacity .28s ease;
+  cursor:default;
+  user-select:none;
+}
+.gal-card.active{transform:translateX(0);opacity:1}
+.gal-card.prev{transform:translateX(-110vw);opacity:0;pointer-events:none}
+.gal-card.next{transform:translateX(110vw);opacity:0;pointer-events:none}
+.gal-card.exit-left{transform:translateX(-110vw);opacity:0;transition:transform .28s ease,opacity .18s ease}
+.gal-card.exit-right{transform:translateX(110vw);opacity:0;transition:transform .28s ease,opacity .18s ease}
+.gal-card.enter-left{transform:translateX(-110vw);opacity:0;transition:none}
+.gal-card.enter-right{transform:translateX(110vw);opacity:0;transition:none}
+
+/* card inner */
+.gal-cat{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;margin-bottom:20px;
+}
+.gal-icon-row{display:flex;align-items:flex-start;gap:18px;margin-bottom:20px}
+.gal-icon{
+  width:60px;height:60px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+}
+.gal-meta{flex:1}
+.gal-title{font-size:1.35rem;font-weight:700;line-height:1.2;color:#f1f5f9;margin-bottom:4px}
+.gal-sub{font-size:.8rem;font-weight:500;color:var(--muted)}
+.gal-desc{font-size:.84rem;line-height:1.6;color:#94a3b8;margin-bottom:20px}
+.gal-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
+.gal-tag{
+  font-size:.66rem;font-weight:600;letter-spacing:.04em;
+  padding:3px 9px;border-radius:6px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+  color:#94a3b8;
+}
+.gal-open{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 20px;border-radius:11px;
+  font-size:.82rem;font-weight:700;
+  text-decoration:none;
+  transition:all .15s;
+  border:1px solid transparent;
+}
+.gal-open:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.gal-open svg{transition:transform .15s}
+.gal-open:hover svg{transform:translateX(3px)}
+
+/* nav arrows */
+.gal-nav{
+  position:fixed;top:50%;transform:translateY(-50%);
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#94a3b8;
+  transition:all .15s;z-index:50;
+  backdrop-filter:blur(8px);
+}
+.gal-nav:hover{background:rgba(255,255,255,0.1);color:#f1f5f9;border-color:rgba(255,255,255,0.18)}
+.gal-nav-l{left:20px}
+.gal-nav-r{right:20px}
+.gal-nav svg{width:18px;height:18px}
+
+/* dots */
+.gal-dots{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:7px;z-index:50;
+}
+.gal-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  cursor:pointer;transition:all .2s;
+}
+.gal-dot.active{width:20px;border-radius:4px}
+
+/* colour themes per app */
+.theme-red   .gal-cat{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.18)}
+.theme-red   .gal-icon{background:rgba(239,68,68,.12)}
+.theme-red   .gal-dot.active,.theme-red .gal-open{background:#dc2626;color:#fff}
+.theme-red   .gal-card{border-color:rgba(239,68,68,.12)}
+
+.theme-indigo .gal-cat{background:rgba(99,102,241,.12);color:#818cf8;border:1px solid rgba(99,102,241,.18)}
+.theme-indigo .gal-icon{background:rgba(99,102,241,.12)}
+.theme-indigo .gal-dot.active,.theme-indigo .gal-open{background:#4f46e5;color:#fff}
+.theme-indigo .gal-card{border-color:rgba(99,102,241,.12)}
+
+.theme-purple .gal-cat{background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.18)}
+.theme-purple .gal-icon{background:rgba(168,85,247,.12)}
+.theme-purple .gal-dot.active,.theme-purple .gal-open{background:#7c3aed;color:#fff}
+.theme-purple .gal-card{border-color:rgba(168,85,247,.12)}
+
+.theme-blue  .gal-cat{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.18)}
+.theme-blue  .gal-icon{background:rgba(59,130,246,.12)}
+.theme-blue  .gal-dot.active,.theme-blue .gal-open{background:#2563eb;color:#fff}
+.theme-blue  .gal-card{border-color:rgba(59,130,246,.12)}
+
+.theme-green .gal-cat{background:rgba(16,185,129,.12);color:#34d399;border:1px solid rgba(16,185,129,.18)}
+.theme-green .gal-icon{background:rgba(16,185,129,.12)}
+.theme-green .gal-dot.active,.theme-green .gal-open{background:#059669;color:#fff}
+.theme-green .gal-card{border-color:rgba(16,185,129,.12)}
+
+.theme-cyan  .gal-cat{background:rgba(6,182,212,.12);color:#22d3ee;border:1px solid rgba(6,182,212,.18)}
+.theme-cyan  .gal-icon{background:rgba(6,182,212,.12)}
+.theme-cyan  .gal-dot.active,.theme-cyan .gal-open{background:#0891b2;color:#fff}
+.theme-cyan  .gal-card{border-color:rgba(6,182,212,.12)}
+
+.theme-amber .gal-cat{background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.18)}
+.theme-amber .gal-icon{background:rgba(245,158,11,.12)}
+.theme-amber .gal-dot.active,.theme-amber .gal-open{background:#d97706;color:#fff}
+.theme-amber .gal-card{border-color:rgba(245,158,11,.12)}
+
+.theme-teal  .gal-cat{background:rgba(20,184,166,.12);color:#2dd4bf;border:1px solid rgba(20,184,166,.18)}
+.theme-teal  .gal-icon{background:rgba(20,184,166,.12)}
+.theme-teal  .gal-dot.active,.theme-teal .gal-open{background:#0d9488;color:#fff}
+.theme-teal  .gal-card{border-color:rgba(20,184,166,.12)}
+</style>
+</head>
+<body>
+
+<header class="gal-header">
+  <div class="gal-logo">
+    <span class="gal-logo-mark">⚡</span>
+    Transfo Gallery
+  </div>
+  <div class="gal-counter" id="counter">1 / 8</div>
+</header>
+
+<div class="gal-stage" id="stage"></div>
+
+<button class="gal-nav gal-nav-l" id="btnPrev" aria-label="Previous">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+<button class="gal-nav gal-nav-r" id="btnNext" aria-label="Next">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+</button>
+
+<div class="gal-dots" id="dots"></div>
+
+<script>
+var BASE = window.location.href.replace(/\?.*$/, '');
+
+var APPS = [
+  {
+    theme: 'red',
+    cat: 'Incident Management',
+    icon: '🚨',
+    title: 'MIM War Room',
+    sub: 'KIA → Porsche Transformation',
+    desc: 'Real-time incident management surface with live action log, role assignments, timelines, and Google Chat integration. Built for critical production incidents.',
+    tags: ['Live Actions', 'Chat Integration', 'Role Management', 'Timeline', 'Escalation'],
+    p: 'H4sIAAAAAAACA8Va_W7jNhJ_FcJBgRZn-5w4ySYpcLhFugfsYT-CeNv7ow0EWqJtNpKoI6UkvoWBPsQ9w73C_X-P0ie5mSFlkbKcOFm3XWCTSBxyPjgz_M1Qn3smXoiM_yC0kSrvXbDe4XDU67NeuSwEPvKjSkb3UoskMpWe8VjQqCxTGn7Pf1aavc1jmYi8ZNfCFCo3lgYWJppUzhclvuFFAc-fezLB19JNGqRqjqOmVJrPBVHU3LNllGh5R-uZhRDlmmfN0vRWuHJVLmhiphKaWFTTVMIMTcMJL7nlbFTKS6dprnLRW62INS9FVGiZyRK4GRj9sS1mJJMoExlKsibE8R94WokJyC7skCqMZZUDCU9pGOmIU72oFiDIndjrmrHKMhOVat8rZma-vyVlHP2zEnq5TwH3uGAp4sU-1wN1uTFynr90ubxK002N97smKb3fJbWYgYsvohOzseInmUFUthYrhb7jKTycjEYjjEjMODYTyPgWpx3Ucej2e6irvNfF8raQkSpE_kzG49FWzvWKOzCOUw5ckv3ydovuwN6llT3zr1cNBLjBrBtjKu3Mll5U1rl8zs0F5XBvSMv5HASDUZW_UzwJRdyW8YFI6UToaLq0vGOVVhnldNwnkJTTeZNIWjoRJu6tbnyjhVv6m0l5DweQNSieMJWlz4nPdb1Vq1VbsGC_f0_ZepfOfTdECl3gd5XJN5SXB1HSyDpgtzhVYYQud2Z9K5ZR40aSZIbnVMQlTcXxuzrHH7RAwdCOOCQR2hKd9T4HZ825hUOfPwMOGlYg3RBfrVYNCSAxmbZo6J0lqgoAMta7iQafSklLEIxR-aSKY2EoIrtCcdPtO_2tY8dvfNtrgXDJmvmxLbCEO2_BQnAIaic8Gc6IO6FluWwgZ2Pi0K4tE_ZbmcCz3A2tC39rdU-8fuy9_XAJCfBwdHyEtFeH9JMvM0S0c5h3z5fs11_-zQAqx7eqKtkMeFRgISZz9uZ7psXc2eCDuMdf9f9gi_AdMPfYWUbE9DUAWAbbfSdjwQCiijxeMlPIW0Gci_Nz9hd2Zp7PY9Tw-KBKOZMx4V9WyEKkMhdsyuNbkbCqIEbHJywDpRKR8uWzmY3PidkYf16LQumSiQf6BTNkPmdkO6gXUq7nguFSTPN8Lp6v1_isYfUdN4up4joBNilsSq5KlkLaQY7IbcJnXEuG0bQbo5vfP5jiBS8jU9TllRdKzUhnPNVZ5f3b9-wfXLNrpQiq2xn1QpOr15dv8LV4gFM_52lkrXHBSl2JPqvxHCQzY2wR1qtXY6jkkH1aSMNoVQZ_0C4CuGC1YVis4EyWOXnXsJ09IUdOLb_egV-nuMQZpHYj8iSyAbslu1CMR0jXyi3V9GfLsfcj2eP1Nbv--PH9TVOgTih5sO9peZw9VcnSZtN1tbNa_ZT_lA8Gg5_yCc6ZaTCCb182XbKNLM6-3kza37TtUKptJuh75ZZH44qvLjs5z7nnGlKZ3fTAb3gKBoLBDBNuYKemeveVwvB_pJxPKk17G0EkVyXVyKejvkVXWhZ1Uf2u5RRZxvMEMpvB_gJ4kYZ002cUJQxHXGgw3Glvphm26ygjuI4XbS0B4oFtlV56442ivult6NHh7WrQTqOS1ffHy6tQu9hR6bU_bk352qkbZRIKgHXwbGQalwC6omv7ye1LEysoLB7K3Xy47oP8YUAubMR04bhrr6b6QwEYAhc4leEMtUUPLyHosUfWOhEKZWQdjaUqBrpuv5mFuq9R6IynRtidqNeBXHEbAQBX4XKIyuAkfaLZB6m33vUwA5QY8HgS_--_jCAxI5xmFrLAV99hd4-VyuaBqvaCKU_mTYZyaZxaiCl2KbCpKGak1FyDeMDINhpzCJVB_errw_FJIub9AzE7hn9s9FX_IImPTo9O2TH-_Soec0A-h6PRV9_0QlsUIA5AMOH3PP1zhl5G3X3MlE9F6jwH7IOQlqkcZevRQdv0OnBRME2EKHdZ59NygeW8SnHtc3wxrwDaRFu7n4HcgGm95kct75xj37V3NCoeAhvGAoWx7r60J0IGyEzmF0dnxQMbMfj5ba9VCw7q9Wue81TdoxYYMiHfdZjB0RJY5jUlexeZqqJS0e0SSSP_RdPGwxMtsl7QmYhVZTe73ZYpVQlWXdGaecklFgNrtWapeLg4_LbXUsVr13yBNl6l56kzO381Pjx9njphp-clGvkdoC9QyU96nk5HR_HJiXieTq3u0e5K-T4dpwryzO6ufni0u6uPyNWP264OuGqAuGqA-GkwLQOfx3fRtCpL1eLfOAWhswCS_6xkHq0J_g5PwTCPY5fHDo6Pzk5mx6FVVX6Z1l25FvSjllzfSvVO5t0060E0PU-30tVjASTPBzLDQs63QWzuouZthwne0qCFzxNb2n5Q949d5aAOgKHdcePK4dzO8cwzEvxEnPc2wfCAFm5vFqDTIhU7bVcoD6Pl2J8Y9gsYXSKFgpyOT09nh0_uk98p2ejfBpKrW19wSadGNAPuWKWvi7MQzDvAZBzywCPEncQTEt8ySNi9LBfsBEr7THkwG05xVysPh8NQkztp5NTGSqcm0tRoZ6s-QusXKwRzlfbVuVRVmlB1b3m47Vl3ZhyYKITOJJUb5tkKvSGeq13yTyLvwIRhUz2cCJioBk-hgk6fdeV1rVJhWvXOoAAnEoH1CqHQj5uBZkmtrFprbHZpCy9HlwJaQUhhm7ITqicYIkEGeI5q1V9_-U_Lt91x3PbtBfZrwjLKiPKHGjcDArbViqOwtUudoOAsqNLStAfdW5r-2t5DOQp7K9Vw2CjVXmYmtI5h74RrTb_EPHUO2moev_LbaiG_3OwyUji-xU7-nWC3qbAufJmlPsHMLzPU2fQknp0-YiivaN1qJ69O7jJTMLzFSt4tZ9tI-wtpUAtiD1uRV1rcSXHfaxfggxhGB4Ub9Y9TrL5xcJdezWTdA8fCqybByis0tOtxd9yekpX2rj_Ides8hFKQ6YjYUg1mUqQBRJ0pnUUyL6ptWOKTYl-Tg33T4Yim4Wr-CkwKni-H8LvP7oqByOf-O7_HYO8Kngph16Z7JAdlZr5FJbQLh5Nmi1a2DcncMcj-zFzzhNqr6Esdyl5WWmOGtx2KC1Yu4MhrXVaUgmdswQ2jPZcgW0J0APDg8OSVEdR742wmH7CbOxVYoSeiSNVSJEP25tPrsCbHO2LmGn_U3HWONX7KeHXvp9t6GA_UUm5DNq_pvQtso7Cb1N3zEGd_hBqhReBlp0P-aizOnkRwjTx1-qGH73W6hWo9vEXf_QI9Us_25h3aexr5eMJuAXKNtF8O454lzZs28uugEh5S8-WlqBhg97Lbp_By4VGXmgBFfU0AMVBHoX_0n5yfnp4_4jOtPmvtMtJcwZMrbjapmmGibTqJnbSTxgtqg22hfLPFUmii33Jjt0kS7GubaHNbSU7beH1JYUfb6R0QbH1B_DSYW-_o5pXURhnni7nf4HaHBDAoH4nqDhG7w9oXdK_l2d_ArnjOKBQ18coyPHng_OZJAgeKea4OXSXZdqDS-gppUPKp_Wqg6XKXPFq_DS5Uqqz-lulWLK2pms8PPIe68zGE7VS7Npm2a10dthqaV0etluDV2FLw6Xhkb7KP6cX5MR9Pz5y2Tgp7hdF0VT5csoOeT7D-MmJN8513J-dTNp9ONOqsXz2mEV6Zew2PftP0DPVa9w29bmGgjG1xBhJ8xPsA4kff9ARa25te96r1gQfWHeFQ_SWI9Z0od98Ct78VwhsgwCTr8fYXvoG8rn0ZSOzKD7o4CsR1mWzD2i2BNm-92iK1vg-mux-RFeXyfXM__8Fr4wBgrCB7MoeHMOI6W1nUA3KufgHosM9qH-8zcqO-w5V91pi0_pss32frD2v6zLsPe2bZcbP6P-Stxnp7LgAA'
+  },
+  {
+    theme: 'indigo',
+    cat: 'Component Library',
+    icon: '⚡',
+    title: 'New Atoms Showcase',
+    sub: 'Latest A2UI Component Catalogue',
+    desc: 'Deep-dive into the newest A2UI atoms: accordion, timeline, sparkline, metric cards, progress bars, tabs and more — all dark-themed and reactive.',
+    tags: ['Accordion', 'Timeline', 'Sparkline', 'Metric Cards', 'Progress', 'Tabs'],
+    p: 'H4sIAAAAAAACA6VZW28bxxX-KwcsUtiqLhR1iSSgSGU7dpM6imDWMdBAIGd3Z7lTDmcWM7OiGcNAgPS5BWoDBfLS5ql9bYGi7_0p-QX9CT1nZpfcWVGU3OYl4uycy3znfvym54STvHcGvfPBy8_ggs_h3OmZhR-_fQ9fCVsxCcNCz1NmeW8beq7gM39diknh6CSROp1aPPr6Tc8tSv9xYlgmuHKjghvtL7Fs4r98XikOg_7gGJ4YXXqOjQL7Rx3xl5Xh8Hg43IbfIBt4wkuuMq5SwS0R2ipZ0j41egYkDCxPndDKgsO_p0JKSJgJ_Pg1NwtXCDWBha4MPDsfQqnLnaoEVpagOM88mdR6CnNtZLaTSmbtLkljaYoPIlk_OT44Ps73V4cDf3qSHKX5sT9FbBSd0Uduem-3YQWNdbwclUZPDLf-GWllTOC8f5sYoqkRlizhkj4H2wTey8PnDB_mOodDZ6rUIZad80uuS9k9fMIc6729ilUOkI4Sw9mU9OkoEUwWFF3I2jsUX49axFmkyNY65kZGz3u3P5-5-vlEQF9__P4H-nLNZFX7TqTX0o-CuIbqP3_-_d9isn7_o4iwcbku3fffRnT9iChyzA7hu79HhOdSRqTDyuQsJbIY8lRLbUY18BuAqeF2Qt0aiwXHWFQTH2r8tWdRYOz6-B0l-rXXB0OD9DmIlLhxbfWsP_4QhW4T7-A1ggcZz1kl3cO20JeWw9ZWxHNri8ItM2wOzDmkx8fCXLgCnRgw02AwY8gKt4DcsBnFrc6BQcqkxBu7cIGxSprbbVAa5swovBNi_beVdXAd3HPOSeAuDKuy1MZZGDf6jrdhbLUUGf7BVAZjZEuuOw4P2RD5S-gbVr37Qvf-nxF0tcQgsI3XkM04wqJnpCN9PIOldvTCVHKmINEm44ZnIWnl2mAaq5zBVwuFv2aMMO0-o8_ZET-NnlGz7vqhY5NRimBnkc7LU69IgBdVSBZgOBqEqZTfChzSdlPZM60n6DXnZWlhmBpRel8ObCkt9uMURYUqunDayWtNDLfvnMR3Lm6Wk-XVj-Orzzh6nohuHG_XEdpGs6NEqCv0poj0KCKta0YnX6dYY9lOZsQ1VxHxYUczrF-veEJCNl17pc3UlizYZHnpIFJkv5-cnux3FPl8-OVFRDOIvz_CnuD4sDIyNle3elARHlERjnxodRy8Wc9KjikgXQAWx1xIfnfoGV2hAb1rem7386smF58OIgTa5WmtKzV0Jyf3NSG6mKVOoE18dA_XwR4F8-AL8k5TZ-6G_uOTu80WHBYusSUqXZf-MKLPj055P7l_vQ_9xZp6nzFbBEu0TNaGZsm7lMKNShbaA8lzuvqml0yCPv38MM8_oJKt2Hkv8vxurWclMwzTdVm0OXzK0gKsyDjVlvGK3xgKZkFgtdBzTLMsnU68v4FHbxdeKimmHMb4s5opiwWEClbrXk4e6Q_zCrvQpY4oCrMzZWosCZipsU5JDytWsYTjOd9jObaN24BXvGKJETzHWhR3CIUoRyTKxz796ro_gbGbeLjucPNwMyC-9vaV95CeqUN8Za88P8n7_7u9TDNEfIDBXhBNAKZtIaqUELRYJhSJGUUusBJmda7HJuASG3qs9QtPYGlmwMJKHSa2FSZDG0hhyRRixib8w0H3L7qBehNnEer11TWwr8Ly6m23LSRnq2-TbEpiwvFZrcc6M7i5Hjmt-IgeGNfx7pf2SPWY1MGqTlbkBn4G8wIFYcORLeKG5rs_3Jqq16mz1qi_DEIcm3JszwKvcRNqj1AkdhaUDlemq22NXR13MA5Kjvx0egYZM9OxDzGG7RAzO4nEuKxfstu483q0VDVLqKEakR9EaEVf4IEfaUPb9nB94msnyDAAx8ZaesJTYWpZNRyPhUkryQwEIdQSQxDfLTQczZBFpL4tLLQR32B6wUwj182Evy6Eich8k4DAenz9AyVXE1cEsO5bH8JICT-F1cwZVQntbAeqdgW73csP7vbyEp0DdWo8WbGwpnhcGScs_MosJgLRoySmgzKPKiGzcJQI3Zw42D-qU4NQgLFBWwMaK3bv7GipH6Pfvj_d5GIlZpZRcMbIwTrn0X6DPCS4vJ-B0EirzUUcju9-VysVz_63eWhnobNBbdROZWzkP0V6dz_cNC-9RupmiHciSOyfnvX7EaehwylsJ2TXRuyUL5R29Z6iId3vd0mfcF7S0mbapqXfttBlh3jQJX5eqbRoEwbX_iDffyHsFD3_gl2LCWvG9k0LEZ4f4n-9_z_BG5Q8yiWbRG-KTulHk3XqUtvDjtgJnKUjqi-EtTRoY5OSNTrP8F79JLIRVj3f1nzx1SU2OZS5Qm5p-M54JqpZbNdUlxxSgza6yfApHn_Dw7xf8rTDTYbFUEtBhXm9xKHdFjBha_hdaut2JPMm3ZjqWTBlQDdy6M6HFv7hk8-YhsphriVq6AMRE00axhbsR7hZZR86yqpm_QmDo2apVVm_BFOrfaDXdSXD5yi0xUxj_7iQmmUxe3xlxrvsBzH7TCve5XtZIXhOw3Ohpjz7TN1D6YOYK9pTrYuPGXdGpBvXeeFKjedtG7ywBWZZM99ViW9YCszlFoHatBVz1CrQWVXH_VLG4CSSQfPzNZaNJlaDDOwVpV5sHGaWDA_iDOBbFGpS7EKlkeIk6t__gjlO6_i_Mss3lMFbtoyfvsahQGFBz3hpW6zLekbFYiUXHbbr5zu_db3R3ixPfftc6DlFpOV1MZxgl1XZG6isUG_FyKoW_fUvsVExQ67WKU3rgVMypqIkZACqgbSdhzlTQRM6RSJIKBbCQEWLCdSG8lRLx93u7vX9n2Jz4xMYfFL-HF6-eN5WgLhzleqM21oHH2p-I4jlFa1KYwbFy_KfDYKTzGjlicxuSH73j3jLWzC0EaYtji1c1HZ9idy9TORCDQcV9gSDx2IzTI9XGk8x6qT0K05WucL_gd-v61b2nmvHsMFeWvsVwYsv8qiGd2EC-KSt21MsnvB16rPBNPRPe2xQiasHhXOlPdvbm2BfWiW7OGrt3bz2cLtGKVgQQTN1fIRdK0NnCHiGfQVZYamQb3DQFXbhHGfnZT8W4r_-5yggUKW4RmQVbG39YnCytfVBC9urt_8FBOXjQP8aAAA'
+  },
+  {
+    theme: 'purple',
+    cat: 'Motion Design',
+    icon: '🎨',
+    title: 'Animate Showcase',
+    sub: 'A2UI Animation & Transition Library',
+    desc: 'Explore the full animation palette: entrance effects, continuous motion, hover transitions, stagger sequences, and scroll-triggered reveals — all declarative.',
+    tags: ['Entrance FX', 'Stagger', 'Continuous', 'Hover FX', 'Scroll Trigger', 'Declarative'],
+    p: 'H4sIAAAAAAACA61Y624bRRR-lcFICEJrOU7ixvlVE6AtQlGEKQgo2s7OnrVHnt1ZZmbtmqpS-VNxkahUKoT6gwgJCfEGPE9egDwCZ2Z37Z31JUmFI8X27LlfvnPGj1uGGwGtI9IadO_fI-dPX5JByhNquEzJKWWT1g3SMmNIHI3go7GxJ6GQbKLx6KvHLTPP3MOMCjAG7GPKGKTGHr7Z2-v14t3lYdedHoYHLO61ntwgS3495kkCKjDwyOlw79Ywzx5n4u29fUuh-beOs9veV5DYk1jJpKF2yqk7id3LCZZ1G6xl6Fdqz6yBoHyzhKQRT0dBJI22xIKGIJxdQpA7g-FNTWNoky9BSRJBBmkEKeOg2-sk4xGTQqq6jX4QgFlXg1ABnXjqPkiNoikDQqt4OHO0mYsyN-mG2HsKFEyBCkdYyXF6DR2NCgPLj0EEgs7x2W6nsyHjCRjFWaDkzPIV30qSKRW5o9nteV6cwIxQIxO9xdQFb5HlBe_7kAk5TyyLz1yvpgVzp8m7yEyDe7cT9g-bqs-__93j_4yHK4zxQR86YevJ1_h3tRzeSyPO0H3lpy6iegzRFrMqyVg7eVLkHT_aUO_hR24gKcO-ti9zocGWr2fKcK6RjQg-Bb8qS7219koi34r1AovsEBtmbBdfZhmpa8scCFDGFwXxPr6aoooErPMe32338irynvxjQfMICNfEjHk6WbF7iSLhqNAeQT-Gbfo2wsWpkgy0LnX4xl-1fk7yJAS1bKDrNv_r1Y-SI4WWB6q0vWqSw1teLGWS4QCweLIhhqXPiCdb4pc6F4NY8Kyuq9XtdB2S6DyO-SPXos9eeMH5AqgiMiapvMlk1KjqCiI2K2YyT00kZ-nCzyhXDh8DTIgNVaeu7VOeABEQX1aeh53V_E64EEFICxRYDmCHxxARfEJiJCE48mw5OWmWp7R4YQNOH6IsrKkCuatg9Q82zpllOc7NGOWvY7_VXRs6j305lBfFWLEX82IFUHz-D6VKNHkbcQ9MEOOXd7zKOlwHH1dukyFTEsP3FklkVY_bsXbdOpJQ9U0O4KXolCqTgtIo2kjbQFZyBijviHQ7fitxVkzWi7O__vbWGbtnDVzQnL6K7vy37_7953md8o6UIwFkkGWaoEs8Mz7Hxdmfv3r0kPCUN2l--bFO87GUE0SQockjLldIf1qjfmhTpJukL1_UST-XaqIzyqDh0qs_6lQnbkHSzTzO6BSRn095tGFBwrMxuM3ziBzYKEtUxc3cTfn2brd15emLKxjFp1MgjKroUgjtAD2A_mUQ2r0cQnUmjdudA6t344aMYTPl6c7OsOJxtu7sPEgfpHflFJPn_uHA0u4J7oMRfgMyUjh5kJ2MhJyRGDtAzjSZy1wRlistVZuc5grI8XBI3iX7xDqsLWB-NGwTzI3goaJq3t4GkrTEqCCUqkzXmpV7ZcGudvAyoLWuae2tOL7EQaej8HxAkIazpZNKGiTShCrE7SIALhoQjcDSGp7mMtdi3ib3NdI9vI1zLMN1Yv4QY6OITqQ0YzLOawt1-zqz-L3cGNzBEQooe-1t_LUGMiIBTtogdAZ4Nn3inhAmeHFxazTi-mtZ8_KzOfsxTiNjl5uQYpTrCi7Onj_zNzc25njTqJb1q-1qKCzGKyRH15T2N8GLs59_IMcgAGvUwBtbWih3Z-vG7uZ5MUHBppnCaoOr6ekzukfj_yGF1R0Xr06OY1vLTamhqrpklQzdbVG0ELPi_bVQdn8VZV2r26XsiBiVQyMEzbzhTdBdJ8uFuJ6ZXqe2Wrm1CvfBurRtVfbqqV9liy0ksz8N6DHWfzHcq4ITow01_h_VfiZ_-hAAAA'
+  },
+  {
+    theme: 'blue',
+    cat: 'Platform Demo',
+    icon: '🧠',
+    title: 'A2UI Meta Demo',
+    sub: 'The Platform Demonstrates Itself',
+    desc: 'A self-referential tour of the A2UI Atom Catalogue — schema-driven composition, dark theme, responsive layout, and the JSON-to-URL rendering pipeline.',
+    tags: ['Self-referential', 'Schema Pipeline', 'Dark Theme', 'Responsive', 'Composition'],
+    p: 'H4sIAAAAAAACA5VXzW7bRhB-lQF7aQVG8U9jJEaLwqjz4yKJjUhpDokhLMmRuBXFZZZLMUIQIKceW6Dtpbn00Gvv7bmPkhdoH6Ezs5RE0nZSQxdpf2ZnvvlmvtHrwGmXYXAIwdHe0xN4__YXeFritMpgaiw8qBYqL4dwjHGmrHJ6ibJ-NMPclcMghMCluJD7ibJzXogyE89LWnn-OnCrQvbSKuKtsoq-w9g1mzrhrUK7OOXNTEWY8cq_v_38O4xThLP1VmwyY3nrk4P9g4PprtjKdIIdS6bAXOezjq1nqXKgS-DgrnJuZlWiKZ5JitbIIZXMPCRFUcIotrpw8PefcN-YWYbwzNh5WagYJfw2fE2Mm7XrIanimL73wvSLe7K6uxPdue1XMz3LeY030QZvQtjGs0BndTyxpuaj_lcT8gaXkcMCxNRSZZVcO7NmUbgmBEkolhR6hFAziCtTQY6YSNAWc4F8minnH-9a3utYHsXEEdWy_M3o9DFM6T0g9sDRyf-yud-xSalpGcwYTp1fnqG14aromR3rBXaMfgEHO2XLbCGQgDMgDzx98vCCwfMO9HNcTZyao6rVSgwVRuee78Fg8NhAbBIEiy8rbTEZDKTeNjgzGIWaoWBdq9yFMEMHkYrnwJCFEGeavp8S0dn4YCDsuZELnRpr7EoCpUAOSxOrqCLCrUDlK3j48BHEKicHVBICha0T5TCkvYReypF4id7wEwoRbcm3aiqLtfF2QdQYgSqKEB4hOVk6cjyEkooyUjYEojY5oLPg_M15A5Kv0gQXplfuP_wBI0Q4cd1a39L9Yq1bjI1N-tV-sHOjpA2KZv3KZfXOjWpT6ylBwWY2BQDvv_8JPGPl65ZoDl9JdY5rw4koqJpPc8rYhiT3caFz3ayq0jElaZnTagVPtNQATI7DTpdh1oH3uwQ6x6aYYR-r8yWBYiaF0lZAwCl79zqorGCROleUhzdv1nU9JD65KsJhbBY3a0VN9avll6Px3bPdybcnx3dPJyfHHRgvAMG7CTpOJ20z_TaxnkmcUsasHx4MbnMNp-lpSwEVOh7SHedJJ2z2vKaibUIfcnSB1bP02nHsXR7HxSxug9j6Lb5sEiVRbLP1tRTc_aY21r8ZgaFIFBUAywu3B_K_R_XUd-CNP-_f_frPXz_CA1MT132T6jL-dnQrnh5czngqsHjeMcfvj9ar1yH6OLVUbhQ_U7hpSsMeyY-aduG491fSDJxiggpc3ESiSmcJKOlYQ-DzKWsc1NqltByR_pRo5ehSYw3adWnfVsJoxV2Quf4x0rPXE2LZzGLp0aus9bK539XQFpgcaU8AG443-tPVBeaphOm7aG_XM4dJJX24pwCuNhNHJT6JlU06A8K9zRTQHxPOMkVlkKl8VnH313kIJNkpEBOJ8FeOBi1tOb5SQrjACrF_N59lupR56iryr3nPZ7ZMl85fpopUI8pEBTdikdBd5oXLVsF1cPBTTx-HkbNV7Cq70S_SKLR6quVdgqK4gMZWI1pojEUClaP5oiWAHAWSvRVMNRJzU0XyRrSb6pwfTFUh2kf1oBaRnlXa-TtcBf5trvS1aCYQIc1va8z4pgTFHbAwJZZhUw7UIaxZ8u81uoCvMK4clXdfG51d9aTx3VsYk8d9aZzeuoM70eWNInaqY4TZTG3COj-7XW8ClvyX1MNj5An4HjWOTjLZOWmZue917XTK3a74HZXzRjlk-FVNntcyol1LH1tZ3obbHodbQ_KHOsaHZzJ2koabC60fPs10PqckZ6b-rBm2yjmd9O4fwuBFsJYFmpL8Zfqbs568OLznW_E7H8ITJGrnYPJsJWU3fBEMvGEJvnGiW5A6Z9pF5pU_2FWjZiaLTbGSw1yYPMlJqRKWm-GtV5opSWzGMjtpDF-KdKsqmTu2kXZhh0lWnllXxt8Ndyv6IRGF-E8diYdWQyr6gO6IZOzD-u9hCLsgvAZUcRrC5-BJCwW54TeqkrQMOrwNYfvHJ4RO1kPotCOSbs7JYTtBwECdB2_Om89__ItoaxkPAAA'
+  },
+  {
+    theme: 'green',
+    cat: 'State & Interactivity',
+    icon: '💰',
+    title: 'Expenses Demo',
+    sub: 'Multi-User Expense Tracking with State',
+    desc: 'Full CRUD expense tracker with A2UI State — add, categorise, and delete expenses. Demonstrates server-side state management and real-time UI updates.',
+    tags: ['A2UI State', 'CRUD', 'Filters', 'Charts', 'Multi-user', 'Spreadsheet'],
+    p: 'H4sIAAAAAAACA61XzW7bRhB-lQXdQ4LahKMgPuRSGLYLBE2Nokp9sV1iRY6khZe77P5YIQQBfZcCfZA8Sp6kM7ukRNKiUgc-2dqZnflmvm9mpXVi8yWU_AaMFVol71nyJj1Njlni6groI594ka2EgSKz3sx5DsEqnAzmq88VKAvsd_jLg3U2GDFiMEqxWDo64VWFn9eJKOgY4h17YkVZyRBP8XJfODLZXEckVqiFhMxbMHQuxRzyOo8wKsJvHaiYzrtlyFfqIpr9TAq7xIsbiui04QsIHm2ZZZ0VRjwGMOgIjg7PJ388yBpINlwtuOOxEqsld03LlFYQzDzPwVo6WmnzYCvsVqaVrJu03EFWGVEKh5nI7bZtCS-1Vy4roSQAWx8y3XDpYYqQIZp0ZSMChS5cBjP5JRtM0sbLMdVCm_rlIhZg85eLZoGbfPly8RpJZXMhXZRHL-a5Mbz-uWNrg0b_X6BuSzSiCqwSX9qbnK7f3hN9NAPhDirTBP-jXRXpY4DVhdRQiuOVPzwBNHUG1Yy1CFSUHoDaJk6OdrpoMpAjd4g5CO_Pu7vix1d3dyn-XZ8eTzavf_qBXMAYbX5FKUaZJ1cKbzDOHikhi0GPGaSLlE3epe9OEfh9kC_V3hOm1LzI2oHt7oUFt-_DoGSxH2QyYrHADqNVq494cVDW-Fhte2vAehmcjvqUpk1TeiLyM-xoi24_ONw8oP4fEPTJtZSQu-B1iSNETuu10qvNhswXzVQFfN0R25Fz2dEQebVjs_M4D93fzy5Vh72b-naP3A4IuA88SV5r7yJNKJ-Sgi2BFyipfqUOPruxLS3hESQaJ7GlbRy6kglV-bBJu9N6MhcgB62UfBaCJNPgwrpKqSSuv6WWRZREUNsnwylrj3OtLpZcRaF2R8qCu-lMVQuQVnDm-Cw-HL3xP9ke7xAipb6MmqarwdpSR_8Phj5SklCXoaxc3Rmia70tj9XgUjYN-mO4_Bl2Qa_SgZb1yu5TMlJH3e1XdZC-a1ixq53KW-befpu5ttKD3F102jFO2jGb6rlbcQMH6OsNxQiB-3ASCwcxXvZpGoEpFHOafdSqQLdxlNuhfAbCKIyDGONks1df_nk9hrHZtqPIOhthBJtQUijUEkAx4_kDukaBDoGGJ2Agp2Y7Ioeq0dp2QXzzgehCfhRWzGQPcXjmUmE_qBDiuaDjKj-hXf10ChrYQs11F3McP4f-X__-dxxg_5VAiL81Sb4Pom12816IHeNw9cbrDgoUKm0p5itaR0X6DOTtu_B9yA8oYmvq95bNuZDPg3g1jDR0ian6FeBg4--AbOadi-Pdwz1zauzRiSg7q5G-gDeP69nbs7P5myezJgV-HduDy_iQpRCW2Cn2aftau5tG3Peb_wCdyDkrOg0AAA'
+  },
+  {
+    theme: 'cyan',
+    cat: 'Live Data Viz',
+    icon: '✈️',
+    title: 'Toulouse ATC',
+    sub: 'Air Traffic Control Radar Demo',
+    desc: 'Real-time ADS-B flight tracking for LFBO/Toulouse-Blagnac. Live aircraft positions, altitude, speed, and squawk codes on an interactive radar display.',
+    tags: ['ADS-B', 'Live Radar', 'Flight Data', 'Real-time', 'Interactive', 'Aviation'],
+    p: 'H4sIAAAAAAACA21TTU4bMRi9ijXdAs0PRYJN5YSkRA0JmiRFFaosx_MN48ZjT20PkKJIPQT7btozsO9ReoIeobaTCRlAyWbe9_ue33d1H9llAdEJigpBl3OlFtEeiqym0nDLlfSRlCbgUZNRDQmZC8UWxgWunoppYuYkBUh8nqR5AAW_CXUMpAVNBLUOPWwfHLWOd9Awo3nQPmo7UNOEl4bI3Gc2PACpBpP5lHfuM-XCF11rVcrEgVaXsNpDT4vkYKl-scntXdjf0orSsN8ZR7X2R43VF58jeAIbctxPiCxdgEpTny3oHITHpvhjb9zve4wyT8SDbxqNY8oC49ckugZFuFFkp5_lVkC1DoovP6Pm4RD9_fGAcLvVlKDQae8Cx9NZ3AujuBZchgI86GwQpmlqSTUEt5qjECitIhLubPUOxD1pmnJWC5LcBJ0bjntQcc34ef6WdoxPcfyCdNpas3nVF1ybwolCmMpzKhOSAAsOy4BfZ6FDWgphmAaQwSvZUitJtspMx7PheDbpoek5DsoMB5_cR4z7_UF3p8CU87qafx7R_f0tUJuBPrjlMlmt6piFvHiOFc4MptSwWq2fhy2c2exGxjAZn072O2GRarP9zhB_GOHudsPDxugcOakGs0n4jnv9uDc5cwY2awZ-PXxxEY9x9wzh7tT3DYmz0SUOHngbo8EIueY7a5jCm_oEtfxZfFdqeyKmUFZs1PT3sAs53cvwUE2fmVBLiVGlZrX73LDfiazvpVBCkG8lmOpqBgbZjBuUQK4QU0q8f5FG1hailhGfsI2rwkc37rihogxzlu7Uanflu7t_VermfOU-8O_nw-8oWHRbK1WtdKQsSpVGOTwr_PUYOXeH33-Ug5Jh7gQAAA'
+  },
+  {
+    theme: 'amber',
+    cat: 'Design System',
+    icon: '🎯',
+    title: 'Icons Showcase',
+    sub: 'Full A2UI Icon & Visual Design System',
+    desc: 'Complete catalogue of all A2UI icon variants, size scales, colour tokens, density modes, and accessibility states — the visual design system reference.',
+    tags: ['Icon Library', 'Color Tokens', 'Size Scale', 'Dark Mode', 'Accessibility', 'Reference'],
+    p: 'H4sIAAAAAAACA7VY3W7bNhR-FcK72JY6nhfHQdqrOc2aBWi7otlaYEOhUNKRRJgiBZJy6hYF9hC9382ebE-wR9ghJdmkIsdJh11ZFsnznf_zUR9HhhkOoydktDj69ZL8_cdncplIQV7RZDkak5EpoHTLnOWFsW9iLpOlxle_fxyZdeUWK8rBGLDLNElAGPvyq-Oj0_mz4-3LI_d2drw4nc9Gn8bEP59DVABNQTnQTqeNKk6xH2Zzu6rreLPhBTWgGOXkal3GkmvyiFxImXMgb6Va6oomQCol0zoxhMtc6glZcE4yJctu49Pzl076B1CSiKqcWAyGwFb-P39-_mvYqkD_EoxiSaTkjd3c_GtdtKK8dnuOxvPp9JFd5zQGPqT9HUhbMdNAxNZMZ15Pgu_rjYRQAFpM8PwSI9A__ezs7Om0j38SnHYBokaW_bM_Lo5nGK5P7wI_aUgMkyKKFdDlna5wIcldhCIXDBt4s-ZtLgq4R1QSyrmsXdJyWDU4TGTSpRi8dwfPMGYaCO4kFoYIWoJGi8jBQSaF0ZNGh0kiy-_sBn1w4FSr8RDWBsGyoKZW4A6Sb2CST8i1wgoBE3Fai6S4HpPrpIBkGSVMJRzsf6NApEzkUV1dfzvpaS15XQrnz8TmxBNybBPSQNlm1FABWtWimKa584vVxb4N9HC1m_cKc-P_582eNl73h_At8xDaxPMR3mB8MwapfZkxzvHpCTGqhgdjet7zINts9SEvMLjmC4zSBQOeerLbbPZlX0GCYR8y5t3_FU6dFFJyT63TeJ5kYUE-B6rEwy3Olawr7YmeAp3D40D0L0DLh0umtZERvQEtSz9BsvljmMaB_MXlf0-NmKooKagyHtTJ7OQk-z6EEpSvje3Rt-K1u0U5xAxcuUe5YmnQk1Kqiya593SlQTFtasx8B2SUa9g1Ub0E6mYVpMxEQjZjeDMhz2Wi_Yb3VuHRMUFANEwq2vwpS4Rwjc11QuF6W-x6o2r7UwdjaIw9eePkDdBVAWACqGdSlTWnekwqtpKGuJP4j4oU--YKSEoNRXAhGp_rSesKqW5Nrw5dc5aCLppBu8V2b33sVwq0NemGmcJCZLhB4JS0JuoSdSecrnE4aBLXjBs0uQfuD78OfIVCZGTHSoD-Ag33sX86J24nKXEB-5RutFhcEiEZzo2EoibofmtzD3U6PZ0dnYeoTMTyfQB4UVLGQ2uZxLiuids7bi1UUPH1eMuEDpkwkNuQpz3Yblr7sGgmtlmspxLnYBHgP22XfBWuHCS2KEhrnM85ZhBO0aXAFCLoaGWDYPf2kLsKeVARuqHDmTZhBUpzF_8J6i-QsLHrLar8te7S3_GBquXBQVsaBAmLsnPLLV7zc20sfUmRqb6WtUjxaUVxh2iU77xvyUeUyhvBJU2HXeaMamHeWBFYXcSec0luFR6TG7C0fUww6imqLStseqiMZh_ARzN1Q6juBjma7mLVDaGWWcYSaytSal86K2kOu0u7Ey8FKCWV7Xs8tpzfSNumMHfQR-5-ocim4XeysUctQUQDEFs-gBeGTf68RCKoiG0gyPJIc5q406TiaFchub2EBIpdKFhrWw5EI7Gvup5iNTuU4rCQq-ba0unk3YaGS6wT_Ft75Rg3l48Y04GjdjZ8NuytW_s81IdKUIkU80Ts8O-Dyqq9vjyUZvtnB8aSK7WQlp2_em1nTsVt2u_v-Xb677j0aMvCsPHtTt7N4KigGc_bVJAE4wAKuQBJodL7-38KK5Y0cybUhdhbEA5OnSgAofc3V-tSrVnMeKv8lpq8vlwcYnzSnk0t17t3RHdU6pcE-KYTFVkRkSuCoG-euRGKPujfve2uvKuebfN07QeJ8KnFxhtUkyeoQlNHtKpcDo3ybs6lCumCe2jZjN6QDb0Z_Yk3lcp2JGdIQZpFbO3uF_mIVhKr6L6O7FlvGVvTYGsMeIIMBl_XsJ8LDs2iAdmBY-23Cl1XlVQ4s4nzy5Yszj1PTnuOdtzxvldv9t7NOvvxhArshXbfvjzp0tGHUNhbqYvXVoxFNjTPm8i2j1EKyL5w7XS644PS7VvTbP-tKfRmm0nudtPlUeuuk-OgHbnVO64aO-V6WTgkuGXEXyK5y99BuY5vuotLmMMZDg3LN6NbU7L7jBV-t7HcxhFxD2nE89FAVSLSv0Y7z-ErFAAA'
+  },
+  {
+    theme: 'teal',
+    cat: 'Pitch Deck',
+    icon: '🏢',
+    title: 'Workspace Pitch',
+    sub: 'A2UI Team Workspace Vision',
+    desc: 'Investor-grade pitch deck built entirely in A2UI — vision narrative, capability matrix, demo screenshots, and roadmap. Schema-driven slides with full navigation.',
+    tags: ['Pitch Deck', 'Navigation', 'Vision', 'Schema-driven', 'Multi-slide', 'Google Workspace'],
+    p: 'H4sIAAAAAAACA61WbW_cRBD-K6ND5UN0vfjuckevQkJRK2ir9EU0oRK0stb22LeKvevuru9yVJX4goQQIAEVSAhRivjA78ov6E9gduxL7EvatNB8uKzHMzuvz-N50nPS5di7Cr3d0cFNOP7qGRxYTKscUm3gRlUIZQdwHeNcGOHkAlm-exN2M1TODnp96Lk5FnxFIsyhF0S5jg8tSb540nOrkt_ZuSwKNKHDI8dG_n_j1j9b-SXr7QwmBgsvSY0uvOS96Xg6TYdetJCCJSn_8TWaBcMgml1hFZHLTHlZTPGh6T3tw8VBnJPyBTmvwx0OxmfincViLNJ2vDjBDzBqxXuq8tp4C2EeV4hsuO7TnTokp-ETrbMc4YE2h7YUMavZEjEhtVFAD5ko6TiZ0rEUlcVQq3CuF-TlKjhTIcljnWsTylgreyqUDoumfbIQGYaVyb3ruXOlvbq9vVx7zHWm7SDWxTaftjOO6PLJ-8u1-DaiY42woFM4CkbTx6Owdj06CpcYhbNpUg5KlfkcchEh-2sS9OZ1Xd5JNNfmookmptNbR-PN32E0u2VpL42C-7GRZROWIFFoWRAOZ6Py6Ewo3ghqk97TR52RWYoFholcyITavG7wBozmKLO5H_ydHXrSFI10K68TDIaT7gQaXKDIeVAV5euk5mG1TmRZ7aA5hgnmwl8yHAevoAAKpSpozuqo_Mtxd9jOM6rdYhJG2jQpnUMMDayuRJM4nbaRF6CY4KyNjN5OHQChTTH4t7aOf_wT7tGlpdvaeqgequroqx8RyOYIxIorXYEia5AKylzQby5UVlH3B7CrVrC3d5tUhQODIrFw6_7dOxALBUQXSAyCIGBBOE-AOdbGxJdisG7c2yZ9SnVN0mfpcbyTjGcXJ_2CRsiHUie9T74TEE4XxH6f-XB9BGCJE2JXGUp1n6ohPAVCaXSpLVr-Xvgi1TkB1cQI8kFvlr4evggGFaXwn9NNJzMMonOp_uRrEEXpaOfCdP8Cgk2d6z1hHSV0LZfxIdwtUQ3g_lxQ9yIC-MGne5xX7mlWKktIYgrqM_T7QN8CQU1vYRBsZVKC9ADuaChliblUyBk_emN0nqb1OnSOuDa5LBuy_p9Ynb0KqgU6I-PQ6KU3q58aFZrkinU-hGlgO7RUY8h_mrh2VEjum58A_7oqa245uSHoWO9R0SzoFG7s3-4aJnqpNkyvTC51jD_GJRryfIjKeiyqs7eccX_8zR-dO_Z16bPctHnzHp7Sz0kPx9MzPQzeiGFTkeCrdqk5XZ57BwSYI7aM42bQ25y43hgezFeg9PIjvk4nHAdtMwxlWxPbwc0BFwwkVU9rUpd21a-PSFhJ6nOlSoOJjB0DxW9FonJa6UJX9mTwiT6Y5zKaAbv2IiDOkbrimGUaumg40_OD9UhzxB35ao05zyvkNLcw550MRO75dQW0yTBAleaY-_6QGlEgf1v5McEy16uCuWqNR7hVWUeBNM6FIrbzMzrY_IS2tq41oQx9GxNpMF73x3CDT5Ysxmp7b4prtZfP__6ls-76clxW9Q5XR9IsE43B8e9ft_VPiThCqjc25eravHz-7Ne2UYfLNlV_-Ketep1WdngfeJqAF3m7afDzt22DG1UESixkVk9qN_bfXrRVP0fDnfARq1ievfnZT52onVj5MWgttBv6333fKSWR8Po73GdKdh7Am90k6xSdk2FUGVtv_dS7jJfgXq5FUmO4YvxMPSEmlVnDcBwEAd33LwMWIP0nDQAA'
+  }
+];
+
+var current = 0;
+var stage = document.getElementById('stage');
+var dotsEl = document.getElementById('dots');
+var counter = document.getElementById('counter');
+var busy = false;
+
+function buildCard(app, cls) {
+  var url = BASE + '?p=' + app.p;
+  var tags = app.tags.map(function(t){ return '<span class="gal-tag">'+t+'</span>'; }).join('');
+  var el = document.createElement('div');
+  el.className = 'gal-card theme-'+app.theme+' '+cls;
+  el.innerHTML =
+    '<span class="gal-cat">'+app.cat+'</span>'+
+    '<div class="gal-icon-row">'+
+      '<div class="gal-icon">'+app.icon+'</div>'+
+      '<div class="gal-meta">'+
+        '<div class="gal-title">'+app.title+'</div>'+
+        '<div class="gal-sub">'+app.sub+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<p class="gal-desc">'+app.desc+'</p>'+
+    '<div class="gal-tags">'+tags+'</div>'+
+    '<a class="gal-open" href="'+url+'" target="_top">'+
+      'Open Demo'+
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'+
+    '</a>';
+  return el;
+}
+
+function buildDots() {
+  dotsEl.innerHTML = '';
+  APPS.forEach(function(_, i) {
+    var d = document.createElement('div');
+    d.className = 'gal-dot theme-'+APPS[current].theme + (i===current?' active':'');
+    d.addEventListener('click', function(){ if(!busy) goTo(i); });
+    dotsEl.appendChild(d);
+  });
+}
+
+function updateDots() {
+  var ds = dotsEl.querySelectorAll('.gal-dot');
+  ds.forEach(function(d,i){
+    d.className = 'gal-dot' + (i===current?' active theme-'+APPS[current].theme:'');
+  });
+}
+
+function goTo(idx, dir) {
+  if (busy || idx === current) return;
+  busy = true;
+  var direction = (dir !== undefined) ? dir : (idx > current ? 1 : -1);
+  var prev = current;
+  current = (idx + APPS.length) % APPS.length;
+
+  var oldCard = stage.querySelector('.gal-card.active');
+  var newCard = buildCard(APPS[current], direction > 0 ? 'enter-right' : 'enter-left');
+  stage.appendChild(newCard);
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if (oldCard) oldCard.classList.replace('active', direction > 0 ? 'exit-left' : 'exit-right');
+      newCard.classList.remove('enter-left','enter-right');
+      newCard.classList.add('active');
+      counter.textContent = (current+1)+' / '+APPS.length;
+      updateDots();
+      setTimeout(function(){
+        if (oldCard && oldCard.parentNode) oldCard.parentNode.removeChild(oldCard);
+        busy = false;
+      }, 380);
+    });
+  });
+}
+
+function init() {
+  var card = buildCard(APPS[0], 'active');
+  stage.appendChild(card);
+  buildDots();
+  counter.textContent = '1 / '+APPS.length;
+}
+
+document.getElementById('btnPrev').addEventListener('click', function(){ goTo(current-1,-1); });
+document.getElementById('btnNext').addEventListener('click', function(){ goTo(current+1, 1); });
+
+document.addEventListener('keydown', function(e) {
+  if (e.key==='ArrowLeft') goTo(current-1,-1);
+  else if (e.key==='ArrowRight') goTo(current+1, 1);
+});
+
+// swipe
+var touchX = 0;
+stage.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, {passive:true});
+stage.addEventListener('touchend', function(e){
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) goTo(dx < 0 ? current+1 : current-1, dx < 0 ? 1 : -1);
+}, {passive:true});
+
+init();
+</script>
+</body>
+</html>

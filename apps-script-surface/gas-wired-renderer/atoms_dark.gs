@@ -73,7 +73,7 @@ _RENDERERS['glowing_stat'] = function(b) {
     '<div style="' + glowStyle +
     'font-size:' + _esc(size) + ';font-weight:900;line-height:1;color:#fff;letter-spacing:-0.02em;">' +
     (prefix ? '<span style="font-size:0.45em;opacity:0.7;vertical-align:0.55em;">' + _esc(prefix) + '</span>' : '') +
-    _esc(value) +
+    '<span data-count>' + _esc(value) + '</span>' +
     (suffix ? '<span style="font-size:0.4em;opacity:0.7;vertical-align:0.6em;margin-left:3px;">' + _esc(suffix) + '</span>' : '') +
     '</div>' +
     (glow

@@ -344,6 +344,11 @@ _RENDERERS['data_table_sortable'] = function(b) {
   var compact = b.compact === true || b.compact === 'true';
   var uid     = Math.random().toString(36).substr(2,6);
 
+  // Normalise string shortcuts to objects so col.key / col.label are always defined
+  columns = columns.map(function(col) {
+    return typeof col === 'string' ? { key: col, label: col } : col;
+  });
+
   if (!columns.length && rows.length) {
     columns = Object.keys(rows[0]).map(function(k){ return { key: k, label: k }; });
   }
@@ -360,6 +365,10 @@ _RENDERERS['data_table_sortable'] = function(b) {
   // Header
   html += '<thead><tr>';
   columns.forEach(function(col) {
+    if (col.key === '_delete') {
+      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:40px;"></th>';
+      return;
+    }
     var align = col.type === 'number' ? 'right' : 'left';
     html += '<th data-key="' + _esc(col.key||'') + '" style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';text-align:' + align + ';cursor:pointer;user-select:none;white-space:nowrap;" onclick="(function(th){var tbl=th.closest(\'table\');var idx=Array.from(th.parentNode.children).indexOf(th);var asc=th.dataset.asc!==\'1\';th.dataset.asc=asc?\'1\':\'\';Array.from(tbl.querySelectorAll(\'th\')).forEach(function(t){t.textContent=t.textContent.replace(/ [▲▼]$/,\'\');});th.textContent+=(asc?\' ▲\':\' ▼\');var tbody=tbl.querySelector(\'tbody\');var rowsArr=Array.from(tbody.querySelectorAll(\'tr\'));rowsArr.sort(function(a,b){var av=a.cells[idx]?a.cells[idx].textContent:\'\',bv=b.cells[idx]?b.cells[idx].textContent:\'\';var an=parseFloat(av),bn=parseFloat(bv);if(!isNaN(an)&&!isNaN(bn))return asc?an-bn:bn-an;return asc?av.localeCompare(bv):bv.localeCompare(av);});rowsArr.forEach(function(r){tbody.appendChild(r);});})(this)">';
     html += _esc(col.label || col.key || '');

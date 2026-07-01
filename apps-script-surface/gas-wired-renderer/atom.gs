@@ -1,5 +1,5 @@
 /**
- * Google Apps Script Web App Renderer — atom.gs
+ * Google Apps Script Web App Renderer — atom.gs (build: sb-fix)
  * Server-side V8 JavaScript engine for rendering A2UI Atom components.
  */
 
@@ -96,6 +96,14 @@ _RENDERERS['text_block'] = function(b) {
 _RENDERERS['heading'] = function(b) {
   var level = b.level || 2;
   return '<h' + level + ' class="asw-heading">' + _esc(b.text) + '</h' + level + '>';
+};
+
+_RENDERERS['presence_bar'] = function(b) {
+  var label = b.label !== undefined ? b.label : 'Active now';
+  return '<div style="display:inline-flex;align-items:center;gap:8px;min-height:32px;margin:0.3rem 0;">'
+    + (label ? '<span style="font-size:0.75rem;color:#64748b;font-weight:500;">' + _esc(label) + '</span>' : '')
+    + '<div data-a2ui-presence style="display:inline-flex;align-items:center;padding-left:6px;min-height:28px;"></div>'
+    + '</div>';
 };
 
 _RENDERERS['subheading'] = function(b) {
@@ -2346,7 +2354,7 @@ _RENDERERS['status_pill'] = function(b) {
 // to app.storage.sheet from the page schema.
 
 _RENDERERS['sheet_badge'] = function(b) {
-  var uid   = _uid();
+  var uid   = 'sb' + Math.random().toString(36).substr(2, 6);
   var sheet = b.sheet || '';
   var label = b.label || 'View Sheet';
 
@@ -2370,13 +2378,7 @@ _RENDERERS['sheet_badge'] = function(b) {
     + ' style="display:inline-flex;align-items:center;gap:6px;background:var(--bg,#fff);'
     + 'border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:5px 10px;cursor:pointer;'
     + 'font-size:0.8rem;font-weight:500;color:var(--text,#374151);font-family:inherit;transition:opacity 0.2s;">'
-    + '<svg width="15" height="15" viewBox="0 0 48 48" aria-hidden="true">'
-    + '<path d="M28 4H8a2 2 0 0 0-2 2v36a2 2 0 0 0 2 2h32a2 2 0 0 0 2-2V20z" fill="#1a9e52"/>'
-    + '<polyline points="28,4 28,20 44,20" fill="none" stroke="#fff" stroke-width="2.5"/>'
-    + '<line x1="13" y1="26" x2="35" y2="26" stroke="#fff" stroke-width="2.5"/>'
-    + '<line x1="13" y1="32" x2="35" y2="32" stroke="#fff" stroke-width="2.5"/>'
-    + '<line x1="13" y1="38" x2="26" y2="38" stroke="#fff" stroke-width="2.5"/>'
-    + '</svg>'
+    + '<span style="display:inline-block;width:14px;height:16px;flex-shrink:0;background:#0f9d58;border-radius:2px;"></span>'
     + _esc(label)
     + '</button>'
     + script;
@@ -3966,3 +3968,7 @@ _RENDERERS['sheet_form'] = function(b) {
     + '</form></div>'
     + script;
 };
+
+
+ 
+ 
