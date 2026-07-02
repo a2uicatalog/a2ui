@@ -113,7 +113,7 @@ def main():
     write_json("runbooks/index.json", gen_runbooks_index(known_types))
 
     # Explicit allowlist — internal working prompts stay unpublished
-    PUBLISHED_PROMPTS = ["a2ui-builder-gem.md", "training-md-gem.md"]
+    PUBLISHED_PROMPTS = ["a2ui-builder-gem.md", "a2ui-builder-gem-offline.md", "training-md-gem.md"]
     prompts_dir = os.path.join(ROOT, "prompts")
     for name in PUBLISHED_PROMPTS:
         if not os.path.isfile(os.path.join(prompts_dir, name)):

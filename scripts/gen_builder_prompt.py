@@ -22,7 +22,22 @@ except ImportError:
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SCHEMA = os.path.join(ROOT, "atoms", "schema.yaml")
 OUTPUT = os.path.join(ROOT, "prompts", "a2ui-builder-gem.md")
+OUTPUT_OFFLINE = os.path.join(ROOT, "prompts", "a2ui-builder-gem-offline.md")
 BASE_URL = "https://a2uicatalog.ai"
+
+# Full field contracts inlined in the offline variant; everything else is
+# represented by its compact-index line only.
+CORE_ATOMS = [
+    "gradient_hero", "dark_hero", "metric_row", "key_takeaways",
+    "two_tone_card", "step_progress", "risk_flag", "action_items",
+    "highlight_box", "icon_list", "heading", "subheading", "body",
+    "bullet_list", "numbered_list", "table", "key_value", "callout",
+    "divider", "stat_card", "progress_bar", "chartjs_bar", "chartjs_line",
+    "timeline", "faq_accordion", "accordion_item", "blockquote",
+    "code_block", "cta_section", "badge_group", "feature_grid",
+    "person_card", "image_with_caption", "youtube", "quote",
+    "comparison_grid",
+]
 
 TEMPLATE = """\
 # Gem: A2UI Payload Builder
@@ -133,14 +148,74 @@ report identifies, and re-output the FULL corrected payload.
 """
 
 
+OFFLINE_SOURCE_SECTION = """\
+## Your vocabulary (inlined — this session has no network access)
+
+You have the FULL catalogue below in two tiers:
+
+1. **Compact index — all {atom_count} atoms.** One line each:
+   `type — intent`. Use it to CHOOSE atoms that fit the content.
+2. **Core field contracts — {core_count} common atoms.** Exact field
+   definitions. Prefer these atoms; you can use them immediately.
+
+If the best fit is a non-core atom from the index, ask the user to paste
+that atom's entry from `{base}/spec.json` (or open `{base}/atoms/<type>`)
+before using it — NEVER guess field names. An atom type not in the index
+does not exist.
+
+### Core field contracts
+
+{core_contracts}
+
+### Compact index (all {atom_count} atoms)
+
+{compact_index}
+"""
+
+
+def _online_source_section():
+    idx = TEMPLATE.index("## Payload envelope")
+    return TEMPLATE[:idx], TEMPLATE[idx:]
+
+
 def main():
+    import json
     with open(SCHEMA) as f:
-        atom_count = len(yaml.safe_load(f)["blocks"])
+        blocks = yaml.safe_load(f)["blocks"]
+    atom_count = len(blocks)
+    by_type = {b["type"]: b for b in blocks}
+
     content = TEMPLATE.format(atom_count=atom_count, base=BASE_URL)
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     with open(OUTPUT, "w") as f:
         f.write(content)
     print(f"✅ {os.path.relpath(OUTPUT, ROOT)} ({os.path.getsize(OUTPUT)/1024:.1f} KB, {atom_count} atoms referenced)")
+
+    core_lines = []
+    for t in CORE_ATOMS:
+        fields = by_type[t].get("fields", {})
+        core_lines.append("#### " + t + "\n```json\n" + json.dumps(fields, ensure_ascii=False, indent=1) + "\n```")
+    compact_lines = []
+    for b in blocks:
+        compact_lines.append("- `" + b["type"] + "` — " + str(b.get("compact_description", "")))
+
+    head, tail = _online_source_section()
+    # Replace the online "source of truth" section with the inlined tiers
+    head_intro = head[:head.index("## Your source of truth")]
+    offline = (head_intro
+               + OFFLINE_SOURCE_SECTION.format(
+                     atom_count=atom_count, core_count=len(CORE_ATOMS),
+                     base=BASE_URL,
+                     core_contracts="\n\n".join(core_lines),
+                     compact_index="\n".join(compact_lines))
+               + tail)
+    offline = offline.replace("{atom_count}", str(atom_count)).replace("{base}", BASE_URL)
+    offline = offline.replace("{{", "{").replace("}}", "}")
+    offline = offline.replace("# Gem: A2UI Payload Builder",
+                              "# Gem: A2UI Payload Builder (self-contained)", 1)
+    with open(OUTPUT_OFFLINE, "w") as f:
+        f.write(offline)
+    print(f"✅ {os.path.relpath(OUTPUT_OFFLINE, ROOT)} ({os.path.getsize(OUTPUT_OFFLINE)/1024:.1f} KB, {len(CORE_ATOMS)} core contracts + {atom_count}-atom index)")
 
 
 if __name__ == "__main__":
