@@ -1,0 +1,329 @@
+{
+ "type": "a2ui_wired_surface",
+ "title": "Get started - CLI",
+ "state_primitives": [
+  {
+   "id": "s_1",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_2",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_3",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_4",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_5",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "done_count",
+   "primitive": "Computed",
+   "props": {
+    "expr": "a+b+c+d+e",
+    "inputs": {
+     "a": "#s_1.value",
+     "b": "#s_2.value",
+     "c": "#s_3.value",
+     "d": "#s_4.value",
+     "e": "#s_5.value"
+    }
+   }
+  },
+  {
+   "id": "progress_pct",
+   "primitive": "Computed",
+   "props": {
+    "expr": "n/5*100",
+    "inputs": {
+     "n": "#done_count.value"
+    }
+   }
+  }
+ ],
+ "actions": [],
+ "layout": [
+  {
+   "id": "title-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "Get started - CLI"
+   }
+  },
+  {
+   "id": "nav",
+   "atom": "jump_nav",
+   "props": {
+    "links": [
+     {
+      "label": "1 · Create a new Worker project",
+      "target": "phase-0-heading"
+     },
+     {
+      "label": "2 · Develop with Wrangler CLI",
+      "target": "phase-1-heading"
+     },
+     {
+      "label": "3 · Write code",
+      "target": "phase-2-heading"
+     },
+     {
+      "label": "4 · Deploy your project",
+      "target": "phase-3-heading"
+     }
+    ]
+   }
+  },
+  {
+   "id": "intro",
+   "atom": "body",
+   "props": {
+    "text": "Set up and deploy your first Worker with Wrangler, the Cloudflare Developer Platform CLI."
+   }
+  },
+  {
+   "id": "concepts-1",
+   "atom": "key_value",
+   "props": {
+    "title": "Concepts",
+    "items": [
+     {
+      "key": "C3 (create-cloudflare-cli)",
+      "description": "A command-line tool designed to help you set up and deploy new applications to Cloudflare."
+     },
+     {
+      "key": "Wrangler",
+      "description": "The Workers command-line interface that allows you to create, test, and deploy your Workers projects."
+     },
+     {
+      "key": "fetch() handler",
+      "description": "An event handler called when your Worker receives an HTTP request, which expects a Response object or a Promise resolving to one."
+     }
+    ]
+   }
+  },
+  {
+   "id": "div0",
+   "atom": "divider"
+  },
+  {
+   "id": "phase-0-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "1 · Create a new Worker project"
+   }
+  },
+  {
+   "id": "cmd-1",
+   "atom": "command_step",
+   "props": {
+    "label": "Run C3 to create your Worker project",
+    "command": "npm create cloudflare@latest my-first-worker",
+    "hint": "Expect: A new project is set up"
+   },
+   "wire": {
+    "done": "#s_1.value",
+    "setDone": "#s_1.setValue"
+   }
+  },
+  {
+   "id": "cmd-2",
+   "atom": "command_step",
+   "props": {
+    "label": "Move into the project folder",
+    "command": "cd my-first-worker"
+   },
+   "wire": {
+    "done": "#s_2.value",
+    "setDone": "#s_2.setValue"
+   }
+  },
+  {
+   "id": "info-2",
+   "atom": "key_value",
+   "props": {
+    "title": "Files created by C3",
+    "items": [
+     {
+      "key": "wrangler.jsonc",
+      "description": "Your Wrangler configuration file."
+     },
+     {
+      "key": "index.js (in /src)",
+      "description": "A minimal 'Hello World!' Worker written in ES module syntax."
+     },
+     {
+      "key": "package.json",
+      "description": "A minimal Node dependencies configuration file."
+     },
+     {
+      "key": "package-lock.json",
+      "description": "Node package lock configuration file."
+     },
+     {
+      "key": "node_modules",
+      "description": "Node dependencies folder."
+     }
+    ]
+   }
+  },
+  {
+   "id": "div1",
+   "atom": "divider"
+  },
+  {
+   "id": "phase-1-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "2 · Develop with Wrangler CLI"
+   }
+  },
+  {
+   "id": "cmd-3",
+   "atom": "command_step",
+   "props": {
+    "label": "Start a local server for developing your Worker",
+    "command": "npx wrangler dev",
+    "hint": "If you have never used Wrangler before, it will open your web browser so you can login to your Cloudflare account. — Verify: Go to http://localhost:8787 to view your Worker."
+   },
+   "wire": {
+    "done": "#s_3.value",
+    "setDone": "#s_3.setValue"
+   }
+  },
+  {
+   "id": "div2",
+   "atom": "divider"
+  },
+  {
+   "id": "phase-2-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "3 · Write code"
+   }
+  },
+  {
+   "id": "info-3",
+   "atom": "key_value",
+   "props": {
+    "title": "Code explanation",
+    "items": [
+     {
+      "key": "export default",
+      "description": "JavaScript syntax required for defining JavaScript modules with properties corresponding to handled events."
+     },
+     {
+      "key": "fetch() handler",
+      "description": "Handler called when your Worker receives an HTTP request, passed request, env, and context parameters."
+     }
+    ]
+   }
+  },
+  {
+   "id": "cmd-4",
+   "atom": "command_step",
+   "props": {
+    "label": "Update the Worker output text",
+    "command": "Replace the content in your current index.js file with the updated code block that returns \"Hello Worker!\"",
+    "hint": "Expect: Your Worker's output will have changed to the new text after saving the file and reloading the page."
+   },
+   "wire": {
+    "done": "#s_4.value",
+    "setDone": "#s_4.setValue"
+   }
+  },
+  {
+   "id": "div3",
+   "atom": "divider"
+  },
+  {
+   "id": "phase-3-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "4 · Deploy your project"
+   }
+  },
+  {
+   "id": "cmd-5",
+   "atom": "command_step",
+   "props": {
+    "label": "Deploy your Worker via Wrangler",
+    "command": "npx wrangler deploy",
+    "hint": "If you have not configured any subdomain or domain, Wrangler will prompt you during the publish process to set one up. — Verify: Preview your Worker at <YOUR_WORKER>.<YOUR_SUBDOMAIN>.workers.dev"
+   },
+   "wire": {
+    "done": "#s_5.value",
+    "setDone": "#s_5.setValue"
+   }
+  },
+  {
+   "id": "trouble-4",
+   "atom": "accordion_item",
+   "props": {
+    "header": "Browser issues or no access to a browser interface",
+    "content": "Refer to the wrangler login documentation."
+   }
+  },
+  {
+   "id": "trouble-5",
+   "atom": "accordion_item",
+   "props": {
+    "header": "The output for your Worker does not change",
+    "content": "Make sure that you saved the changes to index.js, have wrangler dev running, and reloaded your browser."
+   }
+  },
+  {
+   "id": "trouble-6",
+   "atom": "accordion_item",
+   "props": {
+    "header": "Seeing 523 errors when pushing your *.workers.dev subdomain for the first time",
+    "content": "Wait a minute or so and the errors will resolve themselves."
+   }
+  },
+  {
+   "id": "refs-7",
+   "atom": "resources_list",
+   "props": {
+    "items": [
+     {
+      "title": "C3 GitHub repository",
+      "url": "https://github.com/cloudflare/workers-sdk/tree/main/packages/create-cloudflare"
+     },
+     {
+      "title": "View local Worker development",
+      "url": "http://localhost:8787"
+     },
+     {
+      "title": "MDN JavaScript modules export guide",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#default_exports_versus_named_exports"
+     },
+     {
+      "title": "Cloudflare dashboard",
+      "url": "https://dash.cloudflare.com/"
+     }
+    ]
+   }
+  }
+ ]
+}
