@@ -43,6 +43,7 @@ and appear only when the source supports them.
 ---
 <frontmatter>
 ---
+<intro paragraph>     (optional)
 # Prerequisites      (optional)
 # Concepts           (optional)
 # Steps              (REQUIRED)
@@ -50,6 +51,10 @@ and appear only when the source supports them.
 # Troubleshooting    (optional)
 # References         (optional)
 ```
+
+An optional single intro paragraph may appear between the frontmatter and
+the first section heading — one to two sentences stating what the learner
+will accomplish. It renders as the lead `body` block.
 
 ---
 
@@ -108,9 +113,18 @@ come from the source, one to three sentences.
 
 ### `# Steps` (REQUIRED)
 
-Each step is a `##` heading: `## <n>. <title> {#command_step}` where `<n>`
-is a 1-based integer in sequence. The heading is followed by a key-value
-block, one `key: value` per line:
+Two shapes, detected by the parser — never mixed in one file:
+
+- **Flat** (short workflows): each `##` heading is a step.
+- **Phased** (multi-stage workflows): each `##` heading is a *phase*
+  (`## <n> · <title>`, numbered from 0 or 1), and each `###` heading
+  inside it is a step. Use phases when the source has distinct stages
+  (setup vs. configuration vs. deployment). `jump_nav` is derived from
+  phase headings.
+
+A step heading is `<n>. <title> {#command_step}` with `<n>` 1-based and
+sequential (within its phase, in phased shape). The heading is followed
+by a key-value block, one `key: value` per line:
 
 | Key      | Required | Meaning                                              |
 |----------|----------|------------------------------------------------------|
@@ -123,14 +137,35 @@ block, one `key: value` per line:
 Exactly one of `cmd` or `do` per step. No prose paragraphs inside steps —
 anything that isn't one of these keys belongs in `note` or doesn't belong.
 
+Two further elements may appear inside `# Steps` (in phased shape, inside
+a phase; in flat shape, between steps):
+
+- **Callout** — a blockquote line: `> <warning or context>`. Renders as a
+  `callout` atom at that position. Use for warnings that apply to the
+  following step(s) rather than a single step (e.g. "login with the
+  dedicated deployment account — not your personal Google account").
+- **Info block** — a bold label line followed by `- key :: value` bullets.
+  Renders as a `key_value` atom. Use for non-command reference material a
+  learner consults during the phase (deployment modes, checklists of
+  console settings, what-you-will-need lists).
+
 ```markdown
 # Steps
-## 1. Install clasp {#command_step}
+
+## 0 · Prerequisites
+**You will need**
+- Node — LTS version via nvs
+- Repo access :: read access to the deployment repository
+
+### 1. Install clasp {#command_step}
 cmd: npm install -g @google/clasp
 expect: version number prints
 verify: clasp --version
 
-## 2. Authenticate {#command_step}
+## 1 · Authenticate
+> Login with the dedicated deployment account — not your personal one.
+
+### 1. Authenticate CLASP {#command_step}
 cmd: clasp login
 note: opens a browser for OAuth consent
 verify: ~/.clasprc.json exists
@@ -165,11 +200,13 @@ Bullet list of URLs, optionally `- label — url`.
 ## What the Parser Derives (never author these)
 
 The MD file contains **content only**. The training runbook derives all
-machinery deterministically:
+machinery deterministically (verified against the recovered
+`clasp-runbook.json` reference: 7 per-step `ValueStore` done-states, a
+`done_count` Computed summing them, `progress_pct` derived from that):
 
-- `jump_nav` — generated from step headings
-- progress ring — `Computed` over `command_step` done-states
-- `state_primitives`, `actions`, `wire` bindings — from the runbook template
+- `jump_nav` — generated from phase headings (or step headings in flat shape)
+- progress — one `ValueStore` per `command_step` + `Computed` done-count and percentage
+- `actions`, `wire` bindings, dividers between phases — from the runbook template
 - layout order, surface theming, accent palette — runbook + surface config
 
 If you are tempted to write any of these into the MD, the content is in
@@ -188,11 +225,12 @@ Errors (parser rejects; message round-trips to the authoring LLM):
 | E03  | `domain` is not `training` |
 | E04  | no `# Steps` section, or `# Steps` has zero steps |
 | E05  | step missing both `cmd` and `do`, or has both |
-| E06  | step numbering not sequential from 1 |
+| E06  | step numbering not sequential from 1 (within its phase, in phased shape) |
 | E07  | unknown key inside a step block |
-| E08  | `# Troubleshooting` entry without `::` separator |
+| E08  | `# Troubleshooting` or info-block entry without `::` separator |
 | E09  | forbidden frontmatter key (`render`, or any presentation key) |
 | E10  | `# Checkpoints` entry with `Q:` but no matching `A:` |
+| E11  | flat and phased shapes mixed inside `# Steps` |
 
 Warnings (parse succeeds; reported in coverage output):
 
@@ -212,52 +250,81 @@ output.
 
 ## Complete Compliant Example
 
+The phased example below is the round-trip fixture: parsed through the
+training runbook, it should reproduce the recovered
+`payloads/clasp-runbook.json` reference app.
+
 ```markdown
 ---
-id: clasp-basics
+id: clasp-deployment
 domain: training
 subtype: tool-kt
-name: "clasp — Apps Script CLI workflow"
-audience: "developers new to Apps Script"
-source: "github.com/google/clasp README, June 2026"
+name: "CLASP Deployment Runbook"
+audience: "developers deploying Google Workspace add-ons"
+source: "internal KT session + github.com/google/clasp README, July 2026"
 license: "Apache-2.0"
-est_minutes: 20
+est_minutes: 25
 ---
 
-# Prerequisites {#prerequisite_checklist}
-- Node 18+ installed
-- Google account with Apps Script API enabled
+Step-by-step guide to installing CLASP and deploying Google Workspace
+Apps Script projects with a dedicated deployment account.
 
 # Concepts {#glossary .weight-high}
 - **clasp** — CLI that syncs local files with an Apps Script project
 - **scriptId** — the project identifier stored in .clasp.json
 
 # Steps
-## 1. Install clasp {#command_step}
+
+## 0 · Prerequisites
+**You will need**
+- Node :: LTS version, managed via nvs
+- Repo access :: read access to the deployment repository
+
+### 1. Install nvs (Node Version Switcher) {#command_step}
+cmd: winget install jasongin.nvs
+expect: nvs command available in a new shell
+
+### 2. Set Node version to LTS {#command_step}
+cmd: nvs use lts
+verify: node --version
+
+### 3. Install CLASP globally {#command_step}
 cmd: npm install -g @google/clasp
-expect: version number prints
 verify: clasp --version
 
-## 2. Authenticate {#command_step}
+## 1 · GCP Project Setup
+> GCP setup must be done before first deploy. These are one-time steps
+> per project.
+
+**GCP Checklist**
+- Apps Script API :: enabled at script.google.com/home/usersettings
+- OAuth consent screen :: configured in the GCP console
+
+## 2 · Clone & Authenticate
+
+### 1. Pull latest code from repository {#command_step}
+cmd: git pull
+
+> Login with the dedicated deployment account — not your personal
+> Google account.
+
+### 2. Authenticate CLASP with dedicated account {#command_step}
 cmd: clasp login
 note: opens a browser for OAuth consent
 verify: ~/.clasprc.json exists
 
-## 3. Clone an existing project {#command_step}
-cmd: clasp clone <scriptId>
-expect: project files download to the current directory
-verify: .clasp.json exists
+## 3 · Push & Deploy
+**Deployment modes**
+- clasp push :: syncs files, updates the HEAD deployment (test)
+- clasp deploy :: creates a numbered, versioned deployment
 
-## 4. Push local changes {#command_step}
+### 1. Push files to Apps Script {#command_step}
 cmd: clasp push
 expect: file list prints with "Pushed N files"
 
-# Checkpoints {#quiz}
-Q: Where does clasp store the project binding?
-A: .clasp.json in the project root
-
-Q: What must be enabled before clasp login works?
-A: The Apps Script API in user settings
+### 2. Create a new versioned deployment {#command_step}
+cmd: clasp deploy -d "release description"
+expect: deployment ID prints
 
 # Troubleshooting {#accordion_item}
 - "User has not enabled the Apps Script API" :: enable it at script.google.com/home/usersettings
