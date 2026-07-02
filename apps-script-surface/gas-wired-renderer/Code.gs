@@ -50,6 +50,9 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.claim_builders !== undefined) {
     return _claimBuildersPage_();
   }
+  if (e && e.parameter && e.parameter.inspect_nav) {
+    return _inspectNavPage_(e.parameter.inspect_nav);
+  }
   if (e && e.parameter && e.parameter.settings === 'chat') {
     return HtmlService.createHtmlOutputFromFile('ChatSettings')
       .setTitle('Chat Integration Settings')
@@ -2592,6 +2595,24 @@ function _actionBuildTraining(payload) {
   var encoded = Utilities.base64EncodeWebSafe(
     Utilities.gzip(Utilities.newBlob(JSON.stringify(res.payload), 'application/json')).getBytes()
   ).replace(/=+$/, '');
+  // Verify the encode round-trips before persisting — a nav page that
+  // cannot decode should fail here, loudly, not at view time.
+  try {
+    var vPadded = encoded;
+    while (vPadded.length % 4 !== 0) vPadded += '=';
+    var vBytes = Utilities.base64DecodeWebSafe(vPadded);
+    var vJson  = (vBytes.length >= 2 && vBytes[0] === 31 && (vBytes[1] & 0xFF) === 139)
+      ? Utilities.ungzip(Utilities.newBlob(vBytes, 'application/x-gzip')).getDataAsString()
+      : Utilities.newBlob(vBytes).getDataAsString();
+    if (JSON.parse(vJson).title !== res.payload.title) {
+      return { ok: false, error: 'Round-trip verify failed: decoded payload mismatch' };
+    }
+  } catch (vErr) {
+    return { ok: false, error: 'Round-trip verify failed: ' + (vErr.message || vErr) +
+             ' [encoded ' + encoded.length + ' chars, first bytes ' +
+             Utilities.base64DecodeWebSafe(encoded + '===').slice(0, 3).join(',') + ']' };
+  }
+
   var meta = JSON.stringify({
     title: res.payload.title, encoded: encoded,
     saved: new Date().toISOString(), kind: 'training'
@@ -2685,4 +2706,41 @@ function _claimBuildersPage_() {
     '<div style="font-family:system-ui;max-width:480px;margin:80px auto;padding:24px;' +
     'border:1px solid #e2e8f0;border-radius:12px;font-size:15px;color:#1e293b;">' + msg + '</div>'
   ).setTitle('A2UI Builder Access').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+
+// Builders-gated diagnostic: step-by-step decode of a stored nav page.
+function _inspectNavPage_(slug) {
+  var denied = _builderAccessError_();
+  if (denied) return _errorPage(denied);
+  var out = ['inspect nav:' + slug];
+  try {
+    var raw = PropertiesService.getScriptProperties().getProperty('nav:' + slug);
+    out.push('property: ' + (raw ? raw.length + ' chars' : 'MISSING'));
+    if (raw) {
+      var meta = JSON.parse(raw);
+      out.push('meta keys: ' + Object.keys(meta).join(',') + ' | title: ' + meta.title);
+      var enc = meta.encoded || '';
+      out.push('encoded: ' + enc.length + ' chars, head: ' + enc.slice(0, 12));
+      var padded = enc;
+      while (padded.length % 4 !== 0) padded += '=';
+      var bytes = Utilities.base64DecodeWebSafe(padded);
+      out.push('decoded bytes: ' + bytes.length + ', first3: ' + bytes.slice(0, 3).join(','));
+      var isGz = bytes.length >= 2 && bytes[0] === 31 && (bytes[1] & 0xFF) === 139;
+      out.push('gzip magic: ' + isGz);
+      var json = isGz
+        ? Utilities.ungzip(Utilities.newBlob(bytes, 'application/x-gzip')).getDataAsString()
+        : Utilities.newBlob(bytes).getDataAsString();
+      out.push('json: ' + json.length + ' chars, head: ' + json.slice(0, 60));
+      var payload = JSON.parse(json);
+      out.push('payload type: ' + payload.type + ' | layout blocks: ' +
+               ((payload.layout || payload.blocks || []).length));
+      out.push('ALL STEPS OK');
+    }
+  } catch (err) {
+    out.push('FAILED: ' + (err.message || err));
+  }
+  return HtmlService.createHtmlOutput('<pre style="font-family:monospace;padding:24px;">' +
+    out.join('\n').replace(/</g, '&lt;') + '</pre>')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
