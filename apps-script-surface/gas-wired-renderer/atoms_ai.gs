@@ -343,7 +343,7 @@ _RENDERERS['multi_doc_ai_brief'] = function(b) {
 // Fetch a published prompt from a2uicatalog.ai at render time, cached 6h.
 function _fetchPublishedPrompt_(url) {
   var cache = CacheService.getScriptCache();
-  var key = 'prompt:' + url;
+  var key = 'prompt:v2:' + url;  // bump version to bust cache after prompt contract changes
   var hit = cache.get(key);
   if (hit) return hit;
   try {
