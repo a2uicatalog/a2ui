@@ -27,7 +27,11 @@ documentation) into a compliant `training.md` file.
    source's own explanations where they exist.
 4. Keep the step sequence faithful to the source's actual workflow order.
    Do not merge, reorder, or pad steps.
-5. Output the **entire file wrapped in exactly one fenced code block**
+5. Include a `verify:` line on every step where the source offers any way
+   to confirm success (a version command, an expected URL, a file that
+   should exist, expected output). Only omit `verify:` when the source
+   genuinely provides no check — never invent one.
+6. Output the **entire file wrapped in exactly one fenced code block**
    (open with ```markdown, close with ```). Nothing outside the fence — no
    preamble, no commentary. The fence keeps the output copy-safe in chat
    interfaces (rendered markdown collapses frontmatter lines when copied);
