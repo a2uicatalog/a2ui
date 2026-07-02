@@ -100,13 +100,13 @@ learner can verify it themselves.
 - Google account with Apps Script API enabled
 ```
 
-### `# Concepts` `{#glossary}`
+### `# Concepts` `{#key_value}`
 
 Bullet list of `- **term** — definition`. One term per bullet. Definitions
 come from the source, one to three sentences.
 
 ```markdown
-# Concepts {#glossary .weight-high}
+# Concepts {#key_value .weight-high}
 - **clasp** — CLI that syncs local files with an Apps Script project
 - **scriptId** — the project identifier stored in .clasp.json
 ```
@@ -118,7 +118,10 @@ Two shapes, detected by the parser — never mixed in one file:
 - **Flat** (short workflows): each `##` heading is a step.
 - **Phased** (multi-stage workflows): each `##` heading is a *phase*
   (`## <n> · <title>`, numbered from 0 or 1), and each `###` heading
-  inside it is a step. Use phases when the source has distinct stages
+  inside it is a step. A phase heading may carry `nav="short label"` to
+  override its `jump_nav` label; unnumbered phases (e.g. `## Done`) are
+  excluded from `jump_nav`. A plain prose paragraph inside a phase
+  renders as a `body` atom. Use phases when the source has distinct stages
   (setup vs. configuration vs. deployment). `jump_nav` is derived from
   phase headings.
 
@@ -171,13 +174,16 @@ note: opens a browser for OAuth consent
 verify: ~/.clasprc.json exists
 ```
 
-### `# Checkpoints` `{#quiz}`
+### `# Checkpoints` `{#accordion_item}`
+
+Each pair renders as a collapsed accordion — question as header, answer
+revealed on tap.
 
 `Q:`/`A:` pairs separated by blank lines. Questions test the steps and
 concepts actually present in this file — never outside material.
 
 ```markdown
-# Checkpoints {#quiz}
+# Checkpoints {#accordion_item}
 Q: Where does clasp store the project binding?
 A: .clasp.json in the project root
 ```
@@ -191,7 +197,7 @@ Bullet list of `- symptom :: fix`. The `::` separator is mandatory.
 - "User has not enabled the Apps Script API" :: enable it at script.google.com/home/usersettings
 ```
 
-### `# References` `{#link_list}`
+### `# References` `{#resources_list}`
 
 Bullet list of URLs, optionally `- label — url`.
 
@@ -231,6 +237,7 @@ Errors (parser rejects; message round-trips to the authoring LLM):
 | E09  | forbidden frontmatter key (`render`, or any presentation key) |
 | E10  | `# Checkpoints` entry with `Q:` but no matching `A:` |
 | E11  | flat and phased shapes mixed inside `# Steps` |
+| E12  | unknown top-level section heading |
 
 Warnings (parse succeeds; reported in coverage output):
 
@@ -250,9 +257,10 @@ output.
 
 ## Complete Compliant Example
 
-The phased example below is the round-trip fixture: parsed through the
-training runbook, it should reproduce the recovered
-`payloads/clasp-runbook.json` reference app.
+The canonical round-trip fixture is `examples/clasp-deployment.training.md`
+— parsed by `scripts/parse_training_md.py` it reproduces
+`payloads/clasp-runbook.json` (verified in `tests/test_training_parser.py`).
+The illustrative excerpt below shows the section formats.
 
 ```markdown
 ---
