@@ -1105,6 +1105,8 @@ function _actionEmailSend(payload) {
 }
 
 function _actionSaveProperty(payload) {
+  var denied = _builderAccessError_();
+  if (denied) return { ok: false, error: denied };
   var key   = String((payload.key   || payload.data && payload.data.key)   || '').trim();
   var value = String((payload.value !== undefined ? payload.value : (payload.data && payload.data.value !== undefined ? payload.data.value : '')) || '').trim();
   if (!key) return { ok: false, error: 'No key specified' };
@@ -2062,6 +2064,8 @@ function _getWebAppUrl() {
 // Save a page under a slug. Accepts the same gzip+base64 encoded string
 // that callGemini() returns as `encoded`. Callable from PageBuilder via google.script.run.
 function a2uiNavSave(slug, title, encoded) {
+  var denied = _builderAccessError_();
+  if (denied) return { error: denied };
   if (!slug || !encoded) return { error: 'slug and encoded are required' };
   slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
   var props = PropertiesService.getScriptProperties();
@@ -2567,6 +2571,8 @@ function authorizeScopes() {
 // payload as a ?nav= page, and maintains a Training Hub index page.
 
 function _actionBuildTraining(payload) {
+  var denied = _builderAccessError_();
+  if (denied) return { ok: false, error: denied };
   var md = String(payload.md || (payload.data && payload.data.md) || '');
   if (!md.trim()) return { ok: false, error: 'No training.md content supplied' };
 
@@ -2630,4 +2636,21 @@ function _trainingHubRebuild_(index, props) {
   var meta = JSON.stringify({ title: 'Training Hub', encoded: encoded,
                               saved: new Date().toISOString(), kind: 'training-hub' });
   if (meta.length <= 9000) props.setProperty('nav:training-hub', meta);
+}
+
+// ─── Builder access gate ──────────────────────────────────────────────────────
+// Mutating paths (property writes, nav page creation, training builds) are
+// restricted to emails listed in the A2UI_BUILDERS script property
+// (comma-separated). Default DENY when unset — public deployments render,
+// they do not author.
+
+function _builderAccessError_() {
+  var email = '';
+  try { email = Session.getActiveUser().getEmail() || ''; } catch (e) {}
+  var allow = '';
+  try { allow = PropertiesService.getScriptProperties().getProperty('A2UI_BUILDERS') || ''; } catch (e) {}
+  if (!allow) return 'Building is disabled on this deployment (A2UI_BUILDERS not configured).';
+  var ok = allow.split(',').map(function(s) { return s.trim().toLowerCase(); })
+                .indexOf(email.toLowerCase()) !== -1;
+  return ok ? null : 'Building is not enabled for ' + (email || 'anonymous') + ' on this deployment.';
 }
