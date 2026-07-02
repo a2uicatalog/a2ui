@@ -49,14 +49,17 @@ def write_json(rel_path, payload):
 def gen_spec(blocks):
     atoms = []
     for b in blocks:
-        atoms.append({
+        entry = {
             "type": b["type"],
             "description": b.get("description", ""),
             "compact_description": b.get("compact_description", ""),
             "surfaces": b.get("surfaces", {}),
             "fields": b.get("fields", {}),
             "source": b.get("source", {}),
-        })
+        }
+        if b.get("source_inspiration"):
+            entry["source_inspiration"] = b["source_inspiration"]
+        atoms.append(entry)
     return {
         "catalogId": "a2ui-atoms-v1",
         "displayName": "A2UI Multi-Surface Renderer",
@@ -66,6 +69,13 @@ def gen_spec(blocks):
         "runbooks": f"{BASE_URL}/runbooks/index.json",
         "trainingPrompt": f"{BASE_URL}/prompts/training-md-gem.md",
         "builderPrompt": f"{BASE_URL}/prompts/a2ui-builder-gem.md",
+        "thirdPartyNotices": f"{BASE_URL}/THIRD-PARTY-NOTICES.md",
+        "attributionModel": ("Three tiers: 'source' credits derived or adapted work "
+                             "(vendor name + license); 'source_inspiration' credits a "
+                             "visual/pattern origin with no code derivation; atoms with "
+                             "source a2uicatalog and no inspiration field are original. "
+                             "Full notices and per-vendor manifests at /THIRD-PARTY-NOTICES.md "
+                             "and /vendors/."),
         "atoms": atoms,
     }
 
@@ -122,6 +132,23 @@ def main():
         os.makedirs(os.path.dirname(out), exist_ok=True)
         shutil.copyfile(os.path.join(prompts_dir, name), out)
         print(f"  ✅ public/prompts/{name} (copied from prompts/)")
+
+    shutil.copyfile(os.path.join(ROOT, "THIRD-PARTY-NOTICES.md"),
+                    os.path.join(PUBLIC, "THIRD-PARTY-NOTICES.md"))
+    print("  ✅ public/THIRD-PARTY-NOTICES.md")
+    vendors_dir = os.path.join(ROOT, "vendors")
+    for v in sorted(os.listdir(vendors_dir)):
+        man = os.path.join(vendors_dir, v, "MANIFEST.md")
+        if os.path.isfile(man):
+            out_v = os.path.join(PUBLIC, "vendors", v, "MANIFEST.md")
+            os.makedirs(os.path.dirname(out_v), exist_ok=True)
+            shutil.copyfile(man, out_v)
+    for extra in ("MANIFEST.md", "LANDSCAPE.md"):
+        src = os.path.join(vendors_dir, extra)
+        if os.path.isfile(src):
+            os.makedirs(os.path.join(PUBLIC, "vendors"), exist_ok=True)
+            shutil.copyfile(src, os.path.join(PUBLIC, "vendors", extra))
+    print("  ✅ public/vendors/ (manifests + landscape)")
 
     gdm_out = os.path.join(PUBLIC, "catalogue", "gdm-v0.2.json")
     os.makedirs(os.path.dirname(gdm_out), exist_ok=True)
