@@ -47,6 +47,9 @@ function doGet(e) {
   var from     = e && e.parameter && e.parameter.from;
   _ga4PageView(nav, p);
   if (debug)   return _debugPage(debug);
+  if (e && e.parameter && e.parameter.claim_builders !== undefined) {
+    return _claimBuildersPage_();
+  }
   if (e && e.parameter && e.parameter.settings === 'chat') {
     return HtmlService.createHtmlOutputFromFile('ChatSettings')
       .setTitle('Chat Integration Settings')
@@ -2653,4 +2656,30 @@ function _builderAccessError_() {
   var ok = allow.split(',').map(function(s) { return s.trim().toLowerCase(); })
                 .indexOf(email.toLowerCase()) !== -1;
   return ok ? null : 'Building is not enabled for ' + (email || 'anonymous') + ' on this deployment.';
+}
+
+// First-claim builder bootstrap: while A2UI_BUILDERS is unset, the first
+// signed-in visitor to open ?claim_builders=1 becomes the builder. Idempotent
+// for existing builders; refuses once claimed. Cloners onboard with one URL.
+function _claimBuildersPage_() {
+  var email = '';
+  try { email = Session.getActiveUser().getEmail() || ''; } catch (err) {}
+  var props   = PropertiesService.getScriptProperties();
+  var current = props.getProperty('A2UI_BUILDERS') || '';
+  var msg;
+  if (!email) {
+    msg = 'Could not determine your email — open this URL while signed in.';
+  } else if (!current) {
+    props.setProperty('A2UI_BUILDERS', email);
+    msg = 'Builder access claimed for ' + email + '. You can now build on this deployment.';
+  } else if (current.split(',').map(function(s){return s.trim().toLowerCase();})
+                    .indexOf(email.toLowerCase()) !== -1) {
+    msg = email + ' already has builder access.';
+  } else {
+    msg = 'Builder access is already claimed on this deployment. An existing builder must add you to the A2UI_BUILDERS script property.';
+  }
+  return HtmlService.createHtmlOutput(
+    '<div style="font-family:system-ui;max-width:480px;margin:80px auto;padding:24px;' +
+    'border:1px solid #e2e8f0;border-radius:12px;font-size:15px;color:#1e293b;">' + msg + '</div>'
+  ).setTitle('A2UI Builder Access').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
