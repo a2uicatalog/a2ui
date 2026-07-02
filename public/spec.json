@@ -5,6 +5,7 @@
  "atomCount": 467,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
+ "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
  "atoms": [
   {
    "type": "intro",

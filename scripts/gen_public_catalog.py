@@ -64,6 +64,7 @@ def gen_spec(blocks):
         "atomCount": len(atoms),
         "compactIndex": f"{BASE_URL}/atoms/index.json",
         "runbooks": f"{BASE_URL}/runbooks/index.json",
+        "trainingPrompt": f"{BASE_URL}/prompts/training-md-gem.md",
         "atoms": atoms,
     }
 
@@ -109,6 +110,13 @@ def main():
     write_json("spec.json", gen_spec(blocks))
     write_json("atoms/index.json", gen_compact_index(blocks))
     write_json("runbooks/index.json", gen_runbooks_index(known_types))
+
+    prompt_src = os.path.join(ROOT, "prompts", "training-md-gem.md")
+    prompt_out = os.path.join(PUBLIC, "prompts", "training-md-gem.md")
+    if os.path.isfile(prompt_src):
+        os.makedirs(os.path.dirname(prompt_out), exist_ok=True)
+        shutil.copyfile(prompt_src, prompt_out)
+        print("  ✅ public/prompts/training-md-gem.md (copied from prompts/)")
 
     gdm_out = os.path.join(PUBLIC, "catalogue", "gdm-v0.2.json")
     os.makedirs(os.path.dirname(gdm_out), exist_ok=True)
