@@ -1,0 +1,387 @@
+{
+ "type": "a2ui_wired_surface",
+ "title": "CLASP Deployment Runbook",
+ "state_primitives": [
+  {
+   "id": "s_nvs",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_node",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_clasp",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_git",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_login",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_push",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "s_deploy",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": false
+   }
+  },
+  {
+   "id": "done_count",
+   "primitive": "Computed",
+   "props": {
+    "expr": "a+b+c+d+e+f+g",
+    "inputs": {
+     "a": "#s_nvs.value",
+     "b": "#s_node.value",
+     "c": "#s_clasp.value",
+     "d": "#s_git.value",
+     "e": "#s_login.value",
+     "f": "#s_push.value",
+     "g": "#s_deploy.value"
+    }
+   }
+  },
+  {
+   "id": "progress_pct",
+   "primitive": "Computed",
+   "props": {
+    "expr": "n/7*100",
+    "inputs": {
+     "n": "#done_count.value"
+    }
+   }
+  }
+ ],
+ "actions": [],
+ "layout": [
+  {
+   "id": "rbook-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "CLASP Deployment Runbook"
+   }
+  },
+  {
+   "id": "rbook-nav",
+   "atom": "jump_nav",
+   "props": {
+    "links": [
+     {
+      "label": "0 · Prerequisites",
+      "target": "prereq-heading"
+     },
+     {
+      "label": "1 · GCP Setup",
+      "target": "gcp-heading"
+     },
+     {
+      "label": "2 · Clone & Auth",
+      "target": "setup-heading"
+     },
+     {
+      "label": "3 · Push & Deploy",
+      "target": "deploy-heading"
+     }
+    ]
+   }
+  },
+  {
+   "id": "rbook-intro",
+   "atom": "body",
+   "props": {
+    "text": "Step-by-step guide to installing CLASP and deploying Google Workspace Add-ons from a shared git repository using a dedicated deployment account. Tick each step as you complete it."
+   }
+  },
+  {
+   "id": "div0",
+   "atom": "divider"
+  },
+  {
+   "id": "prereq-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "0 · Prerequisites"
+   }
+  },
+  {
+   "id": "prereq-info",
+   "atom": "key_value",
+   "props": {
+    "title": "You will need",
+    "items": [
+     {
+      "key": "Dedicated account",
+      "description": "The shared deployment Google account — not your personal account"
+     },
+     {
+      "key": "Git access",
+      "description": "Clone/pull permissions on the add-on repository"
+     },
+     {
+      "key": "Node 18+",
+      "description": "Managed via nvs (see steps below)"
+     },
+     {
+      "key": "GCP project",
+      "description": "With Apps Script API enabled and OAuth consent screen configured"
+     }
+    ]
+   }
+  },
+  {
+   "id": "cmd-nvs",
+   "atom": "command_step",
+   "props": {
+    "label": "Install nvs (Node Version Switcher)",
+    "command": "export NVS_HOME=\"$HOME/.nvs\" && git clone https://github.com/jasongin/nvs \"$NVS_HOME\" && . \"$NVS_HOME/nvs.sh\" install",
+    "hint": "Skip if nvs is already installed — verify with: nvs --version"
+   },
+   "wire": {
+    "done": "#s_nvs.value",
+    "setDone": "#s_nvs.setValue"
+   }
+  },
+  {
+   "id": "cmd-node",
+   "atom": "command_step",
+   "props": {
+    "label": "Set Node version to LTS",
+    "command": "nvs add lts && nvs use lts",
+    "hint": "Verify with: node --version (expect v18 or higher)"
+   },
+   "wire": {
+    "done": "#s_node.value",
+    "setDone": "#s_node.setValue"
+   }
+  },
+  {
+   "id": "cmd-clasp",
+   "atom": "command_step",
+   "props": {
+    "label": "Install CLASP globally",
+    "command": "npm install -g @google/clasp && clasp --version",
+    "hint": "Expect output like: 2.4.x"
+   },
+   "wire": {
+    "done": "#s_clasp.value",
+    "setDone": "#s_clasp.setValue"
+   }
+  },
+  {
+   "id": "div1",
+   "atom": "divider"
+  },
+  {
+   "id": "gcp-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "1 · GCP Project Setup"
+   }
+  },
+  {
+   "id": "gcp-callout",
+   "atom": "callout",
+   "props": {
+    "type": "warning",
+    "text": "GCP setup must be done before first deploy. These are one-time steps per project."
+   }
+  },
+  {
+   "id": "gcp-steps",
+   "atom": "key_value",
+   "props": {
+    "title": "GCP Checklist",
+    "items": [
+     {
+      "key": "1. Enable API",
+      "description": "GCP Console → APIs & Services → Enable Apps Script API"
+     },
+     {
+      "key": "2. OAuth screen",
+      "description": "APIs & Services → OAuth consent screen → set app name, support email, scopes"
+     },
+     {
+      "key": "3. Add test users",
+      "description": "OAuth consent screen → Test users → add the dedicated account email"
+     },
+     {
+      "key": "4. Link to project",
+      "description": "Apps Script editor → Project Settings → Google Cloud Platform Project → enter GCP project number"
+     },
+     {
+      "key": "5. Shared Drive",
+      "description": "Create or confirm the shared drive where the script project lives — dedicated account must have Contributor access"
+     }
+    ]
+   }
+  },
+  {
+   "id": "div2",
+   "atom": "divider"
+  },
+  {
+   "id": "setup-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "2 · Clone & Authenticate"
+   }
+  },
+  {
+   "id": "cmd-git",
+   "atom": "command_step",
+   "props": {
+    "label": "Pull latest code from repository",
+    "command": "git pull origin main",
+    "hint": "First time? Use: git clone <repo-url> && cd <repo-folder>"
+   },
+   "wire": {
+    "done": "#s_git.value",
+    "setDone": "#s_git.setValue"
+   }
+  },
+  {
+   "id": "login-callout",
+   "atom": "callout",
+   "props": {
+    "type": "warning",
+    "text": "Login with the dedicated deployment account — not your personal Google account. A browser window will open for OAuth."
+   }
+  },
+  {
+   "id": "cmd-login",
+   "atom": "command_step",
+   "props": {
+    "label": "Authenticate CLASP with dedicated account",
+    "command": "clasp login",
+    "hint": "To check who is logged in: clasp login --status"
+   },
+   "wire": {
+    "done": "#s_login.value",
+    "setDone": "#s_login.setValue"
+   }
+  },
+  {
+   "id": "div3",
+   "atom": "divider"
+  },
+  {
+   "id": "deploy-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "3 · Push & Deploy"
+   }
+  },
+  {
+   "id": "deploy-modes",
+   "atom": "key_value",
+   "props": {
+    "title": "Deployment modes",
+    "items": [
+     {
+      "key": "New add-on",
+      "description": "Run clasp create first to link this folder to a new Apps Script project on the shared drive"
+     },
+     {
+      "key": "Update existing",
+      "description": "Confirm .clasp.json contains the correct scriptId before pushing — no clasp create needed"
+     },
+     {
+      "key": "CI-style",
+      "description": "Same flow, but run from a scheduled job using the dedicated account credentials; scriptId in .clasp.json must match the production deployment"
+     }
+    ]
+   }
+  },
+  {
+   "id": "cmd-push",
+   "atom": "command_step",
+   "props": {
+    "label": "Push files to Apps Script",
+    "command": "clasp push --force",
+    "hint": "–force overwrites remote without prompting. Check .claspignore to confirm only intended files are pushed."
+   },
+   "wire": {
+    "done": "#s_push.value",
+    "setDone": "#s_push.setValue"
+   }
+  },
+  {
+   "id": "cmd-deploy",
+   "atom": "command_step",
+   "props": {
+    "label": "Create a new versioned deployment",
+    "command": "clasp deploy --description \"deploy-$(date +%Y%m%d)\"",
+    "hint": "Note the deployment ID in the output — needed for update deploys and Workspace admin install"
+   },
+   "wire": {
+    "done": "#s_deploy.value",
+    "setDone": "#s_deploy.setValue"
+   }
+  },
+  {
+   "id": "update-note",
+   "atom": "key_value",
+   "props": {
+    "title": "Updating an existing deployment",
+    "items": [
+     {
+      "key": "List deployments",
+      "description": "clasp deployments  — copy the target deployment ID"
+     },
+     {
+      "key": "Update in place",
+      "description": "clasp deploy --deploymentId <id> --description \"deploy-YYYYMMDD\""
+     },
+     {
+      "key": "Deployment limit",
+      "description": "Apps Script enforces a 20-version limit per project. Run clasp undeploy <oldest-id> before deploying when at the limit."
+     }
+    ]
+   }
+  },
+  {
+   "id": "div4",
+   "atom": "divider"
+  },
+  {
+   "id": "done-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "Done"
+   }
+  },
+  {
+   "id": "done-body",
+   "atom": "body",
+   "props": {
+    "text": "Share the deployment URL with the Workspace admin for installation, or install directly via Google Workspace Marketplace if published. For internal tools, the admin installs via Admin Console → Apps → Google Workspace Marketplace apps → install by URL."
+   }
+  }
+ ]
+}
