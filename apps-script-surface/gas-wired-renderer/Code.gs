@@ -311,6 +311,7 @@ function a2uiAction(type, payload) {
       case 'gas:chat_message_send':  result = _actionChatMessageSend(payload);  break;
       case 'gas:directory_search':   result = _actionDirectorySearch(payload);  break;
       case 'gas:save_property':      result = _actionSaveProperty(payload);     break;
+      case 'gas:build_training':     result = _actionBuildTraining(payload);    break;
       default: result = { ok: false, error: 'Unknown action type: ' + type };
     }
   } catch (e) {
@@ -2108,6 +2109,9 @@ function _renderNamedPage(slug, from) {
       ? Utilities.ungzip(Utilities.newBlob(bytes, 'application/x-gzip')).getDataAsString()
       : Utilities.newBlob(bytes).getDataAsString();
     var payload = JSON.parse(json);
+    if (!Array.isArray(payload) && payload.type === 'a2ui_wired_surface') {
+      return _renderWiredSurface(payload);
+    }
     var blocks  = Array.isArray(payload) ? payload : (payload.blocks || []);
     var title   = meta.title || payload.title || slug;
     var theme   = (Array.isArray(payload) ? 'light' : payload.theme) || 'light';
@@ -2554,3 +2558,74 @@ function authorizeScopes() {
   SpreadsheetApp.getActiveSpreadsheet();
 }
 
+
+// ─── Training builder — dogfooding: the renderer builds training apps ─────────
+// gas:build_training — takes training.md text (see spec/training-md-v0.1.md),
+// parses it deterministically (training_parser.gs), saves the resulting wired
+// payload as a ?nav= page, and maintains a Training Hub index page.
+
+function _actionBuildTraining(payload) {
+  var md = String(payload.md || (payload.data && payload.data.md) || '');
+  if (!md.trim()) return { ok: false, error: 'No training.md content supplied' };
+
+  var res = parseTrainingMd(md, Object.keys(_RENDERERS));
+  if (!res.payload) {
+    return { ok: false, error: res.report.errors.join('\n') };
+  }
+
+  var idMatch = md.match(/^id:\s*(.+)$/m);
+  var slug = (idMatch ? idMatch[1] : res.payload.title || 'training-app')
+    .toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  if (!slug) return { ok: false, error: 'Could not derive a slug from frontmatter id' };
+
+  var encoded = Utilities.base64EncodeWebSafe(
+    Utilities.gzip(Utilities.newBlob(JSON.stringify(res.payload), 'application/json')).getBytes()
+  ).replace(/=+$/, '');
+  var meta = JSON.stringify({
+    title: res.payload.title, encoded: encoded,
+    saved: new Date().toISOString(), kind: 'training'
+  });
+  if (meta.length > 9000) {
+    return { ok: false, error: 'Payload too large for a nav page (' + meta.length + ' chars, max 9000)' };
+  }
+
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty('nav:' + slug, meta);
+
+  // Maintain the index and regenerate the hub page
+  var index = [];
+  try { index = JSON.parse(props.getProperty('training:index') || '[]'); } catch (e) {}
+  index = index.filter(function(entry) { return entry.slug !== slug; });
+  index.push({ slug: slug, title: res.payload.title,
+               saved: new Date().toISOString(),
+               steps: res.report.step_count, coverage: res.report.coverage });
+  index.sort(function(a, b) { return a.title < b.title ? -1 : 1; });
+  props.setProperty('training:index', JSON.stringify(index));
+  _trainingHubRebuild_(index, props);
+
+  var url = _getWebAppUrl() + '?nav=' + slug;
+  return { ok: true, data: url + (res.report.warnings.length
+    ? '   [' + res.report.coverage + '; ' + res.report.warnings.length + ' warnings]' : '') };
+}
+
+function _trainingHubRebuild_(index, props) {
+  var webAppUrl = _getWebAppUrl();
+  var hub = {
+    title: 'Training Hub',
+    blocks: [
+      { type: 'heading', text: 'Training Hub' },
+      { type: 'body', text: 'Interactive training apps generated from training.md documents. ' +
+                            'Each app tracks per-step completion and progress.' },
+      { type: 'resources_list', items: index.map(function(entry) {
+          return { title: entry.title + '  (' + entry.steps + ' steps · ' + entry.coverage + ')',
+                   url: webAppUrl + '?nav=' + entry.slug };
+        }) }
+    ]
+  };
+  var encoded = Utilities.base64EncodeWebSafe(
+    Utilities.gzip(Utilities.newBlob(JSON.stringify(hub), 'application/json')).getBytes()
+  ).replace(/=+$/, '');
+  var meta = JSON.stringify({ title: 'Training Hub', encoded: encoded,
+                              saved: new Date().toISOString(), kind: 'training-hub' });
+  if (meta.length <= 9000) props.setProperty('nav:training-hub', meta);
+}
