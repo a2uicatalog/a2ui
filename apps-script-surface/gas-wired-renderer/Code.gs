@@ -2581,7 +2581,7 @@ function _actionBuildTraining(payload) {
 
   var res = parseTrainingMd(md, Object.keys(_RENDERERS));
   if (!res.payload) {
-    return { ok: false, error: res.report.errors.join('\n') };
+    return { ok: false, error: res.report.errors.join('  |  ') };
   }
 
   var idMatch = md.match(/^id:\s*(.+)$/m);
@@ -2615,8 +2615,11 @@ function _actionBuildTraining(payload) {
   _trainingHubRebuild_(index, props);
 
   var url = _getWebAppUrl() + '?nav=' + slug;
-  return { ok: true, data: url + (res.report.warnings.length
-    ? '   [' + res.report.coverage + '; ' + res.report.warnings.length + ' warnings]' : '') };
+  var summary = url + '   —   ' + res.report.coverage;
+  if (res.report.warnings.length) {
+    summary += '   |   ' + res.report.warnings.join('   |   ');
+  }
+  return { ok: true, data: summary };
 }
 
 function _trainingHubRebuild_(index, props) {
