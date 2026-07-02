@@ -27,10 +27,23 @@ function parseTrainingMd(text, knownAtoms) {
   function err(code, msg)  { lint.errors.push(code + ': ' + msg); }
   function warn(code, msg) { lint.warnings.push(code + ': ' + msg); }
 
+  // Strip a wrapping code fence (spec asks the model to fence its output
+  // so it copies losslessly from chat UIs)
+  var stripped = text.trim();
+  if (stripped.indexOf('```') === 0) {
+    stripped = stripped.slice(stripped.indexOf('\n') + 1);
+    if (/```\s*$/.test(stripped)) stripped = stripped.replace(/```\s*$/, '');
+    text = stripped.trim() + '\n';
+  }
+
+  // Normalize asterisk bullets — both are legal markdown; section parsers
+  // match "- " only
+  text = text.replace(/^(\s*)\* /gm, '$1- ');
+
   // --- frontmatter ---------------------------------------------------------
   var fmMatch = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!fmMatch) {
-    err('E01', 'missing or malformed frontmatter (--- block)');
+    err('E01', 'missing or malformed frontmatter (--- block). If this was copied from Gemini\'s rendered reply, use the copy button / raw view — rendered copies collapse the frontmatter into one line');
     return { payload: null, report: tpReport_(lint, [], 0) };
   }
   var fm = {};

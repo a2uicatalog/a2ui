@@ -92,10 +92,26 @@ def parse(text):
     lint = Lint()
     known_atoms = _known_atom_types()
 
+    # Strip a wrapping code fence (the spec asks Gemini to fence its output
+    # so it copies losslessly from chat UIs)
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        stripped = stripped[stripped.index("\n") + 1:]
+        if stripped.rstrip().endswith("```"):
+            stripped = stripped.rstrip()[:-3]
+        text = stripped.strip() + "\n"
+
+    # Normalize asterisk bullets — both are legal markdown; the section
+    # parsers match "- " only
+    text = re.sub(r"^(\s*)\* ", r"\1- ", text, flags=re.MULTILINE)
+
     # --- frontmatter -----------------------------------------------------
     fm_match = re.match(r"\A---\n(.*?)\n---\n", text, re.DOTALL)
     if not fm_match:
-        lint.error("E01", "missing or malformed frontmatter (--- block)")
+        lint.error("E01", "missing or malformed frontmatter (--- block). "
+                   "If this was copied from Gemini's rendered reply, use the "
+                   "copy button / raw view — rendered copies collapse the "
+                   "frontmatter into one line")
         return None, _report(lint, {}, [])
     try:
         fm = yaml.safe_load(fm_match.group(1)) or {}

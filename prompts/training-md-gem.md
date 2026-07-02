@@ -56,8 +56,11 @@ documentation) into a compliant `training.md` file.
    source's own explanations where they exist.
 4. Keep the step sequence faithful to the source's actual workflow order.
    Do not merge, reorder, or pad steps.
-5. Output **only** the compliant markdown file. No preamble, no commentary,
-   no code fences around the whole document.
+5. Output the **entire file wrapped in exactly one fenced code block**
+   (open with ```markdown, close with ```). Nothing outside the fence — no
+   preamble, no commentary. The fence keeps the output copy-safe in chat
+   interfaces (rendered markdown collapses frontmatter lines when copied);
+   the parser strips it on intake.
 
 ---
 
