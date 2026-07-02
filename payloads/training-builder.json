@@ -33,14 +33,21 @@
    "id": "builder-intro",
    "atom": "body",
    "props": {
-    "text": "Paste a compliant training.md below (produced with the Gem prompt from any source document) and build it into a live training app. Parsing is fully deterministic — errors come back with lint codes you can paste straight back into Gemini."
+    "text": "Three steps: ① copy the prompt and open Gemini, attach your source document there; ② paste Gemini's training.md reply below; ③ build. Parsing is fully deterministic — errors come back with lint codes you can paste straight back into Gemini."
+   }
+  },
+  {
+   "id": "gemini-handoff",
+   "atom": "gemini_handoff",
+   "props": {
+    "label": "① Copy prompt & open Gemini"
    }
   },
   {
    "id": "md-textarea",
    "atom": "form_textarea",
    "props": {
-    "label": "training.md source",
+    "label": "② training.md source (paste Gemini's reply)",
     "placeholder": "---\nid: my-training-app\ndomain: training\nname: \"…\"\nsource: \"…\"\nlicense: \"…\"\n---\n\n# Steps\n…",
     "rows": 16
    },
@@ -52,7 +59,7 @@
    "id": "build-btn",
    "atom": "ripple_button",
    "props": {
-    "label": "Build training app"
+    "label": "③ Build training app"
    },
    "wire": {
     "onClick": "#build.run"

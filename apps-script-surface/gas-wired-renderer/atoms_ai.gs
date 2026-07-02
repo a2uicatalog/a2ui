@@ -339,3 +339,50 @@ _RENDERERS['multi_doc_ai_brief'] = function(b) {
          cards +
          '</div>';
 };
+
+// Fetch a published prompt from a2uicatalog.ai at render time, cached 6h.
+function _fetchPublishedPrompt_(url) {
+  var cache = CacheService.getScriptCache();
+  var key = 'prompt:' + url;
+  var hit = cache.get(key);
+  if (hit) return hit;
+  try {
+    var resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (resp.getResponseCode() === 200) {
+      var text = resp.getContentText();
+      if (text.length < 90000) cache.put(key, text, 21600);
+      return text;
+    }
+  } catch (e) {}
+  return '';
+}
+
+// One-click Gemini handoff: copies prefix + latest published prompt to the
+// clipboard and opens gemini.google.com. Prompt is fetched server-side at
+// render time so the button always carries the current published version.
+_RENDERERS['gemini_handoff'] = function(b) {
+  var label  = b.label  || 'Copy prompt & open Gemini';
+  var accent = b.accent || '#6366f1';
+  var promptUrl = b.prompt_url || 'https://a2uicatalog.ai/prompts/training-md-gem.md';
+  var prefix = b.prefix ||
+    'With the attached document, produce a compliant training.md exactly per the specification below. Output only the file.\n\n---\n\n';
+  var promptText = _fetchPublishedPrompt_(promptUrl);
+  if (!promptText) {
+    return '<div style="font-size:0.8rem;color:#94a3b8;">Prompt unavailable — fetch it at ' +
+           _esc(promptUrl) + '</div>';
+  }
+  var b64 = Utilities.base64Encode(prefix + promptText, Utilities.Charset.UTF_8);
+  var hint = b.hint || 'Copies the full prompt (' + Math.round(promptText.length / 1024) + ' KB), then opens Gemini — paste it there and attach your source document.';
+  return '<div style="margin:8px 0;">' +
+    '<button data-p="' + b64 + '" onclick="(function(btn){' +
+      'var w=window.open(\'https://gemini.google.com/app\',\'_blank\');' +
+      'var t=decodeURIComponent(escape(atob(btn.getAttribute(\'data-p\'))));' +
+      'navigator.clipboard.writeText(t).then(function(){' +
+        'btn.textContent=\'✓ Copied — paste in Gemini\';' +
+      '});' +
+    '})(this)" style="background:' + accent + ';color:#fff;border:none;border-radius:8px;' +
+    'padding:10px 20px;font-size:0.875rem;font-weight:600;cursor:pointer;">' +
+    _esc(label) + '</button>' +
+    '<div style="font-size:0.75rem;color:#94a3b8;margin-top:6px;">' + _esc(hint) + '</div>' +
+  '</div>';
+};
