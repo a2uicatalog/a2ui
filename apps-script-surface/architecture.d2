@@ -1,0 +1,34 @@
+direction: right
+
+user: User / Browser {shape: person}
+
+gem: Gemini Gem {shape: cloud}
+
+schema: JSON Schema {shape: document}
+
+webapp: GAS Webapp {
+  ui: Generator UI\n(Index.html)
+
+  runtime: GAS Runtime (Google-hosted) {
+    router: Code.js\ndoGet · doPost
+    renderer: atom.gs + atoms_charts.gs\n273 registered atoms
+    router -> renderer: renderAtoms(blocks)
+  }
+
+  ui -> runtime.router: large schema\nPOST
+}
+
+url: Shareable URL\n"...exec?p=BASE64" {shape: oval}
+
+page: Rendered HTML Page\n(server-side · no JS framework) {shape: document}
+
+user -> gem: describe a page
+gem -> schema: JSON output
+schema -> webapp.ui: paste + Generate
+webapp.ui -> url: schema ≤ 6KB\nencode to base64
+url -> webapp.runtime.router: GET request\nanyone with the link
+webapp.runtime.renderer -> page
+page -> user: Open in browser
+
+note: Schema IS the URL\nsharing the link = sharing the content {shape: text}
+url -> note

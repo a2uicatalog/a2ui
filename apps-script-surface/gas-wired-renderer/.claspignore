@@ -1,0 +1,15 @@
+*.js
+node_modules/**
+*.md
+*.pdf
+*.txt
+deploy.sh
+playbooks/**
+bundle.js
+gas_entry_stub.js
+gsfiles.mjs
+local_render.mjs
+server.mjs
+render_output.html
+package.json
+package-lock.json

@@ -1,0 +1,22 @@
+name: demo_launch
+description: Demo or launch stage layout — feature carousel, before/after video pair, headline metric, reliability timeline.
+triggers:
+  - demo
+  - launch
+  - release review
+  - ship it
+surfaces: [google-meet-stage, web]
+layout: presentation
+sequence:
+  - atom: carousel
+    role: feature_tour
+    data_hint: "one slide per headline feature with screenshot and caption"
+  - atom: video_pair
+    role: before_after_demo
+    data_hint: "left: previous behaviour; right: new behaviour"
+  - atom: metric_comparison_card
+    role: headline_metric
+    data_hint: "label: the launch KPI; value: current; previous: pre-launch baseline"
+  - atom: uptime_timeline
+    role: reliability
+    data_hint: "service health blocks over the launch window"

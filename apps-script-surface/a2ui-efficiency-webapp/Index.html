@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A2UI · Token Efficiency · 2026</title>
+  <meta name="description" content="A2UI delivers 35× fewer output tokens with identical UI quality. The model names an atom — the renderer compiles the HTML, CSS, SVG, and animation.">
+  <base target="_top">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #04060f;
+      --bg2:       #080d1a;
+      --bg3:       #0d1526;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #e8eaf6;
+      --mute:      #5a6378;
+      --mute2:     #8892a4;
+      --cyan:      #00f2ff;
+      --teal:      #00d4b8;
+      --purple:    #a78bfa;
+      --pink:      #f472b6;
+      --amber:     #fbbf24;
+      --blue:      #3b82f6;
+      --green:     #34d399;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Dot-grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(0,242,255,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(167,139,250,0.04) 0%, transparent 50%),
+        radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    /* ── Eyebrow ── */
+    .eyebrow {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      color: var(--mute);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+
+    /* ── Hero counter ── */
+    .hero-counter {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.25s forwards;
+    }
+
+    #big-number {
+      font-size: clamp(100px, 18vw, 180px);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 45%, var(--pink) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -4px;
+    }
+
+    .times-sign {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 300;
+      color: var(--mute);
+      line-height: 1;
+      padding-bottom: 8px;
+    }
+
+    /* ── Hero text ── */
+    .hero-label {
+      text-align: center;
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.5s forwards;
+    }
+    .hero-label .line1 {
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: 700;
+      color: #fff;
+    }
+    .hero-label .line2 {
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: 700;
+      color: var(--teal);
+    }
+
+    .hero-sub {
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto 52px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--mute2);
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.65s forwards;
+    }
+
+    /* ── Stat cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.8s forwards;
+    }
+
+    @media (max-width: 620px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-cell {
+      background: var(--bg2);
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-val.cyan   { color: var(--cyan); }
+    .stat-val.teal   { color: var(--teal); }
+    .stat-val.amber  { color: var(--amber); }
+    .stat-val.purple { color: var(--purple); }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: var(--mute);
+      text-transform: uppercase;
+    }
+
+    .stat-hint {
+      font-size: 10px;
+      color: var(--mute);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ── Comparison bars ── */
+    .bars-section {
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 1.0s forwards;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .bar-label {
+      width: 72px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mute2);
+      text-align: right;
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 36px;
+      background: var(--bg3);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      white-space: nowrap;
+      width: 0%;
+      transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .bar-fill.raw  { background: rgba(90,99,120,0.5); border: 1px solid rgba(90,99,120,0.3); }
+    .bar-fill.openui { background: rgba(59,130,246,0.4); border: 1px solid rgba(59,130,246,0.3); }
+    .bar-fill.a2ui { background: rgba(0,212,184,0.35); border: 1px solid rgba(0,212,184,0.4); }
+
+    /* ── Tagline ── */
+    .tagline {
+      text-align: center;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 1.2s forwards;
+    }
+
+    .tagline p {
+      font-size: clamp(14px, 2.5vw, 18px);
+      color: var(--mute);
+      margin-bottom: 6px;
+    }
+
+    .tagline strong {
+      font-size: clamp(16px, 3vw, 22px);
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      border-radius: 2px;
+      margin: 32px auto;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.9s forwards;
+    }
+
+    /* ── How it works section ── */
+    .how-section {
+      margin-top: 64px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 1.4s forwards;
+    }
+
+    .how-section h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 560px) {
+      .how-grid { grid-template-columns: 1fr; }
+    }
+
+    .how-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: border-color 0.25s;
+    }
+    .how-card:hover { border-color: rgba(0,242,255,0.25); }
+
+    .how-icon {
+      font-size: 26px;
+      margin-bottom: 12px;
+    }
+
+    .how-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .how-desc {
+      font-size: 12px;
+      color: var(--mute2);
+      line-height: 1.6;
+    }
+
+    /* ── Code pill ── */
+    .code-example {
+      margin: 40px 0;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 1.6s forwards;
+    }
+
+    .code-header {
+      background: var(--bg3);
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mute);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .code-body {
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .tok-cyan    { color: var(--cyan); }
+    .tok-purple  { color: var(--purple); }
+    .tok-amber   { color: var(--amber); }
+    .tok-green   { color: var(--green); }
+    .tok-mute    { color: var(--mute2); }
+    .tok-white   { color: #fff; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0,242,255,0.3)); }
+      50%       { filter: drop-shadow(0 0 40px rgba(167,139,250,0.5)); }
+    }
+
+    #big-number {
+      animation: pulse-glow 4s ease-in-out infinite;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 4px 12px;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+    .badge.live {
+      background: rgba(52,211,153,0.12);
+      border: 1px solid rgba(52,211,153,0.3);
+      color: var(--green);
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0s forwards;
+    }
+
+    .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+    .logo span { color: var(--cyan); }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="logo"><span>A2</span>UI Catalogue</div>
+      <div class="badge live"><span class="badge-dot"></span>Live Demo</div>
+    </div>
+
+    <!-- Eyebrow -->
+    <div class="eyebrow">A2UI &nbsp;·&nbsp; Token Efficiency &nbsp;·&nbsp; 2026</div>
+
+    <!-- 35× hero -->
+    <div class="hero-counter">
+      <span id="big-number">1</span>
+      <span class="times-sign">×</span>
+    </div>
+
+    <!-- Label -->
+    <div class="hero-label">
+      <div class="line1">fewer output tokens.</div>
+      <div class="line2">Identical UI.</div>
+    </div>
+
+    <!-- Sub -->
+    <p class="hero-sub">
+      The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
+      Output token cost drops by 97 % — server-side, deterministic, never touches context.
+    </p>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-val cyan" id="stat-68">0</div>
+        <div class="stat-label">Tok · Model Output</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val teal" id="stat-2395">0</div>
+        <div class="stat-label">Tok · Rendered HTML</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val amber" id="stat-97">0%</div>
+        <div class="stat-label">Output Tokens Saved</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val purple" id="stat-49">$0</div>
+        <div class="stat-label">Output Spend / Month</div>
+        <div class="stat-hint">10k sessions · 20 updates · $15/M tok</div>
+      </div>
+    </div>
+
+    <!-- Comparison bars -->
+    <div class="bars-section" id="bars-section">
+      <div class="bar-row">
+        <div class="bar-label">Raw HTML</div>
+        <div class="bar-track">
+          <div class="bar-fill raw" id="bar-raw">609 tok · model writes everything</div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">OpenUI</div>
+        <div class="bar-track">
+          <div class="bar-fill openui" id="bar-openui">287 tok · compact DSL</div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">A2UI</div>
+        <div class="bar-track">
+          <div class="bar-fill a2ui" id="bar-a2ui">68 tok · atom name</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tagline -->
+    <div class="tagline">
+      <p>OpenUI makes LLMs better at writing UI</p>
+      <strong>A2UI makes LLMs not write UI at all</strong>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- How it works -->
+    <div class="how-section">
+      <h2>How it works</h2>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-icon">🤖</div>
+          <div class="how-title">Agent picks an atom</div>
+          <div class="how-desc">Names a component from the vocabulary. No HTML, no CSS, no markup — just an atom ID and parameters.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-icon">⚙️</div>
+          <div class="how-title">Renderer compiles</div>
+          <div class="how-desc">Server-side renderer expands 68 tokens into 2,395 tokens of compiled HTML, CSS, SVG, and animation.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-icon">✨</div>
+          <div class="how-title">Identical output</div>
+          <div class="how-desc">The rendered result is pixel-perfect across all surfaces. The model never sees or re-generates the implementation.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code example -->
+    <div class="code-example">
+      <div class="code-header">
+        <div class="code-dot" style="background:#ff5f57"></div>
+        <div class="code-dot" style="background:#febc2e"></div>
+        <div class="code-dot" style="background:#28c840"></div>
+        <span style="margin-left:8px">agent_output.json — 68 tokens</span>
+      </div>
+      <div class="code-body">
+<span class="tok-mute">[{</span><br>
+&nbsp;&nbsp;<span class="tok-cyan">"type"</span><span class="tok-mute">:</span> <span class="tok-amber">"stat_card"</span><span class="tok-mute">,</span><br>
+&nbsp;&nbsp;<span class="tok-cyan">"label"</span><span class="tok-mute">:</span> <span class="tok-amber">"Output tokens saved"</span><span class="tok-mute">,</span><br>
+&nbsp;&nbsp;<span class="tok-cyan">"value"</span><span class="tok-mute">:</span> <span class="tok-amber">"97%"</span><span class="tok-mute">,</span><br>
+&nbsp;&nbsp;<span class="tok-cyan">"delta"</span><span class="tok-mute">:</span> <span class="tok-amber">"+35×"</span><br>
+<span class="tok-mute">}]</span><br><br>
+<span class="tok-green">// ↓ renderer expands to 2,395 tokens of compiled HTML</span><br>
+<span class="tok-mute">// The model never sees or regenerates this.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Count-up: 35× hero ──────────────────────────────────────────
+    function countUp(el, target, duration, prefix, suffix, decimals) {
+      var start = 0;
+      var startTime = null;
+      var isFloat = decimals > 0;
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = Math.min((timestamp - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 4);
+        var current = start + (target - start) * eased;
+        var display = isFloat
+          ? (prefix || '') + current.toFixed(decimals) + (suffix || '')
+          : (prefix || '') + Math.floor(current).toLocaleString() + (suffix || '');
+        el.textContent = display;
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = (prefix || '') + (isFloat ? target.toFixed(decimals) : target.toLocaleString()) + (suffix || '');
+      }
+      requestAnimationFrame(step);
+    }
+
+    // Hero number: count from 1 → 35 over 1.8s, starting at 0.5s
+    setTimeout(function() {
+      countUp(document.getElementById('big-number'), 35, 1800, '', '', 0);
+    }, 500);
+
+    // Stats: staggered
+    setTimeout(function() {
+      countUp(document.getElementById('stat-68'),   68,   1200, '', '',    0);
+      countUp(document.getElementById('stat-2395'), 2395, 1400, '', '',    0);
+      countUp(document.getElementById('stat-97'),   97,   1300, '', '%',   0);
+      countUp(document.getElementById('stat-49'),   4.9,  1500, '$', 'k',  1);
+    }, 900);
+
+    // ── Bars: animate widths after paint ────────────────────────────
+    setTimeout(function() {
+      document.getElementById('bar-raw').style.width    = '100%';
+      document.getElementById('bar-openui').style.width = '47.1%';
+      document.getElementById('bar-a2ui').style.width   = '11.2%';
+    }, 1100);
+
+    // ── Keep-alive ping every 30 s (prevents GAS runtime idle) ─────
+    setInterval(function() {
+      fetch(location.href, { method: 'GET', cache: 'no-store' })
+        .catch(function() {});
+    }, 30000);
+  </script>
+</body>
+</html>

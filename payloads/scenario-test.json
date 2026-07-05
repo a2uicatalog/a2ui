@@ -1,0 +1,41 @@
+{
+  "title": "scenario_case test",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "heading",
+      "text": "TOGAF Part 2 — Scenario Practice"
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc1",
+      "domain": "ADM Phase B",
+      "difficulty": "Practitioner",
+      "scenario": "Energistics is a mid-size energy company currently running a legacy ERP suite across four business divisions. The CIO has commissioned a new enterprise architecture engagement. The lead architect has completed Phase A — Architecture Vision, received sign-off on the Statement of Architecture Work, and has a confirmed scope and set of Architecture Principles. The stakeholders are aligned and the sponsor has formally approved the programme to proceed.",
+      "question": "What should the architect do next?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Begin Phase B — Business Architecture. Develop the Baseline and Target Business Architectures, identify gaps, and produce Business Architecture components of the Architecture Roadmap.",
+          "score": 5
+        },
+        {
+          "id": "b",
+          "text": "Return to Phase A to refine and expand the Architecture Vision before proceeding, since the legacy ERP complexity may require a broader scope statement.",
+          "score": 2
+        },
+        {
+          "id": "c",
+          "text": "Jump to Phase E — Opportunities and Solutions to identify quick wins and assess migration feasibility early in the cycle.",
+          "score": 1
+        },
+        {
+          "id": "d",
+          "text": "Conduct a Preliminary Phase review to re-tailor the TOGAF framework for the energy sector before continuing.",
+          "score": 3
+        }
+      ],
+      "rationale": "Phase B — Business Architecture is the correct next step. The ADM is a sequential cycle: after Phase A sign-off, the architect moves to Phase B. The Statement of Architecture Work approval is the formal gate. Returning to Phase A (B) ignores that gate. Jumping to Phase E (C) violates the ADM sequence without a justified iteration trigger. Re-running Preliminary (D) is only appropriate before the first ADM cycle begins, not mid-engagement."
+    }
+  ]
+}

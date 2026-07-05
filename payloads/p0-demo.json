@@ -1,0 +1,131 @@
+{
+  "type": "a2ui_wired_surface",
+  "title": "P0 — Live SLA Demo",
+  "state_primitives": [
+    {
+      "id": "p0_elapsed",
+      "primitive": "DerivedStore",
+      "props": {
+        "expr": "scalar",
+        "interval": 1000,
+        "thresholds": {
+          "warn": 60,
+          "breach": 180
+        }
+      }
+    },
+    {
+      "id": "sla_pct",
+      "primitive": "Computed",
+      "props": {
+        "expr": "e/1.8",
+        "inputs": {
+          "e": "#p0_elapsed.elapsed_sec"
+        }
+      }
+    },
+    {
+      "id": "webhook_url_mem",
+      "primitive": "ValueStore",
+      "props": {
+        "defaultValue": ""
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "save_webhook_action",
+      "type": "gas:save_property",
+      "props": {
+        "key": "CHAT_WEBHOOK_URL",
+        "collect": {
+          "value": "#webhook_url_mem.value"
+        }
+      }
+    }
+  ],
+  "layout": [
+    {
+      "id": "p0-banner",
+      "atom": "subheading",
+      "props": {
+        "text": "MAJOR INCIDENT — P0 ACTIVE"
+      }
+    },
+    {
+      "id": "p0-timer",
+      "atom": "sla_timer_display",
+      "props": {
+        "title": "Database Failover — Production",
+        "severity": "P0",
+        "sla_label": "3 min SLA"
+      },
+      "wire": {
+        "elapsed_fmt": "#p0_elapsed.elapsed_fmt",
+        "sla_state": "#p0_elapsed.sla_state",
+        "pct": "#sla_pct.value"
+      }
+    },
+    {
+      "id": "p0-divider-1",
+      "atom": "divider"
+    },
+    {
+      "id": "p0-incident-detail",
+      "atom": "key_value",
+      "props": {
+        "title": "Incident Details",
+        "items": [
+          { "key": "Incident ID",   "description": "INC-0001" },
+          { "key": "Severity",      "description": "P0 — Critical" },
+          { "key": "Description",   "description": "Production database failover — all regions affected" },
+          { "key": "Impact",        "description": "All customer-facing services unavailable" },
+          { "key": "IC",            "description": "Unassigned — claim immediately" },
+          { "key": "SLA",           "description": "3 minutes to first response · Timer started at page load" }
+        ]
+      }
+    },
+    {
+      "id": "p0-divider-2",
+      "atom": "divider"
+    },
+    {
+      "id": "webhook-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "Chat Notification Settings"
+      }
+    },
+    {
+      "id": "webhook-input",
+      "atom": "form_input",
+      "props": {
+        "label": "Google Chat Webhook URL",
+        "placeholder": "https://chat.googleapis.com/v1/spaces/..."
+      },
+      "wire": {
+        "setValue": "#webhook_url_mem.setValue"
+      }
+    },
+    {
+      "id": "webhook-save-btn",
+      "atom": "ripple_button",
+      "props": {
+        "label": "Save Webhook URL",
+        "action_node": "save_webhook_action"
+      }
+    },
+    {
+      "id": "webhook-save-ok",
+      "atom": "form_message",
+      "props": {
+        "text": "Webhook URL saved.",
+        "type": "success",
+        "visible": false
+      },
+      "wire": {
+        "visible": "#save_webhook_action.ok"
+      }
+    }
+  ]
+}

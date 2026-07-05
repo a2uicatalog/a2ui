@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "type": "a2ui_wired_surface",
+  "title": "Team Standup",
+  "theme": "dark",
+  "app": {
+    "id": "team-standup",
+    "storage": { "type": "my_drive", "sheet": "Team_Standup" },
+    "auth":    { "mode": "publisher" },
+    "data":    { "isolation": "by_team" }
+  },
+  "state_primitives": [
+    { "id": "yesterday_mem", "primitive": "ValueStore",      "props": { "initialValue": "" } },
+    { "id": "today_mem",     "primitive": "ValueStore",      "props": { "initialValue": "" } },
+    { "id": "blockers_mem",  "primitive": "ValueStore",      "props": { "initialValue": "" } },
+    { "id": "today_valid",   "primitive": "StringValidator", "props": {
+        "source": "#today_mem.value",
+        "pattern": ".+",
+        "errorMessage": "Tell us what you're working on today"
+    }},
+    { "id": "standup_list",  "primitive": "ArrayFilter",     "props": {} }
+  ],
+  "actions": [
+    {
+      "id": "load_standups",
+      "type": "gas:sheet_query",
+      "trigger": "onLoad",
+      "props": {
+        "sheet": "Team_Standup",
+        "where":    { "date": "{{today}}" },
+        "order_by": [{ "column": "submitted_at", "dir": "asc" }],
+        "select":   ["name", "today", "blockers", "submitted_at"]
+      },
+      "wire": { "result": "#standup_list.source" }
+    },
+    {
+      "id": "submit_standup",
+      "type": "gas:sheet_append",
+      "props": {
+        "sheet": "Team_Standup",
+        "collect": {
+          "name":         "{{app.user.name}}",
+          "email":        "{{app.user.email}}",
+          "yesterday":    "#yesterday_mem.value",
+          "today":        "#today_mem.value",
+          "blockers":     "#blockers_mem.value",
+          "date":         "{{today}}",
+          "submitted_at": "{{datetime}}"
+        }
+      },
+      "onSuccess": ["load_standups"]
+    }
+  ],
+  "layout": [
+    {
+      "atom": "heading",
+      "props": { "text": "Team Standup", "level": 2 }
+    },
+    {
+      "atom": "data_table",
+      "id": "standup-table",
+      "props": {
+        "columns":      ["name", "today", "blockers", "submitted_at"],
+        "emptyMessage": "No standups posted yet today — be the first."
+      },
+      "wire": { "rows": "#standup_list.output" }
+    },
+    {
+      "atom": "heading",
+      "props": { "text": "Post your update", "level": 3 }
+    },
+    {
+      "atom": "text_input",
+      "id": "yesterday-field",
+      "props": { "label": "Yesterday", "placeholder": "What did you ship?" },
+      "wire": { "onChange": "#yesterday_mem.setValue" }
+    },
+    {
+      "atom": "text_input",
+      "id": "today-field",
+      "props": { "label": "Today", "placeholder": "What are you working on?" },
+      "wire": { "onChange": "#today_mem.setValue" }
+    },
+    {
+      "atom": "text_input",
+      "id": "blockers-field",
+      "props": { "label": "Blockers", "placeholder": "Anything in the way? (leave blank if none)" },
+      "wire": { "onChange": "#blockers_mem.setValue" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "today-error",
+      "props": { "type": "error", "text": "Tell us what you're working on today" },
+      "wire": { "visible": "#today_valid.isInvalid" }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "submit-btn",
+      "props": { "label": "Post standup", "accent": "#00f2ff" },
+      "wire": {
+        "onClick":   "#submit_standup.run",
+        "disabled":  "#today_valid.isNotValid"
+      }
+    }
+  ]
+}

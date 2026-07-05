@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Learning Path Selector — A2UI Atomic Catalog</title>
+  <meta name="description" content="Path chooser presented at course entry. Shows 2-4 role or level path cards (icon, title, description, duration). Learner clicks to select — selection is stored in progress_store via setPath() and optionally navigates to a path-specific url. Selected path can drive personalised module_map content.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> /
+    <a href="https://a2uicatalog.ai/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / learning_path_selector
+  </nav>
+
+  <h1>Learning Path Selector</h1>
+  <p class="desc">Path chooser presented at course entry. Shows 2-4 role or level path cards (icon, title, description, duration). Learner clicks to select — selection is stored in progress_store via setPath() and optionally navigates to a path-specific url. Selected path can drive personalised module_map content.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span>
+  </div>
+
+  
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div style="font-weight:700;font-size:1rem;margin-bottom:8px;">Choose Your Path</div><div style="border-radius:14px;padding:22px 18px;cursor:pointer;border:2px solid #6366f144;background:#f9fafb;margin-bottom:10px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#6366f144'"><div style="font-weight:700;margin-bottom:4px;"></div><div style="font-size:0.85rem;color:#6b7280;margin-bottom:8px;"></div></div><div style="border-radius:14px;padding:22px 18px;cursor:pointer;border:2px solid #6366f144;background:#f9fafb;margin-bottom:10px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#6366f144'"><div style="font-weight:700;margin-bottom:4px;"></div><div style="font-size:0.85rem;color:#6b7280;margin-bottom:8px;"></div></div></div></div>
+</div>
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. Chooser heading. Default "Choose Your Path".</td><td>optional</td></tr><tr><td>intro</td><td>string. Introductory text below the heading.</td><td>optional</td></tr><tr><td>paths</td><td>array (required). Array of {id, label, description, icon, accent, duration, url?} objects.</td><td>required</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "learning_path_selector",
+  "paths": [
+    {
+      "label": "Beginner Path",
+      "steps": []
+    },
+    {
+      "label": "Advanced Path",
+      "steps": []
+    }
+  ]
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:learning_path_selector",
+  "displayName": "Learning Path Selector",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/learning_path_selector",
+  "capabilities": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+  ],
+  "description": "Path chooser presented at course entry. Shows 2-4 role or level path cards (icon, title, description, duration). Learner clicks to select \u2014 selection is stored in progress_store via setPath() and optionally navigates to a path-specific url. Selected path can drive personalised module_map content.",
+  "representativeQueries": [
+    "show a course entry path chooser \u2014 role/level cards, writes selection to progress_store, optional navigation",
+    "path chooser presented at course entry. shows 2-4 role or level path cards (icon, title, description",
+    "render a learning path selector"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd apps-script-surface/gas-schema-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="https://a2uicatalog.ai/renderer" style="display:inline-block;margin-top:12px;font-size:12px;color:#818cf8;text-decoration:none;">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>MIT License</span>
+  </footer>
+</body>
+</html>

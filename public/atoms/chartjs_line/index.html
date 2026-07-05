@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Chartjs Line — A2UI Atomic Catalog</title>
+  <meta name="description" content="Renders an interactive line chart using Chart.js for time-series or trend data.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> /
+    <a href="https://a2uicatalog.ai/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / chartjs_line
+  </nav>
+
+  <h1>Chartjs Line</h1>
+  <p class="desc">Renders an interactive line chart using Chart.js for time-series or trend data.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-meet-stage</td><td>Canvas rendering inconsistent in stage iframe.</td></tr><tr><td>google-chat</td><td>Canvas not supported.</td></tr><tr><td>email</td><td>Canvas stripped.</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box">
+    <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+      <div style="font-size:0.75rem;font-weight:700;color:#94a3b8;margin-bottom:8px;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;">Dataset A</div>
+      <div style="width:100%;height:200px;">
+        <svg viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+          <defs>
+            
+        <linearGradient id="grad_line_140382082226816_0" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22" />
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
+        </linearGradient>
+        <filter id="glow_line_140382082226816_0" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        
+
+        <linearGradient id="grad_line_140382082226816_1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#10b981" stop-opacity="0.22" />
+          <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
+        </linearGradient>
+        <filter id="glow_line_140382082226816_1" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        
+          </defs>
+          <!-- Grid & Y-Axes -->
+          
+        <line x1="60" y1="30.0" x2="480" y2="30.0" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
+        <text x="50" y="33.0" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">80</text>
+        
+        <line x1="60" y1="62.5" x2="480" y2="62.5" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
+        <text x="50" y="65.5" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">67</text>
+        
+        <line x1="60" y1="95.0" x2="480" y2="95.0" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
+        <text x="50" y="98.0" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">54</text>
+        
+        <line x1="60" y1="127.5" x2="480" y2="127.5" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
+        <text x="50" y="130.5" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">41</text>
+        
+        <line x1="60" y1="160.0" x2="480" y2="160.0" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
+        <text x="50" y="163.0" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">28</text>
+        
+          <!-- X-Axes -->
+          <text x="60.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category A</text><text x="200.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category B</text><text x="340.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category C</text><text x="480.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category D</text>
+          <!-- Series -->
+          <polygon points="60,160 60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0 480,160" fill="url(#grad_line_140382082226816_0)" />
+<polyline points="60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0" fill="none" stroke="#3b82f6" stroke-width="2.5" filter="url(#glow_line_140382082226816_0)" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="60.0" cy="67.5" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
+<circle cx="200.0" cy="82.5" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
+<circle cx="340.0" cy="30.0" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
+<circle cx="480.0" cy="50.0" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
+<polygon points="60,160 60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5 480,160" fill="url(#grad_line_140382082226816_1)" />
+<polyline points="60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5" fill="none" stroke="#10b981" stroke-width="2.5" filter="url(#glow_line_140382082226816_1)" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="60.0" cy="160.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+<circle cx="200.0" cy="110.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+<circle cx="340.0" cy="130.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+<circle cx="480.0" cy="92.5" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+        </svg>
+      </div>
+    </div>
+    </div>
+</div>
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>labels</td><td>array of strings. X-axis labels.</td><td>required</td></tr><tr><td>datasets</td><td>array of {label, data}. Chart datasets.</td><td>required</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "chartjs_line",
+  "labels": [
+    "Category A",
+    "Category B",
+    "Category C",
+    "Category D"
+  ],
+  "datasets": [
+    {
+      "label": "Dataset A",
+      "data": [
+        65,
+        59,
+        80,
+        72
+      ]
+    },
+    {
+      "label": "Dataset B",
+      "data": [
+        28,
+        48,
+        40,
+        55
+      ]
+    }
+  ]
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:chartjs_line",
+  "displayName": "Chartjs Line",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/chartjs_line",
+  "capabilities": [
+    "web",
+    "google-apps-script-web"
+  ],
+  "description": "Renders an interactive line chart using Chart.js for time-series or trend data.",
+  "representativeQueries": [
+    "show a interactive Chart.js line chart for trend data",
+    "renders an interactive line chart using chart.js for time-series or trend data.",
+    "render a chartjs line"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd apps-script-surface/gas-schema-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="https://a2uicatalog.ai/renderer" style="display:inline-block;margin-top:12px;font-size:12px;color:#818cf8;text-decoration:none;">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>MIT License</span>
+  </footer>
+</body>
+</html>

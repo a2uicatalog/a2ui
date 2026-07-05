@@ -1,0 +1,72 @@
+{
+  "title": "A2UI × Astryx — Gap Analysis & Feature Priorities",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "gradient_hero",
+      "badge": "Gap Analysis · 2026-07-04",
+      "title": "A2UI × Astryx",
+      "subtitle": "Where Meta's interaction kit is deep and ours is thin — 26 genuine gaps, folded into ~18 A2UI-native atoms across 3 waves.",
+      "accent": "#6366f1",
+      "accent2": "#8b5cf6",
+      "align": "center"
+    },
+    {
+      "type": "key_takeaways",
+      "title": "The finding",
+      "items": [
+        "Astryx ships 92 components; A2UI ships 498 — we're 5× larger, not behind on breadth.",
+        "Of Astryx's 92, ~66 already have A2UI equivalents.",
+        "The real gap is a specific band: stateful INPUT + app-frame chrome.",
+        "26 genuine gaps collapse to ~18 atoms by folding variants into mode/flags — not 1:1 clones."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Gaps by category"
+    },
+    {
+      "type": "table",
+      "caption": "Astryx category → what A2UI is missing",
+      "headers": ["Category", "Gaps", "Cluster"],
+      "rows": [
+        ["Data Input", "9", "Field, Typeahead/Power Search, Tokenizer, Date/Time, Number, File, Calendar"],
+        ["Action / chrome", "6", "Toolbar, More Menu, Toggle Button(+group), Icon Button, Button Group"],
+        ["Layout", "3", "App Shell, Aspect Ratio, Resize Handle"],
+        ["Navigation", "3", "Side Nav, Mega Menu (+featured)"],
+        ["Overlay", "2", "Popover, Lightbox"],
+        ["Utility", "1", "VisuallyHidden (a11y track)"]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Priority waves"
+    },
+    {
+      "type": "roadmap_card",
+      "title": "Wave 1 — Input primitives (highest leverage)",
+      "description": "form_field wrapper first, then datetime_input (mode: range/datetime/time), number_input, tag_input, search_input, file_input. Closes the structural gap. 9 Astryx atoms → 6 A2UI."
+    },
+    {
+      "type": "roadmap_card",
+      "title": "Wave 2 — App chrome",
+      "description": "app_shell, side_nav, toolbar, more_menu, popover. Turns the catalogue from 'renders content' into 'frames an app'."
+    },
+    {
+      "type": "roadmap_card",
+      "title": "Wave 3 — Polish & a11y",
+      "description": "mega_menu, lightbox, aspect_ratio, resize_handle, visually_hidden, timestamp, token."
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "Consolidation discipline",
+      "text": "Fold Astryx's fragmented variants into mode/flags — same counterweight principle as the chat_thread router. selectable_card / clickable_card become flags on info_card, not new atoms."
+    },
+    {
+      "type": "closing",
+      "text": "Not a copy of Astryx — the A2UI-native equivalent, kept flat where their catalogue fragments.",
+      "tags": ["a2ui", "astryx", "gap-analysis", "roadmap"]
+    }
+  ]
+}

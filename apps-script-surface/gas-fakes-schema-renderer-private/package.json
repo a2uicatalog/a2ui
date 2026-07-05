@@ -1,0 +1,13 @@
+{
+  "name": "gas-fakes-schema-renderer-private",
+  "type": "module",
+  "private": true,
+  "description": "A2UI schema renderer running locally via gas-fakes (https://github.com/brucemcpherson/gas-fakes)",
+  "scripts": {
+    "start": "node server.mjs",
+    "render": "node local_render.mjs"
+  },
+  "dependencies": {
+    "@mcpher/gas-fakes": "file:/home/curtis/gas-fakes"
+  }
+}

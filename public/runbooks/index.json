@@ -1,0 +1,157 @@
+{
+ "catalogId": "a2ui-atoms-v1",
+ "runbookCount": 4,
+ "runbooks": [
+  {
+   "name": "architecture_session",
+   "description": "Architecture review stage layout — system diagram, repo structure, API contract, proposed change comparison.",
+   "triggers": [
+    "architecture review",
+    "design review",
+    "system design",
+    "rfc walkthrough"
+   ],
+   "surfaces": [
+    "google-meet-stage",
+    "web",
+    "google-apps-script-web"
+   ],
+   "layout": "split",
+   "sequence": [
+    {
+     "atom": "diagram",
+     "role": "system_overview",
+     "data_hint": "the system or component diagram under discussion"
+    },
+    {
+     "atom": "file_tree",
+     "role": "repo_structure",
+     "data_hint": "directories and files touched by the proposal"
+    },
+    {
+     "atom": "http_request_block",
+     "role": "api_contract",
+     "data_hint": "representative request/response for the new or changed endpoint"
+    },
+    {
+     "atom": "before_after",
+     "role": "proposed_change",
+     "data_hint": "current vs proposed structure, config, or code shape"
+    }
+   ]
+  },
+  {
+   "name": "demo_launch",
+   "description": "Demo or launch stage layout — feature carousel, before/after video pair, headline metric, reliability timeline.",
+   "triggers": [
+    "demo",
+    "launch",
+    "release review",
+    "ship it"
+   ],
+   "surfaces": [
+    "google-meet-stage",
+    "web"
+   ],
+   "layout": "presentation",
+   "sequence": [
+    {
+     "atom": "carousel",
+     "role": "feature_tour",
+     "data_hint": "one slide per headline feature with screenshot and caption"
+    },
+    {
+     "atom": "video_pair",
+     "role": "before_after_demo",
+     "data_hint": "left: previous behaviour; right: new behaviour"
+    },
+    {
+     "atom": "metric_comparison_card",
+     "role": "headline_metric",
+     "data_hint": "label: the launch KPI; value: current; previous: pre-launch baseline"
+    },
+    {
+     "atom": "uptime_timeline",
+     "role": "reliability",
+     "data_hint": "service health blocks over the launch window"
+    }
+   ]
+  },
+  {
+   "name": "sprint_review",
+   "description": "Sprint review stage layout — velocity and bug KPIs, completion progress, backlog table, burn-down chart.",
+   "triggers": [
+    "sprint review",
+    "sprint retro",
+    "iteration review",
+    "velocity"
+   ],
+   "surfaces": [
+    "google-meet-stage",
+    "web",
+    "google-apps-script-web"
+   ],
+   "layout": "grid",
+   "sequence": [
+    {
+     "atom": "stat_card",
+     "role": "velocity",
+     "data_hint": "value: story points completed this sprint; delta: vs previous sprint; is_up from delta sign"
+    },
+    {
+     "atom": "stat_card",
+     "role": "bugs",
+     "data_hint": "value: open bug count; delta: change over sprint; accent red when rising"
+    },
+    {
+     "atom": "progress_bar",
+     "role": "sprint_completion",
+     "data_hint": "value: percent of committed scope done; label: sprint name; caption: days remaining"
+    },
+    {
+     "atom": "table",
+     "role": "backlog",
+     "data_hint": "rows: carry-over and top backlog items with owner and status columns"
+    },
+    {
+     "atom": "chartjs_line",
+     "role": "burn_down",
+     "data_hint": "labels: sprint days; datasets: [ideal burn-down, actual remaining points]"
+    }
+   ]
+  },
+  {
+   "name": "team_standup",
+   "description": "Team standup stage layout — one bio card per person, blockers checklist, status badges.",
+   "triggers": [
+    "standup",
+    "daily sync",
+    "team check-in"
+   ],
+   "surfaces": [
+    "google-meet-stage",
+    "web",
+    "google-apps-script-web"
+   ],
+   "layout": "grid",
+   "sequence": [
+    {
+     "atom": "author_bio_card",
+     "role": "person",
+     "repeat": "per_participant",
+     "data_hint": "name, role, and yesterday/today summary per team member"
+    },
+    {
+     "atom": "prerequisite_checklist",
+     "role": "blockers",
+     "data_hint": "title: Blockers; items: open blockers with owner in each string"
+    },
+    {
+     "atom": "badge_group",
+     "role": "status",
+     "data_hint": "one badge per workstream; color green/yellow/red by health; pulse on items needing attention"
+    }
+   ]
+  }
+ ]
+}

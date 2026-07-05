@@ -1,0 +1,504 @@
+{
+ "id": "gh-cli-quickstart",
+ "title": "GitHub CLI Quickstart",
+ "domain": "training",
+ "source": "GitHub Docs — GitHub CLI quickstart",
+ "source_url": "https://docs.github.com/en/github-cli/github-cli/quickstart",
+ "license": "CC-BY-4.0",
+ "steps": 13,
+ "coverage": "4/6 sections",
+ "built": "2026-07-02",
+ "planes": {
+  "learning-interactive": {
+   "surface": "a2ui_wired_surface",
+   "payload": {
+    "type": "a2ui_wired_surface",
+    "title": "GitHub CLI Quickstart",
+    "state_primitives": [
+     {
+      "id": "s_1",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_2",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_3",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_4",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_5",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_6",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_7",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_8",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_9",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_10",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_11",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_12",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_13",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "done_count",
+      "primitive": "Computed",
+      "props": {
+       "expr": "a+b+c+d+e+f+g+h+i+j+k+l+m",
+       "inputs": {
+        "a": "#s_1.value",
+        "b": "#s_2.value",
+        "c": "#s_3.value",
+        "d": "#s_4.value",
+        "e": "#s_5.value",
+        "f": "#s_6.value",
+        "g": "#s_7.value",
+        "h": "#s_8.value",
+        "i": "#s_9.value",
+        "j": "#s_10.value",
+        "k": "#s_11.value",
+        "l": "#s_12.value",
+        "m": "#s_13.value"
+       }
+      }
+     },
+     {
+      "id": "progress_pct",
+      "primitive": "Computed",
+      "props": {
+       "expr": "n/13*100",
+       "inputs": {
+        "n": "#done_count.value"
+       }
+      }
+     }
+    ],
+    "actions": [],
+    "layout": [
+     {
+      "id": "title-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "GitHub CLI Quickstart"
+      }
+     },
+     {
+      "id": "nav",
+      "atom": "jump_nav",
+      "props": {
+       "links": [
+        {
+         "label": "1 · Status & Repositories",
+         "target": "phase-0-heading"
+        },
+        {
+         "label": "2 · Issues & Pull Requests",
+         "target": "phase-1-heading"
+        },
+        {
+         "label": "3 · Codespaces",
+         "target": "phase-2-heading"
+        },
+        {
+         "label": "4 · Help & Customization",
+         "target": "phase-3-heading"
+        },
+        {
+         "label": "5 · Multiple Accounts",
+         "target": "phase-4-heading"
+        }
+       ]
+      }
+     },
+     {
+      "id": "intro",
+      "atom": "body",
+      "props": {
+       "text": "A tour of the GitHub CLI: check your work status, manage repositories, issues, pull requests and codespaces, and customize gh to fit how you work."
+      }
+     },
+     {
+      "id": "prereq-1",
+      "atom": "prerequisite_checklist",
+      "props": {
+       "title": "Prerequisites",
+       "items": [
+        "GitHub CLI (gh) installed and authenticated — see GitHub's install-and-auth guide"
+       ]
+      }
+     },
+     {
+      "id": "concepts-2",
+      "atom": "key_value",
+      "props": {
+       "title": "Concepts",
+       "items": [
+        {
+         "key": "alias",
+         "description": "A shortcut you define for a command you commonly run"
+        },
+        {
+         "key": "extension",
+         "description": "A custom command created or added to extend the GitHub CLI"
+        },
+        {
+         "key": "cs",
+         "description": "Shorthand you can substitute for codespace in any codespace command"
+        }
+       ]
+      }
+     },
+     {
+      "id": "div0",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-0-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "1 · Status & Repositories"
+      }
+     },
+     {
+      "id": "callout-3",
+      "atom": "callout",
+      "props": {
+       "type": "warning",
+       "text": "When you use some commands for the first time — for example gh codespace subcommands — you'll be prompted to add extra scopes to your authentication token. Follow the onscreen instructions."
+      }
+     },
+     {
+      "id": "cmd-1",
+      "atom": "command_step",
+      "props": {
+       "label": "View your status across subscribed repositories",
+       "command": "gh status",
+       "hint": "Expect: Details of your current work on GitHub across all the repositories you're subscribed to"
+      },
+      "wire": {
+       "done": "#s_1.value",
+       "setDone": "#s_1.setValue"
+      }
+     },
+     {
+      "id": "cmd-2",
+      "atom": "command_step",
+      "props": {
+       "label": "View a repository's description and README",
+       "command": "gh repo view OWNER/REPO",
+       "hint": "Add --web to open the repository in your default browser. Inside a local repo with a GitHub remote you can omit OWNER/REPO."
+      },
+      "wire": {
+       "done": "#s_2.value",
+       "setDone": "#s_2.setValue"
+      }
+     },
+     {
+      "id": "cmd-3",
+      "atom": "command_step",
+      "props": {
+       "label": "Clone a repository",
+       "command": "gh repo clone OWNER/REPO",
+       "hint": "Expect: The repository is cloned to the directory from which you ran the command"
+      },
+      "wire": {
+       "done": "#s_3.value",
+       "setDone": "#s_3.setValue"
+      }
+     },
+     {
+      "id": "cmd-4",
+      "atom": "command_step",
+      "props": {
+       "label": "Create a repository",
+       "command": "gh repo create",
+       "hint": "Follow the on-screen instructions. You can create a new empty repository and optionally clone it, or push an existing local repository and optionally set it as the remote."
+      },
+      "wire": {
+       "done": "#s_4.value",
+       "setDone": "#s_4.setValue"
+      }
+     },
+     {
+      "id": "div1",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-1-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "2 · Issues & Pull Requests"
+      }
+     },
+     {
+      "id": "cmd-5",
+      "atom": "command_step",
+      "props": {
+       "label": "List open issues for a repository",
+       "command": "gh issue list --repo OWNER/REPO",
+       "hint": "Inside a local repo with a GitHub remote you can omit --repo. Try gh issue list --assignee \"@me\" for your issues, or --author monalisa for a specific user's."
+      },
+      "wire": {
+       "done": "#s_5.value",
+       "setDone": "#s_5.setValue"
+      }
+     },
+     {
+      "id": "cmd-6",
+      "atom": "command_step",
+      "props": {
+       "label": "List open pull requests",
+       "command": "gh pr list --repo OWNER/REPO",
+       "hint": "gh pr list --author \"@me\" lists PRs you created; --label LABEL-NAME filters by label."
+      },
+      "wire": {
+       "done": "#s_6.value",
+       "setDone": "#s_6.setValue"
+      }
+     },
+     {
+      "id": "cmd-7",
+      "atom": "command_step",
+      "props": {
+       "label": "List pull requests awaiting your review",
+       "command": "gh search prs --review-requested=@me --state=open"
+      },
+      "wire": {
+       "done": "#s_7.value",
+       "setDone": "#s_7.setValue"
+      }
+     },
+     {
+      "id": "cmd-8",
+      "atom": "command_step",
+      "props": {
+       "label": "Create a pull request",
+       "command": "gh pr create",
+       "hint": "Follow the on-screen instructions."
+      },
+      "wire": {
+       "done": "#s_8.value",
+       "setDone": "#s_8.setValue"
+      }
+     },
+     {
+      "id": "div2",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-2-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "3 · Codespaces"
+      }
+     },
+     {
+      "id": "cmd-9",
+      "atom": "command_step",
+      "props": {
+       "label": "Create a new codespace",
+       "command": "gh codespace create",
+       "hint": "Follow the on-screen instructions."
+      },
+      "wire": {
+       "done": "#s_9.value",
+       "setDone": "#s_9.setValue"
+      }
+     },
+     {
+      "id": "cmd-10",
+      "atom": "command_step",
+      "props": {
+       "label": "List and open your codespaces",
+       "command": "gh codespace list",
+       "hint": "gh codespace code -w opens a chosen codespace in the web version of VS Code. cs works as shorthand for codespace."
+      },
+      "wire": {
+       "done": "#s_10.value",
+       "setDone": "#s_10.setValue"
+      }
+     },
+     {
+      "id": "div3",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-3-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "4 · Help & Customization"
+      }
+     },
+     {
+      "id": "info-4",
+      "atom": "key_value",
+      "props": {
+       "title": "Customization options",
+       "items": [
+        {
+         "key": "gh config set",
+         "description": "Adjust settings — e.g. gh config set editor \"code -w\" sets VS Code as your editor (the -w flag waits for the file to close)"
+        },
+        {
+         "key": "gh alias set",
+         "description": "Define shortcuts — e.g. gh alias set prd \"pr create --draft\" lets you run gh prd for a draft PR"
+        },
+        {
+         "key": "extensions",
+         "description": "Create or add custom commands via GitHub CLI extensions"
+        }
+       ]
+      }
+     },
+     {
+      "id": "cmd-11",
+      "atom": "command_step",
+      "props": {
+       "label": "See the top-level commands",
+       "command": "gh",
+       "hint": "Expect: A reminder of the top-level commands you can use — issue, pr, repo, and so on"
+      },
+      "wire": {
+       "done": "#s_11.value",
+       "setDone": "#s_11.setValue"
+      }
+     },
+     {
+      "id": "cmd-12",
+      "atom": "command_step",
+      "props": {
+       "label": "Get help on any command",
+       "command": "gh issue --help",
+       "hint": "Append --help to any command or subcommand, e.g. gh issue create --help."
+      },
+      "wire": {
+       "done": "#s_12.value",
+       "setDone": "#s_12.setValue"
+      }
+     },
+     {
+      "id": "div4",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-4-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "5 · Multiple Accounts"
+      }
+     },
+     {
+      "id": "cmd-13",
+      "atom": "command_step",
+      "props": {
+       "label": "Switch between accounts on the same platform",
+       "command": "gh auth switch",
+       "hint": "Authenticate to each account first; use this to switch between them. For use across multiple GitHub platforms, see GitHub's multiple-accounts guide."
+      },
+      "wire": {
+       "done": "#s_13.value",
+       "setDone": "#s_13.setValue"
+      }
+     },
+     {
+      "id": "refs-5",
+      "atom": "resources_list",
+      "props": {
+       "items": [
+        {
+         "title": "GitHub CLI online manual",
+         "url": "https://cli.github.com/manual/gh"
+        },
+        {
+         "title": "gh config set",
+         "url": "https://cli.github.com/manual/gh_config_set"
+        },
+        {
+         "title": "gh alias",
+         "url": "https://cli.github.com/manual/gh_alias"
+        },
+        {
+         "title": "gh auth switch",
+         "url": "https://cli.github.com/manual/gh_auth_switch"
+        }
+       ]
+      }
+     },
+     {
+      "id": "attribution",
+      "atom": "body",
+      "props": {
+       "text": "*Source: [GitHub Docs — GitHub CLI quickstart](https://docs.github.com/en/github-cli/github-cli/quickstart) · License: CC-BY-4.0*"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

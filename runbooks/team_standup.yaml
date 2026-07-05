@@ -1,0 +1,19 @@
+name: team_standup
+description: Team standup stage layout — one bio card per person, blockers checklist, status badges.
+triggers:
+  - standup
+  - daily sync
+  - team check-in
+surfaces: [google-meet-stage, web, google-apps-script-web]
+layout: grid
+sequence:
+  - atom: author_bio_card
+    role: person
+    repeat: per_participant
+    data_hint: "name, role, and yesterday/today summary per team member"
+  - atom: prerequisite_checklist
+    role: blockers
+    data_hint: "title: Blockers; items: open blockers with owner in each string"
+  - atom: badge_group
+    role: status
+    data_hint: "one badge per workstream; color green/yellow/red by health; pulse on items needing attention"

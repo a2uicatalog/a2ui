@@ -1,0 +1,161 @@
+# project.yaml — declarative inventory & publication policy for a2ui-catalogue
+#
+# The a2py pattern applied to this repo: declare what exists and what may be
+# published; tests/test_project_manifest.py enforces it. A tag nothing checks
+# is documentation; these are checked.
+#
+# Visibility tiers:
+#   private   — must never be tracked in git (enforced)
+#   repo      — tracked, not published to a2uicatalog.ai (the default; not enumerated)
+#   published — served from public/ (everything in public/ must trace to a rule here)
+
+project: a2ui-catalogue
+updated: 2026-07-02
+# NB: brand tokens + usage map live in the PRIVATE overlay (ops/project-ops.yaml `brand:`),
+# not here — brand strategy is operational, not published. scripts/check_brand.py reads the
+# merged manifest. Public surfaces still SHOW the brand; only the registry is private.
+
+policy:
+  private:
+    # Globs that must never appear in git tracking
+    - a2uithoughts.md
+    - apps-script-surface/gas-trade-bot/**
+    - ops/**
+    - "**/Code.private.gs"
+    - "**/Code.private.js"
+    - "**/.clasp.json"
+    - "**/.clasprc.json"
+
+  published:
+    # Everything under public/ must match one of these (or published_prompts)
+    - public/index.html
+    - public/robots.txt
+    - public/_headers
+    - public/.well-known/**
+    - public/atoms/**
+    - public/surfaces/**
+    - public/renderer/**
+    - public/spec.json
+    - public/runbooks/**
+    - public/catalogue/**
+    - public/vendors/**
+    - public/THIRD-PARTY-NOTICES.md
+    - public/knowledge/**
+    - public/avatar/**
+
+# Consumed by scripts/gen_public_catalog.py — the single publication
+# decision for prompts. public/prompts/ may contain exactly these.
+# Knowledge atoms — compiled training.md sources served (UNANNOUNCED) at
+# /knowledge/<id>.json. Per-artifact opt-in; prune a line to unpublish.
+published_knowledge:
+  - id: nist-ai-rmf
+    payload: payloads/nist-ai-rmf.json
+    domain: course
+    source: "NIST.AI.100-1.pdf — January 2023"
+    source_url: "https://doi.org/10.6028/NIST.AI.100-1"
+    license: "Public Domain — U.S. Government work"
+  - id: brevet-2026
+    payload: payloads/brevet_full.json
+    domain: course
+    source: "Programmes officiels DNB 2026 (éduscol)"
+    source_url: "https://eduscol.education.fr/"
+    license: "Licence Ouverte 2.0 (contenus officiels); assembly a2uicatalog"
+  - examples/clasp-deployment.training.md
+  - sampledocs/cloudflare-workers-get-started.training.md
+  - sampledocs/gh-cli-quickstart.training.md
+  - sampledocs/vite-getting-started.training.md
+
+published_prompts:
+  - a2ui-builder-gem.md
+  - a2ui-builder-gem-offline.md
+  - training-md-gem.md
+
+# Operational inventory (deployments, script properties, processes) lives in
+# the PRIVATE overlay ops/project-ops.yaml — merged at runtime by ops/ops.py.
+staging:
+  policy: preview atoms are repo-only; publication requires stable
+  preview_count_note: derived from schema.yaml, not duplicated here
+
+known_debt:
+  unregistered_atoms: []   # cleared 2026-07-02 — all 30 wired atoms registered (stage: preview)
+
+# Declared processes — management as data. Run via: python3 scripts/ops.py run <name>
+# The runner executes from repo root, resolves {{inventory.paths}} from this
+# file, stops on first failure, and appends every run to ops/log.jsonl.
+# If an operation isn't declared here, it isn't a process — it's freelancing.
+
+# ── generators — registry -> artifact compilers (retro-registered 2026-07-03) ──
+# A generator is a pure function of its declared source; outputs are compiled
+# artifacts, never hand-edited (cattle not pets). Enforced by
+# tests/test_generators.py: every scripts/gen_*|generate_*.py must be
+# registered here, and every declared output must exist on disk.
+# intake for all public generators is deterministic (tracked sources).
+generators:
+  generate_atom_pages:
+    script: scripts/generate_atom_pages.py
+    source: atoms/schema.yaml
+    outputs: [public/atoms/]          # per-atom index.html pages
+    publish: ci (deploy.yml on push -> Cloudflare)
+  gen_public_catalog:
+    script: scripts/gen_public_catalog.py
+    source: atoms/schema.yaml
+    outputs: [public/spec.json, public/atoms/index.json, public/runbooks/index.json, public/catalogue/gdm-v0.2.json]
+    publish: ci (deploy.yml on push -> Cloudflare)
+  gen_knowledge:
+    script: scripts/gen_knowledge.py
+    source: examples/ + sampledocs/ *.training.md (opt-in via published_knowledge)
+    outputs: [public/knowledge/index.json]  # + one json per opted-in doc
+    publish: ci (deploy.yml on push -> Cloudflare)
+  generate_ard_catalog:
+    script: scripts/generate_ard_catalog.py
+    source: atoms/schema.yaml
+    outputs: [public/.well-known/ai-catalog.json]
+    publish: repo-committed, served by Cloudflare
+  gen_schema_snapshot:
+    script: scripts/gen_schema_snapshot.py
+    source: atoms/schema.yaml
+    outputs: [apps-script-surface/gas-wired-renderer/atoms_schema_snapshot.gs]  # + mirrors in other renderer dirs
+    publish: clasp push (atom-change process)
+  gen_training_prompt:
+    script: scripts/gen_training_prompt.py
+    source: spec/training-md-v0.1.md
+    outputs: [prompts/training-md-gem.md]
+    publish: repo-committed; published per published_prompts policy
+  gen_builder_prompt:
+    script: scripts/gen_builder_prompt.py
+    source: atoms/schema.yaml
+    outputs: [prompts/a2ui-builder-gem.md, prompts/a2ui-builder-gem-offline.md]
+    publish: repo-committed; published per published_prompts policy
+  gen_vocab:
+    script: scripts/gen_vocab.py
+    source: atoms/schema.yaml
+    outputs: [atoms/vocab/]
+    publish: repo-committed (OKF vocabulary bundle)
+  generate_web_catalogue:
+    script: scripts/generate_web_catalogue.py
+    source: atoms/schema.yaml
+    outputs: []                        # in-memory dict; consumed by the a2ui-publish Firestore flow
+    publish: firestore via a2ui-publish skill
+  gen_state_catalog:
+    script: scripts/gen_state_catalog.py
+    source: spec/a2ui-state.yaml + spec/gas-actions-v1.yaml
+    outputs:
+      - public/catalogue/a2ui-state-v1.json            # the a2ui-state-v1 catalogId (behavioral vocabulary)
+      - apps-script-surface/gas-wired-renderer/exprs_schema_snapshot.gs         # renderer authoring prompt (generated, was hand-maintained)
+      - apps-script-surface/gas-wired-renderer-starter/exprs_schema_snapshot.gs
+    publish: ci (Cloudflare) for the catalog; clasp push for the snapshots. Companion to a2ui-atoms-v1; wired surfaces reference both catalogIds
+  gen_pack_map:
+    script: scripts/gen_pack_map.py
+    source: atoms/atom-packs.yaml
+    outputs: [apps-script-surface/gas-wired-renderer/PackMap.gs]   # atom->catalog map; renderAtoms pack-gate
+    publish: clasp push (renderer). Compiled from the catalog partition; drives the lean-workbench gate
+  gen_catalog_index:
+    script: scripts/gen_catalog_index.py
+    source: atoms/atom-packs.yaml + atoms/schema.yaml
+    outputs: [public/catalogue/index.json]              # the agent's deterministic catalog SELECTION menu (id+whenToUse+atoms)
+    publish: ci (Cloudflare)
+  gen_renderer_manifest:
+    script: scripts/gen_renderer_manifest.py
+    source: apps-script-surface/gas-wired-renderer/*.gs + atoms/atom-packs.yaml
+    outputs: [ops/renderer-manifest.json]               # real renderer atom surface -> validated by check_core (local tier)
+    publish: none — build artifact consumed by scripts/check_core.py in catalog-rebuild + pre_push_audit

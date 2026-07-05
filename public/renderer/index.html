@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Deploy your renderer — A2UI Catalog</title>
+  <meta name="description" content="Deploy your own A2UI renderer in 4 commands. Open source, MIT licensed. You own the URL, you own the deployment.">
+  <style>
+    :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--indigo:#6366f1;--green:#3fb950}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+    body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+    a{color:var(--cyan);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:40px}
+    .breadcrumb a{color:var(--muted)}
+    .breadcrumb a:hover{color:var(--cyan)}
+    .breadcrumb span{margin:0 6px}
+
+    h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+    .lead{font-size:1.1rem;color:var(--muted);margin-bottom:40px;max-width:600px}
+    .lead strong{color:var(--text)}
+
+    .steps{display:flex;flex-direction:column;gap:0;margin-bottom:48px}
+    .step{display:grid;grid-template-columns:40px 1fr;gap:0 20px;position:relative}
+    .step:not(:last-child)::before{content:'';position:absolute;left:19px;top:44px;bottom:-20px;width:2px;background:var(--border)}
+    .step-num{width:40px;height:40px;border-radius:50%;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--indigo);flex-shrink:0;margin-top:2px;position:relative;z-index:1}
+    .step-body{padding-bottom:32px}
+    .step-body h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;margin-top:8px}
+    .step-body p{font-size:14px;color:var(--muted);margin-bottom:12px}
+
+    pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px 20px;overflow-x:auto;font-size:13px;font-family:'SF Mono',Monaco,monospace;color:var(--text);position:relative}
+    .copy-btn{position:absolute;top:10px;right:10px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:5px;color:var(--indigo);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.04em}
+    .copy-btn:hover{background:rgba(99,102,241,.25)}
+    .copy-btn.copied{color:var(--green);border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.1)}
+    .comment{color:var(--muted)}
+
+    .what-you-get{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:32px 0 48px}
+    .feature{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+    .feature-icon{font-size:20px;margin-bottom:10px}
+    .feature h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+    .feature p{font-size:13px;color:var(--muted);line-height:1.5}
+
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid var(--border)}
+    .btn-primary{display:inline-block;padding:12px 24px;background:var(--indigo);color:#fff;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.03em}
+    .btn-primary:hover{background:#818cf8;text-decoration:none}
+    .btn-secondary{display:inline-block;padding:12px 24px;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:14px;font-weight:600}
+    .btn-secondary:hover{border-color:var(--cyan);color:var(--cyan);text-decoration:none}
+
+    .note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:24px 0}
+    .note strong{color:var(--text)}
+
+    footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+  </style>
+</head>
+<body>
+
+  <div class="breadcrumb">
+    <a href="/">A2UI Catalog</a>
+    <span>›</span>
+    Deploy your renderer
+  </div>
+
+  <h1>Deploy your own renderer</h1>
+  <p class="lead">The renderer is a <strong>container you deploy once</strong>, then call with any payload from the catalog. Open source, MIT licensed. You own the URL — no dependency on the demo endpoint.</p>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Clone the repo</h3>
+        <p>The renderer lives in <code>apps-script-surface/gas-schema-renderer/</code> — 480 atoms, no CDN, no external dependencies.</p>
+        <pre id="code-clone"><span class="comment"># Clone and navigate to the renderer directory</span>
+git clone https://github.com/a2uicatalog/a2ui
+cd apps-script-surface/gas-schema-renderer
+<button class="copy-btn" onclick="copy('code-clone',this)">COPY</button></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Authenticate with clasp</h3>
+        <p>clasp is Google's Apps Script CLI. One-time login — uses your Google account to deploy the renderer as a GAS web app.</p>
+        <pre id="code-login">npm install -g @google/clasp
+clasp login
+<button class="copy-btn" onclick="copy('code-login',this)">COPY</button></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Create and push</h3>
+        <p>Creates a new GAS project in your Google account and pushes all renderer files. Takes about 30 seconds.</p>
+        <pre id="code-push">clasp create --type webapp --title "My A2UI Renderer"
+clasp push
+<button class="copy-btn" onclick="copy('code-push',this)">COPY</button></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Deploy</h3>
+        <p>Deploy as a web app accessible to anyone. You'll get a URL — that's your renderer endpoint.</p>
+        <pre id="code-deploy">clasp deploy --description "A2UI Renderer v1"
+<span class="comment"># → https://script.google.com/macros/s/YOUR_ID/exec</span>
+<button class="copy-btn" onclick="copy('code-deploy',this)">COPY</button></pre>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">What you get</h2>
+  <div class="what-you-get">
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <h4>You own the deployment</h4>
+      <p>Runs in your Google account. No dependency on the catalog's demo URL. Survives any catalog changes.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h4>480 atoms, ready to go</h4>
+      <p>Every atom in the catalog works immediately — stat cards, charts, globes, animations, tables, forms.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎨</div>
+      <h4>Fully customisable</h4>
+      <p>Fork the renderer, add your own atoms, change the CSS, restrict to specific surfaces. It's your code.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔄</div>
+      <h4>Stay up to date</h4>
+      <p>Pull the latest from the repo and <code>clasp push</code> again when new atoms are added to the catalog.</p>
+    </div>
+  </div>
+
+  <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:12px;">Call it from your GAS project</h2>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Once deployed, use your renderer URL with any payload from the catalog.</p>
+  <pre id="code-usage"><span class="comment">// In any GAS project — call your renderer with atom blocks</span>
+function doGet() {
+  const blocks = [
+    { type: "stat_card", value: "1,234", label: "Daily users", delta: "+12%", is_up: true },
+    { type: "progress_bar", value: 75, label: "Q2 target" },
+    { type: "globe_3d", theme: "earth", size: 300 }
+  ];
+
+  const payload = Utilities.base64EncodeWebSafe(
+    Utilities.newBlob(JSON.stringify(blocks)).getBytes()
+  );
+  const url = "https://script.google.com/macros/s/YOUR_ID/exec?p=" + payload;
+
+  return HtmlService.createHtmlOutput(
+    '&lt;script&gt;window.location="' + url + '"&lt;/script&gt;'
+  );
+}
+<button class="copy-btn" onclick="copy('code-usage',this)">COPY</button></pre>
+
+  <div class="note">
+    <strong>The "Try it live" button on each atom page</strong> uses the catalog's shared demo renderer — same code, same atoms. It's there so you can explore without deploying. For production use, deploy your own.
+  </div>
+
+  <div class="cta-row">
+    <a href="/" class="btn-primary">Browse atoms →</a>
+    <a href="https://github.com/a2uicatalog/a2ui/tree/main/apps-script-surface/gas-schema-renderer" target="_blank" rel="noopener" class="btn-secondary">View source on GitHub</a>
+    <a href="/.well-known/ai-catalog.json" class="btn-secondary">ARD manifest</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>MIT License</span>
+  </footer>
+
+  <script>
+    function copy(id, btn) {
+      const pre = document.getElementById(id);
+      const text = pre.innerText.replace(/COPY\s*$/, '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'COPIED';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+ "type": "a2ui_wired_surface",
+ "title": "Training App Builder",
+ "state_primitives": [
+  {
+   "id": "md_input",
+   "primitive": "ValueStore",
+   "props": {
+    "defaultValue": ""
+   }
+  }
+ ],
+ "actions": [
+  {
+   "id": "build",
+   "type": "gas:build_training",
+   "props": {
+    "collect": {
+     "md": "#md_input.value"
+    }
+   }
+  }
+ ],
+ "layout": [
+  {
+   "id": "builder-heading",
+   "atom": "subheading",
+   "props": {
+    "text": "Training App Builder"
+   }
+  },
+  {
+   "id": "builder-intro",
+   "atom": "body",
+   "props": {
+    "text": "Three steps: ① copy the prompt and open Gemini, attach your source document there; ② paste Gemini's training.md reply below; ③ build. Parsing is fully deterministic — errors come back with lint codes you can paste straight back into Gemini."
+   }
+  },
+  {
+   "id": "gemini-handoff",
+   "atom": "gemini_handoff",
+   "props": {
+    "label": "① Copy prompt & open Gemini"
+   }
+  },
+  {
+   "id": "md-textarea",
+   "atom": "form_textarea",
+   "props": {
+    "label": "② training.md source (paste Gemini's reply)",
+    "placeholder": "---\nid: my-training-app\ndomain: training\nname: \"…\"\nsource: \"…\"\nlicense: \"…\"\n---\n\n# Steps\n…",
+    "rows": 16
+   },
+   "wire": {
+    "onChange": "#md_input.setValue"
+   }
+  },
+  {
+   "id": "build-btn",
+   "atom": "ripple_button",
+   "props": {
+    "label": "③ Build training app"
+   },
+   "wire": {
+    "onClick": "#build.run"
+   }
+  },
+  {
+   "id": "build-error",
+   "atom": "body",
+   "props": {
+    "text": ""
+   },
+   "wire": {
+    "text": "#build.error"
+   }
+  },
+  {
+   "id": "build-result",
+   "atom": "body",
+   "props": {
+    "text": ""
+   },
+   "wire": {
+    "text": "#build.result"
+   }
+  },
+  {
+   "id": "builder-div",
+   "atom": "divider"
+  },
+  {
+   "id": "builder-hub-note",
+   "atom": "body",
+   "props": {
+    "text": "All built apps are listed on the Training Hub: append ?nav=training-hub to this web app URL."
+   }
+  }
+ ]
+}

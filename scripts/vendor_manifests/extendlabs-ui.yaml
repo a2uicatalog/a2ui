@@ -1,0 +1,262 @@
+# Vendor manifest: Extend UI
+# https://github.com/extendlabs/ui — MIT License
+# Schema version: 1
+# Run: python3 scripts/port_vendor_catalogue.py --manifest scripts/vendor_manifests/extendlabs-ui.yaml
+
+vendor:
+  name: "Extend UI"
+  url: "https://github.com/extendlabs/ui"
+  license: "MIT"
+  copyright: "Copyright (c) 2024 extendui"
+  source_dir: "vendors/extendlabs-ui"
+  output_dir: "components/extendlabs"
+  tag_prefix: "ext"
+
+# Skipped (portal/overlay/state-machine incompatible with shadow DOM):
+#   accordion, alert-dialog, aspect-ratio, calendar, carousel,
+#   collapsible, command, dialog, dropdown-menu, popover,
+#   scroll-area, sheet, sonner, tooltip
+
+components:
+
+  - source_file: "button.tsx"
+    tag_name: "ext-button"
+    class_name: "ExtButton"
+    props_interface: "ButtonProps"
+    host_element: "button"
+    group: "atom"
+    description: >
+      Button with animated variants (shimmer, glowingRing, perimeterShimmer,
+      bouncing, ringHover). Integrates with A2UI action protocol.
+    modifications: "React state removed; children→text; onClick→action (A2UI protocol)"
+    drop_props: [asChild, loadingText, className, ref, children]
+    prop_overrides:
+      tooltipText: {rename: tooltip, type: string, description: "Tooltip shown on hover."}
+      children: {rename: text, type: string, description: "Button label."}
+    required_props: []
+    tailwind_animations: [animate-shimmer, animate-glow, animate-perimeterShimmer, animate-bounce, animate-spin]
+    surface_override: null
+
+  - source_file: "badge.tsx"
+    tag_name: "ext-badge"
+    class_name: "ExtBadge"
+    props_interface: "BadgeProps"
+    host_element: "div"
+    group: "atom"
+    description: >
+      Inline status badge. Variants: default, secondary, destructive, outline.
+    modifications: "children→text prop; React.HTMLAttributes dropped"
+    drop_props: [className, ref, children, onClick]
+    prop_overrides:
+      children: {rename: text, type: string, description: "Badge label text."}
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    # BadgeProps extends React.HTMLAttributes — CVA will extract variant values
+    manual_props:
+      - {name: text, type: string, required: true, description: "Badge label text."}
+      - {name: variant, type: string, required: false, default: "default",
+         description: "Visual style: default | secondary | destructive | outline."}
+
+  - source_file: "alert.tsx"
+    tag_name: "ext-alert"
+    class_name: "ExtAlert"
+    props_interface: "AlertProps"
+    host_element: "div"
+    group: "atom"
+    description: >
+      Status alert banner. Variants: default, destructive.
+    modifications: "Compound Alert/AlertTitle/AlertDescription collapsed to single component"
+    drop_props: [className, ref, children]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: title, type: string, required: true, description: "Alert heading text."}
+      - {name: description, type: string, required: false, description: "Alert body text."}
+      - {name: variant, type: string, required: false, default: "default",
+         description: "Visual style: default | destructive."}
+
+  - source_file: "card.tsx"
+    tag_name: "ext-card"
+    class_name: "ExtCard"
+    props_interface: null
+    host_element: "div"
+    group: "molecule"
+    description: >
+      Content card with optional title, description, body, and footer.
+      Collapses Card/CardHeader/CardContent/CardFooter into one component.
+    modifications: >
+      Compound React components collapsed into single Lit element;
+      slot layout handled internally via CSS grid.
+    drop_props: [className, ref, children]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: title, type: string, required: false, description: "Card heading."}
+      - {name: description, type: string, required: false, description: "Card sub-heading below title."}
+      - {name: content, type: string, required: false, description: "Card body text."}
+      - {name: footer, type: string, required: false, description: "Card footer text."}
+
+  - source_file: "checkbox.tsx"
+    tag_name: "ext-checkbox"
+    class_name: "ExtCheckbox"
+    props_interface: null
+    host_element: "button"
+    group: "atom"
+    description: >
+      Accessible checkbox. Fires a2ui-action event on change.
+    modifications: >
+      onCheckedChange wired to a2ui-action event dispatch;
+      Radix CheckboxPrimitive replaced with native input + custom styling.
+    drop_props: [className, ref, asChild]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: checked, type: boolean, required: false, description: "Whether checkbox is checked."}
+      - {name: disabled, type: boolean, required: false, description: "Disables the checkbox."}
+      - {name: label, type: string, required: false, description: "Visible label text."}
+      - {name: name, type: string, required: false, description: "Form field name."}
+      - {name: value, type: string, required: false, description: "Form field value."}
+      - {name: action, type: object, required: false,
+         description: "A2UI action fired on change: { functionCall } or { event }."}
+
+  - source_file: "input.tsx"
+    tag_name: "ext-input"
+    class_name: "ExtInput"
+    props_interface: "InputRootProps"
+    host_element: "div"
+    group: "atom"
+    description: >
+      Text input with optional variants (default, filled, flushed).
+      Fires a2ui-action on value commit (Enter / blur).
+    modifications: >
+      Password toggle removed; React context replaced with direct Lit props;
+      onChange/onBlur collapsed to action dispatch on commit.
+    drop_props: [className, ref, children, onChange, onBlur, onFocus]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: value, type: string, required: false, description: "Input value."}
+      - {name: placeholder, type: string, required: false, description: "Placeholder text."}
+      - {name: type, type: string, required: false, default: "text",
+         description: "Input type: text | email | number | password | search."}
+      - {name: variant, type: string, required: false, default: "default",
+         description: "Visual style: default | filled | flushed."}
+      - {name: disabled, type: boolean, required: false, description: "Disables the input."}
+      - {name: required, type: boolean, required: false, description: "Marks field as required."}
+      - {name: error, type: string, required: false, description: "Error message shown below input."}
+      - {name: label, type: string, required: false, description: "Label text above input."}
+      - {name: action, type: object, required: false,
+         description: "A2UI action fired on Enter or blur."}
+
+  - source_file: "label.tsx"
+    tag_name: "ext-label"
+    class_name: "ExtLabel"
+    props_interface: null
+    host_element: "label"
+    group: "atom"
+    description: >
+      Accessible form label. Associates with an input via the for prop.
+    modifications: "Radix Label.Root replaced with native label; className dropped"
+    drop_props: [className, ref, children, htmlFor]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: text, type: string, required: true, description: "Label text."}
+      - {name: for, type: string, required: false, description: "ID of the associated input element."}
+
+  - source_file: "switch.tsx"
+    tag_name: "ext-switch"
+    class_name: "ExtSwitch"
+    props_interface: null
+    host_element: "button"
+    group: "atom"
+    description: >
+      Toggle switch. Fires a2ui-action on change.
+    modifications: >
+      Radix Switch replaced with native button + CSS track/thumb;
+      onCheckedChange wired to a2ui-action event dispatch.
+    drop_props: [className, ref, asChild, onCheckedChange]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: checked, type: boolean, required: false, description: "Whether switch is on."}
+      - {name: disabled, type: boolean, required: false, description: "Disables the switch."}
+      - {name: label, type: string, required: false, description: "Visible label beside the switch."}
+      - {name: action, type: object, required: false,
+         description: "A2UI action fired on toggle."}
+
+  - source_file: "textarea.tsx"
+    tag_name: "ext-textarea"
+    class_name: "ExtTextarea"
+    props_interface: null
+    host_element: "textarea"
+    group: "atom"
+    description: >
+      Multi-line text input. Fires a2ui-action on commit (blur or Ctrl+Enter).
+    modifications: "React.forwardRef removed; onBlur/onChange collapsed to action dispatch on commit"
+    drop_props: [className, ref, onChange, onBlur, onFocus]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: value, type: string, required: false, description: "Textarea content."}
+      - {name: placeholder, type: string, required: false, description: "Placeholder text."}
+      - {name: rows, type: number, required: false, description: "Visible row count."}
+      - {name: disabled, type: boolean, required: false, description: "Disables the textarea."}
+      - {name: required, type: boolean, required: false, description: "Marks field as required."}
+      - {name: maxLength, type: number, required: false, description: "Max character count."}
+      - {name: label, type: string, required: false, description: "Label text above textarea."}
+      - {name: action, type: object, required: false,
+         description: "A2UI action fired on blur or Ctrl+Enter."}
+
+  - source_file: "table.tsx"
+    tag_name: "ext-table"
+    class_name: "ExtTable"
+    props_interface: null
+    host_element: "div"
+    group: "molecule"
+    description: >
+      Data table with headers and row data passed as JSON arrays.
+      Collapses Table/TableHeader/TableBody/TableRow/TableCell into one component.
+    modifications: >
+      Compound HTML table structure collapsed into single Lit element;
+      data passed as JSON-serialisable headers + rows props.
+    drop_props: [className, ref, children]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "stage_only"
+    manual_props:
+      - {name: headers, type: string, required: false,
+         description: "JSON array of column header strings. e.g. '[\"Name\",\"Value\"]'"}
+      - {name: rows, type: string, required: false,
+         description: "JSON array of row arrays. e.g. '[[\"Alice\",\"100\"],[\"Bob\",\"200\"]]'"}
+      - {name: caption, type: string, required: false, description: "Optional table caption."}
+
+  - source_file: "tabs.tsx"
+    tag_name: "ext-tabs"
+    class_name: "ExtTabs"
+    props_interface: null
+    host_element: "div"
+    group: "molecule"
+    description: >
+      Tab navigation. Tabs defined as a JSON array of {id, label, content} objects.
+    modifications: >
+      Radix Tabs compound (TabsList/TabsTrigger/TabsContent) collapsed into single
+      Lit element; tabs data passed as JSON prop; onValueChange→action dispatch.
+    drop_props: [className, ref, children, onValueChange]
+    required_props: []
+    tailwind_animations: []
+    surface_override: "both"
+    manual_props:
+      - {name: tabs, type: string, required: true,
+         description: "JSON array of tab objects: [{id, label, content}]."}
+      - {name: value, type: string, required: false, description: "Active tab id."}
+      - {name: action, type: object, required: false,
+         description: "A2UI action fired when active tab changes."}

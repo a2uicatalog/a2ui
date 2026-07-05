@@ -1,0 +1,188 @@
+# a2ui-state — the state & expression vocabulary, as a publishable catalog.
+# Companion to the atom catalog (a2ui-atoms-v1). A wired surface declares BOTH:
+#   supportedCatalogIds: [a2ui-atoms-v1, a2ui-state-v1]
+# Atoms are the VISUAL vocabulary; this is the BEHAVIORAL one (state + expressions).
+# Structured source of truth — gen_state_catalog.py emits the published JSON, and
+# the renderer's exprs_schema_snapshot should be regenerated from here (drift note).
+catalogId: a2ui-state-v1
+displayName: A2UI State & Expression Vocabulary
+description: >
+  Behavioral primitives an agent wires into a payload's state_primitives array,
+  plus the expression ops and column render hints. A payload has three sections —
+  state_primitives, actions, layout — and layout atoms subscribe to primitive/action
+  outputs via wires.
+wire_syntax:
+  form: "#nodeId.field"
+  note: >-
+    the # prefix is required; wires subscribe a layout atom prop (or another
+    primitive's input) to a node's readable field.
+
+primitives:
+  - id: ValueStore
+    purpose: mutable named value; holds user input or transient state
+    props: { initialValue: "any (optional, default null)" }
+    readable_fields: [value]
+    action_targets: [setValue]
+    persist: "optional boolean — server-durable via the progress store (agent_/prog_ keys)"
+    example: { id: search_mem, primitive: ValueStore, props: { initialValue: "" } }
+  - id: Timer
+    purpose: fires a tick on a fixed interval; triggers queries or actions
+    props: { interval: "integer ms, default 10000" }
+    readable_fields: [tick]
+    example: { id: refresh_5s, primitive: Timer, props: { interval: 5000 } }
+  - id: DerivedStore
+    purpose: computes augmented data from a source array client-side; no server call
+    props:
+      from: "string — source ref e.g. #incidents_query.result"
+      expr: "augment_rows — maps over source array, adds computed columns"
+      interval: "integer ms (optional) — re-run on tick; only for time-dependent ops"
+      add: "array of op definitions (see derived_store_ops)"
+    readable_fields: [result]
+  - id: Computed
+    purpose: evaluates a math expression over named numeric inputs
+    props:
+      expr: "string — JS-safe math using named vars e.g. 'a + b'"
+      inputs: "object — { varName: '#nodeId.field' }"
+      format: "string (optional) — '0,0' / '0.0%' / 'HH:mm:ss'"
+    readable_fields: [value, display]
+  - id: ArrayFilter
+    purpose: filters a source array by case-insensitive substring match on one field
+    props:
+      source: "array (optional) — static rows; or pushed in via wire (see wire_inputs)"
+      filterKey: "string — object field to match against (default 'label')"
+    wire_inputs:
+      query: "string — '#nodeId.value'; empty query passes source through unfiltered"
+      source: "array — '#actionId.result' or '#nodeId.output' pushes rows in (action → filter)"
+    readable_fields: [output]
+    example: { id: line_filter, primitive: ArrayFilter, props: { filterKey: name }, wire: { query: "#search_mem.value" } }
+  - id: StringValidator
+    purpose: validates a string against a regex pattern
+    props:
+      source: "#nodeId.value"
+      pattern: "string — regex, max 200 chars (bad/overlong pattern degrades to passthrough)"
+      errorMessage: "string — emitted on errorMessage while invalid"
+    readable_fields: [isValid, isNotValid, isInvalid, errorMessage]
+    note: "isInvalid = non-empty AND failing (show format error); isNotValid = empty OR failing (gate submit)"
+  - id: NumericThreshold
+    purpose: compares a numeric source against a threshold
+    props:
+      source: "#nodeId.value"
+      operator: "gt | gte | lt | lte | eq (default gte)"
+      threshold: "number (default 0)"
+    readable_fields: [isTriggered, isNotTriggered]
+  - id: StepNavigator
+    purpose: tracks current step in a multi-step flow
+    props: { totalSteps: "integer (default 2)" }
+    readable_fields: [activeIndex]
+    action_targets: [next, prev, jumpTo]
+
+# ── DERIVATION BOUNDARY (normative) ──────────────────────────────────────────
+# The client engine derives over ONE delivered array within ONE render
+# (presentation + client clock). Anything needing a second point in time, a
+# second store, or more rows than the payload delivered is a SERVER-side
+# derivation exposed as a gas: verb — never a new client engine op. The ops below
+# are a CLOSED, FROZEN set of row-wise augment ops; no new client-side derivation
+# ops are added. New derivations (temporal diff, aggregation, joins over history)
+# go server-side. See thoughts/decision-agent-state-derivation-boundary.md.
+#
+# DerivedStore expr modes: augment_rows (default — applies the `add` ops below),
+# plus scalar and aggregate (sum/last/count over a source array). scalar +
+# aggregate are FROZEN — server-side derivation supersedes them.
+derived_store_ops:
+  - op: elapsed_seconds
+    props: { field: "row field with ISO timestamp" }
+    output: "integer seconds; requires interval to update with time"
+  - op: format_duration
+    props: { src: "column holding seconds" }
+    output: "string e.g. '1h 23m'"
+  - op: threshold_by_field
+    props:
+      src: "column holding numeric value"
+      key: "row field selecting the threshold set"
+      thresholds: "{ KEY: { warn, breach } }"
+    output: "ok | warn | breach"
+  # ── FROZEN (grandfathered; no new client-side ops — see the boundary rule) ────
+  - op: multiply_diff
+    frozen: true
+    props: { a: "row field", b: "row field", by: "row field (optional, default 1)" }
+    output: "number — (a - b) * by, 2dp"
+  - op: pct_diff
+    frozen: true
+    props: { a: "row field", b: "row field" }
+    output: "number — (a - b) / b * 100, 2dp; null if b = 0"
+  - op: signal_threshold
+    frozen: true
+    props: { src: "row field", high: "number (default 70)", low: "number (default 30)", above: "string (default overbought)", below: "string (default oversold)", mid: "string (default neutral)" }
+    output: "string — above/mid/below label"
+  - op: sma
+    frozen: true
+    props: { src: "row field", window: "integer (default 20)" }
+    output: "rolling simple moving average, joined by row index"
+  - op: rsi
+    frozen: true
+    props: { src: "row field", window: "integer (default 14)" }
+    output: "rolling RSI, joined by row index"
+  - op: bband_upper
+    frozen: true
+    props: { src: "row field", window: "integer (default 20)", mult: "number" }
+    output: "rolling Bollinger upper band"
+  - op: bband_lower
+    frozen: true
+    props: { src: "row field", window: "integer (default 20)", mult: "number" }
+    output: "rolling Bollinger lower band"
+
+column_hints:
+  - type: badge
+    extra_props: { colors: "{ VALUE: '#hex' }" }
+    renders: coloured pill from a value->colour map
+  - type: sla_badge
+    extra_props: { time_key: "column holding formatted duration" }
+    renders: ok/warn/breach pill + elapsed time
+  # Row-action hints. A2UI catalog identifiers must be valid Unicode identifiers
+  # (UAX #31, `@` reserved) — a leading underscore is not a conformant catalog
+  # name, so the catalog `type` is the bare verb (claim/resolve/delete). The
+  # renderer still dispatches on the frozen wire sentinel (the column KEY
+  # `_claim`/`_resolve`/`_delete`), carried below as `column_key` so authoring
+  # and the published catalog stay conformant without changing the wire contract.
+  - type: claim
+    column_key: _claim
+    extra_props: [claim_key, email_key, name_key, action_node, key_mem_node]
+    renders: owner avatar+name when owned; Claim button when unclaimed
+  - type: resolve
+    column_key: _resolve
+    extra_props: [resolve_key, status_key, action_node, key_mem_node]
+    renders: resolve button; hidden when already Resolved
+  - type: delete
+    column_key: _delete
+    extra_props: [delete_key, action_node, key_mem_node]
+    renders: delete-row button
+
+action_contract:
+  see: spec/gas-actions-v1.yaml
+  server_response: "{ ok, data?, total?, error? }  (server_response_contract)"
+  action_node: "run input; status/isPending/isSuccess/isError/result/total/error outputs (action_node)"
+  agent_stores: "gas:store_read / gas:store_append — the infinite-array primitive (agent_<id>_<store>)"
+
+# Hand-tuned teaching prose for the authoring prompt (the exprs snapshot's
+# wiring-patterns section). Lives here so the snapshot is generated, not a pet.
+wiring_patterns:
+  - title: Atom input wire
+    body: |
+      "wire": { "atomProp": "#nodeId.field" }
+      e.g. data_table rows: { "wire": { "rows": "#incidents_enriched.result" } }
+  - title: Action input collect
+    body: |
+      "collect": { "actionProp": "#nodeId.value" }
+      e.g. { "collect": { "value": "#webhook_url_mem.value" } }
+  - title: Timer → action (auto-refresh)
+    body: |
+      Add Timer primitive; wire action: { "wire": { "trigger": "#refresh_5s.tick" } }
+  - title: User input → ValueStore → action
+    body: |
+      form_input wire.setValue → "#mem_id.setValue"
+      action collect → { "field": "#mem_id.value" }
+  - title: DerivedStore SLA pattern
+    body: |
+      1. gas:sheet_query returns rows with opened_at timestamp
+      2. DerivedStore augment_rows adds elapsed_sec, elapsed_fmt, sla_state columns
+      3. data_table wires rows to #enriched.result; sla_state column uses type: sla_badge

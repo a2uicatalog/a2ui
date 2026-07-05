@@ -1,0 +1,2002 @@
+{
+  "catalogId": "gdm-v0.2",
+  "description": "Google Meet Studio GDM Component Catalog",
+  "components": {
+    "gdm-stage-grid": {
+      "group": "layout",
+      "description": "Layout engine container for main stage panels.",
+      "strict": true,
+      "properties": {
+        "layout": {
+          "type": "string",
+          "required": false,
+          "description": "Arrangement of panel(s). Options: `\"single\"`, `\"split\"`, `\"grid\"`, `\"grid-3\"`, `\"presentation\"`."
+        },
+        "focusedPanel": {
+          "type": "string",
+          "required": false,
+          "description": "ID of the component to focus/maximize."
+        },
+        "children": {
+          "type": "any",
+          "required": false,
+          "description": "",
+          "doc": false
+        }
+      }
+    },
+    "gdm-image-panel": {
+      "group": "panel",
+      "description": "Renders a static or generated image.",
+      "strict": false,
+      "properties": {
+        "src": {
+          "type": "string",
+          "required": true,
+          "description": "Absolute URL or asset path of the image."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Text caption/label."
+        }
+      }
+    },
+    "gdm-video-panel": {
+      "group": "panel",
+      "description": "Embeds and plays video content (e.g. YouTube or video streams).",
+      "strict": false,
+      "properties": {
+        "src": {
+          "type": "string",
+          "required": true,
+          "description": "URL of the video embed source."
+        },
+        "autoplay": {
+          "type": "boolean",
+          "required": false,
+          "description": "Set to true to begin playback automatically."
+        }
+      }
+    },
+    "gdm-iframe-panel": {
+      "group": "panel",
+      "description": "Displays an iframe web browser.",
+      "strict": false,
+      "properties": {
+        "src": {
+          "type": "string",
+          "required": true,
+          "description": "URL of the web page to load."
+        }
+      }
+    },
+    "gdm-diagram-view": {
+      "group": "panel",
+      "description": "Displays live, high-fidelity interactive D2 or SVG system architecture diagrams.",
+      "strict": false,
+      "properties": {
+        "diagId": {
+          "type": "string",
+          "required": true,
+          "description": "Unique identifier for the diagram."
+        },
+        "svg": {
+          "type": "string",
+          "required": true,
+          "description": "Raw SVG markup or D2 rendering."
+        },
+        "version": {
+          "type": "integer",
+          "required": true,
+          "description": "Version counter."
+        }
+      }
+    },
+    "gdm-telemetry-dashboard": {
+      "group": "panel",
+      "description": "Renders tabbed metric views and interactive sparklines.",
+      "strict": false,
+      "properties": {
+        "metrics": {
+          "type": "array of objects",
+          "required": false,
+          "description": "Metric telemetry objects with `label` (string) and `value` (string) fields."
+        },
+        "chartData": {
+          "type": "array of numbers",
+          "required": false,
+          "description": "Sparkline data values."
+        },
+        "activeTabId": {
+          "type": "string",
+          "required": false,
+          "description": "Active tab ID."
+        },
+        "viewType": {
+          "type": "string",
+          "required": false,
+          "description": "One of `\"cards\"`, `\"chart\"`, or `\"both\"` (default)."
+        }
+      }
+    },
+    "gdm-radar-view": {
+      "group": "panel",
+      "description": "Dynamic interactive radar plot mapping flight paths and telemetry.",
+      "strict": true,
+      "properties": {
+        "stretched": {
+          "type": "boolean",
+          "required": false,
+          "description": "Stretched layout."
+        },
+        "zoom": {
+          "type": "number",
+          "required": false,
+          "description": "Zoom level."
+        },
+        "flights": {
+          "type": "array of objects",
+          "required": false,
+          "description": "Flight coordinates and data."
+        },
+        "lockedCallsign": {
+          "type": "string",
+          "required": false,
+          "description": "Locked focus flight callsign."
+        }
+      }
+    },
+    "gdm-notepad": {
+      "group": "panel",
+      "description": "Interactive shared notepad.",
+      "strict": false,
+      "properties": {
+        "content": {
+          "type": "string",
+          "required": true,
+          "description": "Collaborative rich text/markdown notes."
+        }
+      }
+    },
+    "gdm-camera-panel": {
+      "group": "panel",
+      "description": "Displays a live camera / video feed frame.",
+      "strict": false,
+      "properties": {
+        "frame": {
+          "type": "string",
+          "required": false,
+          "description": "Data URL or image URL of the current camera frame (rendered to fill the panel)."
+        },
+        "src": {
+          "type": "string",
+          "required": false,
+          "description": "Fallback poster/stream image URL used when `frame` is empty."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Caption chip (e.g. `\"🎥 Live Camera\"`)."
+        },
+        "mirrored": {
+          "type": "boolean",
+          "required": false,
+          "description": "Horizontally flip the image for self-view (default `true`)."
+        }
+      }
+    },
+    "gdm-terminal-panel": {
+      "group": "panel",
+      "description": "A developer terminal window showing command output.",
+      "strict": false,
+      "properties": {
+        "content": {
+          "type": "string",
+          "required": false,
+          "description": "Full terminal text, newline-separated (used when `lines` is empty)."
+        },
+        "lines": {
+          "type": "array of strings",
+          "required": false,
+          "description": "Explicit output lines (takes precedence over `content`)."
+        },
+        "title": {
+          "type": "string",
+          "required": false,
+          "description": "Window title-bar text (default `\"Terminal\"`)."
+        },
+        "cursor": {
+          "type": "boolean",
+          "required": false,
+          "description": "Show a blinking block cursor after the last line (default `true`)."
+        }
+      }
+    },
+    "gdm-doc-panel": {
+      "group": "panel",
+      "description": "A document / file card with an optional call-to-action button.",
+      "strict": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": false,
+          "description": "Card heading (default `\"Document Ready\"`)."
+        },
+        "body": {
+          "type": "string",
+          "required": false,
+          "description": "Summary/description text (line breaks preserved)."
+        },
+        "url": {
+          "type": "string",
+          "required": false,
+          "description": "Link the button opens; the button is hidden when empty."
+        },
+        "buttonLabel": {
+          "type": "string",
+          "required": false,
+          "description": "CTA button label (default `\"Open Document\"`)."
+        },
+        "accent": {
+          "type": "string",
+          "required": false,
+          "description": "Accent CSS color (default `#00f2ff`)."
+        }
+      }
+    },
+    "gdm-container": {
+      "group": "layout",
+      "description": "A highly flexible layout container block supporting glassmorphism and nested compositions.",
+      "strict": true,
+      "properties": {
+        "direction": {
+          "type": "string",
+          "required": false,
+          "description": "Flexbox layout direction (`\"row\"` or `\"column\"`, default `\"row\"`)."
+        },
+        "justify": {
+          "type": "string",
+          "required": false,
+          "description": "Flexbox justify-content property (default `\"flex-start\"`)."
+        },
+        "align": {
+          "type": "string",
+          "required": false,
+          "description": "Flexbox align-items property (default `\"stretch\"`)."
+        },
+        "gap": {
+          "type": "string",
+          "required": false,
+          "description": "CSS spacing gap between nested children (e.g. `\"12px\"`)."
+        },
+        "padding": {
+          "type": "string",
+          "required": false,
+          "description": "CSS padding inside the container (e.g. `\"16px\"`)."
+        },
+        "background": {
+          "type": "string",
+          "required": false,
+          "description": "CSS background property."
+        },
+        "border": {
+          "type": "string",
+          "required": false,
+          "description": "CSS border property."
+        },
+        "borderRadius": {
+          "type": "string",
+          "required": false,
+          "description": "CSS border-radius (e.g. `\"12px\"`)."
+        },
+        "width": {
+          "type": "string",
+          "required": false,
+          "description": "CSS width property (default `\"auto\"`)."
+        },
+        "height": {
+          "type": "string",
+          "required": false,
+          "description": "CSS height property (default `\"auto\"`)."
+        },
+        "glass": {
+          "type": "boolean",
+          "required": false,
+          "description": "Set to true to enable premium translucent backdrops."
+        },
+        "scrollable": {
+          "type": "boolean",
+          "required": false,
+          "description": "Enables vertical/horizontal scrollbars for overflowing contents."
+        },
+        "grow": {
+          "type": "number",
+          "required": false,
+          "description": "Flexbox flex-grow factor."
+        },
+        "shrink": {
+          "type": "number",
+          "required": false,
+          "description": "Flexbox flex-shrink factor."
+        },
+        "margin": {
+          "type": "string",
+          "required": false,
+          "description": "CSS margin (e.g. `\"8px\"`)."
+        },
+        "reveal": {
+          "type": "string",
+          "required": false,
+          "description": "Entrance animation played once on mount: `\"fade-up\"`, `\"scale-in\"`, `\"slide-left\"`, `\"slide-right\"`, `\"blur-in\"`, `\"flip\"`."
+        },
+        "revealDelay": {
+          "type": "number",
+          "required": false,
+          "description": "Seconds to delay the entrance — stagger across panels to choreograph a staged \"set the stage\" reveal."
+        },
+        "columns": {
+          "type": "number",
+          "required": false,
+          "description": "CSS column-count for automatic multi-column text or child element flow."
+        },
+        "columnGap": {
+          "type": "string",
+          "required": false,
+          "description": "CSS column-gap spacing (e.g., `\"16px\"`, defaults to gap or `\"16px\"`)."
+        },
+        "children": {
+          "type": "any",
+          "required": false,
+          "description": "",
+          "doc": false
+        }
+      }
+    },
+    "gdm-text": {
+      "group": "atom",
+      "description": "A rich typography component supporting sizes, colors, pulsing glow and weights.",
+      "strict": true,
+      "properties": {
+        "content": {
+          "type": "string",
+          "required": true,
+          "description": "The raw text content."
+        },
+        "size": {
+          "type": "string",
+          "required": false,
+          "description": "Font size or preset (`\"h1\"`, `\"h2\"`, `\"h3\"`, `\"body\"`, `\"caption\"`, or custom `\"16px\"`)."
+        },
+        "weight": {
+          "type": "string",
+          "required": false,
+          "description": "CSS font-weight or preset."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Preset or custom CSS color (Presets: `\"accent\"`, `\"white\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"mute\"`)."
+        },
+        "align": {
+          "type": "string",
+          "required": false,
+          "description": "Text alignment (`\"left\"`, `\"center\"`, `\"right\"`)."
+        },
+        "font": {
+          "type": "string",
+          "required": false,
+          "description": "Font family selection (`\"sans\"`, `\"mono\"`, `\"serif\"`)."
+        },
+        "opacity": {
+          "type": "number",
+          "required": false,
+          "description": "Opacity scale factor (0.0 to 1.0)."
+        },
+        "letterSpacing": {
+          "type": "string",
+          "required": false,
+          "description": "CSS letter-spacing property."
+        },
+        "uppercase": {
+          "type": "boolean",
+          "required": false,
+          "description": "Forces uppercase text transform."
+        },
+        "pulse": {
+          "type": "boolean",
+          "required": false,
+          "description": "Enables breathing glow pulsing animations."
+        },
+        "flip": {
+          "type": "boolean",
+          "required": false,
+          "description": "Animates each character with a flip when the content changes (for live values, clocks, prices)."
+        }
+      }
+    },
+    "gdm-grid": {
+      "group": "layout",
+      "description": "CSS-grid layout atom: arranges children in columns/rows. The structural partner to gdm-container.",
+      "strict": false,
+      "properties": {
+        "columns": {
+          "type": "string",
+          "required": false,
+          "description": "Grid columns: a number (→ equal columns) or a grid-template string (e.g. \"2fr 1fr\")."
+        },
+        "rows": {
+          "type": "string",
+          "required": false,
+          "description": "Grid rows: a number or a grid-template string."
+        },
+        "gap": {
+          "type": "string",
+          "required": false,
+          "description": "Gap between cells (default \"12px\")."
+        },
+        "align": {
+          "type": "string",
+          "required": false,
+          "description": "align-items."
+        },
+        "justify": {
+          "type": "string",
+          "required": false,
+          "description": "justify-items."
+        },
+        "padding": {
+          "type": "string",
+          "required": false,
+          "description": "CSS padding."
+        },
+        "width": {
+          "type": "string",
+          "required": false,
+          "description": "CSS width."
+        },
+        "height": {
+          "type": "string",
+          "required": false,
+          "description": "CSS height."
+        }
+      }
+    },
+    "gdm-stat": {
+      "group": "atom",
+      "description": "Generic metric atom: a label, a large value, and an optional coloured delta/change pill.",
+      "strict": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Small uppercase label above the value."
+        },
+        "value": {
+          "type": "string",
+          "required": true,
+          "description": "The primary value to display."
+        },
+        "unit": {
+          "type": "string",
+          "required": false,
+          "description": "Small unit suffix on the value."
+        },
+        "delta": {
+          "type": "string",
+          "required": false,
+          "description": "Change figure shown in a caret pill (e.g. \"+1.24%\")."
+        },
+        "isUp": {
+          "type": "boolean",
+          "required": false,
+          "description": "Direction of the delta (green up / red down)."
+        },
+        "accent": {
+          "type": "string",
+          "required": false,
+          "description": "Optional CSS colour tint for the value."
+        },
+        "size": {
+          "type": "string",
+          "required": false,
+          "description": "Value size: \"sm\" | \"md\" | \"lg\"."
+        },
+        "align": {
+          "type": "string",
+          "required": false,
+          "description": "Alignment: \"left\" | \"center\" | \"right\"."
+        }
+      }
+    },
+    "gdm-image": {
+      "group": "atom",
+      "description": "Raw image atom (fit / radius / aspect-ratio). Lightweight sibling of gdm-image-panel.",
+      "strict": false,
+      "properties": {
+        "src": {
+          "type": "string",
+          "required": true,
+          "description": "Image URL or data URL."
+        },
+        "alt": {
+          "type": "string",
+          "required": false,
+          "description": "Alt text."
+        },
+        "fit": {
+          "type": "string",
+          "required": false,
+          "description": "object-fit (\"cover\" | \"contain\")."
+        },
+        "radius": {
+          "type": "string",
+          "required": false,
+          "description": "Border radius."
+        },
+        "width": {
+          "type": "string",
+          "required": false,
+          "description": "CSS width."
+        },
+        "height": {
+          "type": "string",
+          "required": false,
+          "description": "CSS height."
+        },
+        "aspectRatio": {
+          "type": "string",
+          "required": false,
+          "description": "CSS aspect-ratio (e.g. \"16/9\")."
+        }
+      }
+    },
+    "gdm-spacer": {
+      "group": "atom",
+      "description": "Layout filler: grows to push siblings apart, or a fixed gap when sized.",
+      "strict": false,
+      "properties": {
+        "size": {
+          "type": "string",
+          "required": false,
+          "description": "Fixed size (e.g. \"24px\"); omit to grow and absorb free space."
+        },
+        "axis": {
+          "type": "string",
+          "required": false,
+          "description": "\"horizontal\" | \"vertical\" | \"both\"."
+        }
+      }
+    },
+    "gdm-badge": {
+      "group": "atom",
+      "description": "Status badge chip with dynamic neon color presets and pulsing indicators.",
+      "strict": true,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Badge text content."
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "description": "Badge category/theme (`\"success\"`, `\"warning\"`, `\"danger\"`, `\"primary\"`, `\"info\"`, `\"cyan\"`)."
+        },
+        "pulse": {
+          "type": "boolean",
+          "required": false,
+          "description": "Enables a blinking live-status dot indicator."
+        },
+        "outline": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggles transparent outline styling mode."
+        }
+      }
+    },
+    "gdm-progress": {
+      "group": "atom",
+      "description": "Glassmorphic linear progress bar or meter indicator.",
+      "strict": true,
+      "properties": {
+        "value": {
+          "type": "number",
+          "required": true,
+          "description": "Progress completion percentage (0 to 100)."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Bar fill color name or custom CSS color."
+        },
+        "height": {
+          "type": "string",
+          "required": false,
+          "description": "Thickness of the bar track (default `\"8px\"`)."
+        },
+        "animated": {
+          "type": "boolean",
+          "required": false,
+          "description": "Enables flowing stripe patterns across the fill."
+        },
+        "glow": {
+          "type": "boolean",
+          "required": false,
+          "description": "Adds a neon glow filter around the filled progress track."
+        }
+      }
+    },
+    "gdm-divider": {
+      "group": "atom",
+      "description": "Structural line divider with configurable layout margins and sizing.",
+      "strict": true,
+      "properties": {
+        "vertical": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggles vertical orientation instead of horizontal."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Custom line color (CSS style)."
+        },
+        "thickness": {
+          "type": "string",
+          "required": false,
+          "description": "Thickness of the dividing line (default `\"1px\"`)."
+        },
+        "margin": {
+          "type": "string",
+          "required": false,
+          "description": "CSS margin spacing around the divider."
+        }
+      }
+    },
+    "gdm-icon": {
+      "group": "atom",
+      "description": "Interactive vector SVG icon selector containing a robust set of symbols.",
+      "strict": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "Icon name key (e.g. `\"sonar\"`, `\"clock\"`, `\"chart\"`, `\"trending-up\"`, `\"trending-down\"`, `\"lock\"`, `\"unlock\"`, `\"info\"`, `\"alert\"`, `\"activity\"`, `\"database\"`, `\"user\"`, `\"globe\"`, `\"cpu\"`, `\"server\"`, `\"arrow-up\"`, `\"arrow-down\"`, `\"check\"`, `\"close\"`, `\"chevron-right\"`, `\"chevron-left\"`)."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Icon stroke color preset or custom Hex."
+        },
+        "size": {
+          "type": "string",
+          "required": false,
+          "description": "Icon bounding box diameter (e.g. `\"24px\"`)."
+        }
+      }
+    },
+    "gdm-button": {
+      "group": "atom",
+      "description": "Interactive button element with two action modes: agent-bound (dispatches action event to the agent) or local-only (executes direct functions).",
+      "strict": true,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Button label."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "Action descriptor: `{\"event\": {\"name\": string, \"context\": object}}` for agent-bound, or `{\"functionCall\": {\"call\": string, \"args\": object}}` for local-only (calls: \"openUrl\", \"navigateTab\", \"fireEndpoint\")."
+        },
+        "targetUrl": {
+          "type": "string",
+          "required": false,
+          "description": "Legacy shorthand for openUrl call — opens this URL in a new tab."
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "description": "Theme preset (`\"primary\"`, `\"secondary\"`, `\"danger\"`, `\"ghost\"`, `\"success\"`)."
+        },
+        "size": {
+          "type": "string",
+          "required": false,
+          "description": "Size variant (`\"sm\"`, `\"md\"` default, `\"lg\"`, `\"hero\"`)."
+        },
+        "icon": {
+          "type": "string",
+          "required": false,
+          "description": "Optional leading icon name."
+        },
+        "pulse": {
+          "type": "boolean",
+          "required": false,
+          "description": "Apply continuous glow pulse animation."
+        },
+        "loading": {
+          "type": "boolean",
+          "required": false,
+          "description": "Replaces label with a spinner; auto-set during fire-mode fetch."
+        },
+        "disabled": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggles user click-ability."
+        }
+      }
+    },
+    "gdm-clock": {
+      "group": "atom",
+      "description": "Digital clock and date widget with dynamic timezone configurations.",
+      "strict": true,
+      "properties": {
+        "showClock": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggles time display on/off."
+        },
+        "showDate": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggles date display on/off."
+        },
+        "format": {
+          "type": "string",
+          "required": false,
+          "description": "Time display format (`\"12h\"` or `\"24h\"`)."
+        },
+        "timezone": {
+          "type": "string",
+          "required": false,
+          "description": "Explicit target Timezone name (e.g. `\"UTC\"`, `\"America/New_York\"`)."
+        },
+        "accentColor": {
+          "type": "string",
+          "required": false,
+          "description": "Neon color style used for text shadowing and clock values."
+        }
+      }
+    },
+    "gdm-sparkline": {
+      "group": "atom",
+      "description": "Ultra-light inline SVG trend sparkline.",
+      "strict": true,
+      "properties": {
+        "data": {
+          "type": "string",
+          "required": true,
+          "description": "Comma-separated numerical datapoints."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Trend-line stroke color preset or custom Hex."
+        },
+        "width": {
+          "type": "string",
+          "required": false,
+          "description": "Sparkline viewport width."
+        },
+        "height": {
+          "type": "string",
+          "required": false,
+          "description": "Sparkline viewport height."
+        },
+        "fill": {
+          "type": "boolean",
+          "required": false,
+          "description": "Adds an elegant vertical backdrop area gradient under the sparkline."
+        }
+      }
+    },
+    "gdm-table-view": {
+      "group": "panel",
+      "description": "Structured grid table for clear dashboard visualizations.",
+      "strict": true,
+      "properties": {
+        "headers": {
+          "type": "array of strings",
+          "required": true,
+          "description": "Table column title headers."
+        },
+        "rows": {
+          "type": "array of arrays",
+          "required": true,
+          "description": "Table row cells, containing numbers, strings, or formatted subtext cell objects."
+        },
+        "accentColor": {
+          "type": "string",
+          "required": false,
+          "description": "Theme color styling used for headers and lines."
+        }
+      }
+    },
+    "gdm-trend-value": {
+      "group": "atom",
+      "description": "Compact financial ticker element with dynamic green/red direction trend arrows.",
+      "strict": true,
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Asset/instrument symbol tag."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Instrument description label."
+        },
+        "price": {
+          "type": "number",
+          "required": true,
+          "description": "Current asset trading price."
+        },
+        "change": {
+          "type": "number",
+          "required": true,
+          "description": "Percentage change factor."
+        },
+        "isUp": {
+          "type": "boolean",
+          "required": false,
+          "description": "Explicitly override calculated positive arrow indicator."
+        },
+        "precision": {
+          "type": "integer",
+          "required": false,
+          "description": "Decimal places to round the price value to."
+        }
+      }
+    },
+    "gdm-scroller": {
+      "group": "layout",
+      "description": "Infinite ticker/marquee container wrapping nested child elements.",
+      "strict": true,
+      "properties": {
+        "speed": {
+          "type": "string",
+          "required": false,
+          "description": "CSS animation duration (e.g. `\"20s\"`)."
+        },
+        "direction": {
+          "type": "string",
+          "required": false,
+          "description": "Scrolling direction vector (`\"left\"` or `\"right\"`)."
+        },
+        "active": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggles scrolling animation activity."
+        },
+        "children": {
+          "type": "any",
+          "required": false,
+          "description": "",
+          "doc": false
+        }
+      }
+    },
+    "gdm-emoji-burst": {
+      "group": "overlay",
+      "description": "Launches a burst of floating emoji reactions across the stage.",
+      "strict": false,
+      "properties": {
+        "emoji": {
+          "type": "string",
+          "required": false,
+          "description": "The emoji to launch (default `\"👏\"`)."
+        },
+        "count": {
+          "type": "number",
+          "required": false,
+          "description": "How many to spawn per burst (default `12`)."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle to trigger / show the burst."
+        }
+      }
+    },
+    "gdm-draw-overlay": {
+      "group": "overlay",
+      "description": "Renders freehand annotation strokes over the stage.",
+      "strict": false,
+      "properties": {
+        "strokes": {
+          "type": "array of objects",
+          "required": true,
+          "description": "Stroke objects with `points` (array of `[x, y]` pairs, coordinates normalized 0–1), optional `color` (string) and `width` (number)."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle overlay visibility."
+        },
+        "accentColor": {
+          "type": "any",
+          "required": false,
+          "description": "is not used; per-stroke `color` defaults to the component `color` prop (default `#00f2ff`)."
+        }
+      }
+    },
+    "gdm-pointer": {
+      "group": "overlay",
+      "description": "A laser-pointer dot for indicating positions on stage.",
+      "strict": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "required": true,
+          "description": "Normalized 0–1 horizontal position."
+        },
+        "y": {
+          "type": "number",
+          "required": true,
+          "description": "Normalized 0–1 vertical position."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle pointer visibility."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Pointer color (default `#ff3b30`)."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Small label shown beside the dot."
+        }
+      }
+    },
+    "gdm-stage-card": {
+      "group": "overlay",
+      "description": "Elegant glassmorphic title and body text message card.",
+      "strict": true,
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "Card header text."
+        },
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Message content."
+        },
+        "accent": {
+          "type": "string",
+          "required": false,
+          "description": "Accent color style (e.g. `\"primary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`)."
+        },
+        "mode": {
+          "type": "any",
+          "required": false,
+          "description": "",
+          "doc": false
+        }
+      }
+    },
+    "gdm-chat-card": {
+      "group": "overlay",
+      "description": "Glassmorphic bubble showcasing a participant's chat comment.",
+      "strict": true,
+      "properties": {
+        "sender": {
+          "type": "string",
+          "required": true,
+          "description": "Sender name."
+        },
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Chat message content."
+        },
+        "avatar": {
+          "type": "any",
+          "required": false,
+          "description": "",
+          "doc": false
+        },
+        "duration": {
+          "type": "any",
+          "required": false,
+          "description": "",
+          "doc": false
+        }
+      }
+    },
+    "gdm-chyron": {
+      "group": "overlay",
+      "description": "A classic lower-third banner for speaker names or key headlines.",
+      "strict": true,
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "Primary lower-third text."
+        },
+        "subtitle": {
+          "type": "string",
+          "required": false,
+          "description": "Secondary context text."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle overlay visibility."
+        },
+        "accentColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the accent bar and glow (default `#00f2ff`)."
+        },
+        "titleColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the title text (default `#ffffff`)."
+        },
+        "subtitleColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the subtitle text (default `rgba(255,255,255,0.62)`)."
+        },
+        "titleSize": {
+          "type": "number",
+          "required": false,
+          "description": "Title font size in px (default `20`)."
+        },
+        "subtitleSize": {
+          "type": "number",
+          "required": false,
+          "description": "Subtitle font size in px (default `14`)."
+        },
+        "bottom": {
+          "type": "number",
+          "required": false,
+          "description": "Distance from bottom of screen in px (default `48`)."
+        },
+        "left": {
+          "type": "number",
+          "required": false,
+          "description": "Distance from left of screen in px (default `40`)."
+        }
+      }
+    },
+    "gdm-ticker": {
+      "group": "overlay",
+      "description": "Bottom scrolling ticker band across the stage screen.",
+      "strict": true,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Text content to scroll."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle ticker visibility."
+        },
+        "badgeText": {
+          "type": "string",
+          "required": false,
+          "description": "Label shown in the left badge (default `LIVE FEED`)."
+        },
+        "badgeColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the badge and dot (default `#ff0055`)."
+        },
+        "accentColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the top border accent (default `#00f2ff`)."
+        },
+        "textColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the scrolling text (default `rgba(255,255,255,0.95)`)."
+        },
+        "fontSize": {
+          "type": "number",
+          "required": false,
+          "description": "Scrolling text font size in px (default `16`)."
+        },
+        "height": {
+          "type": "number",
+          "required": false,
+          "description": "Bar height in px (default `48`)."
+        },
+        "scrollSpeed": {
+          "type": "number",
+          "required": false,
+          "description": "Scroll animation duration in seconds — lower = faster (default `35`)."
+        }
+      }
+    },
+    "gdm-standby-slate": {
+      "group": "overlay",
+      "description": "High-fidelity intermission or standby screen with a countdown timer.",
+      "strict": true,
+      "properties": {
+        "badge": {
+          "type": "string",
+          "required": false,
+          "description": "Category badge."
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "Header text."
+        },
+        "description": {
+          "type": "string",
+          "required": false,
+          "description": "Detail text."
+        },
+        "seconds": {
+          "type": "integer",
+          "required": false,
+          "description": "Timer countdown duration."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle visibility."
+        },
+        "fullscreen": {
+          "type": "boolean",
+          "required": false,
+          "description": "Stretch slate to cover the entire viewport."
+        }
+      }
+    },
+    "gdm-poll-overlay": {
+      "group": "overlay",
+      "description": "Slide-in audience interactive question poll.",
+      "strict": false,
+      "properties": {
+        "question": {
+          "type": "string",
+          "required": true,
+          "description": "Poll question."
+        },
+        "options": {
+          "type": "array of strings",
+          "required": true,
+          "description": "Selections."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle poll."
+        },
+        "values": {
+          "type": "array of integers",
+          "required": false,
+          "description": "Response count tallies."
+        }
+      }
+    },
+    "gdm-captions": {
+      "group": "overlay",
+      "description": "Lower-third live caption overlay — renders the current spoken/narrated line as a large centered pill, keeping the previous line faded above it so each point reads clearly one at a time. Use this to display captions compositionally via render_stage (preferred over the out-of-band transcript stream for agent-driven caption points).",
+      "strict": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "The current caption line to display."
+        },
+        "speaker": {
+          "type": "string",
+          "required": false,
+          "description": "Speaker label shown above the line (default `\"Speaker\"`)."
+        },
+        "active": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toggle caption visibility."
+        },
+        "accentColor": {
+          "type": "string",
+          "required": false,
+          "description": "CSS color for the speaker label (default `#00f2ff`)."
+        },
+        "flip": {
+          "type": "boolean",
+          "required": false,
+          "description": "Toggle mechanical split-flap rendering."
+        }
+      }
+    },
+    "gdm-transcript-view": {
+      "group": "overlay",
+      "description": "Overlay displaying a real-time scrolling transcript log (avatar + role + text per turn), suited to a side log rather than lower-third captions.",
+      "strict": false,
+      "properties": {
+        "transcript": {
+          "type": "array of objects",
+          "required": true,
+          "description": "Turn objects with `id` (string), `role` (string), and `text` (string) fields."
+        }
+      }
+    },
+    "gdm-mermaid-panel": {
+      "group": "panel",
+      "description": "Renders a Mermaid diagram from syntax (syntax, title, version).",
+      "strict": false,
+      "properties": {},
+      "in_prompt": false
+    },
+    "gdm-html-panel": {
+      "group": "panel",
+      "description": "Renders a sandboxed HTML fragment as a panel or overlay (html, title, overlay, version).",
+      "strict": true,
+      "properties": {
+        "html": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "title": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "overlay": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "version": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "bare": {
+          "type": "any",
+          "required": false,
+          "description": "Remove chrome (border, background, header)"
+        }
+      },
+      "in_prompt": false
+    },
+    "gdm-laser-sweep": {
+      "group": "overlay",
+      "description": "Animated laser sweep accent overlay.",
+      "strict": false,
+      "properties": {},
+      "in_prompt": false
+    },
+    "gdm-3d-airspace": {
+      "group": "molecule",
+      "description": "Interactive 3D tactical airspace / radar deck (flights, camera, glide-slope, terrain, orbit, auto-track).",
+      "strict": true,
+      "properties": {
+        "flights": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "lockedCallsign": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "cameraPitch": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "cameraYaw": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "showGlideSlope": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "showTerrain": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "zoom": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "cinematicOrbit": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "autoTrack": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "compact": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        }
+      },
+      "in_prompt": false
+    },
+    "gdm-3d-scene": {
+      "group": "molecule",
+      "description": "Generic high-performance interactive 3D scene engine (points, links, camera, terrain, grid, fog).",
+      "strict": true,
+      "properties": {
+        "points": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "links": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "camera": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "terrain": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "grid": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "fog": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        }
+      },
+      "in_prompt": false
+    },
+    "gdm-market-ticker": {
+      "group": "molecule",
+      "description": "Live global market-scan board: flip-clock time/date, market sections (a big spread of instruments), and an auto-highlighted 'ones to watch' movers strip.",
+      "strict": true,
+      "properties": {
+        "sections": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "active": {
+          "type": "any",
+          "required": true,
+          "description": ""
+        },
+        "badgeText": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "accentColor": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "watchCount": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "showClock": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "showDate": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        }
+      },
+      "in_prompt": false
+    },
+    "gdm-flip-slate": {
+      "group": "overlay",
+      "description": "Mechanical split-flap letter presentation board.",
+      "strict": true,
+      "properties": {
+        "text": {
+          "type": "any",
+          "required": true,
+          "description": ""
+        },
+        "active": {
+          "type": "any",
+          "required": true,
+          "description": ""
+        },
+        "badgeText": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "subtitle": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "accentColor": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        },
+        "delayMs": {
+          "type": "any",
+          "required": false,
+          "description": ""
+        }
+      },
+      "in_prompt": false
+    },
+    "gdm-theme-slider": {
+      "group": "molecule",
+      "description": "Discrete 3-step theme selector for the AeroPulse GTM demo. Emits `aeropulse-theme-change` events on selection.",
+      "strict": false,
+      "in_prompt": false,
+      "properties": {
+        "value": {
+          "type": "string",
+          "required": false,
+          "description": "Active theme id: `\"cyberpunk\"`, `\"quiet_luxury\"`, `\"eco_futurism\"`."
+        },
+        "participantId": {
+          "type": "string",
+          "required": false,
+          "description": "Participant space id for event routing."
+        },
+        "disabled": {
+          "type": "boolean",
+          "required": false,
+          "description": "Locks the slider."
+        },
+        "order": {
+          "type": "string",
+          "required": false,
+          "description": "JSON array of theme ids controlling display order."
+        }
+      }
+    },
+    "gdm-media-review": {
+      "group": "molecule",
+      "description": "Theme brand review panel: video preview + brief table for the AeroPulse GTM demo. Reacts to `aeropulse-theme-change` events.",
+      "strict": false,
+      "in_prompt": false,
+      "properties": {
+        "theme": {
+          "type": "string",
+          "required": false,
+          "description": "Active theme id."
+        },
+        "videoSrc": {
+          "type": "string",
+          "required": false,
+          "description": "Single video URL (legacy)."
+        },
+        "videos": {
+          "type": "string",
+          "required": false,
+          "description": "JSON map of theme_id → video URL."
+        },
+        "participantId": {
+          "type": "string",
+          "required": false,
+          "description": "Participant space id."
+        },
+        "votingActive": {
+          "type": "boolean",
+          "required": false,
+          "description": "Enables voting interaction."
+        },
+        "briefMap": {
+          "type": "string",
+          "required": false,
+          "description": "JSON map of theme_id → [{label, value}] brief items."
+        },
+        "hideVideo": {
+          "type": "boolean",
+          "required": false,
+          "description": "Hides video panel, shows brief only."
+        },
+        "order": {
+          "type": "string",
+          "required": false,
+          "description": "JSON array of theme ids controlling display order."
+        }
+      }
+    },
+    "gdm-lock-trigger": {
+      "group": "molecule",
+      "description": "Vote lock-in button for the AeroPulse GTM demo. Tracks current theme via events; fires lock endpoint on click.",
+      "strict": false,
+      "in_prompt": false,
+      "properties": {
+        "spaceId": {
+          "type": "string",
+          "required": true,
+          "description": "Participant space id — appended to the lock endpoint."
+        },
+        "participantId": {
+          "type": "string",
+          "required": false,
+          "description": "Display name / identity."
+        },
+        "baseEndpoint": {
+          "type": "string",
+          "required": false,
+          "description": "Base fire endpoint (default `/api/playbook/fire/aeropulse_gtm`)."
+        }
+      }
+    },
+    "gdm-matrix-text": {
+      "group": "atom",
+      "description": "Matrix-style character scramble text. Letters decode left-to-right from random characters to the final string on mount.",
+      "strict": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Target string to decode to."
+        },
+        "color": {
+          "type": "string",
+          "required": false,
+          "description": "Text colour (default `\"#00ff41\"`)."
+        },
+        "fontSize": {
+          "type": "string",
+          "required": false,
+          "description": "Font size CSS value (default `\"11px\"`)."
+        },
+        "speed": {
+          "type": "number",
+          "required": false,
+          "description": "Milliseconds per scramble frame (default `40`)."
+        },
+        "framesPerChar": {
+          "type": "number",
+          "required": false,
+          "description": "Number of scramble frames before each character settles (default `6`)."
+        },
+        "cursor": {
+          "type": "boolean",
+          "required": false,
+          "description": "Show a blinking cursor after the text."
+        }
+      }
+    },
+    "ext-button": {
+      "group": "atom",
+      "description": "Button with animated variants (shimmer, glowingRing, perimeterShimmer, bouncing, ringHover). Integrates with A2UI action protocol.",
+      "strict": true,
+      "in_prompt": false,
+      "properties": {
+        "loading": {
+          "type": "boolean",
+          "required": false,
+          "description": "loading"
+        },
+        "tooltip": {
+          "type": "string",
+          "required": false,
+          "description": "Tooltip shown on hover."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "A2UI action: { functionCall: { call, args } } or { event: { name } }."
+        },
+        "targetUrl": {
+          "type": "object",
+          "required": false,
+          "description": "Shorthand for action.functionCall openUrl."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "React state removed; children→text; onClick→action (A2UI protocol)"
+      }
+    },
+    "ext-badge": {
+      "group": "atom",
+      "description": "Inline status badge. Variants: default, secondary, destructive, outline.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Badge label text."
+        },
+        "variant": {
+          "type": "string",
+          "required": false,
+          "description": "Visual style: default | secondary | destructive | outline.",
+          "default": "default"
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "children→text prop; React.HTMLAttributes dropped"
+      }
+    },
+    "ext-alert": {
+      "group": "atom",
+      "description": "Status alert banner. Variants: default, destructive.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "Alert heading text."
+        },
+        "description": {
+          "type": "string",
+          "required": false,
+          "description": "Alert body text."
+        },
+        "variant": {
+          "type": "string",
+          "required": false,
+          "description": "Visual style: default | destructive.",
+          "default": "default"
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Compound Alert/AlertTitle/AlertDescription collapsed to single component"
+      }
+    },
+    "ext-card": {
+      "group": "molecule",
+      "description": "Content card with optional title, description, body, and footer. Collapses Card/CardHeader/CardContent/CardFooter into one component.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": false,
+          "description": "Card heading."
+        },
+        "description": {
+          "type": "string",
+          "required": false,
+          "description": "Card sub-heading below title."
+        },
+        "content": {
+          "type": "string",
+          "required": false,
+          "description": "Card body text."
+        },
+        "footer": {
+          "type": "string",
+          "required": false,
+          "description": "Card footer text."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Compound React components collapsed into single Lit element; slot layout handled internally via CSS grid.\n"
+      }
+    },
+    "ext-checkbox": {
+      "group": "atom",
+      "description": "Accessible checkbox. Fires a2ui-action event on change.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "checked": {
+          "type": "boolean",
+          "required": false,
+          "description": "Whether checkbox is checked."
+        },
+        "disabled": {
+          "type": "boolean",
+          "required": false,
+          "description": "Disables the checkbox."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Visible label text."
+        },
+        "name": {
+          "type": "string",
+          "required": false,
+          "description": "Form field name."
+        },
+        "value": {
+          "type": "string",
+          "required": false,
+          "description": "Form field value."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "A2UI action fired on change: { functionCall } or { event }."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "onCheckedChange wired to a2ui-action event dispatch; Radix CheckboxPrimitive replaced with native input + custom styling.\n"
+      }
+    },
+    "ext-input": {
+      "group": "atom",
+      "description": "Text input with optional variants (default, filled, flushed). Fires a2ui-action on value commit (Enter / blur).",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "value": {
+          "type": "string",
+          "required": false,
+          "description": "Input value."
+        },
+        "placeholder": {
+          "type": "string",
+          "required": false,
+          "description": "Placeholder text."
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "description": "Input type: text | email | number | password | search.",
+          "default": "text"
+        },
+        "variant": {
+          "type": "string",
+          "required": false,
+          "description": "Visual style: default | filled | flushed.",
+          "default": "default"
+        },
+        "disabled": {
+          "type": "boolean",
+          "required": false,
+          "description": "Disables the input."
+        },
+        "required": {
+          "type": "boolean",
+          "required": false,
+          "description": "Marks field as required."
+        },
+        "error": {
+          "type": "string",
+          "required": false,
+          "description": "Error message shown below input."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Label text above input."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "A2UI action fired on Enter or blur."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Password toggle removed; React context replaced with direct Lit props; onChange/onBlur collapsed to action dispatch on commit.\n"
+      }
+    },
+    "ext-label": {
+      "group": "atom",
+      "description": "Accessible form label. Associates with an input via the for prop.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "Label text."
+        },
+        "for": {
+          "type": "string",
+          "required": false,
+          "description": "ID of the associated input element."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Radix Label.Root replaced with native label; className dropped"
+      }
+    },
+    "ext-switch": {
+      "group": "atom",
+      "description": "Toggle switch. Fires a2ui-action on change.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "checked": {
+          "type": "boolean",
+          "required": false,
+          "description": "Whether switch is on."
+        },
+        "disabled": {
+          "type": "boolean",
+          "required": false,
+          "description": "Disables the switch."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Visible label beside the switch."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "A2UI action fired on toggle."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Radix Switch replaced with native button + CSS track/thumb; onCheckedChange wired to a2ui-action event dispatch.\n"
+      }
+    },
+    "ext-textarea": {
+      "group": "atom",
+      "description": "Multi-line text input. Fires a2ui-action on commit (blur or Ctrl+Enter).",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "value": {
+          "type": "string",
+          "required": false,
+          "description": "Textarea content."
+        },
+        "placeholder": {
+          "type": "string",
+          "required": false,
+          "description": "Placeholder text."
+        },
+        "rows": {
+          "type": "number",
+          "required": false,
+          "description": "Visible row count."
+        },
+        "disabled": {
+          "type": "boolean",
+          "required": false,
+          "description": "Disables the textarea."
+        },
+        "required": {
+          "type": "boolean",
+          "required": false,
+          "description": "Marks field as required."
+        },
+        "maxLength": {
+          "type": "number",
+          "required": false,
+          "description": "Max character count."
+        },
+        "label": {
+          "type": "string",
+          "required": false,
+          "description": "Label text above textarea."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "A2UI action fired on blur or Ctrl+Enter."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "React.forwardRef removed; onBlur/onChange collapsed to action dispatch on commit"
+      }
+    },
+    "ext-table": {
+      "group": "molecule",
+      "description": "Data table with headers and row data passed as JSON arrays. Collapses Table/TableHeader/TableBody/TableRow/TableCell into one component.",
+      "strict": true,
+      "in_prompt": false,
+      "properties": {
+        "headers": {
+          "type": "string",
+          "required": false,
+          "description": "JSON array of column header strings. e.g. '[\"Name\",\"Value\"]'"
+        },
+        "rows": {
+          "type": "string",
+          "required": false,
+          "description": "JSON array of row arrays. e.g. '[[\"Alice\",\"100\"],[\"Bob\",\"200\"]]'"
+        },
+        "caption": {
+          "type": "string",
+          "required": false,
+          "description": "Optional table caption."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Compound HTML table structure collapsed into single Lit element; data passed as JSON-serialisable headers + rows props.\n"
+      }
+    },
+    "ext-tabs": {
+      "group": "molecule",
+      "description": "Tab navigation. Tabs defined as a JSON array of {id, label, content} objects.",
+      "strict": true,
+      "in_prompt": true,
+      "properties": {
+        "tabs": {
+          "type": "string",
+          "required": true,
+          "description": "JSON array of tab objects: [{id, label, content}]."
+        },
+        "value": {
+          "type": "string",
+          "required": false,
+          "description": "Active tab id."
+        },
+        "action": {
+          "type": "object",
+          "required": false,
+          "description": "A2UI action fired when active tab changes."
+        }
+      },
+      "source": {
+        "name": "Extend UI",
+        "url": "https://github.com/extendlabs/ui",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2024 extendui",
+        "modifications": "Radix Tabs compound (TabsList/TabsTrigger/TabsContent) collapsed into single Lit element; tabs data passed as JSON prop; onValueChange→action dispatch.\n"
+      }
+    }
+  }
+}

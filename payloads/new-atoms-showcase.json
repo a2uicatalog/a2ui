@@ -1,0 +1,285 @@
+{
+  "title": "A2UI New Atoms — Visual Showcase",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "gradient_hero",
+      "badge": "June 2026 Drop",
+      "title": "15 New Atoms — Pure CSS, Zero Dependencies",
+      "subtitle": "From hero sections to skill bars — everything your GAS pop-up app needs to look world-class.",
+      "accent": "#6366f1",
+      "accent2": "#8b5cf6",
+      "align": "center"
+    },
+    {
+      "type": "step_progress",
+      "current": 1,
+      "accent": "#6366f1",
+      "steps": [
+        {"label": "Visual"},
+        {"label": "Layout"},
+        {"label": "Structure"},
+        {"label": "People"},
+        {"label": "Data"}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Visual Atoms",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "icon_stat_row",
+      "accent": "#6366f1",
+      "stats": [
+        {"icon": "⚡", "value": "15", "label": "New Atoms"},
+        {"icon": "🎨", "value": "100%", "label": "Pure CSS"},
+        {"icon": "🚀", "value": "0", "label": "Dependencies"},
+        {"icon": "📱", "value": "All", "label": "Surfaces"}
+      ]
+    },
+    {
+      "type": "color_section",
+      "accent": "#6366f1",
+      "style": "tint",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "highlight_box",
+          "level": 3
+        },
+        {
+          "type": "highlight_box",
+          "icon": "💡",
+          "title": "gradient style (default)",
+          "text": "Use **highlight_box** to draw attention without the severity framing of a callout. No levels, no warnings — just visual weight. Supports `gradient`, `solid`, and `outline` styles.",
+          "accent": "#6366f1",
+          "style": "gradient"
+        },
+        {
+          "type": "highlight_box",
+          "icon": "🔵",
+          "title": "outline style",
+          "text": "Same atom, `style: outline` — clean bordered look for neutral information.",
+          "accent": "#0ea5e9",
+          "style": "outline"
+        }
+      ]
+    },
+    {
+      "type": "tag_cloud",
+      "title": "tag_cloud — weighted by relevance",
+      "accent": "#6366f1",
+      "tags": [
+        {"label": "Google Apps Script", "weight": 10},
+        {"label": "A2UI", "weight": 9},
+        {"label": "Pure CSS", "weight": 8},
+        {"label": "No Dependencies", "weight": 7},
+        {"label": "Gemini", "weight": 6, "color": "#0ea5e9"},
+        {"label": "Pop-up Apps", "weight": 5, "color": "#8b5cf6"},
+        {"label": "Schema-driven", "weight": 4},
+        {"label": "GAS Web App", "weight": 4},
+        {"label": "Workspace", "weight": 3, "color": "#10b981"},
+        {"label": "JSON", "weight": 2},
+        {"label": "Base64url", "weight": 1}
+      ]
+    },
+    {
+      "type": "skill_bars",
+      "title": "skill_bars — competency profile",
+      "accent": "#6366f1",
+      "style": "rounded",
+      "skills": [
+        {"label": "Google Apps Script", "value": 92, "color": "#6366f1"},
+        {"label": "Pure CSS", "value": 88, "color": "#8b5cf6"},
+        {"label": "Schema Design", "value": 85, "color": "#0ea5e9"},
+        {"label": "Python Rendering", "value": 78, "color": "#10b981"},
+        {"label": "Gemini Prompting", "value": 74, "color": "#f59e0b"}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Layout Atoms",
+      "style": "dashed",
+      "accent": "#8b5cf6"
+    },
+    {
+      "type": "split_pane",
+      "left": {
+        "bg": "#f0f4ff",
+        "blocks": [
+          {"type": "heading", "text": "split_pane — left", "level": 3},
+          {"type": "paragraph", "text": "Each side of `split_pane` has its own background color. Unlike `columns`, the background fills the full pane — ideal for contrast layouts, before/after, or side briefs."},
+          {"type": "chip_group", "chips": [
+            {"label": "left.bg", "color": "#6366f1"},
+            {"label": "left.blocks", "color": "#6366f1"}
+          ]}
+        ]
+      },
+      "right": {
+        "bg": "#fff8f0",
+        "blocks": [
+          {"type": "heading", "text": "split_pane — right", "level": 3},
+          {"type": "paragraph", "text": "Right side has its own atom blocks — completely independent. Pass any atoms here: stat cards, lists, images."},
+          {"type": "chip_group", "chips": [
+            {"label": "right.bg", "color": "#f59e0b"},
+            {"label": "right.blocks", "color": "#f59e0b"}
+          ]}
+        ]
+      }
+    },
+    {
+      "type": "columns",
+      "cols": 2,
+      "items": [
+        {
+          "blocks": [
+            {
+              "type": "two_tone_card",
+              "title": "two_tone_card",
+              "subtitle": "Colored header + white body",
+              "icon": "🃏",
+              "accent": "#6366f1",
+              "blocks": [
+                {"type": "paragraph", "text": "Header takes `accent` color. Body renders any atom blocks. Set `header_theme: dark` for a near-black header."}
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "numbered_list",
+              "title": "numbered_list (badge style)",
+              "accent": "#8b5cf6",
+              "style": "badge",
+              "items": [
+                {"label": "First", "text": "Circular badge with number"},
+                {"label": "Second", "text": "Clean horizontal layout"},
+                {"label": "Third", "text": "Works at any list length"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "People & Structure",
+      "style": "dots",
+      "accent": "#10b981"
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {
+          "blocks": [
+            {
+              "type": "person_card",
+              "name": "Curtis Krygier",
+              "role": "Builder",
+              "bio": "Built 15 atoms in one evening.",
+              "accent": "#6366f1",
+              "tags": ["GAS", "A2UI"]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "page_header",
+              "title": "page_header",
+              "subtitle": "First block of any pop-up app",
+              "icon": "📄",
+              "tag": "Structure",
+              "accent": "#8b5cf6",
+              "theme": "light"
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "agenda_block",
+              "title": "agenda_block",
+              "accent": "#10b981",
+              "slots": [
+                {"time": "09:00", "title": "Stand-up", "type": "keynote"},
+                {"time": "10:00", "title": "Deep work", "type": "workshop"},
+                {"time": "12:00", "title": "Lunch", "type": "break"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Risk & Navigation",
+      "style": "line",
+      "accent": "#ef4444"
+    },
+    {
+      "type": "columns",
+      "cols": 2,
+      "items": [
+        {
+          "blocks": [
+            {
+              "type": "risk_flag",
+              "title": "risk_flag",
+              "risks": [
+                {"level": "critical", "title": "Missing deadline", "mitigation": "Ship the MVP first"},
+                {"level": "medium", "title": "Scope creep", "mitigation": "Freeze the spec"},
+                {"level": "low", "title": "Minor polish gap", "mitigation": "Post-launch"}
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "action_items",
+              "title": "action_items",
+              "items": [
+                {"action": "Write follow-up article", "owner": "Curtis", "due": "Jun 25", "status": "in_progress"},
+                {"action": "Build demo payload", "owner": "Claude", "due": "Jun 22", "status": "done"},
+                {"action": "Push to LinkedIn", "owner": "Curtis", "due": "Jun 23", "status": "open"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "metric_row",
+      "accent": "#6366f1",
+      "metrics": [
+        {"value": "15", "label": "Atoms added", "sub": "this session", "accent": "#6366f1", "trend": "up"},
+        {"value": "28", "label": "GAS version", "sub": "deployed", "accent": "#8b5cf6"},
+        {"value": "3", "label": "Renderers synced", "sub": "GAS · web · pdf", "accent": "#10b981"},
+        {"value": "0", "label": "External deps", "sub": "pure CSS only", "accent": "#f59e0b"}
+      ]
+    },
+    {
+      "type": "icon_list",
+      "title": "icon_list — how these atoms get used",
+      "accent": "#6366f1",
+      "items": [
+        {"icon": "🧠", "label": "Ask Gemini", "text": "Describe the page you want — the Gem builds the JSON using these atoms."},
+        {"icon": "🔗", "label": "Get a ?p= URL", "text": "Gem encodes the payload and appends it to your GAS deployment URL."},
+        {"icon": "📲", "label": "Share or embed", "text": "Open the URL in any browser — no install, no auth, no server."}
+      ]
+    },
+    {
+      "type": "highlight_box",
+      "icon": "🚀",
+      "title": "Want to build your own?",
+      "text": "Fork [curtiskrygier/a2ui](https://github.com/curtiskrygier/a2ui), deploy the GAS renderer, and ask your Gemini Gem to build any page. All atoms in this showcase are live on **@28**.",
+      "accent": "#6366f1",
+      "style": "gradient"
+    }
+  ]
+}

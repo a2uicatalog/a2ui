@@ -1,0 +1,98 @@
+surface: app
+version: "1.0"
+description: >
+  App-level manifest block. Sits at the root of any a2ui_wired_surface payload.
+  Drives deployment behaviour, auth model, storage defaults, and data isolation.
+  Action handlers inherit these defaults — individual action props override.
+
+schema:
+  app:
+    id:
+      type: string
+      required: false
+      description: Stable identifier for the app — used in logs and future registry
+
+    name:
+      type: string
+      required: false
+      description: Human display name
+
+    scope:
+      type: enum
+      values: [single_user, team, org]
+      default: single_user
+
+    lifecycle:
+      type: enum
+      values: [persistent, ephemeral, session]
+      default: persistent
+      notes:
+        persistent: data accumulates across sessions
+        ephemeral:  app is single-use (meeting scenario); data still written
+        session:    state lives only for the browser session; no writes
+
+    auth:
+      mode:
+        type: enum
+        values: [publisher, user, service_account]
+        default: publisher
+        notes:
+          publisher:        all requests run as the GAS deployer — Session.getActiveUser() is deployer
+          user:             requests run as the accessing user — requires individual auth grant
+          service_account:  future; dedicated SA with delegated scopes
+
+    storage:
+      type:
+        type: enum
+        values: [my_drive, shared_drive, firestore]
+        default: my_drive
+      folder_id:
+        type: string | null
+        default: null
+        description: null = root of My Drive or Shared Drive root
+      sheet:
+        type: string
+        default: A2UI_Data
+        description: Spreadsheet name. Auto-created on first gas:sheet_append if absent.
+      shared_drive_id:
+        type: string
+        required: false
+        description: Required when storage.type = shared_drive
+
+    data:
+      isolation:
+        type: enum
+        values: [none, by_user, by_team]
+        default: none
+        notes:
+          none:     all rows visible to all users (shared ledger)
+          by_user:  gas:sheet_query auto-adds WHERE submitted_by = currentUser
+          by_team:  gas:sheet_query filters by a team/group column (requires team_column)
+      key_column:
+        type: string
+        default: submitted_by
+        description: Column auto-populated from user identity when auth.mode = user
+      team_column:
+        type: string
+        required: false
+        description: Required when data.isolation = by_team
+
+    access:
+      type: enum
+      values: [open, workspace_only, domain, allowlist]
+      default: workspace_only
+
+# ─── Scenario matrix ──────────────────────────────────────────────────────────
+# Recommended configs for common scenarios:
+#
+# My Drive / single-user internal tool (expenses demo):
+#   auth.mode: publisher | storage.type: my_drive | data.isolation: none
+#
+# Team shared tool (shared inbox, ops tracker):
+#   auth.mode: publisher | storage.type: shared_drive | data.isolation: none
+#
+# Per-user data (individual expense history, personal tracker):
+#   auth.mode: user | storage.type: shared_drive | data.isolation: by_user
+#
+# Ephemeral meeting surface:
+#   lifecycle: ephemeral | storage.type: my_drive | data.isolation: none

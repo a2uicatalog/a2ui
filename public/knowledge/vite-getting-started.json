@@ -1,0 +1,665 @@
+{
+ "id": "vite-getting-started",
+ "title": "Vite Getting Started Guide",
+ "domain": "training",
+ "source": "vite-getting-started.md documentation, 2026",
+ "source_url": "https://vite.dev/guide/",
+ "license": "MIT",
+ "steps": 19,
+ "coverage": "5/6 sections",
+ "built": "2026-07-02",
+ "planes": {
+  "learning-interactive": {
+   "surface": "a2ui_wired_surface",
+   "payload": {
+    "type": "a2ui_wired_surface",
+    "title": "Vite Getting Started Guide",
+    "state_primitives": [
+     {
+      "id": "s_1",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_2",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_3",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_4",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_5",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_6",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_7",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_8",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_9",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_10",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_11",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_12",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_13",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_14",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_15",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_16",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_17",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_18",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "s_19",
+      "primitive": "ValueStore",
+      "props": {
+       "defaultValue": false
+      }
+     },
+     {
+      "id": "done_count",
+      "primitive": "Computed",
+      "props": {
+       "expr": "a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q+r+s",
+       "inputs": {
+        "a": "#s_1.value",
+        "b": "#s_2.value",
+        "c": "#s_3.value",
+        "d": "#s_4.value",
+        "e": "#s_5.value",
+        "f": "#s_6.value",
+        "g": "#s_7.value",
+        "h": "#s_8.value",
+        "i": "#s_9.value",
+        "j": "#s_10.value",
+        "k": "#s_11.value",
+        "l": "#s_12.value",
+        "m": "#s_13.value",
+        "n": "#s_14.value",
+        "o": "#s_15.value",
+        "p": "#s_16.value",
+        "q": "#s_17.value",
+        "r": "#s_18.value",
+        "s": "#s_19.value"
+       }
+      }
+     },
+     {
+      "id": "progress_pct",
+      "primitive": "Computed",
+      "props": {
+       "expr": "n/19*100",
+       "inputs": {
+        "n": "#done_count.value"
+       }
+      }
+     }
+    ],
+    "actions": [],
+    "layout": [
+     {
+      "id": "title-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "Vite Getting Started Guide"
+      }
+     },
+     {
+      "id": "nav",
+      "atom": "jump_nav",
+      "props": {
+       "links": [
+        {
+         "label": "1 · Automatic Scaffolding",
+         "target": "phase-0-heading"
+        },
+        {
+         "label": "2 · Community Templates",
+         "target": "phase-1-heading"
+        },
+        {
+         "label": "3 · Manual Installation",
+         "target": "phase-2-heading"
+        },
+        {
+         "label": "4 · Command Line Interface & Production Build",
+         "target": "phase-3-heading"
+        },
+        {
+         "label": "5 · Using Unreleased Commits",
+         "target": "phase-4-heading"
+        }
+       ]
+      }
+     },
+     {
+      "id": "intro",
+      "atom": "body",
+      "props": {
+       "text": "Learn how to set up, scaffold, and build web projects using the Vite build tool, covering both automated and manual project installation methods."
+      }
+     },
+     {
+      "id": "prereq-1",
+      "atom": "prerequisite_checklist",
+      "props": {
+       "title": "Prerequisites",
+       "items": [
+        "Node.js version 20.19+ or 22.12+ installed (some templates may require a higher version)"
+       ]
+      }
+     },
+     {
+      "id": "concepts-2",
+      "atom": "key_value",
+      "props": {
+       "title": "Concepts",
+       "items": [
+        {
+         "key": "Vite",
+         "description": "Build tool that aims to provide a faster and leaner development experience for modern web projects"
+        },
+        {
+         "key": "Dev server",
+         "description": "A server providing rich feature enhancements over native ES modules, such as fast Hot Module Replacement (HMR)"
+        },
+        {
+         "key": "Build command",
+         "description": "A command that bundles your code with Rolldown, pre-configured to output highly optimized static assets for production"
+        },
+        {
+         "key": "Root directory",
+         "description": "The concept of a directory which files are served from, where index.html acts as the front-and-central entry point"
+        }
+       ]
+      }
+     },
+     {
+      "id": "div0",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-0-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "1 · Automatic Scaffolding"
+      }
+     },
+     {
+      "id": "info-3",
+      "atom": "key_value",
+      "props": {
+       "title": "Supported Template Presets",
+       "items": [
+        {
+         "key": "vanilla",
+         "description": "https://vite.new/vanilla"
+        },
+        {
+         "key": "vue",
+         "description": "https://vite.new/vue"
+        },
+        {
+         "key": "react",
+         "description": "https://vite.new/react"
+        },
+        {
+         "key": "svelte",
+         "description": "https://vite.new/svelte"
+        }
+       ]
+      }
+     },
+     {
+      "id": "cmd-1",
+      "atom": "command_step",
+      "props": {
+       "label": "Scaffold a new project interactively",
+       "command": "npm create vite@latest",
+       "hint": "Follow the terminal prompts to select your framework and variant."
+      },
+      "wire": {
+       "done": "#s_1.value",
+       "setDone": "#s_1.setValue"
+      }
+     },
+     {
+      "id": "cmd-2",
+      "atom": "command_step",
+      "props": {
+       "label": "Scaffold a project with explicit command line options",
+       "command": "npm create vite@latest my-vue-app -- --template vue",
+       "hint": "You can use . for the project name to scaffold in the current directory, or use the --no-interactive flag to skip interactive prompts."
+      },
+      "wire": {
+       "done": "#s_2.value",
+       "setDone": "#s_2.setValue"
+      }
+     },
+     {
+      "id": "div1",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-1-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "2 · Community Templates"
+      }
+     },
+     {
+      "id": "cmd-3",
+      "atom": "command_step",
+      "props": {
+       "label": "Clone a community template via tiged",
+       "command": "npx tiged user/project my-project"
+      },
+      "wire": {
+       "done": "#s_3.value",
+       "setDone": "#s_3.setValue"
+      }
+     },
+     {
+      "id": "cmd-4",
+      "atom": "command_step",
+      "props": {
+       "label": "Navigate into the cloned project directory",
+       "command": "cd my-project"
+      },
+      "wire": {
+       "done": "#s_4.value",
+       "setDone": "#s_4.setValue"
+      }
+     },
+     {
+      "id": "cmd-5",
+      "atom": "command_step",
+      "props": {
+       "label": "Install project dependencies",
+       "command": "npm install"
+      },
+      "wire": {
+       "done": "#s_5.value",
+       "setDone": "#s_5.setValue"
+      }
+     },
+     {
+      "id": "cmd-6",
+      "atom": "command_step",
+      "props": {
+       "label": "Launch the local development server",
+       "command": "npm run dev"
+      },
+      "wire": {
+       "done": "#s_6.value",
+       "setDone": "#s_6.setValue"
+      }
+     },
+     {
+      "id": "div2",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-2-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "3 · Manual Installation"
+      }
+     },
+     {
+      "id": "cmd-7",
+      "atom": "command_step",
+      "props": {
+       "label": "Install Vite as a development dependency",
+       "command": "npm install -D vite"
+      },
+      "wire": {
+       "done": "#s_7.value",
+       "setDone": "#s_7.setValue"
+      }
+     },
+     {
+      "id": "cmd-8",
+      "atom": "command_step",
+      "props": {
+       "label": "Create the index.html entry point",
+       "command": "Create an index.html file in your project root containing <p>Hello Vite!</p>.",
+       "hint": "Vite treats index.html as source code and part of the module graph, automatically resolving script elements and rebasing URLs."
+      },
+      "wire": {
+       "done": "#s_8.value",
+       "setDone": "#s_8.setValue"
+      }
+     },
+     {
+      "id": "cmd-9",
+      "atom": "command_step",
+      "props": {
+       "label": "Start the development server manually",
+       "command": "npx vite",
+       "hint": "Expect: The index.html will be served on http://localhost:5173."
+      },
+      "wire": {
+       "done": "#s_9.value",
+       "setDone": "#s_9.setValue"
+      }
+     },
+     {
+      "id": "div3",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-3-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "4 · Command Line Interface & Production Build"
+      }
+     },
+     {
+      "id": "info-4",
+      "atom": "key_value",
+      "props": {
+       "title": "Default npm Scripts",
+       "items": [
+        {
+         "key": "dev",
+         "description": "vite"
+        },
+        {
+         "key": "build",
+         "description": "vite build"
+        },
+        {
+         "key": "preview",
+         "description": "vite preview"
+        }
+       ]
+      }
+     },
+     {
+      "id": "cmd-10",
+      "atom": "command_step",
+      "props": {
+       "label": "Build the project for production",
+       "command": "npx vite build",
+       "hint": "Bundles code with Rolldown, targeting Baseline Widely Available browsers by default."
+      },
+      "wire": {
+       "done": "#s_10.value",
+       "setDone": "#s_10.setValue"
+      }
+     },
+     {
+      "id": "cmd-11",
+      "atom": "command_step",
+      "props": {
+       "label": "Preview the production build locally",
+       "command": "npx vite preview"
+      },
+      "wire": {
+       "done": "#s_11.value",
+       "setDone": "#s_11.setValue"
+      }
+     },
+     {
+      "id": "cmd-12",
+      "atom": "command_step",
+      "props": {
+       "label": "Specify an alternative project root directory",
+       "command": "vite serve some/sub/dir",
+       "hint": "Vite will also resolve its config file (i.e. vite.config.js) inside the specified project root."
+      },
+      "wire": {
+       "done": "#s_12.value",
+       "setDone": "#s_12.setValue"
+      }
+     },
+     {
+      "id": "div4",
+      "atom": "divider"
+     },
+     {
+      "id": "phase-4-heading",
+      "atom": "subheading",
+      "props": {
+       "text": "5 · Using Unreleased Commits"
+      }
+     },
+     {
+      "id": "cmd-13",
+      "atom": "command_step",
+      "props": {
+       "label": "Install a specific commit from pkg.pr.new",
+       "command": "npm install -D https://pkg.pr.new/vite@SHA",
+       "hint": "Replace SHA with an active Vite commit SHA from the last month."
+      },
+      "wire": {
+       "done": "#s_13.value",
+       "setDone": "#s_13.setValue"
+      }
+     },
+     {
+      "id": "cmd-14",
+      "atom": "command_step",
+      "props": {
+       "label": "Clone the Vite repository locally",
+       "command": "git clone https://github.com/vitejs/vite.git"
+      },
+      "wire": {
+       "done": "#s_14.value",
+       "setDone": "#s_14.setValue"
+      }
+     },
+     {
+      "id": "cmd-15",
+      "atom": "command_step",
+      "props": {
+       "label": "Change directory to the cloned repo",
+       "command": "cd vite"
+      },
+      "wire": {
+       "done": "#s_15.value",
+       "setDone": "#s_15.setValue"
+      }
+     },
+     {
+      "id": "cmd-16",
+      "atom": "command_step",
+      "props": {
+       "label": "Install repository dependencies using pnpm",
+       "command": "pnpm install"
+      },
+      "wire": {
+       "done": "#s_16.value",
+       "setDone": "#s_16.setValue"
+      }
+     },
+     {
+      "id": "cmd-17",
+      "atom": "command_step",
+      "props": {
+       "label": "Navigate to the core Vite package directory",
+       "command": "cd packages/vite"
+      },
+      "wire": {
+       "done": "#s_17.value",
+       "setDone": "#s_17.setValue"
+      }
+     },
+     {
+      "id": "cmd-18",
+      "atom": "command_step",
+      "props": {
+       "label": "Build the Vite package locally",
+       "command": "pnpm run build"
+      },
+      "wire": {
+       "done": "#s_18.value",
+       "setDone": "#s_18.setValue"
+      }
+     },
+     {
+      "id": "cmd-19",
+      "atom": "command_step",
+      "props": {
+       "label": "Create a global package link",
+       "command": "pnpm link",
+       "hint": "Run pnpm link vite in your local project directory afterward to use this edge build."
+      },
+      "wire": {
+       "done": "#s_19.value",
+       "setDone": "#s_19.setValue"
+      }
+     },
+     {
+      "id": "trouble-5",
+      "atom": "accordion_item",
+      "props": {
+       "header": "Package manager warns about Node.js version",
+       "content": "Upgrade your Node.js version to 20.19+, 22.12+, or higher as required by the template"
+      }
+     },
+     {
+      "id": "trouble-6",
+      "atom": "accordion_item",
+      "props": {
+       "header": "Configuration file not found after changing root",
+       "content": "Move your vite.config.js file into the newly specified alternative project root directory"
+      }
+     },
+     {
+      "id": "refs-7",
+      "atom": "resources_list",
+      "props": {
+       "items": [
+        {
+         "title": "Vite Online Playground",
+         "url": "https://vite.new/"
+        },
+        {
+         "title": "Rolldown Bundler",
+         "url": "https://rolldown.rs"
+        },
+        {
+         "title": "Vite GitHub Repository",
+         "url": "https://github.com/vitejs/vite"
+        },
+        {
+         "title": "Free Vite Course on Scrimba",
+         "url": "https://scrimba.com/intro-to-vite-c03p6pbbdq?via=vite"
+        },
+        {
+         "title": "Discord Community",
+         "url": "https://chat.vite.dev"
+        },
+        {
+         "title": "GitHub Discussions",
+         "url": "https://github.com/vitejs/vite/discussions"
+        }
+       ]
+      }
+     },
+     {
+      "id": "attribution",
+      "atom": "body",
+      "props": {
+       "text": "*Source: [vite-getting-started.md documentation, 2026](https://vite.dev/guide/) · License: MIT*"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "type": "a2ui_wired_surface",
+  "title": "ATC Flight Log",
+  "theme": "dark",
+
+  "app": {
+    "storage": { "type": "my_drive", "sheet": "ATC_FlightLog" },
+    "auth":    { "mode": "publisher" }
+  },
+
+  "state_primitives": [
+    { "id": "live_flights",   "primitive": "ValueStore", "props": { "initialValue": [] } },
+    { "id": "selected_flight","primitive": "ValueStore", "props": { "initialValue": null } },
+    { "id": "flight_filter",  "primitive": "ArrayFilter", "props": {} },
+    {
+      "id": "refresh_timer",
+      "primitive": "Timer",
+      "props": { "interval": 15000 },
+      "wire": { "tick": "#adsb_query.run" }
+    }
+  ],
+
+  "actions": [
+    {
+      "id": "adsb_query",
+      "type": "gas:adsb_query",
+      "props": {
+        "config": { "lamin": 43.0, "lomin": 1.0, "lamax": 44.5, "lomax": 2.5 }
+      },
+      "wire": { "result": "#live_flights.setValue" }
+    },
+    {
+      "id": "log_flight",
+      "type": "gas:sheet_append",
+      "props": {
+        "collect": {
+          "callsign":  "#selected_flight.callsign",
+          "altitude":  "#selected_flight.alt",
+          "speed":     "#selected_flight.spd",
+          "status":    "#selected_flight.status",
+          "logged_at": "{{now}}"
+        },
+        "config": { "sheet": "ATC_FlightLog" }
+      },
+      "onSuccess": ["reload_log"]
+    },
+    {
+      "id": "reload_log",
+      "type": "gas:sheet_query",
+      "props": { "config": { "sheet": "ATC_FlightLog" } },
+      "wire": { "result": "#flight_filter.source" },
+      "trigger": "onLoad"
+    }
+  ],
+
+  "layout": [
+    {
+      "atom": "airspace_command_deck",
+      "id": "radar",
+      "props": { "zoom": 25, "spotlight": true, "spotlight_count": 7 },
+      "wire": {
+        "onFlightClick": "#selected_flight.setValue",
+        "flights":       "#live_flights.value"
+      }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "select-hint",
+      "props": { "type": "info", "text": "Click any aircraft on the radar to select it" }
+    },
+    {
+      "atom": "heading",
+      "id": "callsign-heading",
+      "props": { "text": "--", "level": 3 },
+      "wire": { "text": "#selected_flight.callsign" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "alt-display",
+      "props": { "type": "info", "text": "ALT --" },
+      "wire": { "text": "#selected_flight.alt" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "spd-display",
+      "props": { "type": "info", "text": "SPD --" },
+      "wire": { "text": "#selected_flight.spd" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "status-display",
+      "props": { "type": "success", "text": "--" },
+      "wire": { "text": "#selected_flight.status" }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "log-btn",
+      "props": { "label": "Log Flight", "accent": "#00f2ff" },
+      "wire": { "onClick": "#log_flight.run" }
+    },
+    {
+      "atom": "data_table",
+      "id": "log-table",
+      "props": {
+        "columns": ["callsign", "altitude", "speed", "status", "logged_at"],
+        "rows": []
+      },
+      "wire": { "rows": "#flight_filter.output" }
+    }
+  ]
+}

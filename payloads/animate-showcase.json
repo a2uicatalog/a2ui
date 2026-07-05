@@ -1,0 +1,209 @@
+{
+  "title": "A2UI — Animation Pack",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "palette",
+      "accent": "#6366f1",
+      "accent2": "#8b5cf6"
+    },
+    {
+      "type": "shimmer_text",
+      "text": "Animation Pack — @34",
+      "size": "2.4rem",
+      "from": "#6366f1",
+      "via": "#ffffff",
+      "to": "#8b5cf6",
+      "align": "center"
+    },
+    {
+      "type": "loading_dots",
+      "label": "All GAS-safe. Zero dependencies.",
+      "align": "center",
+      "color": "#6366f1"
+    },
+    {
+      "type": "section_break",
+      "label": "Entrance animations",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "reveal",
+      "animation": "stagger",
+      "stagger_delay": 100,
+      "blocks": [
+        {
+          "type": "metric_row",
+          "metrics": [
+            {"value": "16", "label": "New atoms", "accent": "#6366f1"},
+            {"value": "34", "label": "Deployment", "accent": "#8b5cf6"},
+            {"value": "0", "label": "Dependencies", "accent": "#10b981"},
+            {"value": "∞", "label": "Vibes", "accent": "#f59e0b"}
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Indicators",
+      "style": "dashed",
+      "accent": "#10b981"
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {"blocks": [
+          {"type": "pulse_dot", "label": "System live", "color": "#10b981", "size": "md"},
+          {"type": "pulse_dot", "label": "Deploy pending", "color": "#f59e0b", "size": "md"},
+          {"type": "pulse_dot", "label": "Alert", "color": "#ef4444", "size": "md"}
+        ]},
+        {"blocks": [
+          {"type": "typing_indicator", "label": "Claude is thinking", "color": "#6366f1", "bg": "#ede9fe"}
+        ]},
+        {"blocks": [
+          {"type": "loading_dots", "label": "Processing", "size": "md"}
+        ]}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Number atoms",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {"blocks": [
+          {"type": "progress_ring", "value": 87, "label": "Completion", "color": "#6366f1", "size": 100}
+        ]},
+        {"blocks": [
+          {"type": "number_flip", "value": "2026", "suffix": "→", "label": "Year of no-code", "color": "#8b5cf6"}
+        ]},
+        {"blocks": [
+          {"type": "countdown_ring", "duration_sec": 30, "label": "Time left", "color": "#ef4444", "size": 80}
+        ]}
+      ]
+    },
+    {
+      "type": "skill_bars",
+      "title": "Animated bar fill on load",
+      "skills": [
+        {"label": "GAS renderer", "value": 95, "color": "#6366f1"},
+        {"label": "Python renderer", "value": 72, "color": "#8b5cf6"},
+        {"label": "Animation atoms", "value": 100, "color": "#10b981"},
+        {"label": "Forms (sheet_form)", "value": 88, "color": "#f59e0b"}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Scroll & motion",
+      "style": "dashed",
+      "accent": "#8b5cf6"
+    },
+    {
+      "type": "marquee",
+      "title": "Partners & tools",
+      "speed": 20,
+      "items": [
+        {"icon": "🧩", "text": "A2UI Atoms"},
+        {"icon": "☁️", "text": "Google Apps Script"},
+        {"icon": "🤖", "text": "Gemini"},
+        {"icon": "📊", "text": "Looker Studio"},
+        {"icon": "📋", "text": "Google Sheets"},
+        {"icon": "🔒", "text": "Workspace"},
+        {"icon": "⚡", "text": "No deps"}
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#6366f1",
+      "height": 50,
+      "opacity": "0.12"
+    },
+    {
+      "type": "section_break",
+      "label": "Interactive cards",
+      "style": "line",
+      "accent": "#0ea5e9"
+    },
+    {
+      "type": "columns",
+      "cols": 2,
+      "items": [
+        {"blocks": [
+          {"type": "spotlight_card",
+           "accent": "#6366f1",
+           "content": "**Spotlight card**\n\nHover over this card and the gradient glow follows your cursor. Pure CSS + 4 lines of JS. No library."}
+        ]},
+        {"blocks": [
+          {"type": "animated_border",
+           "from": "#6366f1",
+           "to": "#8b5cf6",
+           "via": "#0ea5e9",
+           "speed": "3",
+           "content": "**Animated border**\n\nA conic gradient rotates around the card edge continuously. Uses `@property` for smooth hue animation."}
+        ]}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Buttons & actions",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {"blocks": [
+          {"type": "ripple_button", "label": "Ripple click", "icon": "⚡", "accent": "#6366f1", "align": "center"}
+        ]},
+        {"blocks": [
+          {"type": "floating_badge", "icon": "🏆", "label": "Achievement", "size": "md"}
+        ]},
+        {"blocks": [
+          {"type": "confetti_burst", "label": "🎉 Celebrate!", "accent": "#6366f1", "count": 80}
+        ]}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Skeletons",
+      "style": "dots",
+      "accent": "#9ca3af"
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {"blocks": [{"type": "skeleton", "skeleton_type": "text", "rows": 3}]},
+        {"blocks": [{"type": "skeleton", "skeleton_type": "avatar_row", "rows": 2}]},
+        {"blocks": [{"type": "skeleton", "type": "card"}]}
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#6366f1",
+      "height": 40,
+      "opacity": "0.1",
+      "flip": true
+    },
+    {
+      "type": "confetti_burst",
+      "trigger": "load",
+      "count": 60,
+      "duration": 3000
+    },
+    {
+      "type": "floating_badge",
+      "icon": "🚀",
+      "label": "Animation pack shipped",
+      "size": "lg",
+      "align": "center"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "title": "chat_thread — Router Demo",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "gradient_hero",
+      "badge": "preview atom",
+      "title": "chat_thread",
+      "subtitle": "One role-routed primitive: user & assistant bubbles, system lines, agent tool calls, composer and suggestions.",
+      "accent": "#6366f1",
+      "accent2": "#8b5cf6",
+      "align": "center"
+    },
+    {
+      "type": "chat_thread",
+      "title": "Deploy assistant",
+      "accent": "#6366f1",
+      "messages": [
+        {
+          "role": "user",
+          "name": "Curtis",
+          "text": "Ship the schema renderer and tell me the deploy URL."
+        },
+        {
+          "role": "assistant",
+          "kind": "tool_call",
+          "tool": {
+            "name": "ops.run",
+            "args": { "process": "renderer-release" },
+            "status": "ok",
+            "result": "deployed in place → /exec (rev 214)",
+            "collapsed": true
+          },
+          "meta": { "latency_ms": 4210 }
+        },
+        {
+          "role": "assistant",
+          "name": "Assistant",
+          "text": "Done — the schema renderer is live at the stable `/exec` URL (revision 214). Both deployments updated in place.",
+          "meta": { "model": "gemini-2.5-flash", "tokens": 812, "latency_ms": 1180 }
+        },
+        {
+          "role": "system",
+          "text": "Manifest audit passed · staging filter applied · 0 preview atoms leaked"
+        }
+      ],
+      "composer": {
+        "placeholder": "Reply to the assistant…",
+        "send_label": "Send",
+        "attach": true
+      },
+      "suggestions": [
+        "Show the deploy log",
+        "Roll back to rev 213",
+        "Run the manifest audit again"
+      ]
+    }
+  ]
+}

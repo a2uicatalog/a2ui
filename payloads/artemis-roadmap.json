@@ -1,0 +1,341 @@
+{
+  "type": "a2ui_wired_surface",
+  "title": "NASA Artemis Programme — Mission Roadmap",
+  "state_primitives": [],
+  "actions": [],
+  "layout": [
+    {
+      "id": "title-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "NASA Artemis Programme — Mission Roadmap"
+      }
+    },
+    {
+      "id": "nav",
+      "atom": "jump_nav",
+      "props": {
+        "links": [
+          {
+            "label": "1 · Foundation flights",
+            "target": "phase-1-foundation-flights-heading"
+          },
+          {
+            "label": "2 · Orbital rendezvous era",
+            "target": "phase-2-orbital-rendezvous-era-heading"
+          },
+          {
+            "label": "3 · Lunar landing",
+            "target": "phase-3-lunar-landing-heading"
+          },
+          {
+            "label": "Timeline",
+            "target": "timeline-heading"
+          },
+          {
+            "label": "Backlog",
+            "target": "backlog-heading"
+          },
+          {
+            "label": "Risks",
+            "target": "risks-heading"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intro",
+      "atom": "body",
+      "props": {
+        "text": "NASA's crewed return to the Moon, phased: uncrewed and crewed test flights first, orbital rendezvous demonstration next, lunar landing after. The infrastructure rows (SLS, Orion, commercial landers) are prerequisites for the missions the public actually watches."
+      }
+    },
+    {
+      "id": "overview",
+      "atom": "roadmap_card",
+      "props": {
+        "title": "Capability phases",
+        "periods": [
+          {
+            "label": "1 · Foundation flights — SHIPPED",
+            "items": [
+              {
+                "text": "Artemis I — uncrewed lunar flyby",
+                "status": "done"
+              },
+              {
+                "text": "Artemis II — crewed lunar flyby",
+                "status": "done"
+              }
+            ]
+          },
+          {
+            "label": "2 · Orbital rendezvous era — IN PROGRESS",
+            "items": [
+              {
+                "text": "Artemis III — LEO rendezvous and docking demo",
+                "status": "in-progress"
+              },
+              {
+                "text": "Post-flight assessments of Artemis II",
+                "status": "in-progress"
+              }
+            ]
+          },
+          {
+            "label": "3 · Lunar landing — PLANNED",
+            "items": [
+              {
+                "text": "Crewed lunar landing",
+                "status": "planned"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "div-overview",
+      "atom": "divider"
+    },
+    {
+      "id": "phase-1-foundation-flights-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "1 · Foundation flights"
+      }
+    },
+    {
+      "id": "phase-0-summary",
+      "atom": "body",
+      "props": {
+        "text": "Certification of the launch and crew vehicles — the plumbing of the programme."
+      }
+    },
+    {
+      "id": "phase-0-matrix",
+      "atom": "data_table_sortable",
+      "props": {
+        "headers": [
+          "Item",
+          "Below the surface",
+          "Above the surface",
+          "Status",
+          "Unlocks"
+        ],
+        "rows": [
+          [
+            "Artemis I — uncrewed lunar flyby",
+            "SLS + Orion integrated flight test, uncrewed",
+            "first SLS/Orion flight around the Moon (Nov–Dec 2022)",
+            "done",
+            "crew certification for Artemis II"
+          ],
+          [
+            "Artemis II — crewed lunar flyby",
+            "crewed life support and high-speed reentry validated over a 694,481-mile journey",
+            "first crewed lunar flyby in over 50 years — launched 1 April 2026, splashdown off San Diego 10 April",
+            "done",
+            "rendezvous and docking demonstration"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "phase-0-notes",
+      "atom": "body",
+      "props": {
+        "text": "Artemis II — crewed lunar flyby: crew — Wiseman, Glover, Koch (NASA), Hansen (CSA)"
+      }
+    },
+    {
+      "id": "div-phase-0",
+      "atom": "divider"
+    },
+    {
+      "id": "phase-2-orbital-rendezvous-era-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "2 · Orbital rendezvous era"
+      }
+    },
+    {
+      "id": "phase-1-summary",
+      "atom": "body",
+      "props": {
+        "text": "Artemis III was redefined: a crewed demonstration flight in low Earth orbit rather than a lunar landing."
+      }
+    },
+    {
+      "id": "phase-1-matrix",
+      "atom": "data_table_sortable",
+      "props": {
+        "headers": [
+          "Item",
+          "Below the surface",
+          "Above the surface",
+          "Status",
+          "Unlocks"
+        ],
+        "rows": [
+          [
+            "Artemis III — LEO rendezvous and docking demo",
+            "Orion rendezvous and docking with commercial landers from Blue Origin and SpaceX",
+            "crewed demo flight in Earth orbit, scheduled late 2027",
+            "in-progress",
+            "crewed lunar landing missions"
+          ],
+          [
+            "Post-flight assessments of Artemis II",
+            "initial assessments feeding vehicle and mission design forward",
+            "",
+            "in-progress",
+            "Artemis III mission definition"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "phase-1-notes",
+      "atom": "body",
+      "props": {
+        "text": "Artemis III — LEO rendezvous and docking demo: crew announced 9 June 2026 — Bresnik, Parmitano, Rubio, Douglas"
+      }
+    },
+    {
+      "id": "div-phase-1",
+      "atom": "divider"
+    },
+    {
+      "id": "phase-3-lunar-landing-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "3 · Lunar landing"
+      }
+    },
+    {
+      "id": "phase-2-matrix",
+      "atom": "data_table_sortable",
+      "props": {
+        "headers": [
+          "Item",
+          "Below the surface",
+          "Above the surface",
+          "Status",
+          "Unlocks"
+        ],
+        "rows": [
+          [
+            "Crewed lunar landing",
+            "",
+            "",
+            "planned",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "id": "phase-2-notes",
+      "atom": "body",
+      "props": {
+        "text": "Crewed lunar landing: deferred beyond Artemis III in the June 2026 replan; depends on commercial lander readiness"
+      }
+    },
+    {
+      "id": "div-phase-2",
+      "atom": "divider"
+    },
+    {
+      "id": "timeline-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "Timeline"
+      }
+    },
+    {
+      "id": "timeline",
+      "atom": "brevet_timeline",
+      "props": {
+        "title": "Delivery timeline",
+        "events": [
+          {
+            "date": "Nov–Dec 2022",
+            "title": "Artemis I",
+            "desc": "uncrewed SLS/Orion lunar flyby"
+          },
+          {
+            "date": "1–10 April 2026",
+            "title": "Artemis II",
+            "desc": "crewed lunar flyby; launched LC-39B, splashdown off San Diego"
+          },
+          {
+            "date": "9 June 2026",
+            "title": "Artemis III crew announced",
+            "desc": "Bresnik, Parmitano, Rubio, Douglas"
+          },
+          {
+            "date": "late 2027",
+            "title": "Artemis III",
+            "desc": "crewed LEO rendezvous/docking demo with commercial landers"
+          }
+        ]
+      }
+    },
+    {
+      "id": "div-timeline",
+      "atom": "divider"
+    },
+    {
+      "id": "backlog-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "Backlog"
+      }
+    },
+    {
+      "id": "backlog",
+      "atom": "checklist_interactive",
+      "props": {
+        "items": [
+          "✓ Artemis II initial post-flight assessments",
+          "commercial lander readiness — Blue Origin",
+          "commercial lander readiness — SpaceX",
+          "Artemis III mission definition (rendezvous/docking profile)"
+        ]
+      }
+    },
+    {
+      "id": "div-backlog",
+      "atom": "divider"
+    },
+    {
+      "id": "risks-heading",
+      "atom": "subheading",
+      "props": {
+        "text": "Risks"
+      }
+    },
+    {
+      "id": "risks",
+      "atom": "risk_flag",
+      "props": {
+        "title": "Delivery risks",
+        "risks": [
+          {
+            "level": "high",
+            "title": "landing schedule dependency",
+            "description": "the crewed landing was deferred beyond Artemis III in the June 2026 replan",
+            "mitigation": "phased demonstration approach — prove docking in LEO first"
+          },
+          {
+            "level": "medium",
+            "title": "commercial lander readiness",
+            "description": "the landing depends on landers from two external providers",
+            "mitigation": "dual-provider redundancy (Blue Origin + SpaceX)"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Chat Integration Settings</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Google Sans',Roboto,sans-serif;background:#f8f9fa;color:#202124;min-height:100vh}
+    .hdr{background:#fff;border-bottom:1px solid #e0e0e0;padding:14px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+    .hdr h1{font-size:18px;font-weight:400}
+    .back{color:#1a73e8;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+    .back svg{width:16px;height:16px;flex-shrink:0}
+    .content{max-width:600px;margin:24px auto;padding:0 16px 40px}
+    .card{background:#fff;border-radius:8px;border:1px solid #e0e0e0;margin-bottom:16px;overflow:hidden}
+    .card-head{padding:14px 20px;border-bottom:1px solid #f1f3f4;display:flex;align-items:center;gap:8px}
+    .card-head svg{width:18px;height:18px;color:#5f6368;flex-shrink:0}
+    .card-head h2{font-size:14px;font-weight:500;flex:1}
+    .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:12px;font-weight:500;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+    .badge.ok{background:#e6f4ea;color:#137333}
+    .badge.miss{background:#fce8e6;color:#c5221f}
+    .badge.warn{background:#fef7e0;color:#b05e00}
+    .card-body{padding:16px 20px}
+    .field{margin-bottom:14px}
+    .field:last-child{margin-bottom:0}
+    label{display:block;font-size:11px;font-weight:500;color:#5f6368;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+    label .sub{color:#80868b;font-weight:400;text-transform:none;font-size:11px}
+    input,textarea{width:100%;border:1px solid #dadce0;border-radius:4px;padding:8px 12px;font-size:14px;font-family:inherit;color:#202124;background:#fff;transition:border-color .15s;resize:vertical}
+    input:focus,textarea:focus{outline:none;border-color:#1a73e8}
+    .hint{font-size:11px;color:#80868b;margin-top:3px}
+    .sa-info{background:#f8f9fa;border-radius:4px;padding:10px 12px;margin-top:8px;font-size:12px;color:#5f6368;line-height:1.7}
+    .sa-info strong{color:#202124}
+    .sa-info code{font-family:monospace;font-size:12px}
+    .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .btn{padding:8px 16px;border-radius:4px;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s}
+    .btn-p{background:#1a73e8;color:#fff}
+    .btn-p:hover{background:#1557b0}
+    .btn-s{background:transparent;color:#1a73e8;border:1px solid #dadce0}
+    .btn-s:hover{background:#e8f0fe}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .divider{height:1px;background:#f1f3f4;margin:12px 0}
+    .tog-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .tog-label{flex:1}
+    .tog-label .tl{font-size:14px;color:#202124}
+    .toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0}
+    .tog-sl{position:absolute;cursor:pointer;inset:0;background:#bdc1c6;border-radius:20px;transition:.2s}
+    .tog-sl:before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+    .toggle input:checked+.tog-sl{background:#1a73e8}
+    .toggle input:checked+.tog-sl:before{transform:translateX(16px)}
+    .res{margin-top:10px;padding:10px 12px;border-radius:4px;font-size:12px;font-family:monospace;white-space:pre-wrap;line-height:1.5;display:none}
+    .res.ok{background:#e6f4ea;color:#137333;border:1px solid #a8d5b5}
+    .res.err{background:#fce8e6;color:#c5221f;border:1px solid #f5a8a4}
+    .foot{text-align:center;padding:24px;color:#80868b;font-size:11px}
+    .chip{background:#e8f0fe;color:#1a73e8;border-radius:12px;padding:1px 7px;font-size:11px;font-family:monospace}
+    .spin{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <a href="#" onclick="goBack(event)" class="back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back
+  </a>
+  <svg viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5" style="width:22px;height:22px">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
+  </svg>
+  <h1>Chat Integration Settings</h1>
+</div>
+
+<div class="content">
+
+  <!-- Service Account -->
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/></svg>
+      <h2>Service Account</h2>
+      <span id="sa-badge" class="badge miss">Not configured</span>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>JSON Key</label>
+        <textarea id="sa-key" rows="5" placeholder='Paste service account JSON key&#10;{"type":"service_account","project_id":"...","client_email":"mim-chat-bot@...","private_key":"-----BEGIN RSA..."}'></textarea>
+        <div class="hint">Download from GCP Console → IAM &amp; Admin → Service Accounts → Keys → Add Key → JSON.</div>
+      </div>
+      <div id="sa-info" class="sa-info" style="display:none"></div>
+      <div class="acts">
+        <button class="btn btn-p" onclick="saveSaKey()">Save Key</button>
+        <button class="btn btn-s" onclick="testConn()">Test Connection</button>
+      </div>
+      <div id="sa-res" class="res"></div>
+    </div>
+  </div>
+
+  <!-- Webhook -->
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+      <h2>Incoming Webhook <span style="font-size:11px;font-weight:400;color:#137333;background:#e6f4ea;border-radius:10px;padding:1px 7px;margin-left:4px">Recommended</span></h2>
+      <span id="wh-badge" class="badge miss">Not set</span>
+    </div>
+    <div class="card-body">
+      <div style="background:#e8f0fe;border-radius:6px;padding:10px 12px;font-size:12px;color:#1a73e8;margin-bottom:12px;line-height:1.6">
+        <strong>Easiest setup — no bot registration needed.</strong><br>
+        In your Chat space: click the space name → <em>Apps &amp; Integrations</em> → <em>Add webhooks</em> → give it a name → copy the URL.
+      </div>
+      <div class="field">
+        <label>Webhook URL</label>
+        <input id="webhook-url" type="text" placeholder="https://chat.googleapis.com/v1/spaces/XXX/messages?key=...&token=...">
+        <div class="hint">Messages are sent here directly. Takes priority over space ID + SA bot approach.</div>
+      </div>
+      <div class="acts">
+        <button class="btn btn-p" onclick="saveWebhook()">Save</button>
+        <button id="test-wh-btn" class="btn btn-s" onclick="testWebhook()" style="display:none">Send test</button>
+        <button id="clear-wh-btn" class="btn btn-s" onclick="clearWebhook()" style="display:none">Clear</button>
+      </div>
+      <div id="wh-res" class="res"></div>
+    </div>
+  </div>
+
+  <!-- Space -->
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+      <h2>Space <span style="font-size:11px;font-weight:400;color:#5f6368;margin-left:4px">SA bot path — requires Chat API config in GCP</span></h2>
+      <span id="space-badge" class="badge miss">No default</span>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Existing Space ID <span class="sub">— paste to reuse, leave blank to create new</span></label>
+        <input id="space-id" type="text" placeholder="spaces/XXXXXXXXXXXXXXXXX">
+        <div class="hint">From Chat URL: chat.google.com/room/<strong>XXXXXXXXX</strong>. Used only if no webhook is set.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <label>Default Space Name <span class="sub">— used when creating a new space</span></label>
+        <input id="space-name" type="text" placeholder="MIM War Room">
+      </div>
+      <div class="acts">
+        <button class="btn btn-p" onclick="saveSpace()">Save</button>
+        <button id="clear-space-btn" class="btn btn-s" onclick="clearSpace()" style="display:none">Clear default</button>
+      </div>
+      <div id="space-res" class="res"></div>
+    </div>
+  </div>
+
+  <!-- Members & Access -->
+  <div class="card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+      <h2>Members &amp; Access</h2>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Auto-add on new space creation <span class="sub">— one email per line</span></label>
+        <textarea id="members" rows="4" placeholder="alice@example.com&#10;bob@example.com"></textarea>
+        <div class="hint">The service account is always added automatically as a bot member. Humans listed here are added after creation.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <div class="tog-row">
+          <div class="tog-label">
+            <div class="tl">Allow external users</div>
+            <div class="hint">Permits members from outside the hosting Google Workspace domain</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="ext-users" checked>
+            <span class="tog-sl"></span>
+          </label>
+        </div>
+      </div>
+      <div class="acts">
+        <button class="btn btn-p" onclick="saveMembers()">Save</button>
+      </div>
+      <div id="mem-res" class="res"></div>
+    </div>
+  </div>
+
+  <div class="foot">Settings stored in Apps Script Script Properties — never leave the script runtime.</div>
+</div>
+
+<script>
+  var _s = {};
+  var _back = document.referrer || '';
+
+  google.script.run
+    .withSuccessHandler(function(s){_s=s;populate(s)})
+    .withFailureHandler(function(e){console.error(e)})
+    .loadChatSettings();
+
+  function populate(s) {
+    if (s.hasKey) {
+      setBadge('sa-badge','ok',s.saEmail || 'Configured');
+      showSaInfo(s.saEmail, s.saProject);
+    }
+    var wh = s.webhookUrl || '';
+    document.getElementById('webhook-url').value = wh;
+    if (wh) {
+      setBadge('wh-badge','ok','Configured');
+      document.getElementById('test-wh-btn').style.display='';
+      document.getElementById('clear-wh-btn').style.display='';
+    }
+    var sid = s.spaceId || '';
+    document.getElementById('space-id').value = sid;
+    document.getElementById('space-name').value = s.spaceName || '';
+    if (sid) {
+      setBadge('space-badge','ok',sid);
+      document.getElementById('clear-space-btn').style.display='';
+    }
+    document.getElementById('members').value = s.members || '';
+    document.getElementById('ext-users').checked = s.externalUsers !== false;
+  }
+
+  function setBadge(id, cls, txt) {
+    var el = document.getElementById(id);
+    el.className = 'badge ' + (cls==='ok'?'ok':cls==='warn'?'warn':'miss');
+    el.title = txt;
+    el.textContent = txt.length > 28 ? txt.slice(0,26)+'…' : txt;
+  }
+
+  function showSaInfo(email, proj) {
+    var el = document.getElementById('sa-info');
+    el.style.display = 'block';
+    el.innerHTML = '<strong>Email:</strong> <code>' + (email||'—') + '</code><br><strong>Project:</strong> ' + (proj||'—');
+  }
+
+  function saveWebhook() {
+    var url = document.getElementById('webhook-url').value.trim();
+    showRes('wh-res','','<span class="spin"></span>Saving…');
+    google.script.run
+      .withSuccessHandler(function(r){
+        if (r.ok) {
+          if (url) {
+            setBadge('wh-badge','ok','Configured');
+            document.getElementById('test-wh-btn').style.display='';
+            document.getElementById('clear-wh-btn').style.display='';
+          } else {
+            setBadge('wh-badge','miss','Not set');
+            document.getElementById('test-wh-btn').style.display='none';
+            document.getElementById('clear-wh-btn').style.display='none';
+          }
+          showRes('wh-res','ok','✅ Saved.');
+        } else { showRes('wh-res','err',r.error||'Failed'); }
+      })
+      .withFailureHandler(function(e){showRes('wh-res','err',String(e))})
+      .saveChatSettings({webhookUrl: url});
+  }
+
+  function testWebhook() {
+    showRes('wh-res','','<span class="spin"></span>Sending test message…');
+    google.script.run
+      .withSuccessHandler(function(r){
+        showRes('wh-res', r.ok?'ok':'err', r.ok ? '✅ Test message sent to space.' : '❌ '+(r.error||'Failed'));
+      })
+      .withFailureHandler(function(e){showRes('wh-res','err','❌ '+String(e))})
+      .testWebhook();
+  }
+
+  function clearWebhook() {
+    document.getElementById('webhook-url').value='';
+    saveWebhook();
+  }
+
+  function saveSaKey() {
+    var raw = document.getElementById('sa-key').value.trim();
+    if (!raw) { showRes('sa-res','err','Paste a JSON key first.'); return; }
+    var parsed;
+    try { parsed = JSON.parse(raw); } catch(e) { showRes('sa-res','err','Invalid JSON: '+e.message); return; }
+    if (parsed.type !== 'service_account') { showRes('sa-res','err','Not a service account key — "type" must be "service_account"'); return; }
+    showRes('sa-res','','<span class="spin"></span>Saving…');
+    google.script.run
+      .withSuccessHandler(function(r){
+        if (r.ok) {
+          setBadge('sa-badge','ok',parsed.client_email||'Saved');
+          showSaInfo(parsed.client_email, parsed.project_id);
+          document.getElementById('sa-key').value='';
+          showRes('sa-res','ok','✅ Key saved. Click "Test Connection" to verify.');
+        } else { showRes('sa-res','err',r.error||'Save failed'); }
+      })
+      .withFailureHandler(function(e){showRes('sa-res','err',String(e))})
+      .saveChatSettings({saKey: raw});
+  }
+
+  function testConn() {
+    showRes('sa-res','','<span class="spin"></span>Testing…');
+    google.script.run
+      .withSuccessHandler(function(r){
+        if (r.ok) {
+          var txt = '✅ Token valid — connected as: '+r.saEmail+'\n';
+          if (r.spaces && r.spaces.length) {
+            txt += '\nSpaces the bot is a member of:\n';
+            r.spaces.forEach(function(sp){ txt += '  • '+(sp.displayName||'(unnamed)')+'  ('+sp.name+')\n'; });
+          } else {
+            txt += '\n⚠ No spaces found — the bot is not yet a member of any space.\n  → In your Chat space: Apps & Integrations → Add apps → search your app name.';
+          }
+          if (r.pingResult) {
+            txt += '\n\nPing to default space: HTTP '+r.pingResult.code;
+            if (r.pingResult.code !== 200) txt += '\n'+r.pingResult.body;
+          }
+          showRes('sa-res','ok',txt);
+          setBadge('sa-badge','ok',r.saEmail||'Connected');
+        } else { showRes('sa-res','err','❌ '+(r.error||'Connection failed')); }
+      })
+      .withFailureHandler(function(e){showRes('sa-res','err','❌ '+String(e))})
+      .testChatConnection();
+  }
+
+  function saveSpace() {
+    var id = document.getElementById('space-id').value.trim();
+    var nm = document.getElementById('space-name').value.trim() || 'MIM War Room';
+    if (id && !id.startsWith('spaces/')) { id='spaces/'+id; document.getElementById('space-id').value=id; }
+    showRes('space-res','','<span class="spin"></span>Saving…');
+    google.script.run
+      .withSuccessHandler(function(r){
+        if (r.ok) {
+          if (id) { setBadge('space-badge','ok',id); document.getElementById('clear-space-btn').style.display=''; }
+          else { setBadge('space-badge','miss','No default'); document.getElementById('clear-space-btn').style.display='none'; }
+          showRes('space-res','ok','✅ Saved.');
+        } else { showRes('space-res','err',r.error||'Failed'); }
+      })
+      .withFailureHandler(function(e){showRes('space-res','err',String(e))})
+      .saveChatSettings({spaceId: id, spaceName: nm});
+  }
+
+  function clearSpace() {
+    document.getElementById('space-id').value='';
+    saveSpace();
+  }
+
+  function saveMembers() {
+    showRes('mem-res','','<span class="spin"></span>Saving…');
+    google.script.run
+      .withSuccessHandler(function(r){
+        showRes('mem-res', r.ok?'ok':'err', r.ok?'✅ Saved.':(r.error||'Failed'));
+      })
+      .withFailureHandler(function(e){showRes('mem-res','err',String(e))})
+      .saveChatSettings({
+        members: document.getElementById('members').value,
+        externalUsers: document.getElementById('ext-users').checked
+      });
+  }
+
+  function showRes(id, cls, html) {
+    var el = document.getElementById(id);
+    el.style.display='block';
+    el.className = 'res' + (cls?' '+cls:'');
+    el.innerHTML = html;
+  }
+
+  function goBack(e) {
+    e.preventDefault();
+    if (_back) window.location.href = _back; else history.back();
+  }
+</script>
+</body>
+</html>

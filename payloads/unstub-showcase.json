@@ -1,0 +1,187 @@
+{
+  "title": "A2UI — 34 Atoms Unstubbed",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "palette",
+      "accent": "#6366f1",
+      "accent2": "#8b5cf6"
+    },
+    {
+      "type": "page_header",
+      "title": "34 Atoms — Now Live",
+      "subtitle": "Every atom that was previously a `status: stub` has a renderer. All pure CSS, no dependencies.",
+      "icon": "🧩",
+      "tag": "@32",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "metric_row",
+      "accent": "#6366f1",
+      "metrics": [
+        {"value": "34", "label": "Atoms unstubbed", "accent": "#6366f1", "trend": "up"},
+        {"value": "32", "label": "Deployment", "accent": "#8b5cf6"},
+        {"value": "0", "label": "Deps added", "accent": "#10b981"},
+        {"value": "100%", "label": "Pure CSS", "accent": "#f59e0b"}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Quick indicators",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {"blocks": [
+          {"type": "trend_indicator", "trend_direction": "up", "label": "Improving", "context": "last 30 days"}
+        ]},
+        {"blocks": [
+          {"type": "trend_indicator", "trend_direction": "down", "label": "Declining", "context": "MoM"}
+        ]},
+        {"blocks": [
+          {"type": "trend_indicator", "trend_direction": "stable", "label": "Steady", "context": "WoW"}
+        ]}
+      ]
+    },
+    {
+      "type": "columns",
+      "cols": 3,
+      "items": [
+        {"blocks": [{"type": "metric_delta", "label": "Revenue", "current_value": "$84,300", "delta_value": "+12%", "delta_type": "increase", "comparison_period": "vs. last month"}]},
+        {"blocks": [{"type": "metric_delta", "label": "Churn", "current_value": "3.2%", "delta_value": "-0.4%", "delta_type": "decrease"}]},
+        {"blocks": [{"type": "metric_delta", "label": "NPS", "current_value": "72", "delta_value": "+5", "delta_type": "increase"}]}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Sparklines inline",
+      "style": "dashed",
+      "accent": "#8b5cf6"
+    },
+    {
+      "type": "highlight_box",
+      "icon": "📈",
+      "title": "Sparkline — inline SVG trend",
+      "text": "Weekly signups:",
+      "accent": "#8b5cf6",
+      "style": "outline"
+    },
+    {
+      "type": "sparkline",
+      "data": [12, 19, 14, 28, 24, 35, 31, 42, 38, 51, 47, 60],
+      "color": "#8b5cf6",
+      "line_width": 2
+    },
+    {
+      "type": "section_break",
+      "label": "Sentiment & ratings",
+      "style": "dots",
+      "accent": "#10b981"
+    },
+    {
+      "type": "columns",
+      "cols": 2,
+      "items": [
+        {"blocks": [
+          {"type": "sentiment_summary", "title": "Call sentiment", "sentiment_index": 78, "negative": 12}
+        ]},
+        {"blocks": [
+          {"type": "review_callout", "rating": 5, "max_rating": 5, "review_text": "Exactly what we needed — describe a page and it just appears. Wild.", "author_name": "Early adopter", "product_name": "A2UI Renderer"}
+        ]}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Data & grids",
+      "style": "line",
+      "accent": "#ef4444"
+    },
+    {
+      "type": "data_grid",
+      "title": "Team sprint status",
+      "columns": [
+        {"header": "Name", "key": "name"},
+        {"header": "Role", "key": "role"},
+        {"header": "Status", "key": "status", "type": "status"},
+        {"header": "Tag", "key": "tag", "type": "tag"}
+      ],
+      "rows": [
+        {"name": "Curtis", "role": "Architect", "status": "active", "tag": "GAS"},
+        {"name": "Claude", "role": "Builder", "status": "active", "tag": "Atoms"},
+        {"name": "Gemini", "role": "Prompter", "status": "pending", "tag": "LLM"}
+      ]
+    },
+    {
+      "type": "stacked_area",
+      "title": "Atom categories over time",
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
+      "series": [
+        {"label": "Core", "data": [40, 60, 80, 100], "color": "#6366f1"},
+        {"label": "LMS", "data": [10, 20, 35, 50], "color": "#10b981"},
+        {"label": "Charts", "data": [5, 15, 25, 40], "color": "#f59e0b"},
+        {"label": "Unstub", "data": [0, 0, 0, 34], "color": "#ef4444"}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Funnel & conversion",
+      "style": "dashed",
+      "accent": "#f59e0b"
+    },
+    {
+      "type": "conversion_funnel",
+      "title": "Gem → live URL funnel",
+      "accent": "#6366f1",
+      "steps": [
+        {"stage": "Described to Gem", "value": 1000},
+        {"stage": "JSON generated", "value": 920},
+        {"stage": "URL encoded", "value": 910},
+        {"stage": "Page opened", "value": 870},
+        {"stage": "Shared", "value": 340}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Expandable & tree",
+      "style": "line",
+      "accent": "#0ea5e9"
+    },
+    {
+      "type": "expandable_text",
+      "summary": "What changed in @32?",
+      "details": "**34 atoms** moved from `status: stub` to full renderers.\n\n**5 new utility atoms**: `palette`, `print_button`, `drive_image`, `maps_embed`, `sheet_form`.\n\n**ARIA pass**: `quiz_question`, `tabs`, `flip_card` now have keyboard navigation and screen reader roles.\n\n**Dark theme fixed**: New atoms use CSS vars `var(--text)`, `var(--bg)`, `var(--border)` — dark mode works."
+    },
+    {
+      "type": "tree_view",
+      "title": "Atom file structure",
+      "nodes": [
+        {"label": "atom.gs — core (3800 lines)", "icon": "📄", "expanded": true, "children": [
+          {"label": "gradient_hero, highlight_box, skill_bars ..."},
+          {"label": "sheet_form, drive_image, print_button, maps_embed, palette"}
+        ]},
+        {"label": "atoms_unstub.gs — 34 new renderers", "icon": "🆕", "expanded": true, "children": [
+          {"label": "trend_indicator, metric_delta, action_required_card"},
+          {"label": "data_grid, stacked_area, sparkline, scatter_trend"},
+          {"label": "heatmap_calendar, gauge_sla, tree_view, toggle_switch"},
+          {"label": "... 22 more"}
+        ]},
+        {"label": "atoms_charts.gs, atoms_lms.gs, atoms_nav.gs ...", "icon": "📦"}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "Actions",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "print_button",
+      "label": "Print this showcase",
+      "align": "center",
+      "accent": "#6366f1"
+    }
+  ]
+}

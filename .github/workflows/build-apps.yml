@@ -1,0 +1,55 @@
+name: Knowledge CI — build training apps
+
+# Documentation as source code: pushing a changed *.training.md compiles it
+# to a live app via the Build API. Secrets: A2UI_API_URL, A2UI_API_TOKEN.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.training.md"
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "build ALL training sources (fleet rebuild)"
+        type: boolean
+        default: false
+
+jobs:
+  build-apps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build changed training.md sources
+        env:
+          API_URL: ${{ secrets.A2UI_API_URL }}
+          API_TOKEN: ${{ secrets.A2UI_API_TOKEN }}
+        run: |
+          # trim stray whitespace/newlines from pasted secret values
+          API_URL=$(printf '%s' "$API_URL" | tr -d '[:space:]')
+          API_TOKEN=$(printf '%s' "$API_TOKEN" | tr -d '[:space:]')
+          if [ -z "$API_URL" ] || [ -z "$API_TOKEN" ]; then
+            echo "::error::A2UI_API_URL / A2UI_API_TOKEN secrets not configured"; exit 1
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.all }}" = "true" ]; then
+            changed=$(ls examples/*.training.md sampledocs/*.training.md 2>/dev/null)
+          else
+            changed=$(git diff --name-only HEAD^ HEAD -- '*.training.md' || true)
+          fi
+          if [ -z "$changed" ]; then echo "no training sources changed"; exit 0; fi
+          fail=0
+          for f in $changed; do
+            [ -f "$f" ] || { echo "skip deleted: $f"; continue; }
+            echo "== building $f"
+            resp=$(curl -sL -H "Content-Type: text/plain" --data-binary @"$f" \
+              "$API_URL?api=training&token=$API_TOKEN")
+            echo "$resp" | head -c 400; echo
+            ok=$(echo "$resp" | python3 -c "import json,sys; print(json.load(sys.stdin).get('ok'))" 2>/dev/null)
+            if [ "$ok" != "True" ]; then
+              echo "::error file=$f::build failed"; fail=1
+            fi
+          done
+          exit $fail

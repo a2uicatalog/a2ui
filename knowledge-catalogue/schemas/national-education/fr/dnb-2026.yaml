@@ -1,0 +1,356 @@
+"@context": "https://schema.org"
+"@type": "EducationalOccupationalCredential"
+credentialCategory: "diploma"
+recognizedBy:
+  "@type": "Organization"
+  name: "Ministère de l'Éducation Nationale"
+  url: "https://www.education.gouv.fr"
+educationalLevel: "Collège (ISCED 2)"
+
+id: national-education/fr/dnb-2026
+name: "Diplôme National du Brevet — Session 2026"
+description: "French lower-secondary graduation exam, end of collège (age ~15)"
+country: FR
+issuer: "Ministère de l'Éducation Nationale"
+source: "BREVET_2026_CURRICULUM.md"
+source_url: "https://www.education.gouv.fr/le-diplome-national-du-brevet-dnb"
+last_updated: "2026-01-01"
+
+render_strategy: subject_hub
+hub_tab_order: [maths, francais, histoire_geo, sciences, oral]
+
+subjects:
+  maths:
+    label: "Mathématiques"
+    hub_icon: "📐"
+    hub_color: "#6366f1"
+    exam:
+      duration: PT2H
+      total_points: 20
+      parts:
+        - id: automatismes
+          name: "Partie A — Automatismes"
+          duration: PT20M
+          points: 6
+          constraints: [no-calculator, timed-removal]
+          note: "Feuille ramassée à 20 min exactement — aucun accès au livret avant"
+        - id: raisonnement
+          name: "Partie B — Raisonnement & Problèmes"
+          duration: PT1H40M
+          points: 14
+          constraints: [calculator-non-programmable]
+          note: "2 pts sur 14 réservés à la clarté du raisonnement — triptyque obligatoire"
+    required_competencies:
+      - id: maths-automatismes-fractions
+        label: "Fractions et décimales (sans calculatrice)"
+        weight: high
+        atom_hint: drill
+      - id: maths-automatismes-carres
+        label: "Carrés parfaits 1² à 12²"
+        weight: high
+        atom_hint: drill
+      - id: maths-automatismes-divisibilite
+        label: "Critères de divisibilité 2, 3, 5, 9"
+        weight: high
+        atom_hint: drill
+      - id: maths-geometrie-pythagore
+        label: "Pythagore — direct, réciproque, contraposée"
+        weight: high
+        atom_hint: concept
+      - id: maths-geometrie-thales
+        label: "Thalès — configuration emboîtée et papillon"
+        weight: high
+        atom_hint: concept
+      - id: maths-geometrie-trigo
+        label: "Trigonométrie sin, cos, tan"
+        weight: high
+        atom_hint: concept
+      - id: maths-geometrie-volumes
+        label: "Volumes — prisme, cône, sphère, pyramide"
+        weight: medium
+        atom_hint: glossary
+      - id: maths-algebre-identites
+        label: "Identités remarquables"
+        weight: high
+        atom_hint: concept
+      - id: maths-algebre-equations
+        label: "Équations 1er degré (ax+b=c) + équation-produit nul"
+        weight: high
+        atom_hint: concept
+      - id: maths-algebre-fonctions
+        label: "Fonction linéaire f(x)=ax et affine f(x)=ax+b"
+        weight: medium
+        atom_hint: concept
+      - id: maths-algebre-nombres-premiers
+        label: "Nombres premiers jusqu'à 30"
+        weight: low
+        atom_hint: glossary
+      - id: maths-stats-probabilites
+        label: "Probabilités — arbres, événements contraires, incompatibles"
+        weight: high
+        atom_hint: concept
+      - id: maths-algo-scratch
+        label: "Algorithmique — boucles, variables, conditionnelles (Scratch ou Python)"
+        weight: medium
+        atom_hint: concept
+    forbidden:
+      - id: maths-stats-fluctuation
+        label: "Fluctuation d'échantillonnage"
+        reason: "Lycée topic (Terminale) — not in DNB curriculum"
+      - id: maths-algebre-discriminant
+        label: "Équation 2e degré — discriminant Δ = b²−4ac"
+        reason: "Lycée topic (Seconde/Première) — DNB covers équation-produit nul, not trinôme général"
+
+  francais:
+    label: "Français"
+    hub_icon: "📖"
+    hub_color: "#ec4899"
+    exam:
+      duration: PT3H
+      total_points: 100
+      scoring_divisor: 5
+      final_points: 20
+      parts:
+        - id: comprehension
+          name: "Partie 1 — Texte littéraire, grammaire & lexique"
+          duration: PT1H10M
+          points: 50
+          note: "Inclut exercice de Réécriture (5 à 10 pts)"
+        - id: dictee
+          name: "Partie 2 — Dictée"
+          duration: PT20M
+          points: 10
+          note: "−0,5 pt par erreur jusqu'à 0 (pas de négatif)"
+        - id: redaction
+          name: "Partie 3 — Rédaction"
+          duration: PT1H30M
+          points: 40
+          variants: [argumentatif, narratif]
+          note: "Choix obligatoire sujet d'imagination OU sujet de réflexion — minimum 40 lignes"
+    required_competencies:
+      - id: fr-reecriture-singulier-pluriel
+        label: "Réécriture — singulier/pluriel (accords en cascade)"
+        weight: high
+        atom_hint: method
+      - id: fr-reecriture-temps
+        label: "Réécriture — changement de temps (passé simple/imparfait)"
+        weight: high
+        atom_hint: method
+      - id: fr-reecriture-discours-indirect
+        label: "Réécriture — discours indirect (concordance des temps)"
+        weight: high
+        atom_hint: method
+      - id: fr-concordance-temps
+        label: "Concordance des temps au discours indirect"
+        weight: high
+        atom_hint: concept
+      - id: fr-figures-style-core
+        label: "Figures de style — Métaphore, Comparaison, Personnification, Hyperbole, Antithèse"
+        weight: high
+        atom_hint: glossary
+      - id: fr-figures-style-extended
+        label: "Figures de style — Allégorie, Oxymore, Périphrase"
+        weight: medium
+        atom_hint: glossary
+      - id: fr-grammaire-classes
+        label: "Classes grammaticales et fonctions syntaxiques"
+        weight: high
+        atom_hint: glossary
+      - id: fr-grammaire-subordonnees
+        label: "Propositions subordonnées — relative, complétive, conjonctive"
+        weight: high
+        atom_hint: concept
+      - id: fr-grammaire-formation-mots
+        label: "Formation des mots — radical, préfixe, suffixe, dérivation"
+        weight: medium
+        atom_hint: glossary
+      - id: fr-4-entrees
+        label: "4 Entrées littéraires — roman engagé, poésie lyrique, théâtre, presse"
+        weight: high
+        atom_hint: concept
+      - id: fr-redaction-argumentatif
+        label: "Structure rédaction argumentative (sujet de réflexion)"
+        weight: high
+        atom_hint: method
+      - id: fr-redaction-narratif
+        label: "Structure rédaction narrative (sujet d'imagination)"
+        weight: high
+        atom_hint: method
+
+  histoire_geo:
+    label: "Histoire-Géographie + EMC"
+    hub_icon: "🗺"
+    hub_color: "#f59e0b"
+    exam:
+      duration: PT2H
+      total_points: 60
+      scoring_divisor: 3
+      final_points: 20
+      parts:
+        - id: hg
+          name: "Histoire-Géographie"
+          points: 40
+          sub_parts:
+            - name: "Exercice 1 — Analyse de documents"
+              points: 15
+            - name: "Exercice 2 — Langages et repères"
+              points: 25
+              note: "Développement construit MINIMUM 30 LIGNES — malus automatique sinon"
+        - id: emc
+          name: "EMC"
+          points: 20
+          note: "Grille indépendante — évalué séparément"
+    required_competencies:
+      - id: hg-t1-totalitarismes
+        label: "Thème 1 — Nazisme et Stalinisme (comparaison des totalitarismes)"
+        weight: high
+        atom_hint: timeline
+      - id: hg-t2-ww2-genocides
+        label: "Thème 2 — Shoah, Samudaripen, Résistance, CNR 1943"
+        weight: high
+        atom_hint: timeline
+      - id: hg-t3-guerre-froide
+        label: "Thème 3 — Guerre froide, Bandung 1955, décolonisation, monde 1945-2000"
+        weight: high
+        atom_hint: timeline
+      - id: hg-t4-france-democratie
+        label: "Thème 4 — France en République 1944-2000 (vote femmes, IVG, peine de mort)"
+        weight: high
+        atom_hint: timeline
+      - id: hg-t5-europe
+        label: "Thème 5 — Construction européenne CECA→Maastricht→Brexit"
+        weight: high
+        atom_hint: timeline
+      - id: hg-geo-france
+        label: "Géographie France — métropoles, zones productives, aménagement, monde"
+        weight: high
+        atom_hint: concept
+      - id: emc-axe1-discriminations
+        label: "EMC Axe 1 — discriminations, cyber-harcèlement, Défenseur des droits, laïcité"
+        weight: high
+        atom_hint: glossary
+      - id: emc-axe2-justice
+        label: "EMC Axe 2 — vocabulaire judiciaire (10 termes), présomption d'innocence"
+        weight: high
+        atom_hint: glossary
+      - id: emc-axe3-republique
+        label: "EMC Axe 3 — symboles républicains, DDHC/CIDE, loi 1905, loi 2004"
+        weight: high
+        atom_hint: glossary
+    forbidden:
+      - id: hg-cee-ue-confusion
+        label: "Appeler la CEE 'Union Européenne' avant 1992"
+        reason: "CEE 1957-1992, UE depuis Maastricht 1992 — anachronisme lourdement pénalisé"
+      - id: hg-loi1905-signes
+        label: "Attribuer l'interdiction des signes religieux à l'école à la loi 1905"
+        reason: "Loi 1905 = séparation Églises/État. Loi 2004 = signes ostentatoires à l'École"
+
+  sciences:
+    label: "Sciences"
+    hub_icon: "🔬"
+    hub_color: "#10b981"
+    exam:
+      duration: PT1H
+      total_points: 50
+      note: "Tirage au sort 2 disciplines sur 3 (PC, SVT, Techno) — 25 pts chacune. Réviser les 3 intégralement."
+    required_competencies:
+      - id: pc-atomique
+        label: "PC — Modèle atomique, numéro atomique Z, tableau périodique"
+        weight: high
+        atom_hint: concept
+      - id: pc-reactions
+        label: "PC — Équations de réaction, loi de Lavoisier, équilibrage"
+        weight: high
+        atom_hint: concept
+      - id: pc-solutions
+        label: "PC — C=m/V, pH (acide/neutre/basique), sécurité dilution"
+        weight: high
+        atom_hint: concept
+      - id: pc-mecanique
+        label: "PC — v=d/t, forces vectorielles, P=mg, U=RI, P=UI, E=Pt"
+        weight: high
+        atom_hint: glossary
+      - id: pc-ondes
+        label: "PC — Ondes sonores vs lumineuses, d=v×t/2 (aller-retour)"
+        weight: medium
+        atom_hint: concept
+      - id: svt-terre
+        label: "SVT — Tectonique des plaques, séismes (foyer/épicentre), volcanisme effusif/explosif"
+        weight: high
+        atom_hint: concept
+      - id: svt-biodiversite
+        label: "SVT — Écosystèmes, biodiversité, perturbations anthropiques"
+        weight: medium
+        atom_hint: concept
+      - id: svt-vivant
+        label: "SVT — Corps à l'effort, agents pathogènes, vaccination, procréation"
+        weight: high
+        atom_hint: concept
+      - id: techno-chaines
+        label: "Techno — Chaîne d'énergie (Alimenter→Convertir) + chaîne d'information (Acquérir→Traiter)"
+        weight: high
+        atom_hint: concept
+      - id: techno-reseaux
+        label: "Techno — IP, switch, routeur, TCP/IP, client/serveur, RGPD"
+        weight: medium
+        atom_hint: glossary
+      - id: techno-programmation
+        label: "Techno — Algorithmique Python/Scratch, variables, boucles, conditionnelles"
+        weight: medium
+        atom_hint: concept
+    forbidden:
+      - id: pc-antibiotique-virus
+        label: "Prescrire antibiotiques contre un virus"
+        reason: "Antibiotiques = bactéries UNIQUEMENT. Confusion biologiquement lourdement pénalisée."
+
+  oral:
+    label: "Oral"
+    hub_icon: "🎤"
+    hub_color: "#8b5cf6"
+    exam:
+      total_points: 20
+      formats:
+        - id: individuel
+          name: "Format individuel"
+          duration: PT15M
+          breakdown: "5 min exposé + 10 min entretien"
+        - id: collectif
+          name: "Format collectif (jusqu'à 3 élèves)"
+          duration: PT25M
+          breakdown: "10 min exposé partagé + 15 min entretien individualisé"
+      scoring: "10 pts maîtrise du sujet + 10 pts expression orale"
+      note: "L'évaluation porte sur la capacité à rendre compte — PAS sur la qualité du projet lui-même"
+    required_competencies:
+      - id: oral-projets
+        label: "3 projets éligibles — EPI, 4 Parcours républicains, Histoire des Arts"
+        weight: high
+        atom_hint: key_takeaways
+      - id: oral-expose-structure
+        label: "Structure de l'exposé minute par minute (5 min)"
+        weight: high
+        atom_hint: method
+      - id: oral-entretien-strategies
+        label: "3 questions clés de l'entretien + stratégies de réponse"
+        weight: high
+        atom_hint: method
+      - id: oral-assr2
+        label: "ASSR2 — prérequis permis de conduire à 18 ans"
+        weight: medium
+        atom_hint: concept
+      - id: oral-pix
+        label: "PIX — 5 domaines de compétences numériques"
+        weight: medium
+        atom_hint: glossary
+      - id: oral-psc1
+        label: "PSC1 — PLS, DEA, numéros d'urgence (15/17/18/112)"
+        weight: medium
+        atom_hint: glossary
+
+atom_type_map:
+  drill: brevet_automatismes
+  concept: flashcard_deck
+  glossary: flashcard_deck
+  timeline: brevet_timeline
+  method: steps
+  key_takeaways: key_takeaways
+  piege: knowledge_check

@@ -1,0 +1,140 @@
+# a2ui-storage — the storage-backend vocabulary, as a publishable catalog.
+# Third sibling to a2ui-atoms-v1 (visual) + a2ui-state-v1 (behavioral). Lets an
+# agent SELECT the durable substrate for a store from the BRIEF, the way it selects
+# atoms and state primitives. Consolidation, not invention: the sheet_*/firestore_*/
+# ScriptProperties store_* verb families already exist; this names the choice and
+# makes each backend's capability legible so selection (and the honesty gate) work.
+# gen_storage_catalog.py emits the published JSON. Verbs + the store_derive operator
+# algebra live in gas-actions-v1; THIS catalog owns backends + axes + selection only —
+# it must NOT own the derivation grammar.
+# See thoughts/decision-storage-backend-vocabulary.md.
+catalogId: a2ui-storage-v1
+displayName: A2UI Storage Backend Vocabulary
+description: >
+  Declarable storage backends for a store, each profiled on four capability axes,
+  plus a brief->backend selection matrix. A store declares { id, backend, target };
+  store_read/append/derive resolve id->backend->profile server-side. Two axes
+  (history, scale) are HARD-GATED by the derivation interpreter — a composition the
+  axis cannot honestly support is refused by name, never a silent empty. Two axes
+  (stewardship, cost) are ADVISORY: they guide selection, not enforcement.
+
+# ── Capability axes (closed set of 4) ─────────────────────────────────────────
+capability_axes:
+  - axis: history
+    gate: hard
+    values:
+      none: "current-only; no prior states retained"
+      append: "append-only retained log (temporal ops require >= this)"
+      versioned: "point-in-time history (RESERVED for BQ; no interpreter yet)"
+    note: >-
+      THE honesty axis. A temporal op (delta, self-join across time) on history=none is
+      a glass-box violation — diffing history that isn't there.
+  - axis: scale
+    gate: hard
+    values:
+      ephemeral: "~KB (ScriptProperties: 9KB/value, 500KB total)"
+      bounded: "grid-scale, ~10^3 rows"
+      unbounded: "no practical row ceiling"
+    note: >-
+      Gates the "infinite" claim and large derivations; the interpreter enforces row
+      caps with an EXPLICIT truncation flag, never a silent drop.
+  - axis: stewardship
+    gate: advisory
+    values:
+      agent-owned: "append-only, machine-written telemetry"
+      human-editable: "a grid a person curates (append-only invariants do NOT hold)"
+  - axis: cost
+    gate: advisory
+    values:
+      instant: "sub-100ms, effectively free"
+      interactive: "~100ms-1s"
+      analytical: "slow / billed (batch reporting)"
+  # NOT axes: queryable-by-field, server-aggregate/join — fetch-then-reduce runs the
+  # operator algebra in memory on ANY backend, so they gate COST, not HONESTY; they
+  # fold into scale + cost. (Same 4-orthogonal discipline as the derivation operators.)
+
+# ── Backends (v1: three with LIVE interpreters; BQ deferred) ──────────────────
+backends:
+  - backend: firestore
+    profile: { history: append, scale: unbounded, stewardship: agent-owned, cost: interactive }
+    target: "collection"
+    note: >-
+      Durable queryable document store; the general-purpose default. Tenant isolation
+      injected server-side per query (never trusted from the payload).
+  - backend: sheets
+    profile: { history: none, scale: bounded, stewardship: human-editable, cost: interactive }
+    target: "sheet"
+    note: >-
+      A grid a human curates and the app reflects. ACTIVELY BETTER for curated /
+      current-truth data (curriculum, config) — not a fallback. history=none, so no delta.
+  - backend: scriptproperties
+    profile: { history: append, scale: ephemeral, stewardship: agent-owned, cost: instant }
+    target: "key"
+    note: >-
+      Tiny fast per-script KV; session / progress / transient. append but capped
+      (silent-drop ring) — do NOT use where retained history matters.
+  # RESERVED — history=versioned is held for BigQuery so it slots in with zero axis
+  # break, but NOT catalogued as a usable backend until its interpreter exists (that
+  # would be the ratio_pct ghost anti-pattern: catalogued-but-unimplemented):
+  #   bigquery -> { history: versioned, scale: unbounded, stewardship: agent-owned, cost: analytical }
+
+# ── brief -> backend selection: filter-then-rank ──────────────────────────────
+selection:
+  method: "hard axes FILTER the candidate set; soft axes RANK the survivors."
+  default: firestore   # when the brief is silent (general-purpose durable)
+  signals:
+    - brief: "what changed / since yesterday / trend / over time / delta"
+      axis: "history >= append"
+      effect: "filters out sheets (history=none)"
+    - brief: "teacher edits / curated / curriculum / config maintained in a grid"
+      axis: "stewardship = human-editable"
+      effect: "ranks sheets FIRST (better, not fallback)"
+    - brief: "every tick / high volume / thousands / continuous stream"
+      axis: "scale = unbounded"
+      effect: "filters out scriptproperties (ephemeral)"
+    - brief: "just this session / progress / transient / remember for now"
+      axis: "scale = ephemeral OK"
+      effect: "ranks scriptproperties (don't over-provision)"
+    - brief: "reporting / cross-time rollup at scale"
+      axis: "cost = analytical"
+      effect: "-> bigquery (deferred; refuse gracefully in v1)"
+
+# The honesty gate is server-authoritative: backend capability is resolved from a
+# server registry (_backendProfile_), NEVER trusted from the payload — an agent must
+# not declare "this Sheet has history" to unlock delta. store_derive walks its
+# operator tree and refuses, by name, any op whose required axis the resolved profile
+# lacks. See gas-actions-v1 for the verbs + the operator algebra.
+
+# ── Secret backends — the credential MECHANISM as a selectable capability ─────
+# The generalising principle (Curtis, 2026-07-04): every piece of plumbing we wire
+# should become a MENU ITEM an agent (or a human, via Q&A) picks with weighted advice
+# — same filter-then-rank shape as data backends. Secrets are the first extension.
+#
+# HARD CONSTRAINT — secrets are SERVER-SIDE ONLY. Unlike data backends, an
+# agent-authored payload can never name or read a secret (isolation crux: untrusted
+# payloads must not hold credentials — an LLM that could author `read secret X` would
+# exfiltrate it). The agent selects a VERB that USES a secret; the server resolves the
+# secret via _getSecret_. So this vocabulary guides the AUTHOR/human config choice and
+# the runtime enforces it — it is NEVER an agent-facing atom or state primitive.
+secret_backends:
+  - backend: secret_manager
+    profile: { access: iam-gated, audit: cloud-audit-logs, versioned: true, rotation: managed, cost: micro-per-access (cache 1h) }
+    invoke: "server-side _getSecret_(name) — cloud-platform scope + secretmanager.secretAccessor IAM; value cached 1h, never logged"
+    weighted_advice:
+      - if: "any real/live credential — API keys, tokens, OAuth secrets (esp. financial/PII)"
+        pick: secret_manager
+        why: "plaintext Script Properties are readable by ANYONE with script access"
+      - if: "shared / multi-user script (e.g. bro access)"
+        pick: secret_manager
+        why: "per-secret IAM sharing (grant secretAccessor per account) vs all-or-nothing script access"
+      - if: "script is linked to a standard GCP project"
+        pick: secret_manager
+        why: "it's the DEFAULT once available — migrate real secrets off Script Properties"
+  - backend: script_property
+    profile: { access: any-script-editor (PLAINTEXT), audit: none, versioned: false, cost: instant }
+    invoke: "PropertiesService.getScriptProperties().getProperty(name)"
+    weighted_advice:
+      - if: "NON-secret config only (FIRESTORE_PROJECT_ID, feature flags, slugs)"
+        pick: script_property
+      - if: "a real credential on a shared script"
+        pick: secret_manager   # NEVER script_property — plaintext, readable by every editor

@@ -1,0 +1,2134 @@
+{
+  "title": "A2UI catalogue index",
+  "description": "The deterministic catalog selection menu — read whenToUse to pick extension catalogs for a need; the base catalog is always resolved.",
+  "baseCatalog": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
+  "catalogCount": 13,
+  "catalogs": [
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
+      "slug": "a2ui-atoms-v1",
+      "title": "A2UI base atoms",
+      "alwaysResolved": true,
+      "whenToUse": "The standard catalog — structure, text, data display, inputs, actions and the wired state connectors. ALWAYS resolved; every surface uses it.",
+      "atomCount": 99,
+      "atoms": [
+        {
+          "type": "accordion_item",
+          "description": "single collapsible section with toggle by clicking its header, using only CSS."
+        },
+        {
+          "type": "alert_banner",
+          "description": "full-width status alert strip optional action."
+        },
+        {
+          "type": "back_button",
+          "description": "back navigation — url, nav_slug, or history.back(); ghost/outline/text style"
+        },
+        {
+          "type": "badge",
+          "description": "inline badge pill"
+        },
+        {
+          "type": "badge_group",
+          "description": "row of coloured label badges"
+        },
+        {
+          "type": "blockquote",
+          "description": "styled pull-quote with attribution"
+        },
+        {
+          "type": "body",
+          "description": "prose paragraph block"
+        },
+        {
+          "type": "breadcrumb",
+          "description": "navigation breadcrumb trail structure."
+        },
+        {
+          "type": "bullet_list",
+          "description": "unordered list with optional bold label per item"
+        },
+        {
+          "type": "callout",
+          "description": "coloured tip info warning or danger highlight box"
+        },
+        {
+          "type": "chip_group",
+          "description": "chip/tag row — label, color, url, active state; wrap or scroll layout"
+        },
+        {
+          "type": "code",
+          "description": "syntax-highlighted fenced code block"
+        },
+        {
+          "type": "code_block",
+          "description": "syntax-highlighted code block"
+        },
+        {
+          "type": "code_diff",
+          "description": "server-side unified diff view with green additions and red removals"
+        },
+        {
+          "type": "collapsible_panel",
+          "description": "expandable content panel with header toggle visible and hidden states by clicking a control, using only CSS."
+        },
+        {
+          "type": "color_section",
+          "description": "colored background wrapper — tint/solid/dark, renders child atom blocks"
+        },
+        {
+          "type": "columns",
+          "description": "multi-column layout — 2–6 cols, each column holds atom blocks"
+        },
+        {
+          "type": "combobox",
+          "description": "searchable filterable dropdown — shadcn/Headless UI pattern"
+        },
+        {
+          "type": "copy_to_clipboard",
+          "description": "copy-to-clipboard button with inline code and feedback"
+        },
+        {
+          "type": "cta_button",
+          "description": "call-to-action button"
+        },
+        {
+          "type": "data_source",
+          "description": "generic HTTP feed — server-side initial fetch, client-side refresh via surface transport"
+        },
+        {
+          "type": "data_table_sortable",
+          "description": "sortable data table with column headers"
+        },
+        {
+          "type": "diagram",
+          "description": "D2 or SVG architecture diagram"
+        },
+        {
+          "type": "divider",
+          "description": "horizontal visual section break"
+        },
+        {
+          "type": "empty_state",
+          "description": "zero-data empty state with icon and call to action image, message, and an optional call to action."
+        },
+        {
+          "type": "file_tree",
+          "description": "present hierarchical directory structures and files for software project navigation"
+        },
+        {
+          "type": "firestore_read",
+          "description": "Firestore document read — publishes deserialized doc to named data connector; visual atoms subscribe by name"
+        },
+        {
+          "type": "form",
+          "description": "labelled form with fields and submit button"
+        },
+        {
+          "type": "form_checkbox_group",
+          "description": "checkbox group for multi-option selection"
+        },
+        {
+          "type": "form_date_picker",
+          "description": "date or date-range picker input"
+        },
+        {
+          "type": "form_field",
+          "description": "labelled input with hint & inline error"
+        },
+        {
+          "type": "form_input",
+          "description": "single labelled input field"
+        },
+        {
+          "type": "form_radio_group",
+          "description": "radio button group for single-option selection"
+        },
+        {
+          "type": "form_select",
+          "description": "labelled dropdown select with options"
+        },
+        {
+          "type": "form_slider",
+          "description": "numeric range slider input"
+        },
+        {
+          "type": "form_switch_group",
+          "description": "group of labelled toggle switches"
+        },
+        {
+          "type": "form_textarea",
+          "description": "multi-line text input area"
+        },
+        {
+          "type": "google_icon",
+          "description": "single Material Symbol icon"
+        },
+        {
+          "type": "heading",
+          "description": "H2 section title"
+        },
+        {
+          "type": "highlight_box",
+          "description": "highlight box — gradient/solid/outline style, icon, title, text"
+        },
+        {
+          "type": "hub",
+          "description": "deck navigation shell with subjects and slides"
+        },
+        {
+          "type": "icon_list",
+          "description": "icon-circle list — emoji/icon per item, label + text, color per item"
+        },
+        {
+          "type": "image",
+          "description": "single image with optional caption"
+        },
+        {
+          "type": "image_with_caption",
+          "description": "image with styled caption below"
+        },
+        {
+          "type": "info_card",
+          "description": "simple info card with title and body"
+        },
+        {
+          "type": "inline_alert",
+          "description": "inline icon-plus-text alert embedded in content flow"
+        },
+        {
+          "type": "inline_code",
+          "description": "monospace inline code span"
+        },
+        {
+          "type": "json_tree_viewer",
+          "description": "expandable visual explorer for nested JSON data"
+        },
+        {
+          "type": "key_takeaways",
+          "description": "highlighted summary of main conclusions and critical takeaways"
+        },
+        {
+          "type": "key_value",
+          "description": "label and value pairs in a compact grid"
+        },
+        {
+          "type": "link_button",
+          "description": "text hyperlink button"
+        },
+        {
+          "type": "live_refresh",
+          "description": "interval action re-runner with live indicator"
+        },
+        {
+          "type": "markdown_block",
+          "description": "GFM markdown string rendered to HTML inline"
+        },
+        {
+          "type": "metric_row",
+          "description": "horizontal metric strip — value, label, prefix/suffix, trend up/down"
+        },
+        {
+          "type": "modal",
+          "description": "modal dialog overlay with title and content"
+        },
+        {
+          "type": "module_map",
+          "description": "course curriculum grid — module cards with live locked/available/complete status from progress_store"
+        },
+        {
+          "type": "multi_select_input",
+          "description": "chip-style multi-value select input — shadcn pattern"
+        },
+        {
+          "type": "nav_bar",
+          "description": "named-page nav bar — generates ?nav= URLs at runtime from _A2UI_NAV; active page auto-highlighted"
+        },
+        {
+          "type": "nav_link",
+          "description": "single CTA link to a named page — appends from= automatically for back-button support"
+        },
+        {
+          "type": "numbered_list",
+          "description": "decorative numbered list — large background numbers or circular badges"
+        },
+        {
+          "type": "otp_input",
+          "description": "N-box one-time password digit input — shadcn OTP pattern"
+        },
+        {
+          "type": "page_header",
+          "description": "app-style page header — title, subtitle, icon, accent, tag badge"
+        },
+        {
+          "type": "pagination",
+          "description": "page number controls"
+        },
+        {
+          "type": "palette",
+          "description": "page-level accent colour and spacing theme variables"
+        },
+        {
+          "type": "paragraph",
+          "description": "prose paragraph (GAS alias for body)"
+        },
+        {
+          "type": "presence_surface",
+          "description": "presence heartbeat pinger for shared sessions"
+        },
+        {
+          "type": "print_button",
+          "description": "button to print or save page as PDF"
+        },
+        {
+          "type": "progress_bar",
+          "description": "labelled horizontal progress bar with percentage"
+        },
+        {
+          "type": "progress_ring",
+          "description": "animated circular progress gauge"
+        },
+        {
+          "type": "progress_store",
+          "description": "invisible LMS state connector — Sheet on GAS, localStorage on web; exposes window._A2UI_STORE"
+        },
+        {
+          "type": "quote",
+          "description": "pull quote or blockquote with attribution"
+        },
+        {
+          "type": "script_run_button",
+          "description": "button to trigger server-side Apps Script function"
+        },
+        {
+          "type": "section_break",
+          "description": "section divider — optional centered label, solid/dashed/dots style"
+        },
+        {
+          "type": "segmented_control",
+          "description": "mutually exclusive option selector strip as a single control."
+        },
+        {
+          "type": "sheet_form_submit",
+          "description": "inline form that appends a row to a Google Sheet on submit"
+        },
+        {
+          "type": "sheet_preview",
+          "description": "live read-only Google Sheet range preview"
+        },
+        {
+          "type": "skeleton",
+          "description": "shimmer loading placeholder shapes"
+        },
+        {
+          "type": "spacer",
+          "description": "vertical whitespace gap"
+        },
+        {
+          "type": "spinner",
+          "description": "loading spinner indicator operation is in progress."
+        },
+        {
+          "type": "split_pane",
+          "description": "two-panel split — distinct bg per side, each side renders atom blocks"
+        },
+        {
+          "type": "stat_card",
+          "description": "single KPI value with label delta and accent colour indicator"
+        },
+        {
+          "type": "status_pill",
+          "description": "coloured status pill badge an item."
+        },
+        {
+          "type": "step_progress",
+          "description": "horizontal step progress — numbered circles, connecting lines, current step highlighted"
+        },
+        {
+          "type": "stepper",
+          "description": "CSS animated vertical step sequence with checkmark draw and active pulse"
+        },
+        {
+          "type": "steps",
+          "description": "numbered step-by-step instruction sequence"
+        },
+        {
+          "type": "subheading",
+          "description": "H3 subsection title"
+        },
+        {
+          "type": "summary_box",
+          "description": "condensed introductory panel with article overview"
+        },
+        {
+          "type": "tab_bar",
+          "description": "horizontal tab navigation bar typically leading to different sections or pages."
+        },
+        {
+          "type": "tabbed_code",
+          "description": "organize multiple programming language snippets inside an interactive tab container"
+        },
+        {
+          "type": "table",
+          "description": "data table with header row on mobile"
+        },
+        {
+          "type": "tabs",
+          "description": "tabbed content panels"
+        },
+        {
+          "type": "tag_chip",
+          "description": "inline tag chip"
+        },
+        {
+          "type": "text_block",
+          "description": "plain text block"
+        },
+        {
+          "type": "text_callout",
+          "description": "lightweight tinted inline tip or note block no icon"
+        },
+        {
+          "type": "theme_toggle",
+          "description": "floating light dark theme switch"
+        },
+        {
+          "type": "timeline",
+          "description": "chronological event timeline"
+        },
+        {
+          "type": "toggle_switch",
+          "description": "CSS toggle switch input"
+        },
+        {
+          "type": "tooltip",
+          "description": "hover tooltip on a trigger element over a specified trigger element, using only CSS."
+        },
+        {
+          "type": "tree_view",
+          "description": "recursive hierarchical tree with expand/collapse per node"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-aviation-v1.json",
+      "slug": "a2ui-aviation-v1",
+      "title": "Aviation, ATC & geo",
+      "alwaysResolved": false,
+      "whenToUse": "Use for air-traffic / geospatial surfaces — radar, ADS-B feeds, airspace maps, isometric fleet and 3-D geo views.",
+      "atomCount": 16,
+      "atoms": [
+        {
+          "type": "adsb_feed",
+          "description": "OpenSky Network ADS-B live flight positions for a bounding box"
+        },
+        {
+          "type": "airspace_command_deck",
+          "description": "Toulouse TMA radar canvas with animated flights, HUD overlay, and live METAR ticker"
+        },
+        {
+          "type": "canvas_plexus",
+          "description": "animated particle plexus with proximity lines and mouse repulsion"
+        },
+        {
+          "type": "fids_board",
+          "description": "auto-refreshing airport departures arrivals board"
+        },
+        {
+          "type": "geo_contour_waves",
+          "description": "animated atmospheric contour wave field"
+        },
+        {
+          "type": "geo_europe_airspace",
+          "description": "interactive European airspace map with airports and flights"
+        },
+        {
+          "type": "geo_iso_fleet",
+          "description": "tabbed isometric fleet demo — A321neo takeoff + Ariane 6 launch + H160 hover with tab switcher"
+        },
+        {
+          "type": "geo_iso_heli_hover",
+          "description": "isometric 3D canvas of H160 helicopter hover — rotor animation, downwash, HUD"
+        },
+        {
+          "type": "geo_iso_rocket_launch",
+          "description": "isometric 3D canvas of Ariane 6 rocket launch from Kourou — animated liftoff and ascent; mission HUD"
+        },
+        {
+          "type": "geo_iso_takeoff",
+          "description": "isometric 3D canvas of A321neo takeoff from LFBO — animated roll, rotation, gear-up, climb; HUD with airline/runway"
+        },
+        {
+          "type": "geo_mercator_radar",
+          "description": "dark-theme interactive Mercator map with node pins and links"
+        },
+        {
+          "type": "globe_3d",
+          "description": "interactive spinning 3-D globe (wire or earth)"
+        },
+        {
+          "type": "isometric_mesh",
+          "description": "rotating 3D isometric mesh with height-colour mapping and drag-rotate"
+        },
+        {
+          "type": "metar_feed",
+          "description": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station"
+        },
+        {
+          "type": "orbit_diagram",
+          "description": "animated orbit diagram with satellite nodes"
+        },
+        {
+          "type": "skill_radar",
+          "description": "SVG radar/spider chart of skill competency levels — optional before/after growth overlay"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-charts-v1.json",
+      "slug": "a2ui-charts-v1",
+      "title": "Data visualisation",
+      "alwaysResolved": false,
+      "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
+      "atomCount": 20,
+      "atoms": [
+        {
+          "type": "benchmark_comparison",
+          "description": "side-by-side performance benchmark comparison bars"
+        },
+        {
+          "type": "chartjs_bar",
+          "description": "interactive Chart.js bar chart with datasets"
+        },
+        {
+          "type": "chartjs_line",
+          "description": "interactive Chart.js line chart for trend data"
+        },
+        {
+          "type": "chartjs_pie",
+          "description": "multi-slice pie or donut SVG chart with legend"
+        },
+        {
+          "type": "confidence_bar",
+          "description": "labelled probability bar with colour-coded confidence fill"
+        },
+        {
+          "type": "conversion_funnel",
+          "description": "pipeline conversion funnel with step tapering and leak markers"
+        },
+        {
+          "type": "donut_stat",
+          "description": "CSS ring chart with centre value and percentage its proportion or progress."
+        },
+        {
+          "type": "gauge_sla",
+          "description": "radial SLA gauge with glowing pointer and large metric value"
+        },
+        {
+          "type": "github_activity_grid",
+          "description": "SVG GitHub-style contribution grid and activity tracker"
+        },
+        {
+          "type": "heatmap",
+          "description": "grid heatmap coloured by intensity value are represented as colors in a matrix."
+        },
+        {
+          "type": "mini_sparkline_set",
+          "description": "compact grid of multiple labeled sparklines"
+        },
+        {
+          "type": "punch_card",
+          "description": "7x24 grid of glowing activity bubbles representing hourly commits"
+        },
+        {
+          "type": "sankey_flow",
+          "description": "curved dual-column gradient flow diagram for financial or pipeline streams"
+        },
+        {
+          "type": "scatter_trend",
+          "description": "coordinate scatter plot with regression trend line"
+        },
+        {
+          "type": "skill_bars",
+          "description": "labeled horizontal progress bars list — percent fill, per-bar color"
+        },
+        {
+          "type": "sparkline",
+          "description": "inline SVG trend line chart general trends."
+        },
+        {
+          "type": "stacked_area",
+          "description": "stacked area chart with overlapping glowing translucent gradients"
+        },
+        {
+          "type": "trend_indicator",
+          "description": "compact inline value with mini trend bar the direction of a"
+        },
+        {
+          "type": "uptime_timeline",
+          "description": "30-day uptime timeline with per-day status blocks"
+        },
+        {
+          "type": "word_cloud",
+          "description": "interactive word cloud with optional live Sheet feed"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-display-v1.json",
+      "slug": "a2ui-display-v1",
+      "title": "General UI & content",
+      "alwaysResolved": false,
+      "whenToUse": "Use for general content/UI beyond the base primitives — richer cards, media, tags, comparison and steppers not in core.",
+      "atomCount": 73,
+      "atoms": [
+        {
+          "type": "action_required_card",
+          "description": "prominent card prompting a required user action user attention,"
+        },
+        {
+          "type": "annotated_code",
+          "description": "code block with numbered callout bubbles on specific lines explanation list below"
+        },
+        {
+          "type": "annotation_highlight",
+          "description": "annotated body text — click highlighted terms to reveal inline explanations"
+        },
+        {
+          "type": "audio_link",
+          "description": "styled link to an audio file"
+        },
+        {
+          "type": "audio_player",
+          "description": "inline audio player with controls"
+        },
+        {
+          "type": "avatar_group",
+          "description": "stacked user avatar group with overflow count or community."
+        },
+        {
+          "type": "before_after",
+          "description": "side-by-side code or content before and after comparison approach"
+        },
+        {
+          "type": "before_after_stack",
+          "description": "old-vs-new stack comparison animation"
+        },
+        {
+          "type": "bento_grid",
+          "description": "asymmetric bento-box feature tile grid — MagicUI/shadcn pattern"
+        },
+        {
+          "type": "carousel",
+          "description": "horizontally scrollable card carousel"
+        },
+        {
+          "type": "caution_block",
+          "description": "highlight dangerous pitfalls or critical destructive actions"
+        },
+        {
+          "type": "choicebox_group",
+          "description": "card-style option selector with icon, title, description per card"
+        },
+        {
+          "type": "code_snippet_pair",
+          "description": "two code blocks side by side without diff highlighting diff highlighting."
+        },
+        {
+          "type": "color_swatch_grid",
+          "description": "grid of named color swatches with hex values"
+        },
+        {
+          "type": "comparison_morph",
+          "description": "draggable before/after comparison slider"
+        },
+        {
+          "type": "copy_code_button",
+          "description": "button to copy specified text or code to clipboard"
+        },
+        {
+          "type": "counter_group",
+          "description": "row of animated stat counters"
+        },
+        {
+          "type": "css_dropdown_menu",
+          "description": "pure-CSS dropdown navigation menu"
+        },
+        {
+          "type": "css_modal",
+          "description": "pure-CSS modal dialog triggered by checkbox controlled purely by CSS without JavaScript."
+        },
+        {
+          "type": "css_slide_panel",
+          "description": "CSS-only slide-in panel drawer activation."
+        },
+        {
+          "type": "custom_checkbox_group",
+          "description": "styled checkbox group input"
+        },
+        {
+          "type": "dark_divider",
+          "description": "dark-theme horizontal divider"
+        },
+        {
+          "type": "data_grid",
+          "description": "enterprise data grid with typed columns, row selection, and"
+        },
+        {
+          "type": "decision_tree",
+          "description": "interactive collapsible decision tree"
+        },
+        {
+          "type": "document_link",
+          "description": "styled link to a downloadable document a document icon."
+        },
+        {
+          "type": "expandable_list",
+          "description": "nested expandable tree list with collapsible children"
+        },
+        {
+          "type": "expandable_text",
+          "description": "truncated text with read more expand toggle more content."
+        },
+        {
+          "type": "faq_accordion",
+          "description": "collapsible FAQ question and answer list the question is clicked."
+        },
+        {
+          "type": "feedback_prompt",
+          "description": "thumbs or star rating feedback collection widget"
+        },
+        {
+          "type": "flip_card",
+          "description": "card that flips on hover to reveal back content"
+        },
+        {
+          "type": "gallery",
+          "description": "scrollable image gallery grid"
+        },
+        {
+          "type": "glass_card",
+          "description": "frosted-glass card with blur backdrop — dark-theme highlight box"
+        },
+        {
+          "type": "highlighted_text",
+          "description": "highlighted text passage with optional hover margin annotation note"
+        },
+        {
+          "type": "hover_card",
+          "description": "rich hover card revealed on mouse over specified trigger element, using only CSS."
+        },
+        {
+          "type": "icon_badge",
+          "description": "Material icon in coloured circular badge"
+        },
+        {
+          "type": "icon_checklist",
+          "description": "checklist items with Material icons"
+        },
+        {
+          "type": "icon_row",
+          "description": "horizontal icon and label strip"
+        },
+        {
+          "type": "icon_stat_row",
+          "description": "icon + big number + label stat strip — more visual than metric_row"
+        },
+        {
+          "type": "image_hotspots",
+          "description": "image with clickable annotated hotspot overlays hover."
+        },
+        {
+          "type": "image_pair",
+          "description": "two images side by side with captions"
+        },
+        {
+          "type": "inline_feedback_message",
+          "description": "inline success error or warning message for validation feedback or hints."
+        },
+        {
+          "type": "jump_nav",
+          "description": "anchor pill buttons scrolling to page sections"
+        },
+        {
+          "type": "lozenge",
+          "description": "Atlassian-semantic status pill with defined appearance variants"
+        },
+        {
+          "type": "metric_comparison_card",
+          "description": "metric card comparing current vs previous period"
+        },
+        {
+          "type": "metric_delta",
+          "description": "big number metric with directional change indicator or percentage"
+        },
+        {
+          "type": "navigation_menu",
+          "description": "multi-level horizontal nav with submenu panels — Radix pattern"
+        },
+        {
+          "type": "next_step_strip",
+          "description": "horizontal numbered next-steps strip"
+        },
+        {
+          "type": "pdf_preview",
+          "description": "embedded PDF preview panel PDF."
+        },
+        {
+          "type": "person_card",
+          "description": "person card — name, role, photo, bio, tags, email, linkedin"
+        },
+        {
+          "type": "pipeline",
+          "description": "left-to-right step flow diagram"
+        },
+        {
+          "type": "progress_circle",
+          "description": "CSS stroke-dashoffset animated SVG progress arc with centre percentage"
+        },
+        {
+          "type": "pull_stat",
+          "description": "large display number pulled from prose for emphasis descriptive label."
+        },
+        {
+          "type": "reaction_group",
+          "description": "emoji reaction counters collecting reader sentiment feedback"
+        },
+        {
+          "type": "repo_links",
+          "description": "styled GitHub repo link list"
+        },
+        {
+          "type": "resources_list",
+          "description": "downloadable project assets and attached resource links"
+        },
+        {
+          "type": "section_label",
+          "description": "uppercase section marker with glowing accent pill"
+        },
+        {
+          "type": "side_by_side_spec",
+          "description": "two items compared spec by spec and values side-by-side."
+        },
+        {
+          "type": "sidebar_note",
+          "description": "off-axis container for peripheral notes or caveats"
+        },
+        {
+          "type": "split_stat",
+          "description": "two-column stat + text keynote layout with neon glow"
+        },
+        {
+          "type": "status_timeline",
+          "description": "status-dot vertical timeline"
+        },
+        {
+          "type": "tag_block",
+          "description": "horizontal wrap of neutral content chip labels"
+        },
+        {
+          "type": "tag_cloud",
+          "description": "weighted tag cloud — variable size by weight, wrap layout"
+        },
+        {
+          "type": "take_away_card",
+          "description": "bold screenshot-ready insight card"
+        },
+        {
+          "type": "task_list",
+          "description": "glassmorphic structured checklist with priority and assignee badges"
+        },
+        {
+          "type": "text_analysis",
+          "description": "passage with tappable highlighted excerpts"
+        },
+        {
+          "type": "text_highlight",
+          "description": "prose sentence with **marked** words highlighted in accent colour"
+        },
+        {
+          "type": "two_tone_card",
+          "description": "split card — colored header with icon/title, white body renders atom blocks"
+        },
+        {
+          "type": "variant_selector",
+          "description": "CSS radio card group for variant or option picking"
+        },
+        {
+          "type": "version_badge",
+          "description": "software release or dependency version number tag"
+        },
+        {
+          "type": "video_card",
+          "description": "video with title description and metadata to the video source."
+        },
+        {
+          "type": "video_pair",
+          "description": "two videos side by side"
+        },
+        {
+          "type": "video_thumbnail",
+          "description": "clickable video thumbnail with play button and a link to the video source."
+        },
+        {
+          "type": "zoomable_image",
+          "description": "image with click-to-zoom lightbox"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-editorial-v1.json",
+      "slug": "a2ui-editorial-v1",
+      "title": "Editorial & long-form",
+      "alwaysResolved": false,
+      "whenToUse": "Use for articles/blog posts — intros, footnotes, table of contents, series navigation, further reading, social share.",
+      "atomCount": 26,
+      "atoms": [
+        {
+          "type": "abbr_tooltip",
+          "description": "inline abbreviation with hover tooltip full form"
+        },
+        {
+          "type": "anchor_list",
+          "description": "in-page anchor navigation links document or to external URLs."
+        },
+        {
+          "type": "article_series_nav",
+          "description": "navigate interconnected parts inside multi-part blog series"
+        },
+        {
+          "type": "author_bio_card",
+          "description": "profile block displaying content creator biographical details"
+        },
+        {
+          "type": "closing",
+          "description": "article closing paragraph with hashtags"
+        },
+        {
+          "type": "display_quote",
+          "description": "typographic pull quote with decorative mark and attribution"
+        },
+        {
+          "type": "footnote",
+          "description": "numbered footnote reference at the bottom of a section or page."
+        },
+        {
+          "type": "footnote_group",
+          "description": "numbered footnote list at section or article end"
+        },
+        {
+          "type": "further_reading",
+          "description": "curated references for extending topic research"
+        },
+        {
+          "type": "glossary_inline",
+          "description": "inline hover tooltips for complex technical term definitions"
+        },
+        {
+          "type": "glossary_term",
+          "description": "definition term with explanation more details."
+        },
+        {
+          "type": "headline_list",
+          "description": "ranked linked headline list"
+        },
+        {
+          "type": "intro",
+          "description": "series link or transparency note at article top"
+        },
+        {
+          "type": "news_digest",
+          "description": "compact tagged news summary digest"
+        },
+        {
+          "type": "particle_burst",
+          "description": "click anywhere to burst coloured gravity particles from click point"
+        },
+        {
+          "type": "post_metadata_bar",
+          "description": "article metadata bar with author date read time"
+        },
+        {
+          "type": "reading_progress_bar",
+          "description": "track and display article reading progress completion status"
+        },
+        {
+          "type": "related_posts_grid",
+          "description": "grid of recommended alternative post reading cards"
+        },
+        {
+          "type": "search_result_card",
+          "description": "single search result card with title snippet URL"
+        },
+        {
+          "type": "series_overview_card",
+          "description": "navigation index for multi-part article series parts"
+        },
+        {
+          "type": "share_quote",
+          "description": "prominent blockquote optimised for social media sharing"
+        },
+        {
+          "type": "social_share_bar",
+          "description": "social media buttons for sharing article to external networks"
+        },
+        {
+          "type": "source_citation",
+          "description": "numbered RAG source card with title excerpt and URL"
+        },
+        {
+          "type": "table_of_contents",
+          "description": "navigate article sections using structured heading directory links"
+        },
+        {
+          "type": "time_estimate",
+          "description": "estimated reading duration badge for article content"
+        },
+        {
+          "type": "tooltip_glossary",
+          "description": "glossary with hover tooltips"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-effects-v1.json",
+      "slug": "a2ui-effects-v1",
+      "title": "Motion & decorative",
+      "alwaysResolved": false,
+      "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text. Presentation polish, not data.",
+      "atomCount": 86,
+      "atoms": [
+        {
+          "type": "ambient_gradient",
+          "description": "animated aurora/ambient gradient background"
+        },
+        {
+          "type": "animated_beam",
+          "description": "CSS stroke-dashoffset animated SVG beam between two labelled nodes"
+        },
+        {
+          "type": "animated_border",
+          "description": "card with rotating gradient border"
+        },
+        {
+          "type": "animated_border_card",
+          "description": "card with CSS rotating gradient animated border"
+        },
+        {
+          "type": "animated_counter",
+          "description": "CSS-only animated counter that counts up to target values"
+        },
+        {
+          "type": "aurora_background",
+          "description": "animated aurora borealis gradient blob background, CSS-only"
+        },
+        {
+          "type": "badge_showcase",
+          "description": "achievement badge wall — earned badges glow, locked badges grey; status from progress_store"
+        },
+        {
+          "type": "big_reveal",
+          "description": "spring-animation big number or word reveal"
+        },
+        {
+          "type": "blur_fade_in",
+          "description": "CSS blur-to-focus fade-in container reveal"
+        },
+        {
+          "type": "card_stack",
+          "description": "CSS-fanned stack of 2–4 cards with rotation and opacity tiers"
+        },
+        {
+          "type": "confetti_burst",
+          "description": "confetti celebration burst effect"
+        },
+        {
+          "type": "confetti_trigger",
+          "description": "click-to-trigger confetti button"
+        },
+        {
+          "type": "count_up_stat",
+          "description": "animated count-up number stat with cubic ease, auto-plays on load"
+        },
+        {
+          "type": "cursor_glow",
+          "description": "ambient glowing orb that lerp-follows the cursor with screen blend"
+        },
+        {
+          "type": "cursor_trail",
+          "description": "chain of fading dots following the cursor with worm physics"
+        },
+        {
+          "type": "depth_stack",
+          "description": "stacked cards with depth parallax"
+        },
+        {
+          "type": "dot_grid_background",
+          "description": "CSS repeating dot or grid pattern panel background"
+        },
+        {
+          "type": "effect_overlay",
+          "description": "CSS confetti/trophy/pulse celebration overlay triggered by name"
+        },
+        {
+          "type": "encrypted_reveal",
+          "description": "CSS steps() scramble-to-reveal text animation"
+        },
+        {
+          "type": "floating_badge",
+          "description": "bobbing emoji or icon badge"
+        },
+        {
+          "type": "floating_orbs",
+          "description": "decorative blurred colour orbs background"
+        },
+        {
+          "type": "floating_particles",
+          "description": "floating particles background (canvas placeholder)"
+        },
+        {
+          "type": "flow_connector",
+          "description": "animated beam connector between two nodes"
+        },
+        {
+          "type": "focus_lens",
+          "description": "spotlight focus lens on blurred background"
+        },
+        {
+          "type": "glitch_text",
+          "description": "RGB-split glitch-effect headline"
+        },
+        {
+          "type": "glow_button",
+          "description": "CSS box-shadow state-signalling button with disabled/ready/fired glow"
+        },
+        {
+          "type": "glowing_stat",
+          "description": "neon-glow stat number on dark card"
+        },
+        {
+          "type": "gradient_border_card",
+          "description": "animated gradient border card"
+        },
+        {
+          "type": "gradient_heading",
+          "description": "gradient-fill standalone heading"
+        },
+        {
+          "type": "gradient_text",
+          "description": "Animated gradient-fill heading text via CSS background-clip"
+        },
+        {
+          "type": "highlight_sweep",
+          "description": "animated highlight sweep text"
+        },
+        {
+          "type": "hint_reveal",
+          "description": "show/hide hint disclosure using HTML details/summary — no JS"
+        },
+        {
+          "type": "kinetic_headline",
+          "description": "word-by-word kinetic headline animation"
+        },
+        {
+          "type": "liquid_button",
+          "description": "liquid morphing hover button"
+        },
+        {
+          "type": "loading_dots",
+          "description": "three-dot pulsing loader"
+        },
+        {
+          "type": "loading_skeleton",
+          "description": "animated placeholder skeleton while content loads indicating active data fetching."
+        },
+        {
+          "type": "magnetic_button",
+          "description": "magnetic cursor-following button"
+        },
+        {
+          "type": "magnetic_element",
+          "description": "content that drifts toward cursor and springs back with overshoot"
+        },
+        {
+          "type": "marquee",
+          "description": "infinite horizontal scrolling ticker strip"
+        },
+        {
+          "type": "marquee_strip",
+          "description": "infinite CSS-animated horizontal marquee of text or logo items"
+        },
+        {
+          "type": "mesh_gradient",
+          "description": "dark card with radial mesh gradient background"
+        },
+        {
+          "type": "meteor_shower",
+          "description": "CSS-animated diagonal falling meteor streaks on a dark panel"
+        },
+        {
+          "type": "neon_glow",
+          "description": "pulsing neon-glow text on dark card"
+        },
+        {
+          "type": "neon_text",
+          "description": "neon-glow coloured text"
+        },
+        {
+          "type": "noise_card",
+          "description": "dark card with film-grain noise texture"
+        },
+        {
+          "type": "number_flip",
+          "description": "slot-machine digit reveal counter"
+        },
+        {
+          "type": "number_odometer",
+          "description": "Slot-machine digit-column flip to target number"
+        },
+        {
+          "type": "parallax_card",
+          "description": "3D CSS perspective tilt card with mousemove parallax depth"
+        },
+        {
+          "type": "parallax_section",
+          "description": "parallax scroll section (canvas placeholder)"
+        },
+        {
+          "type": "pattern_background",
+          "description": "dot-grid pattern background (alias)"
+        },
+        {
+          "type": "progress_reveal",
+          "description": "scroll-triggered animated progress bar"
+        },
+        {
+          "type": "pulse_dot",
+          "description": "pulsing status indicator dot"
+        },
+        {
+          "type": "reaction_shower",
+          "description": "emoji reaction buttons with raining particles"
+        },
+        {
+          "type": "reveal",
+          "description": "entrance animation wrapper for child blocks"
+        },
+        {
+          "type": "reveal_line",
+          "description": "clip-path sweep-in reveal line, auto-plays on load"
+        },
+        {
+          "type": "reveal_on_scroll",
+          "description": "IntersectionObserver scroll-triggered fade+slide reveal"
+        },
+        {
+          "type": "ripple_button",
+          "description": "CTA button with ripple click effect"
+        },
+        {
+          "type": "schema_reveal",
+          "description": "self-reveal: shows this page's own JSON schema"
+        },
+        {
+          "type": "scramble_reveal",
+          "description": "character-scramble text reveal on scroll"
+        },
+        {
+          "type": "scroll_progress",
+          "description": "fixed scroll-progress bar at page top"
+        },
+        {
+          "type": "scroll_to_top",
+          "description": "quickly return viewport to top of page document"
+        },
+        {
+          "type": "scroll_trigger",
+          "description": "scroll-triggered animated reveal"
+        },
+        {
+          "type": "shimmer_button",
+          "description": "button with CSS background-position shimmer sweep animation"
+        },
+        {
+          "type": "shimmer_text",
+          "description": "headline text with shimmer gloss sweep"
+        },
+        {
+          "type": "skeleton_stage_card",
+          "description": "Dark shimmer skeleton loader in card/list/media/chat variants"
+        },
+        {
+          "type": "sonar_pulse",
+          "description": "CSS concentric ring pulse animation for attention signalling"
+        },
+        {
+          "type": "speed_counter",
+          "description": "live page-load stopwatch"
+        },
+        {
+          "type": "split_reveal",
+          "description": "split-panel reveal animation"
+        },
+        {
+          "type": "spotlight_card",
+          "description": "card with cursor-following spotlight"
+        },
+        {
+          "type": "spotlight_cursor",
+          "description": "dark overlay with cursor-following circular cutout — torch effect"
+        },
+        {
+          "type": "spring_nodes",
+          "description": "interactive mass-spring physics graph with drag-to-pin nodes"
+        },
+        {
+          "type": "stagger_list",
+          "description": "stagger-animated list of items"
+        },
+        {
+          "type": "step_reveal_sequence",
+          "description": "tabbed step-by-step sequence"
+        },
+        {
+          "type": "stripe_background",
+          "description": "animated diagonal stripe background card"
+        },
+        {
+          "type": "surface_unlocked",
+          "description": "achievement-style surface unlocked notification"
+        },
+        {
+          "type": "svg_path_draw",
+          "description": "SVG stroke-dashoffset self-drawing path animation"
+        },
+        {
+          "type": "terminal_boot",
+          "description": "animated terminal boot sequence"
+        },
+        {
+          "type": "text_reveal_mask",
+          "description": "clip-path text reveal mask animation"
+        },
+        {
+          "type": "tilt_card",
+          "description": "3D perspective tilt card with glare highlight driven by cursor position"
+        },
+        {
+          "type": "typewriter",
+          "description": "CSS character-by-character typewriter reveal with optional cursor"
+        },
+        {
+          "type": "typewriter_text",
+          "description": "CSS typewriter animation that reveals text character by character"
+        },
+        {
+          "type": "typing_indicator",
+          "description": "Three-dot bouncing chat typing indicator bubble"
+        },
+        {
+          "type": "wave_divider",
+          "description": "animated wave section separator"
+        },
+        {
+          "type": "word_flip",
+          "description": "CSS steps() vertical word carousel in an overflow-hidden inline container"
+        },
+        {
+          "type": "word_reveal",
+          "description": "auto-play word-by-word fade-up reveal animation"
+        },
+        {
+          "type": "word_scramble",
+          "description": "CSS steps() left-to-right character scramble-to-reveal"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-embeds-v1.json",
+      "slug": "a2ui-embeds-v1",
+      "title": "Third-party embeds",
+      "alwaysResolved": false,
+      "whenToUse": "Use to embed external content — YouTube, Figma, CodePen, StackBlitz, Maps, Slides, Lottie, social posts.",
+      "atomCount": 13,
+      "atoms": [
+        {
+          "type": "embed_codepen",
+          "description": "embed interactive CodePen workspace development environments"
+        },
+        {
+          "type": "embed_gist",
+          "description": "embed version-controlled GitHub Gist source code snippets"
+        },
+        {
+          "type": "embed_google_slides",
+          "description": "embed interactive Google Slides presentation slide decks"
+        },
+        {
+          "type": "embed_stackblitz",
+          "description": "embed dynamic StackBlitz live IDE code sandboxes"
+        },
+        {
+          "type": "embed_tweet",
+          "description": "embed live public Twitter status updates and media"
+        },
+        {
+          "type": "figma_embed",
+          "description": "embed collaborative live Figma design file prototype previews"
+        },
+        {
+          "type": "framed_screenshot",
+          "description": "device-framed screenshot with optional caption browser, phone)."
+        },
+        {
+          "type": "live_demo_embed",
+          "description": "embed interactive live demo sandbox iframe"
+        },
+        {
+          "type": "lottie_animation",
+          "description": "render lightweight high-performance vector Lottie animations"
+        },
+        {
+          "type": "maps_embed",
+          "description": "Google Maps location embed iframe"
+        },
+        {
+          "type": "media_stream_card",
+          "description": "Auto-detecting YouTube/Loom/Slides/Vimeo embed with skeleton"
+        },
+        {
+          "type": "social_feed_embed",
+          "description": "embedded social media post or feed or Instagram post."
+        },
+        {
+          "type": "youtube",
+          "description": "responsive 16:9 YouTube embed"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-google-workspace-live-v1.json",
+      "slug": "a2ui-google-workspace-live-v1",
+      "title": "Google Workspace (live data)",
+      "alwaysResolved": false,
+      "whenToUse": "Use when the surface shows the signed-in user's OWN live Google Workspace data — Gmail, Drive, Calendar, Sheets, Tasks, Chat, Meet. Server-fetched, per-user.",
+      "atomCount": 37,
+      "atoms": [
+        {
+          "type": "action_items",
+          "description": "action items table — action, owner, due date, status"
+        },
+        {
+          "type": "agenda_block",
+          "description": "time-slotted agenda — slots with time, title, speaker, location, type"
+        },
+        {
+          "type": "calendar_today",
+          "description": "today's calendar events from the user's default calendar"
+        },
+        {
+          "type": "calendar_upcoming",
+          "description": "list of upcoming calendar events"
+        },
+        {
+          "type": "call_mood_board",
+          "description": "visual summary board of call sentiments moods and active themes"
+        },
+        {
+          "type": "chat_card",
+          "description": "chat card style live status panel"
+        },
+        {
+          "type": "chat_send_button",
+          "description": "send status to Chat webhook button"
+        },
+        {
+          "type": "chat_sequence",
+          "description": "animated chat conversation thread"
+        },
+        {
+          "type": "chat_space_button",
+          "description": "create or open Chat space button"
+        },
+        {
+          "type": "chat_thread",
+          "description": "role-routed chat thread with composer & tool calls"
+        },
+        {
+          "type": "conversation_snippet",
+          "description": "user prompt and AI response as chat bubbles"
+        },
+        {
+          "type": "csv_import",
+          "description": "CSV file import into sheet button"
+        },
+        {
+          "type": "doc_ai_summary",
+          "description": "AI-powered Google Doc summary via Vertex AI Gemini"
+        },
+        {
+          "type": "drive_file_card",
+          "description": "single Drive file card — static on all surfaces; live name/type lookup via file_id on GAS"
+        },
+        {
+          "type": "drive_file_list",
+          "description": "live list of Drive folder files"
+        },
+        {
+          "type": "drive_folder_contents",
+          "description": "Drive folder grid — live on GAS via folder_id, items[] or api connector on web/meet"
+        },
+        {
+          "type": "drive_image",
+          "description": "Google Drive image embed by file ID"
+        },
+        {
+          "type": "drive_recent_files",
+          "description": "swipeable Drive files carousel — live on GAS, items[] or api connector on web/meet"
+        },
+        {
+          "type": "drive_storage_usage",
+          "description": "Drive storage quota progress bar — live on GAS, or pass used_gb/total_gb for static"
+        },
+        {
+          "type": "gmail_inbox",
+          "description": "swipeable Gmail inbox carousel — live on GAS, items[] or api connector on web/meet"
+        },
+        {
+          "type": "gmail_summary",
+          "description": "list of recent Gmail messages matching query"
+        },
+        {
+          "type": "gmail_unread_count",
+          "description": "unread count badges for Gmail labels"
+        },
+        {
+          "type": "heatmap_calendar",
+          "description": "calendar month heatmap with date-value density colouring"
+        },
+        {
+          "type": "me",
+          "description": "current user identity chip"
+        },
+        {
+          "type": "meet_button",
+          "description": "create or join Google Meet button"
+        },
+        {
+          "type": "multi_doc_ai_brief",
+          "description": "multi-doc briefing pack — one Gemini summary card per Google Doc"
+        },
+        {
+          "type": "people_picker",
+          "description": "directory people search and assign input"
+        },
+        {
+          "type": "sentiment_summary",
+          "description": "meeting sentiment analyzer with index arc and timeline chart"
+        },
+        {
+          "type": "sheet_badge",
+          "description": "open backing sheet link badge"
+        },
+        {
+          "type": "sheet_form",
+          "description": "form submitting rows to a Google Sheet tab"
+        },
+        {
+          "type": "sheet_stats",
+          "description": "aggregate stats from a sheet range displayed as stat badges"
+        },
+        {
+          "type": "tasks_today",
+          "description": "task checklist — live via Tasks API on GAS, items[] array on other surfaces"
+        },
+        {
+          "type": "user_greeting",
+          "description": "personalised greeting with active user email"
+        },
+        {
+          "type": "user_profile_card",
+          "description": "user avatar, display name, email and domain — live on GAS, static fields elsewhere"
+        },
+        {
+          "type": "workspace_logo",
+          "description": "single Google Workspace product logo"
+        },
+        {
+          "type": "workspace_logo_grid",
+          "description": "labelled grid of Workspace logos"
+        },
+        {
+          "type": "workspace_logo_strip",
+          "description": "horizontal strip of Workspace logos"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-learning-v1.json",
+      "slug": "a2ui-learning-v1",
+      "title": "Learning & assessment",
+      "alwaysResolved": false,
+      "whenToUse": "Use for education/LMS surfaces — quizzes, flashcards, cohorts, progress tracking, rubrics, scenarios, certificates.",
+      "atomCount": 34,
+      "atoms": [
+        {
+          "type": "achievement_badge",
+          "description": "unlockable achievement badge with locked/unlocked state and optional date"
+        },
+        {
+          "type": "brevet_automatismes",
+          "description": "timed rapid question drill with countdown"
+        },
+        {
+          "type": "brevet_timeline",
+          "description": "dated vertical revision timeline"
+        },
+        {
+          "type": "capability_checklist",
+          "description": "feature capability tick list per tier capability using checkmarks"
+        },
+        {
+          "type": "cert_disclaimer",
+          "description": "certification study material disclaimer"
+        },
+        {
+          "type": "certification_card",
+          "description": "completion certificate — locked until requires id complete in progress_store; earner from GAS session"
+        },
+        {
+          "type": "checklist_interactive",
+          "description": "interactive task tracking checklist for article milestones"
+        },
+        {
+          "type": "cohort_progress_board",
+          "description": "instructor cohort table — per-learner module completion + scores; live on GAS"
+        },
+        {
+          "type": "cohort_retention",
+          "description": "triangular cohort retention grid with continuous color-scale rendering"
+        },
+        {
+          "type": "completion_gate",
+          "description": "content lock — hides until requires module id is complete in progress_store"
+        },
+        {
+          "type": "course_progress_card",
+          "description": "course-level progress card with per-module bars and aggregate completion ring"
+        },
+        {
+          "type": "difficulty_badge",
+          "description": "label technical complexity level of blog content"
+        },
+        {
+          "type": "fill_in_blank",
+          "description": "cloze-test sentence with inline inputs and correct/wrong highlight on submit"
+        },
+        {
+          "type": "flashcard_deck",
+          "description": "flip-card deck of question answer pairs"
+        },
+        {
+          "type": "knowledge_check",
+          "description": "inline comprehension pulse — single question, instant feedback, no score pressure"
+        },
+        {
+          "type": "learning_objectives",
+          "description": "checklist of educational goals and competencies gained post-reading"
+        },
+        {
+          "type": "learning_path_selector",
+          "description": "course entry path chooser — role/level cards, writes selection to progress_store, optional navigation"
+        },
+        {
+          "type": "lesson_nav",
+          "description": "prev/next lesson navigation with module context and optional completion checkbox"
+        },
+        {
+          "type": "match_exercise",
+          "description": "click-to-pair matching exercise with green lock and red mismatch flash"
+        },
+        {
+          "type": "onboarding_stepper",
+          "description": "guided onboarding steps — completes to progress_store, restores on revisit"
+        },
+        {
+          "type": "prerequisite_checklist",
+          "description": "highlight prerequisite knowledge and system requirements before"
+        },
+        {
+          "type": "progress_checkpoint",
+          "description": "milestone progress indicator across multi-step tutorial"
+        },
+        {
+          "type": "quiz_question",
+          "description": "MCQ or true/false question with CSS-only correct/wrong feedback"
+        },
+        {
+          "type": "quiz_result_summary",
+          "description": "end-of-quiz result — score %, pass/fail, question dots, writes to progress_store"
+        },
+        {
+          "type": "quiz_set",
+          "description": "multi-question interactive quiz"
+        },
+        {
+          "type": "reflection_prompt",
+          "description": "reflection textarea — saves to progress_store; restores on revisit"
+        },
+        {
+          "type": "rubric_card",
+          "description": "assessment rubric table — criteria rows × performance level columns"
+        },
+        {
+          "type": "scenario_branch",
+          "description": "branching scenario — situation + choices + consequence reveal with good/neutral/bad outcome"
+        },
+        {
+          "type": "scenario_case",
+          "description": "scenario question with scored options and rationale reveal"
+        },
+        {
+          "type": "score_summary",
+          "description": "end-of-exercise score card with correct/total, percentage, grade, and CTA"
+        },
+        {
+          "type": "spaced_repetition_card",
+          "description": "flip flashcard with confidence rating 1-5 — writes SRS interval to progress_store"
+        },
+        {
+          "type": "study_timer",
+          "description": "Pomodoro focus/break timer with SVG ring — session only, no persistence"
+        },
+        {
+          "type": "video_checkpoint",
+          "description": "YouTube video with pausing quiz checkpoints — learner must answer to continue"
+        },
+        {
+          "type": "xp_bar",
+          "description": "animated XP/points progress bar with level label and level-up flash"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-marketing-v1.json",
+      "slug": "a2ui-marketing-v1",
+      "title": "Marketing & landing",
+      "alwaysResolved": false,
+      "whenToUse": "Use for landing/marketing pages — pricing tables, testimonials, hero banners, feature grids, ratings, social proof.",
+      "atomCount": 33,
+      "atoms": [
+        {
+          "type": "article_hero",
+          "description": "display prominent introductory headline and banner media"
+        },
+        {
+          "type": "blockquote_with_avatar",
+          "description": "testimonial quote with avatar and attribution"
+        },
+        {
+          "type": "case_study_card",
+          "description": "structured case study — situation, data points, questions, optional model answer reveal"
+        },
+        {
+          "type": "comparison_grid",
+          "description": "multi-item attribute comparison grid often using icons or checkmarks to indicate presence."
+        },
+        {
+          "type": "contributor_list",
+          "description": "list of contributors with avatar and role community, with their"
+        },
+        {
+          "type": "cta_section",
+          "description": "full-width CTA banner with headline and buttons — Tailwind UI pattern"
+        },
+        {
+          "type": "customer_logo_grid",
+          "description": "grid of customer or partner logos"
+        },
+        {
+          "type": "dark_feature_grid",
+          "description": "dark-theme feature grid with icons"
+        },
+        {
+          "type": "dark_hero",
+          "description": "dark hero banner with gradient and CTA"
+        },
+        {
+          "type": "expert_endorsement",
+          "description": "expert quote with credentials and photo name, and credentials."
+        },
+        {
+          "type": "feature_grid",
+          "description": "icon + title + description feature grid — Tailwind UI pattern"
+        },
+        {
+          "type": "feature_matrix",
+          "description": "features versus plans comparison matrix"
+        },
+        {
+          "type": "follow_button",
+          "description": "direct profile subscription button for social platforms"
+        },
+        {
+          "type": "follow_cta",
+          "description": "call to action driving social media community expansion"
+        },
+        {
+          "type": "follow_up_chips",
+          "description": "clickable follow-up suggestion chips"
+        },
+        {
+          "type": "github_repo_card",
+          "description": "live GitHub repo card with stars forks and language"
+        },
+        {
+          "type": "gradient_hero",
+          "description": "light gradient hero — badge, large title, subtitle, CTA button"
+        },
+        {
+          "type": "icon_feature_grid",
+          "description": "feature grid with Material icons"
+        },
+        {
+          "type": "linkedin_post_image",
+          "description": "LinkedIn post image preview — conviction_card, stat_card, or carousel_slide mode"
+        },
+        {
+          "type": "media_mention_card",
+          "description": "press or media mention with logo and quote"
+        },
+        {
+          "type": "newsletter_cta",
+          "description": "email subscription form for recurring reader updates"
+        },
+        {
+          "type": "pricing_tier_card",
+          "description": "single pricing plan card with features list an optional call to action."
+        },
+        {
+          "type": "pricing_tier_group",
+          "description": "side-by-side pricing plan comparison different subscription plans."
+        },
+        {
+          "type": "pros_cons_list",
+          "description": "two-column pros and cons comparison a single subject."
+        },
+        {
+          "type": "rating_comparison",
+          "description": "multiple items rated across dimensions scores."
+        },
+        {
+          "type": "rating_stars",
+          "description": "star rating display stars, or displaying a static rating."
+        },
+        {
+          "type": "rating_summary_bar",
+          "description": "star rating histogram with percentage bars per star level"
+        },
+        {
+          "type": "review_callout",
+          "description": "highlighted customer review excerpt by a star rating."
+        },
+        {
+          "type": "social_proof_banner",
+          "description": "social proof strip with stats and logos achievement."
+        },
+        {
+          "type": "star_rating_display",
+          "description": "read-only star rating with score and count total review count."
+        },
+        {
+          "type": "star_rating_input",
+          "description": "interactive star rating input"
+        },
+        {
+          "type": "testimonial_card",
+          "description": "customer testimonial with photo name and quote an optional avatar."
+        },
+        {
+          "type": "versus_block",
+          "description": "head-to-head two-option versus card \"VS\" separator."
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-meta-v1.json",
+      "slug": "a2ui-meta-v1",
+      "title": "Catalog & AI meta",
+      "alwaysResolved": false,
+      "whenToUse": "Use for surfaces ABOUT the catalog or AI tooling — atom anatomy, schema reveal, prompt-to-schema, Gemini handoff, model cards.",
+      "atomCount": 18,
+      "atoms": [
+        {
+          "type": "ai_build_trace",
+          "description": "Gemini token usage trace card"
+        },
+        {
+          "type": "atom_anatomy",
+          "description": "rendered atom + raw schema side-by-side anatomy view"
+        },
+        {
+          "type": "catalogue_provenance",
+          "description": "assembled-from source attribution strip"
+        },
+        {
+          "type": "copy_prompt",
+          "description": "copyable monospace prompt/code block"
+        },
+        {
+          "type": "domain_brief",
+          "description": "subject overview card with key facts and scope"
+        },
+        {
+          "type": "gemini_handoff",
+          "description": "copy prompt to clipboard and open Gemini"
+        },
+        {
+          "type": "gemini_prompt",
+          "description": "inline Gemini prompt input widget"
+        },
+        {
+          "type": "live_edit",
+          "description": "embedded live atom JSON editor with preview"
+        },
+        {
+          "type": "llm_comparison_table",
+          "description": "side-by-side multi-model output comparison table"
+        },
+        {
+          "type": "model_card",
+          "description": "AI model spec card with context window, pricing, and capability badges"
+        },
+        {
+          "type": "multi_surface",
+          "description": "three-engine multi-surface demo atom"
+        },
+        {
+          "type": "prompt_template",
+          "description": "LLM prompt with highlighted {variable} slots and copy button"
+        },
+        {
+          "type": "prompt_to_schema",
+          "description": "three-panel prompt → schema → output flow"
+        },
+        {
+          "type": "renderer_stats",
+          "description": "stat grid for renderer capability metrics"
+        },
+        {
+          "type": "schema_qr",
+          "description": "QR code for current or given URL"
+        },
+        {
+          "type": "surface_map",
+          "description": "A2UI surface diagram (schema → surfaces)"
+        },
+        {
+          "type": "token_budget_meter",
+          "description": "context window token usage meter with capacity warning colours"
+        },
+        {
+          "type": "url_anatomy",
+          "description": "annotated URL anatomy diagram"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-ops-v1.json",
+      "slug": "a2ui-ops-v1",
+      "title": "Status & ops",
+      "alwaysResolved": false,
+      "whenToUse": "Use for operational dashboards — status/SLA, Jira, sprint boards, notifications, changelogs, live polls and votes.",
+      "atomCount": 43,
+      "atoms": [
+        {
+          "type": "api_param_table",
+          "description": "reference table detailing API parameters, data types, and default values"
+        },
+        {
+          "type": "api_reference",
+          "description": "API endpoint method parameters and response docs returns, example"
+        },
+        {
+          "type": "breaking_banner",
+          "description": "pulsing breaking-news banner with headline"
+        },
+        {
+          "type": "changelog_entry",
+          "description": "timeline entry documenting product modifications per release"
+        },
+        {
+          "type": "cli_command",
+          "description": "copyable single-line terminal command execution string"
+        },
+        {
+          "type": "command_palette",
+          "description": "keyboard-driven command palette with shortcut hints"
+        },
+        {
+          "type": "command_step",
+          "description": "copyable command with completion checkbox"
+        },
+        {
+          "type": "countdown_ring",
+          "description": "circular countdown timer ring"
+        },
+        {
+          "type": "countdown_timer",
+          "description": "Flip-clock countdown timer display (static tiles, data-driven ticking)"
+        },
+        {
+          "type": "deadline_ticker",
+          "description": "countdown timer to a target date (alias)"
+        },
+        {
+          "type": "deprecation_notice",
+          "description": "warning banner for deprecated features or unsupported APIs"
+        },
+        {
+          "type": "entity_list",
+          "description": "named resource rows with avatar, status badge, and meta"
+        },
+        {
+          "type": "env_var_list",
+          "description": "list configuration environment variables with descriptions and default values"
+        },
+        {
+          "type": "experimental_banner",
+          "description": "highlight experimental or unstable feature notice callout"
+        },
+        {
+          "type": "feed_status",
+          "description": "live/sim status pill for a named data feed"
+        },
+        {
+          "type": "http_request_block",
+          "description": "document REST API endpoints with HTTP methods, headers, and payloads"
+        },
+        {
+          "type": "inventory_table",
+          "description": "inventory table with SKU, stock levels, and low-stock row highlight"
+        },
+        {
+          "type": "jira_ticket",
+          "description": "Jira issue card with type icon, status lozenge, priority, and assignee"
+        },
+        {
+          "type": "keyboard_shortcut",
+          "description": "display visual keyboard key combinations for application shortcuts and hotkeys"
+        },
+        {
+          "type": "leaderboard_card",
+          "description": "ranked score leaderboard — live on GAS from Sheet, static on web; medal top 3"
+        },
+        {
+          "type": "live_aggregator",
+          "description": "Real-time comparative bars for votes, counts, or percentages"
+        },
+        {
+          "type": "live_clock",
+          "description": "live ticking clock widget"
+        },
+        {
+          "type": "live_metric",
+          "description": "animated counting number (alias for animated_counter)"
+        },
+        {
+          "type": "live_vote",
+          "description": "live audience voting with real-time bar chart results"
+        },
+        {
+          "type": "log_output",
+          "description": "scrollable monospace server or compiler log output block"
+        },
+        {
+          "type": "notification_badge",
+          "description": "unread count badge overlaid on icon element"
+        },
+        {
+          "type": "notification_stack",
+          "description": "persistent notification inbox list with unread indicators"
+        },
+        {
+          "type": "order_status_card",
+          "description": "e-commerce order card with status badge and line item list"
+        },
+        {
+          "type": "poll_block",
+          "description": "poll with question options and vote count bars"
+        },
+        {
+          "type": "presence_bar",
+          "description": "live viewer count presence bar"
+        },
+        {
+          "type": "product_spec_table",
+          "description": "product specifications in a clean table a single product."
+        },
+        {
+          "type": "product_thumbnail",
+          "description": "product card with image, price, status badge, and tags"
+        },
+        {
+          "type": "raise_hand",
+          "description": "raise-hand button with live participant count"
+        },
+        {
+          "type": "release_notes",
+          "description": "grouped product release documentation by change category"
+        },
+        {
+          "type": "risk_flag",
+          "description": "risk list — critical/high/medium/low with title, description, mitigation"
+        },
+        {
+          "type": "roadmap_card",
+          "description": "quarter-based product roadmap with status-tagged milestones"
+        },
+        {
+          "type": "shortcut_legend",
+          "description": "keyboard shortcut cheat-sheet grid with key combos and labels"
+        },
+        {
+          "type": "sla_timer_display",
+          "description": "live SLA timer card with severity state"
+        },
+        {
+          "type": "sprint_board",
+          "description": "kanban sprint board with named columns and compact issue cards"
+        },
+        {
+          "type": "status_dashboard",
+          "description": "grid of service status indicators with color states"
+        },
+        {
+          "type": "terminal_block",
+          "description": "display terminal commands and code output in a simulated console window"
+        },
+        {
+          "type": "toast_notification",
+          "description": "CSS slide-in/out fixed-position notification toast"
+        },
+        {
+          "type": "vote_button_group",
+          "description": "Multi-option vote buttons in pill, neon, or default style"
+        }
+      ]
+    },
+    {
+      "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-presentation-v1.json",
+      "slug": "a2ui-presentation-v1",
+      "title": "Presentation",
+      "alwaysResolved": false,
+      "whenToUse": "Use for fullscreen multi-slide presentation surfaces (playbook).",
+      "atomCount": 1,
+      "atoms": [
+        {
+          "type": "playbook",
+          "description": "multi-slide fullscreen presentation playbook"
+        }
+      ]
+    }
+  ]
+}

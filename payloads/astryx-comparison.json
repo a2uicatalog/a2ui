@@ -1,0 +1,86 @@
+{
+  "title": "A2UI × Astryx — Catalogue Gap Analysis",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "gradient_hero",
+      "badge": "Gap Analysis · 2026-07-04",
+      "title": "A2UI × Astryx",
+      "subtitle": "Meta's component catalogue against the A2UI atom library. Not a size race — a shape read: where each spends its mass tells you what it's for.",
+      "accent": "#6366f1",
+      "accent2": "#8b5cf6",
+      "align": "center"
+    },
+    {
+      "type": "key_takeaways",
+      "title": "The finding",
+      "items": [
+        "Astryx ships 92 components; A2UI ships 498 — 5.4× larger, so breadth was never the gap.",
+        "~66 of Astryx's 92 already have A2UI equivalents — the gap is ~26, and it's one band.",
+        "That band is stateful INPUT + app chrome, headed by Chat.",
+        "Astryx is an interaction kit; A2UI is a presentation kit. Different centres of gravity."
+      ]
+    },
+    { "type": "heading", "text": "Where Astryx spends its mass" },
+    {
+      "type": "chartjs_bar",
+      "title": "Astryx components by category (92 total)",
+      "labels": ["Data Input", "Content", "Navigation", "Action", "Layout", "Overlay", "Chat", "Feedback", "Container", "Table/List", "Utility"],
+      "datasets": [{ "label": "components", "data": [19, 14, 10, 9, 8, 8, 7, 6, 5, 5, 1] }]
+    },
+    {
+      "type": "callout",
+      "kind": "info",
+      "title": "An interaction kit",
+      "text": "Data Input (19) is their biggest bet, plus a first-class 7-piece Chat system — Astryx is a chassis for stateful, agent-facing surfaces."
+    },
+    { "type": "heading", "text": "Coverage — of Astryx's 92" },
+    {
+      "type": "table",
+      "caption": "How much A2UI already speaks",
+      "headers": ["Bucket", "Count", "Share"],
+      "rows": [
+        ["Already have A2UI equivalents", "66", "~72%"],
+        ["Genuine gaps", "26", "~28%"]
+      ]
+    },
+    { "type": "heading", "text": "The gaps — clustered, not scattered" },
+    {
+      "type": "table",
+      "caption": "Astryx category → what A2UI is missing",
+      "headers": ["Category", "Gaps", "What's missing"],
+      "rows": [
+        ["Data Input", "9", "Field, Typeahead/Power Search, Tokenizer, Date/Time, Number, File, Calendar"],
+        ["Action / chrome", "6", "Toolbar, More Menu, Toggle Button (+group), Icon Button, Button Group"],
+        ["Layout", "3", "App Shell, Aspect Ratio, Resize Handle"],
+        ["Navigation", "3", "Side Nav, Mega Menu (+ featured card)"],
+        ["Overlay", "2", "Popover (true anchored), Lightbox"],
+        ["Utility / a11y", "1", "VisuallyHidden — opens a track you have none of"]
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "Consolidation discipline",
+      "text": "Fold the variants into mode/flags and ~26 gaps collapse to ~18 atoms — same principle as the chat router."
+    },
+    { "type": "heading", "text": "The Chat fit map — all 498 atoms" },
+    {
+      "type": "chartjs_bar",
+      "title": "How A2UI atoms render on Google Chat",
+      "labels": ["native cardsV2", "rich-mappable", "text-degrade", "image-only"],
+      "datasets": [{ "label": "atoms", "data": [44, 107, 170, 177] }]
+    },
+    {
+      "type": "callout",
+      "kind": "warning",
+      "title": "The printer changes this",
+      "text": "The 177 image-only atoms were the dead bucket on Chat — until the printer. Render to an image, deliver as an attachment, and cardsV2's ceiling stops mattering for alerts."
+    },
+    {
+      "type": "closing",
+      "text": "Astryx is an interaction kit; A2UI is a presentation kit. You don't need their 92 — you need one band (stateful input, headed by Chat), and everything else is already yours, 5× over.",
+      "tags": ["a2ui", "astryx", "gap-analysis"]
+    }
+  ]
+}

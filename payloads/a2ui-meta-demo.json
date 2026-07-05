@@ -1,0 +1,172 @@
+{
+  "title": "A2UI — Useful for Humans. Declarative for Agents.",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "hub",
+      "subjects": [
+        {
+          "id": "pitch",
+          "label": "📣 The Pitch",
+          "color": "#6366f1",
+          "slides": [
+            {
+              "id": "opening",
+              "label": "What is A2UI",
+              "blocks": [
+                {
+                  "type": "gradient_hero",
+                  "badge": "Apps Script · Google Workspace",
+                  "title": "A2UI",
+                  "subtitle": "Useful for Humans. Declarative for Agents.",
+                  "accent": "#6366f1",
+                  "accent2": "#10b981",
+                  "align": "center"
+                },
+                {
+                  "type": "metric_row",
+                  "metrics": [
+                    { "label": "Step 1", "value": "Prompt", "sub": "describe what you need", "trend": "flat" },
+                    { "label": "Step 2", "value": "Schema", "sub": "JSON from the AI", "trend": "flat" },
+                    { "label": "Step 3", "value": "App", "sub": "live in Google Workspace", "trend": "up" },
+                    { "label": "Time", "value": "< 60s", "sub": "prompt to live URL", "trend": "up" }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**No code required** — describe the page you want, get back JSON, click Open",
+                    "**Agent-native** — typed schema vocabulary any LLM can read, validate, and generate",
+                    "**Renders anywhere** — Apps Script web app, Meet stage, sidebar, or email"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "demo",
+          "label": "🎬 See It",
+          "color": "#10b981",
+          "slides": [
+            {
+              "id": "recording",
+              "label": "60-second demo",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Prompt → Schema → App",
+                  "subtext": "Two clips. One prompt to Gemini. One paste into the renderer. Done.",
+                  "badge": "< 60 seconds end to end",
+                  "align": "center"
+                },
+                {
+                  "type": "video_pair",
+                  "left": {
+                    "url": "https://www.youtube.com/watch?v=STEP1_VIDEO_ID",
+                    "label": "Prompt → Schema",
+                    "detail": "Open Gemini. Paste the A2UI prompt. Describe your topic. Get valid JSON back in seconds."
+                  },
+                  "right": {
+                    "url": "https://www.youtube.com/watch?v=STEP2_VIDEO_ID",
+                    "label": "Schema → App",
+                    "detail": "Paste the JSON into the A2UI renderer. Click Generate. Click Open. The app is live."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "how",
+          "label": "⚙️ How It Works",
+          "color": "#8b5cf6",
+          "slides": [
+            {
+              "id": "stack",
+              "label": "The Stack",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Three steps. No code.",
+                  "subtext": "Any LLM that understands JSON can build a page. Any human with a browser can view it.",
+                  "badge": "Declarative by design",
+                  "align": "center"
+                },
+                {
+                  "type": "step_progress",
+                  "current": 3,
+                  "accent": "#8b5cf6",
+                  "steps": [
+                    { "label": "Prompt the AI" },
+                    { "label": "Get JSON schema" },
+                    { "label": "Paste → Open" }
+                  ]
+                },
+                {
+                  "type": "two_tone_card",
+                  "title": "For Humans",
+                  "subtitle": "Plain language in, rich UI out",
+                  "accent": "#6366f1",
+                  "points": [
+                    "Describe the page you want in plain English",
+                    "Paste the JSON into the renderer",
+                    "Click Open — shareable URL generated instantly"
+                  ]
+                },
+                {
+                  "type": "two_tone_card",
+                  "title": "For Agents",
+                  "subtitle": "Structured schema, verifiable output",
+                  "accent": "#10b981",
+                  "points": [
+                    "Typed atom vocabulary — every field has a defined shape",
+                    "No ambiguity — LLM output is validated before render",
+                    "Agent proposes, human approves, renderer executes"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "try",
+          "label": "🚀 Try It",
+          "color": "#f59e0b",
+          "slides": [
+            {
+              "id": "cta",
+              "label": "Get Started",
+              "blocks": [
+                {
+                  "type": "gradient_hero",
+                  "badge": "Open source · Free",
+                  "title": "Try A2UI now",
+                  "subtitle": "Open the renderer. Ask Gemini for a schema. Paste it. Done.",
+                  "accent": "#f59e0b",
+                  "accent2": "#6366f1",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Open** the A2UI renderer (link below)",
+                    "**Ask** Gemini: *\"Generate an A2UI hub schema for [your topic]. Return only JSON.\"*",
+                    "**Paste** the JSON into the input box",
+                    "**Click Generate** — copy the URL and share it anywhere"
+                  ]
+                },
+                {
+                  "type": "highlight_box",
+                  "accent": "#f59e0b",
+                  "title": "Starter prompt",
+                  "body": "Generate an A2UI hub schema. Return only valid JSON, no explanation. Hub with 3 subjects, 1 slide each, 4 blocks per slide using gradient_hero, metric_row, key_takeaways, two_tone_card. Topic: [your topic here]"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Jira Ticket — A2UI Atomic Catalog</title>
+  <meta name="description" content="Atlassian Design System Jira issue card showing issue key, type icon (bug/story/task/epic/subtask), one-line summary, status lozenge, priority indicator, assignee, optional description, and label chips. Adapted from Atlassian Design System Card + Lozenge patterns.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> /
+    <a href="https://a2uicatalog.ai/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / jira_ticket
+  </nav>
+
+  <h1>Jira Ticket</h1>
+  <p class="desc">Atlassian Design System Jira issue card showing issue key, type icon (bug/story/task/epic/subtask), one-line summary, status lozenge, priority indicator, assignee, optional description, and label chips. Adapted from Atlassian Design System Card + Lozenge patterns.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-chat</td><td>renders as plain text with key and summary; no type icon or status badge</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="background:#fff;border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:15px;">✓</span><span style="font-size:12px;font-weight:600;color:#0052cc;">example-id</span><span style="margin-left:auto;background:#dfe1e6;color:#42526e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;">To Do</span></div><div style="font-size:15px;font-weight:500;color:#172b4d;margin-bottom:10px;line-height:1.4;">A concise description of the content.</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:12px;color:#5e6c84;">🟡 Medium</span></div></div></div>
+</div>
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>key</td><td>string. Issue key, e.g. "PROJ-123".</td><td>required</td></tr><tr><td>issue_type</td><td>string. One of bug | story | task | epic | subtask. Default task.</td><td>optional</td></tr><tr><td>summary</td><td>string. Issue title or one-line description.</td><td>required</td></tr><tr><td>status</td><td>string. Column name e.g. "To Do", "In Progress", "Done".</td><td>optional</td></tr><tr><td>priority</td><td>string. One of highest | high | medium | low | lowest.</td><td>optional</td></tr><tr><td>assignee</td><td>string. Assignee display name.</td><td>optional</td></tr><tr><td>description</td><td>string. Short description or acceptance criteria.</td><td>optional</td></tr><tr><td>labels</td><td>array of strings. Label chips shown below the description.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "jira_ticket",
+  "key": "example-id",
+  "summary": "A concise description of the content."
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:jira_ticket",
+  "displayName": "Jira Ticket",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/jira_ticket",
+  "capabilities": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+  ],
+  "description": "Atlassian Design System Jira issue card showing issue key, type icon (bug/story/task/epic/subtask), one-line summary, status lozenge, priority indicator, assignee, optional description, and label chips. Adapted from Atlassian Design System Card + Lozenge patterns.",
+  "representativeQueries": [
+    "show a Jira issue card with type icon, status lozenge, priority, and assignee",
+    "atlassian design system jira issue card showing issue key, type icon (bug/story/task/epic/subtask),",
+    "render a jira ticket"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd apps-script-surface/gas-schema-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="https://a2uicatalog.ai/renderer" style="display:inline-block;margin-top:12px;font-size:12px;color:#818cf8;text-decoration:none;">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>MIT License</span>
+  </footer>
+</body>
+</html>

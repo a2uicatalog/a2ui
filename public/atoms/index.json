@@ -1,0 +1,4087 @@
+{
+ "catalogId": "a2ui-atoms-v1",
+ "atomCount": 467,
+ "fullSpec": "https://a2uicatalog.ai/spec.json",
+ "atoms": [
+  {
+   "type": "intro",
+   "compact": "series link or transparency note at article top",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "body",
+   "compact": "prose paragraph block",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "heading",
+   "compact": "H2 section title",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "subheading",
+   "compact": "H3 subsection title",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "quote",
+   "compact": "pull quote or blockquote with attribution",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "code",
+   "compact": "syntax-highlighted fenced code block",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pipeline",
+   "compact": "left-to-right step flow diagram",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "bullet_list",
+   "compact": "unordered list with optional bold label per item",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "divider",
+   "compact": "horizontal visual section break",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "youtube",
+   "compact": "responsive 16:9 YouTube embed",
+   "surfaces": [
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "image",
+   "compact": "single image with optional caption",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "image_pair",
+   "compact": "two images side by side with captions",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "diagram",
+   "compact": "D2 or SVG architecture diagram",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "github_repo_card",
+   "compact": "live GitHub repo card with stars forks and language",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "repo_links",
+   "compact": "styled GitHub repo link list",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "closing",
+   "compact": "article closing paragraph with hashtags",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "callout",
+   "compact": "coloured tip info warning or danger highlight box",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "steps",
+   "compact": "numbered step-by-step instruction sequence",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "table",
+   "compact": "data table with header row on mobile",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tabs",
+   "compact": "tabbed content panels",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "key_value",
+   "compact": "label and value pairs in a compact grid",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "before_after",
+   "compact": "side-by-side code or content before and after comparison approach",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "api_reference",
+   "compact": "API endpoint method parameters and response docs returns, example",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gallery",
+   "compact": "scrollable image gallery grid",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "video_pair",
+   "compact": "two videos side by side",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "carousel",
+   "compact": "horizontally scrollable card carousel",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "timeline",
+   "compact": "chronological event timeline",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "annotated_code",
+   "compact": "code block with numbered callout bubbles on specific lines explanation list below",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "stat_card",
+   "compact": "single KPI value with label delta and accent colour indicator",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "progress_bar",
+   "compact": "labelled horizontal progress bar with percentage",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "badge_group",
+   "compact": "row of coloured label badges",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sparkline",
+   "compact": "inline SVG trend line chart general trends.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "heatmap",
+   "compact": "grid heatmap coloured by intensity value are represented as colors in a matrix.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "punch_card",
+   "compact": "7x24 grid of glowing activity bubbles representing hourly commits",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sankey_flow",
+   "compact": "curved dual-column gradient flow diagram for financial or pipeline streams",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "cohort_retention",
+   "compact": "triangular cohort retention grid with continuous color-scale rendering",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "donut_stat",
+   "compact": "CSS ring chart with centre value and percentage its proportion or progress.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "metric_delta",
+   "compact": "big number metric with directional change indicator or percentage",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "task_list",
+   "compact": "glassmorphic structured checklist with priority and assignee badges",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sentiment_summary",
+   "compact": "meeting sentiment analyzer with index arc and timeline chart",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "trend_indicator",
+   "compact": "compact inline value with mini trend bar the direction of a",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "breadcrumb",
+   "compact": "navigation breadcrumb trail structure.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pagination",
+   "compact": "page number controls",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "stepper",
+   "compact": "CSS animated vertical step sequence with checkmark draw and active pulse",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tab_bar",
+   "compact": "horizontal tab navigation bar typically leading to different sections or pages.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "anchor_list",
+   "compact": "in-page anchor navigation links document or to external URLs.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "faq_accordion",
+   "compact": "collapsible FAQ question and answer list the question is clicked.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "glossary_term",
+   "compact": "definition term with explanation more details.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "footnote",
+   "compact": "numbered footnote reference at the bottom of a section or page.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "blockquote_with_avatar",
+   "compact": "testimonial quote with avatar and attribution",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pull_stat",
+   "compact": "large display number pulled from prose for emphasis descriptive label.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "accordion_item",
+   "compact": "single collapsible section with toggle by clicking its header, using only CSS.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tooltip",
+   "compact": "hover tooltip on a trigger element over a specified trigger element, using only CSS.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "hover_card",
+   "compact": "rich hover card revealed on mouse over specified trigger element, using only CSS.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "collapsible_panel",
+   "compact": "expandable content panel with header toggle visible and hidden states by clicking a control, using only CSS.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "css_modal",
+   "compact": "pure-CSS modal dialog triggered by checkbox controlled purely by CSS without JavaScript.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "audio_player",
+   "compact": "inline audio player with controls",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "audio_link",
+   "compact": "styled link to an audio file",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pdf_preview",
+   "compact": "embedded PDF preview panel PDF.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "document_link",
+   "compact": "styled link to a downloadable document a document icon.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "video_thumbnail",
+   "compact": "clickable video thumbnail with play button and a link to the video source.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "video_card",
+   "compact": "video with title description and metadata to the video source.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "code_diff",
+   "compact": "server-side unified diff view with green additions and red removals",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "code_snippet_pair",
+   "compact": "two code blocks side by side without diff highlighting diff highlighting.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "framed_screenshot",
+   "compact": "device-framed screenshot with optional caption browser, phone).",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "image_with_caption",
+   "compact": "image with styled caption below",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "alert_banner",
+   "compact": "full-width status alert strip optional action.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "toast_notification",
+   "compact": "CSS slide-in/out fixed-position notification toast",
+   "surfaces": [
+    "web",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "loading_skeleton",
+   "compact": "animated placeholder skeleton while content loads indicating active data fetching.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "empty_state",
+   "compact": "zero-data empty state with icon and call to action image, message, and an optional call to action.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "spinner",
+   "compact": "loading spinner indicator operation is in progress.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "status_pill",
+   "compact": "coloured status pill badge an item.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "inline_feedback_message",
+   "compact": "inline success error or warning message for validation feedback or hints.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "rating_stars",
+   "compact": "star rating display stars, or displaying a static rating.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "progress_circle",
+   "compact": "CSS stroke-dashoffset animated SVG progress arc with centre percentage",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "action_required_card",
+   "compact": "prominent card prompting a required user action user attention,",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "feature_matrix",
+   "compact": "features versus plans comparison matrix",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pricing_tier_card",
+   "compact": "single pricing plan card with features list an optional call to action.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pricing_tier_group",
+   "compact": "side-by-side pricing plan comparison different subscription plans.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pros_cons_list",
+   "compact": "two-column pros and cons comparison a single subject.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "side_by_side_spec",
+   "compact": "two items compared spec by spec and values side-by-side.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "product_spec_table",
+   "compact": "product specifications in a clean table a single product.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "comparison_grid",
+   "compact": "multi-item attribute comparison grid often using icons or checkmarks to indicate presence.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "versus_block",
+   "compact": "head-to-head two-option versus card \"VS\" separator.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "rating_comparison",
+   "compact": "multiple items rated across dimensions scores.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "capability_checklist",
+   "compact": "feature capability tick list per tier capability using checkmarks",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "toggle_switch",
+   "compact": "CSS toggle switch input",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "expandable_text",
+   "compact": "truncated text with read more expand toggle more content.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "flip_card",
+   "compact": "card that flips on hover to reveal back content",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "image_hotspots",
+   "compact": "image with clickable annotated hotspot overlays hover.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "css_dropdown_menu",
+   "compact": "pure-CSS dropdown navigation menu",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "star_rating_input",
+   "compact": "interactive star rating input",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "segmented_control",
+   "compact": "mutually exclusive option selector strip as a single control.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "zoomable_image",
+   "compact": "image with click-to-zoom lightbox",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "custom_checkbox_group",
+   "compact": "styled checkbox group input",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "css_slide_panel",
+   "compact": "CSS-only slide-in panel drawer activation.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "testimonial_card",
+   "compact": "customer testimonial with photo name and quote an optional avatar.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "star_rating_display",
+   "compact": "read-only star rating with score and count total review count.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "avatar_group",
+   "compact": "stacked user avatar group with overflow count or community.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "contributor_list",
+   "compact": "list of contributors with avatar and role community, with their",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "customer_logo_grid",
+   "compact": "grid of customer or partner logos",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "social_proof_banner",
+   "compact": "social proof strip with stats and logos achievement.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "media_mention_card",
+   "compact": "press or media mention with logo and quote",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "expert_endorsement",
+   "compact": "expert quote with credentials and photo name, and credentials.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "review_callout",
+   "compact": "highlighted customer review excerpt by a star rating.",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "social_feed_embed",
+   "compact": "embedded social media post or feed or Instagram post.",
+   "surfaces": [
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "terminal_block",
+   "compact": "display terminal commands and code output in a simulated console window",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "file_tree",
+   "compact": "present hierarchical directory structures and files for software project navigation",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tabbed_code",
+   "compact": "organize multiple programming language snippets inside an interactive tab container",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "http_request_block",
+   "compact": "document REST API endpoints with HTTP methods, headers, and payloads",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "env_var_list",
+   "compact": "list configuration environment variables with descriptions and default values",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "prerequisite_checklist",
+   "compact": "highlight prerequisite knowledge and system requirements before",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "keyboard_shortcut",
+   "compact": "display visual keyboard key combinations for application shortcuts and hotkeys",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "api_param_table",
+   "compact": "reference table detailing API parameters, data types, and default values",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "version_badge",
+   "compact": "software release or dependency version number tag",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "deprecation_notice",
+   "compact": "warning banner for deprecated features or unsupported APIs",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "experimental_banner",
+   "compact": "highlight experimental or unstable feature notice callout",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "cli_command",
+   "compact": "copyable single-line terminal command execution string",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "copy_code_button",
+   "compact": "button to copy specified text or code to clipboard",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "log_output",
+   "compact": "scrollable monospace server or compiler log output block",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "json_tree_viewer",
+   "compact": "expandable visual explorer for nested JSON data",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "key_takeaways",
+   "compact": "highlighted summary of main conclusions and critical takeaways",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "summary_box",
+   "compact": "condensed introductory panel with article overview",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "learning_objectives",
+   "compact": "checklist of educational goals and competencies gained post-reading",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "changelog_entry",
+   "compact": "timeline entry documenting product modifications per release",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "release_notes",
+   "compact": "grouped product release documentation by change category",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "further_reading",
+   "compact": "curated references for extending topic research",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "resources_list",
+   "compact": "downloadable project assets and attached resource links",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sidebar_note",
+   "compact": "off-axis container for peripheral notes or caveats",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "difficulty_badge",
+   "compact": "label technical complexity level of blog content",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "caution_block",
+   "compact": "highlight dangerous pitfalls or critical destructive actions",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "checklist_interactive",
+   "compact": "interactive task tracking checklist for article milestones",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "glossary_inline",
+   "compact": "inline hover tooltips for complex technical term definitions",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "time_estimate",
+   "compact": "estimated reading duration badge for article content",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "progress_checkpoint",
+   "compact": "milestone progress indicator across multi-step tutorial",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "social_share_bar",
+   "compact": "social media buttons for sharing article to external networks",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "newsletter_cta",
+   "compact": "email subscription form for recurring reader updates",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "author_bio_card",
+   "compact": "profile block displaying content creator biographical details",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "related_posts_grid",
+   "compact": "grid of recommended alternative post reading cards",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "series_overview_card",
+   "compact": "navigation index for multi-part article series parts",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "reaction_group",
+   "compact": "emoji reaction counters collecting reader sentiment feedback",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "linkedin_post_image",
+   "compact": "LinkedIn post image preview — conviction_card, stat_card, or carousel_slide mode",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "share_quote",
+   "compact": "prominent blockquote optimised for social media sharing",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "follow_cta",
+   "compact": "call to action driving social media community expansion",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "follow_button",
+   "compact": "direct profile subscription button for social platforms",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "reading_progress_bar",
+   "compact": "track and display article reading progress completion status",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "table_of_contents",
+   "compact": "navigate article sections using structured heading directory links",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "article_hero",
+   "compact": "display prominent introductory headline and banner media",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "scroll_to_top",
+   "compact": "quickly return viewport to top of page document",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "article_series_nav",
+   "compact": "navigate interconnected parts inside multi-part blog series",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "embed_codepen",
+   "compact": "embed interactive CodePen workspace development environments",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "embed_stackblitz",
+   "compact": "embed dynamic StackBlitz live IDE code sandboxes",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "embed_gist",
+   "compact": "embed version-controlled GitHub Gist source code snippets",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "embed_tweet",
+   "compact": "embed live public Twitter status updates and media",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "embed_google_slides",
+   "compact": "embed interactive Google Slides presentation slide decks",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "lottie_animation",
+   "compact": "render lightweight high-performance vector Lottie animations",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "figma_embed",
+   "compact": "embed collaborative live Figma design file prototype previews",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "color_swatch_grid",
+   "compact": "grid of named color swatches with hex values",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "live_demo_embed",
+   "compact": "embed interactive live demo sandbox iframe",
+   "surfaces": [
+    "web"
+   ]
+  },
+  {
+   "type": "benchmark_comparison",
+   "compact": "side-by-side performance benchmark comparison bars",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "chartjs_bar",
+   "compact": "interactive Chart.js bar chart with datasets",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "chartjs_line",
+   "compact": "interactive Chart.js line chart for trend data",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "data_table_sortable",
+   "compact": "sortable data table with column headers",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ],
+   "aliases": [
+    "data_table"
+   ]
+  },
+  {
+   "type": "metric_comparison_card",
+   "compact": "metric card comparing current vs previous period",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "mini_sparkline_set",
+   "compact": "compact grid of multiple labeled sparklines",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "status_dashboard",
+   "compact": "grid of service status indicators with color states",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "uptime_timeline",
+   "compact": "30-day uptime timeline with per-day status blocks",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "command_palette",
+   "compact": "keyboard-driven command palette with shortcut hints",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "search_result_card",
+   "compact": "single search result card with title snippet URL",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "post_metadata_bar",
+   "compact": "article metadata bar with author date read time",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "footnote_group",
+   "compact": "numbered footnote list at section or article end",
+   "surfaces": [
+    "web",
+    "email",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "notification_badge",
+   "compact": "unread count badge overlaid on icon element",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "expandable_list",
+   "compact": "nested expandable tree list with collapsible children",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "poll_block",
+   "compact": "poll with question options and vote count bars",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "abbr_tooltip",
+   "compact": "inline abbreviation with hover tooltip full form",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "copy_to_clipboard",
+   "compact": "copy-to-clipboard button with inline code and feedback",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "conversion_funnel",
+   "compact": "pipeline conversion funnel with step tapering and leak markers",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gauge_sla",
+   "compact": "radial SLA gauge with glowing pointer and large metric value",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "stacked_area",
+   "compact": "stacked area chart with overlapping glowing translucent gradients",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "scatter_trend",
+   "compact": "coordinate scatter plot with regression trend line",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "call_mood_board",
+   "compact": "visual summary board of call sentiments moods and active themes",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "github_activity_grid",
+   "compact": "SVG GitHub-style contribution grid and activity tracker",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form",
+   "compact": "labelled form with fields and submit button",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form_input",
+   "compact": "single labelled input field",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ],
+   "aliases": [
+    "text_input"
+   ]
+  },
+  {
+   "type": "form_select",
+   "compact": "labelled dropdown select with options",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form_radio_group",
+   "compact": "radio button group for single-option selection",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form_checkbox_group",
+   "compact": "checkbox group for multi-option selection",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form_switch_group",
+   "compact": "group of labelled toggle switches",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form_slider",
+   "compact": "numeric range slider input",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "form_date_picker",
+   "compact": "date or date-range picker input",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "modal",
+   "compact": "modal dialog overlay with title and content",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "follow_up_chips",
+   "compact": "clickable follow-up suggestion chips",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "choicebox_group",
+   "compact": "card-style option selector with icon, title, description per card",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "feedback_prompt",
+   "compact": "thumbs or star rating feedback collection widget",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "entity_list",
+   "compact": "named resource rows with avatar, status badge, and meta",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "prompt_template",
+   "compact": "LLM prompt with highlighted {variable} slots and copy button",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "model_card",
+   "compact": "AI model spec card with context window, pricing, and capability badges",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "conversation_snippet",
+   "compact": "user prompt and AI response as chat bubbles",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "shortcut_legend",
+   "compact": "keyboard shortcut cheat-sheet grid with key combos and labels",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "rating_summary_bar",
+   "compact": "star rating histogram with percentage bars per star level",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "roadmap_card",
+   "compact": "quarter-based product roadmap with status-tagged milestones",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "notification_stack",
+   "compact": "persistent notification inbox list with unread indicators",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "inline_alert",
+   "compact": "inline icon-plus-text alert embedded in content flow",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tag_block",
+   "compact": "horizontal wrap of neutral content chip labels",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "variant_selector",
+   "compact": "CSS radio card group for variant or option picking",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "markdown_block",
+   "compact": "GFM markdown string rendered to HTML inline",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "chartjs_pie",
+   "compact": "multi-slice pie or donut SVG chart with legend",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "text_callout",
+   "compact": "lightweight tinted inline tip or note block no icon",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-chat",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "source_citation",
+   "compact": "numbered RAG source card with title excerpt and URL",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "llm_comparison_table",
+   "compact": "side-by-side multi-model output comparison table",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "confidence_bar",
+   "compact": "labelled probability bar with colour-coded confidence fill",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "token_budget_meter",
+   "compact": "context window token usage meter with capacity warning colours",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "product_thumbnail",
+   "compact": "product card with image, price, status badge, and tags",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "order_status_card",
+   "compact": "e-commerce order card with status badge and line item list",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "inventory_table",
+   "compact": "inventory table with SKU, stock levels, and low-stock row highlight",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "jira_ticket",
+   "compact": "Jira issue card with type icon, status lozenge, priority, and assignee",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sprint_board",
+   "compact": "kanban sprint board with named columns and compact issue cards",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "lozenge",
+   "compact": "Atlassian-semantic status pill with defined appearance variants",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "data_grid",
+   "compact": "enterprise data grid with typed columns, row selection, and",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tree_view",
+   "compact": "recursive hierarchical tree with expand/collapse per node",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "heatmap_calendar",
+   "compact": "calendar month heatmap with date-value density colouring",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "combobox",
+   "compact": "searchable filterable dropdown — shadcn/Headless UI pattern",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "feature_grid",
+   "compact": "icon + title + description feature grid — Tailwind UI pattern",
+   "surfaces": [
+    "web",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "navigation_menu",
+   "compact": "multi-level horizontal nav with submenu panels — Radix pattern",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "multi_select_input",
+   "compact": "chip-style multi-value select input — shadcn pattern",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "otp_input",
+   "compact": "N-box one-time password digit input — shadcn OTP pattern",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "skill_bars",
+   "compact": "labeled horizontal progress bars list — percent fill, per-bar color",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "icon_stat_row",
+   "compact": "icon + big number + label stat strip — more visual than metric_row",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "color_section",
+   "compact": "colored background wrapper — tint/solid/dark, renders child atom blocks",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tag_cloud",
+   "compact": "weighted tag cloud — variable size by weight, wrap layout",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "step_progress",
+   "compact": "horizontal step progress — numbered circles, connecting lines, current step highlighted",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "split_pane",
+   "compact": "two-panel split — distinct bg per side, each side renders atom blocks",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gradient_hero",
+   "compact": "light gradient hero — badge, large title, subtitle, CTA button",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "icon_list",
+   "compact": "icon-circle list — emoji/icon per item, label + text, color per item",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "highlight_box",
+   "compact": "highlight box — gradient/solid/outline style, icon, title, text",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "two_tone_card",
+   "compact": "split card — colored header with icon/title, white body renders atom blocks",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "metric_row",
+   "compact": "horizontal metric strip — value, label, prefix/suffix, trend up/down",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "numbered_list",
+   "compact": "decorative numbered list — large background numbers or circular badges",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "page_header",
+   "compact": "app-style page header — title, subtitle, icon, accent, tag badge",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "back_button",
+   "compact": "back navigation — url, nav_slug, or history.back(); ghost/outline/text style",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "section_break",
+   "compact": "section divider — optional centered label, solid/dashed/dots style",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "chip_group",
+   "compact": "chip/tag row — label, color, url, active state; wrap or scroll layout",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "columns",
+   "compact": "multi-column layout — 2–6 cols, each column holds atom blocks",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "person_card",
+   "compact": "person card — name, role, photo, bio, tags, email, linkedin",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "agenda_block",
+   "compact": "time-slotted agenda — slots with time, title, speaker, location, type",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "risk_flag",
+   "compact": "risk list — critical/high/medium/low with title, description, mitigation",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "action_items",
+   "compact": "action items table — action, owner, due date, status",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "pdf"
+   ]
+  },
+  {
+   "type": "bento_grid",
+   "compact": "asymmetric bento-box feature tile grid — MagicUI/shadcn pattern",
+   "surfaces": [
+    "web",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "cta_section",
+   "compact": "full-width CTA banner with headline and buttons — Tailwind UI pattern",
+   "surfaces": [
+    "web",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "animated_counter",
+   "compact": "CSS-only animated counter that counts up to target values",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "media_stream_card",
+   "compact": "Auto-detecting YouTube/Loom/Slides/Vimeo embed with skeleton",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "live_aggregator",
+   "compact": "Real-time comparative bars for votes, counts, or percentages",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "vote_button_group",
+   "compact": "Multi-option vote buttons in pill, neon, or default style",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "effect_overlay",
+   "compact": "CSS confetti/trophy/pulse celebration overlay triggered by name",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "skeleton_stage_card",
+   "compact": "Dark shimmer skeleton loader in card/list/media/chat variants",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "marquee_strip",
+   "compact": "infinite CSS-animated horizontal marquee of text or logo items",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "typewriter_text",
+   "compact": "CSS typewriter animation that reveals text character by character",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "animated_border_card",
+   "compact": "card with CSS rotating gradient animated border",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "aurora_background",
+   "compact": "animated aurora borealis gradient blob background, CSS-only",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "dot_grid_background",
+   "compact": "CSS repeating dot or grid pattern panel background",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "shimmer_button",
+   "compact": "button with CSS background-position shimmer sweep animation",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "card_stack",
+   "compact": "CSS-fanned stack of 2–4 cards with rotation and opacity tiers",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "meteor_shower",
+   "compact": "CSS-animated diagonal falling meteor streaks on a dark panel",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "blur_fade_in",
+   "compact": "CSS blur-to-focus fade-in container reveal",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "glow_button",
+   "compact": "CSS box-shadow state-signalling button with disabled/ready/fired glow",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "animated_beam",
+   "compact": "CSS stroke-dashoffset animated SVG beam between two labelled nodes",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "encrypted_reveal",
+   "compact": "CSS steps() scramble-to-reveal text animation",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "word_flip",
+   "compact": "CSS steps() vertical word carousel in an overflow-hidden inline container",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sonar_pulse",
+   "compact": "CSS concentric ring pulse animation for attention signalling",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "typewriter",
+   "compact": "CSS character-by-character typewriter reveal with optional cursor",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "number_odometer",
+   "compact": "Slot-machine digit-column flip to target number",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "typing_indicator",
+   "compact": "Three-dot bouncing chat typing indicator bubble",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "countdown_timer",
+   "compact": "Flip-clock countdown timer display (static tiles, data-driven ticking)",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gradient_text",
+   "compact": "Animated gradient-fill heading text via CSS background-clip",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "reveal_on_scroll",
+   "compact": "IntersectionObserver scroll-triggered fade+slide reveal",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "word_scramble",
+   "compact": "CSS steps() left-to-right character scramble-to-reveal",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "svg_path_draw",
+   "compact": "SVG stroke-dashoffset self-drawing path animation",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "parallax_card",
+   "compact": "3D CSS perspective tilt card with mousemove parallax depth",
+   "surfaces": [
+    "web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "quiz_question",
+   "compact": "MCQ or true/false question with CSS-only correct/wrong feedback",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "fill_in_blank",
+   "compact": "cloze-test sentence with inline inputs and correct/wrong highlight on submit",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "match_exercise",
+   "compact": "click-to-pair matching exercise with green lock and red mismatch flash",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "hint_reveal",
+   "compact": "show/hide hint disclosure using HTML details/summary — no JS",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "achievement_badge",
+   "compact": "unlockable achievement badge with locked/unlocked state and optional date",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "score_summary",
+   "compact": "end-of-exercise score card with correct/total, percentage, grade, and CTA",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "xp_bar",
+   "compact": "animated XP/points progress bar with level label and level-up flash",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "lesson_nav",
+   "compact": "prev/next lesson navigation with module context and optional completion checkbox",
+   "surfaces": [
+    "web",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "course_progress_card",
+   "compact": "course-level progress card with per-module bars and aggregate completion ring",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "highlighted_text",
+   "compact": "highlighted text passage with optional hover margin annotation note",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "pdf",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "drive_file_list",
+   "compact": "live list of Drive folder files",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sheet_preview",
+   "compact": "live read-only Google Sheet range preview",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gmail_summary",
+   "compact": "list of recent Gmail messages matching query",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "calendar_upcoming",
+   "compact": "list of upcoming calendar events",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "user_greeting",
+   "compact": "personalised greeting with active user email",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "script_run_button",
+   "compact": "button to trigger server-side Apps Script function",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "calendar_today",
+   "compact": "today's calendar events from the user's default calendar",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "sheet_stats",
+   "compact": "aggregate stats from a sheet range displayed as stat badges",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gmail_unread_count",
+   "compact": "unread count badges for Gmail labels",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "user_profile_card",
+   "compact": "user avatar, display name, email and domain — live on GAS, static fields elsewhere",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "drive_storage_usage",
+   "compact": "Drive storage quota progress bar — live on GAS, or pass used_gb/total_gb for static",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "sheet_form_submit",
+   "compact": "inline form that appends a row to a Google Sheet on submit",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tasks_today",
+   "compact": "task checklist — live via Tasks API on GAS, items[] array on other surfaces",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "cursor_glow",
+   "compact": "ambient glowing orb that lerp-follows the cursor with screen blend",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "cursor_trail",
+   "compact": "chain of fading dots following the cursor with worm physics",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "particle_burst",
+   "compact": "click anywhere to burst coloured gravity particles from click point",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "spotlight_cursor",
+   "compact": "dark overlay with cursor-following circular cutout — torch effect",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "magnetic_element",
+   "compact": "content that drifts toward cursor and springs back with overshoot",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "tilt_card",
+   "compact": "3D perspective tilt card with glare highlight driven by cursor position",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "doc_ai_summary",
+   "compact": "AI-powered Google Doc summary via Vertex AI Gemini",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "multi_doc_ai_brief",
+   "compact": "multi-doc briefing pack — one Gemini summary card per Google Doc",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gradient_heading",
+   "compact": "gradient-fill standalone heading",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "display_quote",
+   "compact": "typographic pull quote with decorative mark and attribution",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "split_stat",
+   "compact": "two-column stat + text keynote layout with neon glow",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "word_reveal",
+   "compact": "auto-play word-by-word fade-up reveal animation",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "section_label",
+   "compact": "uppercase section marker with glowing accent pill",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "count_up_stat",
+   "compact": "animated count-up number stat with cubic ease, auto-plays on load",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "text_highlight",
+   "compact": "prose sentence with **marked** words highlighted in accent colour",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "reveal_line",
+   "compact": "clip-path sweep-in reveal line, auto-plays on load",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "canvas_plexus",
+   "compact": "animated particle plexus with proximity lines and mouse repulsion",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "spring_nodes",
+   "compact": "interactive mass-spring physics graph with drag-to-pin nodes",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "isometric_mesh",
+   "compact": "rotating 3D isometric mesh with height-colour mapping and drag-rotate",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "geo_iso_takeoff",
+   "compact": "isometric 3D canvas of A321neo takeoff from LFBO — animated roll, rotation, gear-up, climb; HUD with airline/runway",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "geo_iso_rocket_launch",
+   "compact": "isometric 3D canvas of Ariane 6 rocket launch from Kourou — animated liftoff and ascent; mission HUD",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "geo_iso_heli_hover",
+   "compact": "isometric 3D canvas of H160 helicopter hover — rotor animation, downwash, HUD",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "geo_iso_fleet",
+   "compact": "tabbed isometric fleet demo — A321neo takeoff + Ariane 6 launch + H160 hover with tab switcher",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "airspace_command_deck",
+   "compact": "Toulouse TMA radar canvas with animated flights, HUD overlay, and live METAR ticker",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "data_source",
+   "compact": "generic HTTP feed — server-side initial fetch, client-side refresh via surface transport",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "adsb_feed",
+   "compact": "OpenSky Network ADS-B live flight positions for a bounding box",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "metar_feed",
+   "compact": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "firestore_read",
+   "compact": "Firestore document read — publishes deserialized doc to named data connector; visual atoms subscribe by name",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "paragraph",
+   "compact": "prose paragraph (GAS alias for body)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "text_block",
+   "compact": "plain text block",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "blockquote",
+   "compact": "styled pull-quote with attribution",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "spacer",
+   "compact": "vertical whitespace gap",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tag_chip",
+   "compact": "inline tag chip",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "badge",
+   "compact": "inline badge pill",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "inline_code",
+   "compact": "monospace inline code span",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "code_block",
+   "compact": "syntax-highlighted code block",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "link_button",
+   "compact": "text hyperlink button",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "cta_button",
+   "compact": "call-to-action button",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "nav_link",
+   "compact": "single CTA link to a named page — appends from= automatically for back-button support",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "info_card",
+   "compact": "simple info card with title and body",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "ai_build_trace",
+   "compact": "Gemini token usage trace card",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gemini_prompt",
+   "compact": "inline Gemini prompt input widget",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "dark_hero",
+   "compact": "dark hero banner with gradient and CTA",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "glowing_stat",
+   "compact": "neon-glow stat number on dark card",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "glass_card",
+   "compact": "frosted-glass card with blur backdrop — dark-theme highlight box",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gradient_border_card",
+   "compact": "animated gradient border card",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "floating_orbs",
+   "compact": "decorative blurred colour orbs background",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "neon_text",
+   "compact": "neon-glow coloured text",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "dark_feature_grid",
+   "compact": "dark-theme feature grid with icons",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "dark_divider",
+   "compact": "dark-theme horizontal divider",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "ambient_gradient",
+   "compact": "animated aurora/ambient gradient background",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "depth_stack",
+   "compact": "stacked cards with depth parallax",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "scramble_reveal",
+   "compact": "character-scramble text reveal on scroll",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "scroll_trigger",
+   "compact": "scroll-triggered animated reveal",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "flow_connector",
+   "compact": "animated beam connector between two nodes",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "live_metric",
+   "compact": "animated counting number (alias for animated_counter)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "deadline_ticker",
+   "compact": "countdown timer to a target date (alias)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "pattern_background",
+   "compact": "dot-grid pattern background (alias)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "glitch_text",
+   "compact": "RGB-split glitch-effect headline",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "neon_glow",
+   "compact": "pulsing neon-glow text on dark card",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "magnetic_button",
+   "compact": "magnetic cursor-following button",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "confetti_trigger",
+   "compact": "click-to-trigger confetti button",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "floating_particles",
+   "compact": "floating particles background (canvas placeholder)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "parallax_section",
+   "compact": "parallax scroll section (canvas placeholder)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "scroll_progress",
+   "compact": "fixed scroll-progress bar at page top",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "live_clock",
+   "compact": "live ticking clock widget",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "decision_tree",
+   "compact": "interactive collapsible decision tree",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "step_reveal_sequence",
+   "compact": "tabbed step-by-step sequence",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "chat_sequence",
+   "compact": "animated chat conversation thread",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "tooltip_glossary",
+   "compact": "glossary with hover tooltips",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "focus_lens",
+   "compact": "spotlight focus lens on blurred background",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "terminal_boot",
+   "compact": "animated terminal boot sequence",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "stagger_list",
+   "compact": "stagger-animated list of items",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "liquid_button",
+   "compact": "liquid morphing hover button",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "highlight_sweep",
+   "compact": "animated highlight sweep text",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "progress_reveal",
+   "compact": "scroll-triggered animated progress bar",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "big_reveal",
+   "compact": "spring-animation big number or word reveal",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "kinetic_headline",
+   "compact": "word-by-word kinetic headline animation",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "text_reveal_mask",
+   "compact": "clip-path text reveal mask animation",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "split_reveal",
+   "compact": "split-panel reveal animation",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "mesh_gradient",
+   "compact": "dark card with radial mesh gradient background",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "stripe_background",
+   "compact": "animated diagonal stripe background card",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "status_timeline",
+   "compact": "status-dot vertical timeline",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "counter_group",
+   "compact": "row of animated stat counters",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "orbit_diagram",
+   "compact": "animated orbit diagram with satellite nodes",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "noise_card",
+   "compact": "dark card with film-grain noise texture",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "comparison_morph",
+   "compact": "draggable before/after comparison slider",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "word_cloud",
+   "compact": "interactive word cloud with optional live Sheet feed",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "quiz_set",
+   "compact": "multi-question interactive quiz",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "globe_3d",
+   "compact": "interactive spinning 3-D globe (wire or earth)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "geo_mercator_radar",
+   "compact": "dark-theme interactive Mercator map with node pins and links",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "geo_contour_waves",
+   "compact": "animated atmospheric contour wave field",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "multi_surface",
+   "compact": "three-engine multi-surface demo atom",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "geo_europe_airspace",
+   "compact": "interactive European airspace map with airports and flights",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "feed_status",
+   "compact": "live/sim status pill for a named data feed",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "playbook",
+   "compact": "multi-slide fullscreen presentation playbook",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "surface_unlocked",
+   "compact": "achievement-style surface unlocked notification",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "schema_reveal",
+   "compact": "self-reveal: shows this page's own JSON schema",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "url_anatomy",
+   "compact": "annotated URL anatomy diagram",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "schema_qr",
+   "compact": "QR code for current or given URL",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "take_away_card",
+   "compact": "bold screenshot-ready insight card",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "next_step_strip",
+   "compact": "horizontal numbered next-steps strip",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "copy_prompt",
+   "compact": "copyable monospace prompt/code block",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "atom_anatomy",
+   "compact": "rendered atom + raw schema side-by-side anatomy view",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "renderer_stats",
+   "compact": "stat grid for renderer capability metrics",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "prompt_to_schema",
+   "compact": "three-panel prompt → schema → output flow",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "before_after_stack",
+   "compact": "old-vs-new stack comparison animation",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "live_vote",
+   "compact": "live audience voting with real-time bar chart results",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "reaction_shower",
+   "compact": "emoji reaction buttons with raining particles",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "raise_hand",
+   "compact": "raise-hand button with live participant count",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "surface_map",
+   "compact": "A2UI surface diagram (schema → surfaces)",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "speed_counter",
+   "compact": "live page-load stopwatch",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "live_edit",
+   "compact": "embedded live atom JSON editor with preview",
+   "surfaces": [
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "gmail_inbox",
+   "compact": "swipeable Gmail inbox carousel — live on GAS, items[] or api connector on web/meet",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "drive_recent_files",
+   "compact": "swipeable Drive files carousel — live on GAS, items[] or api connector on web/meet",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "drive_folder_contents",
+   "compact": "Drive folder grid — live on GAS via folder_id, items[] or api connector on web/meet",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "drive_file_card",
+   "compact": "single Drive file card — static on all surfaces; live name/type lookup via file_id on GAS",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "progress_store",
+   "compact": "invisible LMS state connector — Sheet on GAS, localStorage on web; exposes window._A2UI_STORE",
+   "surfaces": [
+    "google-apps-script-web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "module_map",
+   "compact": "course curriculum grid — module cards with live locked/available/complete status from progress_store",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "knowledge_check",
+   "compact": "inline comprehension pulse — single question, instant feedback, no score pressure",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "quiz_result_summary",
+   "compact": "end-of-quiz result — score %, pass/fail, question dots, writes to progress_store",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "scenario_branch",
+   "compact": "branching scenario — situation + choices + consequence reveal with good/neutral/bad outcome",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "completion_gate",
+   "compact": "content lock — hides until requires module id is complete in progress_store",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "certification_card",
+   "compact": "completion certificate — locked until requires id complete in progress_store; earner from GAS session",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "skill_radar",
+   "compact": "SVG radar/spider chart of skill competency levels — optional before/after growth overlay",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "badge_showcase",
+   "compact": "achievement badge wall — earned badges glow, locked badges grey; status from progress_store",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "learning_path_selector",
+   "compact": "course entry path chooser — role/level cards, writes selection to progress_store, optional navigation",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "video_checkpoint",
+   "compact": "YouTube video with pausing quiz checkpoints — learner must answer to continue",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "cohort_progress_board",
+   "compact": "instructor cohort table — per-learner module completion + scores; live on GAS",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "reflection_prompt",
+   "compact": "reflection textarea — saves to progress_store; restores on revisit",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "annotation_highlight",
+   "compact": "annotated body text — click highlighted terms to reveal inline explanations",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "onboarding_stepper",
+   "compact": "guided onboarding steps — completes to progress_store, restores on revisit",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "case_study_card",
+   "compact": "structured case study — situation, data points, questions, optional model answer reveal",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "study_timer",
+   "compact": "Pomodoro focus/break timer with SVG ring — session only, no persistence",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "rubric_card",
+   "compact": "assessment rubric table — criteria rows × performance level columns",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "spaced_repetition_card",
+   "compact": "flip flashcard with confidence rating 1-5 — writes SRS interval to progress_store",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "leaderboard_card",
+   "compact": "ranked score leaderboard — live on GAS from Sheet, static on web; medal top 3",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "nav_bar",
+   "compact": "named-page nav bar — generates ?nav= URLs at runtime from _A2UI_NAV; active page auto-highlighted",
+   "surfaces": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+   ]
+  },
+  {
+   "type": "palette",
+   "compact": "page-level accent colour and spacing theme variables",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "print_button",
+   "compact": "button to print or save page as PDF",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "drive_image",
+   "compact": "Google Drive image embed by file ID",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "maps_embed",
+   "compact": "Google Maps location embed iframe",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "sheet_form",
+   "compact": "form submitting rows to a Google Sheet tab",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "reveal",
+   "compact": "entrance animation wrapper for child blocks",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "skeleton",
+   "compact": "shimmer loading placeholder shapes",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "marquee",
+   "compact": "infinite horizontal scrolling ticker strip",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "pulse_dot",
+   "compact": "pulsing status indicator dot",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "loading_dots",
+   "compact": "three-dot pulsing loader",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "progress_ring",
+   "compact": "animated circular progress gauge",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "confetti_burst",
+   "compact": "confetti celebration burst effect",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "ripple_button",
+   "compact": "CTA button with ripple click effect",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "wave_divider",
+   "compact": "animated wave section separator",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "floating_badge",
+   "compact": "bobbing emoji or icon badge",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "shimmer_text",
+   "compact": "headline text with shimmer gloss sweep",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "number_flip",
+   "compact": "slot-machine digit reveal counter",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "spotlight_card",
+   "compact": "card with cursor-following spotlight",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "animated_border",
+   "compact": "card with rotating gradient border",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "countdown_ring",
+   "compact": "circular countdown timer ring",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "google_icon",
+   "compact": "single Material Symbol icon",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "icon_badge",
+   "compact": "Material icon in coloured circular badge",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "icon_row",
+   "compact": "horizontal icon and label strip",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "workspace_logo",
+   "compact": "single Google Workspace product logo",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "workspace_logo_strip",
+   "compact": "horizontal strip of Workspace logos",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "workspace_logo_grid",
+   "compact": "labelled grid of Workspace logos",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-apps-script-side-panel"
+   ]
+  },
+  {
+   "type": "icon_feature_grid",
+   "compact": "feature grid with Material icons",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  },
+  {
+   "type": "icon_checklist",
+   "compact": "checklist items with Material icons",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-side-panel",
+    "google-apps-script-web"
+   ]
+  }
+ ]
+}

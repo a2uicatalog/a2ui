@@ -1,0 +1,158 @@
+id: nist-ai-rmf
+schema: pro-cert
+name: "NIST AI Risk Management Framework 1.0"
+vendor: NIST
+description: "Framework for managing risks of AI systems across their full lifecycle. Public domain."
+render_strategy: domain_hub
+license: "Public Domain — U.S. Government work (NIST AI 100-1)"
+
+atom_type_map:
+  concept: flashcard_deck
+  glossary: flashcard_deck
+  key_takeaways: key_takeaways
+  method: steps
+
+domains:
+  - id: govern
+    name: GOVERN
+    hub_icon: "⚖️"
+    hub_color: "#6366f1"
+    weight: 1.0
+    description: "Cross-cutting governance function infused throughout MAP, MEASURE, and MANAGE"
+    required_competencies:
+      - id: govern-purpose
+        label: "Purpose and role of GOVERN as cross-cutting function"
+        weight: high
+        atom_hint: key_takeaways
+      - id: govern-1-subcategories
+        label: "GOVERN 1.1–1.7 — All subcategories"
+        weight: high
+        atom_hint: glossary
+      - id: govern-2-subcategories
+        label: "GOVERN 2.1–2.3 — Accountability structures"
+        weight: high
+        atom_hint: glossary
+      - id: govern-3-subcategories
+        label: "GOVERN 3.1–3.2 — Workforce diversity"
+        weight: medium
+        atom_hint: glossary
+      - id: govern-4-subcategories
+        label: "GOVERN 4.1–4.3 — Risk culture"
+        weight: high
+        atom_hint: glossary
+      - id: govern-5-subcategories
+        label: "GOVERN 5.1–5.2 — AI actor engagement"
+        weight: medium
+        atom_hint: glossary
+      - id: govern-6-subcategories
+        label: "GOVERN 6.1–6.2 — Third-party and supply chain"
+        weight: high
+        atom_hint: glossary
+
+  - id: map
+    name: MAP
+    hub_icon: "🗺️"
+    hub_color: "#0ea5e9"
+    weight: 0.9
+    description: "Establishes context to frame risks; outputs feed MEASURE and MANAGE"
+    required_competencies:
+      - id: map-purpose
+        label: "Purpose of MAP function"
+        weight: high
+        atom_hint: key_takeaways
+      - id: map-1-subcategories
+        label: "MAP 1.1–1.6 — Context established and understood"
+        weight: high
+        atom_hint: glossary
+      - id: map-2-subcategories
+        label: "MAP 2.1–2.3 — Categorization of AI system"
+        weight: high
+        atom_hint: glossary
+      - id: map-3-subcategories
+        label: "MAP 3.1–3.5 — Capabilities, benefits, and costs"
+        weight: high
+        atom_hint: glossary
+      - id: map-4-subcategories
+        label: "MAP 4.1–4.2 — All components including third-party"
+        weight: medium
+        atom_hint: glossary
+      - id: map-5-subcategories
+        label: "MAP 5.1–5.2 — Impacts to individuals, groups, society"
+        weight: high
+        atom_hint: glossary
+
+  - id: measure
+    name: MEASURE
+    hub_icon: "📏"
+    hub_color: "#10b981"
+    weight: 0.9
+    description: "Quantitative/qualitative tools to analyze, assess, benchmark, and monitor AI risk"
+    required_competencies:
+      - id: measure-purpose
+        label: "Purpose and TEVV concept"
+        weight: high
+        atom_hint: key_takeaways
+      - id: measure-1-subcategories
+        label: "MEASURE 1.1–1.3 — Methods and metrics"
+        weight: high
+        atom_hint: glossary
+      - id: measure-2-subcategories
+        label: "MEASURE 2.1–2.13 — Trustworthy characteristics evaluation"
+        weight: high
+        atom_hint: glossary
+      - id: measure-3-subcategories
+        label: "MEASURE 3.1–3.3 — Risk tracking"
+        weight: high
+        atom_hint: glossary
+      - id: measure-4-subcategories
+        label: "MEASURE 4.1–4.3 — Feedback about measurement efficacy"
+        weight: medium
+        atom_hint: glossary
+
+  - id: manage
+    name: MANAGE
+    hub_icon: "🎯"
+    hub_color: "#f59e0b"
+    weight: 0.9
+    description: "Allocates risk resources; defines response, recovery, and communication"
+    required_competencies:
+      - id: manage-purpose
+        label: "Purpose and risk response options"
+        weight: high
+        atom_hint: key_takeaways
+      - id: manage-1-subcategories
+        label: "MANAGE 1.1–1.4 — Prioritize and respond"
+        weight: high
+        atom_hint: glossary
+      - id: manage-2-subcategories
+        label: "MANAGE 2.1–2.4 — Strategies to maximize benefits"
+        weight: high
+        atom_hint: glossary
+      - id: manage-3-subcategories
+        label: "MANAGE 3.1–3.2 — Third-party risk management"
+        weight: medium
+        atom_hint: glossary
+      - id: manage-4-subcategories
+        label: "MANAGE 4.1–4.3 — Response, recovery, communication"
+        weight: high
+        atom_hint: glossary
+
+  - id: trustworthy
+    name: Trustworthiness
+    hub_icon: "✅"
+    hub_color: "#8b5cf6"
+    weight: 0.8
+    description: "Seven characteristics of trustworthy AI systems (NIST AI 100-1 §3)"
+    required_competencies:
+      - id: trust-overview
+        label: "Overview of trustworthiness and socio-technical nature"
+        weight: high
+        atom_hint: key_takeaways
+      - id: trust-seven-characteristics
+        label: "All 7 trustworthiness characteristics with definitions"
+        weight: high
+        atom_hint: glossary
+      - id: trust-bias-categories
+        label: "Three categories of AI bias"
+        weight: medium
+        atom_hint: glossary

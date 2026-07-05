@@ -1,0 +1,382 @@
+{
+  "title": "Sciences — DNB 2026",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "hub",
+      "subjects": [
+        {
+          "id": "sciences",
+          "label": "🔬 Sciences",
+          "color": "#10b981",
+          "slides": [
+            {
+              "id": "epreuve",
+              "label": "📋 Épreuve",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Sciences · 1 h · 50 pts",
+                  "subtext": "Tirage au sort : 2 matières sur 3 (PC, SVT, Techno) — 25 pts chacune",
+                  "badge": "DNB 2026",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Réviser les 3 disciplines intégralement** — le tirage a lieu le jour J, impossible de prévoir",
+                    "Orthographe et clarté de la rédaction évaluées même en Sciences — soigner la présentation",
+                    "Mettre les unités systématiquement — réponse sans unité = 0 sur le calcul",
+                    "Calculatrice autorisée — mais vérifier la cohérence des ordres de grandeur"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pc-matiere",
+              "label": "⚗️ Matière",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "PC — Atome, Réactions, Solutions",
+                  "subtext": "Modèle atomique · Loi de Lavoisier · Concentration et pH",
+                  "badge": "Physique-Chimie",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#10b981",
+                  "label_front": "NOTION",
+                  "label_back": "DÉFINITION / FORMULE",
+                  "cards": [
+                    {
+                      "front": "Structure de l'atome",
+                      "back": "Noyau = protons (+) + neutrons (neutres) | Électrons (−) autour du noyau | Atome neutre : protons = électrons"
+                    },
+                    {
+                      "front": "Numéro atomique Z",
+                      "back": "Z = nombre de protons dans le noyau. Identifie l'élément chimique. ≠ masse atomique (protons + neutrons)"
+                    },
+                    {
+                      "front": "Tableau périodique — familles clés",
+                      "back": "Col. 1 — Alcalins : très réactifs (Na, Li, K) | Col. 17 — Halogènes : très réactifs (F, Cl, Br) | Col. 18 — Gaz nobles : inertes (He, Ne, Ar)"
+                    },
+                    {
+                      "front": "Loi de Lavoisier",
+                      "back": "La masse se conserve dans toute réaction chimique. Le nombre d'atomes de chaque élément est identique avant et après."
+                    },
+                    {
+                      "front": "Équilibrage d'une équation",
+                      "back": "Ajuster uniquement les COEFFICIENTS devant les formules. JAMAIS modifier les indices dans les formules. Ex : CH₄ + 2 O₂ → CO₂ + 2 H₂O"
+                    },
+                    {
+                      "front": "Concentration en masse",
+                      "back": "C = m / V | C en g/L, m en grammes, V en litres | Si V en mL → diviser par 1000"
+                    },
+                    {
+                      "front": "Échelle de pH",
+                      "back": "pH < 7 : acide (ions H⁺ majoritaires) | pH = 7 : neutre (eau pure à 25°C) | pH > 7 : basique (ions HO⁻ majoritaires)"
+                    },
+                    {
+                      "front": "Sécurité — dilution d'un acide",
+                      "back": "Toujours verser l'ACIDE dans l'EAU — jamais l'inverse. L'eau dans l'acide concentré → bouillonnement violent et projections dangereuses."
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : Z (numéro atomique) est égal à la masse atomique de l'élément.",
+                  "correct": false,
+                  "explanation": "FAUX. Z = nombre de protons uniquement. La masse atomique ≈ protons + neutrons. Pour le carbone : Z = 6 (6 protons), masse atomique ≈ 12 (6 protons + 6 neutrons)."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : on peut équilibrer une équation chimique en modifiant les indices dans les formules (ex : écrire H₄O au lieu de H₂O).",
+                  "correct": false,
+                  "explanation": "FAUX. On équilibre UNIQUEMENT en modifiant les grands coefficients devant les formules. Les indices font partie de la formule chimique — les changer crée une molécule différente (H₄O n'existe pas)."
+                }
+              ]
+            },
+            {
+              "id": "pc-forces",
+              "label": "⚡ Forces",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "PC — Mouvement, Forces, Énergie, Ondes",
+                  "subtext": "v=d/t · P=mg · U=RI · P=UI · Ondes son vs lumière",
+                  "badge": "Physique-Chimie",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#10b981",
+                  "label_front": "GRANDEUR / LOI",
+                  "label_back": "FORMULE + UNITÉS",
+                  "cards": [
+                    {
+                      "front": "Vitesse",
+                      "back": "v = d / t | v en m/s ou km/h | Conversion : m/s × 3,6 = km/h | km/h ÷ 3,6 = m/s"
+                    },
+                    {
+                      "front": "Masse vs Poids",
+                      "back": "Masse m (kg) : quantité de matière, INVARIABLE selon le lieu | Poids P (N) : force gravitationnelle, P = m × g | g_Terre ≈ 9,8 N/kg | g_Lune ≈ 1,6 N/kg"
+                    },
+                    {
+                      "front": "Forces",
+                      "back": "À distance : gravité, magnétisme | De contact : frottement, réaction normale | Vecteur : point d'application + direction + sens + valeur (Newtons N)"
+                    },
+                    {
+                      "front": "Loi d'Ohm",
+                      "back": "U = R × I | U en Volts (V) | R en Ohms (Ω) | I en Ampères (A)"
+                    },
+                    {
+                      "front": "Puissance et énergie",
+                      "back": "Puissance : P = U × I (Watts W) | Énergie : E = P × t (Joules si t en s | kWh si P en kW et t en h)"
+                    },
+                    {
+                      "front": "Ondes sonores",
+                      "back": "Onde MÉCANIQUE : nécessite un milieu (air, eau, solide) — ne se propage PAS dans le vide. Vitesse : ~340 m/s dans l'air à 20°C."
+                    },
+                    {
+                      "front": "Ondes lumineuses",
+                      "back": "Se propagent dans le VIDE à c = 3 × 10⁸ m/s. Réfraction lors d'un changement de milieu. Lumière blanche → spectre par prisme."
+                    },
+                    {
+                      "front": "Distance par aller-retour (écho, sonar, radar)",
+                      "back": "d = v × t / 2 — le signal fait l'aller ET le retour, donc diviser le temps total par 2"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : un astronaute de 80 kg sur la Lune a une masse de 13 kg.",
+                  "correct": false,
+                  "explanation": "FAUX. La masse (80 kg) est invariable quel que soit l'endroit. Ce qui change sur la Lune, c'est le POIDS : P = 80 × 1,6 = 128 N (contre 784 N sur Terre). Masse ≠ poids."
+                }
+              ]
+            },
+            {
+              "id": "svt-terre",
+              "label": "🌍 Terre",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "SVT — Tectonique des plaques",
+                  "subtext": "Foyer · Épicentre · Volcanisme effusif vs explosif",
+                  "badge": "SVT",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#10b981",
+                  "label_front": "NOTION",
+                  "label_back": "DÉFINITION",
+                  "cards": [
+                    {
+                      "front": "Plaque lithosphérique",
+                      "back": "Fragment rigide et mobile de la surface terrestre. Se déplace de quelques cm/an sur l'asthénosphère ductile (sous-jacente)."
+                    },
+                    {
+                      "front": "Frontière de divergence (dorsale)",
+                      "back": "Plaques qui s'écartent → création de lithosphère océanique + volcanisme EFFUSIF (lave fluide, peu dangereux). Ex : dorsale médio-atlantique."
+                    },
+                    {
+                      "front": "Frontière de convergence (subduction)",
+                      "back": "Plaque océanique dense plonge sous une autre → séismes violents + volcanisme EXPLOSIF (lave visqueuse, dangereux). Ex : ceinture de feu du Pacifique."
+                    },
+                    {
+                      "front": "Foyer (hypocentre)",
+                      "back": "Lieu EN PROFONDEUR où se produit la rupture sismique. Point d'origine des ondes sismiques."
+                    },
+                    {
+                      "front": "Épicentre",
+                      "back": "Point à la SURFACE à la verticale du foyer. Vibrations maximales. ≠ foyer (profondeur)."
+                    },
+                    {
+                      "front": "Mécanisme d'un séisme",
+                      "back": "(1) Contraintes s'accumulent sur une faille → (2) Rupture brusque au foyer → (3) Ondes sismiques propagées → (4) Dégâts maximaux à l'épicentre"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : les dégâts d'un séisme sont maximaux au foyer.",
+                  "correct": false,
+                  "explanation": "FAUX. Le foyer est EN PROFONDEUR — les dégâts sont maximaux à l'ÉPICENTRE, le point à la surface à la verticale du foyer."
+                }
+              ]
+            },
+            {
+              "id": "svt-vivant",
+              "label": "🧬 Vivant",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "SVT — Écosystèmes, Corps humain, Santé",
+                  "subtext": "Biodiversité · Corps à l'effort · Agents pathogènes · Procréation",
+                  "badge": "SVT",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#10b981",
+                  "label_front": "NOTION",
+                  "label_back": "DÉFINITION",
+                  "cards": [
+                    {
+                      "front": "Biotope + Biocénose",
+                      "back": "Biotope : milieu physique (sol, eau, température, lumière) | Biocénose : ensemble des êtres vivants | Biotope + Biocénose = Écosystème"
+                    },
+                    {
+                      "front": "Perturbations anthropiques",
+                      "back": "Déforestation, artificialisation des sols, pollutions, espèces invasives, changement climatique → déséquilibre des réseaux trophiques"
+                    },
+                    {
+                      "front": "Corps à l'effort",
+                      "back": "Besoin accru en O₂ et glucose → fréquences cardiaque et respiratoire augmentent. Commande : cerveau → moelle épinière → nerfs moteurs → muscles."
+                    },
+                    {
+                      "front": "Contamination vs Infection",
+                      "back": "Contamination : pénétration de l'agent pathogène (franchissement des barrières peau/muqueuses) | Infection : multiplication active → symptômes"
+                    },
+                    {
+                      "front": "Asepsie vs Antisepsie",
+                      "back": "Asepsie : PRÉVENIR la contamination (lavage des mains, outils stériles) | Antisepsie : DÉTRUIRE les microbes sur une plaie ouverte (désinfectant)"
+                    },
+                    {
+                      "front": "Antibiotiques",
+                      "back": "Détruisent les BACTÉRIES uniquement — aucune efficacité contre les virus (grippe, COVID, rougeole). Résistance bactérienne si usage inapproprié."
+                    },
+                    {
+                      "front": "Vaccination",
+                      "back": "Agent atténué/inactivé → stimule la mémoire immunitaire → protection individuelle ET collective. Immunité de groupe : proportion critique immunisée = virus sans hôtes."
+                    },
+                    {
+                      "front": "Fécondation et nidation",
+                      "back": "Fécondation : spermatozoïde + ovule → zygote (cellule-œuf) dans les trompes de Fallope | Nidation : implantation dans l'endomètre → développement embryonnaire"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : les antibiotiques sont efficaces contre la grippe et le COVID.",
+                  "correct": false,
+                  "explanation": "FAUX. Les antibiotiques détruisent uniquement les BACTÉRIES. La grippe et le COVID sont des maladies VIRALES — les antibiotiques n'ont aucun effet et leur usage inapproprié crée de l'antibiorésistance."
+                }
+              ]
+            },
+            {
+              "id": "techno",
+              "label": "💻 Techno",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Technologie — Chaînes, Réseaux, Programmation",
+                  "subtext": "Chaîne d'énergie · Chaîne d'information · IP/Routeur · Python",
+                  "badge": "Technologie",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#10b981",
+                  "label_front": "NOTION",
+                  "label_back": "DÉFINITION",
+                  "cards": [
+                    {
+                      "front": "Chaîne d'information",
+                      "back": "Acquérir (Capteurs) → Traiter (Microcontrôleur) → Communiquer (Fils / Radio) | Dirige la chaîne d'énergie"
+                    },
+                    {
+                      "front": "Chaîne d'énergie",
+                      "back": "Alimenter (Batterie/Secteur) → Distribuer (Relais) → Convertir (Moteur/LED) → Transmettre (Engrenages) | Exécute les ordres de la chaîne d'info"
+                    },
+                    {
+                      "front": "Capteur vs Actionneur",
+                      "back": "Capteur : grandeur physique → signal (chaîne d'INFO) | Actionneur : signal → action mécanique/lumineuse/sonore (chaîne d'ÉNERGIE)"
+                    },
+                    {
+                      "front": "Adresse IP",
+                      "back": "Identifiant unique de chaque machine sur un réseau. Ex : 192.168.1.1"
+                    },
+                    {
+                      "front": "Switch vs Routeur",
+                      "back": "Switch : communications INTERNES au réseau local (LAN) | Routeur : communications ENTRE réseaux distincts (LAN ↔ Internet)"
+                    },
+                    {
+                      "front": "TCP/IP",
+                      "back": "Données découpées en paquets → transmission indépendante → réassemblage à l'arrivée. Base de toutes les communications Internet."
+                    },
+                    {
+                      "front": "RGPD",
+                      "back": "Règlement Général sur la Protection des Données — consentement explicite, droit à l'oubli, protection des données personnelles des utilisateurs européens"
+                    },
+                    {
+                      "front": "Structures algorithmiques",
+                      "back": "Variable : case mémoire nommée | Boucle : répétition (for/while) | Conditionnelle : Si…Alors…Sinon | Séquence : ordre linéaire des instructions"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : un switch est utilisé pour connecter le réseau domestique à Internet.",
+                  "correct": false,
+                  "explanation": "FAUX. Un switch gère les communications INTERNES au réseau local (entre les appareils de la maison). C'est le ROUTEUR qui connecte le réseau local à Internet."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : le capteur appartient à la chaîne d'énergie.",
+                  "correct": false,
+                  "explanation": "FAUX. Le capteur appartient à la CHAÎNE D'INFORMATION (il 'acquiert' une grandeur physique et la convertit en signal). La chaîne d'énergie commence à 'Alimenter' et va jusqu'à 'Transmettre'."
+                }
+              ]
+            },
+            {
+              "id": "pieges",
+              "label": "⚠️ Pièges",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Pièges classiques — Sciences",
+                  "subtext": "Confusions fréquentes et lourdement pénalisées",
+                  "badge": "Examen",
+                  "align": "center"
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : Z (numéro atomique) est la somme des protons et des neutrons.",
+                  "correct": false,
+                  "explanation": "FAUX. Z = nombre de protons UNIQUEMENT. La somme protons + neutrons = nombre de masse (A). Pour l'oxygène : Z = 8 (protons), A = 16 (protons + neutrons)."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : la masse d'un objet est plus faible sur la Lune que sur Terre.",
+                  "correct": false,
+                  "explanation": "FAUX. La masse (kg) est une quantité de matière — elle est INVARIABLE. Seul le poids (N) change selon g. Sur la Lune : P = m × 1,6 N/kg (au lieu de 9,8 N/kg)."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : le son se propage dans le vide.",
+                  "correct": false,
+                  "explanation": "FAUX. Le son est une onde MÉCANIQUE — il nécessite un milieu matériel (air, eau, solide). Dans l'espace (vide), aucun son ne se propage. La lumière, elle, se propage dans le vide."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : les antibiotiques sont efficaces contre la rougeole.",
+                  "correct": false,
+                  "explanation": "FAUX. La rougeole est une maladie VIRALE. Les antibiotiques ne détruisent que les bactéries. Contre un virus : vaccination (prévention) ou antiviraux spécifiques (traitement)."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : l'épicentre d'un séisme est le point en profondeur où la rupture se produit.",
+                  "correct": false,
+                  "explanation": "FAUX. Le foyer (hypocentre) est en PROFONDEUR. L'épicentre est le point à la SURFACE directement au-dessus du foyer — où les vibrations sont maximales."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

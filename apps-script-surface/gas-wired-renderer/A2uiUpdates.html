@@ -1,0 +1,74 @@
+<script>
+// A2UI v1.0 incremental-update APPLIER — client-side receive semantics.
+// A faithful port of renderers/a2ui_v1_updates.apply_update; a conforming A2UI
+// host MUST behave identically (RFC-6901 pointer patch, component upsert-by-id,
+// surface teardown). Transport-agnostic: feed it messages from the live_refresh
+// poll (compliant pull) OR a Firestore onSnapshot push — same applier either way.
+// Node-testable (tests/test_a2ui_updates_js.mjs); wired into the poll loop at
+// deploy time. Exposes global A2uiUpdates.{stateFromCreate, applyUpdate}.
+(function (global) {
+  function tokens(path) {
+    if (path === '' || path === '/') return [];
+    return path.replace(/^\//, '').split('/')
+      .map(function (t) { return t.replace(/~1/g, '/').replace(/~0/g, '~'); });
+  }
+  function pointerSet(root, path, value) {
+    var toks = tokens(path);
+    if (!toks.length) {                       // path '/' -> replace whole data model
+      return (value && typeof value === 'object' && !Array.isArray(value)) ? value : { '': value };
+    }
+    var node = root;
+    for (var i = 0; i < toks.length - 1; i++) {
+      var t = toks[i];
+      if (!node[t] || typeof node[t] !== 'object') node[t] = {};   // auto-vivify
+      node = node[t];
+    }
+    node[toks[toks.length - 1]] = value;
+    return root;
+  }
+  function pointerRemove(root, path) {
+    var toks = tokens(path);
+    if (!toks.length) return {};
+    var node = root;
+    for (var i = 0; i < toks.length - 1; i++) {
+      node = node[toks[i]];
+      if (!node || typeof node !== 'object') return root;          // nothing to remove
+    }
+    delete node[toks[toks.length - 1]];
+    return root;
+  }
+  function stateFromCreate(msg) {
+    var cs = msg.createSurface, comps = {};
+    (cs.components || []).forEach(function (c) { comps[c.id] = Object.assign({}, c); });
+    return {
+      surfaceId: cs.surfaceId, catalogId: cs.catalogId || null,
+      // deep-copy the data model so later pointer-patches never mutate the source
+      // createSurface message (it may be cached / re-rendered)
+      components: comps, dataModel: JSON.parse(JSON.stringify(cs.dataModel || {})), deleted: false
+    };
+  }
+  function guard(state, inner) {
+    if (inner.surfaceId != null && state.surfaceId != null && inner.surfaceId !== state.surfaceId) {
+      throw new Error('surfaceId mismatch: ' + inner.surfaceId + ' != ' + state.surfaceId);
+    }
+  }
+  function applyUpdate(state, msg) {
+    if (msg.updateComponents) {
+      var uc = msg.updateComponents; guard(state, uc);
+      (uc.components || []).forEach(function (c) { state.components[c.id] = Object.assign({}, c); });
+    } else if (msg.updateDataModel) {
+      var ud = msg.updateDataModel; guard(state, ud);
+      var path = ud.path || '/';
+      if ('value' in ud) state.dataModel = pointerSet(state.dataModel, path, ud.value);
+      else state.dataModel = pointerRemove(state.dataModel, path);
+    } else if (msg.deleteSurface) {
+      guard(state, msg.deleteSurface);
+      state.deleted = true; state.components = {}; state.dataModel = {};
+    } else {
+      throw new Error('not an incremental update message');
+    }
+    return state;
+  }
+  global.A2uiUpdates = { stateFromCreate: stateFromCreate, applyUpdate: applyUpdate };
+})(typeof window !== 'undefined' ? window : this);
+</script>

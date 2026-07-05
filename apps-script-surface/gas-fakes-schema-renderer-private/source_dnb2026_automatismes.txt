@@ -1,0 +1,97 @@
+Diplôme national du brevet
+Mathématiques
+
+LISTE INDICATIVE D’AUTOMATISMES SUSCEPTIBLES
+D’ÊTRE MOBILISÉS LORS DE L’ÉPREUVE ÉCRITE DE
+MATHÉMATIQUES (séries générale et professionnelle)
+NOMBRES ET CALCULS
+ Entretenir l’écriture décimale des fractions simples comme
+1/2 ; 1/4 ; 3/4 ; 3/2 ; 4/2 ; 5/2 ; 1/10 ; 100/100 ; 7/1.
+ Comparer des nombres décimaux et calculer avec des nombres décimaux (y compris
+négatifs)
+ Simplifier, comparer des fractions, calculer avec des fractions.
+ Prendre une fraction simple d’un nombre : le tiers de 18 ; le quart de 12.
+Déterminer 𝑎𝑎 % de 𝑐𝑐 quand 𝑎𝑎 vaut 100, 50, 25, 10, 1.
+
+ Écrire un même nombre sous de multiples formes, par exemple dire que
+1,2 = 12/10 = 6/5 = 1 +1/5 = 120 % = 120/100 etc.
+
+ Passer d’une écriture décimale à la notation scientifique.
+ Connaitre les carrés des nombres entiers compris entre 1 et 12.
+ Appliquer les critères de divisibilité par 2, 3, 5, 9.
+ Pour un nombre entier n, exprimer son double, son triple, sa moitié, son prédécesseur, son
+successeur, son carré.
+ Simplifier des expressions littérales.
+ Calculer la valeur d’une expression algébrique y compris avec des puissances, sans technicité
+excessive.
+ Développer et factoriser une expression simple.
+Liste automatismes – Octobre 2025
+
+1
+
+ Résoudre des équations du type 𝑎𝑎𝑎𝑎 = 𝑐𝑐, 𝑥𝑥 + 𝑏𝑏 = 𝑐𝑐, 𝑎𝑎𝑎𝑎 + 𝑏𝑏 = 𝑐𝑐.
+
+ Sur une droite graduée, lire l’abscisse d’un point et placer un point d’abscisse donnée.
+
+ESPACE ET GÉOMÉTRIE
+ Dans le plan muni d’un repère orthogonal, lire les coordonnées d’un point, placer un point de
+coordonnées données.
+ Exploiter le codage d’une figure pour identifier des triangles, des quadrilatères particuliers, une
+médiatrice.
+ Reconnaître et citer des angles sur une configuration géométrique. Connaitre angle plat, nul ;
+angles opposés par le sommet, adjacents, supplémentaires, aigus, obtus. Savoir qu’un angle droit
+mesure 90°, qu’un angle plat mesure 180 °.
+ Connaître la somme des mesures des angles d’un triangle, calculer la mesure du troisième angle
+d’un triangle connaissant les mesures des deux autres.
+ Connaitre les procédures de conversion d’unités : mm, cm, m, km ; mm2, cm2, m2, km2 ; cm3, dm3,
+m3 ; g, kg ; mL, cL, dL, L et les correspondances : s, min, h, jour ; dm3, L ; m3, L.
+ Reconnaître des solides (cube, pavé droit, prisme droit, cylindre, pyramide, cône).
+ Déterminer le périmètre d’un polygone, d’un disque.
+ Connaître et utiliser les formules d’aire d’un triangle, d’un rectangle, d’un disque.
+ Déterminer le périmètre d’un polygone, d’un disque.
+ Connaître et utiliser les formules du volume d’un cube, d’un pavé droit, d’un prisme droit, d’un
+cylindre.
+ Reconnaître une situation d’application du théorème de Pythagore, mettre en place
+l’automatisme sur l’égalité de Pythagore, développer un regard critique sur les conditions
+d’utilisation et les résultats obtenus.
+ Reconnaître une situation d’application du théorème de Thalès dans la configuration des triangles
+emboîtés, mettre en place l’automatisme sur l’égalité des rapports de longueur, développer un
+regard critique sur les conditions d’utilisation et les résultats obtenus.
+ Reconnaître une situation d’application de la ligne trigonométrique cosinus, mettre en place
+l’automatisme sur l’égalité des rapports de longueur, développer un regard critique sur les
+conditions d’utilisation et les résultats obtenus.
+ Mobiliser les propriétés de la symétrie axiale, de la symétrie centrale, de la translation 1.
+
+ORGANISATION ET GESTION DE DONNÉES ET PROBABILITÉS
+ Attribuer des probabilités dans des cas simples (équiprobabilité).
+ Exprimer une fréquence simple.
+ Exprimer une moyenne.
+ Déterminer une médiane pour une série comportant un petit nombre de valeurs.
+ Lire et interpréter des informations présentées sous forme de tableaux, de diagrammes et de
+graphiques.
+
+1
+
+La translation ne concerne pas les candidats de l’enseignement agricole
+
+Liste automatismes – Octobre 2025
+
+2
+
+ Proportionnalité, fonctions
+ Reconnaître si une situation donnée entre dans le cadre de la proportionnalité ou non.
+ Dans des situations simples, mobiliser une procédure adaptée (propriété de linéarité pour la
+multiplication ou l’addition, retour à l’unité) pour résoudre un problème lié à la proportionnalité.
+ Appliquer une augmentation ou une diminution exprimée en pourcentage.
+ Exploiter un graphique représentant la dépendance de deux grandeurs pour lire et interpréter
+différentes valeurs sur l’axe des abscisses ou l’axe des ordonnées.
+
+ALGORITHMIQUE ET PROGRAMMATION
+ Interpréter une suite d’instructions : programme de calcul, déplacement, construction
+géométrique.
+
+Liste automatismes – Octobre 2025
+
+3
+
+

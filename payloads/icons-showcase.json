@@ -1,0 +1,75 @@
+{
+  "title": "A2UI — Icon Pack",
+  "theme": "light",
+  "blocks": [
+    {"type": "palette", "accent": "#4285F4", "accent2": "#34A853"},
+    {"type": "page_header", "title": "Icon Pack — @35", "subtitle": "Material Symbols + Google Workspace product logos. All from Google CDN — zero npm.", "icon": "🔤", "accent": "#4285F4"},
+    {"type": "metric_row", "metrics": [
+      {"value": "2,500+", "label": "Material Symbols", "accent": "#4285F4"},
+      {"value": "20", "label": "Workspace logos", "accent": "#34A853"},
+      {"value": "0", "label": "npm packages", "accent": "#FBBC04"},
+      {"value": "6", "label": "Icon atoms", "accent": "#EA4335"}
+    ]},
+
+    {"type": "section_break", "label": "Material Symbols — google_icon", "style": "line", "accent": "#4285F4"},
+    {"type": "callout", "level": "info", "text": "Browse all icon names at **fonts.google.com/icons** — use the ligature name (e.g. `rocket_launch`, `check_circle`, `trending_up`)."},
+    {"type": "columns", "cols": 4, "items": [
+      {"blocks": [{"type": "icon_badge", "name": "rocket_launch", "bg": "#4285F4", "label": "Launch"}]},
+      {"blocks": [{"type": "icon_badge", "name": "check_circle", "bg": "#34A853", "label": "Verified", "filled": true}]},
+      {"blocks": [{"type": "icon_badge", "name": "trending_up", "bg": "#FBBC04", "label": "Growth"}]},
+      {"blocks": [{"type": "icon_badge", "name": "shield", "bg": "#EA4335", "label": "Secure", "filled": true}]}
+    ]},
+    {"type": "columns", "cols": 4, "items": [
+      {"blocks": [{"type": "icon_badge", "name": "school", "bg": "#8b5cf6", "label": "Learn"}]},
+      {"blocks": [{"type": "icon_badge", "name": "groups", "bg": "#0ea5e9", "label": "Team"}]},
+      {"blocks": [{"type": "icon_badge", "name": "auto_awesome", "bg": "#f59e0b", "label": "AI", "filled": true}]},
+      {"blocks": [{"type": "icon_badge", "name": "bar_chart", "bg": "#6366f1", "label": "Analytics"}]}
+    ]},
+
+    {"type": "section_break", "label": "icon_feature_grid", "style": "dashed", "accent": "#4285F4"},
+    {"type": "icon_feature_grid", "cols": 3, "filled": false, "accent": "#4285F4", "items": [
+      {"icon": "edit_note", "title": "Docs", "text": "Write, collaborate, comment — all in the browser."},
+      {"icon": "table_chart", "title": "Sheets", "text": "Formulas, pivot tables, and live data connections.", "color": "#34A853"},
+      {"icon": "slideshow", "title": "Slides", "text": "Present with confidence — smart layouts built in.", "color": "#FBBC04"},
+      {"icon": "video_call", "title": "Meet", "text": "HD video meetings with AI noise cancellation.", "color": "#00832D"},
+      {"icon": "inbox", "title": "Gmail", "text": "Priority inbox, smart reply, Workspace-integrated.", "color": "#EA4335"},
+      {"icon": "calendar_month", "title": "Calendar", "text": "Smart scheduling that knows your context.", "color": "#4285F4"}
+    ]},
+
+    {"type": "section_break", "label": "icon_checklist", "style": "dots", "accent": "#34A853"},
+    {"type": "icon_checklist", "title": "What's in the icon pack", "filled": true, "accent": "#34A853", "items": [
+      {"text": "Material Symbols Outlined + Rounded variants", "icon": "font_download", "color": "#4285F4"},
+      {"text": "Variable font — fill, weight, grade, optical size", "icon": "tune", "color": "#4285F4"},
+      {"text": "20 Workspace product logos from official CDN", "icon": "image", "color": "#34A853"},
+      {"text": "onerror fallback to coloured letter badge", "icon": "broken_image", "color": "#FBBC04", "sublabel": "Never shows a broken image placeholder"},
+      {"text": "Greyscale strip with colour-on-hover", "icon": "palette", "color": "#EA4335"},
+      {"text": "Zero npm, zero bundler — loads from fonts.google.com", "icon": "cloud_done", "color": "#34A853"}
+    ]},
+
+    {"type": "section_break", "label": "icon_row", "style": "line", "accent": "#4285F4"},
+    {"type": "icon_row", "items": [
+      {"icon": "check", "label": "GDPR compliant", "color": "#34A853"},
+      {"icon": "lock", "label": "Workspace security", "color": "#4285F4"},
+      {"icon": "speed", "label": "No external deps", "color": "#FBBC04"},
+      {"icon": "devices", "label": "Works on all screens", "color": "#EA4335"},
+      {"icon": "accessibility", "label": "ARIA-ready", "color": "#8b5cf6"}
+    ]},
+
+    {"type": "section_break", "label": "Workspace product logos", "style": "line", "accent": "#4285F4"},
+    {"type": "workspace_logo_strip", "title": "Built on Google Workspace", "greyscale": true, "size": 48, "align": "center", "apps": ["gmail","drive","docs","sheets","slides","calendar","meet","forms","chat","classroom"]},
+
+    {"type": "section_break", "label": "workspace_logo_grid — full catalogue", "style": "dashed", "accent": "#34A853"},
+    {"type": "workspace_logo_grid", "title": "All supported apps", "cols": 5, "size": 40, "greyscale": false},
+
+    {"type": "section_break", "label": "Mix icons + animation", "style": "line", "accent": "#8b5cf6"},
+    {"type": "reveal", "animation": "stagger", "stagger_delay": 80, "blocks": [
+      {"type": "columns", "cols": 3, "items": [
+        {"blocks": [{"type": "workspace_logo", "app": "gmail", "size": 64, "label": "Gmail"}]},
+        {"blocks": [{"type": "workspace_logo", "app": "sheets", "size": 64, "label": "Sheets"}]},
+        {"blocks": [{"type": "workspace_logo", "app": "meet", "size": 64, "label": "Meet"}]}
+      ]}
+    ]},
+
+    {"type": "floating_badge", "icon": "🔤", "label": "Icon pack live", "size": "lg", "align": "center"}
+  ]
+}

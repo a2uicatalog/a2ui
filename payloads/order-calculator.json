@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "type": "a2ui_wired_surface",
+  "title": "Order Calculator",
+  "theme": "light",
+
+  "state_primitives": [
+    { "id": "qty_store",   "primitive": "ValueStore", "props": { "initialValue": 1   } },
+    { "id": "price_store", "primitive": "ValueStore", "props": { "initialValue": 75  } },
+    {
+      "id": "total",
+      "primitive": "Computed",
+      "props": {
+        "inputs":  { "qty": "#qty_store.value", "price": "#price_store.value" },
+        "expr":    "qty * price",
+        "format":  "currency:GBP"
+      }
+    },
+    {
+      "id": "approval_gate",
+      "primitive": "NumericThreshold",
+      "props": { "source": "#total.value", "operator": "gte", "threshold": 500 }
+    }
+  ],
+
+  "layout": [
+    {
+      "atom": "heading",
+      "props": { "text": "Order Calculator", "level": 2 }
+    },
+    {
+      "atom": "form_slider",
+      "id": "qty-slider",
+      "props": { "label": "Quantity", "min": 1, "max": 20, "step": 1, "value": 1 },
+      "wire": { "onChange": "#qty_store.setValue" }
+    },
+    {
+      "atom": "form_slider",
+      "id": "price-slider",
+      "props": { "label": "Unit Price (£)", "min": 25, "max": 250, "step": 25, "value": 75 },
+      "wire": { "onChange": "#price_store.setValue" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "total-display",
+      "props": { "type": "info", "text": "£75.00" },
+      "wire": { "text": "#total.display" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "approval-ok",
+      "props": { "type": "success", "text": "Within standard limit — no approval required" },
+      "wire": { "visible": "#approval_gate.isNotTriggered" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "approval-warning",
+      "props": { "type": "warning", "text": "Order ≥ £500 — manager approval required" },
+      "wire": { "visible": "#approval_gate.isTriggered" }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "submit-btn",
+      "props": { "label": "Place Order", "accent": "#6366f1" }
+    }
+  ]
+}

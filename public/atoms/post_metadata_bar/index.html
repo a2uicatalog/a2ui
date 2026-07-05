@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Post Metadata Bar — A2UI Atomic Catalog</title>
+  <meta name="description" content="Displays article metadata — author, publish date, read time, and optional tags — in a compact bar.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> /
+    <a href="https://a2uicatalog.ai/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / post_metadata_bar
+  </nav>
+
+  <h1>Post Metadata Bar</h1>
+  <p class="desc">Displays article metadata — author, publish date, read time, and optional tags — in a compact bar.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-meet-stage</td><td>Renders as plain text line.</td></tr><tr><td>email</td><td>Simplified to plain text.</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div class="post-metadata-bar" style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; padding: 8px 12px; background: #f9fafb; border: 1px solid #f3f4f6; border-radius: 6px; margin: 1rem 0;"><span style="font-weight: 600; color: #374151;">✍️ Author Name</span> <span style="color: #e5e7eb; margin: 0 8px;">|</span> <span style="color: #6b7280;">📅 2026-06-28</span> <span style="color: #e5e7eb; margin: 0 8px;">|</span> <span style="color: #6b7280;">⏱️ 75 min read</span></div></div>
+</div>
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>author</td><td>string. Author display name.</td><td>required</td></tr><tr><td>date</td><td>string. Publish date (YYYY-MM-DD).</td><td>required</td></tr><tr><td>readTime</td><td>integer. Estimated read time in minutes.</td><td>required</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "post_metadata_bar",
+  "author": "Author Name",
+  "date": "2026-06-28",
+  "readTime": 75
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:post_metadata_bar",
+  "displayName": "Post Metadata Bar",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/post_metadata_bar",
+  "capabilities": [
+    "web",
+    "google-apps-script-web"
+  ],
+  "description": "Displays article metadata \u2014 author, publish date, read time, and optional tags \u2014 in a compact bar.",
+  "representativeQueries": [
+    "show a article metadata bar with author date read time",
+    "displays article metadata \u2014 author, publish date, read time, and optional tags \u2014 in a compact bar.",
+    "render a post metadata bar"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd apps-script-surface/gas-schema-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="https://a2uicatalog.ai/renderer" style="display:inline-block;margin-top:12px;font-size:12px;color:#818cf8;text-decoration:none;">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>MIT License</span>
+  </footer>
+</body>
+</html>

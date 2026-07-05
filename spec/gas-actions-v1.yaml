@@ -1,0 +1,236 @@
+surface: gas
+version: "1.0"
+description: >
+  Actions catalogue for the GAS surface. Each verb maps to a server-side handler
+  in Code.private.gs dispatched via a2uiAction(type, payload).
+  All actions share the same output contract and are addressable as state nodes.
+
+# ─── Server response envelope (NORMATIVE — every handler, no exceptions) ─────
+# The wire contract between server handlers (_action* in Code.gs) and the
+# client runtime (A2UIState.html). Locked by tests/test_action_contract.py.
+# Incident that made this normative (2026-07-02): a handler returned its
+# array un-enveloped; the client copied r.data (undefined) into node.result
+# and a dashboard rendered silently empty. The envelope is not optional.
+server_response_contract:
+  shape: "{ ok: boolean, data?: any, total?: number, error?: string }"
+  ok: REQUIRED. true on success, false on failure — the only success signal.
+  data: payload on success. The client copies r.data into node.result — returning the payload un-enveloped yields result=null, silently.
+  total: optional row count; client falls back to data.length when absent.
+  error: REQUIRED when ok is false; surfaced through node.error / #id.error.
+  client_mapping: |
+    result = r.data  || null
+    total  = r.total !== undefined ? r.total : (r.data ? r.data.length : 0)
+    error  = r.error (isError when ok false)
+
+# ─── Shared output contract (all actions) ─────────────────────────────────────
+outputs_common:
+  status:          idle | pending | success | error
+  isPending:       boolean — true while google.script.run is in flight
+  isSuccess: 'boolean — true on completion with ok: true'
+  isError: 'boolean — true on completion with ok: false or failure'
+  error:           string  — error message, empty when ok
+
+# ─── ActionNode contract (NORMATIVE — the addressable wiring surface) ────────
+# What a third party needs to wire actions WITHOUT reverse-engineering the
+# runtime. Every action is a state node addressable as #<id>.<prop>. This
+# block is locked to A2UIStateEngine._initAction by tests/test_action_contract.py.
+# Worked reference: payloads/expenses-demo.json (submit_expense + load_expenses).
+action_node:
+  # ── INPUT (things you wire INTO the action to invoke it) ──
+  inputs:
+    run: 'trigger — invoke the action. Wire a DOM event to it: { onClick: "#submit_expense.run" }. onLoad trigger and onSuccess cascade call it internally.'
+  # ── OUTPUTS (node props you wire OUT of, into other atoms) ──
+  outputs:
+    status: 'string — idle | pending | success | error'
+    isPending: 'boolean — true while google.script.run is in flight. Wire to a spinner: { visible: "#a.isPending" }'
+    isSuccess: 'boolean — true on completion with ok:true'
+    isError: 'boolean — true on completion with ok:false or transport failure'
+    result: 'any — r.data from the server envelope. THE payload output — wire into a table/filter: { source: "#load_expenses.result" }. (was undocumented — the reverse-engineering gap this contract closes)'
+    total: 'number — r.total, or result.length when the server omits it'
+    error: 'string — r.error on failure, null otherwise. Wire to a message: { text: "#a.error" }'
+  # ── how run resolves (so authors know what the server receives) ──
+  invocation: |
+    On run: collect{} exprs resolve (#node.prop reads, {{now}} = today ISO,
+    literals pass through) → { data: collected, config: <props minus collect>,
+    appConfig } → server handler → {ok,data,total,error} envelope (see
+    server_response_contract) → mapped onto the outputs above.
+
+# ─── Agent-state stores: the infinite-array primitive ───────────────────────
+# Agent state = arrays + expressions over them. An append-only log is the
+# unbounded-array case. Server-durable (survives the client session), keyed
+# 'agent_<agentId>_<store>'. Read into a wired surface, then ArrayFilter /
+# DerivedStore / Computed EXPRESSIONS derive the views. No new state primitive:
+# the store is a persistent array; the derivations are existing expression atoms.
+# Reference: payloads/trader-bot-audit.json (agent_trader-bot-v1_audit).
+agent_stores:
+  store_read:
+    verb: gas:store_read
+    config: '{ agent_id, store }'
+    returns: '{ ok, data: <array>, total }  — the whole array (wire rows <- #load.result)'
+    trigger: 'usually onLoad — hydrate the view on open'
+  store_append:
+    verb: gas:store_append
+    config: '{ agent_id, store, cap? }'
+    data: 'the record to append (ts auto-stamped at the store boundary)'
+    returns: '{ ok, data: { length }, total }'
+    note: 'server code appends via _storeAppend_ directly (e.g. _tradeAudit_); the verb is the client-addressable path'
+
+  # BOUNDARY RULE (normative — thoughts/decision-agent-state-derivation-boundary):
+  # the CLIENT state engine derives over ONE delivered array within ONE render.
+  # Anything needing a SECOND point in time, a SECOND store, or MORE rows than the
+  # payload carries is a SERVER derivation — this verb — NEVER a new client engine
+  # primitive (engine ops are normative-forever; that accretion is the lock-in trap).
+  # gas:store_derive's `expr` is a small CLOSED operator algebra; delta / latest_per_key
+  # / window_aggregate are RECIPES over the operators, NEVER catalogued as named ops.
+  # Safety crux: an authored payload is untrusted input under the renderer's ambient
+  # OAuth, so the INTERPRETER (never the author) injects agent_id+store isolation and a
+  # hard row cap into every read — infinite expressivity (composition), finite
+  # capability (bounded operators). Raw store-query-language is NEVER exposed to authors.
+  store_derive:
+    verb: gas:store_derive
+    config: '{ agent_id, store, expr }'
+    returns: '{ ok, data: <array>, total }  — derived rows, each tracing to real retained docs'
+    operators:   # the closed temporal-relational algebra (σ γ ⋈ π), closed under composition
+      filter:  'σ — { op:filter, where:{field:{gt|lt|gte|lte|eq|ne: val} | val}, since?, until?, from } (time-windowing IS a predicate: since=ts>=, until=ts<)'
+      group:   'γ — { op:group, by, reduce: last|count|sum|avg|min|max, field?, from } (latest_per_key = reduce:last; window_aggregate = reduce:sum/avg/… — same op, different reducer)'
+      join:    '⋈ — { op:join, kind:self, on, left, right } → { key, left, right } (right may be null → honesty, never a fabricated delta-from-zero)'
+      project: 'π — { op:project, fields:{ name: "left.x" | {sub:[a,b]} | {pct:[a,b]} | {lit:v} }, from }'
+    recipes:   # authoring shortcuts (live in runbooks, NOT catalogued as ops)
+      delta: '{ op:delta, key, field, since?, where? } → per key { key, field, before, after, delta, pct, before_ts, after_ts, status(new|flat|up|down) }. delta = project(join:self(group:last(filter ts>=since), group:last(filter ts<since))). since default = start of today (UTC).'
+    backend: 'durable history tier (Firestore agent_records today; server-swappable to BigQuery without a vocabulary break — the algebra is the compile SOURCE, the query language is the compile TARGET). Requires FIRESTORE_PROJECT_ID; refuses to derive over the volatile ring (baseline must trace to a real retained doc).'
+    honesty_gate: 'a key with no record before the cutoff returns status:new (before/delta/pct = null) — never a delta-from-zero; every value traces to a retained doc _id/ts.'
+    note: 'BUILD STATE: the delta recipe + all four operators are live (gas-trade-bot-couk Code.gs _actionStoreDerive); unsupported operators/reducers/join-kinds return "unsupported composition". Reference invocation: ops.py run derive.'
+
+# ─── Action-level fields ──────────────────────────────────────────────────────
+action_fields:
+  id:        'string   — node ID, addressable as #id.run / #id.result / #id.isSuccess'
+  type:      'string   — surface:verb e.g. gas:sheet_append'
+  trigger:   'onLoad | null — onLoad fires _run() automatically during boot (e.g. load-on-open)'
+  onSuccess: '[actionId, ...]  — cascade: fire these actions after this one succeeds'
+  clearOnSuccess: '[nodeId, ...] — reset these ValueStores to their initial value after success (form clear)'
+  props:     'object   — verb-specific config; props.collect is the input map (see per-verb below)'
+  wire:      'object   — route action outputs into the state graph, e.g. { result: "#filter.source" }'
+
+# ─── Verbs ────────────────────────────────────────────────────────────────────
+
+actions:
+
+  sheet_append:
+    description: Append a row to a Google Sheet. Auto-creates the sheet if absent.
+    props:
+      required:
+        sheet:
+          type: string
+          description: Spreadsheet name (matched by filename in My Drive / Shared Drive)
+        collect:
+          type: object
+          description: >
+            Map of column name → wire expr or literal.
+            Wire exprs: "#nodeId.property"
+            Date literal: "{{now}}" → ISO date string (YYYY-MM-DD)
+      optional:
+        folder_id:
+          type: string | null
+          default: null
+          description: Override app.storage.folder_id for this action
+    outputs:
+      insertedRow:  number — 1-based row index of the new row
+    notes:
+      - Headers are written automatically on the first append (keys of collect)
+      - Row order matches the collect key order
+
+  sheet_query:
+    description: >
+      Load rows from a Google Sheet into the state graph.
+      Returns an array of objects keyed by lowercased column headers.
+      Designed to feed directly into an ArrayFilter via wire.result.
+    props:
+      required:
+        sheet:
+          type: string
+      optional:
+        folder_id:
+          type: string | null
+          default: null
+        where:
+          type: object
+          description: "{ columnName: value } — simple equality filter applied server-side"
+        limit:
+          type: number
+          description: Max rows returned (applied after where filter)
+        order_by:
+          type: string
+          description: Column name to sort by ascending
+    outputs:
+      result:  Array<object>  — rows as objects; feeds ArrayFilter.source via wire
+    notes:
+      - Column headers are lowercased and spaces replaced with _ for key names
+        e.g. "Budget Line" → "budget_line"
+      - Returns empty array if sheet does not exist yet
+
+  sheet_upsert:
+    description: Update an existing row matched by key column, or append if not found.
+    props:
+      required:
+        sheet:    { type: string }
+        key_column: { type: string, description: "Column to match on" }
+        key_value:  { type: string, description: "Wire expr or literal for the match value" }
+        collect:  { type: object }
+      optional:
+        folder_id: { type: string | null, default: null }
+    outputs:
+      upserted_row: number
+      was_insert:   boolean
+
+  email_send:
+    description: Send an email via GmailApp.
+    props:
+      required:
+        to:      { type: string, description: "Wire expr or literal email address" }
+        subject: { type: string }
+        body:    { type: string, description: "Wire expr or literal; plain text or HTML" }
+      optional:
+        cc:      { type: string }
+        is_html: { type: boolean, default: false }
+    outputs: {}
+
+  calendar_event:
+    description: Create a Google Calendar event.
+    props:
+      required:
+        title:   { type: string }
+        start:   { type: string, description: "ISO datetime wire expr or literal" }
+        end:     { type: string }
+      optional:
+        description: { type: string }
+        attendees:   { type: string, description: "Comma-separated emails or wire expr" }
+        calendar_id: { type: string, default: primary }
+    outputs:
+      event_id: string
+
+  api_post:
+    description: POST to an external URL via UrlFetchApp. Runs server-side (avoids CORS).
+    props:
+      required:
+        url:     { type: string }
+        collect: { type: object, description: "Map to JSON request body" }
+      optional:
+        headers:      { type: object }
+        content_type: { type: string, default: application/json }
+    outputs:
+      result:       any   — parsed JSON response body
+      status_code:  number
+
+  script_run:
+    description: >
+      Call any named GAS function by name. Escape hatch for custom server-side logic.
+      The function must be defined in the GAS project and return { ok, data, error }.
+    props:
+      required:
+        fn:   { type: string, description: "GAS function name" }
+      optional:
+        args:
+          type: array
+          description: "Array of wire exprs or literals passed as positional args"
+    outputs:
+      result: any — whatever the function returns in data

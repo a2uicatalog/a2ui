@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -c 'if ((.tool_input.command // \"\") | test(\"clasp (push|deploy)\")) and ((.tool_input.command // \"\") | test(\"ops\\\\.py\") | not) then {hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"deny\",permissionDecisionReason:\"clasp push/deploy must go through a declared process: python3 ops/ops.py run renderer-release (see project.yaml processes)\"}} else empty end'",
+            "statusMessage": "ops discipline: clasp gate"
+          }
+        ]
+      }
+    ]
+  }
+}

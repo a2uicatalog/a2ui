@@ -1,0 +1,11 @@
+{
+  "title": "form_field — labelled input with hint & error",
+  "theme": "light",
+  "blocks": [
+    {"type":"heading","text":"form_field (preview)"},
+    {"type":"body","text":"A form_input with hint + inline error affordances. form_input stays primary; use form_field when a field needs guidance or validation feedback."},
+    {"type":"form_field","label":"Incident title","required":true,"placeholder":"e.g. checkout-api 5xx spike","hint":"Short, service-first — this becomes the war-room name."},
+    {"type":"form_field","label":"Owner email","field_type":"email","placeholder":"name@krygier.fr","error":"Not a valid email address."},
+    {"type":"form_field","label":"Severity note","placeholder":"optional context"}
+  ]
+}

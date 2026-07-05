@@ -1,0 +1,198 @@
+{
+  "title": "Oral — DNB 2026",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "hub",
+      "subjects": [
+        {
+          "id": "oral",
+          "label": "🎤 Oral",
+          "color": "#8b5cf6",
+          "slides": [
+            {
+              "id": "epreuve",
+              "label": "📋 Format",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Oral — 20 pts",
+                  "subtext": "Exposé 5 min + Entretien 10 min (individuel) — évalué sur la prise de parole, pas la qualité du projet",
+                  "badge": "DNB 2026",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**10 pts maîtrise du sujet** + **10 pts expression orale** — les deux comptent également",
+                    "Format individuel : 5 min exposé + 10 min entretien (15 min total)",
+                    "Format collectif (jusqu'à 3 élèves) : 10 min exposé partagé + 15 min entretien individualisé",
+                    "Présenter un projet RÉEL vécu en classe — EPI, Parcours républicain ou Histoire des Arts",
+                    "Lire ses notes mot à mot = note expression orale ≤ 5/10 — utiliser des fiches mots-clés"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "projets",
+              "label": "📁 Projets",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Les 3 types de projets éligibles",
+                  "subtext": "Présenter UN seul projet — choix parmi EPI, Parcours républicains, Histoire des Arts",
+                  "badge": "10 pts — maîtrise du sujet",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**EPI (Enseignements Pratiques Interdisciplinaires)** : projets conduits en 4ème/3ème, croisant au moins 2 disciplines. Ex : 'Alimentation et développement durable' (SVT + Techno) | 'Médias et démocratie' (Français + HG-EMC)",
+                    "**Parcours Avenir (PAVO)** : orientation scolaire et professionnelle. Ex : enquête métiers, stage de 3ème",
+                    "**Parcours Citoyen (PACO)** : engagement républicain, laïcité. Ex : simulation d'élections, semaine de la presse",
+                    "**Parcours Éducatif Artistique et Culturel (PEAC)** : pratiques culturelles. Ex : sortie musée + production artistique",
+                    "**Parcours Santé (PS)** : bien-être et prévention. Ex : projet nutrition, PSC1",
+                    "**Histoire des Arts** : étude approfondie d'une œuvre (peinture, musique, cinéma, architecture) replacée dans son contexte historique et culturel"
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : si l'élève 'n'a pas de projet', il peut demander un sujet de remplacement le jour J.",
+                  "correct": false,
+                  "explanation": "FAUX. Tous les élèves de 3ème ont obligatoirement participé à au moins un EPI ou un parcours républicain. Le jury attend un projet RÉEL vécu. Présenter un projet fictif ou vague entraîne l'échec sur les 10 pts 'maîtrise du sujet'."
+                }
+              ]
+            },
+            {
+              "id": "expose",
+              "label": "🗣️ Exposé",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Structure de l'exposé — 5 minutes",
+                  "subtext": "Chrono strict — s'entraîner à voix haute avant le jour J",
+                  "badge": "10 pts — expression orale",
+                  "align": "center"
+                },
+                {
+                  "type": "steps",
+                  "items": [
+                    {
+                      "label": "0:00 — 0:45",
+                      "text": "Introduction : 'Bonjour, je vais vous présenter mon projet [titre]. Je l'ai choisi parce que [raison personnelle]. Je structurerai mon exposé en 3 parties : [plan].'"
+                    },
+                    {
+                      "label": "0:45 — 2:45",
+                      "text": "Présentation du projet : dans quelle matière / quel cadre ? Ce que vous avez FAIT concrètement. Qui ? Avec qui ? Quand ? Comment ?"
+                    },
+                    {
+                      "label": "2:45 — 4:15",
+                      "text": "Ce que j'ai appris : compétences disciplinaires renforcées + compétences transversales (travail en équipe, gestion de l'imprévu, prise de parole) + lien avec l'orientation"
+                    },
+                    {
+                      "label": "4:15 — 5:00",
+                      "text": "Conclusion : bilan en 1-2 phrases + ouverture (ce que je ferais différemment, ou comment prolonger ce travail)"
+                    }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "Les 10 pts expression orale évaluent : clarté de la diction, richesse du vocabulaire, structure du discours, contact visuel, capacité à répondre en reformulant",
+                    "Fiche mots-clés autorisée — phrases rédigées interdites (récitation = −5 pts)",
+                    "S'entraîner avec le chrono : 5 minutes = durée réelle, pas approximative"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "entretien",
+              "label": "💬 Entretien",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Les 3 questions incontournables",
+                  "subtext": "10 min — le jury cherche la capacité à réfléchir sur son propre apprentissage",
+                  "badge": "Entretien",
+                  "align": "center"
+                },
+                {
+                  "type": "steps",
+                  "items": [
+                    {
+                      "label": "Q1 — Intérêt",
+                      "text": "'Qu'est-ce qui vous a le plus intéressé dans ce projet ?' → Répondre avec sincérité + relier à une compétence. Structure : 'Ce qui m'a le plus intéressé, c'est [X]. Cela m'a permis de [compétence]. Par exemple, [anecdote].'"
+                    },
+                    {
+                      "label": "Q2 — Difficulté",
+                      "text": "'Qu'est-ce que vous avez trouvé difficile ?' → Montrer sa capacité réflexive, ne pas minimiser. Structure : 'La difficulté principale était [X]. J'ai résolu ça en [stratégie]. Si c'était à refaire, je [amélioration].'"
+                    },
+                    {
+                      "label": "Q3 — Orientation",
+                      "text": "'En quoi ce projet est-il lié à votre orientation ?' → Relier à un domaine ou intérêt. Structure : 'Ce projet m'a confirmé mon intérêt pour [X]. Je souhaite [lycée/filière] parce que [lien avec le projet].'"
+                    },
+                    {
+                      "label": "Autres fréquentes",
+                      "text": "'Pouvez-vous nous montrer une production concrète ?' | 'Comment avez-vous travaillé en groupe ?' | 'Qu'avez-vous appris sur vous-même ?'"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : répondre 'Tout m'a intéressé' est une bonne réponse à la Q1.",
+                  "correct": false,
+                  "explanation": "FAUX. Une réponse vague ne convainc pas le jury. Il faut identifier UN élément précis, le relier à une compétence, et illustrer avec une anecdote concrète vécue dans le projet."
+                }
+              ]
+            },
+            {
+              "id": "certifications",
+              "label": "🎓 Certifs",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Certifications en 3ème",
+                  "subtext": "ASSR2 · PIX · PSC1",
+                  "badge": "Hors DNB — mais obligatoires",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#8b5cf6",
+                  "label_front": "CERTIFICATION",
+                  "label_back": "DÉTAILS",
+                  "cards": [
+                    {
+                      "front": "ASSR2 — Sécurité Routière",
+                      "back": "QCM 40 questions — seuil : 35/40 (87,5%). Obligatoire pour s'inscrire au permis de conduire à 18 ans. Thèmes : vitesse/freinage, alcool/drogues, téléphone, signalisation, comportement en cas d'accident."
+                    },
+                    {
+                      "front": "PIX — Compétences numériques",
+                      "back": "5 domaines : (1) Information et données (2) Communication et collaboration (3) Création de contenu numérique (4) Protection et sécurité (5) Environnement numérique. Score 0-896 pixels — parcours adaptatif en ligne."
+                    },
+                    {
+                      "front": "PSC1 — Premiers secours",
+                      "back": "4 gestes : PLS (inconscient qui respire) · MCE + DEA (arrêt cardiaque) · Compression hémorragie · Numéros d'urgence. Non obligatoire DNB mais valorisé en lycée pro/BTS."
+                    },
+                    {
+                      "front": "Numéros d'urgence — mémoriser",
+                      "back": "15 = SAMU (urgence médicale) · 17 = Police · 18 = Pompiers · 112 = Numéro européen unique (sans crédit, dans toute l'UE) · 3114 = Prévention suicide"
+                    },
+                    {
+                      "front": "PLS — Position Latérale de Sécurité",
+                      "back": "Personne inconsciente qui RESPIRE. Coucher sur le côté gauche, genou supérieur fléchi, tête inclinée en arrière pour dégager les voies aériennes. Évite l'étouffement par vomissements."
+                    },
+                    {
+                      "front": "DEA / MCE — Arrêt cardiaque",
+                      "back": "Personne inconsciente qui NE RESPIRE PAS. (1) Appeler le 15 immédiatement (2) MCE : 30 compressions + 2 insufflations, 100-120/min (3) Brancher le DEA dès disponible → suivre les instructions vocales. Chaque minute sans MCE = −10% survie."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

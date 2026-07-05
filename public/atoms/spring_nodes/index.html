@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Spring Nodes — A2UI Atomic Catalog</title>
+  <meta name="description" content="Interactive mass-spring physics simulation — nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked initial position.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> /
+    <a href="https://a2uicatalog.ai/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / spring_nodes
+  </nav>
+
+  <h1>Spring Nodes</h1>
+  <p class="desc">Interactive mass-spring physics simulation — nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked initial position.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span>
+  </div>
+
+  
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><canvas id="snd7517" style="width:100%;height:340px;border-radius:12px;background:#0f172a;display:block;cursor:grab;"></canvas><script>(function(){var c=document.getElementById("snd7517");c.width=c.offsetWidth||600;c.height=340;var W=c.width,H=c.height,x=c.getContext("2d");var nodeDefs=[];var edgeDefs=[];var ns=nodeDefs.map(function(d,i){return{id:d.id||String(i),label:d.label||"",x:(0.1+Math.random()*0.8)*W,y:(0.1+Math.random()*0.8)*H,vx:0,vy:0,r:d.size||22,pinned:false};});var idx={};ns.forEach(function(n,i){idx[n.id]=i;});var drag=-1,lx=0,ly=0;function ptOn(e){var r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)};}function hit(px,py){for(var i=0;i<ns.length;i++){var n=ns[i],dx=px-n.x,dy=py-n.y;if(dx*dx+dy*dy<n.r*n.r)return i;}return -1;}c.addEventListener("mousedown",function(e){var p=ptOn(e);drag=hit(p.x,p.y);if(drag>=0){ns[drag].pinned=true;c.style.cursor="grabbing";}});window.addEventListener("mouseup",function(){if(drag>=0)ns[drag].pinned=false;drag=-1;c.style.cursor="grab";});window.addEventListener("mousemove",function(e){if(drag<0)return;var p=ptOn(e);ns[drag].x=p.x;ns[drag].y=p.y;ns[drag].vx=0;ns[drag].vy=0;});(function loop(){requestAnimationFrame(loop);for(var i=0;i<ns.length;i++){for(var j=i+1;j<ns.length;j++){var a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;var rep=1200/(d*d);if(!a.pinned){a.vx-=dx*rep/d;a.vy-=dy*rep/d;}if(!b.pinned){b.vx+=dx*rep/d;b.vy+=dy*rep/d;}}}edgeDefs.forEach(function(e){var ai=idx[e.source||e.from],bi=idx[e.target||e.to];if(ai===undefined||bi===undefined)return;var a=ns[ai],b=ns[bi],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;var rl=e.rest_length||120,f=(d-rl)*0.04;if(!a.pinned){a.vx+=dx/d*f;a.vy+=dy/d*f;}if(!b.pinned){b.vx-=dx/d*f;b.vy-=dy/d*f;}});ns.forEach(function(n){if(n.pinned)return;n.vx=(n.vx+(W/2-n.x)*0.001)*0.85;n.vy=(n.vy+(H/2-n.y)*0.001)*0.85;n.x=Math.max(n.r,Math.min(W-n.r,n.x+n.vx));n.y=Math.max(n.r,Math.min(H-n.r,n.y+n.vy));});x.clearRect(0,0,W,H);x.strokeStyle="#6366f144";x.lineWidth=1.5;edgeDefs.forEach(function(e){var ai=idx[e.source||e.from],bi=idx[e.target||e.to];if(ai===undefined||bi===undefined)return;x.beginPath();x.moveTo(ns[ai].x,ns[ai].y);x.lineTo(ns[bi].x,ns[bi].y);x.stroke();});ns.forEach(function(n){x.beginPath();x.arc(n.x,n.y,n.r,0,Math.PI*2);x.fillStyle="#6366f122";x.fill();x.strokeStyle="#6366f1";x.lineWidth=2;x.stroke();x.fillStyle="#fff";x.font="bold 11px system-ui";x.textAlign="center";x.textBaseline="middle";x.fillText(n.label.substr(0,12),n.x,n.y);});})();})();</script></div>
+</div>
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>nodes</td><td>array. Array of {id, label} objects. Defaults to 6 labelled nodes.</td><td>optional</td></tr><tr><td>edges</td><td>array. Array of {a, b} index pairs for spring connections.</td><td>optional</td></tr><tr><td>colour</td><td>string. Node and edge accent colour. Default</td><td>optional</td></tr><tr><td>bg</td><td>string. Background colour. Default</td><td>optional</td></tr><tr><td>height</td><td>integer. Canvas height px. Default 420.</td><td>optional</td></tr><tr><td>rest_length</td><td>integer. Spring rest length px. Default 110.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "spring_nodes"
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:spring_nodes",
+  "displayName": "Spring Nodes",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/spring_nodes",
+  "capabilities": [
+    "google-apps-script-web",
+    "web",
+    "google-meet-stage"
+  ],
+  "description": "Interactive mass-spring physics simulation \u2014 nodes repel each other (Coulomb) and are held by Hooke springs on defined edges. Click and drag to pin and move nodes. Settles naturally from a stacked initial position.",
+  "representativeQueries": [
+    "show a interactive mass-spring physics graph with drag-to-pin nodes",
+    "interactive mass-spring physics simulation \u2014 nodes repel each other (coulomb) and are held by hooke",
+    "render a spring nodes"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd apps-script-surface/gas-schema-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="https://a2uicatalog.ai/renderer" style="display:inline-block;margin-top:12px;font-size:12px;color:#818cf8;text-decoration:none;">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>MIT License</span>
+  </footer>
+</body>
+</html>

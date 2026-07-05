@@ -1,0 +1,357 @@
+{
+  "title": "Français — DNB 2026",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "hub",
+      "subjects": [
+        {
+          "id": "francais",
+          "label": "📖 Français",
+          "color": "#ec4899",
+          "slides": [
+            {
+              "id": "epreuve",
+              "label": "📋 Épreuve",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Français · 3 h · 100 pts → /5 = 20/20",
+                  "subtext": "Partie 1 : Texte + Réécriture (50 pts) — Partie 2 : Dictée (10 pts) — Partie 3 : Rédaction (40 pts)",
+                  "badge": "DNB 2026",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Réécriture** : chaque accord en cascade vaut des points — méthode par flèches obligatoire. Un seul oubli annule toute la structure.",
+                    "**Dictée** : −0,5 pt par erreur jusqu'à 0, jamais de note négative — soigner tous les accords",
+                    "**Rédaction** : 40 lignes MINIMUM — viser 50-60 — choisir UN sujet et s'y tenir",
+                    "**Analyse littéraire** : nommer la figure + citer le passage exact + interpréter l'intention de l'auteur (3 étapes)"
+                  ]
+                },
+                {
+                  "type": "steps",
+                  "items": [
+                    {"label": "1 h 10", "text": "Partie 1 — Texte littéraire : compréhension, grammaire, lexique + Réécriture (50 pts)"},
+                    {"label": "20 min", "text": "Partie 2 — Dictée : −0,5 par erreur jusqu'à 0 (10 pts)"},
+                    {"label": "1 h 30", "text": "Partie 3 — Rédaction : sujet d'imagination OU de réflexion au choix (40 pts)"}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "grammaire",
+              "label": "📝 Grammaire",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Étude de la langue",
+                  "subtext": "Classes grammaticales · Fonctions · Subordonnées · Concordance · Formation des mots",
+                  "badge": "Partie 1 · Compréhension",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#ec4899",
+                  "label_front": "NOTION",
+                  "label_back": "DÉFINITION",
+                  "cards": [
+                    {
+                      "front": "Classes variables (5)",
+                      "back": "Nom · Déterminant · Adjectif qualificatif · Pronom · Verbe"
+                    },
+                    {
+                      "front": "Classes invariables (4)",
+                      "back": "Adverbe (modifie verbe/adj) · Préposition (à, de, en…) · Conjonction de coordination · Conjonction de subordination"
+                    },
+                    {
+                      "front": "Conjonctions de coordination — moyen mnémo",
+                      "back": "mais · ou · et · donc · or · ni · car — MOEDONICCAR"
+                    },
+                    {
+                      "front": "Attribut du sujet",
+                      "back": "Qualifie le SUJET via un verbe d'état (être, paraître, sembler, devenir, rester, avoir l'air). S'accorde avec le sujet. ≠ COD (pas relié à un verbe d'action)"
+                    },
+                    {
+                      "front": "COD vs COI",
+                      "back": "COD : complément DIRECT du verbe, sans préposition. Ex : 'Je mange [une pomme]' | COI : complément INDIRECT, avec préposition. Ex : 'Je pense [à toi]'"
+                    },
+                    {
+                      "front": "Subordonnée relative",
+                      "back": "Introduite par pronom relatif (qui, que, dont, où, lequel…). Expansionne un ANTÉCÉDENT. Ex : 'La fille [que j'aime]' — antécédent : fille"
+                    },
+                    {
+                      "front": "Subordonnée complétive",
+                      "back": "Introduite par 'que'. Fonction : COD du verbe principal. Ex : 'Je pense [que tu as raison]'"
+                    },
+                    {
+                      "front": "Subordonnée conjonctive / circonstancielle",
+                      "back": "Introduite par conjonction de subordination (quand, parce que, bien que, bien que…). Exprime un CC (temps, cause, but…)"
+                    },
+                    {
+                      "front": "Concordance au discours indirect",
+                      "back": "Présent → Imparfait | Futur simple → Conditionnel présent | Passé composé → Plus-que-parfait | Repères temporels : demain→le lendemain, ici→là, hier→la veille"
+                    },
+                    {
+                      "front": "Imparfait vs Passé simple",
+                      "back": "Passé simple : 1er plan — action brève, soudaine, achevée (fait progresser le récit) | Imparfait : 2nd plan — description, habitude, durée, verbe d'état"
+                    },
+                    {
+                      "front": "Radical",
+                      "back": "Base porteuse du sens (port-, chant-, écri-…)"
+                    },
+                    {
+                      "front": "Préfixe",
+                      "back": "Élément AVANT le radical — modifie le sens sans changer la classe. Ex : in- (incapable), re- (revenir), anti-, pré-, dé-"
+                    },
+                    {
+                      "front": "Suffixe",
+                      "back": "Élément APRÈS le radical — change souvent la classe. Ex : -tion, -ment, -eur, -able, -iste | chanter → chanteur (verbe → nom)"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : dans 'Il semble intelligent', 'intelligent' est un COD.",
+                  "correct": false,
+                  "explanation": "FAUX. 'Intelligent' est un ATTRIBUT DU SUJET (relié par le verbe d'état 'sembler'). S'accorde avec le sujet. ≠ COD : le COD est relié à un verbe d'action sans préposition."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : 'Je pense que tu as raison' contient une subordonnée relative.",
+                  "correct": false,
+                  "explanation": "FAUX. C'est une subordonnée COMPLÉTIVE ('que' + COD du verbe 'pense'). Une relative expansionne un antécédent : 'La fille [que j'aime]' → antécédent 'fille' présent."
+                }
+              ]
+            },
+            {
+              "id": "reecriture",
+              "label": "✍️ Réécriture",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Exercice de Réécriture",
+                  "subtext": "Singulier/Pluriel · Changement de temps · Discours indirect",
+                  "badge": "5 à 10 pts · Partie 1",
+                  "align": "center"
+                },
+                {
+                  "type": "steps",
+                  "label": "Singulier ↔ Pluriel (méthode par flèches)",
+                  "items": [
+                    {"label": "Étape 1", "text": "Souligner le mot inducteur imposé par la consigne"},
+                    {"label": "Étape 2", "text": "Tracer des flèches vers TOUS les mots dépendants : verbes, adjectifs, déterminants, pronoms de rappel"},
+                    {"label": "Étape 3", "text": "Modifier chaque élément individuellement en suivant chaque flèche"},
+                    {"label": "Étape 4", "text": "Relire en suivant les flèches — un seul accord oublié annule les points de TOUTE la structure liée"}
+                  ]
+                },
+                {
+                  "type": "steps",
+                  "label": "Transposition au passé (imparfait / passé simple)",
+                  "items": [
+                    {"label": "Action soudaine", "text": "Présent → Passé simple (brève, achevée, 1er plan du récit)"},
+                    {"label": "Description/état", "text": "Présent (état/décor/habitude) → Imparfait (2nd plan, durée)"},
+                    {"label": "Verbe mental", "text": "Penser, savoir, croire → Imparfait (état continu)"},
+                    {"label": "Futur", "text": "Futur simple → Conditionnel présent (projection depuis le passé)"},
+                    {"label": "RÈGLE D'OR", "text": "Ne JAMAIS mélanger passé simple et passé composé dans le même texte"}
+                  ]
+                },
+                {
+                  "type": "steps",
+                  "label": "Discours direct → indirect",
+                  "items": [
+                    {"label": "Étape 1", "text": "Supprimer les guillemets et les deux-points introducteurs"},
+                    {"label": "Étape 2", "text": "Ajouter 'que' après le verbe de parole"},
+                    {"label": "Étape 3", "text": "Changer les pronoms de 1ère personne → 3ème personne"},
+                    {"label": "Étape 4", "text": "Concordance des temps : présent→imparfait | futur→conditionnel | PC→plus-que-parfait"},
+                    {"label": "Étape 5", "text": "Repères spatio-temporels : maintenant→alors | ici→là | demain→le lendemain | hier→la veille"}
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : au discours indirect, seuls les temps verbaux changent.",
+                  "correct": false,
+                  "explanation": "FAUX. Les repères spatio-temporels changent aussi : 'demain' → 'le lendemain', 'hier' → 'la veille', 'ici' → 'là', 'maintenant' → 'alors'. Oublier ces repères = erreur de concordance."
+                }
+              ]
+            },
+            {
+              "id": "figures",
+              "label": "🎭 Figures",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Figures de style",
+                  "subtext": "Nommer + Citer + Interpréter — en 3 étapes",
+                  "badge": "Analyse littéraire",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#ec4899",
+                  "label_front": "FIGURE",
+                  "label_back": "DÉFINITION + EXEMPLE",
+                  "cards": [
+                    {
+                      "front": "Métaphore",
+                      "back": "Assimilation implicite SANS outil de comparaison. Ex : « La vie est un long fleuve tranquille »"
+                    },
+                    {
+                      "front": "Comparaison",
+                      "back": "Ressemblance EXPLICITE avec outil (comme, tel que, ainsi que…). Ex : « Achille est rapide comme l'éclair »"
+                    },
+                    {
+                      "front": "Personnification",
+                      "back": "Caractéristiques humaines attribuées à un objet, animal ou abstraction. Ex : « La mort vint le chercher à l'aube »"
+                    },
+                    {
+                      "front": "Hyperbole",
+                      "back": "Exagération forte pour frapper l'esprit ou accentuer une émotion. Ex : « Il y avait un million de personnes »"
+                    },
+                    {
+                      "front": "Antithèse",
+                      "back": "Rapprochement de deux termes ou idées de sens opposés. Ex : « Partir c'est mourir un peu »"
+                    },
+                    {
+                      "front": "Allégorie",
+                      "back": "Représentation concrète et FILÉE d'une idée abstraite (prolongée sur tout un texte). Ex : la Mort comme la Faucheuse"
+                    },
+                    {
+                      "front": "Oxymore",
+                      "back": "Deux mots de sens opposés dans le MÊME groupe nominal. Ex : « une obscure clarté » (Corneille)"
+                    },
+                    {
+                      "front": "Périphrase",
+                      "back": "Expression longue remplaçant un mot. Ex : « le roi des animaux » = lion | « l'astre du jour » = soleil"
+                    }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Métaphore ≠ Comparaison** : 'La vie EST un fleuve' (métaphore — pas d'outil) | 'La vie est COMME un fleuve' (comparaison — outil 'comme')",
+                    "**Méthode analyse en 3 étapes** : (1) nommer et identifier la figure (2) citer le passage exact entre guillemets (3) interpréter l'intention de l'auteur dans le contexte de l'entrée littéraire",
+                    "Réponse RÉDIGÉE obligatoire — une liste à puces de figures ne constitue pas une analyse"
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : 'La vie est comme un fleuve tranquille' est une métaphore.",
+                  "correct": false,
+                  "explanation": "FAUX. C'est une COMPARAISON : l'outil 'comme' est présent. La métaphore dit 'La vie est un fleuve' — assimilation implicite, sans outil de comparaison."
+                }
+              ]
+            },
+            {
+              "id": "entrees",
+              "label": "📚 Entrées",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Les 4 Entrées littéraires — 3ème",
+                  "subtext": "Perspective annuelle : S'affirmer, s'émanciper — l'engagement humaniste",
+                  "badge": "Compréhension",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**A — Roman et récit à l'épreuve du réel** (témoigner, réparer) : autobiographie, témoignage historique (guerre, déportation), récit de catastrophes. L'écriture comme acte de justice pour donner voix aux opprimés.",
+                    "**B — Poésie lyrique** (l'amour) : union (célébration) vs désunion (rupture, deuil). Mécanismes formels clés : polysémie, rythme (mètres, césures, enjambements), effets sonores (allitérations, assonances, rimes).",
+                    "**C — Théâtre et société** (la scène et la Cité) : depuis l'Antiquité, espace politique. Texte (dialogues, didascalies) + pratique scénique (jeu, mise en scène). Dramaturges contemporains réinvestissent les mythes antiques.",
+                    "**D — Écrivains et journalistes acteurs de leur temps** (défendre des valeurs humanistes) : essor de la presse au XIXe, écrivain-journaliste (Hugo, Zola, Albert Londres). Formes : reportage, chronique, tribune, lettre ouverte, éditorial."
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "redaction",
+              "label": "✒️ Rédaction",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Rédaction — 40 pts",
+                  "subtext": "Imagination OU Réflexion — 40 lignes minimum, viser 50-60",
+                  "badge": "1 h 30 · Partie 3",
+                  "align": "center"
+                },
+                {
+                  "type": "steps",
+                  "label": "Sujet de réflexion — Structure argumentative",
+                  "items": [
+                    {"label": "Introduction", "text": "2-3 phrases : reformuler le sujet → prendre position → annoncer le plan"},
+                    {"label": "Argument 1", "text": "7-10 lignes : idée centrale + exemple précis (œuvre, actualité) + analyse. Transition : 'En premier lieu'"},
+                    {"label": "Argument 2", "text": "7-10 lignes : nuance ou approfondissement + exemple différent. Transition : 'Par ailleurs', 'En outre'"},
+                    {"label": "Argument 3", "text": "(Optionnel) Contre-argument ou ouverture si le temps le permet. Transition : 'En revanche'"},
+                    {"label": "Conclusion", "text": "2-3 phrases : bilan + ouverture vers une autre question. Transition : 'En conclusion'"}
+                  ]
+                },
+                {
+                  "type": "steps",
+                  "label": "Sujet d'imagination — Schéma narratif",
+                  "items": [
+                    {"label": "Situation initiale", "text": "Cadre (lieu + époque) et personnages présentés"},
+                    {"label": "Élément perturbateur", "text": "Événement qui rompt l'équilibre initial"},
+                    {"label": "Péripéties", "text": "Actions et réactions du héros — au moins 1 passage en discours direct"},
+                    {"label": "Résolution", "text": "Dénouement — comment le problème est réglé"},
+                    {"label": "Situation finale", "text": "Nouvel équilibre — registre soutenu, cohérence passé simple + imparfait"}
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : 'À mon avis, les réseaux sociaux sont mauvais.' est un bon début argumentatif.",
+                  "correct": false,
+                  "explanation": "FAUX. Une opinion sans argumentation = 0 pt sur les critères de raisonnement. Chaque affirmation doit être ÉTAYÉE par un exemple précis. La structure : opinion → exemple précis → analyse."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : dans une rédaction narrative, on peut alterner passé simple et passé composé.",
+                  "correct": false,
+                  "explanation": "FAUX. Choisir un seul système dès la première phrase : passé simple (1er plan, actions) + imparfait (2nd plan, descriptions). Le passé composé est réservé à l'écrit informel et à l'oral — mélanger les deux systèmes est l'erreur la plus fréquente."
+                }
+              ]
+            },
+            {
+              "id": "pieges",
+              "label": "⚠️ Pièges",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Pièges classiques — Français",
+                  "subtext": "Les erreurs les plus fréquentes et les plus pénalisées",
+                  "badge": "Examen",
+                  "align": "center"
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : l'attribut du sujet est un COD.",
+                  "correct": false,
+                  "explanation": "FAUX. L'attribut du sujet qualifie le sujet via un verbe d'état et s'accorde avec lui. Le COD complète un verbe d'action sans préposition."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : 'que' introduit toujours une subordonnée relative.",
+                  "correct": false,
+                  "explanation": "FAUX. 'que' introduit une relative UNIQUEMENT s'il y a un antécédent ('La fille que j'aime'). Sans antécédent ('Je pense que tu as raison'), c'est une complétive (COD). Chercher l'antécédent pour distinguer."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : oublier un accord dans la réécriture en cascade n'affecte que ce seul mot.",
+                  "correct": false,
+                  "explanation": "FAUX. Le barème est en CASCADE. Oublier un accord intermédiaire annule les points de TOUTE la structure liée. Méthode par flèches obligatoire."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : au discours indirect, seuls les temps verbaux changent.",
+                  "correct": false,
+                  "explanation": "FAUX. Les repères spatio-temporels changent aussi : demain→le lendemain, hier→la veille, ici→là, maintenant→alors."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

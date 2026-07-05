@@ -1,0 +1,124 @@
+direction: down
+vars: {
+  d2-config: {
+    layout-engine: elk
+    sketch: true
+  }
+}
+
+title: |md
+  # A2UI Knowledge Catalogue — Ingestion Pipeline
+| {near: top-center}
+
+classes: {
+  source_node: {
+    shape: document
+    style: {
+      fill: "#0d0d1a"
+      stroke: "#00f0ff"
+      stroke-width: 2
+      font-color: "#00f0ff"
+      shadow: true
+    }
+  }
+  schema_node: {
+    shape: document
+    style: {
+      fill: "#0d0d1a"
+      stroke: "#7f5af0"
+      stroke-width: 2
+      font-color: "#7f5af0"
+      shadow: true
+    }
+  }
+  prompt_node: {
+    shape: hexagon
+    style: {
+      fill: "#12002a"
+      stroke: "#cb3dff"
+      stroke-width: 2
+      font-color: "#cb3dff"
+      shadow: true
+    }
+  }
+  artifact_node: {
+    shape: document
+    style: {
+      fill: "#001a0d"
+      stroke: "#00ff88"
+      stroke-width: 2
+      font-color: "#00ff88"
+      shadow: true
+    }
+  }
+  gap_node: {
+    shape: document
+    style: {
+      fill: "#1a0000"
+      stroke: "#ff2d55"
+      stroke-width: 2
+      font-color: "#ff2d55"
+      shadow: true
+    }
+  }
+  human_node: {
+    shape: person
+    style: {
+      fill: "#0d0d1a"
+      stroke: "#ffcc00"
+      stroke-width: 2
+      font-color: "#ffcc00"
+    }
+  }
+  mechanical_node: {
+    style: {
+      fill: "#0a0a12"
+      stroke: "#334155"
+      stroke-width: 1
+      font-color: "#64748b"
+    }
+  }
+  live_node: {
+    shape: cloud
+    style: {
+      fill: "#0a001a"
+      stroke: "#7f5af0"
+      stroke-width: 3
+      font-color: "#a78bfa"
+      shadow: true
+    }
+  }
+}
+
+curriculum_doc: Official Curriculum {class: source_node}
+course_content: Course Content {class: source_node}
+p0: Prompt 0 -- Schema Generator {class: prompt_node}
+schema_ref: Schema YAML {class: schema_node}
+p1: Prompt 1 -- Extraction {class: prompt_node}
+curriculum: curriculum.md {class: artifact_node}
+p2: Prompt 2 -- Suitability Checker {class: prompt_node}
+gap_report: Gap Report JSON {class: gap_node}
+human: Human Review {class: human_node}
+p3: Prompt 3 -- A2UI Transformer {class: prompt_node}
+payload: payload.json {class: artifact_node}
+make_url: make_url.py {class: mechanical_node}
+gas: GAS Renderer {class: mechanical_node}
+live: Live A2UI App {class: live_node}
+
+curriculum_doc -> p0: official programme
+p0 -> schema_ref: generates
+curriculum_doc -> p1: what to cover
+course_content -> p1: how to explain it
+schema_ref -> p1: competency targets
+p1 -> curriculum: outputs
+schema_ref -> p2: required competencies
+curriculum -> p2: validates against
+p2 -> gap_report: coverage analysis
+gap_report -> human: flags gaps
+human -> curriculum: edit and fill
+curriculum -> p3: approved
+schema_ref -> p3: atom type mapping
+p3 -> payload
+payload -> make_url
+make_url -> gas
+gas -> live: deploy

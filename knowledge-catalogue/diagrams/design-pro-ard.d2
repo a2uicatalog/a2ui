@@ -1,0 +1,86 @@
+direction: down
+
+title: "A2UI Pro — Agentic Resource Directory on Cloud" {
+  near: top-center
+  shape: text
+  style.font-size: 18
+  style.bold: true
+  style.font-color: "#e2e8f0"
+}
+
+source: "New certification doc\n(GCS upload trigger)" {
+  shape: document
+  style.fill: "#292524"
+  style.font-color: "#d6d3d1"
+  style.stroke: "#57534e"
+}
+
+pipeline: "Gemini Agent  ·  Cloud Run job" {
+  style.fill: "#1a3a6e"
+  style.stroke: "#2563eb"
+  style.font-color: "#bfdbfe"
+  p0: "Prompt 0 — generate schema"
+  p1: "Prompt 1 — extract curriculum"
+  p2: "Prompt 2 — suitability check"
+  p3: "Prompt 3 — transform → payload"
+  p0 -> p1 -> p2 -> p3
+}
+
+ard: "Agentic Resource Directory  ·  Cloud Storage + Cloud Run" {
+  style.fill: "#0f172a"
+  style.stroke: "#6366f1"
+  style.stroke-width: 3
+  style.font-color: "#e2e8f0"
+
+  knowledge: "Knowledge Catalogue" {
+    style.fill: "#0c4a6e"
+    style.font-color: "#bae6fd"
+    style.stroke: "#0369a1"
+    k1: "schemas/  (competency specs)"
+    k2: "*.curriculum.md  (extracted knowledge)"
+    k3: "registry.yaml"
+    k4: "/.well-known/agent-resources  (A2A endpoint)"
+  }
+
+  ui: "UI Vocabulary" {
+    style.fill: "#312e81"
+    style.font-color: "#c7d2fe"
+    style.stroke: "#4338ca"
+    u1: "atom type definitions"
+    u2: "render capabilities"
+  }
+}
+
+consumers: "Consumers" {
+  style.fill: "#0f172a"
+  style.stroke: "#374151"
+
+  gas: "GAS Hub App\n(one consumer)" {
+    style.fill: "#14532d"
+    style.font-color: "#bbf7d0"
+    style.stroke: "#166534"
+  }
+
+  agents: "Any A2A Agent\n(Gemini · Claude · future)" {
+    style.fill: "#4c1d95"
+    style.font-color: "#ddd6fe"
+    style.stroke: "#6d28d9"
+  }
+
+  future: "Future consumers\n(LMS · mobile · print)" {
+    style.fill: "#1c1917"
+    style.font-color: "#78716c"
+    style.stroke: "#57534e"
+    style.stroke-dash: 4
+  }
+}
+
+
+source -> pipeline: "triggers"
+pipeline -> ard.knowledge: "writes curriculum.md\nschema · payload"
+ard.knowledge -> pipeline: "reads per prompt"
+pipeline -> consumers.gas: "deploys *_page.gs"
+ard -> consumers.gas: "UI vocab"
+ard.knowledge -> consumers.agents: "curriculum JSON\ndiscovery query"
+ard.knowledge -> consumers.future: "any format"
+consumers.agents -> ard.knowledge: "/.well-known/\nagent-resources"

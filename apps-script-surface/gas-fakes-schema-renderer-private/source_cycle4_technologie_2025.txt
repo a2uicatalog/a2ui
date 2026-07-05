@@ -1,0 +1,3218 @@
+Projet d’aménagement des programmes
+de technologie du cycle 4
+
+Les aménagements du programme en vigueur depuis la rentrée 2024 concernent :
+• l’introduction d’exemples de réussite ;
+• l’intégration de références au socle commun de connaissances, de compétences et de culture.
+
+Juin 2025
+
+Ce projet de programme n’engage pas, à ce stade, le ministère de l’Éducation nationale.
+
+Sommaire
+Table des matières
+Préambule .............................................................................................................................................. 4
+Un enseignement qui prépare les élèves à relever les défis technologiques liés aux enjeux de société et de la
+transition écologique ................................................................................................................................................ 4
+Les objets et les systèmes techniques, supports privilégiés de l’enseignement de technologie ............................. 4
+Un enseignement de technologie qui permet un usage raisonné des objets et des systèmes techniques en réponse
+aux besoins des sociétés et aux exigences de leur environnement ......................................................................... 4
+Un renforcement de la pensée informatique ........................................................................................................... 4
+Des apprentissages inscrits dans une logique spiralaire de complexité croissante ................................................. 5
+« Faire pour apprendre et apprendre à faire » ......................................................................................................... 6
+Contribution de l’enseignement de technologie au socle commun de connaissances de compétences et de culture
+................................................................................................................................................................................... 6
+Le développement des compétences psychosociales (CPS) ................................................................................... 11
+Les compétences numériques dans le cadre de référence des compétences numériques CRCN ......................... 12
+Des supports et des espaces de formation consacrés aux apprentissages attendus ............................................. 13
+
+Les objets et les systèmes techniques : leurs usages et leurs interactions à découvrir et à analyser ....... 14
+Compétences de fin de cycle .................................................................................................................................. 14
+Progressivité pour atteindre ces compétences en fin de cycle .............................................................................. 14
+Cycle 4 ......................................................................................................................................................................... 15
+L’évolution des OST................................................................................................................................................. 15
+Usages et impacts sociétaux du numérique ........................................................................................................... 17
+L’OST dans son environnement .............................................................................................................................. 19
+Le choix d’un OST dans un contexte de développement durable .......................................................................... 21
+La performance des OST ......................................................................................................................................... 23
+
+Structure, fonctionnement, comportement : des objets et des systèmes techniques à comprendre ....... 25
+Compétences de fin de cycle .................................................................................................................................. 25
+Progressivité pour atteindre ces compétences en fin de cycle .............................................................................. 25
+Cycle 4 ......................................................................................................................................................................... 27
+Fonctions, solutions, constituants de la chaine d’énergie ...................................................................................... 27
+Matériaux et procédés ............................................................................................................................................ 29
+Fonctions, solutions, constituants de la chaine d’information ............................................................................... 31
+Structuration et traitement de données ................................................................................................................. 32
+La circulation de l’information dans un réseau informatique ................................................................................ 34
+Le dépannage et la réparation ................................................................................................................................ 35
+La programmation d’une nouvelle fonctionnalité .................................................................................................. 38
+
+Création, conception, réalisation, innovations : des objets à concevoir et à réaliser ............................... 41
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+2
+
+Compétences de fin de cycle .................................................................................................................................. 41
+Progressivité pour atteindre ces compétences en fin de cycle .............................................................................. 41
+Cycle 4 ......................................................................................................................................................................... 43
+La gestion de projet technique ............................................................................................................................... 43
+Le prototypage de solutions ................................................................................................................................... 45
+Le choix des matériaux............................................................................................................................................ 47
+Le choix d’une source d’énergie ............................................................................................................................. 48
+L’assemblage de constituants ................................................................................................................................. 50
+La modélisation et la fabrication............................................................................................................................. 51
+Les objets communicants........................................................................................................................................ 53
+La validation du comportement mécanique d’un matériau ................................................................................... 54
+La validation des performances d’un OST............................................................................................................... 55
+La programmation des OST ..................................................................................................................................... 57
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+3
+
+Préambule
+Un enseignement qui prépare les élèves à relever les défis technologiques liés aux enjeux de société et
+de la transition écologique
+La société est confrontée à de nombreux enjeux et défis que les générations actuelles et futures auront à relever. Les
+besoins élémentaires de tout être humain (alimentation, santé, habitat, sécurité, etc.), les transitions actuelles
+(énergétique, climatique, écologique, numérique, etc.), sont à considérer notamment dans la perspective du
+développement durable. Les possibilités et les innovations offertes par l’avènement du numérique transforment en
+profondeur les relations entre les individus, ainsi que celles entre les individus et les objets ou systèmes techniques
+(OST).
+Les technologies occupent, avec les sciences, une place centrale pour l’avenir de l’humanité en apportant des réponses
+aux défis environnementaux, sociaux, économiques et industriels. Les innovations technologiques induisent des
+changements rapides de société, parfois radicaux. Elles permettent aussi des avancées spectaculaires dans divers
+domaines (médecine, transports, agriculture, industrie, grands équipements et ouvrages, services, tourisme,
+communication, etc.).
+Les objets et les systèmes techniques sont omniprésents dans la vie courante et dans tous les secteurs d’activité
+économiques, industriels et de services de la société. Ils soulèvent régulièrement des questions d’ordre éthique. Il
+convient d’apporter, sans rejet ni fascination, des éléments de réponse aux élèves pour construire ou développer une
+pensée critique, notamment relative aux usages raisonnés des objets et des systèmes techniques.
+L’enseignement de la technologie confronte l’élève à des situations concrètes de la vie quotidienne et permet de faire
+acquérir aux élèves des compétences manuelles telles que fabriquer, savoir utiliser, ou réparer un objet.
+
+Les objets et les systèmes techniques, supports privilégiés de l’enseignement de technologie
+La notion d’objet ou de système technique utilisée dans ce programme inclut les produits et les services du quotidien,
+les instruments scientifiques, les grands équipements et les ouvrages, mais aussi les logiciels et les programmes
+informatiques. La distinction entre objet et système techniques dépend du niveau d’observation et d’analyse de
+l’observateur et de la complexité des relations avec son environnement. Un élève doit pouvoir déplacer son point
+d’observation et d’analyse du niveau de l’objet à celui du système.
+Exemple : une montre connectée peut être regardée comme un objet technique (design, ergonomie, matériaux,
+énergie, usages, paramétrages, acquisition et mise en forme de données, etc.). Elle peut être considérée comme
+appartenant à un système dès lors qu’elle est connectée à un système de géolocalisation, qu’elle partage des données
+avec différentes applications (santé, bien-être, sport, cybersécurité) ou qu’elle est reliée à un terminal de télé
+assistance.
+
+Un enseignement de technologie qui permet un usage raisonné des objets et des systèmes techniques
+en réponse aux besoins des sociétés et aux exigences de leur environnement
+Au travers d’activités technologiques variées (concevoir, réaliser, mettre en service, utiliser, réparer ou maintenir un
+objet ou un système technique, interagir sur et avec son environnement), l’enseignement de technologie mobilise
+différentes disciplines (notamment les sciences et les mathématiques) et prend en considération les relations entre
+sciences, technologies et société. Cet apprentissage se fait au cours des trois années du cycle 4, à travers des supports
+et dans des contextes variés.
+Cet enseignement stimule la curiosité des élèves, développe leur culture technologique et contribue à construire leur
+culture scientifique. Il initie les élèves à la compréhension et à la réalisation des objets et des systèmes techniques
+contemporains. Il leur permet d’appréhender les solutions techniques retenues selon les champs d’études suivants :
+matériaux, énergies, information (MEI), dans le respect de certaines exigences (écologie, sécurité, etc.).
+
+Un renforcement de la pensée informatique
+L’informatique est largement présente dans les objets et les systèmes techniques du XXIe siècle, avec une accélération
+fulgurante ces dernières années. Elle occupe donc une place significative dans le programme de technologie, à la fois
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+4
+
+à travers ses usages (en lien avec le référentiel du cadre de référence des compétences numériques ou CRCN) et à
+travers l’acquisition des concepts de base de la science informatique. L’ensemble contribue à construire la pensée
+informatique des élèves par la construction de plusieurs processus cognitifs complexes : abstraction, décomposition,
+modélisation et représentation sous forme d’algorithme, simulation, résolution à l’aide d’un dispositif de traitement.
+Ces processus font appel à plusieurs compétences cognitives clés :
+• l’analyse (pour comprendre un système ou une situation) ;
+• le raisonnement logique (pour enchaîner des étapes de façon cohérente) ;
+• la capacité à planifier et à prévoir des résultats ;
+• la pensée critique (pour évaluer la pertinence d’une solution) ;
+• la métacognition (prendre du recul sur sa démarche et l’améliorer).
+En technologie, la pensée informatique est une compétence transversale et structurante. Elle permet aux élèves de :
+• modéliser des systèmes techniques, en comprenant le lien entre capteurs, traitement et actionneurs ;
+• structurer leur raisonnement, en passant d’une idée intuitive à une solution formalisée (logigramme,
+algorithme, code) ;
+• travailler en mode projet, en planifiant des étapes de conception, d’essai-erreur, et de correction.
+• développer leur autonomie face à la complexité en les amenant à construire une solution de manière
+itérative en cherchant, testant et améliorant successivement.
+• transférer des compétences dans d’autres disciplines (mathématiques, physique, SVT, etc.) où le
+raisonnement logique est aussi une clé des apprentissages.
+• renforcer la confiance en les élèves, car cette démarche valorise l’expérimentation, l’erreur comme étape de
+progrès, et l’esprit d’initiative.
+La pensée informatique devient ainsi un levier d’apprentissage actif et un outil de réussite scolaire, en donnant aux
+élèves les moyens de comprendre et de maîtriser le monde technique et numérique qui les entoure.
+En technologie, on peut la développer à travers des activités pratiques telles que la programmation de cartes
+microcontrôleurs (gestion de capteurs, automatismes), la modélisation d’objets techniques avec des logigrammes, ou
+encore la simulation de systèmes. De nombreux objets ou systèmes techniques (barrières de parking, ouvrage
+connecté, véhicule autonome, système d’alarme, système d’arrosage et ventilation d’une serre, gestion intelligent
+d’un éclairage, robot suiveur de ligne, etc.), des projets, concours ou défis technologiques permettent d’aborder
+concrètement cette pensée informatique, tout en liant analyse technique, algorithmique et programmation.
+La science informatique est à la fois présente dans les programmes de mathématiques et de technologie : les
+professeurs de ces deux disciplines se coordonnent et accompagnent les élèves dans la compréhension et les
+applications des concepts communs qui structurent la science informatique autour de quatre piliers, à savoir les
+données et leurs représentations, les algorithmes, les langages, les machines. L’approche des deux disciplines est
+nécessairement complémentaire pour permettre aux élèves d’appréhender les concepts sous-jacents. Ces derniers
+étant mobilisés dans une approche appliquée en technologie et par une approche de l’informatique fondamentale en
+mathématiques. En fonctionnant en interaction, ces quatre piliers donnent à l’étude de la chaîne d’information toute
+sa cohérence.
+
+Des apprentissages inscrits dans une logique spiralaire de complexité croissante
+Le programme de technologie du cycle 4 est structuré autour de trois thèmes et de neuf compétences à acquérir tout
+au long du cycle. Les trois thèmes doivent être associés et abordés progressivement dans le cadre des séquences
+pédagogiques. Les repères de progressivité annuels permettent de fixer des attendus pour chacun des niveaux (5ᵉ, 4ᵉ,
+3ᵉ).
+La complexité des objets et des systèmes techniques est abordée au travers du triptyque Matière, Énergie, Information
+(MEI). L’enseignement permet aux élèves d’établir des liens entre les solutions à apporter et les fonctions des objets
+et des systèmes techniques appelés à y répondre. Les deux premiers thèmes correspondent respectivement à l’analyse
+externe et à l’analyse interne des objets et des systèmes techniques. Le troisième thème, quant à lui, offre l’occasion
+de concevoir des solutions concrètes, fondées sur les moyens disponibles, dans le cadre de projets techniques ou de
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+5
+
+défis collaboratifs, ancrés sur des contextes, notamment locaux. Les élèves travaillent en équipe. En proposant des
+solutions techniques en réponse à des besoins, leur créativité est valorisée.
+•
+
+•
+
+•
+
+Le thème « Les objets et les systèmes techniques : leurs usages et leurs interactions à découvrir et analyser »
+permet, dans le cadre d’une approche socioculturelle, d’étudier le cycle de vie, les usages et le fonctionnement
+global des objets et des systèmes techniques. Ce thème vise à une meilleure compréhension de l’environnement
+technologique de proximité, dans l’environnement quotidien des élèves ou approché dans le cadre de la
+découverte des métiers ainsi que les relations entre la technologie, les systèmes naturels, les sciences, la société,
+l’économie, le développement durable, etc.
+Le thème « Structure, fonctionnement, comportement : des objets et des systèmes techniques à comprendre »
+permet, dans le cadre d’approches scientifiques et techniques, d’étudier la structure interne des objets et des
+systèmes techniques, d’évaluer leurs comportements, leurs performances et leurs caractéristiques. Ce thème vise
+à mieux comprendre les choix faits lors de leur conception en réponse à des besoins, à un cahier des charges et à
+des exigences. Il s’agit également de comprendre comment certains objets et systèmes techniques, à partir
+d’acquisition et de traitements de données, communiquent et interagissent avec leur environnement.
+Le thème « Création, conception, réalisation, innovations : des objets à concevoir et à réaliser » permet, dans le
+cadre d’une démarche d’ingénierie, d’imaginer, d’innover en faisant preuve de créativité, de concevoir, de mettre
+au point un prototype, de simuler, de fabriquer, de programmer, de valider des solutions techniques en réponse à
+un besoin ou à une évolution attendue.
+
+« Faire pour apprendre et apprendre à faire »
+L’enseignement de technologie vise l’acquisition des neuf compétences attendues en fin de cycle.
+Au cycle 4, la démarche d’investigation, la démarche technologique, la démarche de résolution de problèmes et la
+pensée informatique soutiennent l’étude des OST et la démarche de projet. Ces démarches pour apprendre et le
+recours à la créativité en font un enseignement spécifique qui donne tout son sens à la formule « faire pour apprendre
+et apprendre à faire ». Ces démarches pilotées par l’enseignant permettent de mettre les élèves en activité dans des
+contextes variés. Associées à des temps de structuration et de généralisation, elles permettent de construire,
+d’appliquer et de valider des connaissances et des compétences en sciences, en mathématiques et en ingénierie.
+Il convient, dans le cadre des activités proposées, de valoriser la créativité, l’intuition, l’imagination et la collaboration.
+La mise en place de pratiques pédagogiques qui s’adressent et profitent à tous les élèves, filles et garçons, est un enjeu
+majeur pour cet enseignement au collège et dans l’accompagnement à l’orientation vers des filières et des métiers
+scientifiques, technologiques, industriels, artisanaux ou de services techniques.
+
+Contribution de l’enseignement de technologie au socle commun de connaissances de compétences et
+de culture
+La formation des élèves requiert l’acquisition de connaissances et de compétences fondatrices – savoirs, savoir-faire,
+attitudes et dispositions – dans l’ensemble des domaines et disciplines enseignés tout au long de la scolarité
+obligatoire. Elle requiert en particulier l’acquisition de connaissances et de compétences fondamentales de français et
+de mathématiques. Le parcours de formation proposé aux élèves se déploie et se consolide grâce à la complémentarité
+de l’ensemble des autres champs disciplinaires et disciplines enseignés. Ces apprentissages sont enrichis par des
+éducations transversales qui permettent aux élèves d’élargir leur horizon et leurs perspectives.
+Contributions de la technologie aux apprentissages fondamentaux de français (AFF)
+Écouter et comprendre (AFF1)
+Compétences
+attendues en
+fin de collège
+
+• Rendre compte de ses activités, expliquer un phénomène à l’oral en utilisant le lexique et les
+formes langagières spécifiques des sciences et de la technologie.
+• Argumenter en mobilisant des connaissances et des ressources scientifiques simples.
+• Mobiliser les outils langagiers, et en particulier des connecteurs logiques, pour exprimer à
+l’oral les différentes étapes d’une démarche scientifique ou technologique.
+
+Prendre la parole, communiquer, dialoguer (AFF2)
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+6
+
+Compétences
+attendues en
+fin de collège
+
+• Décrire à l’oral un objet, une idée, une hypothèse, un phénomène en utilisant le vocabulaire
+disciplinaire adapté.
+• Décrire à l’oral les étapes d’une démarche scientifique ou technologique.
+• Exprimer un raisonnement structuré à l’aide de connecteurs logiques adaptés.
+• Décrire à l’oral une corrélation et pouvoir s’interroger précisément sur sa nature.
+• Décrire à l’oral une relation de cause à effet.
+• Décrire à l’oral un résultat expérimental présenté selon différents moyens de communication
+(graphiques, tableaux, schémas).
+• Communiquer à l’oral sur un sujet scientifique, technologique dans le contexte d’un débat,
+d’un exposé ou d’un projet.
+
+Écrire (AFF3)
+Compétences
+attendues en
+fin de collège
+
+• Décrire à l’écrit un objet, une idée, une hypothèse, un phénomène en utilisant le vocabulaire
+disciplinaire.
+• Décrire à l’écrit les étapes d’une démarche scientifique ou technologique.
+• Exprimer un raisonnement structuré à l’aide de connecteurs logiques adaptés.
+• Décrire à l’écrit une corrélation ou une relation (notamment de cause à effet).
+• Décrire à l’écrit un résultat expérimental présenté selon différents moyens de communication
+(graphiques, tableaux, schémas).
+• Communiquer à l’écrit sur un sujet scientifique, technologique dans le contexte d’un exposé
+ou d’un projet.
+• Présenter à l’écrit des résultats de mesures ou de simulations.
+• Utiliser des écritures symboliques.
+• Produire différentes formes d’écrits (schéma, dessin, croquis, tableau, graphique, texte, carte
+heuristique) et être capable de passer d’une forme à l’autre.
+• Écrire pour rendre compte de ses observations, de son raisonnement et pour communiquer, y
+compris en gardant la trace de ses brouillons.
+
+Lire, comprendre, interpréter, apprécier (AFF4)
+Compétences
+attendues en
+fin de collège
+
+•
+•
+•
+•
+•
+
+Mobiliser le vocabulaire scientifique spécifique.
+Lire des représentations symboliques.
+Lire une valeur numérique en notation scientifique.
+Reconnaître les principales unités de mesure dans un texte.
+Utiliser différentes formes d’écrits (schéma, dessin, croquis, tableau, graphique, texte, carte
+heuristique) et être capable de passer d’une forme à l’autre.
+• Lire, comprendre et apprécier un texte scientifique ou technique.
+• Reconnaître des caractéristiques des textes scientifiques ou techniques.
+
+Contributions de la Technologie aux apprentissages fondamentaux de mathématiques
+Utiliser les nombres, calculer (AFM1)
+Compétences
+attendues en
+fin de collège
+
+• Écrire les valeurs numériques des grandeurs à l’aide de nombres décimaux ou de nombres en
+écriture scientifique en utilisant l’unité appropriée.
+• Calculer la valeur numérique d’une grandeur, en mobilisant les quatre opérations.
+• Comparer deux valeurs d’une grandeur, en effectuant et en interprétant leur quotient.
+• Modéliser la relation entre plusieurs grandeurs à l’aide d’une expression littérale.
+• Substituer une valeur numérique à une lettre dans une expression littérale, en utilisant l’unité
+appropriée.
+• Estimer et comparer des ordres de grandeur.
+• Utiliser les opérations sur les puissances de dix.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+7
+
+Mesurer et utiliser des grandeurs (AFM2)
+Compétences
+attendues en
+fin de collège
+
+• Associer une grandeur à une propriété d’un système naturel ou technique.
+• Mesurer des grandeurs afin d’en exprimer la valeur numérique avec l’unité et la précision
+adaptées.
+• Avoir conscience de la variabilité des mesures et estimer l’ordre de grandeur de l’incertitude
+de mesure dans des cas simples.
+• Utiliser des grandeurs quotients (comme la vitesse et la masse volumique) et des grandeurs
+produits (comme la surface et le volume).
+• Connaître les ordres de grandeurs associées à la caractérisation de systèmes ou de
+phénomènes courants.
+
+Se repérer dans l’espace et dans le temps (AFM3)
+Compétences
+attendues en
+fin de collège
+
+• Identifier les échelles spatiales et temporelles caractéristiques des phénomènes et des
+systèmes naturels et techniques (longueurs et temps caractéristiques).
+• Distinguer différentes échelles temporelles : temps géologique, temps historique, temps du
+vivant (espèces humaine et non humaines), temps d’évolution à l’échelle microscopique.
+• Relier les unités de temps (jour, année) aux phénomènes astronomiques.
+
+Représenter, traiter et interpréter des données (AFM4)
+Compétences
+attendues en
+fin de collège
+
+• Représenter une situation à l’aide de schémas utilisant des formes géométriques simples.
+• Lire, organiser et interpréter des tableaux de données, des graphiques, des diagrammes dans
+différents contextes scientifiques et technologiques (observation, expérimentation,
+modélisation, simulation).
+• Représenter, analyser et discuter la variabilité d’une mesure à l’aide d’un graphique
+(histogramme, nuage de points) ou d’indicateurs statistiques (moyenne, médiane,
+pourcentage).
+• Représenter la relation entre deux grandeurs sur un diagramme cartésien.
+• Identifier une situation de proportionnalité entre deux grandeurs à partir de la représentation
+graphique de leur relation.
+• Évaluer les objets et les systèmes techniques selon des exigences ou des critères identifiés.
+• Représenter et exploiter les données de diverses natures associées au fonctionnement d’un
+objet et d’un système technique.
+• Identifier la mise en forme de données, leur transmission, ou leur stockage dans des fichiers
+(texte, image, nombre).
+• Identifier et représenter la circulation d’une information.
+• Déterminer les données utilisées et produites par un programme associé à la fonctionnalité
+d’un objet ou système technique en vue de la modifier.
+
+Construire un raisonnement logique (AFM5)
+Compétences
+attendues en
+fin de collège
+
+• Pratiquer et concevoir des démarches scientifiques et technologiques.
+• Formuler une question ou un problème scientifique, déterminer une hypothèse qui peut être
+éprouvée.
+• Interpréter des résultats au regard d’une hypothèse, en tirer des conclusions en mobilisant
+des arguments scientifiques.
+• Concevoir et modifier un algorithme pour programmer un objet technique et en vérifier le
+bon fonctionnement.
+• Mobiliser la logique et exploiter des connaissances scientifiques et des données pour trouver
+la solution d’un problème.
+• Tester des hypothèses pour diagnostiquer une panne.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+8
+
+• Élaborer un processus de conception et de réalisation dans un délai prescrit, avec des tâches
+identifiées.
+• Justifier le choix d‘un matériau, d’une source et forme d’énergie, des constituants pour
+répondre à un besoin.
+• Réaliser et mettre au point un programme informatique.
+Contributions de la discipline « Technologie » aux éléments de culture commune
+La discipline technologie contribue également à l’acquisition par les élèves des éléments de culture commune et qui
+par ailleurs permettent des rapprochements interdisciplinaires significatifs et parfois inattendus. Ils peuvent éclairer
+les professeurs et les équipes éducatives sur les communautés d’objectifs qui unissent les différents enseignements,
+sans déroger à leurs spécificités disciplinaires. Pour chacune des compétences détaillées listées ci-après, les principaux
+éléments de culture commune concernés sont précisés.
+Acquérir et mobiliser les démarches et les gestes fondamentaux de l’apprentissage (ECC1)
+
+Compétences
+attendues en
+fin de collège
+
+• Proposer, définir et mettre en œuvre des protocoles de test ou de dépannage pour mesurer
+une caractéristique, une performance, pour réparer un système défectueux.
+• Programmer un algorithme, modifier et tester le programme informatique associé à une
+nouvelle fonctionnalité d’un objet et système technique.
+
+Raisonner, définir, argumenter, démontrer, prouver, avoir le sens de la vérité (ECC2)
+
+Compétences
+attendues en
+fin de collège
+
+• Évaluer, choisir un objet ou système technique et défendre ce choix en prenant en compte
+son cycle de vie, des exigences attendues ou des critères (caractéristiques, performances,
+coût, indice de réparabilité, impact environnemental).
+• Justifier le choix d’un matériau et de son procédé de mise en forme au regard des contraintes
+techniques et environnementales.
+• Proposer un protocole de test pour valider la tenue mécanique d’un matériau ou pour valider
+le comportement et les performances d’un objet technique.
+• Formuler des hypothèses expliquant le dysfonctionnement d’un objet technique et proposer
+un protocole de dépannage puis de réparation.
+
+Faire preuve d’esprit critique (ECC3)
+
+Compétences
+attendues en
+fin de collège
+
+• Évaluer les objets et systèmes techniques selon des exigences ou des critères identifiés
+(caractéristiques, performances, coût, indice de réparabilité, impacts environnementaux).
+• Justifier le choix d’un matériau, d’une énergie, d’un procédé de réalisation au regard de
+contraintes techniques et environnementales.
+• Formuler des hypothèses expliquant le dysfonctionnement d’un objet technique, d’un
+programme informatique.
+
+Se situer dans l’espace et dans le temps naturel ou historique (ECC4)
+
+Compétences
+attendues en
+fin de collège
+
+• Identifier les innovations de rupture qui sont attachées à l’évolution d’un objet ou d’un
+système technique.
+• Mettre en relation une découverte scientifique avec ses développements technologiques et
+leurs effets sur la société.
+• Élaborer un processus de conception et de réalisation dans une durée, avec des tâches
+identifiées.
+
+Être curieux de la pluralité des langages et des langues et s’ouvrir aux richesses des autres cultures (ECC5)
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+9
+
+Compétences
+attendues en
+fin de collège
+
+• Savoir que les technologies du monde entier utilisent des démarches et des outils de
+description ou représentation, de conception, de programmation leur permettant de
+partager leurs connaissances sur les objets et systèmes techniques
+
+Acquérir des savoir-faire artistiques et développer une sensibilité esthétique (ECC6)
+
+Compétences
+attendues en
+fin de collège
+
+• Contribuer à l’aide d’un objet ou système technique (OST), de techniques et de technologies à
+la production ou à la création d’œuvres d’art (anciennes, modernes, contemporaines).
+
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Compétences
+attendues en
+fin de collège
+
+• Choisir un matériau, une source d’énergie, les constituants pour un objet ou système
+technique (OST).
+• Mettre en œuvre une simulation pour valider la tenue mécanique d’un matériau.
+• Proposer et fabriquer un ensemble de solutions pour produire un nouvel OST (croquis,
+schéma, graphique, algorithme, modélisation).
+• Choisir les moyens de réalisation et produire la forme voulue et assembler un prototype.
+• Définir et mettre en œuvre un protocole pour mesurer une caractéristique, une performance
+d’un OST.
+• Réaliser le dépannage ou la réparation d’un système défectueux (et notamment : réaliser une
+pièce sur mesure pour réparer un objet technique).
+• Élaborer ou concevoir un algorithme permettant de répondre au besoin visé, puis réaliser,
+tester et mettre au point un programme structuré (appel de sous-programmes ou de
+fonctions) commandant le système réel incluant une interaction entre un humain et une
+machine.
+• Réaliser un interface entre deux objets techniques communicants.
+
+Découvrir, observer, questionner et décrire le monde (ECC8)
+
+Compétences
+attendues en
+fin de collège
+
+• Analyser l’incidence d’un objet ou système technique (OST) sur la société et, réciproquement,
+l’incidence des contraintes sociétales sur les OST, dans des cas simples.
+• Analyser le rôle du développement stratégique du numérique au sein de la société et des
+environnements professionnels (ou des métiers), dans des cas simples.
+• Décrire l’expérience de l’utilisateur d’un OST à l’aide de modes de représentation choisis.
+• Décrire un OST en caractérisant sa chaîne d’information et sa chaîne d'énergie.
+• Décrire et comprendre le fonctionnement d’un OST par le biais de mesures réalisées sur cet
+objet.
+
+Connaître le corps humain dans ses différentes dimensions : anatomiques, physiologiques, culturelles et sociales
+(ECC9)
+
+Compétences
+attendues en
+fin de collège
+
+• Identifier les avancées technologiques notamment dans les domaines de la médecine, des
+transports et de la mobilité, de l’agriculture, des équipements sportifs et ouvrages, des
+services de soin à la personne, de la communication et de la prévention des risques.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+10
+
+Comprendre et interroger rationnellement les transformations environnementale, climatique, énergétique et leurs
+conséquences (ECC10)
+
+Compétences
+attendues en
+fin de collège
+
+• Appréhender les objets et les systèmes techniques omniprésents dans la vie courante et dans
+tous les secteurs d’activité économiques, industriels et de services de la société.
+• Évaluer leurs cycles de vie, leurs apports dans divers domaines (médecine, transports,
+agriculture, industrie, grands équipements et ouvrages, services, tourisme, communication,
+etc.), les problèmes environnementaux qui leur sont associés.
+• Prendre la mesure de l’impact environnemental des technologies quotidiennes.
+• Interroger et évaluer les évolutions et transformations (énergétique, climatique, écologique,
+numérique, etc.) dans la perspective du développement durable.
+
+Disposer d’une culture du numérique, en maîtriser les usages et en apprécier les enjeux (ECC11)
+
+Compétences
+attendues en
+fin de collège
+
+• Identifier, selon les cas, leur mise en forme, leur transmission, ou leur stockage dans des
+fichiers (texte, image, nombre) afin de comprendre le fonctionnement de l’objet et système
+technique (OST).
+• Identifier et représenter la circulation d’une information dans le réseau Internet.
+• Justifier la nécessité d’un protocole de routage pour faire communiquer plusieurs réseaux
+(activité débranchée, table de routage donnée).
+
+Savoir jouer (ECC 12)
+
+Compétences
+attendues en
+fin de collège
+
+• Concevoir en mode collaboratif des objets et systèmes communicants destinés à se comparer
+lors de compétitions ou de défis.
+
+Le développement des compétences psychosociales (CPS)
+L'intégration des compétences psychosociales dans l'enseignement de la technologie au collège permet de développer
+des aptitudes essentielles à la vie en société, telles que la communication, la collaboration, la gestion des émotions et
+la prise de décision responsable. En utilisant des approches pédagogiques variées et des ressources adaptées, les
+enseignants de technologie peuvent également favoriser le bien-être des élèves de collège et contribuer à améliorer
+le climat scolaire.
+Les CPS sont à travailler de façon intégrée et de manière transversale au travers de différentes approches
+pédagogiques reposant sur la répartition des tâches et des responsabilités au sein du groupe mais aussi la
+collaboration qui exige une responsabilité individuelle et collective pour atteindre le but. Les exemples suivants
+permettent de préciser les apports de l’enseignement de la technologie à la construction des CPS.
+•
+•
+
+Études de cas (individuelles ou à plusieurs) : analyse de situations techniques ou éthiques sur la place des
+objets et systèmes techniques, sur le rôle des technologies et leurs incidences, permettant ainsi de développer
+une réflexion critique et des prises de décision.
+Discussions et débats (en classe entière ou en groupe) : échanges sur des thèmes liés à la technologie et à la
+société, pour développer l'écoute active et le respect des opinions.
+
+À travers l’étude de solutions technologiques et l’analyse des situations où la technologie soulève des questions
+éthiques (par exemple : la protection des données personnelles, la cybersécurité, l'impact environnemental des
+technologies et de l’informatique) deux groupes d’élèves confrontent leurs arguments (pour ou contre, avantages,
+inconvénients) vis à vis des technologies. Ces études et analyses permettent aux élèves de développer leur réflexion
+critique, leur capacité à prendre des décisions responsables et à exprimer leurs opinions de manière argumentée.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+11
+
+•
+
+Jeux de rôle (défis, concours) : simulation de situations professionnelles ou sociales (chef d’équipe, technicocommercial, technicien, chargé de communication, informaticien, etc.) pour pratiquer la gestion de groupe, la
+gestion de projet et la résolution de problèmes.
+
+À travers des mises en situation, les élèves peuvent pratiquer l'écoute active et la recherche de solutions, solutions
+auxquelles chacun apporte son avis, son expertise, solutions qui, in fine, seront adoptées par tous. Par exemple, un
+jeu de rôle où un groupe d’élèves doit s’entendre sur la conception d'un projet technique.
+•
+
+Projets technologique collaboratifs : réalisation de projets techniques en groupe, favorisant la coopération, la
+communication et la gestion des conflits.
+
+L’enseignement de la technologie s’y prête d’autant plus qu’une grande place est donnée au travail collaboratif, dans
+le cadre des enseignements en ilots ou dans le cadre de projets technologiques. Les élèves peuvent être ainsi amenés
+à concevoir et réaliser une activité ou un objet technique en groupe. Ce projet implique la répartition des tâches, la
+gestion du temps, la résolution de problèmes techniques et la communication au sein du groupe. Par exemple, la
+construction d'un modèle réduit de voiture de course, d'éolienne, de serre connectée, de robots, etc. nécessite la
+collaboration de tous les membres du groupe, favorisant ainsi le développement des CPS.
+•
+
+Utilisation d'outils numériques : applications et logiciels permettant de travailler la collaboration à distance,
+la gestion de projet et la communication.
+
+L'utilisation de plateformes numériques pour la gestion de projet permet aux élèves de travailler ensemble à distance,
+de communiquer efficacement et de respecter les délais. Par exemple, l'utilisation de cartes mentales, de plannings,
+de l’ENT et d’outils collaboratifs pour organiser les tâches d'un projet technique en groupe développe la collaboration
+et la responsabilité individuelle.
+De ce fait, dans le cadre de l'enseignement de la technologie, les compétences suivantes peuvent être particulièrement
+développées :
+•
+
+•
+•
+•
+•
+
+Travail en équipe et socialisation : collaborer, respecter les rôles et responsabilités, et gérer les conflits. Se
+respecter mutuellement, respecter ses engagements, assumer ses responsabilités, faire preuve d'autonomie,
+organiser son travail selon les priorités et les objectifs, prendre des initiatives et être force de proposition Faire
+preuve de réactivité.
+Résolution de problèmes : Faire preuve de créativité, d'inventivité, de curiosité, analyser une situation,
+proposer des solutions et évaluer leurs conséquences, analyser ses erreurs pour progresser et/ou réussir,
+résoudre des problèmes lors des apprentissages, faire preuve de rigueur et de précision.
+Gestion des émotions : identifier et exprimer ses émotions de manière appropriée, gérer son stress et
+s’adapter à des situations nouvelles, persévérer, être résilient, éprouver et exprimer de l’empathie.
+Communication efficace : écouter activement, exercer son esprit critique, exprimer clairement ses idées,
+communiquer de façon constructive et comprendre les autres, résoudre des problèmes relationnels.
+Prise de décision responsable : évaluer les options et choisir des actions appropriées en tenant compte des
+apports de chacun, des contraintes, des risques et de leurs conséquences, des valeurs qui fondent toute
+décision, faire preuve de leadership ou demander de l’aide, s’adapter aux changements.
+
+Les compétences numériques dans le cadre de référence des compétences numériques CRCN
+Le programme de technologie permet aux élèves de développer, comme toutes les disciplines, des compétences
+numériques, mais qui, dans le contexte de cet enseignement, apparaissent pertinentes pour être à la fois mobilisées
+pour étayer des apprentissages ou pour être spécifiquement développées ou évaluées.
+L’acquisition de compétences numériques constituent depuis plusieurs années un élément essentiel du parcours
+scolaire. Les professeurs de technologie sont régulièrement associés non seulement au développement de ces
+compétences mais aussi à leurs évaluations au sein de leur collège.
+L’acquisition de ces compétences favorisent à termes l'insertion professionnelle et l’exercice d’une citoyenneté dans
+une société dont l'environnement numérique mais aussi technologique évolue constamment.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+12
+
+Le cadre de référence des compétences numériques (CRCN) définit les compétences numériques et leurs niveaux de
+maîtrise progressive au long de la scolarité.
+En fonction des acquis antérieures des élèves au cycle 3, en fonction de l’environnement numérique disponible,
+l’enseignant de technologie, membre d’une équipe pédagogique en charge de l’acquisition collégiale de ces
+compétences numériques, contribue à l’acquisition des compétences suivantes tout au long du cycle 4 :
+▪
+
+▪
+
+▪
+
+▪
+
+▪
+
+informations et données : (en lien avec les compétences traitant du traitement des données)
+− mener une recherche ou une veille d’information ;
+− gérer et traiter des données.
+communication et collaboration :
+− interagir, partager et publier ;
+− collaborer ;
+− s’insérer dans un monde numérique.
+création de contenus :
+− développer des documents textuels ;
+− développer des documents visuels et sonores ;
+− programmer.
+protection et sécurité : (en lien avec les compétences traitant de la cybersécurité)
+− sécuriser l’environnement numérique ;
+− protéger les données personnelles et la vie privée ;
+− protéger la santé, le bien-être et l’environnement.
+environnement numérique : (en lien avec les compétences traitant de la cybersécurité)
+− évoluer dans un environnement numérique ;
+− résoudre des problèmes techniques.
+
+Des supports et des espaces de formation consacrés aux apprentissages attendus
+Le recours aux ressources matérielles et documentaires, et aux supports d’étude choisis avec soin, en prenant en
+compte le contexte local de chaque collège et avec l’appui de partenaires de proximité volontaires, permet aux élèves
+de mieux percevoir et d’appréhender les objets et les systèmes techniques en interaction avec leur environnement
+direct.
+L’approche « faire pour apprendre et apprendre à faire » doit se dérouler au sein d’un laboratoire de technologie
+flexible et modulaire, disposant de matériels informatiques et de logiciels, de moyens de prototypage et de réalisation
+dans le cadre, par exemple, d’un atelier de fabrication collaboratif (Fablab) où des habiletés manuelles peuvent
+également être développées.
+Une attention particulière mérite d’être portée sur les choix d’objets et de systèmes techniques pluri-technologiques
+suffisamment représentatifs des technologies : radio-identification (RFID), géolocalisation par satellite (GPS),
+communication sans fil (WiFi), prototypage rapide, impression 3D, intelligence artificielle, objets communicants,
+robots, etc.) et qui pourront être impliqués dans la réponse aux grands enjeux contemporains : énergie pour un
+développement durable, transition écologique, information et société numérique, mobilité, santé, sécurité, ville
+connectée, robotique, industrie 4.0, etc.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+13
+
+Les objets et les systèmes techniques : leurs usages et leurs
+interactions à découvrir et à analyser
+Les objets et les systèmes techniques peuvent évoluer rapidement et changer notre quotidien. Au travers de ce thème,
+les élèves étudient les objets et les systèmes techniques qui les entourent en décrivant leur fonctionnement global
+(mise en service et contexte d’utilisation), les usages raisonnés et détournés ainsi que l’incidence de leurs usages sur
+notre environnement : consommation d’énergie, disponibilité et consommation de ressources, rejets et déchets,
+échanges de données (images, textes, etc.). De plus, en s’appuyant sur l’étude de l’évolution des usages en fonction
+des innovations, des inventions et du contexte socio-économique, les élèves sont en mesure de faire le choix éclairé
+d’un objet ou d’un système technique au regard de critères identifiés.
+L’étude de cas à partir de manipulations et d’expérimentations est privilégiée. Un travail collaboratif doit conduire les
+élèves à exprimer et à structurer leur pensée en mobilisant le langage naturel et des outils de représentation (croquis,
+textes, schémas, diagrammes, algorithmes, etc.).
+
+Compétences de fin de cycle
+•
+
+Décrire les liens entre usages et évolutions technologiques des objets et des systèmes techniques
+
+Au-delà du simple constat, les élèves apprennent à décrire les liens entre l’évolution des besoins et des exigences, et
+la conception des objets et des systèmes techniques, mais aussi les relations entre les avancées scientifiques, les
+inventions et les innovations technologiques et les transformations de la société.
+•
+
+Décrire les interactions entre un objet ou un système technique, son environnement et les utilisateurs
+
+Les élèves doivent appréhender des objets et des systèmes techniques de plus en plus complexes, que ce soit par
+l’augmentation du nombre de leurs fonctions, par la diversité de leurs interactions ou encore par la prise en compte
+des expériences vécues par les utilisateurs. La mise en service et la manipulation d’objets réels sont à privilégier, afin
+que les descriptions produites s’inscrivent dans la réalité.
+•
+
+Caractériser et choisir un objet ou un système technique selon différents critères
+
+Les élèves font un choix éclairé en identifiant les critères à prendre en compte pour comparer des objets et des
+systèmes techniques répondant à un même besoin. Ces critères portent sur les performances des objets ou des
+systèmes techniques, mais aussi sur leurs incidences environnementales tout au long de leur cycle de vie.
+
+Progressivité pour atteindre ces compétences en fin de cycle
+En classe de 5ᵉ, il s’agit d’amener les élèves à mieux appréhender les usages d’objets et de systèmes techniques de
+leur quotidien, par la mise en service, la manipulation, le recours à des expériences d’utilisateurs, des activités de
+paramétrage, de configuration et de tests, etc. Les élèves commencent ainsi à construire et à conceptualiser les
+premiers éléments d’une culture des solutions technologiques.
+En classe de 4ᵉ, dans le prolongement et la continuité des activités pratiques découvertes en 5ᵉ, il s’agit d’approfondir
+ces usages et cette culture technologiques en intégrant les conditions et les contraintes associées aux différents objets
+et systèmes techniques.
+En classe de 3ᵉ, toujours dans le cadre d’activités pratiques, il s’agit d’amener les élèves à formuler les liens entre
+sciences, technologies, innovations et inventions, en tenant compte des besoins, des usages et du cycle de vie de ces
+objets ou de ces systèmes.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+14
+
+Cycle 4
+L’évolution des OST
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+−
+
+Se situer dans l’espace et dans le temps naturel ou historique (ECC4)
+Découvrir, observer, questionner et décrire le monde (ECC8)
+Comprendre et interroger rationnellement les transformations environnementale, climatique, énergétique et leurs conséquences (ECC10)
+
+Points de vigilance : il convient de graduer les apprentissages sur des objets disponibles en classe ou fournis par le professeur et empruntés à l’environnement des élèves
+(OST, ouvrages connus ou déjà rencontrés) ou issus d’une recherche personnelle de l’élève. Les apprentissages visés doivent pouvoir prendre appui sur des ressources
+documentaires ou pluri média sur ces objets ou systèmes techniques. Les apprentissages doivent amener progressivement les élèves à appréhender, comprendre et analyser
+les éléments qui permettent d’identifier et caractériser les évolutions technologiques et informatiques des OST.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Pour la classe de 5ᵉ, l’élève s’intéresse à différents objets ou systèmes techniques, sans valeur symbolique, ayant la même fonction d’usage, qui seront étudiés ou mobilisés
+lors des activités pratiques de technologie. Exemples : se déplacer d’un point A à un point B, communiquer à distance, mesurer une caractéristique (un réglet, un mètre ruban,
+un décamètre, un télémètre laser, etc.), assurer un serrage (une pince à linge, une sauterelle ou étrier à bascule, une pince étau ou à genouillère, un étau, etc.), franchir un
+obstacle (pont haubané, pont suspendu, pont en treillis, etc.), etc.
+Pour la classe de 4ᵉ, l’élève travaille en classe sur des maquettes d’OST emblématiques des technologies contemporaines avec des usages qui ont évolué en réponse à des
+besoins : exemple : se déplacer (trottinette électrique, maquette de pile à combustible, modèle réduit de voiture, char à voile, etc.) avec un accès aux sources d’énergies
+disponibles (solaire, éolien, thermique, hydraulique). L’élève aborde les principaux besoins fondamentaux de l’être humain. Exemples : besoins physiologiques (s’alimenter,
+accéder à l’eau, accéder à l’énergie, évoluer dans un environnement sain), besoins de sécurité (se protéger, préserver sa santé), besoins d’appartenance sociale
+(communiquer, se déplacer, pratiquer une activité sportive, ludique, culturelle, sociale).
+Pour la classe de 3ᵉ, l’élève travaille en classe sur des OST qui participent à l’automatisation des activités humaines, à l’accélération des échanges et de l’évolution des moyens
+de communication, au développement du numérique au travers de l’acquisition et du traitement des données, à celui de l’avènement des cas d’usage de l’intelligence
+artificielle (IA).
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Comparer des principes techniques pour une
+même fonction technique
+
+L’élève sait :
+− associer un usage aux différents OST étudiés, mis en œuvre, manipulés ;
+− extraire d’une documentation ou d’une ressource ou d’une notice des informations ou des données
+(exemples : grandeur physique, vitesse, efforts, matériaux, caractéristiques, performances, design, énergies,
+information, etc.) pour identifier les principes techniques et les fonctions techniques.
+
+Collecter, trier et analyser des données
+recueillies sur les OST
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+15
+
+Connaissances visées :
+Usage ;
+Fonction, principe et solution technique ;
+La famille et la lignée d’OST.
+
+Mettre en relation les OST avec leurs usages
+Identifier les avantages et les inconvénients
+associés aux évolutions technologiques et
+informatiques
+
+4ᵉ
+
+Justifier l’évolution d’un OST pour répondre à
+l’évolution des besoins
+Connaissances visées :
+Les éléments qui participent à l’évolution des
+besoins (invention, innovation, développement
+durable).
+
+Identifier les innovations de rupture qui sont
+attachées à l’évolution d’un OST
+
+3ᵉ
+
+Mettre en relation une découverte scientifique
+avec ses développements technologiques et
+leurs effets sur la société
+Exprimer dans un argumentaire court
+l’incidence d’un OST sur la société
+
+−
+
+décrire à l’écrit, à l’oral, au travers d’une production et en mobilisant le vocabulaire technique adapté
+comment ces OST s’inscrivent dans une famille et lignée d’objets :
+• collecte des informations de nature technologique sur des objets ou systèmes techniques ayant une
+même fonction d’usage ;
+• comparaison des différents objets ou systèmes techniques à partir d’une description ou d’une
+documentation disponible pour identifier les principales fonctions techniques puis les principes
+techniques associés à ces fonctions techniques ;
+• comparaison d’objets d’une même famille ou lignée en identifiant ce qui les différencient ;
+• description et illustration sur une affiche à destination d’une exposition permanente en classe et pour
+ces objets ou systèmes techniques étudiés, leurs fonctions, leurs principes techniques, les
+caractéristiques qui les différencient.
+
+L’élève sait :
+− replacer ces objets dans un contexte d’usage : à quoi ça sert ?
+− distinguer au travers des objets étudiés ceux qui relèvent ou ont fait l’objet d’une invention et/ou innovation
+et/ou évolution ;
+− comparer les objets étudiés (évolution des ordres de grandeur des caractéristiques, évolution des principes
+et fonctions, évolution des techniques, évolution des sources et formes d’énergie, évolution de la nature des
+matériaux, etc.).
+L’élève sait :
+− débattre avec ses camarades sur les avantages et inconvénients liés à l’évolution des OST ;
+− défendre un point de vue en justifiant à partir des sources et données scientifiques et technologiques
+fournies, les évolutions constatées au niveau de ces OST et de leurs contextes d’usages sur le plan du
+développement durable : réduction des impacts environnementaux, efficacité énergétique, réponse aux
+besoins fondamentaux de l’être humain, etc.
+L’élève sait :
+− mettre en exergue l’évolution constatée des technologies (performances, caractéristiques, principes
+techniques, etc.) et comment ces évolutions technologiques font appel au développement du numérique, à
+l’informatique et à l’intelligence artificielle.
+L’élève sait :
+− distinguer le résultat obtenu d’une recherche d’information sur un OST à partir d’un moteur de recherche ou
+d’une IA générative (exemple : recherche et génération d’une notice technique).
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+16
+
+Exprimer dans un argumentaire court
+l’incidence des contraintes sociétales sur les
+OST
+
+−
+−
+
+Connaissances visées :
+Les contraintes sociétales ;
+Les grands types d’apprentissage des
+intelligences artificielles et leurs usages
+possibles (géolocalisation, identification, calcul,
+traduction, etc.) ;
+Les incidences sociétales et environnementales,
+l’effet de l’usage d’une intelligence artificielle
+(IA).
+
+rédiger un prompt efficace (rôle donné à l’IA, la tâche, le contexte, le format de sortie ; reformulation de la
+requête) et est capable d’identifier l’origine des écarts constatés sur la réponse obtenue après avoir rédigé
+un prompt identique dans deux IA génératives dans le cadre d’une recherche d’information sur un OST ;
+comparer dans différents cas d’usage de l’IA les bénéfices, les avantages, les inconvénients apportés par cette
+technologie (exemple : utilisation de l’IA dans le diagnostic au travers de traitements d’images : maintenance
+industrielle, médecine, etc.).
+
+L’élève sait :
+− développer à l’oral ou à l’écrit un argumentaire court mettant en avant le rôle de l’intelligence artificielle dans
+le développement des OST ainsi que sur les incidences (positives, négatives) de ce développement sur la
+société (exemple : développement des véhicules autonomes, développement de la reconnaissance d’objets
+ou de personnes, etc.) et sur la consommation énergétique induite.
+
+Usages et impacts sociétaux du numérique
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+−
+
+Découvrir, observer, questionner et décrire le monde (ECC8)
+Comprendre et interroger rationnellement les transformations environnementale, climatique, énergétique et leurs conséquences (ECC10)
+Disposer d’une culture du numérique, en maîtriser les usages et en apprécier les enjeux (ECC11)
+
+Points de vigilance : La cybersécurité (ou sécurité des systèmes d'information) est un domaine scientifique et technique qui désigne l’ensemble des mécanismes pouvant être
+mis en œuvre pour protéger des actes malveillants (attaques informatiques) les systèmes informatiques et les données qu'ils manipulent. La cybersécurité vise à garantir la
+confidentialité, l’intégrité et la disponibilité de ces systèmes et données. La cybersécurité est un domaine scientifique et technique.
+La cyberviolence consiste à utiliser des outils informatiques (en particulier les réseaux sociaux) pour harceler, intimider ou manipuler une ou plusieurs personnes. Elle désigne
+donc des comportements tels que le cyberharcèlement, la divulgation d’informations personnelles, l’incitation à la haine, etc. La cyberviolence pose des problématiques
+sociétales et humaines, que l'on abordera plutôt sous l'angle éducatif, sociologique, psychologique ou juridique.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Pour les classes de 5ᵉ, 4ᵉ et 3ᵉ : les objectifs d’apprentissage se construisent au fur et à mesure des trois années du cycle 4 par l’utilisation de l’ENT de l’établissement, et
+d’outils numériques au quotidien et par la confrontation à des problématiques variées à travers les différentes activités pédagogiques rencontrées. L’élève travaille les
+objectifs d’apprentissage pour chaque niveau à partir de témoignages, de situations de la vie courante (messages sur les réseaux sociaux, SMS frauduleux, messages
+électroniques d’hameçonnage, etc.), de documents détaillant les recommandations émises par les autorités.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+17
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Décrire le rôle des systèmes d’information dans
+le partage d’information
+
+L’élève sait :
+− indiquer les services rendus par un système d’information (centralisation, accès, sauvegarde, diffusion,
+présentation - dans un format donné - de l’information) ;
+− accéder à l’ENT de l’établissement, prendre connaissance de la charte d’usage de l’ENT, y récupérer les
+données ou fichiers utiles pour l’activité à réaliser ;
+− effectuer une recherche documentaire seul ou en groupe ;
+− stocker et organiser les données utiles dans son espace personnel et/ou dans un espace partagé ;
+− compléter des fichiers dans le cadre de ses activités, les sauvegarder au format adéquat avec la bonne
+extension de fichier.
+
+Recenser des données, les identifier, les classer,
+les représenter, les stocker dans des fichiers,
+les retrouver dans une arborescence
+Connaître et appliquer des règles permettant
+de sécuriser un environnement numérique
+(bases de la cybersécurité)
+Appliquer des règles de respect de la propriété
+intellectuelle
+
+5ᵉ
+
+Appréhender la responsabilité de chacun dans
+les dérives liées aux système d’information
+(cyberviolence, attaque des données
+personnelle, usurpation d’identité)
+
+L’élève sait :
+− citer les règles pour la constitution d’un mot de passe solide ;
+− mettre en œuvre des moyens mnémotechniques pour retenir un mot de passe solide (premières lettres d’une
+phrase, etc.) ;
+− verrouiller sa session après utilisation ;
+− citer des techniques de récupération frauduleuse de mots de passe (hameçonnage et attaque par force brute)
+et s’en prémunir ;
+− limiter le partage d’informations au minimum en fonction du service numérique utilisé.
+
+Connaissances visées :
+L’élève sait :
+Système d’information et stockage des données
+− indiquer que la propriété intellectuelle inclut le droit d’auteur ;
+: fichiers informatiques (fichiers texte, fichiers
+− identifier une situation de diffusion sans autorisation d’un texte, d’une image, d’une vidéo, d’un son, etc. ;
+image, fichiers de type tableur ou CSV) et
+− citer ses sources dans le cadre de ses activités.
+dossiers, arborescence ;
+Extension et format de fichiers, droits
+L’élève sait :
+d’écriture et de lecture sur les fichiers ;
+− repérer et réagir à une situation de cyberviolence, d’attaque à la donnée personnelle, d’usurpation d’identité ;
+Unité de quantité d’information : bit, octet et
+− expliquer à l’oral et/ou à l’écrit, pourquoi certains messages ou situations ne sont pas acceptables.
+leurs multiples ;
+Ordre de grandeur de la taille d’un fichier
+image, d’un fichier son, d’une vidéo ;
+Incidences liées au stockage, au flux des
+données et aux réseaux d’information ;
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+18
+
+Cyberviolence : usurpation d’identité, usage
+détourné.
+
+Identifier et appliquer les règles pour un usage
+raisonné des objets communicants et des
+environnements numériques (propriété
+intellectuelle, identité numérique, témoins de
+connexion, géolocalisation)
+
+4ᵉ
+
+Connaissances visées :
+Principes de la cybersécurité : la confidentialité,
+l’intégrité, la disponibilité
+Cybersécurité : protection des données
+personnelles, traces numériques (témoins de
+connexion, géolocalisation), identification,
+authentification, respect de la propriété
+intellectuelle
+Exprimer dans un argumentaire court le rôle du
+développement stratégique du numérique au
+sein de la société et des environnements
+professionnels (ou des métiers)
+
+3ᵉ
+
+L'élève sait :
+− gérer ses profils (pseudo, mot de passe, remplissage des champs uniquement obligatoires) ;
+− paramétrer la confidentialité et la disponibilité des données dans le cadre d’une activité collaborative (partage
+de fichier avec gestion de droits de lecture et d’écriture, etc.) ;
+− désactiver sa géolocalisation pour se connecter et effectuer des recherches ;
+− paramétrer un réseau social en limitant la diffusion de données ;
+− gérer ou effacer ses témoins de connexion (cookies) ;
+− rectifier, voire supprimer des informations qui le concernent sur certains comptes.
+
+L'élève sait :
+− dresser un inventaire des technologies de l’information et de la communication numérique (textes, images,
+sons, vidéos) qui ont un impact constaté sur la vie des collégiens et plus largement sur la société dans laquelle
+il évolue ;
+− expliquer la différence d’échelle de diffusion entre une information partagée dans le cadre d’une discussion
+et celle partagée sur les réseaux sociaux ;
+− citer des exemples de dématérialisation dans sa vie quotidienne : réservation de repas, accès à ses bulletins
+de notes, tickets de bus ;
+− identifier dans le monde économique et professionnel, dans le cadre d’un métier ou d’un secteur
+économique, la place du numérique pour accomplir des activités et tâches professionnelles.
+
+L’OST dans son environnement
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+
+Découvrir, observer, questionner et décrire le monde (ECC8)
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+19
+
+−
+−
+
+Connaître le corps humain dans ses différentes dimensions : anatomiques, physiologiques, culturelles et sociales (ECC9)
+Comprendre et interroger rationnellement les transformations environnementale, climatique, énergétique et leurs conséquences (ECC10)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+L’élève mobilise dans un premier temps, en classe de 5ᵉ, différents objets disponibles et utilisés en classe (différents podomètres, souris d’ordinateur, écouteurs audio,
+calculatrices, etc.), puis ensuite en classe de 4ᵉ aborde l’étude d’objets plus sophistiqués (poste de travail informatique, montre connectée, trottinette électrique,
+thermomètre digital, etc.) auxquels seront associés différentes ressources décrivant l’objet technique dans son environnement (images, représentation 2D et 3D, notice
+descriptive, notice de fonctionnement, vidéos, etc.) pour ensuite effectuer une synthèse commune sur les choix de conception. En classe de 3ᵉ, l’élève aborde les objectifs
+d’apprentissages dans le cadre d’un projet et d’une évolution à apporter à un OST. L’élève dispose de documents décrivant l’expérience utilisateur de cet OST mais également
+les contraintes, exigences, normes à respecter, des labels ou certifications délivrés pour cet objet.
+
+Objectifs d’apprentissage
+Faire la liste des interacteurs extérieurs d’un
+OST
+
+5ᵉ
+
+Repérer et expliquer les choix de conception
+dans les domaines de l’ergonomie et de la
+sécurité ou en lien avec des objectifs de
+développement durable
+Connaissances visées :
+Les différents types d’interacteurs : usagers,
+données, autres objets, éléments de
+l’environnement qui interagissent avec l’OST ;
+Les modes de représentation : schéma,
+graphique ;
+L’ergonomie liée à l’usage d’un OST.
+
+4ᵉ
+
+Décrire l’expérience de l’utilisateur (ressenti et
+facilité d’usage) d’un OST en partant du langage
+naturel (texte, croquis) pour aboutir aux
+schémas, graphiques, algorithmes ;
+Repérer et expliquer les contraintes, exigences
+prises en compte (sécurité, incidences
+
+Exemples de réussite
+L’élève sait :
+− compléter un graphique ou un schéma représentant l’objet technique et les interacteurs identifiés : les autres
+OST, les usagers, les éléments de l’environnement, les données, les sources et forme d’énergies mobilisées,
+etc.
+L’élève sait :
+− comparer, à partir d’un objectif de développement durable, la conception de deux OST pour identifier celui
+qui offre la meilleure alternative : plus faible consommation d’énergie, réduction de la pollution, etc.
+− comparer à partir de ressources techniques, la conception de deux objets techniques et identifier celui qui
+est le plus ergonomique à l’usage (facilité, confort d’utilisation, personnalisation et adaptabilité à l’utilisateur,
+etc.). ;
+− appréhender comment la sécurité ou la prévention des risques est assurée dans les différentes phases
+d’utilisation d’un objet technique : protection électrique, protection mécanique des dispositifs en
+mouvement, prévention des risques, etc.
+
+L’élève sait :
+− décrire, en langage naturel, son expérience personnelle (plaisir, facilité d’utilisation, design, couleurs, toucher,
+accès à l’information, etc.) en tant qu’utilisateur et à partir des interactions qu’il a eues avec un OST après
+l’avoir testé et utilisé éventuellement son interface Homme Machine (IHM). ;
+− mobiliser différents modes de représentation (schémas, graphiques, algorithme, cartes mentales, etc.) pour
+soutenir sa description.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+20
+
+environnementales, formes et fonctions,
+ergonomie, qualité, fiabilité) pour répondre aux
+attentes des utilisateurs
+Connaissances visées :
+Les modes de représentation : croquis,
+graphiques, algorithmes ;
+Les contraintes et la prise en compte des
+exigences issues des normes ou d’un cahier des
+charges.
+Décrire l’expérience de l’utilisateur d’un OST à
+l’aide de modes de représentation choisis
+Connaissances visées :
+L’expérience utilisateur ;
+Les contraintes : prise en compte des exigences
+issues des normes ou d’un cahier des charges,
+labels et certifications, l’ergonomie liée à
+l’usage.
+
+3ᵉ
+
+L'élève sait :
+− extraire de différents documents (notices techniques, documentations, cahier des charges, etc.) les
+contraintes ou les exigences qui ont présidé aux choix de conception de l’OST ;
+− associer ces choix de conception aux choix de constituants, de matériaux, de sources et formes d’énergie puis
+aux fonctions techniques qui participent aux exigences et contraintes de sécurité, d’ergonomie, de qualité,
+de fiabilité, etc.
+
+L’élève sait :
+− choisir différents modes de représentation (schémas, graphiques, algorithme, cartes mentales, etc.) adaptés
+pour décrire les modifications ou interactions souhaitées en termes d’expérience utilisateur ;
+− décrire avec les différents modes de représentation (schémas, graphiques, algorithmes) l’expérience
+utilisateur souhaitée par lui-même ou voulue par le groupe projet (plaisir, facilité d’utilisation, design,
+couleurs, touché, accès à l’information, etc.) pour un OST imaginé et qui sera concrétisé dans le cadre d’une
+démarche de projet.
+
+Le choix d’un OST dans un contexte de développement durable
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Raisonner, définir, argumenter, démontrer, prouver, avoir le sens de la vérité (ECC2)
+Faire preuve d’esprit critique (ECC3)
+
+Points de vigilance : En 5ᵉ, les critères de choix relèvent du choix des matériaux et des sources et formes d’énergies. En 4ᵉ, les critères de choix sont liés aux caractéristiques
+fournies ou identifiées et intègrent les enjeux du développement durable dont les incidences environnementales, le bilan carbone, l’efficacité énergétique, la durabilité, la
+recyclabilité. En 3ᵉ, les critères de choix évoluent et intègrent en plus, la prise en compte des performances, du coût, de l’indice de réparabilité, de durabilité.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève réalise l’étude technologique de plusieurs OST répondant à un même besoin (comparaison des fonctions techniques).
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+21
+
+En classe de 4ᵉ, l’élève réalise des études comparatives à partir d’une documentation fournie aux élèves, de produits grand public (électroménager connecté, téléviseurs,
+téléphone portable, lampes, etc.) répondant à un usage et à des besoins identiques.
+En classe de 3ᵉ, après une visite de magasins spécialisés, d’une entreprise ou société de distribution de matériels ou après avoir consulté des catalogues de produits
+d’enseignes de bricolage, l’élève aborde l’étude d’OST en réponse à un même usage et/ou besoin (exemple : nettoyer à haute pression, se chauffer avec un système de
+chauffage individuel, récupérer de l’eau de pluie, produire de façon autonome de l’électricité, etc.)
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Repérer pour un OST les matériaux, les sources
+et les formes d’énergie, le traitement de
+l’information
+
+L'élève sait :
+− identifier sur un OST à partir des ressources fournies (notices et documentations scientifiques, techniques,
+environnementales) les matériaux qui le composent, les sources et les formes d’énergies mobilisées ainsi que
+les données et les informations traitées ou échangées avec son environnement, avec un usager.
+
+Identifier les étapes du cycle de vie d’un OST
+influencées par les choix de matériaux et
+d’énergie
+Choisir un OST parmi plusieurs propositions en
+vue de répondre à un besoin
+Connaissances visées :
+Les composantes d’une notice et d’une
+documentation technique et leur organisation ;
+Les différentes étapes du cycle de vie d’un OST.
+
+4ᵉ
+
+Identifier les caractéristiques à prendre en
+compte dans le choix d’un OST en vue de
+répondre à un besoin
+Comparer qualitativement et/ou
+quantitativement (incidences
+environnementales, bilan carbone, efficacité
+énergétique) plusieurs OST répondant au
+même besoin et arrêter un choix
+
+L’élève sait :
+− identifier, par comparaison et à l’aide d’exemples fournis de cycles de vie associés à différents OST, les étapes
+du cycle de vie de l’OST qu’il étudie (extraction de matériaux, transformation, mise en forme, fabrication,
+mise en service, destruction ou recyclage).
+L'élève sait :
+− choisir l’OST qui correspond au besoin identifié et expliquer par une argumentation courte son choix.
+
+L’élève sait :
+− identifier les critères qui permettent de comparer plusieurs OST et construire un tableau comparatif ;
+− pondérer les critères de choix et réaliser une analyse multicritère à partir de données ou valeurs ou
+appréciations connues et issues de la documentation fournie ;
+− choisir l’OST qui répond aux besoins précisés et expliquer par une argumentation courte son choix.
+
+Connaissances visées :
+L’indice énergétique ;
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+22
+
+Les impacts environnementaux (indicateurs :
+air, eau, sol et santé) ;
+Les critères de choix : la qualité, l’efficacité
+énergétique, la durabilité, la recyclabilité.
+Établir une liste d’OST possibles en vue de
+répondre à un besoin
+Choisir un OST et argumenter ce choix en
+prenant en compte son cycle de vie et les trois
+piliers du développement durable
+
+L’élève sait :
+− identifier les critères (efficacité énergétique, la réparabilité, la durabilité, la recyclabilité et l'impact
+environnemental) qui permettent de comparer plusieurs OST et compléter un tableau comparatif ;
+− pondérer les critères de choix et réaliser une analyse multicritère ;
+− choisir l’OST qui répond aux besoins précisés et, dans une démarche technico-commerciale (valeur technique
+et arguments de vente), préparer et présenter à l’intention de ses camarades un argumentaire mettant en
+valeur un des OST identifié, répondant à un besoin et au développement durable.
+
+Évaluer les OST selon des exigences ou des
+critères identifiés (caractéristiques,
+performances, coût, indice de réparabilité)
+
+3ᵉ
+
+Connaissances visées :
+L’indice de réparabilité ;
+Les piliers du développement durable ;
+Les critères de choix : les performances
+associées aux caractéristiques techniques, la
+réparabilité, la durabilité.
+
+La performance des OST
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+Comprendre et interroger rationnellement les transformations environnementale, climatique, énergétique et leurs conséquences (ECC10)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Pour la classe de 5ᵉ, l’élève travaille à partir d’une exigence attendue et d’un document décrivant un protocole expérimental à mettre en œuvre pour réaliser la mesure
+directe d’une performance d’un OST (temps d’exécution, temps de réaction, distance d’arrêt pour un robot mobile, précision de la luminosité pour éclairage intelligent, taux
+de comportements conformes à une situation donnée, etc.). Le document précise le(s) appareil(s) de mesure à utiliser.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+23
+
+Pour la classe de 4ᵉ, l’élève travaille à partir d’une exigence attendue et d’un document décrivant un protocole expérimental à mettre en œuvre pour réaliser la mesure
+directe d’une performance d’un OST (temps d’exécution, temps de réaction, distance d’arrêt pour un robot mobile, précision de la luminosité pour éclairage intelligent, taux
+de comportements conformes à une situation donnée, etc.). Le document ne précise pas le(s) appareil(s) de mesure à utiliser.
+Pour la classe de 3ᵉ, l’élève travaille à partir d’une exigence attendue en lien avec une caractéristique (dimensions, etc.) ou une performance (temps d’exécution, temps de
+réaction, distance d’arrêt pour un robot mobile, précision de la luminosité pour éclairage intelligent, taux de comportements conformes à une situation donnée, etc.) d’un
+OST.
+
+Objectifs d’apprentissage
+Mesurer et comparer une performance d’un
+OST à partir d’un protocole fourni
+
+5ᵉ
+
+4ᵉ
+
+Connaissances visées :
+Les exigences issues d’un cahier des charges ;
+Les grandeurs mesurées associées à un
+protocole ;
+Les critères de performance d’un OST.
+Choisir les appareils de mesure à utiliser pour
+mesurer une performance d’un OST à partir
+d’un protocole donné
+Connaissances visées :
+Les instruments de mesure permettant
+d’effectuer une mesure directe
+Définir et mettre en œuvre un protocole pour
+mesurer une caractéristique, une performance
+d’un OST
+
+3ᵉ
+
+Exemples de réussite
+L’élève sait :
+− mettre en œuvre le protocole et effectuer la mesure directe de la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant à la capacité de l’OST à atteindre le niveau de
+performance attendu.
+
+L’élève sait :
+− choisir le(s) appareil(s) de mesure nécessaire(s) à la mise en œuvre du protocole ;
+− mettre en œuvre le protocole et effectuer la mesure directe de la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant à la capacité de l’OST à atteindre le niveau de
+performance attendu.
+
+L’élève sait :
+− établir un protocole expérimental permettant de mesurer la caractéristique ou la performance de l’OST ;
+− choisir le(s) appareils de mesure nécessaire à la mise en œuvre du protocole ;
+− mettre en œuvre le protocole et effectuer la mesure de la caractéristique ou la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant au respect de la caractéristique ou quant à la
+capacité de l’OST à atteindre le niveau de performance attendu ;
+− choisir le(s) appareil(s) de mesure nécessaire(s) à la mise en œuvre du protocole ;
+− mettre en œuvre le protocole et effectuer la mesure indirecte de la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant à la capacité de l’OST à atteindre le niveau de
+performance attendu.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+24
+
+Structure, fonctionnement, comportement : des objets et des
+systèmes techniques à comprendre
+Ce thème permet d’étudier, au sein d’objets et de systèmes techniques contemporains, les relations internes entre
+des fonctions techniques ainsi que les relations entre leurs constituants. L’exploration et l’expérimentation
+technologique des objets et des systèmes techniques disponibles qui servent de supports aux apprentissages de ce
+thème, mobilisent des documentations techniques et des modèles numériques associés pour développer les
+compétences liées à ce thème. Il est nécessaire de préciser aux élèves le périmètre d’étude des objets et des systèmes
+techniques.
+Tout au long du cycle 4, en mobilisant à la fois leur habileté manuelle, mais aussi leur capacité de programmation,
+d’usage des logiciels et des ressources informatiques disponibles, les élèves manipulent, réparent, fabriquent et, ce
+faisant, deviennent capables de comprendre et d’analyser le fonctionnement des objets et des systèmes techniques.
+L’atelier de fabrication collaboratif offre le cadre idéal pour ces apprentissages. La démarche d’investigation, la
+démarche technologique et la démarche de résolution de problèmes sont privilégiées.
+
+Compétences de fin de cycle
+•
+
+Décrire et caractériser l’organisation interne d’un objet ou d’un système technique et ses échanges avec son
+environnement (énergies, données)
+
+En manipulant un objet ou un système technique, l’élève est capable de décrire son fonctionnement, la chaîne
+d’énergie et la chaîne d’information. Les sources et les formes d’énergie sont identifiées, tout comme les conversions
+et les transferts. Les mouvements mécaniques sont analysés en distinguant les transmissions et les transformations
+au sein des objets et des systèmes techniques. L’étude de la chaîne d’information est abordée au travers du rôle
+central des données dans le traitement informatique, en particulier au niveau des entrées et des sorties du programme
+associé à l’objet ou au système technique. Les élèves doivent savoir décrire un objet à l’aide de données, puis les
+structurer pour en extraire de l’information et les analyser avec des outils de mise en forme et de traitement figurant
+dans un tableur. Après l’étude du stockage de ces données dans des fichiers, celle des composants du réseau permet
+de comprendre comment ces données circulent dans l’Internet.
+•
+
+Identifier un dysfonctionnement d’un objet technique et y remédier
+
+L’initiation des élèves au dépannage et à la réparation d’objets s’appuie sur des problèmes techniques réels. Leur
+résolution mobilise notamment des compétences manuelles. Ces interventions encouragent le développement de la
+curiosité et de l’ingéniosité des élèves. Détecter un dysfonctionnement, l’analyser, proposer une solution, réparer puis
+tester et valider des améliorations sont des activités à proposer aux élèves pour les aider à comprendre la structure
+d’un objet technique, le rôle des matériaux, l’agencement des solutions constructives. L’étude des propriétés et des
+caractéristiques des matériaux mobilisés permet aux élèves de comprendre le comportement mécanique des
+structures et les mécanismes de transformation de mouvements.
+•
+
+Comprendre et modifier un programme associé à une fonctionnalité d’un objet ou d’un système technique
+
+L’étude du programme réalisant une ou plusieurs fonctionnalités d’un objet ou d’un système technique permet aux
+élèves d’explorer son comportement. En produisant un algorithme en langage naturel, les élèves identifient les
+données utilisées ou produites, les interprètent et les traitent si besoin est. Des modifications peuvent être apportées
+à ce programme, pour répondre à une nouvelle fonctionnalité. L’acquisition des concepts fondamentaux de la
+programmation s’effectue tout au long du cycle 4, en lien avec le professeur de mathématiques de la classe.
+
+Progressivité pour atteindre ces compétences en fin de cycle
+En classe de 5ᵉ, à partir d’observations, de manipulations, de réparations, les élèves abordent les objets et les systèmes
+techniques et identifient leurs entrées et leurs sorties (mouvements, informations). Ils doivent être en mesure de
+modifier les paramètres d’entrée d’un programme pour en identifier les conséquences sur les fonctionnalités d’un
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+25
+
+objet ou d’un système technique. Ils doivent également être en mesure d’effectuer une réparation d’une pièce d’un
+objet ou d’un système technique après avoir repéré visuellement un dysfonctionnement.
+En classe de 4ᵉ, en étudiant la composition interne des objets et des systèmes techniques, les élèves explorent et
+étudient les composants et les solutions techniques qui constituent les chaînes d’énergie et d’information. Les flux
+d’information, d’énergie et de matière sont abordés et caractérisés afin de comprendre les éléments qui les
+constituent. Les élèves analysent les données, complètent et testent un programme pour modifier une fonctionnalité
+d’un objet ou d’un système technique. L’étude d’un système et de ses données nécessite d’aborder l’architecture de
+réseaux locaux. Après avoir identifié un dysfonctionnement, les élèves définissent un protocole de réparation et le
+mettent en œuvre.
+En classe de 3ᵉ, les élèves caractérisent les chaînes d’information et d’énergie en matière de fonctions. Ils utilisent des
+modèles pour caractériser les objets et les systèmes techniques et intervenir sur eux (nouvelle fonctionnalité,
+réparation). Ils déterminent les données et conçoivent l’algorithme associé à une nouvelle fonctionnalité d’un objet
+ou d’un système technique, puis le programment et le testent. Les élèves découvrent la façon dont des données de
+différentes natures sont numérisées, stockées, mises en forme et transmises par un objet ou un système technique.
+La circulation de ces données dans le réseau Internet est étudiée. Les élèves fabriquent une pièce sur mesure ou
+utilisent des composants issus de bibliothèques (réelles ou virtuelles) pour remédier à un dysfonctionnement.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+26
+
+Cycle 4
+Fonctions, solutions, constituants de la chaine d’énergie
+Relation avec le socle commun de connaissances, de compétences et de culture :
+−
+
+Découvrir, observer, questionner et décrire le monde (ECC8)
+
+Points de vigilance : Dans le cadre des activités proposées, l’élève met en œuvre l’objet ou le système technique. Les activités privilégient le démontage et l’étude d’OST pour
+développer une approche pratique et théorique. L’élève approfondit le champ lexical et notionnel sur les énergies : source et forme d’énergie, transformation et conversion
+d’énergie. En classe de 5ᵉ, l’élève s’est approprié au préalable le fonctionnement et le comportement d’un objet technique et a identifié les différentes actions que l’OST
+réalise. L’élève a pu également être amené à réaliser des mesures et des essais. En classe de 4ᵉ et 3ᵉ, les activités favorisent l'analyse des solutions techniques, la
+compréhension de la structure de la chaîne d'énergie et le lien entre les fonctions techniques de la chaine d’énergie et ses composants.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève manipule et étudie des OST avec une chaine d’énergie simple (exemple : lampe dynamo à manivelle ou solaire), pour lesquels la fonction est connue
+ainsi que la nomenclature des constituants lui permettant d’enrichir son vocabulaire technique. L’élève disposera de la fiche technique et d’une représentation 3D ou éclatée
+de l’objet.
+En classe de 4ᵉ, l’élève étudie la chaine d’énergie d’OST en mobilisant des maquettes de systèmes techniques simples (exemple : maquette de portail automatique). Dans le
+cadre d’une approche interdisciplinaire, en lien avec le programme de Sciences et Vie de la Terre et de Physique chimie, l’élève pourra être amené à identifier les différentes
+sources d’énergies, dresser un inventaire et une comparaison des sources d’énergie ou des formes d’énergies qui sont emmagasinées dans la matière, celles qui se manifestent
+lors d’un transfert d’énergie.
+En classe de 3ᵉ, l’élève étudie des OST ayant à la fois une chaine d’information et une chaine d’énergie qui interagissent (exemple un robot).
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Associer des solutions techniques à une ou des
+fonctions techniques
+
+L'élève sait :
+− décrire le fonctionnement et le comportement de l’objet à l’aide d’un texte court et illustré après avoir de
+préférence mis en œuvre l’objet ou à défaut après avoir visionné une ressource plurimédia.
+
+Identifier des constituants de la chaîne
+d’énergie d’un objet technique (l’organisation
+de la chaîne d’énergie étant fournie)
+Indiquer la nature des énergies en entrée et en
+sortie des constituants de la chaîne d’énergie
+
+L’élève sait :
+− identifier les principaux constituants et en particulier ceux qui participent à la chaine d’énergie ;
+− associer les composants (exemples : batterie, relais/interrupteur, engrenage, courroie, moteur, etc.) aux
+fonctions techniques (alimenter, distribuer, convertir, transmettre) correspondantes (et non l’inverse). ;
+− compléter la description fonctionnelle fournie de la chaine d’énergie de l’objet étudié.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+27
+
+Connaissances visées :
+Les fonctions des constituants batterie,
+relais/interrupteur
+
+L’élève sait :
+− distinguer l’énergie d’entrée et de sortie de l’OST.
+
+Identifier les constituants d’une chaîne
+d’énergie et les associer à leurs fonctions
+
+L’élève sait :
+− associer les composants (exemples : batterie, relais/interrupteur, engrenage, courroie, moteur, etc.) aux
+fonctions techniques (alimenter, distribuer, convertir, transmettre) correspondantes (et non l’inverse) ;
+− identifier les énergies “entrantes” et “sortantes” des principaux constituants mobilisés dans des OST : moteur,
+lampe, radiateur, vérin, etc.
+− associer les symboles, les unités légales, les grandeurs physiques aux énergies d’entrée et de sortie de l’OST
+étudié, de chaque composant ;
+− compléter la description fonctionnelle interne de la chaine d’énergie de l’objet étudié (chaine d’énergie non
+fournie).
+
+Repérer les transformations d’énergie et les
+flux d’énergie au sein de l’OST
+
+4ᵉ
+
+Connaissances visées :
+Les différentes formes d’énergie : électrique,
+cinétique, potentielle, thermique, lumineuse ;
+Les conversions d’énergie des constituants
+suivants : moteur électrique, lampe, radiateur,
+génératrice, vérin.
+
+Élaborer, à l’aide d’un schéma bloc, la chaîne
+d’énergie d’un OST
+
+3ᵉ
+
+Connaissances visées :
+Les mécanismes de transmission et de
+transformation de mouvements (engrenages,
+courroies, chaînes).
+
+L’élève sait :
+− compléter la description fonctionnelle interne de la chaine d’énergie de différents OST en y ajoutant les
+constituants identifiés et en précisant les transformations d’énergie entre chaque constituant ;
+− associer en lien avec le programme de physique des unités de mesure de l’énergie dans le système
+international : Joule, Volt, kWh, calorie, tonne équivalent pétrole ;
+− appréhender des ordres de grandeurs d’énergies transformées par des OST.
+L'élève sait
+− décrire le comportement de l’OST : son fonctionnement, ses mouvements, ses déplacements, ses interactions
+avec son environnement.
+L’élève sait
+− repérer l’ensemble des blocs fonctionnels, constituants internes qui participent à la chaine d’énergie, et les
+associe, à l’aide d’une représentation appropriée (exemple : un schéma bloc), à la fonction technique qu’ils
+réalisent : alimenter, distribuer, convertir, transmettre ;
+− préciser pour chaque transformation et conversion réalisée au sein de l’OST, les grandeurs et les unités des
+énergies d’entrée et de sortie.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+28
+
+Matériaux et procédés
+Relation avec le socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Faire preuve d’esprit critique (ECC3)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Points de vigilance : Les élèves doivent pouvoir s’approprier le champ lexical et notionnel associé aux termes : propriétés, caractéristiques, cycle de vie. On se limitera à l’étude
+des principales propriétés mécaniques (résistance à la traction, dureté, élasticité), thermiques (conductivité thermique, résistance à la chaleur), électriques (conductivité et
+résistance électriques), chimiques (résistance à la corrosion), capacité à laisser passer la lumière. L’élève doit pouvoir justifier, argumenter ses choix de matériaux, à partir de
+ressources scientifiques et techniques fiables et reconnues. En classe de 5ᵉ, l’élève dispose de ressources sur les matériaux et familles de matériaux pour les différents objets
+disponibles et étudiés dans la classe. En classe de 4ᵉ et 3ᵉ, il sera opportun d’aborder ces objectifs d’apprentissages en faisant le lien avec ceux ayant trait à la réparation, à la
+fabrication de pièces et les projets engagés, pour amener les élèves à mieux appréhender la relation « Produit-Matériaux-Procédés » ou dans le cadre d’activités de projets
+technologiques et scientifiques.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève aborde les objectifs d’apprentissage sur les objets et/ou les matériaux disponibles dans la salle de technologie.
+En classe de 4ᵉ, l’élève aborde un contexte technologique où des innovations et des évolutions sont apportées régulièrement aux OST, contexte qui offre des opportunités
+d’interroger les choix des constructeurs (exemple dans le cadre d’une famille de produits : évolutions et innovations apportées aux vélos de course, Vélo Tout Terrain, Gravel,
+Vélo à Assistance Électrique, vélo cargo).
+En classe de 3ᵉ, l’élève traite les objectifs d’apprentissage en lien avec le projet à mener, et de ce fait il est amené à explorer la relation entre l’OST à concevoir, à réaliser et
+les propriétés de certains matériaux permettant par exemple d’assurer une protection ou une résistance à l’eau, aux saletés (indices IP20 à IP67), aux dégradations (indice
+IK), permettant d’améliorer l’acoustique, etc.
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier les principaux matériaux constitutifs
+d’un OST
+
+L’élève sait :
+− repérer et identifier pour les objets retenus les principaux matériaux mobilisés par les constructeurs ou
+fabricants à l’aide d’une matériauthèque ou en ayant accès à une base de données ;
+− associer un matériau à une famille de matériaux : métaux (aciers, aluminium, cuivre, etc.), organiques (bois,
+pierre, etc.) ou synthétiques (plastiques, composites), minéraux (céramique, verre).
+
+Connaissances visées :
+Les caractéristiques et les propriétés des
+principaux matériaux ;
+Les étapes du cycle de vie d’un OST : extraction,
+transport, utilisation, fin de vie.
+
+L’élève sait :
+− expérimenter, pour chaque famille de matériaux, sur la base d’un protocole fourni, leurs propriétés
+mécaniques, thermiques, électriques ;
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+29
+
+−
+
+4ᵉ
+
+3ᵉ
+
+classer les matériaux selon différentes propriétés.
+
+Mettre en relation la forme d’une pièce avec le
+procédé de réalisation
+
+L’élève sait :
+− distinguer un matériau homogène d’un matériau composite (assemblage de matériaux non miscibles).
+
+Connaissances visées :
+Les caractéristiques et les propriétés des
+principaux matériaux ;
+Les caractéristiques des procédés de mise en
+forme disponibles dans le laboratoire ;
+Les étapes du cycle de vie d’un OST :
+traitement, fabrication, assemblage.
+
+L’élève sait :
+− sélectionner à l’aide d’un logiciel de choix de matériaux un ou plusieurs matériaux adaptés à l’usage et
+compatibles avec des procédés de réalisation ou de mise en forme ;
+− repérer sur un graphique le positionnement d’une famille de matériaux en fonction de deux propriétés (par
+exemple la densité et le module de Young d’un matériau).
+
+Justifier le choix d’un matériau et de son
+procédé de mise en forme au regard des
+contraintes techniques et environnementales
+
+L’élève sait :
+− justifier (usage, performances, caractéristiques, propriétés) un choix de matériaux en mobilisant des
+ressources ou un logiciel de choix de matériaux :
+• sélection des indices de performance et environnementaux en lien avec l’usage et l’environnement
+de l’objet ou du système technique ;
+• sélection des diagrammes qui positionnent les familles de matériaux pour réaliser un choix de
+matériaux ;
+• sélection de la famille de matériaux ;
+• sélection du ou des matériaux adaptés en précisant ou en appliquant des valeurs limites.
+
+Connaissances visées :
+Les caractéristiques et les propriétés des
+principaux matériaux ;
+Les étapes du cycle de vie d’un OST : l’incidence
+environnementale sur l’air, les sols, l’eau :
+toxicité humaine, oxydants, effet de serre,
+acidification, etc.
+
+L’élève sait :
+− mettre en relation la forme, la géométrie d’une pièce à réaliser avec les procédés de réalisation existants ou
+avec des procédés de mise en forme, d’enlèvement ou d’ajout de matière, d’assemblage ou avec des
+techniques d’assemblage disponibles dans le FabLab.
+
+L’élève sait :
+− justifier, au regard de contraintes connues ou issues d’un cahier des charges ou d’un diagramme d’exigence,
+le choix du matériau qui entrera dans la conception et la réalisation de la pièce.
+L’élève sait :
+− préciser les éléments pris en compte dans une analyse de cycle de vie (ACV ISO 14 040 à 14 044), en référence
+à une stratégie d’éco conception d’objets (norme ISO 14 062 https://www.eco-conception.fr/) ;
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+30
+
+L’élève sait :
+− identifier les pays qui extraient des matériaux rares, précieux, spécifiques ainsi que les filières de recyclage
+qui s’organisent pour quelques objets technologiques (exemple : batterie électrique) ;
+− rédiger un argumentaire sur la disponibilité des matériaux (exemple : béton, acier, cuivre, aluminium, terres
+rares, silicium, verre, titane, lithium, graphite, nickel, cobalt, uranium dans le cadre d’un débat et/ou d’une
+exposition réalisée par la classe).
+
+Fonctions, solutions, constituants de la chaine d’information
+Relation avec le socle commun de connaissances, de compétences et de culture :
+−
+
+Découvrir, observer, questionner et décrire le monde (ECC8)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève travaille à partir de la description d’un OST (disposant d’une chaine d’information) et de l’observation de son fonctionnement.
+En classe de 4ᵉ, l’élève travaille à partir de la description d’un OST (disposant d’une chaine d’information), de l’observation de son fonctionnement et d’une description de
+l’organisation fonctionnelle de la chaine d’information.
+En classe de 3ᵉ, l’élève travaille à partir de la description d’un OST et de son comportement attendu.
+
+Objectifs d’apprentissage
+Identifier les capteurs et les composants d’une
+interface homme machine (IHM) d’un OST
+
+5ᵉ
+
+4ᵉ
+
+Connaissances visées :
+Les catégories des constituants de la chaine
+d’information : capteurs, composants
+d’interface homme machine (IHM).
+Identifier les constituants de la chaîne
+d’information d’un objet réel et les associer à
+leur fonction
+Connaissances visées :
+
+Exemples de réussite
+L’élève sait :
+− identifier les événements qui influencent le comportement d’un OST ;
+− identifier des capteurs et des composants d’une interface homme machine (IHM) d’un OST ;
+− classer les constituants identifiés dans la catégorie « capteur » ou « composants d’IHM ».
+
+L’élève sait :
+− identifier les événements qui influencent le comportement d’un OST ;
+− identifier les capteurs ainsi que les composants d’IHM d’un OST ;
+− compléter la description de la chaine d’information en indiquant pour chaque bloc fonctionnel les
+constituants associés.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+31
+
+La description de la chaine d’information :
+fonctions, composants ;
+Les catégories des constituants de la chaine
+d’information : unité de traitement ;
+Les fonctions associées aux constituants :
+capteurs, microcontrôleur, composants d’IHM.
+Décrire un OST en caractérisant sa chaîne
+d’information
+Associer des grandeurs analogiques issues d’un
+OST à des données exploitables
+
+3ᵉ
+
+Connaissances visées :
+Les grandeurs analogiques associées aux
+différents capteurs.
+
+L’élève sait :
+− identifier les grandeurs à mesurer et les interactions entre l’humain et un OST ;
+− déterminer les capteurs et les composants d’IHM permettant le bon fonctionnement d’un OST ;
+− classer les capteurs et les composants d’IHM délivrant une information logique et ceux relevant d’une
+information analogique ;
+− décrire, pour chaque grandeur analogique, le format de données associé qui sera utilisé dans le programme
+de commande de l’OST.
+
+Structuration et traitement de données
+Relation avec le socle commun de connaissance, de compétences et de culture :
+−
+
+Disposer d’une culture du numérique, en maîtriser les usages et en apprécier les enjeux (ECC11)
+
+Points de vigilance : En classe de 5ᵉ, on privilégiera une démarche permettant à l’élève d’analyser le programme de commande d’un OST pour aller vers une formulation en
+langage naturel de son fonctionnement. Cette démarche préliminaire permet ensuite à l’élève de modifier le programme et de le familiariser avec les différents niveaux
+d’abstraction. En classe de 4ᵉ, le travail de modification du programme de commande de l’OST débute par une modification de l’algorithme. En classe de 3ᵉ, l’élève doit
+maîtriser les différents processus cognitifs complexes de la pensée informatique (abstraction, décomposition, modélisation et représentation sous forme d’algorithme,
+simulation, résolution à l’aide d’un dispositif de traitement) pour définir par lui-même un algorithme et parvenir à traduire celui-ci en programme de commande d’un OST.
+Il s’agit en technologie d’inscrire l’élève dans une démarche qui privilégie les allers retours permanents entre le concret (activités pratiques de manipulation, de mise en
+œuvre et l’élaboration de concepts au travers de l’étude des comportements des OST et les apports théoriques initiaux.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève travaille à partir de documents de natures variées (notices, vidéos, etc.) décrivant plusieurs OST.
+En classe de 4ᵉ, l’élève travaille sur le traitement des données par un OST sous deux approches différentes :
+−
+
+la description du traitement interne des données par un OST à partir d’un programme ou d’un algorithme fourni ;
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+32
+
+−
+
+l’exploitation de données de supervision d’un OST pour en déduire son fonctionnement. Dans ce cadre, on se limite aux OST fonctionnant par une approche
+combinatoire (les actions produites par l’OST ne dépendent, à un instant donné, que de l’état des données d’entrée).
+
+En classe de 3ᵉ, l’élève travaille à partir de la description du fonctionnement d’un OST et de sa structure interne.
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Déterminer des descripteurs permettant de
+décrire des objets sous forme de données en
+précisant leurs types et leurs formats
+
+L’élève sait :
+− décrire une collection d’OST sous la forme d’un tableau dans lequel chaque ligne représente un OST et chaque
+colonne étant un descripteur (dimensions, forme, puissance, réparabilité, etc.) ;
+− déterminer un format adapté à chaque descripteur (booléen, nombre, texte, image, son, etc.) ;
+− utiliser plusieurs formes de description pour un même OST (son, image, texte, etc.).
+
+Connaissances visées :
+Vocabulaire des données : objet, descripteur,
+collection ;
+Représentation des données : le booléen
+(élément minimum d’information,
+représentation par les symboles 0 et 1).
+Décrire et analyser le traitement réalisé par un
+OST sur les données qu’il reçoit et qu’il produit
+
+4ᵉ
+
+Décrire et analyser la structuration d’une table
+de données qui permet une exploitation et une
+interprétation du comportement d’un OST
+Connaissances visées :
+Représentation des booléens, des mots (code
+ASCII étendu), des nombres entiers naturels ;
+Traitement des données : mise en forme et
+traitement de données (calculs, filtre, tri) dans
+un logiciel (tableur).
+
+L’élève sait :
+− analyser les données issues de la supervision d’un OST organisées sous forme de table ;
+− identifier les formats des données présentes dans la table ;
+− filtrer et organiser les données pour identifier les conditions qui déclenchent une action de l’OST ;
+− décrire en langage naturel le comportement de l’OST.
+
+L’élève sait :
+− lister les données nécessaires au fonctionnement d’un OST ;
+− déterminer le format adapté (booléen, nombre entier, chaine de caractère) à chaque donnée utilisée par
+l’OST ;
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+33
+
+3ᵉ
+
+Représenter sous forme de données les
+informations de diverses natures utilisées par
+un OST
+
+L’élève sait :
+− identifier les données en entrée d’un programme ou d’un algorithme (issues de capteurs, d’IHM ou d’une
+transmission) ;
+− décrire les données intermédiaires produites par le programme par transformation des données d’entrée ;
+− décrire les données produites par le programme ou l’algorithme (pour la commande d’actionneurs, d’IHM ou
+pour une transmission).
+
+Identifier, selon les cas, leur mise en forme,
+leur transmission, ou leur stockage dans des
+fichiers (texte, image, nombre) afin de
+comprendre le fonctionnement de l’OST
+
+−
+−
+
+cartographier la source des données d’entrées (capteurs, composants IHM, fichiers, transmission réseau) ;
+cartographier les données produites et leur destination (actionneurs, composants IHM, fichiers, transmission
+réseau).
+
+La circulation de l’information dans un réseau informatique
+Relation avec le socle commun, de connaissance, de compétence et de culture :
+Disposer d’une culture du numérique, en maîtriser les usages et en apprécier les enjeux (ECC11)
+Points de vigilance : En classe de 5ᵉ, pour favoriser la compréhension de l’acheminement de l’information dans un réseau local, la mobilisation d’un outil de simulation ou
+d’une activité d’informatique débranchée est à privilégier. Il n’est pas attendu de l’élève une explication quant à la façon dont l’identification des constituants du réseau est
+réalisée. En classe de 3ᵉ, la compréhension de la nécessité d’un protocole de routage est à réaliser sous la forme d’une activité débranchée dans laquelle la table de routage
+est fournie.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Les objectifs d’apprentissage sont à travailler de manière privilégiée dans le cadre d’un projet portant sur l’évolution d’un OST ou la création de tout ou partie d’un nouvel
+OST.
+En classe de 5ᵉ, l’élève travaille sur la base de la description de la topologie d’un réseau local.
+En classe de 4ᵉ, l’élève travaille sur la base d’un réseau local simulé ou d’un réseau local réel indépendant du réseau pédagogique de l’établissement.
+En classe de 3ᵉ, l’élève travaille sur la base d’un réseau simulé incluant un échange d’information entre un terminal d’un réseau local et un composant présent sur Internet.
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier les composants qui constituent un
+réseau local (terminaux, commutateurs,
+liaisons filaires et sans fil (WiFi)) et sa topologie
+
+L’élève sait :
+− identifier le chemin parcouru par l’information émise d’un terminal à destination d’un autre composant d’un
+réseau local ;
+− identifier, pour chaque étape de ce chemin, le type du composant (terminal ou commutateur) et le type de
+liaisons (filaire ou sans-fil) ;
+− reconnaître les composants qui participent au bon acheminement de l’information.
+
+Justifier la nécessité d’identifier les terminaux
+pour communiquer sur un réseau local
+Connaissances visées :
+Le réseau local ;
+Le rôle d’un terminal, d’une carte réseau, des
+liaisons (filaires ou non filaires), d’un
+commutateur.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+34
+
+Paramétrer une adresse IP fixe pour ajouter un
+objet connecté à un réseau local.
+Résoudre des problèmes pour assurer la
+communication entre les différents terminaux
+dans un réseau informatique
+
+4ᵉ
+
+Compléter une simulation fournie pour valider
+le comportement d’un réseau informatique
+Connaissances visées :
+Le rôle et la structure d’une adresse IP.
+Identifier et représenter la circulation d’une
+information dans le réseau Internet
+Justifier la nécessité d’un protocole de routage
+pour faire communiquer plusieurs réseaux
+(activité débranchée, table de routage donnée)
+
+3ᵉ
+
+Connaissances visées :
+Le réseau mondial (internet) ;
+Le rôle d’un routeur, d’un serveur.
+Le rôle des tables de routage.
+Le chiffrement de l’information.
+
+L’élève sait :
+− analyser les adresses IP des terminaux présents sur un réseau local et en proposer une nouvelle pour un
+terminal à ajouter sur le réseau.
+L’élève sait :
+− identifier une situation d’un mauvais acheminement de l’information sur un réseau local ;
+− déterminer un chemin possible pour transférer l’information sur un réseau local ;
+− contrôler le paramétrage IP des composants du réseau par lesquels l’information doit passer et les mettre à
+jour si nécessaire ;
+− tester le bon fonctionnement du réseau suite aux modifications opérées.
+
+L’élève sait :
+− identifier les constituants du réseau local par lesquels l’information circule et le constituant permettant
+d’interfacer plusieurs réseaux (routeur) ;
+− expliquer le rôle d’un serveur dans les échanges entre le terminal du réseau local et le réseau internet ;
+− représenter sur un croquis les constituants du réseau local et du réseau internet utiles pour l’acheminement
+de l’information ainsi que la circulation de celle-ci ;
+− justifier la nécessité de maintenir la confidentialité et l’intégrité des échanges par le chiffrement de
+l’information.
+L’élève sait :
+− expliquer les transmissions d’information issues du réseau local vers le réseau internet et réciproquement.
+
+Le dépannage et la réparation
+Relation avec le socle commun de connaissances, de compétences et de culture :
+−
+−
+−
+
+Raisonner, définir, argumenter, démontrer, prouver, avoir le sens de la vérité (ECC2)
+Faire preuve d’esprit critique (ECC3)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Points de vigilance : Ces objectifs d’apprentissage doivent être abordés en cohérence avec les objectifs d’apprentissage relevant de la modélisation et de la fabrication. L’élève
+doit pouvoir s’approprier progressivement le champ lexical et notionnel associé aux différents termes : réparabilité, indice de réparabilité, fiabilité, durabilité mais aussi ce
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+35
+
+qui distingue la réparation du dépannage. Il est donc important de se référer à des ressources scientifiques et institutionnelles qui les définissent : JORF et loi AGEC, site de
+l’ADEME, site du ministère de l’écologie, site du ministère de l’économie, ressources spécialisées disponibles au CDI comme les techniques de l’ingénieur, l’usine nouvelle,
+etc.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève étudie des objets techniques contemporains, grand public ou appartenant à l’environnement proche des élèves, en panne ou qui ne fonctionnent pas
+correctement, pour autant facilement démontables avec un outillage approprié (pince, tournevis, clé plate, etc.). L’élève manipule l’objet et tente de le faire fonctionner. La
+découverte des moyens de réalisation s’effectue à partir de démonstrations à l’initiative du professeur. L’élève participe à la réalisation de pièces à partir de postes préréglés
+et en suivant une procédure définie par le professeur.
+En classe de 4ᵉ, l’élève aborde la relation « causes effets » pour identifier l’origine des dysfonctionnements ou pannes constatés. L’élève suit des protocoles établis.
+En classe de 3ᵉ, l’élève élabore et met en œuvre des protocoles pour identifier l’origine des dysfonctionnements ou des pannes constatées.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Repérer visuellement une pièce défectueuse
+
+L’élève sait :
+− repérer visuellement la pièce ou le composant qui est en mauvais état (pièce cassée par exemple) ou à
+l’origine du dysfonctionnement ou du défaut (usure, dégradation, absence de signal, etc.) ;
+− identifier la pièce ou le composant défectueux dans une nomenclature afin de la nommer, de préciser sa
+désignation et de relever ses caractéristiques ;
+− effectuer, à partir d’un stock de pièces, une recherche pour disposer d’une pièce de rechange (pièce neuve,
+de remplacement, issue d’une filière de recyclage ou d’occasion).
+
+Réaliser une réparation en suivant un protocole
+fourni
+Découvrir les procédés de réalisation présents
+dans un atelier de fabrication collaboratif
+
+5ᵉ
+
+Connaissances visées :
+La fiabilité, la durabilité, l’indice de
+réparabilité ;
+Le dépannage et la réparation ;
+Les règles usuelles de sécurité et de mise en
+œuvre des moyens de réalisation au sein d’un
+atelier de fabrication collaboratif ;
+l’outillage manuel.
+
+L’élève sait :
+− appliquer le protocole de démontage et de remontage (le protocole de démontage / remontage (réel ou
+virtuel) de l’objet technique étant fourni) pour remplacer la pièce défectueuse par une pièce en bon état de
+fonctionnement et en repérant la logique des opérations séquentielles à effectuer ;
+− vérifier que la réparation effectuée donne satisfaction sur le plan fonctionnel attendu.
+L’élève sait :
+− identifier les moyens de production, de réalisation et de mise en forme présents dans le Fablab en capacité
+de réaliser tout ou partie d’une pièce ;
+− identifier les dispositifs de sécurité en observant la mise en service de moyens techniques disponibles dans le
+FabLab ;
+− repérer les différents moyens de production, enlèvement ou ajout de matière, mise en forme, assemblage
+qui permettront de réparer ultérieurement une pièce défectueuse.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+36
+
+Proposer un protocole permettant de vérifier
+l’origine d’un dysfonctionnement
+Remplacer une pièce défectueuse sans
+protocole fourni (la pièce de remplacement
+étant fournie)
+Choisir les procédés de réalisation et les mettre
+en œuvre
+
+4ᵉ
+
+Connaissances visées :
+Indice de réparabilité ;
+La technologie et les caractéristiques des
+composants à remplacer : capteurs,
+actionneurs, microcontrôleurs, générateurs ;
+Les équipements de protection individuelle ;
+Les conductibilités électrique et thermique ;
+Connaissance des règles usuelles de sécurité et
+de mise en œuvre des moyens de réalisation au
+sein d’un atelier de fabrication collaboratif ;
+Capabilité et opérations réalisables par les
+moyens de production : découpe au laser,
+centre d’usinage, fabrication additive
+(imprimante 3D) ;
+Capabilité et opérations réalisables par les
+procédés d’obtention de pièce (ajout et
+enlèvement de matière), de mise en forme
+(pliage, thermoformage) et d’assemblage (fixe
+et démontable) ;
+
+L’élève sait :
+− identifier en visitant ou au travers d’un site marchand les principales catégories de produits de grande
+consommation pour lesquelles l’indice de réparabilité s’applique ;
+− relever ou vérifier la présence d’informations permettant d’attribuer une valeur à l’indice de réparabilité r
+(durée de disponibilité de la documentation technique, facilité de démontage, outils nécessaires pour y
+parvenir, durée de disponibilité des pièces détachées, prix des pièces détachées rapporté au prix du produit
+neuf) ;
+− calculer (grilles et barèmes de calcul fournis) et vérifier à l’aide des informations connues et quantifiées,
+l’indice de réparabilité de différents produits de grande consommation proposés à la vente.
+L'élève sait :
+− proposer à l’écrit, à l’oral, à l’aide des moyens disponibles, un protocole (valeur ou variable à relever, matériel
+à mobiliser, feuille de relevé, suite d’opérations, règles à appliquer, moyens de protection, etc.) pour relever
+et mesurer une valeur : par exemple une force, une contrainte, une vitesse, une tension, une intensité, une
+température, un signal , etc. et identifier l’origine d’un dysfonctionnement constaté ;
+− caractériser l’écart entre le résultat attendu et le ou les constats observés en faisant fonctionner un OST :
+exemples : commande non effective, message d’erreur, absence de signal, trajectoire incorrecte,
+comportement différent de celui attendu ;
+− préciser si le dysfonctionnement constaté interfère ou est à mettre en relation (effet constaté – cause
+possible) avec une des fonctions de la chaine d’énergie ou de la chaine d’information.
+L’élève sait :
+− identifier dans une représentation 3D, dans un éclaté, dans un catalogue ou dans un site en ligne, la pièce ou
+le composant qu’il doit remplacer sur un objet technique ;
+− proposer la suite logique des actions de démontage puis de remontage qui permettront de remplacer une
+pièce ou un composant en y associant les outillages à mobiliser pour chaque étape de démontage, remontage.
+L’élève sait
+− choisir et mettre en œuvre, en toute sécurité, au sein du FabLab les moyens de réalisation en capacité de
+fabriquer une pièce ou de reconstituer un stock de pièces détachées.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+37
+
+Formuler des hypothèses expliquant le
+dysfonctionnement d’un objet technique
+Proposer un protocole de dépannage puis de
+réparation
+Réaliser le dépannage ou la réparation d’un
+système défectueux
+Réaliser une pièce sur mesure pour réparer un
+objet technique
+
+L’élève sait :
+− identifier les critères retenus par le ministère de l’Économie pour calculer l’indice de durabilité
+environnemental : fiabilité, robustesse, facilité d’entretien.
+L’élève sait :
+− mener une investigation technologique, scientifique à l’aide des moyens de mesure disponibles ou à l’aide
+d’un prototypage électronique et proposer une ou plusieurs causes possibles à l’origine d’un
+dysfonctionnement ou d’une panne dans une relation « effet(s) constaté(s)-causes envisageables » ;
+− formaliser sa recherche de causes envisageables à l’aide d’outils de description ou en langage naturel « si alors ».
+L’élève sait :
+− proposer un protocole de dépannage (ensemble d’actions visant à rétablir provisoirement une fonction
+dégradée) et réaliser le dépannage d’un OST, d’un sous ensemble, d’un constituant ;
+− proposer, à la suite du dépannage effectué, un protocole ou un ensemble d’actions de réparation pour rétablir
+définitivement le dysfonctionnement identifié ou la panne constatée : changement standard de composants,
+nouveau paramétrage, fabrication d’une pièce sur mesure.
+
+Connaissances visées :
+Indice de durabilité
+La disponibilité, la valorisation, le recyclage des
+matériaux
+Les moyens de prototypage électronique :
+plaque d’essai, fils, composants électroniques,
+générateurs ;
+Mise en œuvre en toute sécurité des moyens
+de production : découpe au laser, centre
+L’élève sait :
+d’usinage, fabrication additive (imprimante 3D),
+− décrire les opérations successives qui permettront de réaliser cette pièce et choisir les moyens de fabrication
+de l’appareillage de prototypage, de réalisation,
+adaptés et disponibles dans le FabLab ;
+de fabrication ;
+− mettre en œuvre les moyens de réalisation dans le respect des règles de sécurité, et superviser la réalisation
+Mise en œuvre en toute sécurité des procédés
+de la pièce et la contrôler avant de procéder à son remplacement dans l’objet technique.
+d’obtention de pièce (ajout et enlèvement de
+matière), de mise en forme (pliage,
+thermoformage) et d’assemblage (fixe et
+démontable) ;
+Application des règles usuelles de sécurité et de
+mise en œuvre des moyens de réalisation au
+sein d’un atelier de fabrication collaboratif.
+
+3ᵉ
+
+La programmation d’une nouvelle fonctionnalité
+Relation avec le socle commun de connaissances, de compétences et de culture :
+−
+
+Acquérir et mobiliser les démarches et les gestes fondamentaux de l’apprentissage (ECC1)
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+38
+
+Points de vigilance : En fin d’année de la classe de 3ᵉ, l’élève est initié à la programmation textuelle en préparation des apprentissages de la suite de la scolarité.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève travaille à partir de la description de la structure interne d’un OST et du programme de commande associé à une fonctionnalité de cet OST.
+En classe de 4ᵉ, l’élève travaille à partir de la description de la structure interne d’un OST mesurant une grandeur à intervalles réguliers, de son programme de commande et
+de la description d'une évolution attendue d'une de ses fonctionnalités.
+En classe de 3ᵉ, l’élève travaille à partir de la description de la structure interne d’un OST et de l’algorithme décrivant son programme de pilotage.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Identifier les données utilisées et produites par
+le programme associé à une fonctionnalité d’un
+OST (à partir d’un programme existant)
+
+L’élève sait :
+− identifier les éléments d’un programme de commande d’un OST (variable, instruction conditionnelle,
+séquence d’instruction), les données manipulées par le programme et le traitement réalisé sur ces données
+par le programme ;
+− retranscrire en algorithme et en langage naturel la fonctionnalité associée de l’OST ;
+− anticiper les conséquences d’une modification des paramètres du programme (valeur initiale, seuil de
+détection, valeur de commande d’un actionneur, nombre d'itérations, etc.) ;
+− mettre en œuvre les modifications sur l’OST réel ou simulé ;
+− conclure quant au nouveau fonctionnement associé à la fonctionnalité de l’OST.
+
+Comprendre et traduire par un algorithme en
+langage naturel le programme associé à une
+fonctionnalité d’un OST
+Modifier les paramètres d’un programme et
+identifier ou évaluer ses effets en termes de
+fonctionnalité
+
+5ᵉ
+Connaissances visées :
+Instruction d’affectation, variable (type mot,
+nombre et booléen) ;
+Opérateurs arithmétiques ;
+Instruction conditionnelle ;
+Séquences (bloc) d’instructions ;
+Instructions itératives ;
+Entrées ou sorties d’un programme (données
+issues par exemple de capteurs IHM et sorties
+pouvant être en lien avec un actionneur,
+fichiers) ;
+Programmation graphique par blocs.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+39
+
+Analyser les données et en déduire des
+modifications à apporter au programme
+Compléter un programme pour répondre à une
+fonctionnalité d’un OST
+
+4ᵉ
+
+Tester et valider, dans un environnement
+simulé ou réel, une modification du programme
+
+L’élève sait :
+− analyser les données manipulées par le programme de commande d’un OST et en déduire les modifications
+à opérer sur celles-ci pour obtenir la fonctionnalité modifiée (nouvelles données, données obsolètes,
+modification de la manipulation des données existantes dans le programme) ;
+− déterminer les éventuelles modifications à opérer sur l’organisation interne de l’OST (ajout/suppression d’un
+constituant, remplacement d’un constituant) ;
+− modifier en conséquence la structure interne de l’OST et compléter un programme fourni en vue de répondre
+à l’évolution attendue ;
+− vérifier le nouveau fonctionnement de la fonctionnalité via une simulation et/ou un test sur l’OST réel.
+
+Connaissances visées :
+opérateurs logiques (ET, OU, NON) ;
+structure de données « listes » afin de stocker
+des données issues du programme pour les
+parcourir et les traiter ;
+événement ;
+déclenchement d’une séquence d’instructions
+par un événement.
+Déterminer les données utilisées et produites
+par un programme associé à une fonctionnalité
+en vue de le modifier
+
+3ᵉ
+
+Programmer un algorithme lié à une nouvelle
+fonctionnalité
+Modifier et tester le programme associé à une
+nouvelle fonctionnalité d’un OST
+Connaissances visées :
+Lien entre la programmation graphique par
+bloc et la programmation textuelle.
+
+L’élève sait :
+− déterminer les données utilisées et produites par la partie du programme associé à une fonctionnalité d’un
+OST ;
+− déterminer les évolutions à prévoir sur la structure interne de l’OST et sur l’algorithme décrivant son
+fonctionnement ;
+− mettre en œuvre ces évolutions sur l’OST réel ;
+− vérifier le nouveau fonctionnement de la fonctionnalité via un test sur l’OST réel.
+L’élève sait :
+− rédiger un programme en langage par blocs correspondant à un algorithme simple de commande d’un OST ;
+− utiliser un outil de transcription de ce programme en langage Python ;
+− associer les blocs de texte en langage Python aux blocs du programme initial qui remplissent les mêmes rôles.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+40
+
+Création, conception, réalisation, innovations : des objets à
+concevoir et à réaliser
+À travers ce thème, de manière collaborative, les élèves analysent un problème, conçoivent et matérialisent des
+solutions. Ils développent des habiletés manuelles (créer, réaliser, construire, installer, assembler, produire, mettre
+en œuvre, mesurer vérifier, exécuter) et des compétences de programmation et de communication au travers de
+revues de projets (suivi, validation, argumentation, explications, etc.).
+Les démarches de projet et les phases de créativité mises en œuvre conduisent les élèves à mobiliser leurs
+connaissances et leurs compétences, notamment celles développées et décrites dans les deux thèmes précédents. Ils
+sont invités à développer leur esprit critique en réponse à un besoin lié à un enjeu sociétal, en s’appuyant sur des
+données fiables. Ils exercent leur esprit critique en identifiant les leviers d’action et en se centrant sur les besoins de
+l’utilisateur. Ils débattent, argumentent et portent un regard critique sur les solutions proposées au regard de leur
+efficacité et de leurs incidences environnementales et sociétales. Ils imaginent ainsi les solutions les plus appropriées,
+en alternant les phases de créativité individuelle et collective, et pouvant intégrer une dimension design.
+Les démarches de projet et les phases de créativité sont menées dans un environnement de type classe modulaire ou
+flexible, au sein de l’atelier de fabrication collaboratif, tout en ayant recours à un environnement informatique maîtrisé
+(ENT, réseau, identité numérique, etc.).
+
+Compétences de fin de cycle
+•
+
+Imaginer, concevoir et réaliser une ou des solutions en réponse à un besoin, à des exigences (de développement
+durable, par exemple) ou à la nécessité d’améliorations dans une démarche de créativité
+
+En comparant des solutions existantes ou des familles de produits, les élèves imaginent et formulent une solution
+associée à une fonction technique répondant à un besoin. Ainsi sont-ils amenés à conceptualiser progressivement les
+démarches d’investigation, de créativité et de projet.
+•
+
+Valider les solutions techniques par des simulations ou par des protocoles de tests
+
+Après avoir concrétisé leurs choix de solutions lors de la phase de réalisation, les élèves s’attachent à la vérification,
+au contrôle et à la validation de solutions. Cette phase essentielle, menée par l’intermédiaire de simulations ou
+l’utilisation d’appareils de mesure, permet de comparer les résultats obtenus ou simulés avec des résultats attendus
+ou des exigences issues d’un cahier des charges. Les élèves identifient les écarts, la précision, les erreurs de mesure.
+Ils s’appuient sur les documentations techniques mises à leur disposition (documents des constructeurs, données des
+fabricants, etc.). Les élèves proposent et réalisent un protocole de tests (ce terme englobe l’ensemble des
+expérimentations, des essais et des mesures que les élèves sont amenés à mettre en œuvre pour valider leurs
+solutions).
+•
+
+Concevoir, écrire, tester et mettre au point un programme
+
+Face à un problème donné, dans le cadre d’un projet nécessitant de la programmation, une phase d’analyse permet
+aux élèves d’expliciter les fonctionnalités du programme à réaliser puis de concevoir un algorithme en langage naturel
+répondant au problème posé. Celui-ci est ensuite traduit dans un langage informatique en le structurant avec des
+sous-programmes ou des fonctions pour en assurer la lisibilité. Une phase de tests et de mise au point permet d’aboutir
+à un programme répondant aux besoins spécifiés. Le travail en équipe est privilégié pour l’élaboration de projets. Un
+partage des fonctionnalités à programmer est planifié et piloté par l’enseignant en interaction avec l’équipe d’élèves
+chargée du projet.
+
+Progressivité pour atteindre ces compétences en fin de cycle
+En classe de 5ᵉ, dans le cadre de mini-projets, les élèves identifient des problématiques afin de répondre à des besoins
+en lien avec des enjeux. Ils choisissent ou proposent des solutions à partir d’éléments donnés en suivant une
+planification établie et arrêtée. L’organisation ainsi mise en place aboutit, après conception et réalisation d’un ou
+plusieurs éléments répondant à une fonction technique précise, à l’élaboration d’un prototype (constituants,
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+41
+
+assemblage, programme). L’objectif est de développer et d’acquérir les savoirs et les savoir-faire leur permettant de
+mener une démarche de projet globale durant l’année.
+En classe de 4ᵉ, l’accent est mis sur la relation entre les besoins, les fonctions, les solutions dans la continuité de la
+démarche engagée en 5ᵉ en réinvestissant les compétences et les connaissances des élèves. Dans cette partie du cycle,
+ils identifient et résolvent un problème portant sur un objet ou un système technique existant. Ils doivent être en
+mesure d’ajouter une fonctionnalité en respectant les spécifications attendues par une approche Matériaux, Énergies,
+Information en prenant conscience de ses effets sur l’environnement.
+En classe de 3ᵉ, en traitant de thématiques choisies, par exemple en lien avec les objectifs du développement durable,
+les élèves s’investissent dans un projet mené en groupe, leur permettant de mettre en œuvre les compétences
+développées lors des niveaux précédents.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+42
+
+Cycle 4
+La gestion de projet technique
+Relation au socle commun de connaissance, de compétences et de culture :
+−
+−
+
+Se situer dans l’espace et dans le temps naturel ou historique (ECC4)
+Savoir jouer (ECC 12)
+
+Points de vigilance : La gestion de projet technique prend principalement toute sa place dans la réalisation d’un projet, d’un défi, d’un concours technologique qui amènera
+les élèves à concevoir, modéliser, modifier, réparer, fabriquer et assembler des pièces. Chaque séquence peut donner lieu à la définition d’activités pour « apprendre à faire
+et faire pour apprendre », de ce fait la mobilisation de plannings matériels ou au format numérique facilitera l’appropriation progressive des connaissances et compétences
+et devrait aussi apporter à l’élève des compétences pour organiser ses propres activités, sa vie de collégien. Si l'élève vit son projet c’est bien à l'enseignant d’amener l’élève
+à expliciter, au terme du projet, le processus qui lui a permis de mener à terme ce qui était prévu. C’est ce processus qui est formateur et éducatif, pas le résultat en luimême. En vivant plusieurs projets dans sa scolarité, l’élève s’approprie peu à peu la démarche, ce qui lui permettra plus tard de mieux agir au quotidien en citoyen confronté
+à des projets ultérieurs personnels ou professionnels.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève se confronte aux activités et tâches qui vont permettre de concrétiser un processus de conception et de réalisation d’un objet technique ou de son
+prototype. Les activités et tâches sont planifiées par le professeur (planning en salle de classe ou au format numérique). L’élève dispose de différentes sources d’informations
+utiles : représentation 3D, dessins côtés de pièces à réaliser, liste des moyens disponibles dans le Fablab.
+En classe de 4ᵉ, des revues de projet sont inscrites au planning pour amener l’élève à prendre des décisions collectives avec ses camarades et pour s’assurer que les délais
+pourront être respectés. Les principales activités du projet sont planifiées par le professeur.
+En classe de 3ᵉ, les activités et tâches sont planifiées par les élèves associés dans un même projet. La supervision et la régularisation des projets sont conduites par le
+professeur.
+
+Objectifs d’apprentissage
+Suivre un processus de conception et de
+réalisation dans une durée, avec des tâches
+identifiées
+
+5ᵉ
+Connaissances visées :
+Le diagramme de planification des tâches :
+notion de tâches, durées et contraintes et
+antériorités entre tâches.
+
+Exemples de réussite
+L’élève sait :
+− identifier sur le planning, les tâches de conception et de réalisation programmées pour la réalisation d’un
+projet, d’une pièce et leurs durées ;
+− identifier sur le planning les tâches qui lui sont confiées et celles allouées à d’autres élèves de la classe ;
+− repérer sur le planning les tâches qui précèdent et succèdent à ses propres tâches.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+43
+
+Organiser un processus de conception et de
+réalisation dans une durée, avec des tâches
+identifiées
+
+4ᵉ
+
+Connaissances visées :
+Les étapes d’un projet ;
+Planification au plus tôt, au plus tard ;
+Le rôle d’une revue de projet.
+
+L’élève sait :
+− disposer avec ses camarades, sur un planning, les tâches définies et identifiées dans le cadre d’une séquence,
+d’un projet, défi ou concours ;
+− identifier les tâches figurant sur le chemin critique et les marges possibles pour les tâches qui ne figurent pas
+sur le chemin critique ;
+− contribuer avec ses camarades à l’optimisation préalable du planning :
+• comment allouer ou répartir les ressources matérielles et humaines disponibles ?
+• quelle planification des tâches sur la base de différents critères et du contexte du projet ? (au plus tôt,
+au plus tard, en jouant sur chaque marge pour respecter le délai imparti).
+L’élève sait :
+− collaborer, dans le cadre des revues de projet, à l’ajustement du planning de tâches pour tenir les délais qui
+jalonnent le projet
+• quelle nouvelle répartition des tâches ou ressources à envisager ?
+
+Élaborer un processus de conception et de
+réalisation dans une durée, avec des tâches
+identifiées
+Connaissances visées :
+Marges libres et totales.
+
+3ᵉ
+
+L’élève, avec ses camarades, sait :
+− définir les étapes et tâches du projet : de créativité, de conception préliminaire, de conception détaillée, de
+réalisation, d’assemblage, de paramétrage, de tests, de mise en service et d’optimisation, de préparation
+d’une soutenance (revues de projet ou soutenance devant une assemblée) ;
+− jalonner le processus de revues de projet ;
+− arrêter, à partir d’un historique ou retour d’expérience communiqué par le professeur, des durées pour
+chaque tâche identifiée ;
+− répartir les tâches définies sur un planning en allouant à chaque tâche, les ressources humaines et matérielles
+disponibles ;
+− coordonner des tâches du planning à engager pour respecter les délais.
+L’élève sait :
+− identifier son rôle et ses responsabilités au sein du projet.
+L’élève sait :
+− collaborer, dans le cadre de revues de projet, à l’ajustement du planning de tâches pour faire face à des aléas :
+• quelle mobilisation possible de la marge libre ?
+• quelle nouvelle répartition des tâches et/ou nouvelle collaboration ?
+• quelles sont les possibilités de faire appel à une aide extérieure ou à de la « sous-traitance » ?
+• quels impacts en cas de temps ou délai supplémentaire ?
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+44
+
+Le prototypage de solutions
+Relation au socle commun de connaissance, de compétences et de culture :
+−
+
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Points de vigilance : Le prototypage de solutions prend principalement toute sa place dans la réalisation d’un projet, d’un défi, d’un concours technologique qui amènera les
+élèves à concevoir, modifier, réparer, fabriquer et assembler des pièces à partir des moyens disponibles dans le FabLab. Ces objectifs d’apprentissage doivent pouvoir
+également être développés en lien et cohérence avec les objectifs d’apprentissages relevant du dépannage et de la réparation, des matériaux et procédés mais aussi de la
+modélisation et fabrication. Pour autant, il ne s’agit pas de professionnaliser les élèves dans la conception de processus de réalisation.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève agit en tant qu’« opérateur » sur les moyens disponibles. Il dispose de l’ensemble des informations pour effectuer le prototypage en toute sécurité.
+En classe de 4ᵉ, l’élève participe à un projet qui permet d’ajouter une nouvelle fonctionnalité à un OST en disposant par exemple d’un kit de composants (carte, capteurs,
+écran, connectique, composants, etc.). L’élève participe aux opérations d’installation des outillages et paramétrages pour la conduite des moyens de réalisation disponibles
+dans le FabLab.
+En classe de 3ᵉ, l’élève participe à un projet, un défi, un challenge technologique ou concours de robotique collaboratif qui suppose différentes activités de conception, de
+réalisation, d’évolution à apporter à un OST. L’usage de l’IA contribue à la recherche de solutions. L’élève prend en charge la réalisation d’une pièce sur l’un des moyens de
+réalisation disponible.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Fabriquer une solution pour améliorer un OST
+existant
+
+5ᵉ
+
+L’élève sait :
+− mobiliser les moyens disponibles et configurés (usinage, impression 3D, formage), pour réaliser en toute
+sécurité les modifications sur les pièces à prototyper et qui intégreront un nouveau composant et sa
+Connaissances visées :
+connectique ;
+Les règles usuelles de sécurité et de mise en
+− identifier sur une gamme de fabrication, la phase de réalisation qui lui est confiée ainsi que le temps de
+œuvre des moyens de réalisation dans un
+réalisation associé ;
+atelier de fabrication collaboratif : identification
+− relever, en lien avec le contrat de phase, sur le modèle 3D les formes, dimensions et cotes de la pièce à
+des risques ;
+réaliser ;
+Les procédés d’assemblage (fixe et
+− collaborer aux opérations de réalisation définies et décrites sur le contrat de phase (moyen de production
+démontable).
+retenu, suites des opérations, outillages à mobiliser, etc.) inscrites au planning (traçage, découpe , usinage,
+perçage, impression 3D, assemblage, ) ;
+− réaliser le contrôle de dimensions et de certaines cotes fabriquées pour la pièce réalisée ;
+− assembler un objet constitué de différentes pièces en suivant une gamme de montage.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+45
+
+Proposer et fabriquer une solution pour ajouter
+une nouvelle fonction à un OST (croquis,
+schéma, graphique, algorithme, modélisation)
+
+4ᵉ
+
+Connaissances visées :
+Les modes de représentation (croquis, schéma,
+graphique, algorithme, modélisation)
+Les mécanismes de transmission et de
+transformation de mouvements ;
+Les procédés de mise en forme (pliage,
+thermoformage) et d’assemblage (fixe et
+démontable) ;
+Les règles usuelles de sécurité et de mise en
+œuvre des moyens de réalisation dans un
+atelier de fabrication collaboratif : protocoles
+de mise en œuvre : réglage, configuration,
+paramétrage.
+Proposer et fabriquer un ensemble de solutions
+pour produire un nouvel OST (croquis, schéma,
+graphique, algorithme, modélisation)
+
+3ᵉ
+
+Connaissances visées :
+L’ergonomie liée à l’usage ;
+Les procédés d’obtention de pièces (ajout et
+enlèvement de matière), de mise en forme
+(pliage, thermoformage) et d’assemblage (fixe
+et démontable) ;
+Les règles usuelles de sécurité et de mise en
+œuvre des moyens de réalisation dans un
+atelier de fabrication collaboratif : mise en
+œuvre en autonomie.
+
+L’élève sait :
+− décrire à l’aide de schémas, croquis et/ou d’une modélisation et dans le cadre d’une nouvelle fonction à
+ajouter, les modifications et évolutions à apporter à l’OST (chaine d’information, chaine d’énergie,
+constituants, pièces, algorithme, programme) ;
+− préciser les modifications structurelles envisagées à la chaîne d’information, et/ou à la chaine d’énergie) pour
+apporter à l’OST cette nouvelle fonctionnalité ;
+− identifier et préciser au niveau de l’algorithme les modifications qui devront être apportées au programme
+de l’OS.
+L’élève sait :
+− réaliser le montage ou assembler les composants et les pièces permettant d’apporter la nouvelle
+fonctionnalité souhaitée ;
+− modifier l’algorithme (nouveau test, nouvelle boucle, nouvelle variable) qui permettra à l’OST de disposer
+d’une nouvelle fonctionnalité.
+
+L’élève sait :
+− imaginer une solution et l’expliciter à ses camarades pour faire émerger un consensus ou d’autres solutions
+nouvelles ou originales en développant une pensée critique ;
+− s’approprier les solutions proposées par ses camarades ;
+− rechercher sur différents médias à partir de différents mots clés ou en utilisant une intelligence artificielle
+générative de nouvelles idées ;
+− collaborer pour parvenir à une décision collégiale qui arrête les meilleures solutions qui répondent au besoin
+et qui font consensus.
+L’élève sait :
+− proposer une structure et une organisation interne de la chaine d’énergie et interne de la chaine
+d’information.
+L'élève sait :
+− mettre en œuvre les moyens disponibles au sein du FabLab pour concrétiser les solutions définies et qu’il doit
+fabriquer.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+46
+
+L'élève sait :
+− documenter et rendre compte de l’avancement de son travail (compte rendu, revues de projet, échanges
+entre pairs).
+
+Le choix des matériaux
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Raisonner, définir, argumenter, démontrer, prouver, avoir le sens de la vérité (ECC2)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Points de vigilance : Ces objectifs d’apprentissage doivent être abordés dans le cadre d’une démarche de projet, de ce fait mobilisent des connaissances acquises, celles en
+particulier abordées en cohérence avec les objectifs d’apprentissage relevant des matériaux et des procédés. Le choix des matériaux entrant dans la composition ou la
+réalisation d’un OST doit répondre, comme pour le choix d’une source et forme d’énergie, à des contraintes ou exigences ou règlements ou normes à respecter. Les élèves
+doivent pouvoir continuer à s’approprier le champ lexical et les notions associées aux termes : propriétés, caractéristiques, cycle de vie et recyclabilité des matériaux. Les
+matériaux retenus ici sont ceux disponibles pour concrétiser l’OST à réaliser.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, l’élève étudie les caractéristiques des seuls matériaux disponibles en classe (exemple : PLA, PVC, ABS, balsa, carton, bois, etc.).
+En classe de 4ᵉ, l’élève assiste et participe à des essais de matériaux au sein d’un laboratoire ou d’un centre de formation disposant d’un laboratoire d’essais. L’élève étudie
+les matériaux facilement disponibles et mobilisables dans les projets.
+En classe de 3ᵉ, le choix de matériaux s’effectue dans le cadre exclusif d’un projet de conception, ou de re-conception, pour réparer ou réaliser une pièce. L’usage de l’IA est
+recommandé pour trouver les matériaux disponibles et pour évaluer leurs empreintes carbones.
+
+Objectifs d’apprentissage
+Choisir un matériau parmi plusieurs proposés
+en fonction de leurs caractéristiques
+
+5ᵉ
+
+Exemples de réussite
+L’élève sait :
+− choisir le matériau compatible avec les contraintes ;
+− rédiger un argumentaire court sur l’intérêt de recycler ces matériaux.
+
+Connaissances visées :
+Choix multicritères
+Le recyclage des matériaux.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+47
+
+Comparer différents matériaux pour choisir le
+plus adapté
+
+4ᵉ
+
+Connaissances visées :
+Les modes de sollicitation des matériaux
+(flexion, torsion) ;
+Les conductibilités électrique et thermique ;
+La valorisation des matériaux.
+Choisir un matériau constitutif d’un objet et/ou
+système technique
+Connaissances visées :
+Les différentes étapes du cycle de vie d’un OST
+;
+L’empreinte carbone ;
+La disponibilité.
+
+3ᵉ
+
+L'élève sait :
+− mettre en œuvre, un protocole de test et d’essai de matériaux sur quelques échantillons afin d’évaluer leurs
+propriétés et aptitudes telles que la conductibilité, la dureté, la traction, la flexion , etc. ;
+− comparer les matériaux retenus à partir des résultats obtenus ou constatés et arrêter un choix ;
+− rédiger un document qui explicite sa démarche de recherche, de comparaison et de sélection de matériaux ;
+− argumenter son choix en explorant la possibilité de recycler et de valoriser le ou les matériaux retenus.
+
+L'élève sait :
+− sélectionner le matériau approprié au projet et éditer une fiche reprenant sa désignation, ses caractéristiques
+et performances ;
+− argumenter à partir de ressources disponibles ou recherchées (sites internet ou en faisant usage de l’IA), le
+choix d’un matériau au regard de sa disponibilité et de son empreinte carbone ;
+− argumenter sur le choix de matériaux entrant dans la composition d’OST et répondant à des enjeux actuels :
+par exemple ceux de la transition énergétique et au déploiement de nouvelles technologies (énergies
+renouvelables, recours aux véhicules électriques, etc.) et pour atteindre la neutralité carbone (cf. Scénarios
+ADEME, neutralité carbone 2050).
+
+Le choix d’une source d’énergie
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Faire preuve d’esprit critique (ECC3)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Points de vigilance : Ces objectifs d’apprentissage doivent être abordés dans le cadre d’une démarche de projet, de ce fait mobilisent des connaissances acquises, celles en
+particulier abordées en cohérence avec les objectifs d’apprentissage relevant des fonctions, des solutions constituant la chaine d’énergie. Le choix d’une source et forme
+d’énergie entrant dans la composition ou la réalisation d’un OST doit répondre, comme pour le choix d’un matériau, à des contraintes ou exigences ou règlements ou normes
+à respecter. Les élèves doivent pouvoir continuer à s’approprier le champ lexical et les notions associées aux termes : sources et formes d’énergies, transformation, conversion
+d’énergie, rendement et efficacité énergétique. L’élève identifie les unités associées aux énergies et à leurs conversions. Les sources et formes d’énergies retenues ici sont
+celles disponibles pour concrétiser l’OST à réaliser.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, les objectifs d’apprentissage s’appliquent à un OST équipé de piles ou d’accumulateurs et qui doit répondre à des contraintes ou exigences ou normes ou
+règlements à respecter.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+48
+
+En classe de 4ᵉ, l’élève assiste et participe à des essais d’efficacité énergétique de constituants au sein d’un laboratoire ou d’un centre de formation disposant d’un laboratoire
+d’essais. L’élève s’intéresse à des sources et formes d’énergies facilement disponibles et mobilisables dans les projets.
+En classe de 3ᵉ, le choix d’une source ou forme d’énergie s’effectue dans le cadre exclusif d’un projet de conception, ou de re-conception, pour permettre à l’OST de
+fonctionner. L’usage de l’IA est recommandé pour effectuer ces choix.
+
+Objectifs d’apprentissage
+Choisir une source d’énergie et une forme
+d’énergie possible parmi plusieurs proposées
+
+5ᵉ
+
+L’élève sait :
+− choisir la source d’énergie compatible avec les contraintes de l‘OST ;
+− rédiger un argumentaire court sur l’intérêt de recycler les piles ou les accumulateurs.
+
+Connaissances visées :
+Sources et formes d’énergie ;
+Les différentes formes d’énergie : électrique,
+cinétique, thermique, lumineuse.
+Comparer différentes sources d’énergie pour
+choisir la plus adaptée
+
+4ᵉ
+
+Exemples de réussite
+
+Connaissances visées :
+Les conversions d’énergie des constituants
+suivants : moteur électrique, lampe, radiateur,
+génératrice, vérin.
+
+L'élève sait :
+− mettre en œuvre ou assiste au sein d’un laboratoire ou d’un centre de formation disposant d’un laboratoire
+d’essais, un protocole de test et d’essais sur quelques générateurs ou accumulateurs pour évaluer leur
+efficacité énergétique ;
+− comparer les sources et la forme d’énergie retenues à partir des résultats obtenus ou constatés et arrêter un
+choix.
+L’élève sait :
+− rédiger un document qui explicite sa démarche de recherche, de comparaison et de sélection de sources et
+formes d’énergie ;
+− argumenter son choix en explorant la disponibilité des sources et formes d’énergie et la possibilité d’améliorer
+l’efficacité énergétique des OST.
+
+Choisir une source d’énergie pour un OST
+
+3ᵉ
+
+Connaissances visées :
+L’impact environnemental lié aux sources
+d’énergie.
+
+L'élève sait :
+− évaluer le besoin énergétique de l’OST à partir des caractéristiques et performances attendues ;
+− évaluer le coût des composants qui transformeront la source et les formes d’énergie au sein de la chaine
+d’énergie ;
+− évaluer l’impact environnemental lié aux sources d’énergie envisagées.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+49
+
+L’élève sait :
+− choisir une source d’énergie en argumentant sur les critères retenus pour l’OST : contexte d’usage,
+accessibilité et disponibilité de la source d’énergie, autonomie et efficacité énergétique, impacts
+environnementaux, coûts , etc.
+
+L’assemblage de constituants
+Relation au socle commun, de connaissance, de compétences et de culture :
+−
+−
+
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+Savoir jouer (ECC 12)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Les objectifs d’apprentissage sont à travailler de manière privilégiée dans le cadre d’un projet portant sur l’évolution d’un OST ou la création de tout ou partie d’un nouvel
+OST.
+En classe de 5ᵉ, l’élève travaille à partir d’un OST (ou d’une maquette ou d’un prototype), d’un stock de constituants, d’une gamme de montage détaillée (ou d’une
+documentation technique ou d’une représentation 3D en éclaté). Les documents doivent préciser les outils adéquats.
+En classe de 4ᵉ, l’élève travaille à partir de la description d’un prototype, de la description de ses constituants, d’une gamme de montage, d’un kit de pièces/constituants à
+assembler, d’une liste de plusieurs propositions pour un des constituants.
+En classe de 3ᵉ, l’élève travaille à partir d’un stock existant de constituants nécessaires à la réalisation de son prototype.
+
+Objectifs d’apprentissage
+Assembler les constituants fournis pour réaliser
+un prototype
+
+5ᵉ
+
+Connaissances visées :
+Lecture d’une gamme de montage ou
+d’assemblage ;
+Les mécanismes de transmission de
+mouvements (engrenages, courroies, chaînes) ;
+Les outils et les pièces d’assemblage : tournevis
+cruciforme, tournevis plat, vis, écrou, clefs,
+pinces, vis auto foreuses.
+
+Exemples de réussite
+L’élève sait :
+− mobiliser l’outil adéquat pour les assemblages à chaque étape ;
+− assembler un nouveau constituant lié à la chaine d’information sur l’OST ;
+− connecter le ou les constituants de la chaine d’information à l’unité de traitement de données ;
+− assembler les constituants ou les pièces de la chaine d’énergie de l’OST ;
+− assembler les pièces composant la structure de l’OST.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+50
+
+Identifier les constituants manquants dans un
+prototype et le compléter
+
+4ᵉ
+
+Connaissances visées :
+Les fonctions des constituants de la chaîne
+d’information ;
+Les fonctions des constituants de la chaîne
+d’énergie.
+Choisir les constituants et assembler un
+prototype
+
+3ᵉ
+
+L’élève sait :
+− dresser l’inventaire des constituants disponibles et manquants ;
+− relever les caractéristiques et les propriétés d’un constituant manquant ;
+− choisir le constituant parmi l’ensemble des propositions ;
+− organiser son poste d’assemblage (constituants rangés dans l’ordre chronologique de montage, outillage à
+proximité) ;
+− suivre pas à pas la gamme de montage pour assembler le prototype.
+L’élève sait :
+− sélectionner dans une banque de données ou par des tests réels, les constituants du prototype dont il a
+besoin ;
+− ordonner les étapes d’assemblage du prototype ;
+− identifier le matériel et l’outillage à mobiliser ;
+− assembler les constituants ;
+− contrôler l’assemblage du prototype en mobilisant différents outillages ou appareils de contrôle et de mesure
+(pied à coulisse, multimètre, matériel d’acquisition de données, etc.) ;
+− vérifier que le prototype assemblé assure les fonctionnalités attendues.
+
+La modélisation et la fabrication
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Acquérir des savoir-faire artistiques et développer une sensibilité esthétique (ECC6)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Points de vigilance : Ces objectifs d’apprentissage doivent être abordés dans le cadre d’une démarche de projet, de ce fait mobilisent des connaissances acquises, celles en
+particulier abordées en cohérence avec les objectifs d’apprentissage relevant de la réparation et du dépannage et celles relevant du prototypage de solution.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 5ᵉ, les objectifs d’apprentissage sont à envisager dans le cadre de la réalisation de tout ou partie d’une maquette ou d’un prototype.
+En classe de 4ᵉ, les objectifs d’apprentissages sont à envisager à partir d’images 2D, d’un modeleur volumique, d’outils de dessin, d’aperçus et dans la perspective de modéliser
+une pièce, une structure, un bâtiment.
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+51
+
+En classe de 3ᵉ, les objectifs d’apprentissage sont à envisager à partir d’images 2D, d’un modeleur volumique, d’outils de dessin, d’aperçus et dans la perspective de modéliser
+une pièce, une structure, un bâtiment et de réaliser une pièce, un prototype, une maquette.
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Mettre en œuvre les moyens pour réaliser une
+forme selon une procédure fournie
+
+L’élève sait :
+− mettre en œuvre des moyens de réalisation (découpe et formage) à partir d’une démonstration, des tutoriels
+(vidéos et documents imprimés) ;
+− apporter des modifications dimensionnelles à une pièce conçue avec un modeleur volumique ;
+− réaliser en 3D le modèle volumique de la pièce et assigner des cotes qui permettent de dimensionner
+correctement la pièce ;
+− vérifier les cotes modifiées sur la pièce réalisée avec l’outil de mesure adapté.
+
+Connaissances visées :
+Les règles usuelles de sécurité et de mise en
+œuvre des moyens de réalisation (découpage
+formage) au sein d’un atelier de fabrication
+collaboratif ;
+Les instruments de mesure.
+Modifier une forme à l’aide d’une modélisation
+Choisir les moyens et produire la forme voulue
+
+4ᵉ
+
+Connaissances visées :
+Les règles usuelles de sécurité et de mise en
+œuvre des moyens de réalisation (usinage) au
+sein d’un atelier de fabrication collaboratif ;
+Les instruments de mesures.
+
+Modéliser une forme voulue
+Choisir les moyens et produire la forme voulue
+
+3ᵉ
+Connaissances visées :
+Les règles usuelles de sécurité et de mise en
+œuvre des moyens de réalisation (impression
+
+L'élève sait :
+− mobiliser et combiner différentes applications et fonctionnalités logicielles pour modifier une forme simple
+dans un modeleur volumique (modification d’un cercle, rectangle, etc.) et pour créer des volumes et formes
+dimensionnés et détaillés ;
+− apporter des modifications dimensionnelles et géométriques de forme à une pièce conçue avec un modeleur
+volumique pour réaliser une pièce sur mesure.
+L’élève sait :
+− exploiter le modèle 3D pour mettre en œuvre différents procédés : impression en 3D ou machine-outil à partir
+de son programme de commande numérique ;
+− vérifier les modifications apportées sur la pièce fabriquée à l’aide des outils de mesure adaptés.
+L’élève sait :
+− utiliser une numérisation 3D pour reconcevoir une pièce endommagée, à remplacer, à modifier ;
+− mobiliser et combiner différentes applications et fonctionnalités logicielles pour créer et réaliser la conception
+préliminaire d’une pièce ;
+− modifier si besoin une forme simple à complexe dans un modeleur volumique ;
+− utiliser le résultat de sa modélisation et le rendu réaliste pour communiquer ses idées dans le cadre d’un
+travail collaboratif ou projet.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+52
+
+3D, découpe laser, MOCN) au sein d’un atelier
+de fabrication collaboratif ;
+Les instruments de mesure.
+
+L’élève sait :
+− réaliser en 3D le modèle volumique de la pièce et assigner des cotes qui permettent de dimensionner
+correctement la pièce à réaliser sur les moyens disponibles pour réaliser une pièce sur mesure ;
+− exploiter le modèle 3D pour piloter différents procédés : impression en 3D ou création de programmes de
+commande numérique. ;
+Vérifier, avec les outils de mesure adaptés, la pièce réalisée.
+L’élève sait :
+− modéliser (représentation graphique, modélisation 3D) ses idées, une ou plusieurs solutions qui répondent à
+un cahier des charges (règlement de concours, diagrammes d’exigences, CCTP, etc.).
+
+Les objets communicants
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+Savoir jouer (ECC 12)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+En classe de 4ᵉ, l’élève travaille à partir de la description de la topologie d’un réseau local indiquant les adresses IP des constituants présents. L’élève dispose de deux
+programmes simples fournis (l’un à destination d’un terminal, l’autre à destination d’un OST).
+En classe de 3ᵉ, l’élève travaille à partir de la description de la topologie d’un réseau local indiquant les adresses IP des constituants présents. L’élève dispose de deux
+programmes simples fournis (l’un à destination d’un premier OST, l’autre à destination d’un autre OST).
+
+Objectifs d’apprentissage
+Interfacer un objet technique avec un réseau
+
+4ᵉ
+
+Connaissances visées :
+Le rôle d’un terminal, d’une carte réseau, des
+liaisons (filaires ou non filaires), d’un
+commutateur ;
+Les composants d’une interface entre l’humain
+et la machine (IHM) : boutons, afficheurs, etc.
+
+Exemples de réussite
+L’élève sait :
+− déterminer une adresse IP possible pour l’OST ;
+− paramétrer l’adresse IP dans l’OST ;
+− tester la connexion entre l’OST et un terminal du réseau local ;
+− téléverser les programmes dans l’OST et le terminal ;
+− tester la possibilité de commander le comportement de l’OST à l’aide du terminal.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+53
+
+Interfacer deux objets techniques
+communicants
+
+3ᵉ
+
+L’élève sait :
+− déterminer deux adresses IP possibles pour les deux OST ;
+− paramétrer les adresses IP dans les deux OST ;
+− tester la connexion entre chacun des deux OST et un terminal du réseau local ;
+− tester la possibilité de commander le comportement d’un OST à l’aide d’une action sur l’autre OST.
+
+La validation du comportement mécanique d’un matériau
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+−
+
+Raisonner, définir, argumenter, démontrer, prouver, avoir le sens de la vérité (ECC2)
+Être curieux de la pluralité des langages et des langues et s’ouvrir aux richesses des autres cultures (ECC5)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Les objectifs d’apprentissage sont à travailler de manière privilégiée dans le cadre d’un projet. L’élève travaille à partir de documents décrivant une pièce, un produit ou un
+ouvrage dans son contexte et soumis(e) à une sollicitation simple. L’élève dispose également d’une simulation (ou d’une feuille de calcul) permettant de calculer la
+déformation subie par la pièce, le produit ou l’ouvrage.
+En classe de 5ᵉ, l’élève dispose d’un protocole expérimental pour mesurer la déformation.
+En classe de 4ᵉ, l’élève dispose de plusieurs protocoles expérimentaux proposés pour mesurer la déformation.
+En classe de 3ᵉ, l’élève calcule la déformation subie par la pièce, le produit ou l’ouvrage.
+
+Objectifs d’apprentissage
+Identifier la nature des sollicitations
+mécaniques des matériaux
+
+5ᵉ
+
+Utiliser une simulation fournie pour valider la
+tenue mécanique d’un matériau soumis à une
+sollicitation simple
+Mettre en œuvre un protocole de test fourni
+pour valider la tenue mécanique d’un matériau
+soumis à une sollicitation simple
+
+Exemples de réussite
+L’élève sait :
+− identifier la sollicitation subie par la pièce, le produit ou l’ouvrage ;
+− déterminer, en simulation, l’ampleur de la déformation subie par la pièce, le produit ou l’ouvrage ;
+− choisir un matériau ou une dimension qui limitera la déformation dans des valeurs acceptables ;
+− mettre en œuvre le protocole expérimental et conclure quant à l’écart entre le réel et le simulé.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+54
+
+Connaissances visées :
+Mode de sollicitation des matériaux : flexion,
+torsion, traction, compression
+Paramétrer une simulation fournie pour valider
+la tenue mécanique d’un matériau soumis à
+une sollicitation simple.
+
+4ᵉ
+
+Choisir et mettre en œuvre un protocole de
+test pour valider la tenue mécanique d’un
+matériau soumis à une sollicitation simple
+
+Paramétrer une simulation fournie pour valider
+la tenue mécanique d’un matériau
+Proposer et mettre en œuvre un protocole de
+test pour valider la tenue mécanique d’un
+matériau
+
+3ᵉ
+
+L’élève sait :
+− identifier la sollicitation subie par la pièce, le produit ou l’ouvrage ;
+− paramétrer la simulation (ou la feuille de calcul) en renseignant la nature du matériau et les dimensions de la
+pièce, du produit ou de l’ouvrage ;
+− déterminer, en simulation, l’ampleur de la déformation subie par la pièce, le produit ou l’ouvrage ;
+− conclure quant au respect de la déformation maximale autorisée ;
+− choisir le protocole expérimental adapté parmi ceux fournis permettant de mesurer la déformation ;
+− mettre en œuvre le protocole expérimental choisi et conclure quant à l’écart entre le réel et le simulé.
+L’élève sait :
+− identifier la sollicitation subie par la pièce, le produit ou l’ouvrage ;
+− paramétrer la simulation (ou la feuille de calcul) en renseignant la nature du matériau et les dimensions de la
+pièce, du produit ou de l’ouvrage ;
+− déterminer, en simulation, l’ampleur de la déformation subie par la pièce, le produit ou l’ouvrage ;
+− explorer, en simulation, aux frontières des exigences attendues les limites (de charge, de déformation, de
+comportement, etc.) identifiées ;
+− conclure quant au respect de la déformation maximale autorisée ;
+− proposer un protocole expérimental permettant de mesurer la déformation ;
+− mettre en œuvre le protocole expérimental et conclure quant à l’écart entre le réel et le simulé.
+
+La validation des performances d’un OST
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+
+Acquérir et mobiliser les démarches et les gestes fondamentaux de l’apprentissage (ECC1)
+Être curieux de la pluralité des langages et des langues et s’ouvrir aux richesses des autres cultures (ECC5)
+
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+55
+
+Les objectifs d’apprentissage sont à travailler de manière privilégiée dans le cadre d’un projet. En classe de 5ᵉ et de 4ᵉ, l’élève dispose de documents décrivant un protocole
+expérimental à mettre en œuvre pour réaliser la mesure directe d’une performance d’un OST (temps d’exécution, temps de réaction, distance d’arrêt pour un robot mobile,
+précision de la luminosité pour éclairage intelligent, etc.). Le document précise le(s) appareil(s) de mesure à utiliser.
+En classe de 5ᵉ, l’élève travaille à partir d’un document décrivant les tests (changement des conditions de fonctionnement ou création d’événements) à réaliser pour valider
+(ou non) le comportement d’un OST. L’élève travaille à partir d’une exigence attendue.
+En classe de 4ᵉ, l’élève travaille à partir d’un OST réel ou simulé dont le comportement et/ou une exigence attendue sont connus.
+En classe de 3ᵉ, L’élève travaille à partir d’un OST réel ou simulé dont le comportement attendu est connu.
+
+5ᵉ
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Vérifier le comportement et les performances
+d’un objet technique en suivant un protocole
+fourni
+
+L’élève sait :
+− mettre en œuvre les tests sur l’OST (simulé ou réel) en agissant sur les conditions de fonctionnement ou en
+générant des événements ;
+− valider ou invalider le comportement de celui-ci au regard du comportement attendu.
+
+Connaissances visées :
+Les exigences issues d’un cahier des charges
+Les grandeurs mesurées associées à un
+protocole
+
+Choisir les appareils pour mesurer les
+performances d’un OST à partir d’un protocole
+donné
+
+4ᵉ
+
+L’élève sait :
+− mettre en œuvre le protocole et effectuer la mesure directe de la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant à la capacité de l’OST à atteindre le niveau de
+performance attendu.
+L’élève sait :
+− lister les tests à réaliser (changement des conditions de fonctionnement ou création d’événements) sur l’OST
+pour valider le comportement de celui-ci ;
+− mettre en œuvre les tests sur l’OST ;
+− valider ou invalider le comportement de celui-ci au regard du comportement attendu.
+L’élève sait :
+− choisir le(s) appareil(s) de mesure nécessaire à la mise en œuvre du protocole ;
+− mettre en œuvre le protocole et effectuer la mesure directe de la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant à la capacité de l’OST à atteindre le niveau de
+performance attendu.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+56
+
+Proposer un protocole de test pour valider le
+comportement et les performances d’un objet
+technique
+
+L’élève sait :
+− lister les tests à réaliser (changement des conditions de fonctionnement ou création d’événements) sur l’OST
+pour valider le comportement de celui-ci ;
+− mettre en œuvre les tests sur l’OST ;
+− valider ou invalider le comportement de celui-ci au regard du comportement attendu.
+
+3ᵉ
+L’élève sait :
+− établir un protocole expérimental permettant de mesurer la performance de l’OST ;
+− choisir le(s) appareil(s) de mesure nécessaire à la mise en œuvre du protocole ;
+− mettre en œuvre le protocole et effectuer la mesure indirecte de la performance de l’OST ;
+− comparer la mesure obtenue avec l’exigence et conclure quant à la capacité de l’OST à atteindre le niveau de
+performance attendu.
+
+La programmation des OST
+Relation au socle commun de connaissances, de compétences et de culture :
+−
+−
+−
+−
+
+Acquérir et mobiliser les démarches et les gestes fondamentaux de l’apprentissage (ECC1)
+Faire preuve d’esprit critique (ECC3)
+Imaginer, fabriquer, créer, expérimenter avec habileté (ECC7)
+Savoir jouer (ECC 12)
+
+Points de vigilance : En classe de 5ᵉ, on privilégiera une démarche permettant à l’élève d’analyser le programme de commande d’un OST pour aller vers une formulation en
+langage naturel de son fonctionnement. Cette démarche préliminaire permet ensuite à l’élève de modifier le programme. Cette démarche vise à familiariser l’élève avec les
+différents niveaux d’abstraction qui permettent d’élaborer un programme de commande d’un OST. En classe de 4ᵉ, le travail de modification du programme de commande
+de l’OST part d’une modification de l’algorithme. En classe de 3ᵉ, l’élève doit maîtriser les différents processus cognitifs complexes de la pensée informatique (abstraction,
+décomposition, modélisation et représentation sous forme d’algorithme, simulation, résolution à l’aide d’un dispositif de traitement) pour définir par lui-même un algorithme
+et parvenir à traduire celui-ci en programme de commande d’un OST.
+Exemples de contextes envisagés pour atteindre les objectifs d’apprentissage du programme de technologie
+Les objectifs d’apprentissage sont à travailler de manière privilégiée dans le cadre d’un projet portant sur l’évolution d’un OST ou la création de tout ou partie d’un nouvel
+OST.
+En classe de 5ᵉ, l’élève travaille à partir d’un programme de commande d’un OST fourni et d’une description de la structure interne de l’OST associé.
+En classe de 4ᵉ, l’élève travaille à partir de l’algorithme de fonctionnement de l’OST, du programme de commande de l’OST et de l’expression d’un nouveau besoin
+(introduction d’une IHM, ajout d’une fonction communicante, ajout d’un capteur ou d’un actionneur, etc.).
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+57
+
+En classe de 3ᵉ, l’élève travaille dans le cadre d’un projet nécessitant la création d’un programme de commande d’un OST. Ce projet intègre une IHM permettant une
+interaction entre l’humain et l’OST.
+
+Objectifs d’apprentissage
+
+Exemples de réussite
+
+Analyser un programme simple fourni et tester
+s’il répond au besoin ou au problème posé
+
+L’élève sait :
+− identifier les éléments d’un programme de commande d’un OST fourni (variables, instruction conditionnelle,
+séquences d’instruction) ainsi que ses entrées/sorties ;
+− mettre en relation les éléments du programme avec les capteurs et les actionneurs de l’OST ;
+− associer les séquences d’instructions à un comportement de l’OST ;
+− retranscrire en algorithme le fonctionnement de l’OST ;
+− résumer en langage naturel le fonctionnement de l’OST afin de le comparer au comportement attendu.
+
+Modifier un programme fourni pour répondre
+au besoin ou à un problème posé
+
+5ᵉ
+
+Réaliser et mettre au point un programme
+simple commandant un OST
+Connaissances visées :
+entrées ou sorties d’un programme ;
+instruction conditionnelle ;
+opérateurs arithmétiques ;
+séquence (bloc) d’instructions.
+
+Modifier un algorithme permettant de
+répondre au besoin ou au problème posé
+Traduire un algorithme permettant de
+répondre à un besoin ou à un problème simple
+en un programme.
+
+L’élève sait :
+− modifier le programme de commande d’un OST fourni conformément à un besoin ou problème posé
+nouveau ;
+− tester le programme modifié en simulation en mode pas à pas pour le mettre au point ;
+− tester le programme sur l’OST réel.
+
+L’élève sait :
+− modifier l’algorithme de fonctionnement d’un OST en fonction d’un nouveau besoin exprimé ;
+− exploiter le nouvel algorithme pour modifier le programme de commande ;
+− tester le programme modifié en simulation en mode pas à pas pour le mettre au point ;
+− tester le programme sur l’objet réel.
+
+4ᵉ
+Réaliser et mettre au point un programme
+commandant un système réel incluant
+éventuellement une interaction entre un
+humain et une machine
+Connaissances visées :
+opérateurs logiques (ET, OU, NON) ;
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+58
+
+événement ;
+déclenchement d’une séquence d’instructions
+par un événement.
+
+Élaborer ou concevoir un algorithme
+permettant de répondre au besoin visé, puis le
+traduire en un programme structuré (appel de
+sous-programmes ou de fonctions), le tester et
+le mettre au point
+
+3ᵉ
+
+Réaliser et mettre au point un programme
+commandant un système réel incluant une
+interaction entre un humain et une machine
+Connaissances visées :
+La modularité : sous-programme, fonction ;
+La structuration d’un programme (organisation,
+modularité, commentaires).
+Biais dans un jeu de données
+
+L’élève sait :
+− décomposer l’objectif en sous-objectifs plus simples ;
+− écrire un algorithme principal et des algorithmes pour chaque sous-objectif ;
+− traduire les algorithmes associés à chaque sous-objectif en fonctions ;
+− tester chacune des fonctions en mode pas à pas pour les mettre au point ;
+− traduire l’algorithme principal en programme faisant appel aux fonctions ;
+− tester le programme principal en mode pas à pas pour le mettre au point ;
+− tester le programme sur l’objet réel.
+L'élève sait :
+− sélectionner les données permettant d'entrainer un modèle d'IA de classification ;
+− entrainer le modèle d'IA souhaité à l'aide d'un outil dédié ;
+− tester le fonctionnement du modèle d'IA et détecter les biais de ce modèle ;
+− intégrer le modèle d'IA dans la programmation d'un OST.
+
+Projet d’ajustement des programmes de Technologie – Cycle 4 – juin 2025
+
+59
+
+

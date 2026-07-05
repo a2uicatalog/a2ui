@@ -1,0 +1,56 @@
+title: A2UI — Local Dev via gas-fakes vs Deployed GAS {
+  near: top-center
+  shape: text
+  style.font-size: 18
+  style.bold: true
+}
+
+direction: right
+
+dev: Developer {shape: person}
+
+payload: Schema Payload\n(base64 JSON) {shape: document}
+
+dev -> payload: describe atoms
+
+local: Local Dev (gas-fakes) {
+  server: gas-fakes\nweb server {shape: rectangle}
+  worker: Worker Thread {shape: hexagon}
+  stub: gas_entry_stub.js\nauto-loads atoms_*.gs {shape: page}
+  doget: doGet(e) {shape: diamond}
+
+  server -> worker: spawn per request
+  worker -> stub: import
+  stub -> doget: globalThis
+}
+
+gas: Deployed GAS {
+  clasp: clasp push {shape: package}
+  runtime: GAS Runtime {shape: rectangle}
+  doget2: doGet(e) {shape: diamond}
+
+  clasp -> runtime: deploy
+  runtime -> doget2
+}
+
+atoms: atoms_*.gs\n(shared source) {shape: cylinder}
+
+browser: Browser {shape: rectangle}
+
+payload -> local.server: localhost:3099/?p=
+payload -> gas.clasp: make_url.py → URL
+
+atoms -> local.stub: vm.runInThisContext
+atoms -> gas.runtime: GAS execution env
+
+local.doget -> browser: rendered HTML
+gas.doget2 -> browser: rendered HTML
+
+atoms.style.fill: "#e8f4fd"
+atoms.style.stroke: "#0ea5e9"
+local.style.fill: "#f0fdf4"
+local.style.stroke: "#22c55e"
+gas.style.fill: "#fefce8"
+gas.style.stroke: "#eab308"
+payload.style.fill: "#f5f3ff"
+payload.style.stroke: "#8b5cf6"

@@ -1,0 +1,521 @@
+<script>
+// ─── A2UI State Engine ────────────────────────────────────────────────────────
+// Client-side reactive state graph. Injected only for a2ui_wired_surface payloads.
+
+var VALID_ID = /^[a-zA-Z0-9_-]+$/;
+var MAX_PATTERN_LENGTH = 200;
+var OUTPUT_WIRE_PROPS = { onChange: 1, onClick: 1, onToggle: 1, onRowClick: 1 };
+
+function A2UIStateEngine(spec) {
+  this.nodes     = {};
+  this.listeners = {};
+  this._initPrimitives(spec.state_primitives || []);
+  this._initActions(spec.actions || []);
+  this._resolveWires(spec.state_primitives || [], spec.actions || []);
+}
+
+A2UIStateEngine.prototype._validateId = function(id) {
+  if (!VALID_ID.test(id)) throw new Error('[A2UI] Invalid node ID: "' + id + '"');
+};
+
+A2UIStateEngine.prototype._parseWire = function(expr) {
+  var inner = expr.slice(1);
+  var dot = inner.indexOf('.');
+  if (dot === -1) { console.warn('[A2UI] Malformed wire: "' + expr + '"'); return null; }
+  return { nodeId: inner.slice(0, dot), property: inner.slice(dot + 1) };
+};
+
+A2UIStateEngine.prototype._set = function(nodeId, property, value) {
+  var node = this.nodes[nodeId];
+  if (!node) return;
+  node[property] = value;
+  var key = nodeId + ':' + property;
+  var cbs = this.listeners[key] || [];
+  for (var i = 0; i < cbs.length; i++) cbs[i](value);
+};
+
+A2UIStateEngine.prototype.registerListener = function(nodeId, property, callback) {
+  var node = this.nodes[nodeId];
+  if (!node) { console.warn('[A2UI] Wire target "' + nodeId + '" not found'); return; }
+  if (!(property in node)) { console.warn('[A2UI] Node "' + nodeId + '" has no property "' + property + '"'); return; }
+  var key = nodeId + ':' + property;
+  if (!this.listeners[key]) this.listeners[key] = [];
+  this.listeners[key].push(callback);
+  callback(node[property]);
+};
+
+A2UIStateEngine.prototype.trigger = function(nodeId, inputName, value) {
+  var node = this.nodes[nodeId];
+  if (!node) { console.warn('[A2UI] Wire target "' + nodeId + '" not found'); return; }
+  var handler = node['_' + inputName];
+  if (typeof handler !== 'function') { console.warn('[A2UI] "' + nodeId + '" has no input "' + inputName + '"'); return; }
+  handler(value);
+};
+
+A2UIStateEngine.prototype.compileWires = function(layoutEl, domBridge) {
+  if (!layoutEl.wire || !layoutEl.id) return;
+  var self = this;
+  var wire = layoutEl.wire;
+  Object.keys(wire).forEach(function(propName) {
+    if (OUTPUT_WIRE_PROPS[propName]) return;
+    var wireExpr = wire[propName];
+    if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+    var parsed = self._parseWire(wireExpr);
+    if (!parsed) return;
+    self.registerListener(parsed.nodeId, parsed.property, function(val) {
+      var safeVal = typeof val === 'string' ? _a2uiSanitize(val) : val;
+      domBridge.setProp(layoutEl.id, propName, safeVal);
+    });
+  });
+};
+
+A2UIStateEngine.prototype.bindOutput = function(wireExpr, eventValue) {
+  if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) { console.warn('[A2UI] Malformed output wire: "' + wireExpr + '"'); return; }
+  var parsed = this._parseWire(wireExpr);
+  if (!parsed) return;
+  this.trigger(parsed.nodeId, parsed.property, eventValue);
+};
+
+// ─── Primitives ───────────────────────────────────────────────────────────────
+
+A2UIStateEngine.prototype._initPrimitives = function(primitives) {
+  var self = this;
+  primitives.forEach(function(p) {
+    self._validateId(p.id);
+    switch (p.primitive) {
+      case 'ValueStore':       self._initValueStore(p);       break;
+      case 'ArrayFilter':      self._initArrayFilter(p);      break;
+      case 'StringValidator':  self._initStringValidator(p);  break;
+      case 'NumericThreshold': self._initNumericThreshold(p); break;
+      case 'StepNavigator':    self._initStepNavigator(p);    break;
+      case 'Computed':         self._initComputed(p);         break;
+      default: console.warn('[A2UI] Unknown primitive: "' + p.primitive + '"');
+    }
+  });
+};
+
+A2UIStateEngine.prototype._resolveWires = function(primitives, actions) {
+  var self = this;
+
+  primitives.forEach(function(p) {
+    var node = self.nodes[p.id];
+    if (!node) return;
+
+    if (typeof (p.props && p.props.source) === 'string' && p.props.source.startsWith('#')) {
+      var parsed = self._parseWire(p.props.source);
+      if (parsed) {
+        self.registerListener(parsed.nodeId, parsed.property, function(val) {
+          if (node._recompute) node._recompute(val);
+        });
+      }
+    }
+
+    if (p.primitive === 'Computed' && p.props && p.props.inputs) {
+      var inputSpec = p.props.inputs;
+      Object.keys(inputSpec).forEach(function(varName) {
+        var wireExpr = inputSpec[varName];
+        if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+        var parsed = self._parseWire(wireExpr);
+        if (!parsed) return;
+        self.registerListener(parsed.nodeId, parsed.property, function(val) {
+          node._vars[varName] = isNaN(Number(val)) ? 0 : Number(val);
+          node._recompute();
+        });
+      });
+    }
+
+    if (p.wire) {
+      Object.keys(p.wire).forEach(function(inputName) {
+        var wireExpr = p.wire[inputName];
+        if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+        var parsed = self._parseWire(wireExpr);
+        if (!parsed) return;
+        self.registerListener(parsed.nodeId, parsed.property, function(val) {
+          if (p.primitive === 'ArrayFilter') {
+            if (inputName === 'query')  { node._query = val;                          node._recompute(); }
+            if (inputName === 'source') { node._sourceData = Array.isArray(val) ? val : []; node._recompute(); }
+          } else {
+            self.trigger(p.id, inputName, val);
+          }
+        });
+      });
+    }
+  });
+
+  // Route action output wires into the state graph
+  (actions || []).forEach(function(p) {
+    if (!p.wire) return;
+    var node = self.nodes[p.id];
+    if (!node) return;
+    Object.keys(p.wire).forEach(function(outputProp) {
+      var wireExpr = p.wire[outputProp];
+      if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+      var parsed = self._parseWire(wireExpr);
+      if (!parsed) return;
+      var targetNode = self.nodes[parsed.nodeId];
+      if (!targetNode) { console.warn('[A2UI] Action wire target "' + parsed.nodeId + '" not found'); return; }
+      self.registerListener(p.id, outputProp, function(val) {
+        if (val === null || val === undefined) return;
+        if (parsed.property === 'source' && typeof targetNode._recompute === 'function') {
+          targetNode._sourceData = Array.isArray(val) ? val : [];
+          targetNode._recompute();
+        } else {
+          self.trigger(parsed.nodeId, parsed.property, val);
+        }
+      });
+    });
+  });
+};
+
+A2UIStateEngine.prototype._initValueStore = function(p) {
+  var self = this;
+  var node = { value: (p.props && p.props.initialValue !== undefined) ? p.props.initialValue : null };
+  node._setValue = function(val) { self._set(p.id, 'value', val); };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initArrayFilter = function(p) {
+  var self = this;
+  var filterKey = (p.props && p.props.filterKey) || 'label';
+  var staticSrc = (p.props && Array.isArray(p.props.source)) ? p.props.source : [];
+  var node = { output: staticSrc.slice(), _sourceData: staticSrc, _query: '' };
+  node._recompute = function() {
+    var q   = (node._query || '').toLowerCase().trim();
+    var src = Array.isArray(node._sourceData) ? node._sourceData : [];
+    var result = q
+      ? src.filter(function(item) { return String(item[filterKey] || '').toLowerCase().indexOf(q) !== -1; })
+      : src.slice();
+    self._set(p.id, 'output', result);
+  };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initStringValidator = function(p) {
+  var self   = this;
+  var raw    = (p.props && p.props.pattern) || '';
+  var errMsg = (p.props && p.props.errorMessage) || 'Invalid value';
+  var pattern;
+  if (raw.length > MAX_PATTERN_LENGTH) {
+    console.warn('[A2UI] StringValidator "' + p.id + '" pattern too long — using passthrough');
+    pattern = /.*/;
+  } else {
+    try { pattern = new RegExp(raw); } catch(e) {
+      console.warn('[A2UI] StringValidator "' + p.id + '" bad pattern — using passthrough');
+      pattern = /.*/;
+    }
+  }
+  // isInvalid: typed something that doesn't match (show format error)
+  // isNotValid: empty OR invalid (gate submit button)
+  var node = { isValid: false, isNotValid: true, isInvalid: false, errorMessage: '' };
+  node._recompute = function(source) {
+    var notEmpty = typeof source === 'string' && source.length > 0;
+    var valid    = notEmpty && pattern.test(source);
+    var invalid  = notEmpty && !pattern.test(source);
+    self._set(p.id, 'isValid',       valid);
+    self._set(p.id, 'isNotValid',    !valid);
+    self._set(p.id, 'isInvalid',     invalid);
+    self._set(p.id, 'errorMessage',  invalid ? errMsg : '');
+  };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initNumericThreshold = function(p) {
+  var self = this;
+  var ops  = { gt: function(a,b){return a>b;}, gte: function(a,b){return a>=b;},
+               lt: function(a,b){return a<b;}, lte: function(a,b){return a<=b;},
+               eq: function(a,b){return a===b;} };
+  var compare   = ops[(p.props && p.props.operator)] || ops.gte;
+  var threshold = (p.props && p.props.threshold !== undefined) ? p.props.threshold : 0;
+  var node = { isTriggered: false, isNotTriggered: true };
+  node._recompute = function(source) {
+    var triggered = compare(Number(source), threshold);
+    self._set(p.id, 'isTriggered',    triggered);
+    self._set(p.id, 'isNotTriggered', !triggered);
+  };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initStepNavigator = function(p) {
+  var self  = this;
+  var total = (p.props && p.props.totalSteps) || 2;
+  var node  = { activeIndex: 0 };
+  node._next   = function()  { if (node.activeIndex < total-1) self._set(p.id, 'activeIndex', node.activeIndex+1); };
+  node._prev   = function()  { if (node.activeIndex > 0)       self._set(p.id, 'activeIndex', node.activeIndex-1); };
+  node._jumpTo = function(i) { if (i >= 0 && i < total)        self._set(p.id, 'activeIndex', i); };
+  this.nodes[p.id] = node;
+};
+
+A2UIStateEngine.prototype._initComputed = function(p) {
+  var self   = this;
+  var expr   = (p.props && p.props.expr)   || '0';
+  var fmt    = (p.props && p.props.format) || '';
+  var inputs = (p.props && p.props.inputs) || {};
+  var vars   = {};
+  Object.keys(inputs).forEach(function(k) { vars[k] = 0; });
+  var node = { value: 0, display: _a2uiFormatValue(0, fmt), _vars: vars };
+  node._recompute = function() {
+    var result = _a2uiSafeExpr(expr, vars);
+    if (result === null || isNaN(result)) return;
+    self._set(p.id, 'value',   result);
+    self._set(p.id, 'display', _a2uiFormatValue(result, fmt));
+  };
+  this.nodes[p.id] = node;
+};
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
+A2UIStateEngine.prototype._initActions = function(actions) {
+  var self = this;
+  actions.forEach(function(p) {
+    self._validateId(p.id);
+    self._initAction(p);
+  });
+};
+
+A2UIStateEngine.prototype._initAction = function(p) {
+  var self = this;
+  var node = {
+    status: 'idle', isPending: false, isSuccess: false, isError: false,
+    result: null, error: null
+  };
+
+  node._run = function() {
+    var collected = {};
+    var cs = (p.props && p.props.collect) || {};
+    Object.keys(cs).forEach(function(key) {
+      var expr = cs[key];
+      if (typeof expr === 'string' && expr.startsWith('#')) {
+        var par = self._parseWire(expr);
+        if (par) collected[key] = (self.nodes[par.nodeId] || {})[par.property];
+      } else if (expr === '{{now}}') {
+        collected[key] = new Date().toISOString().slice(0, 10);
+      } else {
+        collected[key] = expr;
+      }
+    });
+
+    var config = {};
+    var cp = p.props || {};
+    Object.keys(cp).forEach(function(k) { if (k !== 'collect') config[k] = cp[k]; });
+
+    self._set(p.id, 'status',    'pending');
+    self._set(p.id, 'isPending', true);
+    self._set(p.id, 'isSuccess', false);
+    self._set(p.id, 'isError',   false);
+
+    google.script.run
+      .withSuccessHandler(function(r) {
+        self._set(p.id, 'isPending', false);
+        self._set(p.id, 'status',    r.ok ? 'success' : 'error');
+        self._set(p.id, 'isSuccess', r.ok);
+        self._set(p.id, 'isError',   !r.ok);
+        self._set(p.id, 'result',    r.data  || null);
+        self._set(p.id, 'error',     r.error || null);
+        if (r.ok && p.onSuccess) {
+          p.onSuccess.forEach(function(aid) {
+            var n = self.nodes[aid];
+            if (n && n._run) n._run();
+          });
+        }
+      })
+      .withFailureHandler(function(e) {
+        self._set(p.id, 'isPending', false);
+        self._set(p.id, 'status',   'error');
+        self._set(p.id, 'isSuccess', false);
+        self._set(p.id, 'isError',   true);
+        self._set(p.id, 'error',     e.message || 'Unknown error');
+      })
+      .a2uiAction(p.type, { data: collected, config: config });
+  };
+
+  this.nodes[p.id] = node;
+};
+
+function _a2uiSafeExpr(expr, vars) {
+  if (!/^[a-zA-Z0-9_\s\+\-\*\/\(\)\.]+$/.test(expr)) {
+    console.warn('[A2UI] Computed: unsafe expression chars');
+    return null;
+  }
+  try {
+    var keys = Object.keys(vars);
+    var vals = keys.map(function(k) { return vars[k]; });
+    var fn = new Function(keys.join(','), 'return (' + expr + ')');
+    return fn.apply(null, vals);
+  } catch(e) {
+    console.warn('[A2UI] Computed eval error: ' + e.message);
+    return null;
+  }
+}
+
+function _a2uiFormatValue(val, fmt) {
+  if (!fmt)                        return String(Math.round(val * 100) / 100);
+  if (fmt === 'integer')           return String(Math.round(val));
+  if (fmt === 'percent')           return Math.round(val) + '%';
+  if (fmt.startsWith('decimal:')) {
+    var dp = parseInt(fmt.split(':')[1], 10) || 2;
+    return val.toFixed(dp);
+  }
+  if (fmt.startsWith('currency:')) {
+    var sym = { GBP: '£', USD: '$', EUR: '€' }[fmt.split(':')[1]] || fmt.split(':')[1];
+    return sym + val.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  return String(val);
+}
+
+function _a2uiSanitize(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ─── DOM Bridge ───────────────────────────────────────────────────────────────
+
+var _a2uiBridge = {
+  setProp: function(id, prop, val) {
+    var el = document.getElementById('a2ui-' + id);
+    if (!el) { console.warn('[A2UI] DOM element not found: a2ui-' + id); return; }
+
+    if (prop === 'visible') {
+      el.style.display = val ? '' : 'none';
+    } else if (prop === 'text') {
+      var spans = el.querySelectorAll('span');
+      var textSpan = spans.length >= 2 ? spans[spans.length - 1] : spans[0];
+      if (textSpan) textSpan.textContent = val;
+    } else if (prop === 'value') {
+      var inp = el.querySelector('input:not([type=checkbox]),textarea');
+      if (inp) inp.value = val;
+    } else if (prop === 'disabled') {
+      var btn = el.querySelector('button');
+      if (btn) btn.disabled = !!val;
+      var finp = el.querySelector('input:not([type=checkbox])');
+      if (finp) finp.disabled = !!val;
+    } else if (prop === 'checked') {
+      var chk = el.querySelector('input[type=checkbox]');
+      if (chk) chk.checked = !!val;
+    } else if (prop === 'rows') {
+      _a2uiUpdateTableRows(el, val);
+    }
+  }
+};
+
+function _a2uiUpdateTableRows(el, rows) {
+  var tbody = el.querySelector('tbody');
+  if (!tbody) return;
+  var colsAttr = el.getAttribute('data-a2ui-columns');
+  var cols;
+  try { cols = colsAttr ? JSON.parse(colsAttr) : []; } catch(e) { cols = []; }
+  if (!cols.length && rows && rows.length) cols = Object.keys(rows[0]).map(function(k) { return { key: k, label: k }; });
+  var emptyMsg = el.getAttribute('data-a2ui-empty') || 'No results.';
+
+  if (!rows || !rows.length) {
+    var colCount = cols.length || 1;
+    tbody.innerHTML = '<tr><td colspan="' + colCount + '" style="padding:16px;text-align:center;color:#94a3b8;font-style:italic;">' + _a2uiSanitize(emptyMsg) + '</td></tr>';
+    return;
+  }
+  var html = '';
+  rows.forEach(function(row) {
+    var rowJson = _a2uiSanitize(JSON.stringify(row));
+    html += '<tr style="cursor:pointer;" data-row-json="' + rowJson + '">';
+    cols.forEach(function(col) {
+      var key = typeof col === 'string' ? col : col.key;
+      var val = row[key];
+      html += '<td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;color:#334155;">'
+            + _a2uiSanitize(val === null || val === undefined ? '' : String(val)) + '</td>';
+    });
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+  _a2uiBindRowClicks(el);
+}
+
+function _a2uiBindRowClicks(wrapEl) {
+  var elId   = wrapEl.id.replace('a2ui-', '');
+  var schema = window.__A2UI_SCHEMA__;
+  if (!schema) return;
+  var layoutEl;
+  for (var i = 0; i < (schema.layout || []).length; i++) {
+    if (schema.layout[i].id === elId) { layoutEl = schema.layout[i]; break; }
+  }
+  if (!layoutEl || !layoutEl.wire || !layoutEl.wire.onRowClick) return;
+  var wireExpr = layoutEl.wire.onRowClick;
+  wrapEl.querySelectorAll('tbody tr').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var rowData = {};
+      try { rowData = JSON.parse(this.getAttribute('data-row-json') || '{}'); } catch(e) {}
+      window._a2uiEngine.bindOutput(wireExpr, rowData);
+    });
+  });
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', function() {
+  var schema = window.__A2UI_SCHEMA__;
+  if (!schema || schema.type !== 'a2ui_wired_surface') return;
+
+  window._a2uiEngine = new A2UIStateEngine(schema);
+
+  // Input wires: state → DOM props
+  (schema.layout || []).forEach(function(el) {
+    if (!el.id || !el.wire) return;
+    window._a2uiEngine.compileWires(el, _a2uiBridge);
+  });
+
+  // Output wires: DOM events → state
+  (schema.layout || []).forEach(function(el) {
+    if (!el.id || !el.wire) return;
+    var domEl = document.getElementById('a2ui-' + el.id);
+    if (!domEl) return;
+    var wire = el.wire;
+
+    Object.keys(wire).forEach(function(prop) {
+      var wireExpr = wire[prop];
+      if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+
+      if (prop === 'onChange') {
+        var inp = domEl.querySelector('input:not([type=checkbox]),textarea');
+        if (inp) inp.addEventListener('input', function(e) {
+          window._a2uiEngine.bindOutput(wireExpr, e.target.value);
+        });
+      } else if (prop === 'onClick') {
+        var btn = domEl.querySelector('button');
+        if (btn) btn.addEventListener('click', function() {
+          window._a2uiEngine.bindOutput(wireExpr, null);
+        });
+      } else if (prop === 'onToggle') {
+        var chk = domEl.querySelector('input[type=checkbox]');
+        if (chk) chk.addEventListener('change', function(e) {
+          window._a2uiEngine.bindOutput(wireExpr, e.target.checked);
+        });
+      } else if (prop === 'onRowClick') {
+        _a2uiBindRowClicks(domEl);
+      }
+    });
+  });
+
+  // Step binding: StepNavigator.activeIndex → show/hide elements
+  if (schema.stepBinding) {
+    var stepParsed = typeof schema.stepBinding === 'string' && schema.stepBinding.startsWith('#')
+      ? (function() {
+          var inner = schema.stepBinding.slice(1);
+          var dot = inner.indexOf('.');
+          return dot === -1 ? null : { nodeId: inner.slice(0, dot), property: inner.slice(dot+1) };
+        })()
+      : null;
+
+    if (stepParsed) {
+      window._a2uiEngine.registerListener(stepParsed.nodeId, stepParsed.property, function(idx) {
+        document.querySelectorAll('[data-a2ui-step]').forEach(function(el) {
+          el.style.display = (parseInt(el.getAttribute('data-a2ui-step'), 10) === idx) ? '' : 'none';
+        });
+      });
+    }
+  }
+
+  // Fire onLoad actions
+  (schema.actions || []).forEach(function(a) {
+    if (a.trigger === 'onLoad') {
+      var node = window._a2uiEngine.nodes[a.id];
+      if (node && node._run) node._run();
+    }
+  });
+});
+</script>

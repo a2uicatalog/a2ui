@@ -1,0 +1,56 @@
+{
+  "title": "sheet_form — test",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "palette",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "page_header",
+      "title": "Sheet Form Test",
+      "subtitle": "Submit this form — it writes to the spreadsheet tab named `Responses`.",
+      "icon": "📋",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "highlight_box",
+      "icon": "⚠️",
+      "title": "Before testing",
+      "text": "Replace `YOUR_SPREADSHEET_ID` in this payload with the ID from your Sheet URL: `docs.google.com/spreadsheets/d/**ID**/edit`. Also confirm the GAS project has Spreadsheet OAuth scope.",
+      "accent": "#f59e0b",
+      "style": "outline"
+    },
+    {
+      "type": "sheet_form",
+      "title": "Send a test response",
+      "sheet": "Responses",
+      "spreadsheet_id": "YOUR_SPREADSHEET_ID",
+      "submit_label": "Submit →",
+      "accent": "#6366f1",
+      "fields": [
+        {"label": "Name", "name": "name", "placeholder": "Your name", "required": true},
+        {"label": "Email", "name": "email", "type": "email", "placeholder": "you@example.com", "required": true},
+        {"label": "Department", "name": "dept", "type": "select", "options": ["Engineering", "Design", "Product", "Other"]},
+        {"label": "Message", "name": "message", "type": "textarea", "placeholder": "What's on your mind?", "rows": 4}
+      ]
+    },
+    {
+      "type": "section_break",
+      "label": "How it works",
+      "style": "line",
+      "accent": "#6366f1"
+    },
+    {
+      "type": "numbered_list",
+      "accent": "#6366f1",
+      "style": "badge",
+      "items": [
+        {"label": "User submits", "text": "Form captures field values via FormData API"},
+        {"label": "google.script.run", "text": "`a2uiSheetFormSubmit(sheet, data, spreadsheetId)` fires — no page reload"},
+        {"label": "Sheet write", "text": "Server appends a row with timestamp + all field values. Creates the tab if it doesn't exist."},
+        {"label": "Feedback", "text": "Button shows ✓ Submitted on success, Retry on error with the error message"}
+      ]
+    }
+  ]
+}

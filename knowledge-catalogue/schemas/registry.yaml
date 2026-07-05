@@ -1,0 +1,26 @@
+schemas:
+  - id: national-education/fr/dnb-2026
+    name: "Diplôme National du Brevet — Session 2026"
+    path: national-education/fr/dnb-2026.yaml
+    type: national-education
+    country: FR
+    issuer: "Ministère de l'Éducation Nationale"
+    render_strategy: subject_hub
+    subjects: [maths, francais, histoire_geo, sciences, oral]
+    tags: [brevet, collège, dnb, france]
+
+  - id: pro-cert/opengroup/togaf-10
+    name: "TOGAF® 10 Foundation & Practitioner"
+    path: pro-cert/opengroup/togaf-10.yaml
+    type: pro-cert
+    country: EU
+    issuer: "The Open Group"
+    render_strategy: domain_hub
+    tags: [togaf, enterprise-architecture, opengroup, foundation, practitioner]
+
+  - id: pro-cert/_template
+    name: "Generic Professional Certification Template"
+    path: pro-cert/_template.yaml
+    type: pro-cert
+    render_strategy: domain_hub
+    tags: [aws, gcp, pmp, template]

@@ -1,0 +1,84 @@
+id: pro-cert
+name: "Professional Certification (Generic)"
+description: "Generic schema for vendor professional certifications. Override fields per cert."
+render_strategy: domain_hub
+
+# Hub tabs = exam domains, ordered by weight descending
+hub_tab_order_by: weight_desc
+
+# Each instantiated cert YAML should extend this schema and fill in:
+# - id, name, vendor, exam fields
+# - domains list with required_competencies
+
+# Atom type map for pro certs differs slightly from academic:
+atom_type_map:
+  concept: flashcard_deck       # term/definition or service description
+  glossary: flashcard_deck      # acronyms, service names
+  scenario: knowledge_check     # "which service for this use case" MCQ
+  comparison: flashcard_deck    # service A vs service B
+  piege: knowledge_check        # "don't confuse X with Y"
+  method: steps                 # step-by-step architecture patterns
+  checklist: key_takeaways      # exam-day reminders
+
+# ── Example instantiation: AWS SAA-C03 ───────────────────────────────────────
+# Copy to schemas/aws-saa-c03.yaml and fill in:
+#
+# id: aws-saa-c03
+# schema: pro-cert
+# name: "AWS Solutions Architect Associate"
+# vendor: Amazon Web Services
+# educationalLevel: professional
+# competencyFramework: aws-skill-builder
+# source: "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+#
+# exam:
+#   duration: PT2H10M
+#   questions: 65
+#   passing_score: 720
+#   scoring_scale: [100, 1000]
+#   format: [multiple-choice, multiple-response]
+#
+# domains:
+#   - id: secure-architectures
+#     name: Design Secure Architectures
+#     weight: 0.30
+#     hub_icon: "🔒"
+#     required_competencies:
+#       - id: aws-iam-fundamentals
+#         label: "IAM — users, groups, roles, policies, trust policies"
+#         weight: high
+#         atom_hint: concept
+#       - id: aws-s3-security
+#         label: "S3 — bucket policies, ACLs, encryption at rest/transit"
+#         weight: high
+#         atom_hint: concept
+#
+#   - id: resilient-architectures
+#     name: Design Resilient Architectures
+#     weight: 0.26
+#     hub_icon: "⚡"
+#     required_competencies:
+#       - id: aws-s3-storage-classes
+#         label: "S3 storage classes — Standard, IA, Glacier variants, lifecycle"
+#         weight: high
+#         atom_hint: comparison
+#       - id: aws-rds-ha
+#         label: "RDS — Multi-AZ vs Read Replicas"
+#         weight: high
+#         atom_hint: comparison
+#
+# ── Example instantiation: GCP ACE ───────────────────────────────────────────
+# id: gcp-ace
+# schema: pro-cert
+# name: "Google Cloud Associate Cloud Engineer"
+# vendor: Google Cloud
+# exam:
+#   duration: PT2H
+#   questions: 50
+#   passing_score: null
+#   format: [multiple-choice]
+# domains:
+#   - id: setup-cloud-solution-env
+#     name: "Setting Up a Cloud Solution Environment"
+#     weight: 0.17
+#     ...

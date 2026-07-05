@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Mono&display=swap" rel="stylesheet">
+  <?!= include('AtomStyles') ?>
+  <style>
+    /* Override asw-page constraints for bare screenshot rendering */
+    body { margin: 0; padding: 0; background: #fff; }
+    .li-screenshot-wrap {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 24px 8px;
+      box-sizing: border-box;
+    }
+    /* Hide the hint text when printing / screenshotting */
+    @media print { .li-screenshot-wrap > *:last-child { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="li-screenshot-wrap">
+    <?!= content ?>
+  </div>
+  <?!= include('AtomScripts') ?>
+</body>
+</html>

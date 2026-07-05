@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Email Atoms — A2UI Atomic Catalog</title>
+  <meta name="description" content="44 A2UI atoms for the Email surface.">
+  
+<style>
+:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
+nav{font-size:13px;color:var(--muted);margin-bottom:32px}
+nav a{color:var(--cyan);text-decoration:none}
+nav a:hover{text-decoration:underline}
+h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
+.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
+.back:hover{border-color:var(--cyan);color:var(--cyan)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
+.try-btn:hover{background:#00d4e0}
+.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+footer a{color:var(--cyan);text-decoration:none}
+</style>
+
+  <style>
+  .surface-atom{border-bottom:1px solid var(--border);padding:28px 0}
+  .surface-atom:last-child{border-bottom:none}
+  .sa-name{font-size:1.1rem;font-weight:700;color:var(--text);text-decoration:none}
+  .sa-name:hover{color:var(--cyan)}
+  .sa-desc{font-size:14px;color:var(--muted);margin:4px 0 12px}
+  .preview-box{background:#fff;border-radius:8px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+  .preview-box *{max-width:100%}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="https://a2uicatalog.ai">A2UI Catalog</a> / surfaces / email
+  </nav>
+
+  <h1>Email</h1>
+  <p class="desc">44 atoms available on this surface</p>
+
+  
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/intro">Intro</a>
+    <p class="sa-desc">series link or transparency note at article top</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><p><em>In <a href="https://example.com" target="_blank" rel="noopener noreferrer">Series label</a>, I covered the background. This article picks up from there.</em></p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/body">Body</a>
+    <p class="sa-desc">prose paragraph block</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><p>This is a body paragraph. It supports <strong>bold</strong>, <em>italic</em>, and <code>inline code</code> via lightweight markdown.</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/heading">Heading</a>
+    <p class="sa-desc">H2 section title</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><h2>Section Heading</h2></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/subheading">Subheading</a>
+    <p class="sa-desc">H3 subsection title</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><h3>Subheading text</h3></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/quote">Quote</a>
+    <p class="sa-desc">pull quote or blockquote with attribution</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><blockquote><p>The vocabulary IS the discovery layer.</p><footer>— A2UI</footer></blockquote></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/bullet_list">Bullet List</a>
+    <p class="sa-desc">unordered list with optional bold label per item</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><ul><li>First item in the list</li><li><strong>Labelled item</strong> with supporting description</li><li>Third item</li></ul></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/divider">Divider</a>
+    <p class="sa-desc">horizontal visual section break</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><hr style="border:none;border-top:1px solid #e5e7eb;margin:1.5rem 0;"></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/image">Image</a>
+    <p class="sa-desc">single image with optional caption</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1.5rem 0;text-align:center;"><img src="https://example.com" alt="Descriptive alt text for this image" style="max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto;"></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/repo_links">Repo Links</a>
+    <p class="sa-desc">styled GitHub repo link list</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;"><a href="https://github.com/a2uicatalog/a2ui" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;color:#374151;font-size:0.84rem;background:#f9fafb;margin:4px;">🐙 GitHub</a></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/closing">Closing</a>
+    <p class="sa-desc">article closing paragraph with hashtags</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><p>A concise description of the content.</p></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/table">Table</a>
+    <p class="sa-desc">data table with header row on mobile</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><caption style="padding:8px;font-size:0.8rem;color:#9ca3af;text-align:left;">Example fields</caption><thead><tr><th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;text-transform:uppercase;color:#6b7280;background:#f9fafb;">Field</th><th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;text-transform:uppercase;color:#6b7280;background:#f9fafb;">Type</th><th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;text-transform:uppercase;color:#6b7280;background:#f9fafb;">Required</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">value</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">string</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">yes</td></tr><tr style="background:#f9fafb;"><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">label</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">string</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">yes</td></tr><tr style="background:#fff;"><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">trend</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">string</td><td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">no</td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/metric_delta">Metric Delta</a>
+    <p class="sa-desc">big number metric with directional change indicator or percentage</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;min-width:140px;"><div style="font-size:.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;">Metric Delta</div><div style="font-size:2rem;font-weight:700;color:#111827;margin:4px 0;">Current value</div><span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:#d1fae5;color:#10b981;font-size:.8rem;font-weight:600;">↑ Delta value</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/trend_indicator">Trend Indicator</a>
+    <p class="sa-desc">compact inline value with mini trend bar the direction of a</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:#d1fae5;font-size:.82rem;font-weight:600;color:#10b981;">↑ Trend Indicator</span></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/anchor_list">Anchor List</a>
+    <p class="sa-desc">in-page anchor navigation links document or to external URLs.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><ul style="list-style:none;padding:12px 16px;margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;"></ul></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/glossary_term">Glossary Term</a>
+    <p class="sa-desc">definition term with explanation more details.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border-bottom:1px solid #f3f4f6;padding:10px 0;"><dt style="font-weight:700;color:#111827;font-size:0.9rem;">API</dt><dd style="margin:4px 0 0;font-size:0.86rem;color:#374151;">Application Programming Interface</dd></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/footnote">Footnote</a>
+    <p class="sa-desc">numbered footnote reference at the bottom of a section or page.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div id="fn1" style="border-top:1px solid #f3f4f6;padding:6px 0;font-size:0.82rem;color:#6b7280;display:flex;gap:8px;align-items:flex-start;"><span style="font-weight:700;flex-shrink:0;">[1]</span><span>A concise description of the content.</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pull_stat">Pull Stat</a>
+    <p class="sa-desc">large display number pulled from prose for emphasis descriptive label.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="text-align:center;padding:24px;border:2px solid #6366f122;border-radius:14px;background:#6366f108;margin:1.5rem 0;"><div style="font-size:2.5rem;font-weight:900;color:#6366f1;">1</div><div style="font-size:0.9rem;color:#374151;font-weight:600;margin-top:4px;">Pull Stat</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/audio_link">Audio Link</a>
+    <p class="sa-desc">styled link to an audio file</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><a href="" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;font-size:0.85rem;color:#374151;text-decoration:none;background:#f9fafb;">🎵 Audio Link</a></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/document_link">Document Link</a>
+    <p class="sa-desc">styled link to a downloadable document a document icon.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><a href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:8px;padding:8px 16px;text-decoration:none;color:#374151;font-size:0.86rem;background:#f9fafb;margin:0.5rem 0;">📄 Document Link</a></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/image_with_caption">Image With Caption</a>
+    <p class="sa-desc">image with styled caption below</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><figure style="margin:1.5rem 0;"><img src="https://example.com" alt="" style="max-width:100%;height:auto;border-radius:8px;display:block;"><figcaption style="font-size:0.82rem;color:#6b7280;margin-top:6px;font-style:italic;">A descriptive caption</figcaption></figure></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pricing_tier_card">Pricing Tier Card</a>
+    <p class="sa-desc">single pricing plan card with features list an optional call to action.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;"><em style='color:#999;'>[ pricing_tier_card ]</em></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/pros_cons_list">Pros Cons List</a>
+    <p class="sa-desc">two-column pros and cons comparison a single subject.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;"><em style='color:#999;'>[ pros_cons_list ]</em></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/rating_comparison">Rating Comparison</a>
+    <p class="sa-desc">multiple items rated across dimensions scores.</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1.5rem 0;"><div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-bottom:4px;"><span style="font-weight:600;">Item 1</span><span style="color:#6b7280;">0.0/5</span></div><div style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="height:100%;width:0.0%;background:#6366f1;border-radius:100px;"></div></div></div><div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:0.84rem;margin-bottom:4px;"><span style="font-weight:600;">Item 2</span><span style="color:#6b7280;">0.0/5</span></div><div style="height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="height:100%;width:0.0%;background:#6366f1;border-radius:100px;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/footnote_group">Footnote Group</a>
+    <p class="sa-desc">numbered footnote list at section or article end</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;"></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/entity_list">Entity List</a>
+    <p class="sa-desc">named resource rows with avatar, status badge, and meta</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;"><div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:700;color:#7c3aed;flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:0.88rem;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;"><div style="width:36px;height:36px;border-radius:50%;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:700;color:#7c3aed;flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div style="font-size:0.88rem;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/model_card">Model Card</a>
+    <p class="sa-desc">AI model spec card with context window, pricing, and capability badges</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;padding:16px 18px;border:1px solid #e0e0e0;border-radius:10px;background:#fff;"><div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">Model Card</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;"><span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:rgba(124,58,237,0.08);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);font-weight:500;">{'label': 'Vision', 'supported': True}</span><span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:rgba(124,58,237,0.08);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);font-weight:500;">{'label': 'Code execution', 'supported': True}</span><span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:rgba(124,58,237,0.08);color:#7c3aed;border:1px solid rgba(124,58,237,0.3);font-weight:500;">{'label': 'Web search', 'supported': False}</span></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/conversation_snippet">Conversation Snippet</a>
+    <p class="sa-desc">user prompt and AI response as chat bubbles</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;display:flex;flex-direction:column;gap:12px;"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span style="font-size:0.7rem;font-weight:600;color:#1a73e8;padding:0 4px;">You</span><div style="max-width:80%;padding:10px 14px;border-radius:12px;border:1px solid rgba(26,115,232,0.25);background:rgba(26,115,232,0.1);font-size:0.86rem;color:#374151;line-height:1.5;white-space:pre-wrap;">How does this work?</div></div><div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;"><span style="font-size:0.7rem;font-weight:600;color:#6b7280;padding:0 4px;">Assistant</span><div style="max-width:80%;padding:10px 14px;border-radius:12px;border:1px solid #e5e7eb;background:#f9fafb;font-size:0.86rem;color:#374151;line-height:1.5;white-space:pre-wrap;">Here's a clear explanation of how it works.</div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/shortcut_legend">Shortcut Legend</a>
+    <p class="sa-desc">keyboard shortcut cheat-sheet grid with key combos and labels</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f4f6;"><span style="font-size:0.82rem;color:#374151;"></span><div style="display:flex;gap:3px;align-items:center;"></div></div><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f4f6;"><span style="font-size:0.82rem;color:#374151;"></span><div style="display:flex;gap:3px;align-items:center;"></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/rating_summary_bar">Rating Summary Bar</a>
+    <p class="sa-desc">star rating histogram with percentage bars per star level</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;padding:16px 18px;border:1px solid #e0e0e0;border-radius:10px;background:#fff;"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;"><span style="font-size:2rem;font-weight:700;color:#111827;">75.0</span><span style="font-size:0.85rem;color:#9ca3af;">/ 5 · 5 ratings</span></div><div style="display:flex;flex-direction:column;gap:6px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">5</span><span style="font-size:0.82rem;color:#f59e0b;">★</span><div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;"><div style="width:100%;height:100%;border-radius:100px;background:#f59e0b;"></div></div><span style="font-size:0.75rem;color:#6b7280;width:3ch;text-align:right;">960%</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">4</span><span style="font-size:0.82rem;color:#f59e0b;">★</span><div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;"><div style="width:62%;height:100%;border-radius:100px;background:#f59e0b;"></div></div><span style="font-size:0.75rem;color:#6b7280;width:3ch;text-align:right;">600%</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:0.78rem;color:#374151;width:2ch;text-align:right;">3</span><span style="font-size:0.82rem;color:#f59e0b;">★</span><div style="flex:1;height:8px;border-radius:100px;background:#f3f4f6;"><div style="width:25%;height:100%;border-radius:100px;background:#f59e0b;"></div></div><span style="font-size:0.75rem;color:#6b7280;width:3ch;text-align:right;">240%</span></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/roadmap_card">Roadmap Card</a>
+    <p class="sa-desc">quarter-based product roadmap with status-tagged milestones</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/notification_stack">Notification Stack</a>
+    <p class="sa-desc">persistent notification inbox list with unread indicators</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#fff;"></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tag_block">Tag Block</a>
+    <p class="sa-desc">horizontal wrap of neutral content chip labels</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="display:flex;flex-wrap:wrap;gap:6px;margin:0.75rem 0;"><span style="display:inline-block;padding:3px 10px;border-radius:9999px;background:#f3f4f6;border:1px solid #d1d5db;color:#374151;font-size:0.78rem;font-weight:500;white-space:nowrap;">typescript</span><span style="display:inline-block;padding:3px 10px;border-radius:9999px;background:#f3f4f6;border:1px solid #d1d5db;color:#374151;font-size:0.78rem;font-weight:500;white-space:nowrap;">react</span><span style="display:inline-block;padding:3px 10px;border-radius:9999px;background:#f3f4f6;border:1px solid #d1d5db;color:#374151;font-size:0.78rem;font-weight:500;white-space:nowrap;">a2ui</span></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/markdown_block">Markdown Block</a>
+    <p class="sa-desc">GFM markdown string rendered to HTML inline</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div class="markdown-content">A concise description of the content.</div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/text_callout">Text Callout</a>
+    <p class="sa-desc">lightweight tinted inline tip or note block no icon</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:0.5rem 0;padding:8px 12px;border-radius:6px;background:#f9fafb;border:1px solid #e5e7eb;"><div style="font-size:0.78rem;font-weight:700;color:#374151;margin-bottom:2px;">Text Callout</div><div style="font-size:0.8rem;color:#4b5563;line-height:1.5;">A concise description of the content.</div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/source_citation">Source Citation</a>
+    <p class="sa-desc">numbered RAG source card with title excerpt and URL</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/confidence_bar">Confidence Bar</a>
+    <p class="sa-desc">labelled probability bar with colour-coded confidence fill</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:0.75rem 0;"><div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;"><span>Confidence Bar</span><span style="font-weight:700;color:#22c55e;">75%</span></div><div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;"><div style="width:75.0%;height:100%;background:#22c55e;border-radius:4px;transition:width .4s;"></div></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/product_thumbnail">Product Thumbnail</a>
+    <p class="sa-desc">product card with image, price, status badge, and tags</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><a href="#" style="display:block;text-decoration:none;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;max-width:180px;margin:1rem 0;"><div style="position:relative;"><div style=background:#f3f4f6;aspect-ratio:1;></div></div><div style="padding:8px 10px;"><div style="font-size:0.84rem;font-weight:600;color:#111827;">Product Thumbnail</div><div style=font-size:0.88rem;font-weight:800;color:#7c3aed;margin-top:2px;>$29/mo</div></div></a></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/order_status_card">Order Status Card</a>
+    <p class="sa-desc">e-commerce order card with status badge and line item list</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="background:#fff;border:1px solid #e1e3e5;border-radius:8px;padding:20px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:16px;font-weight:700;color:#202223;">Order number</span><div style="display:flex;align-items:center;gap:10px;"><span style="background:#fff3cd;color:#856404;font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;">Active</span></div></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/inventory_table">Inventory Table</a>
+    <p class="sa-desc">inventory table with SKU, stock levels, and low-stock row highlight</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:400px;"><thead><tr><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:#6b7280;background:#f9fafb;text-transform:uppercase;">Name</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:#6b7280;background:#f9fafb;text-transform:uppercase;">SKU</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:#6b7280;background:#f9fafb;text-transform:uppercase;">Stock</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:#6b7280;background:#f9fafb;text-transform:uppercase;">Price</th><th style="padding:8px 12px;text-align:left;font-size:0.75rem;font-weight:700;color:#6b7280;background:#f9fafb;text-transform:uppercase;">Status</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;border-top:1px solid #f3f4f6;"><span style="color:#9ca3af;font-size:0.78rem;font-weight:700;">—</span></td></tr><tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;font-size:0.84rem;border-top:1px solid #f3f4f6;">—</td><td style="padding:8px 12px;border-top:1px solid #f3f4f6;"><span style="color:#9ca3af;font-size:0.78rem;font-weight:700;">—</span></td></tr></tbody></table></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/jira_ticket">Jira Ticket</a>
+    <p class="sa-desc">Jira issue card with type icon, status lozenge, priority, and assignee</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="background:#fff;border:1px solid #dfe1e6;border-radius:3px;padding:16px;font-family:-apple-system,sans-serif;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:15px;">✓</span><span style="font-size:12px;font-weight:600;color:#0052cc;">example-id</span><span style="margin-left:auto;background:#dfe1e6;color:#42526e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.05em;">To Do</span></div><div style="font-size:15px;font-weight:500;color:#172b4d;margin-bottom:10px;line-height:1.4;">A concise description of the content.</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:12px;color:#5e6c84;">🟡 Medium</span></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/lozenge">Lozenge</a>
+    <p class="sa-desc">Atlassian-semantic status pill with defined appearance variants</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><span style="display:inline-block;padding:2px 8px;border-radius:3px;background:#f3f4f6;color:#374151;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">New</span></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/tree_view">Tree View</a>
+    <p class="sa-desc">recursive hierarchical tree with expand/collapse per node</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:12px;border:1px solid #e5e7eb;border-radius:10px;"><detailsopen><summary style="padding:3px 8px;cursor:pointer;list-style:none;color:#374151;"><span style="padding-left:0px;font-size:.85rem;">📁 src/</span></summary><div style="padding:3px 8px;color:#374151;"><span style="padding-left:16px;font-size:.85rem;">📄 index.ts</span></div></details><div style="padding:3px 8px;color:#374151;"><span style="padding-left:0px;font-size:.85rem;">📄 package.json</span></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/cta_section">Cta Section</a>
+    <p class="sa-desc">full-width CTA banner with headline and buttons — Tailwind UI pattern</p>
+  </div>
+  
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/achievement_badge">Achievement Badge</a>
+    <p class="sa-desc">unlockable achievement badge with locked/unlocked state and optional date</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;display:inline-flex;flex-direction:column;align-items:center;padding:20px 16px;border-radius:14px;border:2px solid #f59e0b;min-width:100px;text-align:center;"><div style="position:relative;font-size:2.5rem;margin-bottom:8px;">🏆</div><div style="font-weight:700;font-size:0.85rem;"></div><div style="font-size:0.75rem;color:#6b7280;margin-top:4px;"></div></div></div>
+</div>
+</div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
+  </footer>
+</body>
+</html>

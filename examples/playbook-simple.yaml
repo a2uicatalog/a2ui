@@ -1,0 +1,53 @@
+# Simple 3-slide playbook demonstrating agent composition.
+# Shows how agents pick from the vocabulary and arrange components.
+
+- id: title
+  template: simple
+  children:
+    - element: gdm-text
+      content: "Q3 Financial Summary"
+      size: h1
+      color: accent
+      align: center
+
+- id: metrics
+  template: simple
+  children:
+    - element: gdm-container
+      direction: row
+      justify: space-around
+      gap: "24px"
+      padding: "32px"
+      glass: true
+      reveal: fade-up
+      children:
+        - element: gdm-stat
+          label: "Annual Recurring Revenue"
+          value: "$48.2M"
+          delta: "+12.4%"
+          isUp: true
+          countUp: true
+          size: lg
+        - element: gdm-stat
+          label: "Net Revenue Retention"
+          value: "128%"
+          delta: "+4.2%"
+          isUp: true
+          countUp: true
+          size: lg
+        - element: gdm-stat
+          label: "Customer Acquisition Cost"
+          value: "$1,240"
+          delta: "-8.1%"
+          isUp: false
+          countUp: true
+          size: lg
+
+- id: close
+  template: simple
+  children:
+    - element: gdm-text
+      content: "See the full financial deck for detailed analysis."
+      size: body
+      color: mute
+      align: center

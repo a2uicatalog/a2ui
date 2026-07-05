@@ -1,0 +1,132 @@
+{
+  "title": "A2UI — Useful for Humans. Declarative for Agents.",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "shimmer_text",
+      "text": "A2UI",
+      "size": "4rem",
+      "from": "#6366f1",
+      "via": "#ffffff",
+      "to": "#10b981",
+      "align": "center"
+    },
+    {
+      "type": "shimmer_text",
+      "text": "Useful for Humans.  Declarative for Agents.",
+      "size": "1.4rem",
+      "from": "#9ca3af",
+      "via": "#e5e7eb",
+      "to": "#9ca3af",
+      "align": "center"
+    },
+    {
+      "type": "marquee",
+      "title": "Renders across Google Workspace",
+      "speed": 22,
+      "gap": 48,
+      "pause_on_hover": true,
+      "color_icons": true,
+      "items": [
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Meet/logo_meet_2026q2_color_2x_web_96dp.png", "label": "Meet" },
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Chat/logo_chat_2026q2_color_2x_web_96dp.png", "label": "Chat" },
+        { "image_url": "https://workspacelogos.com/logos/google-workspace-logos/Apps%20Script/logo_apps_script_192px.png", "label": "Apps Script" }
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#6366f1",
+      "height": 40,
+      "opacity": "0.15"
+    },
+    {
+      "type": "reveal",
+      "animation": "stagger",
+      "stagger_delay": 120,
+      "blocks": [
+        {
+          "type": "columns",
+          "cols": 3,
+          "items": [
+            {
+              "blocks": [{
+                "type": "animated_border",
+                "from": "#6366f1",
+                "to": "#8b5cf6",
+                "via": "#0ea5e9",
+                "speed": "4",
+                "content": "**① Prompt**\n\nDescribe the page you want in plain English. Any LLM understands the schema."
+              }]
+            },
+            {
+              "blocks": [{
+                "type": "animated_border",
+                "from": "#10b981",
+                "to": "#6366f1",
+                "via": "#34d399",
+                "speed": "4",
+                "content": "**② Schema**\n\nGet back valid JSON. Typed atoms. Verifiable before it ever renders."
+              }]
+            },
+            {
+              "blocks": [{
+                "type": "animated_border",
+                "from": "#f59e0b",
+                "to": "#10b981",
+                "via": "#fbbf24",
+                "speed": "4",
+                "content": "**③ App**\n\nPaste. Click Open. Live URL. Works in any Google Workspace surface."
+              }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "wave_divider",
+      "color": "#10b981",
+      "height": 40,
+      "opacity": "0.12",
+      "flip": true
+    },
+    {
+      "type": "reveal",
+      "animation": "stagger",
+      "stagger_delay": 80,
+      "blocks": [
+        {
+          "type": "metric_row",
+          "metrics": [
+            { "value": "< 60s", "label": "Prompt to live URL", "trend": "up" },
+            { "value": "0",     "label": "Lines of code",      "trend": "down" },
+            { "value": "9+",    "label": "Workspace surfaces", "trend": "up" },
+            { "value": "∞",     "label": "Topics",             "trend": "up" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "marquee",
+      "speed": 18,
+      "direction": "right",
+      "gap": 40,
+      "separator": "·",
+      "items": [
+        { "icon": "🤖", "text": "Agent-native schema" },
+        { "icon": "✅", "text": "Validated before render" },
+        { "icon": "🔗", "text": "Shareable URL" },
+        { "icon": "🎨", "text": "Dark & light themes" },
+        { "icon": "📊", "text": "Hub navigation" },
+        { "icon": "⚡", "text": "Zero dependencies" },
+        { "icon": "🔒", "text": "Stays in Workspace" },
+        { "icon": "🌍", "text": "Any language" }
+      ]
+    },
+    {
+      "type": "confetti_burst",
+      "trigger": "load",
+      "count": 55,
+      "duration": 2800
+    }
+  ]
+}

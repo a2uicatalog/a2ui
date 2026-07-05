@@ -1,0 +1,22 @@
+name: architecture_session
+description: Architecture review stage layout — system diagram, repo structure, API contract, proposed change comparison.
+triggers:
+  - architecture review
+  - design review
+  - system design
+  - rfc walkthrough
+surfaces: [google-meet-stage, web, google-apps-script-web]
+layout: split
+sequence:
+  - atom: diagram
+    role: system_overview
+    data_hint: "the system or component diagram under discussion"
+  - atom: file_tree
+    role: repo_structure
+    data_hint: "directories and files touched by the proposal"
+  - atom: http_request_block
+    role: api_contract
+    data_hint: "representative request/response for the new or changed endpoint"
+  - atom: before_after
+    role: proposed_change
+    data_hint: "current vs proposed structure, config, or code shape"

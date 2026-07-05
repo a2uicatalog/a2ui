@@ -1,0 +1,78 @@
+**/Code.private.gs
+**/Code.private.js
+.clasp.json
+node_modules/
+dist/
+*.d.ts
+.DS_Store
+.env
+.env.local
+*.log
+*.bak
+a2uithoughts.md
+__pycache__/
+*.pyc
+*.pyo
+benchmarks/.openui_cache/
+catalogue_meet_preview.html
+catalogue_web_preview.html
+apps-script-surface/gas-schema-renderer/.clasp.json
+apps-script-surface/gas-schema-renderer/Code.private.js
+apps-script-surface/gas-schema-renderer-private/
+apps-script-surface/gas-wired-renderer/Code.private.gs
+apps-script-surface/gas-fakes-schema-renderer-private/
+apps-script-surface/gas-schema-renderer/*.old
+apps-script-surface/gas-schema-renderer/BREVET_2026_*.md
+apps-script-surface/gas-schema-renderer/MULTIPAGE_NAV_ISSUE.md
+apps-script-surface/gas-schema-renderer/geo_iso_*.md
+apps-script-surface/gas-schema-renderer/playbooks/
+apps-script-surface/gas-schema-renderer/source_*.pdf
+apps-script-surface/gas-schema-renderer/source_*.txt
+apps-script-surface/gas-schema-renderer/togaf_page.gs
+# articles/ tracked — blog post source files
+web-article/
+ROAST-*.md
+knowledge-catalogue/TOGAF_GEMINI_BRIEF.md
+knowledge-catalogue/togaf-10.curriculum.md
+knowledge-catalogue/schemas/pro-cert/opengroup/
+payloads/togaf-10.json
+.clasp.json.old
+ops/
+scripts/ops.py
+a2uithoughts.md
+thoughts/
+apps-script-surface/gas-trade-bot/
+# Symlink-safe: these paths are now symlinks into ../a2ui-private (durable
+# home). git sees a symlink as a FILE, so the trailing-slash dir patterns
+# above miss it — anchor without a slash so the symlink itself is ignored.
+/ops
+/thoughts
+/apps-script-surface/gas-trade-bot
+mcp/node_modules/
+mcp/.env
+
+# MCP server — deliberately NOT published (closed-source-for-launch decision 2026-07-04/05).
+# Stripped from unpushed history via filter-repo 2026-07-05; lives on disk only.
+mcp/
+
+# ── key-shaped files: never track, regardless of location ────────────────────
+# Google service-account keys, PEM/P12 material, OAuth client secrets.
+**/SA/
+*service*account*.json
+*_sa.json
+*-sa.json
+*.pem
+*.p12
+client_secret*.json
+
+# ── local-only backend + tooling (not part of the published catalogue) ───────
+functions/
+apps-script-surface/gas-mcp-demo-renderer/
+spec/mcp-endpoint.md
+spec/emit-deployment.md
+scripts/build_demo_renderer.py
+scripts/check_demo_renderer.py
+scripts/smoke_demo_renderer.py
+scripts/emit_deployment.py
+scripts/check_mcp_tools.py
+apps-script-surface/graduated-*/

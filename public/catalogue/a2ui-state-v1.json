@@ -1,0 +1,671 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://a2uicatalog.ai/catalogue/a2ui-state-v1.json",
+ "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-state-v1.json",
+ "title": "A2UI State & Expression Vocabulary",
+ "description": "Behavioral primitives an agent wires into a payload's state_primitives array, plus the expression ops and column render hints. A payload has three sections — state_primitives, actions, layout — and layout atoms subscribe to primitive/action outputs via wires.",
+ "instructions": "A2UI **behavioral** catalog — the companion to the visual atom catalog `a2ui-atoms-v1`. A wired surface declares `supportedCatalogIds: [a2ui-atoms-v1, a2ui-state-v1]`: atoms are the visual vocabulary, these `components` (state primitives + column render-hints) and `functions` (derived-store ops) are the behavioral one.\n\nWire syntax: `#nodeId.field` — the `#` prefix is required. Atoms in `layout` use `wire` to subscribe to a primitive/action output field.\n\nFull prose descriptions, examples, and wiring patterns: see https://a2uicatalog.ai/spec.json and the a2ui-state spec.",
+ "components": {
+  "ValueStore": {
+   "type": "object",
+   "description": "mutable named value; holds user input or transient state",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "ValueStore"
+      },
+      "initialValue": {
+       "description": "any (optional, default null)"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "value"
+   ],
+   "x-actionTargets": [
+    "setValue"
+   ]
+  },
+  "Timer": {
+   "type": "object",
+   "description": "fires a tick on a fixed interval; triggers queries or actions",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "Timer"
+      },
+      "interval": {
+       "description": "integer ms, default 10000"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "tick"
+   ]
+  },
+  "DerivedStore": {
+   "type": "object",
+   "description": "computes augmented data from a source array client-side; no server call",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "DerivedStore"
+      },
+      "from": {
+       "description": "string — source ref e.g. #incidents_query.result"
+      },
+      "expr": {
+       "description": "augment_rows — maps over source array, adds computed columns"
+      },
+      "interval": {
+       "description": "integer ms (optional) — re-run on tick; only for time-dependent ops"
+      },
+      "add": {
+       "description": "array of op definitions (see derived_store_ops)"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "result"
+   ]
+  },
+  "Computed": {
+   "type": "object",
+   "description": "evaluates a math expression over named numeric inputs",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "Computed"
+      },
+      "expr": {
+       "description": "string — JS-safe math using named vars e.g. 'a + b'"
+      },
+      "inputs": {
+       "description": "object — { varName: '#nodeId.field' }"
+      },
+      "format": {
+       "description": "string (optional) — '0,0' / '0.0%' / 'HH:mm:ss'"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "value",
+    "display"
+   ]
+  },
+  "ArrayFilter": {
+   "type": "object",
+   "description": "filters a source array by case-insensitive substring match on one field",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "ArrayFilter"
+      },
+      "source": {
+       "description": "array (optional) — static rows; or pushed in via wire (see wire_inputs)"
+      },
+      "filterKey": {
+       "description": "string — object field to match against (default 'label')"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "output"
+   ]
+  },
+  "StringValidator": {
+   "type": "object",
+   "description": "validates a string against a regex pattern",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "StringValidator"
+      },
+      "source": {
+       "description": "#nodeId.value"
+      },
+      "pattern": {
+       "description": "string — regex, max 200 chars (bad/overlong pattern degrades to passthrough)"
+      },
+      "errorMessage": {
+       "description": "string — emitted on errorMessage while invalid"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "isValid",
+    "isNotValid",
+    "isInvalid",
+    "errorMessage"
+   ]
+  },
+  "NumericThreshold": {
+   "type": "object",
+   "description": "compares a numeric source against a threshold",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "NumericThreshold"
+      },
+      "source": {
+       "description": "#nodeId.value"
+      },
+      "operator": {
+       "description": "gt | gte | lt | lte | eq (default gte)"
+      },
+      "threshold": {
+       "description": "number (default 0)"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "isTriggered",
+    "isNotTriggered"
+   ]
+  },
+  "StepNavigator": {
+   "type": "object",
+   "description": "tracks current step in a multi-step flow",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "StepNavigator"
+      },
+      "totalSteps": {
+       "description": "integer (default 2)"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "activeIndex"
+   ],
+   "x-actionTargets": [
+    "next",
+    "prev",
+    "jumpTo"
+   ]
+  },
+  "badge": {
+   "type": "object",
+   "description": "coloured pill from a value->colour map",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "badge"
+      },
+      "colors": {
+       "description": "{ VALUE: '#hex' }"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false
+  },
+  "sla_badge": {
+   "type": "object",
+   "description": "ok/warn/breach pill + elapsed time",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "sla_badge"
+      },
+      "time_key": {
+       "description": "column holding formatted duration"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false
+  },
+  "claim": {
+   "type": "object",
+   "description": "owner avatar+name when owned; Claim button when unclaimed",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "claim"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-extraProps": [
+    "claim_key",
+    "email_key",
+    "name_key",
+    "action_node",
+    "key_mem_node"
+   ],
+   "x-columnKey": "_claim"
+  },
+  "resolve": {
+   "type": "object",
+   "description": "resolve button; hidden when already Resolved",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "resolve"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-extraProps": [
+    "resolve_key",
+    "status_key",
+    "action_node",
+    "key_mem_node"
+   ],
+   "x-columnKey": "_resolve"
+  },
+  "delete": {
+   "type": "object",
+   "description": "delete-row button",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "delete"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-extraProps": [
+    "delete_key",
+    "action_node",
+    "key_mem_node"
+   ],
+   "x-columnKey": "_delete"
+  }
+ },
+ "functions": {
+  "elapsed_seconds": {
+   "type": "object",
+   "description": "integer seconds; requires interval to update with time",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "elapsed_seconds"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "field": {
+       "description": "row field with ISO timestamp"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "format_duration": {
+   "type": "object",
+   "description": "string e.g. '1h 23m'",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "format_duration"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "column holding seconds"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "threshold_by_field": {
+   "type": "object",
+   "description": "ok | warn | breach",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "threshold_by_field"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "column holding numeric value"
+      },
+      "key": {
+       "description": "row field selecting the threshold set"
+      },
+      "thresholds": {
+       "description": "{ KEY: { warn, breach } }"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "multiply_diff": {
+   "type": "object",
+   "description": "number — (a - b) * by, 2dp",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "multiply_diff"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "a": {
+       "description": "row field"
+      },
+      "b": {
+       "description": "row field"
+      },
+      "by": {
+       "description": "row field (optional, default 1)"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "pct_diff": {
+   "type": "object",
+   "description": "number — (a - b) / b * 100, 2dp; null if b = 0",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "pct_diff"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "a": {
+       "description": "row field"
+      },
+      "b": {
+       "description": "row field"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "signal_threshold": {
+   "type": "object",
+   "description": "string — above/mid/below label",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "signal_threshold"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "row field"
+      },
+      "high": {
+       "description": "number (default 70)"
+      },
+      "low": {
+       "description": "number (default 30)"
+      },
+      "above": {
+       "description": "string (default overbought)"
+      },
+      "below": {
+       "description": "string (default oversold)"
+      },
+      "mid": {
+       "description": "string (default neutral)"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "sma": {
+   "type": "object",
+   "description": "rolling simple moving average, joined by row index",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "sma"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "row field"
+      },
+      "window": {
+       "description": "integer (default 20)"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "rsi": {
+   "type": "object",
+   "description": "rolling RSI, joined by row index",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "rsi"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "row field"
+      },
+      "window": {
+       "description": "integer (default 14)"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "bband_upper": {
+   "type": "object",
+   "description": "rolling Bollinger upper band",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "bband_upper"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "row field"
+      },
+      "window": {
+       "description": "integer (default 20)"
+      },
+      "mult": {
+       "description": "number"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  },
+  "bband_lower": {
+   "type": "object",
+   "description": "rolling Bollinger lower band",
+   "returnType": "any",
+   "properties": {
+    "call": {
+     "const": "bband_lower"
+    },
+    "args": {
+     "type": "object",
+     "properties": {
+      "src": {
+       "description": "row field"
+      },
+      "window": {
+       "description": "integer (default 20)"
+      },
+      "mult": {
+       "description": "number"
+      }
+     }
+    }
+   },
+   "required": [
+    "call"
+   ],
+   "unevaluatedProperties": false
+  }
+ }
+}

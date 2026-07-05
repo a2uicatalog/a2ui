@@ -1,0 +1,311 @@
+{
+  "title": "TOGAF 10 Part 2 — Scenario Practice",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "heading",
+      "text": "TOGAF 10 — Part 2 Scenario Practice"
+    },
+    {
+      "type": "body",
+      "text": "8 scenario questions across the Part 2 exam domains. Open book — TOGAF standard only. Select an answer then click **Check answer** to reveal gradient scoring and rationale."
+    },
+    {
+      "type": "jump_nav",
+      "links": [
+        {
+          "label": "ADM Decisions",
+          "target": "sc-adm-1"
+        },
+        {
+          "label": "Governance",
+          "target": "sc-gov-1"
+        },
+        {
+          "label": "Stakeholders",
+          "target": "sc-stk-1"
+        },
+        {
+          "label": "Change & Migration",
+          "target": "sc-chg-1"
+        }
+      ]
+    },
+    {
+      "type": "dark_hero",
+      "heading": "ADM Sequence & Phase Decisions",
+      "subtext": "Part 2 tests your ability to apply the ADM in a real situation — not just recall phase names, but choose the right action at the right moment.",
+      "badge": "Part 2 · Open book",
+      "align": "center"
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-adm-1",
+      "domain": "ADM Phase B",
+      "difficulty": "Practitioner",
+      "scenario": "Energistics is a mid-size energy company running a legacy ERP suite across four business divisions. The CIO has commissioned a new enterprise architecture engagement. The lead architect has completed Phase A — Architecture Vision, received sign-off on the Statement of Architecture Work, and has a confirmed scope and set of Architecture Principles. Stakeholders are aligned and the sponsor has formally approved the programme to proceed.",
+      "question": "What should the architect do next?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Begin Phase B — Business Architecture. Develop the Baseline and Target Business Architectures, identify gaps, and produce the Business Architecture components of the Architecture Roadmap.",
+          "score": 5
+        },
+        {
+          "id": "b",
+          "text": "Return to Phase A to refine and expand the Architecture Vision, since the legacy ERP complexity may require a broader scope statement.",
+          "score": 2
+        },
+        {
+          "id": "c",
+          "text": "Jump to Phase E — Opportunities and Solutions to identify quick wins and assess migration feasibility early in the cycle.",
+          "score": 1
+        },
+        {
+          "id": "d",
+          "text": "Conduct a Preliminary Phase review to re-tailor the TOGAF framework for the energy sector before continuing.",
+          "score": 3
+        }
+      ],
+      "rationale": "Phase B — Business Architecture is the correct next step. The ADM is a sequential cycle: after Phase A sign-off, the architect moves to Phase B. The Statement of Architecture Work approval is the formal gate. Returning to Phase A (B) ignores that gate. Jumping to Phase E (C) violates the ADM sequence without a justified iteration trigger. Re-running Preliminary (D) is only appropriate before the first ADM cycle begins, not mid-engagement."
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-adm-2",
+      "domain": "ADM Phase C",
+      "difficulty": "Practitioner",
+      "scenario": "Meridian Insurance has completed Phase B — Business Architecture and is ready to begin Phase C — Information Systems Architecture. The Architecture Team Leader asks the lead architect: 'Should we develop the Data Architecture first, or the Application Architecture? The team is split and we need guidance from TOGAF.' The lead architect has the TOGAF standard open.",
+      "question": "What does TOGAF specify about the sequencing within Phase C?",
+      "options": [
+        {
+          "id": "a",
+          "text": "TOGAF recommends Data Architecture before Application Architecture, since data is the more stable enterprise asset and provides the foundation for application design.",
+          "score": 3
+        },
+        {
+          "id": "b",
+          "text": "TOGAF recommends Application Architecture before Data Architecture, since applications define what data must be created and stored.",
+          "score": 2
+        },
+        {
+          "id": "c",
+          "text": "TOGAF does not mandate a fixed order within Phase C — either sequence is acceptable and the choice should reflect the enterprise's priorities and existing architecture maturity.",
+          "score": 5
+        },
+        {
+          "id": "d",
+          "text": "TOGAF requires both Data and Application Architecture sub-phases to run simultaneously, with joint workshops and a single combined deliverable.",
+          "score": 1
+        }
+      ],
+      "rationale": "TOGAF does not prescribe a fixed sequence within Phase C. The standard states the order should reflect enterprise priorities and the scope of the engagement. Both Data-first and Application-first are explicitly valid. Distractors A and B each assert a mandated sequence where none exists. D incorrectly requires simultaneous delivery — TOGAF allows but does not require concurrent development."
+    },
+    {
+      "type": "dark_hero",
+      "heading": "Architecture Governance",
+      "subtext": "Phase G decisions, compliance reviews, Architecture Contracts, and how to handle deviations from the approved architecture.",
+      "badge": "Part 2 · Open book",
+      "align": "center"
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-gov-1",
+      "domain": "Phase G — Implementation Governance",
+      "difficulty": "Practitioner",
+      "scenario": "Nexus Corp is in Phase G — Implementation Governance. An implementation team has delivered a component that deviates from the approved Target Architecture. The deviation reduces costs by 15% but introduces a new integration pattern not covered by the Architecture Contract. The project manager argues the change is beneficial and wants to move on. The lead architect is conducting a compliance review and must decide how to respond.",
+      "question": "What is the correct course of action for the architect?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Accept the deviation because it reduces costs, and update the Architecture Definition Document retroactively to reflect the new integration pattern.",
+          "score": 1
+        },
+        {
+          "id": "b",
+          "text": "Issue a Dispensation — a formal exception request — assess the impact on the architecture, and decide whether to approve, modify, or escalate to the Architecture Board.",
+          "score": 5
+        },
+        {
+          "id": "c",
+          "text": "Immediately reject the implementation and require the team to rebuild to the approved specification before any further work proceeds.",
+          "score": 2
+        },
+        {
+          "id": "d",
+          "text": "Raise a Change Request under Phase H and trigger a new ADM iteration to formally incorporate the new integration pattern.",
+          "score": 3
+        }
+      ],
+      "rationale": "TOGAF Phase G provides for Dispensations — formal documented exceptions that are assessed, approved or escalated. Retroactively updating documents without process (A) undermines governance. Immediately rejecting (C) ignores due process and business impact. Triggering Phase H (D) is appropriate only when the deviation is strategic in scope requiring a full architecture revision — a localized integration pattern change warrants a Dispensation first."
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-gov-2",
+      "domain": "Phase G — Architecture Contracts",
+      "difficulty": "Practitioner",
+      "scenario": "Apex Logistics is about to begin Phase G — Implementation Governance. Multiple delivery teams from different suppliers will be executing work packages. The CIO asks the lead architect: 'What formal mechanism should we use to ensure all teams deliver to the agreed architecture standard and that we have a basis for compliance review?' The architect must recommend the correct TOGAF deliverable.",
+      "question": "What should the architect produce to govern implementation across the delivery teams?",
+      "options": [
+        {
+          "id": "a",
+          "text": "A Service Level Agreement (SLA) between the architecture function and each delivery team, specifying performance targets and architecture standards.",
+          "score": 1
+        },
+        {
+          "id": "b",
+          "text": "An Architecture Contract — a joint agreement between development partners and sponsors on deliverables, quality criteria, and fitness-for-purpose of the solution.",
+          "score": 5
+        },
+        {
+          "id": "c",
+          "text": "A Project Charter that includes architecture governance clauses and is signed off by the sponsoring organisation.",
+          "score": 2
+        },
+        {
+          "id": "d",
+          "text": "An updated Architecture Requirements Specification issued separately to each delivery team as their implementation brief.",
+          "score": 3
+        }
+      ],
+      "rationale": "An Architecture Contract is the specific TOGAF Phase G mechanism for governing implementation. It is a joint agreement specifying what is to be delivered, the quality required, and fitness-for-purpose criteria. SLAs (A) and Project Charters (C) are not TOGAF governance deliverables for this purpose. The Architecture Requirements Specification (D) is a Phase B–D output, not a governance agreement."
+    },
+    {
+      "type": "dark_hero",
+      "heading": "Stakeholder Management",
+      "subtext": "How to handle conflicting requirements, resistant stakeholders, and the architect's dual role as SME and agent.",
+      "badge": "Part 2 · Open book",
+      "align": "center"
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-stk-1",
+      "domain": "Phase A — Stakeholder Alignment",
+      "difficulty": "Practitioner",
+      "scenario": "Polar Retail is in Phase A — Architecture Vision. The Chief Marketing Officer (CMO) requires a customer data platform with real-time personalisation and broad data retention to enable AI-driven marketing. The Chief Security Officer (CSO) insists on strict data minimisation and a 30-day retention limit to meet regulatory obligations. Both are senior stakeholders with equal authority. The conflict is direct and unresolved. The architect must decide how to proceed.",
+      "question": "What is the most appropriate first step for the architect?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Align with the most senior stakeholder — in this case the CMO as a revenue driver — and document the CSO's concern as an accepted risk in the Architecture Vision.",
+          "score": 1
+        },
+        {
+          "id": "b",
+          "text": "Escalate the conflict immediately to the Architecture Board for a binding governance decision before any further architecture work proceeds.",
+          "score": 3
+        },
+        {
+          "id": "c",
+          "text": "Document both requirements in the Architecture Requirements Specification and facilitate a stakeholder workshop to identify an agreed trade-off that satisfies regulatory constraints while meeting business goals.",
+          "score": 5
+        },
+        {
+          "id": "d",
+          "text": "Defer the conflict to Phase B where business requirements are developed in full detail and the trade-offs can be properly explored.",
+          "score": 2
+        }
+      ],
+      "rationale": "Phase A is precisely where stakeholder conflicts should be surfaced and addressed. The architect's role is to facilitate alignment, not to choose sides or defer. Documenting both positions and running a facilitated workshop is the TOGAF-aligned approach. Escalating to the Architecture Board (B) is premature — that body handles unresolved governance disputes, not initial stakeholder alignment. Deferring to Phase B (D) delays a conflict that will block architecture progress."
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-stk-2",
+      "domain": "Architecture Review Board",
+      "difficulty": "Practitioner",
+      "scenario": "Orion Energy has an Architecture Review Board (ARB) that meets monthly. The lead architect has produced a draft Architecture Definition Document covering significant changes across three business divisions. One division head — responsible for the largest impacted business unit — has not engaged with the architecture process and is known to be resistant to the proposed changes. The ARB meeting is in two weeks. Other stakeholders are ready.",
+      "question": "What should the architect do to manage the resistant division head?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Proceed with the ARB review without waiting for the division head — architecture decisions should not be held hostage by individual stakeholders who choose not to engage.",
+          "score": 1
+        },
+        {
+          "id": "b",
+          "text": "Delay the ARB meeting until the division head engages, to ensure full stakeholder representation before any formal decision is made.",
+          "score": 2
+        },
+        {
+          "id": "c",
+          "text": "Conduct a targeted one-to-one briefing with the division head before the ARB, specifically addressing their concerns, so they arrive informed and with an opportunity to contribute.",
+          "score": 5
+        },
+        {
+          "id": "d",
+          "text": "Issue a formal communication through the sponsoring organisation's chain of command requiring the division head to participate in the review process.",
+          "score": 3
+        }
+      ],
+      "rationale": "TOGAF emphasises proactive, targeted stakeholder engagement. A pre-meeting briefing addresses the specific concerns of a resistant stakeholder in a low-stakes setting — far more effective than delaying (B), overriding (A), or command-and-control escalation (D) which damages relationships and entrenches resistance. The goal is to arrive at the ARB with informed, engaged stakeholders, not to hold or bypass the process."
+    },
+    {
+      "type": "dark_hero",
+      "heading": "Change Management & Migration Planning",
+      "subtext": "Phase H change classification, when to trigger a new ADM cycle, and Phase F work package prioritisation.",
+      "badge": "Part 2 · Open book",
+      "align": "center"
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-chg-1",
+      "domain": "Phase H — Architecture Change Management",
+      "difficulty": "Practitioner",
+      "scenario": "Sable Bank is in Phase H — Architecture Change Management. A major regulatory announcement requires fundamental changes to the bank's data sovereignty model — data must now be stored in-country for all retail customers. This affects the Target Technology Architecture, the Data Architecture, and multiple approved work packages. The change is enterprise-wide in scope. The compliance deadline is 18 months away.",
+      "question": "What should the architect recommend in response to this change request?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Assess and absorb the change through the existing dispensation process, updating the affected architecture deliverables to reflect the new data sovereignty requirement.",
+          "score": 2
+        },
+        {
+          "id": "b",
+          "text": "Reject the change and advise the business to incorporate it into the next planned annual architecture cycle, as the current cycle should be protected from scope creep.",
+          "score": 1
+        },
+        {
+          "id": "c",
+          "text": "Initiate a new ADM cycle — returning to Phase A — to formally address the strategic change, update the Architecture Vision, and rebuild the affected architecture domains.",
+          "score": 5
+        },
+        {
+          "id": "d",
+          "text": "Implement the change immediately in Phase G using an emergency implementation governance track, bypassing the normal ADM review.",
+          "score": 3
+        }
+      ],
+      "rationale": "TOGAF Phase H classifies change requests as strategic, tactical, or operational. A regulatory change affecting the entire data sovereignty model — across multiple architecture domains and approved work packages — is strategic. Strategic changes trigger a new ADM cycle from Phase A (or Preliminary if the governance framework must also change). Dispensations (A) are for localised, non-strategic changes. Deferring (B) ignores an 18-month compliance deadline. Emergency Phase G implementation (D) bypasses the architecture process entirely."
+    },
+    {
+      "type": "scenario_case",
+      "id": "sc-chg-2",
+      "domain": "Phase F — Migration Planning",
+      "difficulty": "Practitioner",
+      "scenario": "Caspian Rail has completed Phase E — Opportunities and Solutions. The Architecture Roadmap contains seven candidate work packages covering infrastructure refresh, an ERP migration, a customer portal, two data platform components, and two application retirements. Implementation resources are constrained — only four work packages can run in the first delivery wave. The Architecture Team Leader asks: 'How should we decide which work packages to prioritise for Wave 1?'",
+      "question": "What is the TOGAF approach to prioritising work packages in Phase F?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Prioritise by technical dependency alone — deliver foundation infrastructure and platform components before any business-facing applications, regardless of business value.",
+          "score": 3
+        },
+        {
+          "id": "b",
+          "text": "Prioritise by stakeholder seniority — deliver the work packages most valued by the most senior sponsor first to secure continued executive support.",
+          "score": 2
+        },
+        {
+          "id": "c",
+          "text": "Apply a business value and risk assessment to each work package and sequence by the combination that delivers optimal business value within the resource and dependency constraints.",
+          "score": 5
+        },
+        {
+          "id": "d",
+          "text": "Run all seven work packages in parallel to maximise resource utilisation and minimise total delivery time, accepting the increased coordination overhead.",
+          "score": 1
+        }
+      ],
+      "rationale": "Phase F — Migration Planning centres on assigning business value to work packages and using a structured assessment — covering value, risk, dependencies, and resource constraints — to produce the Implementation and Migration Plan. Technical dependency (A) is one input into that assessment, not the sole criterion. Stakeholder seniority (B) is not the TOGAF prioritisation approach. Running all in parallel (D) ignores resource constraints and dependency chains, and is explicitly not recommended."
+    }
+  ]
+}

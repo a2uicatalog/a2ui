@@ -1,0 +1,69 @@
+{
+  "title": "Budget Request Wizard — A2UI-State Preview",
+  "theme": "light",
+  "blocks": [
+
+    { "type": "heading", "text": "Budget Request", "level": 2 },
+
+    { "type": "text_block", "text": "**Step 1 of 2 — Search & Select**", "size": "sm" },
+
+    {
+      "type": "form_input",
+      "label": "Search budget lines",
+      "name": "search",
+      "placeholder": "e.g. Travel"
+    },
+
+    {
+      "type": "data_table_sortable",
+      "headers": ["Budget Line", "Remaining (£)"],
+      "rows": [
+        ["Office Supplies",        "1,200"],
+        ["Travel & Accommodation", "3,400"],
+        ["Software Licences",        "800"],
+        ["Training & Development", "2,100"],
+        ["Marketing & Events",     "5,000"]
+      ]
+    },
+
+    {
+      "type": "ripple_button",
+      "label": "Next →",
+      "accent": "#6366f1"
+    },
+
+    { "type": "divider" },
+
+    { "type": "text_block", "text": "**Step 2 of 2 — Enter Amount & Confirm**", "size": "sm" },
+
+    {
+      "type": "form_input",
+      "label": "Amount (£)",
+      "name": "amount",
+      "placeholder": "e.g. 125.50"
+    },
+
+    {
+      "component": "inline_feedback_message",
+      "type": "warning",
+      "text": "Amounts ≥ £500 require line manager sign-off before processing."
+    },
+
+    {
+      "type": "toggle_switch",
+      "label": "I confirm the details above are correct"
+    },
+
+    {
+      "type": "ripple_button",
+      "label": "Submit Request",
+      "accent": "#6366f1"
+    },
+
+    {
+      "type": "ripple_button",
+      "label": "← Back",
+      "accent": "#94a3b8"
+    }
+  ]
+}

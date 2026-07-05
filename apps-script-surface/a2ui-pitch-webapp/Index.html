@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base target="_top">
+  <title>A2UI — Apps Script Web App Surface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Mono&display=swap" rel="stylesheet">
+  <style>
+
+  :root {
+    --bg: #ffffff; --surface: #f8f9fa; --surface2: #f1f3f4;
+    --border: #e0e0e0; --text: #202124; --muted: #5f6368;
+    --accent: #1a73e8; --accent2: #4285f4; --green: #34a853;
+    --red: #ea4335; --yellow: #fbbc04; --orange: #fa7b17;
+    --font: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Google Sans Mono', 'JetBrains Mono', monospace;
+  }
+
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font); font-size: 15px; line-height: 1.65;
+  }
+
+  .asw-page { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+  .asw-page.sidebar { max-width: 380px; padding: 16px 14px 32px; }
+
+  h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--text); }
+  h2 { font-size: 1.2rem; font-weight: 600; margin: 28px 0 8px; color: var(--text); }
+  h3 { font-size: 1rem; font-weight: 600; margin: 20px 0 6px; color: var(--text); }
+  p  { color: var(--muted); margin-bottom: 12px; font-size: 0.9rem; }
+  a  { color: var(--accent); }
+  code { font-family: var(--mono); font-size: 0.85em;
+         background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* ── Training atoms ── */
+  .asw-quiz { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin: 20px 0; }
+  .asw-quiz-label { font-size: 0.65rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .asw-quiz-q { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
+  .asw-quiz-opts { display: flex; flex-direction: column; gap: 7px; }
+  .asw-quiz-opt { padding: 10px 14px; border: 1px solid var(--border); border-radius: 7px;
+    cursor: pointer; font-size: 0.85rem; color: var(--muted); transition: all .15s;
+    display: flex; align-items: center; gap: 8px; user-select: none; }
+  .asw-quiz-opt::before { content: "○"; color: var(--border); }
+  .asw-quiz-opt:hover { border-color: var(--accent); color: var(--text); }
+  .asw-quiz-opt.selected { border-color: var(--accent); background: var(--surface2); color: var(--text); }
+  .asw-quiz-opt.selected::before { content: "●"; color: var(--accent); }
+  .asw-quiz-opt.correct { border-color: var(--green); background: #e6f4ea; color: var(--green); }
+  .asw-quiz-opt.correct::before { content: "✓"; color: var(--green); }
+  .asw-quiz-opt.wrong { border-color: var(--red); background: #fce8e6; color: var(--red); }
+  .asw-quiz-opt.wrong::before { content: "✗"; color: var(--red); }
+  .asw-quiz-explain { display: none; margin-top: 12px; padding: 10px 12px;
+    background: var(--surface2); border-radius: 6px; font-size: 0.82rem; color: var(--muted); }
+
+  .asw-fib { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin: 20px 0; }
+  .asw-fib-label { font-size: 0.65rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .asw-fib input { border: 1px solid var(--border); border-radius: 4px;
+    padding: 2px 8px; font-family: var(--mono); font-size: 0.82rem;
+    background: var(--bg); color: var(--text); width: 130px; text-align: center; outline: none; }
+  .asw-fib input:focus { border-color: var(--accent); }
+  .asw-fib input.correct { border-color: var(--green); background: #e6f4ea; color: var(--green); }
+  .asw-fib input.wrong   { border-color: var(--red);   background: #fce8e6; color: var(--red); }
+  .asw-fib-actions { margin-top: 10px; display: flex; gap: 8px; }
+
+  .asw-match { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin: 20px 0; }
+  .asw-match-label { font-size: 0.65rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .asw-match-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; }
+  .asw-match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .asw-match-col h4 { font-size: 0.65rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .asw-match-item { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 0.82rem; cursor: pointer; transition: all .15s; color: var(--muted); user-select: none; }
+  .asw-match-item:hover { border-color: var(--accent); color: var(--text); }
+  .asw-match-item.selected { border-color: var(--accent2); background: var(--surface2); color: var(--text); }
+  .asw-match-item.matched { border-color: var(--green); background: #e6f4ea; color: var(--green); cursor: default; }
+  .asw-match-score { font-size: 0.78rem; color: var(--muted); margin-top: 10px; text-align: right; }
+
+  details.asw-hint { background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 8px; margin: 12px 0; }
+  details.asw-hint summary { padding: 10px 14px; font-size: 0.83rem; font-weight: 600;
+    color: var(--accent); cursor: pointer; list-style: none; display: flex; align-items: center; gap: 7px; }
+  details.asw-hint summary::before { content: "💡"; }
+  details.asw-hint summary::-webkit-details-marker { display: none; }
+  details.asw-hint[open] summary { border-bottom: 1px solid var(--border); }
+  details.asw-hint .asw-hint-body { padding: 12px 14px; font-size: 0.84rem; color: var(--muted); }
+
+  .asw-achievement { display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 1px solid var(--yellow);
+    border-radius: 10px; padding: 16px 20px; margin: 20px 0; }
+  .asw-achievement.locked { filter: grayscale(.8); opacity: .6; }
+  .asw-achievement-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .asw-achievement-title { font-size: 0.9rem; font-weight: 700; color: var(--yellow); margin-bottom: 2px; }
+  .asw-achievement-desc  { font-size: 0.8rem; color: var(--muted); }
+  .asw-achievement-date  { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+
+  .asw-score { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px; margin: 20px 0; text-align: center; }
+  .asw-score-pct { font-family: var(--mono); font-size: 2.8rem; font-weight: 800;
+    color: var(--green); line-height: 1; margin-bottom: 4px; }
+  .asw-score-pct.fail { color: var(--red); }
+  .asw-score-label { font-size: 0.68rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .asw-score-row { display: flex; justify-content: center; gap: 20px; }
+  .asw-score-stat-val { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .asw-score-stat-lbl { font-size: 0.63rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+  .asw-score-ctas { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+
+  .asw-xp { margin: 20px 0; }
+  .asw-xp-row { display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 6px; font-size: 0.82rem; }
+  .asw-xp-level { font-weight: 600; color: var(--text); }
+  .asw-xp-count { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; }
+  .asw-xp-track { background: var(--surface2); border-radius: 4px; height: 8px; overflow: hidden; }
+  .asw-xp-fill  { height: 100%; border-radius: 4px; background: var(--accent);
+    transition: width .6s cubic-bezier(.16,1,.3,1); }
+
+  .asw-lesson-nav { display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin: 20px 0; gap: 12px; }
+  .asw-lesson-nav-side { font-size: 0.82rem; color: var(--muted); text-decoration: none;
+    display: flex; align-items: center; gap: 5px; min-width: 0; }
+  .asw-lesson-nav-side:hover { color: var(--accent); }
+  .asw-lesson-nav-side .nav-arrow { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
+  .asw-lesson-nav-center { text-align: center; flex: 1; min-width: 0; }
+  .asw-lesson-nav-module { font-size: 0.65rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .asw-lesson-nav-title { font-size: 0.88rem; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .asw-complete-row { display: flex; align-items: center; justify-content: center;
+    gap: 6px; margin-top: 8px; font-size: 0.78rem; color: var(--muted); cursor: pointer; }
+
+  .asw-course-card { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px; margin: 20px 0; }
+  .asw-course-title { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+  .asw-course-module { margin-bottom: 12px; }
+  .asw-course-mod-row { display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px; font-size: 0.82rem; }
+  .asw-course-mod-name { color: var(--text); font-weight: 500; }
+  .asw-course-mod-pct  { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; }
+  .asw-course-bar-track { background: var(--surface2); border-radius: 3px; height: 5px; overflow: hidden; }
+  .asw-course-bar-fill  { height: 100%; border-radius: 3px; background: var(--accent); }
+
+  .asw-highlight { background: #fef08a; border-radius: 2px; padding: 0 2px; position: relative; cursor: default; }
+  .asw-highlight[data-note]:hover::after {
+    content: attr(data-note); position: absolute; bottom: 100%; left: 0;
+    background: var(--yellow); color: #000; padding: 4px 8px; border-radius: 5px;
+    font-size: 0.75rem; white-space: nowrap; z-index: 10; margin-bottom: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); pointer-events: none;
+  }
+
+  /* ── Shared button ── */
+  .asw-btn { padding: 8px 18px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; font-family: var(--font); border: none; transition: all .15s; }
+  .asw-btn-primary { background: var(--accent); color: #fff; }
+  .asw-btn-primary:hover { opacity: .88; }
+  .asw-btn-ghost { background: var(--surface2); color: var(--muted); }
+  .asw-btn-ghost:hover { color: var(--text); }
+
+  </style>
+</head>
+<body>
+  <div class="asw-page">
+    <h1>A2UI — Apps Script Web App Surface</h1>
+<div class="asw-user-greeting"><div class="asw-user-avatar">C</div><div>Hey, <span class="asw-user-email">curtis@example.com</span>!</div></div>
+
+<h1 class="asw-heading">A2UI — now on Apps Script Web App</h1>
+
+<p class="asw-body"><strong>100+ composable atoms. One JSON schema. Zero HTML.</strong> A2UI lets you build rich, interactive Workspace pages by describing what you want — not how to render it.</p>
+
+<div class="asw-callout" style="border-left-color:var(--green); background:var(--surface2);"><span class="asw-callout-icon">🎉</span><div class="asw-callout-content" style="font-weight:500;"><strong>Apps Script Web App is now a first-class A2UI surface.</strong> Workspace-native atoms call Google APIs at runtime — no backend, no auth tokens, no extra infra.</div></div>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">What is A2UI?</h2>
+
+<p class="asw-body">A2UI is an atom catalogue for AI-generated UIs. An AI agent emits a JSON block list; A2UI renders it to a beautiful, surface-aware page. You get consistent design, safe rendering, and Workspace integration — without maintaining any frontend code.</p>
+
+<table><thead><tr><th>Surface</th><th>Renderer</th><th>Atoms available</th><th>Status</th></tr></thead><tbody><tr><td><strong>Apps Script Web App</strong></td><td>`apps_script_web.py`</td><td>150+</td><td>✅ New</td></tr><tr><td>Web / Blog</td><td>`web_article.py`</td><td>150+</td><td>✅ Live</td></tr><tr><td>Google Chat</td><td>`googlechat.py`</td><td>40+</td><td>✅ Live</td></tr><tr><td>GAS Sidebar</td><td>`apps_script_web.py`</td><td>150+</td><td>✅ Live</td></tr></tbody></table>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">Why Apps Script Web App?</h2>
+
+<ul><li><strong>Zero infrastructure: </strong>Deploy from the Apps Script editor in 30 seconds — no Cloud Run, no Docker, no domain setup.</li><li><strong>Workspace identity: </strong>`Session.getActiveUser()` gives you the signed-in user for free. No OAuth dance.</li><li><strong>Live Google data: </strong>DriveApp, SpreadsheetApp, GmailApp, CalendarApp — all callable server-side, results rendered as atoms.</li><li><strong>Script actions: </strong>`script_run_button` calls your `.gs` function directly via `google.script.run`. No HTTP endpoints.</li><li><strong>iframe-safe: </strong>All links force `target=&quot;_top&quot;` so clicks break out of the sandbox. `&lt;base target=&quot;_top&quot;&gt;` in the document head.</li></ul>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">Live Workspace Data — Rendered as Atoms</h2>
+
+<p class="asw-body">These atoms call real Google APIs at runtime. In preview mode they show representative mock data so you can build without deploying.</p>
+
+<div class="asw-user-greeting"><div class="asw-user-avatar">C</div><div>Signed in as, <span class="asw-user-email">curtis@example.com</span>!</div></div>
+
+<div class="asw-native-card"><div class="asw-native-header"><span class="asw-native-header-icon">📊</span> Google Sheet Live Preview (Q2 Pipeline!A1:E5)</div><div class="asw-sheet-preview-wrapper"><table class="asw-sheet-table"><tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr><tr><td>Row 1 Col 1</td><td>Row 1 Col 2</td><td>Row 1 Col 3</td></tr><tr><td>Row 2 Col 1</td><td>Row 2 Col 2</td><td>Row 2 Col 3</td></tr></table></div></div>
+
+<div class="asw-native-card"><div class="asw-native-header"><span class="asw-native-header-icon">📁</span> Google Drive Folder</div><ul class="asw-drive-list"><li class="asw-drive-item"><span class="asw-drive-icon">📕</span><a href="#" class="asw-drive-link" target="_top">Document_1.pdf</a></li><li class="asw-drive-item"><span class="asw-drive-icon">📊</span><a href="#" class="asw-drive-link" target="_top">Project_Sheet.xlsx</a></li><li class="asw-drive-item"><span class="asw-drive-icon">📈</span><a href="#" class="asw-drive-link" target="_top">Slideshow.gslides</a></li></ul></div>
+
+<div class="asw-native-card"><div class="asw-native-header"><span class="asw-native-header-icon">✉️</span> Gmail Search: "label:a2ui OR label:apps-script is:unread"</div><ul class="asw-gmail-list"><li class="asw-gmail-item"><div class="asw-gmail-meta"><span class="asw-gmail-from">Google Apps Script team &lt;dev@google.com&gt;</span><span class="asw-gmail-date">6/16/2026</span></div><div class="asw-gmail-subject">New V8 features available</div></li><li class="asw-gmail-item"><div class="asw-gmail-meta"><span class="asw-gmail-from">GitHub Notification &lt;noreply@github.com&gt;</span><span class="asw-gmail-date">6/15/2026</span></div><div class="asw-gmail-subject">[a2ui-catalogue] Pull request #4 merged</div></li></ul></div>
+
+<div class="asw-native-card"><div class="asw-native-header"><span class="asw-native-header-icon">📅</span> Calendar Schedule</div><ul class="asw-cal-list"><li class="asw-cal-item"><div class="asw-cal-date-badge"><span class="day">18</span><span class="month">Jun</span></div><div class="asw-cal-details"><span class="asw-cal-title">A2UI Review Meeting</span><span class="asw-cal-time">⏰ 10:00 AM</span></div></li><li class="asw-cal-item"><div class="asw-cal-date-badge"><span class="day">20</span><span class="month">Jun</span></div><div class="asw-cal-details"><span class="asw-cal-title">Weekly Pair Programming</span><span class="asw-cal-time">⏰ 02:00 PM</span></div></li></ul></div>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">Server-Side Actions</h2>
+
+<p class="asw-body">The `script_run_button` atom calls your Apps Script function directly — wired through `google.script.run` with built-in loading state and success/error feedback.</p>
+
+<div class="asw-callout" style="border-left-color:var(--accent);"><span class="asw-callout-icon">⚡</span><div class="asw-callout-content">Add `function refreshDashboard() { ... }` to your `.gs` file and the button below calls it. No HTTP endpoint. No auth token. Just Apps Script.</div></div>
+
+<div style="margin:16px 0; display:flex; align-items:center; gap:12px;"><button id="btn-b4d1bdfa" class="asw-btn asw-btn-primary" onclick="runCustomScript('btn-b4d1bdfa','refreshDashboard','')"><span class="asw-spinner" style="display:none;"></span><span class="asw-btn-label">Refresh Dashboard</span></button><span id="btn-b4d1bdfa-status" style="font-size:0.8rem; font-weight:500;"></span></div>
+
+<div style="margin:16px 0; display:flex; align-items:center; gap:12px;"><button id="btn-7f833cae" class="asw-btn asw-btn-primary" onclick="runCustomScript('btn-7f833cae','exportToSheets','')"><span class="asw-spinner" style="display:none;"></span><span class="asw-btn-label">Export to Sheets</span></button><span id="btn-7f833cae-status" style="font-size:0.8rem; font-weight:500;"></span></div>
+
+<div style="margin:16px 0; display:flex; align-items:center; gap:12px;"><button id="btn-8c26a52b" class="asw-btn asw-btn-primary" onclick="runCustomScript('btn-8c26a52b','sendSummaryEmail','')"><span class="asw-spinner" style="display:none;"></span><span class="asw-btn-label">Send Summary Email</span></button><span id="btn-8c26a52b-status" style="font-size:0.8rem; font-weight:500;"></span></div>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">Interactive &amp; Training Atoms</h2>
+
+<p class="asw-body">A2UI ships with a full suite of training atoms — quizzes, fill-in-the-blank, matching exercises, and gamification. All client-side, all CSP-safe.</p>
+
+<div class="asw-quiz"><div class="asw-quiz-label">Question</div><div class="asw-quiz-q">Which Apps Script service retrieves live spreadsheet data?</div><div class="asw-quiz-opts" id="7524ca4d-opts"><div class="asw-quiz-opt" id="7524ca4d-opt-0" data-idx="0">UrlFetchApp</div>
+<div class="asw-quiz-opt" id="7524ca4d-opt-1" data-idx="1">SpreadsheetApp</div>
+<div class="asw-quiz-opt" id="7524ca4d-opt-2" data-idx="2">GmailApp</div>
+<div class="asw-quiz-opt" id="7524ca4d-opt-3" data-idx="3">PropertiesService</div>
+</div><div class="asw-quiz-explain" id="7524ca4d-explain">SpreadsheetApp.openById(id).getSheetByName(name).getRange(range).getValues() returns a 2D array of live cell data.</div></div><script>
+(function(){
+  var correct=1;
+  var opts=document.querySelectorAll('#7524ca4d-opts .asw-quiz-opt');
+  opts.forEach(function(el){
+    el.addEventListener('click',function(){
+      var idx=parseInt(el.dataset.idx);
+      opts.forEach(function(o){o.classList.remove('selected','correct','wrong');});
+      el.classList.add('selected');
+      el.classList.add(idx===correct?'correct':'wrong');
+      var exp=document.getElementById('7524ca4d-explain');
+      if(exp)exp.style.display='block';
+    });
+  });
+})();
+</script>
+
+<div class="asw-fib" id="6caa7400-fib"><div class="asw-fib-label">Fill in the blank</div><div style="font-size:0.9rem;line-height:2">Use <input class="asw-fib-input" id="6caa7400-inp-0" data-idx="0" placeholder="…" autocomplete="off"> to serve an HTML page, and call server functions with <input class="asw-fib-input" id="6caa7400-inp-1" data-idx="1" placeholder="…" autocomplete="off">.</div><p style="margin-top:8px;font-size:0.8rem;color:var(--muted)">💡 Both are core Apps Script APIs, not imported libraries.</p><div class="asw-fib-actions"><button class="asw-btn asw-btn-primary" id="6caa7400-check">Check</button><button class="asw-btn asw-btn-ghost" id="6caa7400-reset">Reset</button></div></div><script>
+(function(){
+  var answers=[["HtmlService", "HtmlService.createHtmlOutput"], ["google.script.run"]];
+  var ignoreCase=true;
+  document.getElementById('6caa7400-check').addEventListener('click',function(){
+    var inputs=document.querySelectorAll('#6caa7400-fib .asw-fib-input');
+    inputs.forEach(function(inp,i){
+      var val=inp.value.trim();
+      var accepted=Array.isArray(answers[i])?answers[i]:[answers[i]];
+      var ok=accepted.some(function(a){
+        return ignoreCase?val.toLowerCase()===a.toLowerCase():val===a;
+      });
+      inp.classList.remove('correct','wrong');
+      inp.classList.add(ok?'correct':'wrong');
+    });
+  });
+  document.getElementById('6caa7400-reset').addEventListener('click',function(){
+    document.querySelectorAll('#6caa7400-fib .asw-fib-input').forEach(function(inp){
+      inp.value=''; inp.classList.remove('correct','wrong');
+    });
+  });
+})();
+</script>
+
+<div class="asw-match"><div class="asw-match-label">Matching exercise</div><div class="asw-match-sub">Click a term, then click its match.</div><div class="asw-match-grid"><div class="asw-match-col"><h4>Term</h4><div class="asw-match-item" id="795f063f-l-0" data-side="left" data-idx="0">DriveApp</div>
+<div class="asw-match-item" id="795f063f-l-1" data-side="left" data-idx="1">SpreadsheetApp</div>
+<div class="asw-match-item" id="795f063f-l-2" data-side="left" data-idx="2">GmailApp</div>
+<div class="asw-match-item" id="795f063f-l-3" data-side="left" data-idx="3">CalendarApp</div>
+<div class="asw-match-item" id="795f063f-l-4" data-side="left" data-idx="4">Session</div>
+</div><div class="asw-match-col"><h4>Match</h4><div class="asw-match-item" id="795f063f-r-0" data-side="right" data-idx="0">Get the active user's email address</div>
+<div class="asw-match-item" id="795f063f-r-1" data-side="right" data-idx="1">List files in a Google Drive folder</div>
+<div class="asw-match-item" id="795f063f-r-2" data-side="right" data-idx="2">Search and read Gmail threads</div>
+<div class="asw-match-item" id="795f063f-r-3" data-side="right" data-idx="3">Read and write Google Sheets data</div>
+<div class="asw-match-item" id="795f063f-r-4" data-side="right" data-idx="4">Fetch upcoming calendar events</div>
+</div></div><div class="asw-match-score">Matched: <strong id="795f063f-score">0 / 5</strong></div></div><script>
+(function(){
+  var correct={0: 1, 1: 3, 2: 2, 3: 4, 4: 0};
+  var selLeft=null, selRight=null, matched=0, total=5;
+  function getEl(side,idx){return document.getElementById('795f063f-'+side+'-'+idx);}
+  function clearSel(){
+    if(selLeft!==null){getEl('l',selLeft).classList.remove('selected');selLeft=null;}
+    if(selRight!==null){getEl('r',selRight).classList.remove('selected');selRight=null;}
+  }
+  function pick(side,idx){
+    var el=getEl(side,idx);
+    if(el.classList.contains('matched'))return;
+    if(side==='left'){
+      if(selLeft===idx){clearSel();return;}
+      if(selLeft!==null)getEl('l',selLeft).classList.remove('selected');
+      selLeft=idx; el.classList.add('selected');
+    }else{
+      if(selRight===idx){clearSel();return;}
+      if(selRight!==null)getEl('r',selRight).classList.remove('selected');
+      selRight=idx; el.classList.add('selected');
+    }
+    if(selLeft!==null&&selRight!==null){
+      var ok=correct[selLeft]===selRight;
+      if(ok){
+        getEl('l',selLeft).classList.add('matched');
+        getEl('r',selRight).classList.add('matched');
+        matched++;
+        document.getElementById('795f063f-score').textContent=matched+' / '+total;
+      }
+      clearSel();
+    }
+  }
+  document.querySelectorAll('[id^="795f063f-"]').forEach(function(el){
+    el.addEventListener('click',function(){pick(el.dataset.side,parseInt(el.dataset.idx));});
+  });
+})();
+</script>
+
+<details class="asw-hint" style="border-left-color:#1a73e8"><summary style="color:#1a73e8">Struggling with the match?</summary><div class="asw-hint-body">Each Apps Script service is named after the Google product it wraps. DriveApp → Drive, SpreadsheetApp → Sheets, and so on.</div></details>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">Gamification Atoms</h2>
+
+<div class="asw-xp"><div class="asw-xp-row"><span class="asw-xp-level">Workspace Developer — Level 3</span><span class="asw-xp-count">750 / 1000 XP</span></div><div class="asw-xp-track"><div class="asw-xp-fill" style="width:75%;background:#1a73e8"></div></div></div>
+
+<div class="asw-achievement"><div class="asw-achievement-icon">🚀</div><div><div class="asw-achievement-title" style="color:#1a73e8">Apps Script Pioneer</div><div class=asw-achievement-desc>First to deploy A2UI on a Web App surface</div><div class="asw-achievement-date">Unlocked Jun 16, 2026</div></div></div>
+
+<div class="asw-achievement"><div class="asw-achievement-icon">📊</div><div><div class="asw-achievement-title" style="color:#34a853">Data Connector</div><div class=asw-achievement-desc>Rendered a live Sheet preview via SpreadsheetApp</div><div class="asw-achievement-date">Unlocked Jun 16, 2026</div></div></div>
+
+<div class="asw-achievement locked"><div class="asw-achievement-icon">✉️</div><div><div class="asw-achievement-title" style="color:#fbbc04">Inbox Zero</div><div class=asw-achievement-desc>Cleared all unread mail via the Gmail atom</div></div></div>
+
+<div class="asw-score"><div class="asw-score-pct">80%</div><div class="asw-score-label">Passed</div><div class="asw-score-row"><div class="asw-score-stat"><div class="asw-score-stat-val">4/5</div><div class="asw-score-stat-lbl">Correct</div></div><div class="asw-score-stat"><div class="asw-score-stat-val">2m 14s</div><div class="asw-score-stat-lbl">Time</div></div></div><div class="asw-score-ctas"><button class="asw-btn asw-btn-ghost">Try again</button><a href="#deploy" class="asw-btn asw-btn-primary">Next: Deploy your Web App →</a></div></div>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">How It Works</h2>
+
+<pre><code class="language-python"># 1. An AI agent emits atom blocks
+blocks = [
+    {&quot;type&quot;: &quot;user_greeting&quot;, &quot;prefix&quot;: &quot;Hello&quot;},
+    {&quot;type&quot;: &quot;sheet_preview&quot;, &quot;spreadsheet_id&quot;: &quot;...&quot;, &quot;range&quot;: &quot;A1:D10&quot;},
+    {&quot;type&quot;: &quot;quiz_question&quot;,  &quot;question&quot;: &quot;...&quot;, &quot;options&quot;: [...], &quot;correct&quot;: 0},
+]
+
+# 2. Preview locally with the Python renderer
+from renderers.apps_script_web import render
+html = render(blocks, title=&quot;My Dashboard&quot;)
+
+# 3. Serve from Apps Script
+# In Code.gs:
+#   function doGet() {
+#     return HtmlService.createHtmlOutput(renderAtoms(blocks));
+#   }</code></pre>
+
+<div class="asw-callout" style="border-left-color:var(--accent);"><span class="asw-callout-icon">🔄</span><div class="asw-callout-content">The Python renderer and the `atom.gs` runtime share the same CSS classes, atom field names, and rendering logic — so what you preview locally is what users see in production.</div></div>
+
+<hr class="asw-divider">
+
+<h2 class="asw-heading">Get Started in 3 Steps</h2>
+
+<ul><li><strong>1. Copy the surface files: </strong>Add `atom.gs`, `AtomPage.html`, `AtomStyles.html`, and `AtomScripts.html` from `apps-script-surface/` into your Apps Script project.</li><li><strong>2. Call renderAtoms(): </strong>Pass your block list to `renderAtoms(blocks)` and serve the result with `HtmlService.createHtmlOutput(html)`.</li><li><strong>3. Add workspace atoms: </strong>Drop in `drive_file_list`, `sheet_preview`, `gmail_summary`, or `calendar_upcoming` atoms — they call the relevant Google API automatically.</li></ul>
+
+<div style="margin:16px 0;text-align:center;"><a href="https://techmusings.krygier.fr" class="asw-btn asw-btn-primary" style="padding:10px 24px;font-size:0.85rem;" target="_top">View the full A2UI Catalogue →</a></div>
+
+<hr class="asw-divider">
+
+<div class="asw-course-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div class="asw-course-title">A2UI Developer Series</div><div style="font-family:var(--mono);font-size:1.1rem;font-weight:700;color:#1a73e8">69%</div></div><div class="asw-course-module"><div class="asw-course-mod-row"><span class="asw-course-mod-name">Core atoms & schema</span><span class="asw-course-mod-pct">5/5</span></div><div class="asw-course-bar-track"><div class="asw-course-bar-fill" style="width:100%;background:#1a73e8"></div></div></div><div class="asw-course-module"><div class="asw-course-mod-row"><span class="asw-course-mod-name">Web & Chat surfaces</span><span class="asw-course-mod-pct">4/4</span></div><div class="asw-course-bar-track"><div class="asw-course-bar-fill" style="width:100%;background:#1a73e8"></div></div></div><div class="asw-course-module"><div class="asw-course-mod-row"><span class="asw-course-mod-name">Apps Script Web App surface</span><span class="asw-course-mod-pct">2/3</span></div><div class="asw-course-bar-track"><div class="asw-course-bar-fill" style="width:67%;background:#1a73e8"></div></div></div><div class="asw-course-module"><div class="asw-course-mod-row"><span class="asw-course-mod-name">AI agent integration</span><span class="asw-course-mod-pct">0/4</span></div><div class="asw-course-bar-track"><div class="asw-course-bar-fill" style="width:0%;background:#1a73e8"></div></div></div></div>
+
+<div class="asw-lesson-nav"><a href="#chat" class="asw-lesson-nav-side"><span class="nav-arrow">←</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Google Chat Surface</span></a><div class="asw-lesson-nav-center"><div class="asw-lesson-nav-module">A2UI Developer Series</div><div class="asw-lesson-nav-title">Apps Script Web App Surface</div><label class="asw-complete-row"><input type="checkbox" onchange="localStorage.setItem('complete-Apps Script Web App Surface',this.checked)">Mark as complete</label></div><a href="#agents" class="asw-lesson-nav-side" style="justify-content:flex-end;text-align:right"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">AI Agent Integration</span><span class="nav-arrow">→</span></a></div>
+  </div>
+</body>
+</html>

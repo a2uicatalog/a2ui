@@ -1,0 +1,65 @@
+{
+ "knowledgeAtoms": [
+  {
+   "id": "nist-ai-rmf",
+   "title": "NIST AI Risk Management Framework 1.0",
+   "domain": "course",
+   "source": "NIST.AI.100-1.pdf — January 2023",
+   "license": "Public Domain — U.S. Government work",
+   "steps": null,
+   "coverage": "precompiled",
+   "built": "2026-07-02"
+  },
+  {
+   "id": "brevet-2026",
+   "title": "Brevet 2026 — Révisions complètes",
+   "domain": "course",
+   "source": "Programmes officiels DNB 2026 (éduscol)",
+   "license": "Licence Ouverte 2.0 (contenus officiels); assembly a2uicatalog",
+   "steps": null,
+   "coverage": "precompiled",
+   "built": "2026-07-02"
+  },
+  {
+   "id": "clasp-deployment",
+   "title": "CLASP Deployment Runbook",
+   "domain": "training",
+   "source": "github.com/google/clasp README + field experience, July 2026",
+   "license": "Apache-2.0",
+   "steps": 7,
+   "coverage": "1/6 sections",
+   "built": "2026-07-02"
+  },
+  {
+   "id": "cloudflare-workers-get-started",
+   "title": "Get started - CLI",
+   "domain": "training",
+   "source": "Cloudflare Workers Documentation",
+   "license": "CC-BY-4.0",
+   "steps": 5,
+   "coverage": "4/6 sections",
+   "built": "2026-07-02"
+  },
+  {
+   "id": "gh-cli-quickstart",
+   "title": "GitHub CLI Quickstart",
+   "domain": "training",
+   "source": "GitHub Docs — GitHub CLI quickstart",
+   "license": "CC-BY-4.0",
+   "steps": 13,
+   "coverage": "4/6 sections",
+   "built": "2026-07-02"
+  },
+  {
+   "id": "vite-getting-started",
+   "title": "Vite Getting Started Guide",
+   "domain": "training",
+   "source": "vite-getting-started.md documentation, 2026",
+   "license": "MIT",
+   "steps": 19,
+   "coverage": "5/6 sections",
+   "built": "2026-07-02"
+  }
+ ],
+ "note": "Compiled knowledge artifacts — payload + provenance. Unannounced tier."
+}

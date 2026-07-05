@@ -1,0 +1,25 @@
+name: sprint_review
+description: Sprint review stage layout — velocity and bug KPIs, completion progress, backlog table, burn-down chart.
+triggers:
+  - sprint review
+  - sprint retro
+  - iteration review
+  - velocity
+surfaces: [google-meet-stage, web, google-apps-script-web]
+layout: grid
+sequence:
+  - atom: stat_card
+    role: velocity
+    data_hint: "value: story points completed this sprint; delta: vs previous sprint; is_up from delta sign"
+  - atom: stat_card
+    role: bugs
+    data_hint: "value: open bug count; delta: change over sprint; accent red when rising"
+  - atom: progress_bar
+    role: sprint_completion
+    data_hint: "value: percent of committed scope done; label: sprint name; caption: days remaining"
+  - atom: table
+    role: backlog
+    data_hint: "rows: carry-over and top backlog items with owner and status columns"
+  - atom: chartjs_line
+    role: burn_down
+    data_hint: "labels: sprint days; datasets: [ideal burn-down, actual remaining points]"

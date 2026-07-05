@@ -1,0 +1,257 @@
+<script>
+  // Client-Side Logic & Event Listeners for A2UI Apps Script Web App
+
+  // ── Theme Management ──
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      document.body.classList.add('asw-dark-theme');
+    } else {
+      document.body.classList.remove('asw-dark-theme');
+    }
+  }
+
+  // ── Quiz Question (Interactive) ──
+  function initQuiz(uid, correctIdx, atomId) {
+    var opts = document.querySelectorAll('[id^="' + uid + '-opt-"]');
+    opts.forEach(function(el) {
+      el.addEventListener('click', function() {
+        var idx = parseInt(el.dataset.idx);
+        opts.forEach(function(o) {
+          o.classList.remove('selected', 'correct', 'wrong');
+        });
+        el.classList.add('selected');
+        
+        // Show correct / wrong state
+        var isCorrect = idx === correctIdx;
+        el.classList.add(isCorrect ? 'correct' : 'wrong');
+        
+        // Reveal explanation
+        var exp = document.getElementById(uid + '-explain');
+        if (exp) exp.style.display = 'block';
+
+        // Call server to persist answer
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(res) {
+              console.log('Quiz progress saved:', res);
+            })
+            .withFailureHandler(function(err) {
+              console.error('Failed to save quiz progress:', err);
+            })
+            .saveQuizAnswer(atomId, idx);
+        }
+      });
+    });
+  }
+
+  // ── Fill In the Blank (Interactive) ──
+  function initFillInBlank(uid, atomId) {
+    var checkBtn = document.getElementById(uid + '-check');
+    var resetBtn = document.getElementById(uid + '-reset');
+    var inputs = document.querySelectorAll('#' + uid + '-fib .asw-fib-input');
+
+    if (checkBtn) {
+      checkBtn.addEventListener('click', function() {
+        var userAnswers = [];
+        inputs.forEach(function(inp) {
+          userAnswers.push(inp.value.trim());
+        });
+
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(results) {
+              // results should be an object/array indicating correctness: e.g. [true, false]
+              inputs.forEach(function(inp, i) {
+                inp.classList.remove('correct', 'wrong');
+                var ok = Array.isArray(results) ? results[i] : (results.correct && results.correct[i]);
+                inp.classList.add(ok ? 'correct' : 'wrong');
+              });
+            })
+            .withFailureHandler(function(err) {
+              console.error('Failed to validate answers:', err);
+            })
+            .checkFillInBlank(atomId, userAnswers);
+        }
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function() {
+        inputs.forEach(function(inp) {
+          inp.value = '';
+          inp.classList.remove('correct', 'wrong');
+        });
+      });
+    }
+  }
+
+  // ── Match Exercise (Interactive) ──
+  function initMatchExercise(uid, atomId, correctMap) {
+    var selLeft = null;
+    var selRight = null;
+    var matchedCount = 0;
+    var totalPairs = Object.keys(correctMap).length;
+
+    function getEl(side, idx) {
+      return document.getElementById(uid + '-' + side + '-' + idx);
+    }
+
+    function clearSel() {
+      if (selLeft !== null) {
+        getEl('l', selLeft).classList.remove('selected');
+        selLeft = null;
+      }
+      if (selRight !== null) {
+        getEl('r', selRight).classList.remove('selected');
+        selRight = null;
+      }
+    }
+
+    function pick(side, idx) {
+      var el = getEl(side, idx);
+      if (el.classList.contains('matched')) return;
+
+      if (side === 'left') {
+        if (selLeft === idx) {
+          clearSel();
+          return;
+        }
+        if (selLeft !== null) getEl('l', selLeft).classList.remove('selected');
+        selLeft = idx;
+        el.classList.add('selected');
+      } else {
+        if (selRight === idx) {
+          clearSel();
+          return;
+        }
+        if (selRight !== null) getEl('r', selRight).classList.remove('selected');
+        selRight = idx;
+        el.classList.add('selected');
+      }
+
+      if (selLeft !== null && selRight !== null) {
+        var isMatch = correctMap[selLeft] === selRight;
+        if (isMatch) {
+          getEl('l', selLeft).classList.add('matched');
+          getEl('r', selRight).classList.add('matched');
+          matchedCount++;
+          var scoreEl = document.getElementById(uid + '-score');
+          if (scoreEl) scoreEl.textContent = matchedCount + ' / ' + totalPairs;
+
+          if (matchedCount === totalPairs) {
+            // Log result to server
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+              google.script.run.saveMatchResult(atomId, matchedCount);
+            }
+          }
+        }
+        clearSel();
+      }
+    }
+
+    document.querySelectorAll('[id^="' + uid + '-"]').forEach(function(el) {
+      if (el.dataset.side && el.dataset.idx !== undefined) {
+        el.addEventListener('click', function() {
+          pick(el.dataset.side, parseInt(el.dataset.idx));
+        });
+      }
+    });
+  }
+
+  // ── Custom Script Run Button ──
+  function runCustomScript(btnId, functionName, arg) {
+    var btn = document.getElementById(btnId);
+    if (!btn) return;
+    
+    var spinner = btn.querySelector('.asw-spinner');
+    var status = document.getElementById(btnId + '-status');
+
+    btn.disabled = true;
+    if (spinner) spinner.style.display = 'inline-block';
+    if (status) {
+      status.textContent = ' Running...';
+      status.style.color = 'var(--muted)';
+    }
+
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      var runner = google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          if (spinner) spinner.style.display = 'none';
+          if (status) {
+            status.textContent = ' Success: ' + String(result);
+            status.style.color = 'var(--green)';
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          if (spinner) spinner.style.display = 'none';
+          if (status) {
+            status.textContent = ' Error: ' + String(err.message || err);
+            status.style.color = 'var(--red)';
+          }
+        });
+
+      if (typeof runner[functionName] === 'function') {
+        runner[functionName](arg);
+      } else {
+        btn.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+        if (status) {
+          status.textContent = ' Function ' + functionName + ' not found on server.';
+          status.style.color = 'var(--red)';
+        }
+      }
+    } else {
+      // Offline/preview fallback simulation
+      setTimeout(function() {
+        btn.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+        if (status) {
+          status.textContent = ' Preview: Function "' + functionName + '" called with "' + arg + '"';
+          status.style.color = 'var(--accent)';
+        }
+      }, 1000);
+    }
+  }
+
+  // ── gemini_prompt atom ────────────────────────────────────────────────────
+  function _gpGenerate(uid) {
+    var t = document.getElementById(uid + 't');
+    var b = document.getElementById(uid + 'b');
+    var r = document.getElementById(uid + 'r');
+    var e = document.getElementById(uid + 'e');
+    var s = document.getElementById(uid + 's');
+    var prompt = t ? t.value.trim() : '';
+    if (!prompt) return;
+    b.disabled = true;
+    r.style.display = 'none';
+    e.style.display = 'none';
+    s.textContent = 'Calling Gemini…';
+    google.script.run
+      .withSuccessHandler(function(res) {
+        b.disabled = false; s.textContent = '';
+        var tk = res.tokens || {};
+        var defs = [
+          { l: 'in',       c: '#6366f1', v: (tk.prompt   || 0).toLocaleString() + ' tok' },
+          { l: 'thinking', c: '#a78bfa', v: (tk.thinking || 0).toLocaleString() + ' tok', hide: !tk.thinking },
+          { l: 'out',      c: '#38bdf8', v: (tk.output   || 0).toLocaleString() + ' tok' },
+          { l: 'total',    c: '#94a3b8', v: (tk.total    || 0).toLocaleString() + ' tok' }
+        ];
+        document.getElementById(uid + 'rchips').innerHTML = defs.filter(function(c) { return !c.hide; }).map(function(c) {
+          return '<span style="padding:3px 8px;background:rgba(255,255,255,0.45);border:1px solid rgba(99,102,241,0.12);border-radius:5px;font-size:0.68rem;font-family:monospace;">' +
+                 '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:' + c.c + ';margin-right:3px;vertical-align:middle;"></span>' +
+                 c.l + ' <strong>' + c.v + '</strong></span>';
+        }).join('');
+        var link = document.getElementById(uid + 'rlink');
+        link.href = res.url;
+        r.style.display = 'block';
+      })
+      .withFailureHandler(function(err) {
+        b.disabled = false; s.textContent = '';
+        e.textContent = err.message || String(err);
+        e.style.display = 'block';
+      })
+      .callGemini(prompt);
+  }
+</script>

@@ -1,0 +1,136 @@
+{
+ "schemaVersion": "1.0",
+ "type": "a2ui_wired_surface",
+ "title": "Trading 212 — Observation Plane",
+ "theme": "dark",
+ "app": "trading-dashboard",
+ "state_primitives": [
+  {
+   "id": "positions_enriched",
+   "primitive": "DerivedStore",
+   "props": {
+    "from": "#portfolio_query.result",
+    "expr": "augment_rows",
+    "add": [
+     {"col": "pnl_pct", "op": "pct_diff", "a": "price", "b": "avg"}
+    ]
+   }
+  },
+  {
+   "id": "totals",
+   "primitive": "DerivedStore",
+   "props": {
+    "from": "#positions_enriched.result",
+    "expr": "aggregate",
+    "sum": [{"col": "ppl", "out": "total_ppl"}],
+    "count": "positions"
+   }
+  },
+  {
+   "id": "candles_ind",
+   "primitive": "DerivedStore",
+   "props": {
+    "from": "#candles_query.result",
+    "expr": "augment_rows",
+    "add": [
+     {"col": "sma20", "op": "sma", "src": "close", "window": 20},
+     {"col": "rsi14", "op": "rsi", "src": "close", "window": 14},
+     {"col": "bb_up", "op": "bband_upper", "src": "close", "window": 20, "mult": 2},
+     {"col": "bb_low", "op": "bband_lower", "src": "close", "window": 20, "mult": 2},
+     {"col": "signal", "op": "signal_threshold", "src": "rsi14", "high": 70, "low": 30,
+      "above": "OVERBOUGHT", "below": "OVERSOLD", "mid": "neutral"}
+    ]
+   }
+  },
+  {
+   "id": "ind_now",
+   "primitive": "DerivedStore",
+   "props": {
+    "from": "#candles_ind.result",
+    "expr": "aggregate",
+    "last": [
+     {"col": "rsi14", "out": "rsi_now"},
+     {"col": "signal", "out": "signal_now"},
+     {"col": "close", "out": "close_now"}
+    ]
+   }
+  }
+ ],
+ "actions": [
+  {
+   "id": "portfolio_query",
+   "type": "gas:t212_portfolio",
+   "trigger": "onLoad",
+   "props": {}
+  },
+  {
+   "id": "candles_query",
+   "type": "gas:market_candles",
+   "trigger": "onLoad",
+   "props": {"symbol": "NVDA", "interval": "1day", "outputsize": 40}
+  }
+ ],
+ "layout": [
+  {"atom": "dark_hero", "props": {
+   "title": "Trading 212 — Observation Plane",
+   "subtitle": "Demo account. Read-only: every number on this page is a declared derivation — nothing here can place a trade.",
+   "badge": "PILOT · DERIVED STATE",
+   "accent": "#22c55e"}},
+
+  {"atom": "row_open", "props": {}},
+  {"id": "stat-pnl", "atom": "glowing_stat",
+   "props": {"label": "Open P&L", "accent": "#22c55e"},
+   "wire": {"count": "#totals.total_ppl"}},
+  {"id": "stat-count", "atom": "glowing_stat",
+   "props": {"label": "Positions", "accent": "#6366f1"},
+   "wire": {"count": "#totals.positions"}},
+  {"id": "stat-rsi", "atom": "glowing_stat",
+   "props": {"label": "NVDA RSI-14", "accent": "#f59e0b"},
+   "wire": {"count": "#ind_now.rsi_now"}},
+  {"id": "stat-close", "atom": "glowing_stat",
+   "props": {"label": "NVDA close", "accent": "#38bdf8"},
+   "wire": {"count": "#ind_now.close_now"}},
+  {"atom": "row_close", "props": {}},
+
+  {"id": "portfolio-error", "atom": "inline_feedback_message",
+   "props": {"message": "Portfolio fetch failed — set T212_API_KEY in Script Properties (demo account by default)", "type": "error"},
+   "wire": {"visible": "#portfolio_query.isError"}},
+  {"id": "candles-error", "atom": "inline_feedback_message",
+   "props": {"message": "Candles fetch failed — set TWELVE_API_KEY in Script Properties", "type": "error"},
+   "wire": {"visible": "#candles_query.isError"}},
+
+  {"atom": "subheading", "props": {"text": "Positions — P&L derived per row"}},
+  {"id": "positions-table", "atom": "data_table",
+   "props": {"striped": true, "compact": true,
+    "columns": [
+     {"key": "ticker", "label": "Ticker"},
+     {"key": "qty", "label": "Qty"},
+     {"key": "avg", "label": "Avg"},
+     {"key": "price", "label": "Price"},
+     {"key": "ppl", "label": "P&L"},
+     {"key": "pnl_pct", "label": "P&L %"}
+    ]},
+   "wire": {"rows": "#positions_enriched.result"}},
+
+  {"atom": "subheading", "props": {"text": "NVDA daily — SMA-20 / RSI-14 / Bollinger derived from candles"}},
+  {"id": "candles-table", "atom": "data_table",
+   "props": {"striped": true, "compact": true,
+    "columns": [
+     {"key": "t", "label": "Date"},
+     {"key": "close", "label": "Close"},
+     {"key": "sma20", "label": "SMA-20"},
+     {"key": "bb_low", "label": "BB low"},
+     {"key": "bb_up", "label": "BB up"},
+     {"key": "rsi14", "label": "RSI-14"},
+     {"key": "signal", "label": "Signal"}
+    ]},
+   "wire": {"rows": "#candles_ind.result"}},
+
+  {"id": "refresh-positions", "atom": "live_refresh",
+   "props": {"action": "portfolio_query", "interval": 60, "label": "positions 60s", "color": "#22c55e"}},
+  {"id": "refresh-candles", "atom": "live_refresh",
+   "props": {"action": "candles_query", "interval": 300, "label": "candles 5m", "color": "#38bdf8"}},
+
+  {"atom": "body", "props": {"text": "*Data: Trading 212 (demo) + Twelve Data. Indicators are declared DerivedStore ops (sma, rsi, bband, signal_threshold) — the parser-is-the-renderer principle applied to market state.*"}}
+ ]
+}

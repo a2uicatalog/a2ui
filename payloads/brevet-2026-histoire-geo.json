@@ -1,0 +1,585 @@
+{
+  "title": "Histoire-Géographie & EMC — DNB 2026",
+  "theme": "light",
+  "blocks": [
+    {
+      "type": "hub",
+      "subjects": [
+        {
+          "id": "histoire_geo",
+          "label": "🗺 Histoire-Géo",
+          "color": "#f59e0b",
+          "slides": [
+            {
+              "id": "epreuve",
+              "label": "📋 Épreuve",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Histoire-Géo + EMC · 2 h · 60 pts → /3 = 20/20",
+                  "subtext": "HG 40 pts : Analyse docs (15) + Développement construit (18) + Repères (7) — EMC 20 pts (grille indépendante)",
+                  "badge": "DNB 2026",
+                  "align": "center"
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Développement construit : MINIMUM 30 LIGNES** — malus automatique sévère si < 30 lignes (BO n°33, 02/09/2025). Viser 35 lignes.",
+                    "**Vocabulaire technique obligatoire** — citer les termes exacts (Shoah ≠ 'tueries', CEE ≠ UE avant 1992)",
+                    "**Repères chronologiques** : mémoriser les dates clés par thème — une date fausse = point perdu",
+                    "**EMC** : évalué séparément — nommer les institutions, les lois, les droits avec précision"
+                  ]
+                },
+                {
+                  "type": "steps",
+                  "items": [
+                    {"label": "15 pts", "text": "Exercice 1 — Analyse de document(s) : identifier la nature, l'auteur, la date, contextualiser et dégager les idées principales"},
+                    {"label": "18 pts", "text": "Exercice 2 — Développement construit : ≥ 30 lignes, 2 paragraphes avec transitions, intro + conclusion"},
+                    {"label": "7 pts", "text": "Repères chronologiques et/ou spatiaux : dates et lieux clés à placer ou identifier"},
+                    {"label": "20 pts", "text": "EMC : grille indépendante — discriminations, vocabulaire judiciaire, valeurs républicaines"}
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "t1-totalitarismes",
+              "label": "🏛️ Totalitarismes",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Thème 1 — Les totalitarismes (1919-1939)",
+                  "subtext": "Nazisme · Stalinisme · Front Populaire",
+                  "badge": "Histoire · XXe siècle",
+                  "align": "center"
+                },
+                {
+                  "type": "brevet_timeline",
+                  "events": [
+                    {
+                      "date": "1919",
+                      "title": "Traité de Versailles + SDN",
+                      "desc": "Allemagne humiliée : pertes territoriales, réparations, 'clause de culpabilité' (art. 231). Création de la SDN pour garantir la paix collective."
+                    },
+                    {
+                      "date": "1929",
+                      "title": "Crise économique mondiale",
+                      "desc": "Krach boursier de Wall Street. Chômage de masse. Ébranle les démocraties et favorise la montée des extrémismes en Europe."
+                    },
+                    {
+                      "date": "1922–1953",
+                      "title": "Totalitarisme soviétique — Staline",
+                      "desc": "Collectivisation forcée (kolkhozes, Holodomor). Terreur de masse, Goulag, NKVD. Parti unique, culte du chef, propagande, contrôle total."
+                    },
+                    {
+                      "date": "1933",
+                      "title": "Hitler au pouvoir",
+                      "desc": "Accession légale en janvier 1933. Parti nazi unique. Gestapo + SS. Embrigadement de la jeunesse. Lois de Nuremberg (1935) : Juifs exclus de la citoyenneté."
+                    },
+                    {
+                      "date": "1936",
+                      "title": "Front Populaire — Accords de Matignon",
+                      "desc": "Réponse démocratique aux crises. Semaine de 40 heures, premiers congés payés, liberté syndicale."
+                    }
+                  ]
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#f59e0b",
+                  "label_front": "COMPARAISON",
+                  "label_back": "NAZISME vs STALINISME",
+                  "cards": [
+                    {
+                      "front": "Idéologie",
+                      "back": "Nazisme : nationalisme racial (race aryenne supérieure) | Stalinisme : communisme étatiste (dictature du prolétariat)"
+                    },
+                    {
+                      "front": "Ennemi désigné",
+                      "back": "Nazisme : Juifs, Roms, opposants politiques | Stalinisme : Koulaks (paysans riches), opposants politiques, 'ennemis du peuple'"
+                    },
+                    {
+                      "front": "Instrument de terreur",
+                      "back": "Nazisme : Gestapo, SS, camps de concentration | Stalinisme : NKVD, Goulag (réseau de camps de travail forcé)"
+                    },
+                    {
+                      "front": "Points communs",
+                      "back": "Parti unique · Culte du chef · Propagande omniprésente · Terreur de masse · Embrigadement de la jeunesse · Contrôle total de la société"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : le nazisme et le stalinisme sont des régimes identiques.",
+                  "correct": false,
+                  "explanation": "FAUX. Idéologies opposées : nationalisme racial (nazisme) vs communisme étatiste (stalinisme). Ils partagent les MÉTHODES de contrôle (parti unique, terreur, culte du chef) mais leurs doctrines sont radicalement différentes."
+                }
+              ]
+            },
+            {
+              "id": "t2-ww2",
+              "label": "⚔️ WW2",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Thème 2 — La Seconde Guerre mondiale (1939-1945)",
+                  "subtext": "Shoah · Samudaripen · Résistance · CNR",
+                  "badge": "Histoire · XXe siècle",
+                  "align": "center"
+                },
+                {
+                  "type": "brevet_timeline",
+                  "events": [
+                    {
+                      "date": "1939-09-01",
+                      "title": "Invasion de la Pologne",
+                      "desc": "Début de la guerre. Grande Alliance se forme progressivement (UK, USA, URSS). Guerre totale : économies mobilisées, crimes de masse contre civils."
+                    },
+                    {
+                      "date": "1940-06-18",
+                      "title": "Appel du 18 juin — De Gaulle",
+                      "desc": "Depuis Londres. Vichy abolit la République. Collaboration d'État : statuts antisémites (octobre 1940), co-organisation des rafles avec les Allemands."
+                    },
+                    {
+                      "date": "1942-07",
+                      "title": "Rafle du Vél d'Hiv",
+                      "desc": "13 152 Juifs arrêtés par la POLICE FRANÇAISE, déportés vers les centres de mise à mort. Acte de collaboration d'État."
+                    },
+                    {
+                      "date": "1943",
+                      "title": "CNR — Jean Moulin",
+                      "desc": "Jean Moulin unifie la Résistance intérieure sous l'autorité du général de Gaulle → Conseil National de la Résistance."
+                    },
+                    {
+                      "date": "1945-05-08",
+                      "title": "Capitulation de l'Allemagne",
+                      "desc": "Fin de la guerre en Europe. Libération des camps. Découverte de l'ampleur des génocides."
+                    },
+                    {
+                      "date": "1945-08",
+                      "title": "Hiroshima et Nagasaki — Capitulation du Japon",
+                      "desc": "6 et 9 août 1945. Premières bombes atomiques utilisées en temps de guerre. Capitulation japonaise le 2 septembre 1945."
+                    }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Shoah** : 6 millions de Juifs exterminés par le régime nazi. Processus : lois antisémites → spoliation → ghettos → fusillades (Einsatzgruppen) → déportation → extermination par le gaz",
+                    "**Samudaripen** : génocide des Tsiganes par le régime nazi — terme à connaître",
+                    "**Juste parmi les Nations** : titre décerné par Yad Vashem aux non-Juifs ayant sauvé des Juifs au péril de leur vie. ≠ Résistant (combat l'occupant en général)",
+                    "**Centres de mise à mort** (Auschwitz-Birkenau, Treblinka…) ≠ camps de concentration (travail forcé) — distinction essentielle"
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : la rafle du Vél d'Hiv a été organisée uniquement par les Allemands.",
+                  "correct": false,
+                  "explanation": "FAUX. La rafle du 16-17 juillet 1942 a été organisée ET exécutée par la POLICE FRANÇAISE sous Vichy. C'est un acte de collaboration d'État — la France a arrêté elle-même 13 152 Juifs."
+                }
+              ]
+            },
+            {
+              "id": "t3-monde",
+              "label": "🌐 Guerre froide",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Thème 3 — Le monde de 1945 aux années 2000",
+                  "subtext": "Guerre froide · Bandung · Décolonisation · Dissolution URSS",
+                  "badge": "Histoire · XXe siècle",
+                  "align": "center"
+                },
+                {
+                  "type": "brevet_timeline",
+                  "events": [
+                    {
+                      "date": "1945",
+                      "title": "Naissance de l'ONU",
+                      "desc": "~60-70 millions de morts. ONU : Assemblée générale + Conseil de sécurité (5 membres permanents) + Cour internationale de Justice."
+                    },
+                    {
+                      "date": "1947",
+                      "title": "Plan Marshall — Début guerre froide",
+                      "desc": "USA vs URSS : deux blocs antagonistes, deux idéologies (capitalisme vs communisme), course aux armements nucléaires."
+                    },
+                    {
+                      "date": "1948–1949",
+                      "title": "Blocus de Berlin",
+                      "desc": "URSS bloque Berlin-Ouest. Alliés ripostent par le pont aérien. Symbole de la confrontation Est-Ouest."
+                    },
+                    {
+                      "date": "1955",
+                      "title": "Conférence de Bandung",
+                      "desc": "29 nouveaux États d'Afrique et d'Asie refusent les deux blocs → naissance du mouvement des non-alignés et du 'Tiers-Monde'."
+                    },
+                    {
+                      "date": "1961–1989",
+                      "title": "Mur de Berlin",
+                      "desc": "Construit pour stopper l'exode est-allemand. Sa chute le 9 novembre 1989 marque la fin de la guerre froide."
+                    },
+                    {
+                      "date": "1962",
+                      "title": "Crise des missiles de Cuba",
+                      "desc": "Affrontement nucléaire évité de justesse. Ligne directe Moscou-Washington créée pour prévenir les crises futures."
+                    },
+                    {
+                      "date": "1954–1962",
+                      "title": "Décolonisation — Guerre d'Algérie",
+                      "desc": "Indépendances massives en Afrique et Asie. Inde (1947, négociation). Algérie (guerre sanglante 1954-1962, accords d'Évian)."
+                    },
+                    {
+                      "date": "1991",
+                      "title": "Dissolution de l'URSS",
+                      "desc": "Chute du mur (1989) → réunification allemande (1990) → dissolution URSS (1991). Monde multipolaire : Chine, mondialisation, terrorisme (11 septembre 2001)."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "t4-france",
+              "label": "🇫🇷 France",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Thème 4 — La France en République (1944-2000)",
+                  "subtext": "Vote femmes · Ve République · Mai 68 · Loi Veil · Loi Badinter",
+                  "badge": "Histoire",
+                  "align": "center"
+                },
+                {
+                  "type": "brevet_timeline",
+                  "events": [
+                    {
+                      "date": "1944",
+                      "title": "Droit de vote des femmes",
+                      "desc": "GPRF (Gouvernement Provisoire). Programme du CNR appliqué : Sécurité sociale (1945), nationalisations."
+                    },
+                    {
+                      "date": "1946",
+                      "title": "IVe République",
+                      "desc": "Constitution de 1946. Régime parlementaire à dominante législative."
+                    },
+                    {
+                      "date": "1958",
+                      "title": "Ve République — De Gaulle",
+                      "desc": "Crise algérienne → retour de De Gaulle. Constitution de la Ve République : renforcement du pouvoir présidentiel."
+                    },
+                    {
+                      "date": "1962",
+                      "title": "Élection du Président au SUD",
+                      "desc": "Révision par référendum : Président élu au suffrage universel direct. + Accords d'Évian (fin guerre d'Algérie)."
+                    },
+                    {
+                      "date": "1968",
+                      "title": "Mai 68",
+                      "desc": "Crise sociale et culturelle : étudiants + ouvriers. Accords de Grenelle : hausse du SMIC, droits syndicaux."
+                    },
+                    {
+                      "date": "1974",
+                      "title": "Majorité civile à 18 ans",
+                      "desc": "Abaissement de la majorité de 21 à 18 ans."
+                    },
+                    {
+                      "date": "1975",
+                      "title": "Loi Veil — IVG",
+                      "desc": "Simone Veil : légalisation de l'interruption volontaire de grossesse."
+                    },
+                    {
+                      "date": "1981",
+                      "title": "Loi Badinter — Abolition peine de mort",
+                      "desc": "Robert Badinter, garde des Sceaux. La France rejoint les démocraties abolitionnistes."
+                    }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Trente Glorieuses (1945-1975)** : croissance économique forte, consommation de masse, exode rural, urbanisation. Fin : choc pétrolier 1973 → désindustrialisation et chômage",
+                    "**Ve République** : bipartition pouvoir présidentiel (dominant) / premier ministre. Cohabitation possible depuis 1986.",
+                    "Repères : 1944 (vote femmes) · 1958 (Ve Rép.) · 1962 (SUD) · 1968 (Mai 68) · 1975 (IVG Veil) · 1981 (Badinter)"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "t5-europe",
+              "label": "🇪🇺 Europe",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Thème 5 — Construction européenne",
+                  "subtext": "CECA 1951 → CEE 1957 → UE 1992 → Brexit 2016-2021",
+                  "badge": "Histoire",
+                  "align": "center"
+                },
+                {
+                  "type": "brevet_timeline",
+                  "events": [
+                    {
+                      "date": "1951",
+                      "title": "CECA — 6 pays fondateurs",
+                      "desc": "France, RFA, Italie, Belgique, Pays-Bas, Luxembourg. Charbon et acier mis en commun. Robert Schuman, père fondateur."
+                    },
+                    {
+                      "date": "1957",
+                      "title": "Traité de Rome — CEE",
+                      "desc": "Marché commun, libre circulation des marchandises. CEE ≠ UE (UE créée en 1992 par Maastricht)."
+                    },
+                    {
+                      "date": "1963",
+                      "title": "Traité de l'Élysée",
+                      "desc": "Réconciliation franco-allemande : De Gaulle + Adenauer. Moteur franco-allemand de la construction européenne."
+                    },
+                    {
+                      "date": "1979",
+                      "title": "Parlement européen élu au SUD",
+                      "desc": "Premières élections du Parlement européen au suffrage universel direct."
+                    },
+                    {
+                      "date": "1985",
+                      "title": "Accords de Schengen",
+                      "desc": "Libre circulation des personnes. En vigueur depuis 1995."
+                    },
+                    {
+                      "date": "1992",
+                      "title": "Traité de Maastricht — NAISSANCE DE L'UE",
+                      "desc": "CEE → Union Européenne. Citoyenneté européenne. Euro programmé. Mitterrand + Kohl."
+                    },
+                    {
+                      "date": "2002",
+                      "title": "Mise en circulation de l'euro",
+                      "desc": "12 pays de la zone euro initialement."
+                    },
+                    {
+                      "date": "2016–2021",
+                      "title": "Brexit",
+                      "desc": "Référendum 2016 : 52% pour la sortie. Premier retrait d'un État membre. Sortie effective au 01/01/2021."
+                    }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Institutions UE** : Commission européenne (exécutif, propose les lois) · Parlement européen (élu au SUD, vote les lois) · Conseil de l'UE (États membres, co-législateur) · Cour de Justice de l'UE",
+                    "**Élargissements** : 6 (1957) → 9 (1973) → 12 (1986) → 15 (1995) → 25 (2004) → 27 membres actuels"
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : le Traité de Rome (1957) a créé l'Union Européenne.",
+                  "correct": false,
+                  "explanation": "FAUX. Le Traité de Rome (1957) a créé la CEE (Communauté Économique Européenne). L'Union Européenne naît avec le Traité de MAASTRICHT en 1992. Écrire 'UE' avant 1992 = anachronisme lourdement pénalisé."
+                }
+              ]
+            },
+            {
+              "id": "geo-france",
+              "label": "🗾 Géo France",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Géographie de la France",
+                  "subtext": "Population · Territoires productifs · Aménagement · France dans le monde",
+                  "badge": "Géographie",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#f59e0b",
+                  "label_front": "NOTION",
+                  "label_back": "CONTENU",
+                  "cards": [
+                    {
+                      "front": "Répartition de la population",
+                      "back": "Concentration > 200 hab./km² : littoraux, vallées, grandes agglomérations | 'Diagonale du vide' < 50 hab./km² : Ardennes → Pyrénées | Régions en croissance : Occitanie, AURA, Nouvelle-Aquitaine"
+                    },
+                    {
+                      "front": "10 métropoles majeures",
+                      "back": "Bordeaux · Lille · Lyon · Marseille-Aix · Nancy · Nantes · Nice · Paris · Strasbourg · Toulouse"
+                    },
+                    {
+                      "front": "Territoires productifs",
+                      "back": "Industriels : Nord/Pas-de-Calais, Est lyonnais | Agricoles : Beauce (céréales), Bretagne (élevage) | Touristiques : Île-de-France, Méditerranée, Alpes | Grands Ports Maritimes : Le Havre, Marseille-Fos, Dunkerque"
+                    },
+                    {
+                      "front": "Aménagement du territoire",
+                      "back": "LGV (désenclavement des métropoles) | DROM-COM (insularité, biodiversité) | Pôles de compétitivité (entreprises + recherche + formation)"
+                    },
+                    {
+                      "front": "France dans le monde",
+                      "back": "Francophonie : 84 États membres de l'OIF | ZEE : 2e mondiale (~11 M km²) grâce aux DROM-COM | Siège permanent Conseil de sécurité ONU | Moteur construction européenne"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "emc",
+              "label": "🏛️ EMC",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Enseignement Moral et Civique",
+                  "subtext": "Axe 1 : Respecter autrui · Axe 2 : Rôle de la loi · Axe 3 : Valeurs de la République",
+                  "badge": "EMC — 20 pts",
+                  "align": "center"
+                },
+                {
+                  "type": "flashcard_deck",
+                  "accent": "#f59e0b",
+                  "label_front": "NOTION EMC",
+                  "label_back": "DÉFINITION",
+                  "cards": [
+                    {
+                      "front": "Discriminations",
+                      "back": "Distinctions illégales fondées sur l'origine, la religion, le sexe, l'orientation sexuelle, le handicap — sanctionnées pénalement"
+                    },
+                    {
+                      "front": "Cyber-harcèlement",
+                      "back": "Harcèlement amplifié par les outils numériques. 'Groupe privé' ne dédouane pas les auteurs. Témoin silencieux : non-assistance à personne en danger = infraction pénale."
+                    },
+                    {
+                      "front": "Défenseur des droits",
+                      "back": "Institution indépendante à saisir en cas de discrimination, de harcèlement ou de manquement au service public"
+                    },
+                    {
+                      "front": "Laïcité (loi 1905)",
+                      "back": "Séparation des Églises et de l'État. Neutralité de l'État en matière religieuse. Liberté de conscience garantie."
+                    },
+                    {
+                      "front": "Loi 2004",
+                      "back": "Interdiction des signes religieux ostentatoires dans les établissements PUBLICS d'enseignement. ≠ loi 1905 (portée générale)"
+                    },
+                    {
+                      "front": "Présomption d'innocence",
+                      "back": "Tout accusé est présumé innocent jusqu'à preuve légale du contraire et condamnation définitive"
+                    },
+                    {
+                      "front": "Mise en examen",
+                      "back": "Indices graves → suspect formellement suspecté. ≠ condamné. La présomption d'innocence s'applique toujours."
+                    },
+                    {
+                      "front": "Tribunal correctionnel vs Cour d'assises",
+                      "back": "Correctionnel : juge les délits (peines jusqu'à 10 ans) | Cour d'assises : juge les crimes, avec jury populaire tiré au sort"
+                    },
+                    {
+                      "front": "Devise + Symboles républicains",
+                      "back": "Devise : Liberté, Égalité, Fraternité | Drapeau tricolore | La Marseillaise | 14 juillet (fête nationale) | Marianne"
+                    },
+                    {
+                      "front": "DDHC et CIDE",
+                      "back": "DDHC (1789) : Déclaration des Droits de l'Homme et du Citoyen | CIDE (1989) : Convention Internationale des Droits de l'Enfant (ONU)"
+                    }
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : la loi 1905 interdit les signes religieux à l'école.",
+                  "correct": false,
+                  "explanation": "FAUX. La loi 1905 sépare les Églises de l'État (portée générale). C'est la LOI 2004 qui interdit spécifiquement les signes religieux ostentatoires dans les établissements publics d'enseignement."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : être mis en examen signifie être condamné.",
+                  "correct": false,
+                  "explanation": "FAUX. La mise en examen signifie qu'il existe des indices graves — pas que la culpabilité est établie. La présomption d'innocence s'applique jusqu'au jugement DÉFINITIF."
+                }
+              ]
+            },
+            {
+              "id": "methode",
+              "label": "✍️ Méthode",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Développement construit — ≥ 30 lignes",
+                  "subtext": "Structure en 4 blocs — viser 35 lignes pour avoir de la marge",
+                  "badge": "18 pts · BO n°33, 02/09/2025",
+                  "align": "center"
+                },
+                {
+                  "type": "steps",
+                  "items": [
+                    {
+                      "label": "Introduction (3-4 lignes)",
+                      "text": "Contextualiser le sujet → poser la problématique → annoncer le plan en 2 axes"
+                    },
+                    {
+                      "label": "Paragraphe 1 (10-12 lignes)",
+                      "text": "Transition : 'En premier lieu, …' | Idée principale → développement avec exemples précis + vocabulaire technique → mini-conclusion du paragraphe"
+                    },
+                    {
+                      "label": "Paragraphe 2 (10-12 lignes)",
+                      "text": "Transition : 'Par ailleurs, …' ou 'De plus, …' | Idée complémentaire → exemples différents du §1"
+                    },
+                    {
+                      "label": "Conclusion (2-3 lignes)",
+                      "text": "Bilan synthétique des deux axes → éventuelle ouverture vers un autre aspect"
+                    }
+                  ]
+                },
+                {
+                  "type": "key_takeaways",
+                  "points": [
+                    "**Règle d'or** : expliciter tout. Au lieu de 'Vichy collaborait' → 'le régime de Vichy co-organisa la rafle du Vél d'Hiv en juillet 1942, livrant 13 152 Juifs à la déportation'",
+                    "**Seuil automatique** : 15 lignes correctes = malus. La qualité NE compense PAS le non-respect des 30 lignes.",
+                    "Astuce volume : sauter une ligne entre chaque bloc, développer chaque exemple en 2-3 phrases"
+                  ]
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : un développement construit de 20 lignes historiquement parfait obtient la note maximale.",
+                  "correct": false,
+                  "explanation": "FAUX. La note de service du 2 septembre 2025 (BO n°33) impose un malus automatique sévère si < 30 lignes. La qualité du contenu ne compense pas le non-respect du seuil quantitatif."
+                }
+              ]
+            },
+            {
+              "id": "pieges",
+              "label": "⚠️ Pièges",
+              "blocks": [
+                {
+                  "type": "dark_hero",
+                  "heading": "Pièges classiques — Histoire-Géo",
+                  "subtext": "Anachronismes et confusions systématiquement pénalisés",
+                  "badge": "Examen",
+                  "align": "center"
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : le Traité de Rome (1957) a fondé l'Union Européenne.",
+                  "correct": false,
+                  "explanation": "FAUX. Le Traité de Rome a fondé la CEE (1957). L'UE naît avec MAASTRICHT (1992). Écrire 'UE' avant 1992 = anachronisme majeur."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : la loi 1905 interdit le port de signes religieux à l'école.",
+                  "correct": false,
+                  "explanation": "FAUX. Loi 1905 = séparation Églises/État. Loi 2004 = interdiction des signes ostentatoires à l'école publique."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : le nazisme et le stalinisme défendent la même idéologie.",
+                  "correct": false,
+                  "explanation": "FAUX. Idéologies opposées : nationalisme racial (nazisme) vs communisme étatiste (stalinisme). Ils partagent des méthodes de contrôle, pas une doctrine."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : la rafle du Vél d'Hiv a été uniquement organisée par les nazis.",
+                  "correct": false,
+                  "explanation": "FAUX. Organisée ET exécutée par la POLICE FRANÇAISE de Vichy. La France a arrêté elle-même 13 152 Juifs — collaboration d'État."
+                },
+                {
+                  "type": "knowledge_check",
+                  "question": "Vrai ou Faux : un développement construit de 20 lignes peut obtenir la note maximale.",
+                  "correct": false,
+                  "explanation": "FAUX. Malus automatique sévère si < 30 lignes (BO n°33). La qualité du contenu ne compense pas le non-respect du seuil."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
