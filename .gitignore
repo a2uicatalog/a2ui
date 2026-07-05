@@ -76,3 +76,9 @@ scripts/smoke_demo_renderer.py
 scripts/emit_deployment.py
 scripts/check_mcp_tools.py
 apps-script-surface/graduated-*/
+
+# ── agent scratch: coding agents (Antigravity, etc.) drop conversation/debug logs
+# into the working dir — never let those into the repo ───────────────────────
+debug.md
+**/debug.md
+*.debug.md

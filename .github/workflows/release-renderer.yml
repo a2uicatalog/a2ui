@@ -1,0 +1,51 @@
+name: release-renderer
+
+# Builds the version-pinned Apps Script renderer bundle (gas-wired-renderer.zip) and attaches
+# it to the GitHub Release for a tag. The graduation recipe fetches the renderer from this
+# asset (curl + unzip) instead of cloning the whole catalogue — smaller, no git dependency.
+#
+# Reproducible + declared (no hand drag-drop): future `git push origin vX.Y.Z` auto-builds and
+# attaches; workflow_dispatch covers an already-pushed tag (e.g. v1.0.0).
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build the renderer bundle for (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write            # create/update releases + upload assets (uses the built-in GITHUB_TOKEN)
+
+jobs:
+  build-and-attach:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag
+        id: tag
+        run: echo "ref=${{ github.event.inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.ref }}
+
+      # git archive → files land at the archive ROOT (unzip drops them straight into an app dir).
+      # Identical bytes to a local `git archive v<x>:apps-script-surface/gas-wired-renderer`.
+      - name: Build gas-wired-renderer.zip
+        run: git archive --format=zip -o gas-wired-renderer.zip HEAD:apps-script-surface/gas-wired-renderer
+
+      - name: Attach to the release (create if missing, else clobber the asset)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          REF="${{ steps.tag.outputs.ref }}"
+          if gh release view "$REF" >/dev/null 2>&1; then
+            gh release upload "$REF" gas-wired-renderer.zip --clobber
+          else
+            gh release create "$REF" gas-wired-renderer.zip \
+              --title "A2UI Catalogue $REF" \
+              --notes "Version-pinned Apps Script renderer bundle for the A2UI Catalogue."
+          fi
