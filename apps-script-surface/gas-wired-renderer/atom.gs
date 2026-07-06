@@ -3575,7 +3575,7 @@ _RENDERERS['back_button'] = function(b) {
   var el = b.url
     ? '<a href="' + _safeUrl(b.url) + '" style="' + baseStyle + '">' + _esc(label) + '</a>'
     : b.nav_slug
-    ? '<a href="?nav=' + _esc(b.nav_slug) + '" style="' + baseStyle + '">' + _esc(label) + '</a>'
+    ? '<a href="' + _getWebAppUrl() + '?nav=' + _esc(b.nav_slug) + '" style="' + baseStyle + '">' + _esc(label) + '</a>'
     : '<button onclick="window.history.back()" style="' + baseStyle + '">' + _esc(label) + '</button>';
   return '<div style="margin:0.5rem 0 1rem;">' + el + '</div>';
 };
