@@ -18,22 +18,61 @@ Renderers:
 import sys, json, zlib, base64, argparse, subprocess, tempfile, os
 from urllib.parse import quote
 
-_dep_id = os.environ.get('GAS_DEPLOYMENT_ID', 'YOUR_DEPLOYMENT_ID')
+def resolve_deployment_id(renderer):
+    # 1. Check if explicit environment variable is set
+    env_val = os.environ.get('GAS_DEPLOYMENT_ID')
+    if env_val:
+        return env_val
+
+    # 2. Try to load project-ops.yaml
+    candidates = [
+        os.path.join(os.path.dirname(__file__), '../ops/project-ops.yaml'),
+        os.path.join(os.path.dirname(__file__), 'ops/project-ops.yaml'),
+        'ops/project-ops.yaml',
+        '../ops/project-ops.yaml'
+    ]
+    ops_data = None
+    for path in candidates:
+        if os.path.exists(path):
+            try:
+                import yaml
+                with open(path, 'r', encoding='utf-8') as f:
+                    ops_data = yaml.safe_load(f)
+                break
+            except Exception as e:
+                pass
+
+    if ops_data and 'deployments' in ops_data:
+        try:
+            deployments = ops_data['deployments']
+            if renderer in ('gem', 'main'):
+                return deployments['gas-wired-renderer']['public_deployment']
+            elif renderer == 'wired':
+                return deployments['gas-trade-bot']['deployment']
+            elif renderer == 'fakes':
+                return deployments['gas-fakes-schema-renderer-private']['head_deployment']
+        except KeyError:
+            pass
+
+    # 3. Fallback to default placeholder if not found or failed
+    return 'YOUR_DEPLOYMENT_ID'
+
 RENDERERS = {
-    'gem':  f'https://script.google.com/macros/s/{_dep_id}/exec',
-    'main': f'https://script.google.com/macros/s/{_dep_id}/exec',
+    r: f'https://script.google.com/macros/s/{resolve_deployment_id(r)}/exec'
+    for r in ['gem', 'main', 'wired', 'fakes']
 }
 
 URL_LIMIT = 8000
 
 def make_url(payload, renderer='gem'):
     raw = json.dumps(payload, ensure_ascii=False).encode()
-    if renderer == 'gem':
+    if renderer in ('gem', 'wired', 'fakes'):
         compressed = zlib.compress(raw, level=9, wbits=31)  # gzip
         enc = base64.urlsafe_b64encode(compressed).rstrip(b'=').decode()
     else:
+        compressed = raw
         enc = quote(base64.b64encode(raw).decode(), safe='')
-    return RENDERERS[renderer] + '?p=' + enc, len(raw), len(compressed if renderer == 'gem' else raw)
+    return RENDERERS[renderer] + '?p=' + enc, len(raw), len(compressed if renderer in ('gem', 'wired', 'fakes') else raw)
 
 def emit(url):
     osc52 = f'\033]52;c;{base64.b64encode(url.encode()).decode()}\a'
