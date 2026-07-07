@@ -6,11 +6,27 @@ inputs, so the output survives paste into CMS/knowledge-base rich-text fields.
 
 ```
 pip install pyyaml
-python3 render_kb.py sample.yaml > article.html                 # whole article
-python3 compose.py  sample.yaml -o out/article                  # 2 files out:
+
+# full pipeline: existing article HTML in → two interactive HTML files out
+python3 lift.py your-article.html > article.yaml   # deterministic HTML→YAML (no LLM)
+python3 compose.py article.yaml -o out/article     # 2 files out:
 #   out/article-description.html   (scope hero · issue · environment · cause)
 #   out/article-resolution.html    (resolution · action buttons)
+
+# or author/edit the YAML directly and render:
+python3 render_kb.py sample.yaml > article.html
 ```
+
+## The lift (HTML → YAML)
+`lift.py` parses messy article HTML mechanically: KCS section headings
+(Summary/Issue/Environment/Cause/Resolution + synonyms), "Step N" procedures,
+platform sections → tabs, note/warning boxes → callouts, tables, code blocks,
+links (kept), escalation sentences → `actions`, record chrome → `meta`.
+It **never fabricates**: anything ambiguous lands in `review_flags`
+(`BRANCH_CANDIDATE`, `MULTI_ISSUE`, `SECTIONS_INFERRED`, `NO_RESOLUTION`, …)
+— review those YAMLs (by hand or with an LLM) before rendering. The YAML is
+the human checkpoint: readable, editable, and the single source the renderer
+trusts.
 
 Each output file is fully self-contained (one `<style>` block, inline markup,
 no external resources, no JS).
