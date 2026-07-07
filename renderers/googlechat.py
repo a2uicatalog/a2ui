@@ -435,16 +435,150 @@ def _generic_text_widgets(b: dict) -> List[Dict]:
     return [_text("<br/>".join(parts))] if parts else []
 
 
+# ── Family mapper: shape-based dispatch for atoms with no native renderer ─────
+# Keys on the block's DATA SHAPE (field names/structure), not its type name —
+# one rule covers a whole family. Ordered; first non-empty result wins. Every
+# emitted widget uses only contract-validated fields (see verify_chat_surface).
+
+def _fm_str(x, *keys):
+    if isinstance(x, str): return x
+    if isinstance(x, dict):
+        for k in keys:
+            if x.get(k): return str(x[k])
+    return ""
+
+def _fm_table(b):
+    hdrs, rows = b.get("headers"), b.get("rows")
+    if isinstance(rows, list) and rows and isinstance(rows[0], (list, tuple)):
+        return _render_table({"headers": hdrs or [], "rows": rows, "caption": b.get("title") or b.get("caption", "")})
+    return None
+
+def _fm_tabs(b):
+    tabs = b.get("tabs")
+    if isinstance(tabs, list) and tabs and isinstance(tabs[0], dict) and "label" in tabs[0]:
+        out = []
+        for t in tabs:
+            out.append(_text(f'<b><font color="#1a73e8">▸ {t.get("label","")}</font></b>'))
+            for bl in (t.get("content") or t.get("blocks") or []):
+                out.extend(_degrade_for_chat(bl) if isinstance(bl, dict) else [_text(str(bl))])
+        return out or None
+    return None
+
+def _fm_columns(b):
+    left, right = b.get("left"), b.get("right")
+    if isinstance(left, dict) and isinstance(right, dict):
+        def col(d):
+            ws = _generic_text_widgets(d) or [_text("")]
+            return {"horizontalSizeStyle": "FILL_AVAILABLE_SPACE", "widgets": ws}
+        return [{"columns": {"columnItems": [col(left), col(right)]}}]
+    return None
+
+def _fm_chips(b):
+    src = b.get("badges") or b.get("tags") or b.get("chips") or b.get("keywords")
+    if isinstance(src, list) and src:
+        chips = [{"label": _fm_str(i, "text", "label", "tag")} for i in src]
+        chips = [c for c in chips if c["label"]]
+        if chips:
+            head = [_text(f'<b>{b["title"]}</b>')] if b.get("title") else []
+            return head + [{"chipList": {"chips": chips[:20]}}]
+    return None
+
+def _fm_buttons(b):
+    src = b.get("links") or b.get("buttons") or b.get("actions") or b.get("resources")
+    if isinstance(src, list) and src:
+        btns = []
+        for i in src:
+            if isinstance(i, dict) and str(i.get("url", "")).startswith("http"):
+                btns.append(_button(_fm_str(i, "label", "text", "title") or i["url"], i["url"]))
+        if btns:
+            head = [_text(f'<b>{b["title"]}</b>')] if b.get("title") else []
+            return head + [{"buttonList": {"buttons": btns[:10]}}]
+    return None
+
+def _fm_image(b):
+    url = b.get("url") or b.get("image") or b.get("src") or b.get("thumbnail")
+    looks_img = isinstance(url, str) and url.startswith("http") and (
+        re.search(r'\.(png|jpe?g|gif|webp|svg)(\?|$)', url, re.I) or b.get("alt") or b.get("caption"))
+    if looks_img:
+        w = [{"image": {"imageUrl": url, "altText": str(b.get("alt") or b.get("title") or "")}}]
+        if b.get("caption"): w.append(_text(f'<font color="#9aa0a6"><i>{b["caption"]}</i></font>'))
+        return w
+    return None
+
+def _fm_kv(b):
+    items = b.get("items") or b.get("pairs") or b.get("entries")
+    if isinstance(items, list) and items and isinstance(items[0], dict):
+        pairs = []
+        for i in items:
+            k = _fm_str(i, "key", "label", "term", "name", "date")
+            v = _fm_str(i, "value", "definition", "description", "text", "desc", "subtitle", "action")
+            if k and v: pairs.append((k, v))
+        if pairs and len(pairs) >= max(1, len(items) - 1):     # mostly kv-shaped
+            head = [_text(f'<b>{b["title"]}</b>')] if b.get("title") else []
+            return head + [{"decoratedText": {"topLabel": k, "text": _md_to_chat(v), "wrapText": True}}
+                           for k, v in pairs[:15]]
+    return None
+
+def _fm_stat(b):
+    if b.get("value") is not None and (b.get("label") or b.get("unit") or b.get("title")):
+        lab = str(b.get("label") or b.get("title") or "")
+        unit = str(b.get("unit") or "")
+        return [{"decoratedText": {"topLabel": lab.upper(),
+                                   "text": f'<b>{b["value"]}{unit}</b>', "wrapText": False}}]
+    return None
+
+def _fm_listy(b):
+    src = b.get("items") or b.get("steps") or b.get("entries") or b.get("list") or b.get("events")
+    if isinstance(src, list) and src:
+        numbered = "steps" in b
+        lines = []
+        for n, i in enumerate(src[:20], 1):
+            txt = _fm_str(i, "text", "label", "title", "name", "question", "desc", "description")
+            if isinstance(i, dict):
+                extra = _fm_str(i, "desc", "description", "subtitle", "detail") if txt != _fm_str(i, "desc", "description", "subtitle", "detail") else ""
+                date = _fm_str(i, "date", "time")
+                if date: txt = f'<b><font color="#1a73e8">{date}</font></b> {txt}'
+                if extra and extra != txt: txt = f'<b>{txt}</b> — {extra}'
+            if txt: lines.append((f'{n}. ' if numbered else '• ') + _md_to_chat(txt))
+        if lines:
+            head = [_text(f'<b>{b["title"]}</b>')] if b.get("title") else []
+            return head + [_text("<br/>".join(lines))]
+    return None
+
+_FAMILY_RULES = (_fm_table, _fm_tabs, _fm_columns, _fm_chips, _fm_buttons,
+                 _fm_image, _fm_kv, _fm_stat, _fm_listy)
+
+def _family_map(b: dict) -> List[Dict]:
+    for rule in _FAMILY_RULES:
+        try:
+            w = rule(b)
+        except Exception:
+            w = None                                   # a mapper must never crash the render
+        if w: return w
+    return []
+
 def _degrade_for_chat(b: dict) -> List[Dict]:
-    """Render an embedded atom on Google Chat, degrading web-only atoms on purpose."""
+    """Render any atom on Google Chat: native → chart-degrade → family shape-map
+    → text extraction → honest reduced note. Degrades on purpose, never errors."""
     t = b.get("type", "")
-    if t in RENDERERS:                       # natively supported on Chat
+    if t in RENDERERS:                       # 1. natively supported on Chat
         return RENDERERS[t](b)
-    if t in _CHART_TYPES:                     # data-viz → table / sparkline text
-        w = _chart_to_table_widgets(b)
+    if t in _CHART_TYPES:                     # 2. data-viz → table / sparkline text
+        try:
+            w = _chart_to_table_widgets(b)
+        except Exception:
+            w = None                          # malformed chart data → fall through, never crash
         if w:
             return w
-    w = _generic_text_widgets(b)             # any atom carrying text-ish fields
+    w = _family_map(b)                        # 3. shape-based family mapping
+    if w:
+        title = b.get("title") or b.get("heading")
+        lead = b.get("text") or b.get("subtitle") or ""
+        head = []
+        if title and not any("decoratedText" in x or f'<b>{title}</b>' in str(x) for x in w[:1]):
+            head = [_text(f'<b>{_md_to_chat(str(title))}</b>' + (f'<br/>{_md_to_chat(str(lead))}' if lead else ''))]
+        return head + w
+    w = _generic_text_widgets(b)             # 4. any atom carrying text-ish fields
     if w:
         return w
     return [_text(f'<font color="#9aa0a6"><i>↓ {t} — reduced (no Chat visual)</i></font>')]
@@ -581,8 +715,8 @@ def render(blocks: List[Dict[str, Any]],
         fn = RENDERERS.get(btype)
 
         if fn is None:
-            # Incompatible atom — add fallback
-            current_widgets.extend(_incompatible(btype))
+            # no native renderer — family-map / degrade on purpose (never a red error)
+            current_widgets.extend(_degrade_for_chat(block))
             continue
 
         widgets = fn(block)
