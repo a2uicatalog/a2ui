@@ -1,0 +1,76 @@
+# Reference instance — a KB article as A2UI structure YAML.
+# Shape defined in structure-schema.md. Synthetic content (no real KB data).
+# Reads: KCS sections (outer) + Guided-Decisions branch grammar (resolution) + deterministic layout.
+
+article:
+  title: "VPN fails to connect after sign-in"
+  layout: diagnostic                 # chosen by rule: features.questions > 0 -> diagnostic
+  features: { questions: 3, tables: 1, platforms: 2, steps: 6 }
+
+  # ── KCS sections ────────────────────────────────────────────
+  issue:                             # KCS: the requestor's words
+    - body: "Client authenticates but the tunnel never establishes — signed in, no network access."
+
+  environment:                       # KCS: platforms / scope -> findability
+    - key_value:
+        - { key: Client,    value: "GlobalProtect 6.x" }
+        - { key: Platforms, value: "Windows 11, macOS 14" }
+        - { key: Network,   value: "Off-corporate / home broadband" }
+
+  cause:
+    - body: "Usually stale client config, a blocked UDP port, or an expired device certificate."
+
+  cause_test:                        # KCS "Cause Test" == a CHECK branch ("does this article even match?")
+    - branch:
+        question: "Check: client shows 'Connected' but no assigned IP?"
+        kind: check
+        choices:
+          - answer: "Yes — connected, no IP"
+            guidance:
+              - body: "This is the tunnel-establishment failure this article covers. Continue."
+          - answer: "No — an auth error instead"
+            guidance:
+              - body: "Different issue -> KB0009921 (VPN authentication failures)."
+
+  # ── Resolution = Guided-Decisions tree ──────────────────────
+  resolution:
+    - branch:
+        question: "What error code is in the client logs?"   # GD 'What' node (multi-way)
+        kind: what
+        choices:
+          - answer: "Error 800 (tunnel blocked)"
+            guidance:
+              - steps:                                        # KCS: number multi-step resolutions
+                  - "Confirm UDP 4501 is open on the local network."
+                  - "Restart the GlobalProtect service."
+              - branch:                                       # nested GD tree (bounded — no loops)
+                  question: "Is UDP 4501 reachable after the restart?"
+                  kind: is
+                  choices:
+                    - answer: "Yes"
+                      guidance:
+                        - body: "Reconnect — the tunnel should establish."
+                    - answer: "No"
+                      guidance:
+                        - body: "Home firewall is blocking it -> escalate to Network with the port-test result."
+          - answer: "Error 619 (certificate)"
+            guidance:
+              - steps:
+                  - "Certificates -> Personal -> find the device cert."
+                  - "If expired, run the cert-renewal tool and reconnect."
+
+    - tabs:                          # reference-dense sub-block: per-platform commands
+        - label: Windows
+          content:
+            - table:
+                headers: [Step, Command]
+                rows:
+                  - [Restart service, "net stop PanGPS && net start PanGPS"]
+                  - [Test port,       "Test-NetConnection vpn.corp -Port 4501"]
+        - label: macOS
+          content:
+            - table:
+                headers: [Step, Command]
+                rows:
+                  - [Restart service, "sudo launchctl kickstart -k system/com.paloalto.gp"]
+                  - [Test port,       "nc -vz vpn.corp 4501"]
