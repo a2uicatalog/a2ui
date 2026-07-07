@@ -13,8 +13,8 @@ python3 compose.py article.yaml -o out/article     # 2 files out:
 #   out/article-description.html   (scope hero · issue · environment · cause)
 #   out/article-resolution.html    (resolution · action buttons)
 
-# or author/edit the YAML directly and render:
-python3 render_kb.py sample.yaml > article.html
+# or author/edit the YAML directly and render (demo of the bundled example):
+python3 render_kb.py sample.yaml > sample-preview.html
 ```
 
 ## The lift (HTML → YAML)

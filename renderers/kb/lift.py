@@ -13,6 +13,11 @@ Usage: python3 lift.py article.html > article.yaml
 """
 import sys, re, html as H, yaml
 
+# Windows-safe I/O: force UTF-8 regardless of console codepage (cp1252 crashes on emoji)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
 # ── Phase 0: normalize to a marked line stream ────────────────────────────────
 EXTRAS = []   # structured blocks captured before flattening: ('table'|'code', payload)
 

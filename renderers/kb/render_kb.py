@@ -14,6 +14,11 @@ Usage: python3 render_kb.py article.yaml [--section description|resolution|all] 
 """
 import sys, html, re, yaml, itertools
 
+# Windows-safe I/O: force UTF-8 regardless of console codepage (cp1252 crashes on emoji)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
 _uid = itertools.count(1)
 def uid(p): return f"{p}{next(_uid)}"
 
@@ -214,5 +219,5 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:]]
     if "--section" in args:
         i = args.index("--section"); section = args[i+1]; del args[i:i+2]
-    data = yaml.safe_load(open(args[0]))
+    data = yaml.safe_load(open(args[0], encoding='utf-8'))
     print(render(data["article"], section))

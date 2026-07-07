@@ -17,6 +17,11 @@ Either way, OUT is always exactly two self-contained HTML files:
 import sys, yaml
 from render_kb import render
 
+# Windows-safe I/O: force UTF-8 regardless of console codepage (cp1252 crashes on emoji)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
 def main(argv):
     args = list(argv)
     out = "composed"
@@ -27,16 +32,16 @@ def main(argv):
         sys.exit("usage: compose.py <article.yaml> [resolution.yaml] -o <outprefix>")
 
     if len(files) == 1:                    # whole article → split
-        a = yaml.safe_load(open(files[0]))["article"]
+        a = yaml.safe_load(open(files[0], encoding='utf-8'))["article"]
         pairs = [("description", a), ("resolution", a)]
     else:                                  # already two payloads → render each as its section
-        d = yaml.safe_load(open(files[0]))["article"]
-        r = yaml.safe_load(open(files[1]))["article"]
+        d = yaml.safe_load(open(files[0], encoding='utf-8'))["article"]
+        r = yaml.safe_load(open(files[1], encoding='utf-8'))["article"]
         pairs = [("description", d), ("resolution", r)]
 
     for section, article in pairs:
         path = f"{out}-{section}.html"
-        with open(path, "w") as f:
+        with open(path, "w", encoding='utf-8') as f:
             f.write(render(article, section))
         print(f"wrote {path}")
 
