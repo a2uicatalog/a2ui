@@ -35,6 +35,13 @@ model_compatibility:
     - models: [haiku]
       compensation_strategy: procedural_thresholds   # free-text label, describes the technique
       compensation_prose: |
+        NEVER hand-write your own gzip/base64 encoding for the ?p= URL, in
+        ANY language, even as a "just this once" fallback. This is the
+        single most common cause of "could not decompress gzip" — a
+        self-written encoder with one wrong flag (wbits, base64 variant,
+        un-stripped padding) breaks at ANY size, not just large ones. Always
+        call the tool again — never substitute your own implementation.
+
         EXACT PROCEDURE — follow precisely, do not estimate:
         1. Count JSON payload characters.
         2. If <=1500 chars: call directly.
@@ -47,8 +54,8 @@ model_compatibility:
         retry with the SAME unchanged payload (identical input reproduces
         identical broken output). Recover by: (1) re-count the payload's
         exact character length, (2) HALVE your per-section target vs. what
-        you just tried, (3) re-split and re-call. Never fall back to
-        hand-written gzip/base64 encoding scripts.
+        you just tried, (3) re-split and re-call THIS tool (never a
+        hand-written script).
       degraded_as: build_multi_page_surface   # optional — name of the safer wrapper tool/atom, if one exists
       verified: true
       verification_fixture: haiku_make_surface_url_2026-07-08.json
