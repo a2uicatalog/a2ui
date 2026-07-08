@@ -52,6 +52,12 @@ _RENDERERS['nav_bar'] = function(b) {
         // Navigate to from-slug if known, else exec root — always via target="_top" anchor.
         // Never use history.back(): it navigates the sandbox iframe not the top window.
         'var href=l.url||"#";' +
+        // Relative "?nav=..." urls resolve against the SANDBOX iframe origin
+        // (script.googleusercontent.com/userCodeAppPanel), not the app. Anchor
+        // them to the injected exec URL (server-knows-its-url), same as slugs.
+        // Found 2026-07-08: a benchmark-built app used url:"?nav=lesson1" in
+        // nav_bar and its links broke exactly this way.
+        'if(href.charAt(0)==="?"&&nav.url){href=nav.url+href;}' +
         'var _useBack=!!(l.slug&&(!nav.slug||(nav.from&&l.slug===nav.from)));' +
         'if(_useBack){href=nav.from?nav.url+"?nav="+nav.from:nav.url;}' +
         'else if(l.slug&&nav.url){href=nav.url+"?nav="+l.slug+(nav.slug?"&from="+nav.slug:"");}' +
