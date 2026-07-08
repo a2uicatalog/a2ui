@@ -1,0 +1,20 @@
+{
+  "atom_or_tool": "make_surface_url",
+  "models_tested": ["haiku"],
+  "date": "2026-07-08",
+  "task_description": "Build a 4-section guide (Remote Work Best Practices 2026) via make_surface_url, given the exact character-count compensation_prose thresholds (<=1500 direct, 1501-3000 split-2, 3001-5000 split-3) with no estimation/judgment permitted.",
+  "compensation_prose_ref": "spec/model-compatibility-v0.1.md",
+  "passed": true,
+  "evidence": {
+    "payload_char_count_reported": 1772,
+    "rule_applied": "1501-3000 -> split into 2 pages",
+    "url_1_length": 1821,
+    "url_2_length": 863,
+    "url_1_http_status": 200,
+    "url_2_http_status": 200,
+    "safe_ceiling": 2000,
+    "hard_ceiling": 8000,
+    "used_hand_written_fallback_script": false,
+    "notes": "Haiku correctly counted payload characters, applied the exact threshold rule (no estimation), split into 2 make_surface_url calls, and manually wired nav_bar links between the two pages. Both URLs are well under the safe ceiling and confirmed live (HTTP 200). Contrast with the earlier unverified attempt same session where Haiku used make_surface_url WITHOUT compensation_prose and produced a 4361-char URL that failed to decompress. This fixture is the first controlled A/B evidence that exact procedural thresholds (not general 'paginate when large' prose) let Haiku use make_surface_url safely."
+  }
+}
