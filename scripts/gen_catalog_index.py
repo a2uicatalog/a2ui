@@ -9,6 +9,12 @@ pick catalogs by capability, so selection is grounded in declared metadata, not 
 
 Emits public/catalogue/index.json. Wired into catalog-rebuild. Fails if any catalog in
 atoms/atom-packs.yaml lacks a when-to-use here (no silent gaps in the menu).
+
+Also carries each atom's `processing` block (spec/atom-processing-contract-v0.1.md, Tracks B/C)
+straight through from schema.yaml when declared — pagination safety (e.g. module_map's
+hub_aggregating) and required_scope. This is the artifact a2ui-private/gas-mcp/sync_embeds.py
+copies into mcp-worker/src/catalog-data.js, so declaring it here is what makes it reach the
+MCP layer without hand-maintained, drift-prone MCP-side copies.
 """
 import json
 import os
@@ -74,9 +80,24 @@ def _atom_descriptions():
             for b in d["blocks"] if isinstance(b, dict) and b.get("type")}
 
 
+def _atom_processing():
+    """type -> declared `processing` block (Track B/C), only for atoms that declare one."""
+    d = yaml.safe_load(open(SCHEMA))
+    return {b["type"]: b["processing"]
+            for b in d["blocks"] if isinstance(b, dict) and b.get("type") and b.get("processing")}
+
+
+def _atom_entry(atom_type, desc, processing):
+    entry = {"type": atom_type, "description": desc.get(atom_type, "")}
+    if atom_type in processing:
+        entry["processing"] = processing[atom_type]
+    return entry
+
+
 def main():
     part = yaml.safe_load(open(PACKS))
     desc = _atom_descriptions()
+    processing = _atom_processing()
 
     missing = [c for c in part if c not in CATALOG_META]
     if missing:
@@ -95,7 +116,7 @@ def main():
             "alwaysResolved": slug == BASE_SLUG,
             "whenToUse": when,
             "atomCount": len(atoms),
-            "atoms": [{"type": a, "description": desc.get(a, "")} for a in atoms],
+            "atoms": [_atom_entry(a, desc, processing) for a in atoms],
         })
 
     index = {

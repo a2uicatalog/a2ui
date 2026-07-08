@@ -94,7 +94,10 @@
         },
         {
           "type": "data_source",
-          "description": "generic HTTP feed — server-side initial fetch, client-side refresh via surface transport"
+          "description": "generic HTTP feed — server-side initial fetch, client-side refresh via surface transport",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "data_table_sortable",
@@ -118,7 +121,10 @@
         },
         {
           "type": "firestore_read",
-          "description": "Firestore document read — publishes deserialized doc to named data connector; visual atoms subscribe by name"
+          "description": "Firestore document read — publishes deserialized doc to named data connector; visual atoms subscribe by name",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "form",
@@ -218,7 +224,10 @@
         },
         {
           "type": "live_refresh",
-          "description": "interval action re-runner with live indicator"
+          "description": "interval action re-runner with live indicator",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "markdown_block",
@@ -234,7 +243,10 @@
         },
         {
           "type": "module_map",
-          "description": "course curriculum grid — module cards with live locked/available/complete status from progress_store"
+          "description": "course curriculum grid — module cards with live locked/available/complete status from progress_store",
+          "processing": {
+            "pagination": "hub_aggregating"
+          }
         },
         {
           "type": "multi_select_input",
@@ -290,7 +302,13 @@
         },
         {
           "type": "progress_store",
-          "description": "invisible LMS state connector — Sheet on GAS, localStorage on web; exposes window._A2UI_STORE"
+          "description": "invisible LMS state connector — Sheet on GAS, localStorage on web; exposes window._A2UI_STORE",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "quote",
@@ -310,11 +328,17 @@
         },
         {
           "type": "sheet_form_submit",
-          "description": "inline form that appends a row to a Google Sheet on submit"
+          "description": "inline form that appends a row to a Google Sheet on submit",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "sheet_preview",
-          "description": "live read-only Google Sheet range preview"
+          "description": "live read-only Google Sheet range preview",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "skeleton",
@@ -420,7 +444,10 @@
       "atoms": [
         {
           "type": "adsb_feed",
-          "description": "OpenSky Network ADS-B live flight positions for a bounding box"
+          "description": "OpenSky Network ADS-B live flight positions for a bounding box",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "airspace_command_deck",
@@ -472,7 +499,10 @@
         },
         {
           "type": "metar_feed",
-          "description": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station"
+          "description": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "orbit_diagram",
@@ -526,7 +556,10 @@
         },
         {
           "type": "github_activity_grid",
-          "description": "SVG GitHub-style contribution grid and activity tracker"
+          "description": "SVG GitHub-style contribution grid and activity tracker",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "heatmap",
@@ -570,7 +603,10 @@
         },
         {
           "type": "word_cloud",
-          "description": "interactive word cloud with optional live Sheet feed"
+          "description": "interactive word cloud with optional live Sheet feed",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         }
       ]
     },
@@ -1424,11 +1460,17 @@
         },
         {
           "type": "calendar_today",
-          "description": "today's calendar events from the user's default calendar"
+          "description": "today's calendar events from the user's default calendar",
+          "processing": {
+            "required_scope": "calendar.readonly"
+          }
         },
         {
           "type": "calendar_upcoming",
-          "description": "list of upcoming calendar events"
+          "description": "list of upcoming calendar events",
+          "processing": {
+            "required_scope": "calendar.readonly"
+          }
         },
         {
           "type": "call_mood_board",
@@ -1460,47 +1502,80 @@
         },
         {
           "type": "csv_import",
-          "description": "CSV file import into sheet button"
+          "description": "CSV file import into sheet button",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "doc_ai_summary",
-          "description": "AI-powered Google Doc summary via Vertex AI Gemini"
+          "description": "AI-powered Google Doc summary via Vertex AI Gemini",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "drive_file_card",
-          "description": "single Drive file card — static on all surfaces; live name/type lookup via file_id on GAS"
+          "description": "single Drive file card — static on all surfaces; live name/type lookup via file_id on GAS",
+          "processing": {
+            "required_scope": "drive.readonly"
+          }
         },
         {
           "type": "drive_file_list",
-          "description": "live list of Drive folder files"
+          "description": "live list of Drive folder files",
+          "processing": {
+            "required_scope": "drive.readonly"
+          }
         },
         {
           "type": "drive_folder_contents",
-          "description": "Drive folder grid — live on GAS via folder_id, items[] or api connector on web/meet"
+          "description": "Drive folder grid — live on GAS via folder_id, items[] or api connector on web/meet",
+          "processing": {
+            "required_scope": "drive.readonly"
+          }
         },
         {
           "type": "drive_image",
-          "description": "Google Drive image embed by file ID"
+          "description": "Google Drive image embed by file ID",
+          "processing": {
+            "required_scope": "drive.readonly"
+          }
         },
         {
           "type": "drive_recent_files",
-          "description": "swipeable Drive files carousel — live on GAS, items[] or api connector on web/meet"
+          "description": "swipeable Drive files carousel — live on GAS, items[] or api connector on web/meet",
+          "processing": {
+            "required_scope": "drive.readonly"
+          }
         },
         {
           "type": "drive_storage_usage",
-          "description": "Drive storage quota progress bar — live on GAS, or pass used_gb/total_gb for static"
+          "description": "Drive storage quota progress bar — live on GAS, or pass used_gb/total_gb for static",
+          "processing": {
+            "required_scope": "drive.readonly"
+          }
         },
         {
           "type": "gmail_inbox",
-          "description": "swipeable Gmail inbox carousel — live on GAS, items[] or api connector on web/meet"
+          "description": "swipeable Gmail inbox carousel — live on GAS, items[] or api connector on web/meet",
+          "processing": {
+            "required_scope": "gmail.readonly"
+          }
         },
         {
           "type": "gmail_summary",
-          "description": "list of recent Gmail messages matching query"
+          "description": "list of recent Gmail messages matching query",
+          "processing": {
+            "required_scope": "gmail.readonly"
+          }
         },
         {
           "type": "gmail_unread_count",
-          "description": "unread count badges for Gmail labels"
+          "description": "unread count badges for Gmail labels",
+          "processing": {
+            "required_scope": "gmail.readonly"
+          }
         },
         {
           "type": "heatmap_calendar",
@@ -1508,7 +1583,10 @@
         },
         {
           "type": "me",
-          "description": "current user identity chip"
+          "description": "current user identity chip",
+          "processing": {
+            "required_scope": "userinfo.email"
+          }
         },
         {
           "type": "meet_button",
@@ -1516,11 +1594,17 @@
         },
         {
           "type": "multi_doc_ai_brief",
-          "description": "multi-doc briefing pack — one Gemini summary card per Google Doc"
+          "description": "multi-doc briefing pack — one Gemini summary card per Google Doc",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "people_picker",
-          "description": "directory people search and assign input"
+          "description": "directory people search and assign input",
+          "processing": {
+            "required_scope": "userinfo.email"
+          }
         },
         {
           "type": "sentiment_summary",
@@ -1528,15 +1612,24 @@
         },
         {
           "type": "sheet_badge",
-          "description": "open backing sheet link badge"
+          "description": "open backing sheet link badge",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "sheet_form",
-          "description": "form submitting rows to a Google Sheet tab"
+          "description": "form submitting rows to a Google Sheet tab",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "sheet_stats",
-          "description": "aggregate stats from a sheet range displayed as stat badges"
+          "description": "aggregate stats from a sheet range displayed as stat badges",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "tasks_today",
@@ -1544,11 +1637,17 @@
         },
         {
           "type": "user_greeting",
-          "description": "personalised greeting with active user email"
+          "description": "personalised greeting with active user email",
+          "processing": {
+            "required_scope": "userinfo.email"
+          }
         },
         {
           "type": "user_profile_card",
-          "description": "user avatar, display name, email and domain — live on GAS, static fields elsewhere"
+          "description": "user avatar, display name, email and domain — live on GAS, static fields elsewhere",
+          "processing": {
+            "required_scope": "userinfo.email"
+          }
         },
         {
           "type": "workspace_logo",
@@ -1602,7 +1701,10 @@
         },
         {
           "type": "cohort_progress_board",
-          "description": "instructor cohort table — per-learner module completion + scores; live on GAS"
+          "description": "instructor cohort table — per-learner module completion + scores; live on GAS",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "cohort_retention",
@@ -1610,7 +1712,13 @@
         },
         {
           "type": "completion_gate",
-          "description": "content lock — hides until requires module id is complete in progress_store"
+          "description": "content lock — hides until requires module id is complete in progress_store",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "course_progress_card",
@@ -1638,7 +1746,13 @@
         },
         {
           "type": "learning_path_selector",
-          "description": "course entry path chooser — role/level cards, writes selection to progress_store, optional navigation"
+          "description": "course entry path chooser — role/level cards, writes selection to progress_store, optional navigation",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "lesson_nav",
@@ -1650,7 +1764,13 @@
         },
         {
           "type": "onboarding_stepper",
-          "description": "guided onboarding steps — completes to progress_store, restores on revisit"
+          "description": "guided onboarding steps — completes to progress_store, restores on revisit",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "prerequisite_checklist",
@@ -1666,7 +1786,13 @@
         },
         {
           "type": "quiz_result_summary",
-          "description": "end-of-quiz result — score %, pass/fail, question dots, writes to progress_store"
+          "description": "end-of-quiz result — score %, pass/fail, question dots, writes to progress_store",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "quiz_set",
@@ -1674,7 +1800,13 @@
         },
         {
           "type": "reflection_prompt",
-          "description": "reflection textarea — saves to progress_store; restores on revisit"
+          "description": "reflection textarea — saves to progress_store; restores on revisit",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "rubric_card",
@@ -1690,11 +1822,23 @@
         },
         {
           "type": "score_summary",
-          "description": "end-of-exercise score card with correct/total, percentage, grade, and CTA"
+          "description": "end-of-exercise score card with correct/total, percentage, grade, and CTA",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "spaced_repetition_card",
-          "description": "flip flashcard with confidence rating 1-5 — writes SRS interval to progress_store"
+          "description": "flip flashcard with confidence rating 1-5 — writes SRS interval to progress_store",
+          "processing": {
+            "required_scope": [
+              "drive",
+              "spreadsheets"
+            ]
+          }
         },
         {
           "type": "study_timer",
@@ -1780,7 +1924,10 @@
         },
         {
           "type": "github_repo_card",
-          "description": "live GitHub repo card with stars forks and language"
+          "description": "live GitHub repo card with stars forks and language",
+          "processing": {
+            "required_scope": "script.external_request"
+          }
         },
         {
           "type": "gradient_hero",
@@ -2020,7 +2167,10 @@
         },
         {
           "type": "leaderboard_card",
-          "description": "ranked score leaderboard — live on GAS from Sheet, static on web; medal top 3"
+          "description": "ranked score leaderboard — live on GAS from Sheet, static on web; medal top 3",
+          "processing": {
+            "required_scope": "spreadsheets"
+          }
         },
         {
           "type": "live_aggregator",
