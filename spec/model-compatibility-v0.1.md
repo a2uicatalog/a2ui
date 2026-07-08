@@ -41,6 +41,14 @@ model_compatibility:
         3. If 1501-3000 chars: split into 2 sections.
         4. If 3001-5000 chars: split into 3 sections.
         Do not judge. Follow rule 2-4 exactly by character count.
+
+        RECOVERY — if a render check reports "could not decompress gzip" /
+        "Render error" / "invalid distance too far back": STOP. Do not
+        retry with the SAME unchanged payload (identical input reproduces
+        identical broken output). Recover by: (1) re-count the payload's
+        exact character length, (2) HALVE your per-section target vs. what
+        you just tried, (3) re-split and re-call. Never fall back to
+        hand-written gzip/base64 encoding scripts.
       degraded_as: build_multi_page_surface   # optional — name of the safer wrapper tool/atom, if one exists
       verified: true
       verification_fixture: haiku_make_surface_url_2026-07-08.json
