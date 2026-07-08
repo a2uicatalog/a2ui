@@ -4393,6 +4393,9 @@ blocks:
       reason: Non-functional in email
     - surface: pdf
       reason: Non-functional in PDF
+  children:
+    children:
+      shape: simple
   fields:
     title: string. Modal heading.
     size: 'string (optional). One of: sm, md, lg. Default: md.'
@@ -5366,6 +5369,9 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+  children:
+    blocks:
+      shape: simple
   fields:
     accent: string (optional, hex, default "#6366f1")
     style: string (optional, "tint"|"solid"|"dark"|"light", default "tint")
@@ -5423,6 +5429,13 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+  children:
+    left:
+      shape: wrapper_single
+      inner_path: blocks
+    right:
+      shape: wrapper_single
+      inner_path: blocks
   fields:
     left: object — {bg (css color, default "#f8fafc"), blocks (atom blocks)}
     right: object — {bg (css color, default "#fff"), blocks (atom blocks)}
@@ -5503,6 +5516,9 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+  children:
+    blocks:
+      shape: simple
   fields:
     title: string (required)
     subtitle: string (optional)
@@ -5638,6 +5654,10 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+  children:
+    items:
+      shape: wrapper_list
+      inner_path: blocks
   fields:
     cols: integer (optional, 2–6, default 2)
     gap: string (optional, css gap value, default "1.5rem")
@@ -6243,6 +6263,9 @@ blocks:
     incompatible_on:
     - surface: email
       reason: CSS keyframe animations not supported in email clients
+  children:
+    children:
+      shape: simple
   fields:
     children: array of atom objects to render inside the container (optional).
     title: string (optional). Heading text.
@@ -8408,6 +8431,11 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-chat
+  children:
+    messages:
+      shape: wrapper_list
+      inner_path: block
+      conditional: "only present on items where kind: atom"
   fields:
     messages: >-
       array of message objects, each routed by role/kind. Common:
@@ -8645,6 +8673,11 @@ blocks:
   compact_description: multi-question interactive quiz
   surfaces:
     works_on: *id006
+  children:
+    on_pass:
+      shape: single
+    on_fail:
+      shape: single
   fields:
     title: string (optional)
     questions: 'array of {question, options: [string], correct: integer (0-based index),
@@ -8737,6 +8770,12 @@ blocks:
   compact_description: multi-slide fullscreen presentation playbook
   surfaces:
     works_on: *id006
+  children:
+    slides:
+      shape: wrapper_list
+      inner_path: blocks
+    shared_blocks:
+      shape: simple
   fields:
     slides: 'array of {id (optional), blocks: [atom block objects]} — each slide is
       a full block list'
@@ -8826,6 +8865,9 @@ blocks:
   compact_description: rendered atom + raw schema side-by-side anatomy view
   surfaces:
     works_on: *id006
+  children:
+    schema:
+      shape: single
   fields:
     label: string (optional, panel header)
     schema: object (atom block JSON to render and display)
@@ -9149,6 +9191,10 @@ blocks:
     - google-meet-stage
   processing:
     pagination: hub_aggregating
+  children:
+    modules:
+      shape: wrapper_list
+      inner_path: page
   fields:
     title: string (optional). Section heading. Default "Course Modules".
     columns: integer (optional). Grid columns, max 4. Default 3.
@@ -9689,6 +9735,9 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+  children:
+    blocks:
+      shape: simple
   fields:
     animation: fade_up (default), fade_in, slide_left, slide_right, scale_in, stagger
     duration: animation duration in ms (default 500)
@@ -9946,6 +9995,9 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+  children:
+    blocks:
+      shape: simple
   fields:
     blocks: array of child atoms inside the card
     content: markdown string (if no blocks)
@@ -9964,6 +10016,9 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+  children:
+    blocks:
+      shape: simple
   fields:
     blocks: array of child atoms inside
     content: markdown string (if no blocks)
@@ -10175,6 +10230,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+  children:
+    subjects:
+      shape: wrapper_list
+      inner_path: slides.blocks
   fields:
     subjects: 'array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom
       blocks]}]}'

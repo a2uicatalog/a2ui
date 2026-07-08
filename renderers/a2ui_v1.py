@@ -9,7 +9,7 @@ carries a required `catalogId`; this emitter produces conformant messages so tha
     (a host without the catalog simply skips them — correct A2UI behaviour, not
     a violation).
 
-Scope (tiers 1 + 2-core, plus Track B1 + C1):
+Scope (tiers 1 + 2-core, plus Track B1 + C1 + Phase 0 schema-driven children):
   - Full envelope/metadata: version, surfaceId, catalogId, surfaceProperties.
   - Deterministic ID minting; flat `components` list with parent→child ID refs.
   - Standard-component mapping for clean atoms; common container inversion
@@ -18,7 +18,17 @@ Scope (tiers 1 + 2-core, plus Track B1 + C1):
     (wired-dialect bracket pseudo-atoms) -> a Row wrapping the bracketed run;
     hub (2-level subject/slide deck nav) -> nested Tabs (outer = subjects,
     inner = slides, each slide a Column of its blocks).
-  - Safe pass-through for everything else (extension components).
+  - Schema-driven children (spec/childlist-migration-v0.1.md, Phase 0): any
+    atom NOT already covered by an explicit case above, but that declares a
+    `children:` block in atoms/schema.yaml (shape: simple/single/wrapper_list/
+    wrapper_single + inner_path), gets its nested atom content flattened into
+    ID refs generically — driven by that declaration, not a hand-written case
+    per atom type. Covers blur_fade_in, playbook, quiz_set, atom_anatomy,
+    module_map, chat_thread — atoms that previously fell through to raw
+    pass-through with their nested atoms still embedded, non-conformant with
+    v1.0's ChildList rule. See _emit_declared_children.
+  - Safe pass-through for everything else (extension components, and any
+    field this cut doesn't recognize as child-bearing at all).
   - Action-contract adapter: {ok,data,total,error} -> actionResponse {value|error}.
   - C1 client-facing function RPC: call_function() builds the `callFunction`
     request; function_response() adapts the catalogue envelope into the
@@ -182,10 +192,15 @@ def _child_blocklists(b: Dict[str, Any]) -> Optional[Tuple[str, List[Dict[str, A
     child block dicts). None => not a supported container."""
     t = b.get("type")
     if t == "columns":
-        kids = []
+        # Each item becomes its OWN Column (preserves per-column grouping) —
+        # flattening straight into the Row (pre-Phase-0 behaviour) silently lost
+        # which block belonged to which column whenever a column held >1 block.
+        cols = []
         for item in b.get("items", []):
-            kids.extend(item.get("blocks", []) if isinstance(item, dict) else [])
-        return ("Row", kids)
+            cols.append({"type": "_column_item", "blocks": item.get("blocks", []) if isinstance(item, dict) else []})
+        return ("Row", cols)
+    if t == "_column_item":
+        return ("Column", b.get("blocks", []))
     if t == "color_section":
         return ("Column", b.get("blocks", []))
     if t in ("info_card", "card", "glass_card"):
@@ -260,6 +275,114 @@ def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids
     return cid
 
 
+# ── Phase 0: schema-driven children (spec/childlist-migration-v0.1.md) ──────────
+_ATOM_CHILDREN_CACHE: Optional[Dict[str, Dict[str, Any]]] = None
+
+# Atom types with an explicit, hand-written container-inversion case above
+# (including the generic `"blocks" in b` fallback in _child_blocklists) — these
+# keep their existing handling. Every OTHER atom that declares a `children:`
+# block in schema.yaml routes through _emit_declared_children instead.
+_EXPLICITLY_HANDLED_TYPES = {
+    "hub", "columns", "_column_item", "color_section", "info_card", "card",
+    "glass_card", "tabs", "modal", "split_pane", "_split_pane_side", "row_bracket",
+}
+
+
+def _atom_children_schema() -> Dict[str, Dict[str, Any]]:
+    """type -> declared `children` block (Phase 0) from atoms/schema.yaml, for
+    atoms that declare one. Cached at module scope — schema.yaml is static for
+    the life of a process."""
+    global _ATOM_CHILDREN_CACHE
+    if _ATOM_CHILDREN_CACHE is None:
+        import os as _os
+        import yaml as _yaml
+        root = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+        schema = _yaml.safe_load(open(_os.path.join(root, "atoms", "schema.yaml")))
+        _ATOM_CHILDREN_CACHE = {
+            b["type"]: b["children"]
+            for b in schema["blocks"] if isinstance(b, dict) and b.get("type") and b.get("children")
+        }
+    return _ATOM_CHILDREN_CACHE
+
+
+def _emit_wrapper_item(item: Any, inner_key: str, components: List[Dict[str, Any]], ids: _IdGen,
+                        default_type: str = "_wrapper_item") -> str:
+    """Promote a wrapper object (its own properties alongside nested atom
+    content at `inner_key`) to its own flat component. ChildList can only ever
+    hold a reference, never an inline object with its own properties — so for
+    shapes like module_map's `modules[]` ({id,title,icon,...,page:[blocks]}),
+    the wrapper itself has to become the referenced component: its own
+    properties (minus the nested-content key) become that component's
+    properties, and the nested content — if present; may be absent for
+    conditional shapes like chat_thread.messages — becomes a ChildList/
+    ComponentId at `inner_key` on the new component.
+
+    Single-level inner_key only. hub.subjects's inner_path ('slides.blocks')
+    is the one two-level case in the catalogue today; it keeps its own
+    dedicated builder (_emit_hub) rather than going through this generic
+    path — not worth generalizing to two levels for a single caller."""
+    if not isinstance(item, dict):
+        cid = ids.take({"type": default_type})
+        components.append({"id": cid, "component": default_type, "value": item})
+        return cid
+
+    cid = ids.take(item)
+    node: Dict[str, Any] = {"id": cid, "component": item.get("type", default_type)}
+    for k, v in item.items():
+        if k in ("id", "type", inner_key):
+            continue
+        node[k] = v
+
+    nested = item.get(inner_key)
+    if isinstance(nested, list):
+        node[inner_key] = [_emit_block(nb, components, ids) for nb in nested if isinstance(nb, dict)]
+    elif isinstance(nested, dict):
+        node[inner_key] = _emit_block(nested, components, ids)
+
+    components.append(node)
+    return cid
+
+
+def _emit_declared_children(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids: _IdGen) -> str:
+    """Flatten an atom's schema-declared child-bearing fields into ID refs,
+    generically — driven by atoms/schema.yaml's `children:` block (shape:
+    simple/single/wrapper_list/wrapper_single + inner_path) instead of a
+    hand-written case per atom type. The atom keeps its OWN component type
+    (an extension component under catalogId) rather than being remapped to a
+    standard A2UI primitive — unlike _child_blocklists's cases, which exist
+    specifically because a clean standard-component mapping exists."""
+    decl = _atom_children_schema()[b["type"]]
+    node: Dict[str, Any] = {"id": cid, "component": b["type"]}
+    child_fields = set(decl.keys())
+    for k, v in b.items():
+        if k in ("id", "type") or k in child_fields:
+            continue
+        node[k] = v
+
+    for field, spec in decl.items():
+        shape = spec["shape"]
+        value = b.get(field)
+        if shape == "simple":
+            if isinstance(value, list):
+                node[field] = [_emit_block(item, components, ids) for item in value if isinstance(item, dict)]
+        elif shape == "single":
+            if isinstance(value, dict):
+                node[field] = _emit_block(value, components, ids)
+        elif shape == "wrapper_list":
+            if isinstance(value, list):
+                inner_key = spec["inner_path"].split(".")[0]
+                item_type = f"{b['type']}.{field}"
+                node[field] = [_emit_wrapper_item(item, inner_key, components, ids, item_type) for item in value]
+        elif shape == "wrapper_single":
+            if isinstance(value, dict):
+                inner_key = spec["inner_path"].split(".")[0]
+                item_type = f"{b['type']}.{field}"
+                node[field] = _emit_wrapper_item(value, inner_key, components, ids, item_type)
+
+    components.append(node)
+    return cid
+
+
 def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen) -> str:
     """Append the flattened component(s) for `b` (and its descendants) to
     `components`; return this block's minted component id."""
@@ -267,6 +390,10 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
 
     if b.get("type") == "hub":
         return _emit_hub(b, cid, components, ids)
+
+    btype = b.get("type")
+    if btype not in _EXPLICITLY_HANDLED_TYPES and btype in _atom_children_schema():
+        return _emit_declared_children(b, cid, components, ids)
 
     container = _child_blocklists(b)
     if container is not None:

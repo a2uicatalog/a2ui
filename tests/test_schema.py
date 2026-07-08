@@ -223,3 +223,50 @@ def test_emit_deployment_scope_atoms_derived_from_schema(atoms):
         "processing.required_scope declarations — this is the exact drift the "
         "atom-processing-contract spec exists to prevent"
     )
+
+
+# ── children (spec/childlist-migration-v0.1.md, Phase 0) — shape-aware child-bearing
+# field declarations, replacing MCP_CHILD_KEYS's name-based guessing. Structural only,
+# same posture as the processing tests above.
+
+CHILD_SHAPES = {"simple", "single", "wrapper_list", "wrapper_single"}
+
+
+def test_children_shape_is_valid_enum(atoms):
+    """A typo in shape (e.g. 'wrapperlist') would silently fail every consumer's lookup —
+    same failure mode processing.pagination's enum test exists to catch."""
+    for name, atom in atoms.items():
+        for field, decl in (atom.get("children") or {}).items():
+            shape = decl.get("shape")
+            assert shape in CHILD_SHAPES, (
+                f"{name}.children.{field}: shape '{shape}' is not one of {sorted(CHILD_SHAPES)}"
+            )
+
+
+def test_children_wrapper_shapes_declare_inner_path(atoms):
+    """wrapper_list/wrapper_single mean 'the nested atoms are one level deeper than this
+    field' — without inner_path a consumer has no way to find them (this is exactly the
+    module_map incident: knowing 'modules' holds children isn't enough, you also need to
+    know to walk into '.page')."""
+    for name, atom in atoms.items():
+        for field, decl in (atom.get("children") or {}).items():
+            if decl["shape"] in ("wrapper_list", "wrapper_single"):
+                assert decl.get("inner_path"), (
+                    f"{name}.children.{field}: shape '{decl['shape']}' requires inner_path"
+                )
+            else:
+                assert "inner_path" not in decl, (
+                    f"{name}.children.{field}: inner_path only applies to wrapper shapes, "
+                    f"not '{decl['shape']}'"
+                )
+
+
+def test_children_field_names_exist_in_fields(atoms):
+    """A children: declaration naming a field that doesn't exist in fields: is drift —
+    the field was renamed/removed and the declaration wasn't updated with it."""
+    for name, atom in atoms.items():
+        declared_fields = set((atom.get("fields") or {}).keys())
+        for field in (atom.get("children") or {}):
+            assert field in declared_fields, (
+                f"{name}.children declares '{field}' but it's not in {name}.fields"
+            )

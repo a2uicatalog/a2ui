@@ -78,6 +78,27 @@ def test_envelope_and_metadata():
     assert cats == sorted(cats[:1]) + sorted(cats[1:])               # base, then sorted extensions
 
 
+def test_catalog_discovery_reaches_atoms_nested_via_declared_children():
+    """Regression guard: before Phase 0 (spec/childlist-migration-v0.1.md), catalog_map's
+    collect_types() walked a flat, hand-maintained key-name list that never included
+    chat_thread's `messages[].block` — so an atom needing a non-base catalog, buried inside
+    a chat_thread message, was silently missing from surfaceProperties.catalogs. A host
+    that only resolved the declared catalogs would then fail to render it. Now driven by
+    schema.yaml's `children:` declarations, so this can't go invisible by field-name
+    coincidence again."""
+    payload = {
+        "title": "Chat with a chart", "blocks": [
+            {"type": "chat_thread", "messages": [
+                {"role": "assistant", "kind": "atom", "block": {"type": "chartjs_bar", "data": []}},
+            ]},
+        ],
+    }
+    msg = emit_surface(payload)
+    cats = msg["createSurface"]["surfaceProperties"]["catalogs"]
+    assert any(c.endswith("a2ui-charts-v1.json") for c in cats), \
+        f"chartjs_bar nested in chat_thread.messages[].block did not surface its catalog: {cats}"
+
+
 def test_standard_component_mapping():
     _, by_id = _assert_valid_surface(emit_surface(SAMPLE))
     texts = [c for c in by_id.values() if c["component"] == "Text"]
@@ -232,6 +253,53 @@ def test_call_function_and_function_response():
     bad = function_response({"ok": False, "error": "denied"}, "fc-2", "getScreenResolution")
     assert "functionResponse" not in bad
     assert bad["error"] == {"code": "function_call_failed", "message": "denied", "functionCallId": "fc-2"}
+
+
+def test_all_declared_children_atoms_are_flattened():
+    """Regression guard for the 2026-07-08 silent-gap class: module_map, chat_thread,
+    playbook, quiz_set, atom_anatomy, blur_fade_in previously fell through to raw
+    pass-through with nested atoms still embedded — non-conformant with v1.0's
+    ChildList rule, and nothing caught it (same shape as the original module_map MCP
+    incident, different codepath). Every atom that declares a `children:` block in
+    schema.yaml and isn't already explicitly handled by a hand-written container case
+    (_EXPLICITLY_HANDLED_TYPES) must, when emitted, replace EVERY declared child field
+    with ID ref(s) — never leave a raw dict. Synthesizes a minimal payload per
+    declared shape rather than hand-writing one per atom, so a NEW atom that later
+    declares `children:` is covered automatically, with no test to remember to add."""
+    from renderers.a2ui_v1 import _atom_children_schema, _EXPLICITLY_HANDLED_TYPES
+    decl_by_type = _atom_children_schema()
+    checked = 0
+    for atom_type, decl in decl_by_type.items():
+        if atom_type in _EXPLICITLY_HANDLED_TYPES:
+            continue
+        block = {"type": atom_type}
+        for field, spec in decl.items():
+            shape = spec["shape"]
+            leaf = {"type": "body", "text": "x"}
+            if shape == "simple":
+                block[field] = [dict(leaf)]
+            elif shape == "single":
+                block[field] = dict(leaf)
+            elif shape == "wrapper_list":
+                inner = spec["inner_path"].split(".")[0]
+                block[field] = [{"id": "w1", inner: [dict(leaf)]}]
+            elif shape == "wrapper_single":
+                inner = spec["inner_path"].split(".")[0]
+                block[field] = {inner: [dict(leaf)]}
+        _, by_id = _assert_valid_surface(emit_surface({"title": "t", "blocks": [block]}))
+        emitted = by_id.get(f"{atom_type}-0")
+        assert emitted is not None, f"{atom_type}: expected component id '{atom_type}-0' not found"
+        for field in decl:
+            val = emitted.get(field)
+            assert val is not None, f"{atom_type}.{field}: declared child field missing from emitted component"
+            if isinstance(val, list):
+                assert all(isinstance(v, str) for v in val), \
+                    f"{atom_type}.{field}: expected a list of ID refs, found raw embedded content"
+            else:
+                assert isinstance(val, str), \
+                    f"{atom_type}.{field}: expected an ID ref (string), found raw embedded content"
+        checked += 1
+    assert checked >= 6, f"expected to cover at least the 6 originally-uncovered atoms, covered {checked}"
 
 
 def test_real_payload_smoke():

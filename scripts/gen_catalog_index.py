@@ -15,6 +15,11 @@ straight through from schema.yaml when declared — pagination safety (e.g. modu
 hub_aggregating) and required_scope. This is the artifact a2ui-private/gas-mcp/sync_embeds.py
 copies into mcp-worker/src/catalog-data.js, so declaring it here is what makes it reach the
 MCP layer without hand-maintained, drift-prone MCP-side copies.
+
+Also carries each atom's `children` block (spec/childlist-migration-v0.1.md, Phase 0) — the
+shape-aware, per-field declaration of which properties hold nested atom content (simple/
+single/wrapper_list/wrapper_single + inner_path), when declared. Replaces name-based guessing
+(MCP_CHILD_KEYS) with a fact read from the schema, same propagation path as `processing`.
 """
 import json
 import os
@@ -87,10 +92,19 @@ def _atom_processing():
             for b in d["blocks"] if isinstance(b, dict) and b.get("type") and b.get("processing")}
 
 
-def _atom_entry(atom_type, desc, processing):
+def _atom_children():
+    """type -> declared `children` block (Phase 0), only for atoms that declare one."""
+    d = yaml.safe_load(open(SCHEMA))
+    return {b["type"]: b["children"]
+            for b in d["blocks"] if isinstance(b, dict) and b.get("type") and b.get("children")}
+
+
+def _atom_entry(atom_type, desc, processing, children):
     entry = {"type": atom_type, "description": desc.get(atom_type, "")}
     if atom_type in processing:
         entry["processing"] = processing[atom_type]
+    if atom_type in children:
+        entry["children"] = children[atom_type]
     return entry
 
 
@@ -98,6 +112,7 @@ def main():
     part = yaml.safe_load(open(PACKS))
     desc = _atom_descriptions()
     processing = _atom_processing()
+    children = _atom_children()
 
     missing = [c for c in part if c not in CATALOG_META]
     if missing:
@@ -116,7 +131,7 @@ def main():
             "alwaysResolved": slug == BASE_SLUG,
             "whenToUse": when,
             "atomCount": len(atoms),
-            "atoms": [_atom_entry(a, desc, processing) for a in atoms],
+            "atoms": [_atom_entry(a, desc, processing, children) for a in atoms],
         })
 
     index = {

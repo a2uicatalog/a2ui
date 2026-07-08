@@ -74,11 +74,22 @@
         },
         {
           "type": "color_section",
-          "description": "colored background wrapper — tint/solid/dark, renders child atom blocks"
+          "description": "colored background wrapper — tint/solid/dark, renders child atom blocks",
+          "children": {
+            "blocks": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "columns",
-          "description": "multi-column layout — 2–6 cols, each column holds atom blocks"
+          "description": "multi-column layout — 2–6 cols, each column holds atom blocks",
+          "children": {
+            "items": {
+              "shape": "wrapper_list",
+              "inner_path": "blocks"
+            }
+          }
         },
         {
           "type": "combobox",
@@ -180,7 +191,13 @@
         },
         {
           "type": "hub",
-          "description": "deck navigation shell with subjects and slides"
+          "description": "deck navigation shell with subjects and slides",
+          "children": {
+            "subjects": {
+              "shape": "wrapper_list",
+              "inner_path": "slides.blocks"
+            }
+          }
         },
         {
           "type": "icon_list",
@@ -239,13 +256,24 @@
         },
         {
           "type": "modal",
-          "description": "modal dialog overlay with title and content"
+          "description": "modal dialog overlay with title and content",
+          "children": {
+            "children": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "module_map",
           "description": "course curriculum grid — module cards with live locked/available/complete status from progress_store",
           "processing": {
             "pagination": "hub_aggregating"
+          },
+          "children": {
+            "modules": {
+              "shape": "wrapper_list",
+              "inner_path": "page"
+            }
           }
         },
         {
@@ -354,7 +382,17 @@
         },
         {
           "type": "split_pane",
-          "description": "two-panel split — distinct bg per side, each side renders atom blocks"
+          "description": "two-panel split — distinct bg per side, each side renders atom blocks",
+          "children": {
+            "left": {
+              "shape": "wrapper_single",
+              "inner_path": "blocks"
+            },
+            "right": {
+              "shape": "wrapper_single",
+              "inner_path": "blocks"
+            }
+          }
         },
         {
           "type": "stat_card",
@@ -884,7 +922,12 @@
         },
         {
           "type": "two_tone_card",
-          "description": "split card — colored header with icon/title, white body renders atom blocks"
+          "description": "split card — colored header with icon/title, white body renders atom blocks",
+          "children": {
+            "blocks": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "variant_selector",
@@ -1044,7 +1087,12 @@
         },
         {
           "type": "animated_border",
-          "description": "card with rotating gradient border"
+          "description": "card with rotating gradient border",
+          "children": {
+            "blocks": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "animated_border_card",
@@ -1068,7 +1116,12 @@
         },
         {
           "type": "blur_fade_in",
-          "description": "CSS blur-to-focus fade-in container reveal"
+          "description": "CSS blur-to-focus fade-in container reveal",
+          "children": {
+            "children": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "card_stack",
@@ -1248,7 +1301,12 @@
         },
         {
           "type": "reveal",
-          "description": "entrance animation wrapper for child blocks"
+          "description": "entrance animation wrapper for child blocks",
+          "children": {
+            "blocks": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "reveal_line",
@@ -1308,7 +1366,12 @@
         },
         {
           "type": "spotlight_card",
-          "description": "card with cursor-following spotlight"
+          "description": "card with cursor-following spotlight",
+          "children": {
+            "blocks": {
+              "shape": "simple"
+            }
+          }
         },
         {
           "type": "spotlight_cursor",
@@ -1494,7 +1557,14 @@
         },
         {
           "type": "chat_thread",
-          "description": "role-routed chat thread with composer & tool calls"
+          "description": "role-routed chat thread with composer & tool calls",
+          "children": {
+            "messages": {
+              "shape": "wrapper_list",
+              "inner_path": "block",
+              "conditional": "only present on items where kind: atom"
+            }
+          }
         },
         {
           "type": "conversation_snippet",
@@ -1796,7 +1866,15 @@
         },
         {
           "type": "quiz_set",
-          "description": "multi-question interactive quiz"
+          "description": "multi-question interactive quiz",
+          "children": {
+            "on_pass": {
+              "shape": "single"
+            },
+            "on_fail": {
+              "shape": "single"
+            }
+          }
         },
         {
           "type": "reflection_prompt",
@@ -2013,7 +2091,12 @@
         },
         {
           "type": "atom_anatomy",
-          "description": "rendered atom + raw schema side-by-side anatomy view"
+          "description": "rendered atom + raw schema side-by-side anatomy view",
+          "children": {
+            "schema": {
+              "shape": "single"
+            }
+          }
         },
         {
           "type": "catalogue_provenance",
@@ -2276,7 +2359,16 @@
       "atoms": [
         {
           "type": "playbook",
-          "description": "multi-slide fullscreen presentation playbook"
+          "description": "multi-slide fullscreen presentation playbook",
+          "children": {
+            "slides": {
+              "shape": "wrapper_list",
+              "inner_path": "blocks"
+            },
+            "shared_blocks": {
+              "shape": "simple"
+            }
+          }
         }
       ]
     }
