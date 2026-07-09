@@ -2101,8 +2101,17 @@ function _renderFromPayload(payload, from) {
 
     // Register hub + cascade-save module pages into ScriptProperties.
     // hub_slug (explicit field) takes precedence over title-derived slug for stable back-nav.
+    //
+    // GENERALIZED 2026-07-09 (spec/nav-budget-pagination-v0.1.md, a2ui-private): seeding used to be
+    // a module_map side effect only. Any payload carrying `hub_slug` now registers under
+    // `nav:<hub_slug>` on first render regardless of module_map — the first-class capability the
+    // two-phase seeding architecture (content pages register once; a nav page links them by short
+    // ?nav= slug, costing only name overhead, never embedded content) depends on. The module-page
+    // cascade-save below stays module_map-specific (additive, unaffected) — a separate, narrower
+    // sub-feature this generalization doesn't touch.
     var hasModuleMap = blocks.some(function(b) { return b.type === 'module_map'; });
-    if (hasModuleMap && !from) {
+    var wantsHubSeed = hasModuleMap || (!Array.isArray(payload) && !!payload.hub_slug);
+    if (wantsHubSeed && !from) {
       var autoSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/, '');
       var hubSlug  = (!Array.isArray(payload) && payload.hub_slug)
         ? payload.hub_slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
