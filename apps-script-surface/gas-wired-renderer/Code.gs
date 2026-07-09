@@ -2084,7 +2084,12 @@ function _rehydrateV1Surface(surface) {
     ? root.children.map(function(id) { return resolveNode(id, {}); }).filter(Boolean)
     : [];
   var props = surface.surfaceProperties || {};
-  return { title: props.title, theme: props.theme, blocks: rootChildren };
+  // hub_slug carried through 2026-07-09 (nav-budget-pagination-v0.1.md) — without this a v1.0
+  // page's hub_slug never reaches _renderFromPayload's seeding trigger, since that check runs
+  // on the REHYDRATED payload, after this function returns.
+  var out = { title: props.title, theme: props.theme, blocks: rootChildren };
+  if (props.hub_slug) out.hub_slug = props.hub_slug;
+  return out;
 }
 
 function _renderFromPayload(payload, from) {
