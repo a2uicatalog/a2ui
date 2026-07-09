@@ -58,8 +58,13 @@ _RENDERERS['nav_bar'] = function(b) {
         // Found 2026-07-08: a benchmark-built app used url:"?nav=lesson1" in
         // nav_bar and its links broke exactly this way.
         'if(href.charAt(0)==="?"&&nav.url){href=nav.url+href;}' +
-        'var _useBack=!!(l.slug&&(!nav.slug||(nav.from&&l.slug===nav.from)));' +
-        'if(_useBack){href=nav.from?nav.url+"?nav="+nav.from:nav.url;}' +
+        // A target slug always resolves forward via nav.url + "?nav="+slug, regardless of
+        // whether THIS page has its own nav.slug (true for any plain ?p= landing page, e.g.
+        // a nav-budget-pagination nav page) — found live 2026-07-09: !nav.slug used to force
+        // every link on such a page into the back-navigation branch, breaking all of them.
+        // "Back" now only fires when this link's slug explicitly matches where we came from.
+        'var _useBack=!!(l.slug&&nav.from&&l.slug===nav.from);' +
+        'if(_useBack){href=nav.url+"?nav="+nav.from;}' +
         'else if(l.slug&&nav.url){href=nav.url+"?nav="+l.slug+(nav.slug?"&from="+nav.slug:"");}' +
         'var isActive=!!(l.active||(l.slug&&l.slug===nav.slug));' +
         'var baseStyle="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;' +
@@ -112,11 +117,12 @@ _RENDERERS['nav_link'] = function(b) {
       'var nav=window._A2UI_NAV||{slug:"",from:"",url:""};' +
       'el.target="_top";' +
       'if(slug&&nav.url){' +
-        // On a ?p= page (no named slug) we cannot resolve nav_slug targets.
-        // Navigate top window: to from-slug if known, else exec root.
-        // history.back() must NOT be used — it navigates the sandbox iframe, not the top window.
-        'if(!nav.slug||(slug===nav.from&&nav.from)){' +
-          'el.href=nav.from?nav.url+"?nav="+nav.from:nav.url;' +
+        // A target slug always resolves forward via nav.url + "?nav="+slug, regardless of
+        // whether THIS page has its own nav.slug — see nav_bar's matching fix, same bug,
+        // same date. history.back() must NOT be used — it navigates the sandbox iframe,
+        // not the top window.
+        'if(slug===nav.from&&nav.from){' +
+          'el.href=nav.url+"?nav="+nav.from;' +
         '}else{' +
           'el.href=nav.url+"?nav="+slug+(nav.slug?"&from="+nav.slug:"");' +
         '}' +
