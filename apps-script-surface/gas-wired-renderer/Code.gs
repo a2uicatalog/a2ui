@@ -2362,6 +2362,16 @@ function _renderNamedPage(slug, from) {
   _CURRENT_NAV_SLUG = slug; // allows module_map to stamp &from=<slug> on child ?p= URLs
   var props = PropertiesService.getScriptProperties();
   var raw   = props.getProperty('nav:' + slug);
+  if (!raw) {
+    // Explicit hub_slug writes (_renderFromPayload) sanitize non-[a-z0-9-] chars (e.g. the
+    // underscore in a runbook id like "learning_hub") before the ScriptProperties key; this read
+    // path historically didn't, so an unsanitized slug (e.g. from a ?nav= link built with the
+    // original hub_slug) never matched its own write — found live 2026-07-09 testing
+    // emit_runbook_surface's paginated mode. Fallback, not a rewrite of the primary lookup: keeps
+    // exact-match behavior (module_map's unsanitized m.id keys) working unchanged.
+    var sanitized = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    if (sanitized !== slug) raw = props.getProperty('nav:' + sanitized);
+  }
   if (!raw) return _errorPage('Page not found: "' + slug + '". Save it first via the Page Builder.');
   try {
     var meta    = JSON.parse(raw);
