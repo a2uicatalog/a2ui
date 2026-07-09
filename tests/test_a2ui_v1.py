@@ -317,3 +317,41 @@ def test_real_payload_smoke():
         if checked >= 5:
             break
     assert checked >= 1, "expected at least one blocks-dialect payload to validate"
+
+
+def test_childlist_v1_course_fixture():
+    """Locks the exact scenario empirically verified against the LIVE GAS renderer
+    (spec/childlist-migration-v0.1.md Phase 1, a2ui-private, 2026-07-09) — a course
+    payload mixing standard-mapped atoms (heading/body -> Text), a container
+    (columns -> Row of Columns), and an extension atom with inline data
+    (brevet_timeline, its `events` array untouched, not resolved as child refs).
+    This test locks the EMIT shape; the render-side proof is manual (curl against
+    the deployed demo renderer — no automated GAS render-output harness exists yet,
+    confirmed absent by this session's own investigation) and is not re-run here.
+    A regression in this test means the GAS decode shim's assumptions about this
+    shape (Code.gs:_rehydrateV1Surface, atoms_v1_standard.gs) may now be stale."""
+    payload = json.load(open(os.path.join(ROOT, "tests", "fixtures", "childlist_v1_course_2026-07-09.json")))
+    msg = emit_surface(payload)
+    cs, by_id = _assert_valid_surface(msg)
+
+    # standard-mapped atoms became Text
+    texts = [c for c in by_id.values() if c.get("component") == "Text"]
+    assert any("Web Dev 101" in c.get("text", "") for c in texts)
+    assert any("Lesson 1: HTML" in c.get("text", "") for c in texts)
+    assert any("Lesson 2: CSS" in c.get("text", "") for c in texts)
+
+    # columns -> a Row containing two Columns, each with 2 Text children
+    rows = [c for c in by_id.values() if c.get("component") == "Row"]
+    assert len(rows) == 1
+    cols = [by_id[cid] for cid in rows[0]["children"]]
+    assert all(c["component"] == "Column" for c in cols)
+    assert all(len(c["children"]) == 2 for c in cols)
+
+    # brevet_timeline is an extension atom with no declared children — passes
+    # through with its OWN type as `component`, `events` untouched as inline data
+    # (NOT resolved as child refs — it's a data array, not nested atoms)
+    timelines = [c for c in by_id.values() if c.get("component") == "brevet_timeline"]
+    assert len(timelines) == 1
+    assert timelines[0]["title"] == "Course milestones"
+    assert timelines[0]["events"] == payload["blocks"][-1]["events"], \
+        "events must pass through as literal data, not get resolved as ChildList refs"

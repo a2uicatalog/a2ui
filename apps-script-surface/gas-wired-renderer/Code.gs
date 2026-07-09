@@ -2011,8 +2011,80 @@ function _renderWiredSurface(payload, navSlug) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// A2UI v1.0 dual-decode shim (spec/childlist-migration-v0.1.md Phase 1, a2ui-private).
+// Resolves a flat createSurface.components list (ChildList/ComponentId refs) back
+// into the nested {title,theme,blocks} shape renderAtoms/_RENDERERS already expect —
+// a rehydration shim, not a renderer rewrite. Zero existing atoms change shape;
+// this only lets a NEW v1.0-shaped payload (produced by renderers/a2ui_v1.py)
+// render at all, additive to the legacy `blocks` dialect decode path below.
+//
+// Two component families reach this function's output:
+//   - "extension" components (e.g. brevet_timeline) keep their OWN catalogue type
+//     name as `component` and pass through untouched — they dispatch straight into
+//     their EXISTING _RENDERERS entry, no new render code needed for these.
+//   - "standard" components (Text/Image/Column/Row/Card/Tabs/Modal/...) are the
+//     ~12 A2UI basic-catalog primitive names a2ui_v1.py's STANDARD_MAP/
+//     _child_blocklists emit — rendered by the new entries in atoms_v1_standard.gs.
+//
+// ChildList resolution: `children` (array of ComponentId strings) is the common
+// case; `tabs: [{label, child}]` is hub's dedicated shape (a2ui_v1.py _emit_hub).
+// KNOWN LIMITATION: schema-declared wrapper fields (module_map.modules etc, the
+// 6 "wrapper" atoms explicitly out of scope for this phase) are resolved via a
+// generic "string value that matches a known component id" heuristic below, not
+// per-atom field-name knowledge — reasonable for now since none of this phase's
+// test content exercises them, but a real string property that happens to collide
+// with another component's id would misfire. Flagged, not fixed, this phase.
+function _rehydrateV1Surface(surface) {
+  var byId = {};
+  (surface.components || []).forEach(function(c) { byId[c.id] = c; });
+
+  function resolveNode(id, seen) {
+    if (seen[id]) return null;               // cycle guard
+    seen[id] = true;
+    var src = byId[id];
+    if (!src) return null;
+    var node = {};
+    for (var k in src) {
+      if (k === 'id') continue;
+      node[k] = src[k];
+    }
+    if (Array.isArray(src.children) && src.children.every(function(x) { return typeof x === 'string'; })) {
+      node.blocks = src.children.map(function(cid) { return resolveNode(cid, seen); }).filter(Boolean);
+      delete node.children;
+    }
+    if (Array.isArray(src.tabs)) {
+      node.tabs = src.tabs.map(function(t) {
+        var out = {};
+        for (var k2 in t) { if (k2 !== 'child') out[k2] = t[k2]; }
+        if (t.child) out.blocks = [resolveNode(t.child, seen)].filter(Boolean);
+        return out;
+      });
+    }
+    for (var field in node) {
+      if (field === 'blocks' || field === 'tabs') continue;
+      var val = node[field];
+      if (typeof val === 'string' && byId[val]) {
+        node[field] = resolveNode(val, seen);
+      } else if (Array.isArray(val) && val.length && val.every(function(x) { return typeof x === 'string' && byId[x]; })) {
+        node[field] = val.map(function(cid) { return resolveNode(cid, seen); }).filter(Boolean);
+      }
+    }
+    return node;
+  }
+
+  var root = byId['root'];
+  var rootChildren = (root && Array.isArray(root.children))
+    ? root.children.map(function(id) { return resolveNode(id, {}); }).filter(Boolean)
+    : [];
+  var props = surface.surfaceProperties || {};
+  return { title: props.title, theme: props.theme, blocks: rootChildren };
+}
+
 function _renderFromPayload(payload, from) {
   try {
+    if (!Array.isArray(payload) && payload.version === 'v1.0' && payload.createSurface) {
+      payload = _rehydrateV1Surface(payload.createSurface);
+    }
     if (!Array.isArray(payload) && payload.type === 'a2ui_wired_surface') {
       return _renderWiredSurface(payload, '');
     }

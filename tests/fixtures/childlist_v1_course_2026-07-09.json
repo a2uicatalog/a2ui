@@ -1,0 +1,17 @@
+{
+  "title": "Web Dev 101 — Course Home",
+  "theme": "light",
+  "blocks": [
+    {"type": "heading", "text": "Web Dev 101", "level": 1},
+    {"type": "body", "text": "A short course covering the basics of building for the web."},
+    {"type": "columns", "items": [
+      {"blocks": [{"type": "heading", "text": "Lesson 1: HTML", "level": 3}, {"type": "body", "text": "Structure and semantics."}]},
+      {"blocks": [{"type": "heading", "text": "Lesson 2: CSS", "level": 3}, {"type": "body", "text": "Styling and layout."}]}
+    ]},
+    {"type": "divider"},
+    {"type": "brevet_timeline", "title": "Course milestones", "events": [
+      {"date": "Week 1", "title": "HTML basics", "desc": "Tags, structure, semantics"},
+      {"date": "Week 2", "title": "CSS basics", "desc": "Selectors, box model, flexbox"}
+    ]}
+  ]
+}
