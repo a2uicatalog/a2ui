@@ -65,3 +65,24 @@ def test_outputs_declared_or_explicitly_empty():
         f"generator(s) without an outputs field: {undeclared} — declare the "
         "artifact list, or [] with a note for in-memory consumers"
     )
+
+
+def test_stampable_runbook_bom_is_validated_and_published():
+    """learning_hub (first stampable runbook) locks: the published runbooks
+    index carries the FULL definition (input_contract + composition — the
+    Worker embed and the emit_runbook_surface engine depend on it), and every
+    atom the BOM references is a real catalogue type. gen_public_catalog.py
+    hard-fails on unknown atoms at build time; this locks the contract so a
+    future refactor can't quietly slim the index back down to summaries."""
+    import json
+    idx = json.load(open(ROOT / "public/runbooks/index.json"))
+    lh = [r for r in idx["runbooks"] if r.get("name") == "learning_hub"]
+    assert lh, "learning_hub missing from public/runbooks/index.json"
+    rb = lh[0]
+    assert rb.get("kind") == "stampable"
+    for field in ("input_contract", "composition", "parsing_guide"):
+        assert rb.get(field), f"learning_hub.{field} missing from published index"
+    comp = rb["composition"]
+    assert comp.get("container_atom") == "hub"
+    kinds = comp.get("slide_kind_atoms") or {}
+    assert set(kinds) == {"timeline", "drill", "flashcards", "quiz", "takeaways", "method"}

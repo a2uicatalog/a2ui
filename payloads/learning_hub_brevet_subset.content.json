@@ -1,0 +1,259 @@
+{
+ "title": "Brevet 2026 — Learning Hub (subset)",
+ "theme": "light",
+ "subjects": [
+  {
+   "label": "📐 Maths",
+   "color": "#6366f1",
+   "slides": [
+    {
+     "label": "📋 Épreuve",
+     "hero": {
+      "heading": "Maths · 2 h 00 · 20 pts",
+      "subtext": "Partie A : Automatismes sans calculatrice (20 min, 6 pts) — Partie B : Problèmes avec calculatrice (1 h 40, 14 pts)",
+      "badge": "Brevet 2026"
+     },
+     "kind": "takeaways",
+     "points": [
+      "**Partie A** feuille ramassée à la sonnerie — calculatrice interdite pendant ces 20 min",
+      "**2 pts sur 14** réservés à la clarté du raisonnement — toujours conclure en langage naturel",
+      "Ne jamais laisser une case vide — une réponse partielle rapporte plus que rien",
+      "Ordre de passage : cases sûres d'abord → difficiles à la fin"
+     ]
+    },
+    {
+     "label": "⏱ Auto",
+     "hero": {
+      "heading": "Drill Automatismes",
+      "subtext": "Chrono 20 min, calculatrice interdite — réponds et soumets",
+      "badge": "16 questions · MEN Oct 2025"
+     },
+     "kind": "drill",
+     "duration": 1200,
+     "questions": [
+      {
+       "question": "Écriture décimale de ¾",
+       "answer": "0,75"
+      },
+      {
+       "question": "Calculer 12²",
+       "answer": "144"
+      },
+      {
+       "question": "Écrire 1,5 comme fraction irréductible",
+       "answer": "3/2"
+      },
+      {
+       "question": "(-4)²",
+       "answer": "16"
+      },
+      {
+       "question": "30 % de 80",
+       "answer": "24"
+      },
+      {
+       "question": "Un article à 50 € augmente de 20 %. Nouveau prix (€)",
+       "answer": "60"
+      },
+      {
+       "question": "Triple de 17",
+       "answer": "51"
+      },
+      {
+       "question": "Résoudre : 5x = 35",
+       "answer": "7"
+      },
+      {
+       "question": "Racine carrée de 49",
+       "answer": "7"
+      },
+      {
+       "question": "126 est-il divisible par 9 ? (oui/non)",
+       "answer": "oui"
+      },
+      {
+       "question": "Périmètre d'un carré de côté 7 cm (en cm)",
+       "answer": "28"
+      },
+      {
+       "question": "Dans un triangle : angles 90° et 52° — troisième angle (°)",
+       "answer": "38"
+      },
+      {
+       "question": "Convertir 3,2 km en mètres",
+       "answer": "3200"
+      },
+      {
+       "question": "Point A(−3 ; 7). Quelle est son abscisse ?",
+       "answer": "-3"
+      },
+      {
+       "question": "Médiane de la série : 2, 5, 7, 9, 13",
+       "answer": "7"
+      },
+      {
+       "question": "Probabilité de tirer un cœur dans un jeu de 52 cartes (fraction)",
+       "answer": "1/4"
+      }
+     ]
+    },
+    {
+     "label": "📐 Géométrie",
+     "hero": {
+      "heading": "Géométrie",
+      "subtext": "Théorèmes, formules et preuves",
+      "badge": "Partie B"
+     },
+     "kind": "flashcards",
+     "accent": "#6366f1",
+     "label_front": "RÉSULTAT",
+     "label_back": "FORMULE / MÉTHODE",
+     "cards": [
+      {
+       "front": "Pythagore (direct)",
+       "back": "Si ∠A = 90° → BC² = AB² + AC²\n(BC = hypoténuse)"
+      },
+      {
+       "front": "Réciproque Pythagore",
+       "back": "Calculer séparément BC² et AB²+AC²\nSi égaux → triangle rectangle en A"
+      },
+      {
+       "front": "Thalès (triangles emboîtés)",
+       "back": "AM/AB = AN/AC = MN/BC\n(M∈[AB], N∈[AC], MN∥BC)"
+      },
+      {
+       "front": "Réciproque Thalès",
+       "back": "Si AM/AB = AN/AC → MN∥BC"
+      },
+      {
+       "front": "Trigonométrie (CAH-SOH-TOA)",
+       "back": "cos = adj/hyp · sin = opp/hyp · tan = opp/adj"
+      },
+      {
+       "front": "Angles alternes-internes",
+       "back": "Deux droites parallèles coupées par une sécante → angles AI égaux; angles correspondants égaux"
+      },
+      {
+       "front": "Aires planes",
+       "back": "Triangle: base×h/2 | Disque: πr² | Trapèze: (a+b)×h/2"
+      },
+      {
+       "front": "Volumes",
+       "back": "Cube: a³ | Cylindre: πr²h | Cône: πr²h/3 | Sphère: 4πr³/3"
+      },
+      {
+       "front": "Agrandissement k",
+       "back": "Longueurs ×k · Aires ×k² · Volumes ×k³"
+      },
+      {
+       "front": "Symétries & transformations",
+       "back": "Axiale (axe), Centrale (point), Translation (vecteur), Rotation (centre+angle)"
+      },
+      {
+       "front": "Repérage sphère",
+       "back": "Latitude (N/S, équateur=0°) · Longitude (E/O, Greenwich=0°)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "label": "🗺 Histoire-Géo",
+   "color": "#f59e0b",
+   "slides": [
+    {
+     "label": "📋 Épreuve",
+     "hero": {
+      "heading": "Histoire-Géo + EMC · 2 h · 60 pts → /3 = 20/20",
+      "subtext": "HG 40 pts : Analyse docs (15) + Développement construit (18) + Repères (7) — EMC 20 pts (grille indépendante)",
+      "badge": "DNB 2026"
+     },
+     "kind": "takeaways",
+     "points": [
+      "**Développement construit : MINIMUM 30 LIGNES** — malus automatique sévère si < 30 lignes (BO n°33, 02/09/2025). Viser 35 lignes.",
+      "**Vocabulaire technique obligatoire** — citer les termes exacts (Shoah ≠ 'tueries', CEE ≠ UE avant 1992)",
+      "**Repères chronologiques** : mémoriser les dates clés par thème — une date fausse = point perdu",
+      "**EMC** : évalué séparément — nommer les institutions, les lois, les droits avec précision"
+     ]
+    },
+    {
+     "label": "🏛️ Totalitarismes",
+     "hero": {
+      "heading": "Thème 1 — Les totalitarismes (1919-1939)",
+      "subtext": "Nazisme · Stalinisme · Front Populaire",
+      "badge": "Histoire · XXe siècle"
+     },
+     "kind": "timeline",
+     "events": [
+      {
+       "date": "1919",
+       "title": "Traité de Versailles + SDN",
+       "desc": "Allemagne humiliée : pertes territoriales, réparations, 'clause de culpabilité' (art. 231). Création de la SDN pour garantir la paix collective."
+      },
+      {
+       "date": "1929",
+       "title": "Crise économique mondiale",
+       "desc": "Krach boursier de Wall Street. Chômage de masse. Ébranle les démocraties et favorise la montée des extrémismes en Europe."
+      },
+      {
+       "date": "1922–1953",
+       "title": "Totalitarisme soviétique — Staline",
+       "desc": "Collectivisation forcée (kolkhozes, Holodomor). Terreur de masse, Goulag, NKVD. Parti unique, culte du chef, propagande, contrôle total."
+      },
+      {
+       "date": "1933",
+       "title": "Hitler au pouvoir",
+       "desc": "Accession légale en janvier 1933. Parti nazi unique. Gestapo + SS. Embrigadement de la jeunesse. Lois de Nuremberg (1935) : Juifs exclus de la citoyenneté."
+      },
+      {
+       "date": "1936",
+       "title": "Front Populaire — Accords de Matignon",
+       "desc": "Réponse démocratique aux crises. Semaine de 40 heures, premiers congés payés, liberté syndicale."
+      }
+     ]
+    },
+    {
+     "label": "⚔️ WW2",
+     "hero": {
+      "heading": "Thème 2 — La Seconde Guerre mondiale (1939-1945)",
+      "subtext": "Shoah · Samudaripen · Résistance · CNR",
+      "badge": "Histoire · XXe siècle"
+     },
+     "kind": "timeline",
+     "events": [
+      {
+       "date": "1939-09-01",
+       "title": "Invasion de la Pologne",
+       "desc": "Début de la guerre. Grande Alliance se forme progressivement (UK, USA, URSS). Guerre totale : économies mobilisées, crimes de masse contre civils."
+      },
+      {
+       "date": "1940-06-18",
+       "title": "Appel du 18 juin — De Gaulle",
+       "desc": "Depuis Londres. Vichy abolit la République. Collaboration d'État : statuts antisémites (octobre 1940), co-organisation des rafles avec les Allemands."
+      },
+      {
+       "date": "1942-07",
+       "title": "Rafle du Vél d'Hiv",
+       "desc": "13 152 Juifs arrêtés par la POLICE FRANÇAISE, déportés vers les centres de mise à mort. Acte de collaboration d'État."
+      },
+      {
+       "date": "1943",
+       "title": "CNR — Jean Moulin",
+       "desc": "Jean Moulin unifie la Résistance intérieure sous l'autorité du général de Gaulle → Conseil National de la Résistance."
+      },
+      {
+       "date": "1945-05-08",
+       "title": "Capitulation de l'Allemagne",
+       "desc": "Fin de la guerre en Europe. Libération des camps. Découverte de l'ampleur des génocides."
+      },
+      {
+       "date": "1945-08",
+       "title": "Hiroshima et Nagasaki — Capitulation du Japon",
+       "desc": "6 et 9 août 1945. Premières bombes atomiques utilisées en temps de guerre. Capitulation japonaise le 2 septembre 1945."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

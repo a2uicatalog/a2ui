@@ -236,6 +236,15 @@ def gen_runbooks_index(known_types):
         with open(os.path.join(RUNBOOKS_DIR, name)) as f:
             rb = yaml.safe_load(f)
         unknown = [s["atom"] for s in rb.get("sequence", []) if s.get("atom") not in known_types]
+        # stampable runbooks (kind: stampable) declare their BOM in `composition`
+        # instead of `sequence` — validate those atom refs with the same check.
+        if rb.get("kind") == "stampable":
+            comp = rb.get("composition") or {}
+            comp_atoms = list((comp.get("slide_kind_atoms") or {}).values())
+            for key in ("container_atom", "hero_atom"):
+                if comp.get(key):
+                    comp_atoms.append(comp[key])
+            unknown += [a for a in comp_atoms if a not in known_types]
         if unknown:
             print(f"  ❌ {name}: unknown atom types {unknown}", file=sys.stderr)
             sys.exit(1)

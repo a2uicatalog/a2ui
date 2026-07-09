@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "runbookCount": 4,
+ "runbookCount": 5,
  "runbooks": [
   {
    "name": "architecture_session",
@@ -76,6 +76,77 @@
      "data_hint": "service health blocks over the launch window"
     }
    ]
+  },
+  {
+   "name": "learning_hub",
+   "kind": "stampable",
+   "description": "Learning Hub — a curriculum/revision study app: subject tabs across the top, slide pills per subject, each slide one learning interaction (timeline, drill, flashcards, quiz, takeaways, or method steps). First runbook-as-data instance (spec/runbook-pattern-v0.1.md in a2ui-private): the composition block below is the authored bill of materials; consumers shape content to the input_contract (see parsing_guide) and stamp via the MCP emit_runbook_surface tool. Judgment lives here, spent once — callers supply content only and cannot compose badly.\n",
+   "triggers": [
+    "learning hub",
+    "study app",
+    "revision app",
+    "course hub",
+    "curriculum",
+    "cursus"
+   ],
+   "surfaces": [
+    "google-apps-script-web"
+   ],
+   "layout": "hub",
+   "composition": {
+    "strategy": "subject_hub",
+    "container_atom": "hub",
+    "hub_defaults": {
+     "background": "#0f172a"
+    },
+    "hero_atom": "dark_hero",
+    "slide_kind_atoms": {
+     "timeline": "brevet_timeline",
+     "drill": "brevet_automatismes",
+     "flashcards": "flashcard_deck",
+     "quiz": "knowledge_check",
+     "takeaways": "key_takeaways",
+     "method": "steps"
+    },
+    "content_required": {
+     "timeline": [
+      "events"
+     ],
+     "drill": [
+      "questions"
+     ],
+     "flashcards": [
+      "cards"
+     ],
+     "quiz": [
+      "question",
+      "options",
+      "correct",
+      "explanation"
+     ],
+     "takeaways": [
+      "points"
+     ],
+     "method": [
+      "items"
+     ]
+    }
+   },
+   "input_contract": {
+    "title": "string (required) — app title",
+    "theme": "string (optional, light|dark, default light)",
+    "subjects": "array (required) of {label, color?, slides}. label may carry an emoji prefix (\"📐 Maths\"); color is the subject's hex accent.\n",
+    "slides": "each slide = {label, kind, hero?, ...content fields by kind}. label is the pill text (short, emoji prefix welcome). hero (optional) = {heading, subtext?, badge?} — rendered as a banner above the slide content.\n",
+    "content_by_kind": {
+     "timeline": "events: array of {date, title, desc}",
+     "drill": "questions: array of {question, answer}; duration?: seconds (default 1200)",
+     "flashcards": "cards: array of {front, back}; label_front?; label_back?; accent?",
+     "quiz": "question: string; options: array of strings; correct: 0-based index; explanation: string",
+     "takeaways": "points: array of strings (markdown **bold** supported)",
+     "method": "items: array of {label, text}"
+    }
+   },
+   "parsing_guide": "Consumers shape their source into the input_contract; parsing is the consumer's documented job, composition is the runbook's. From a knowledge-catalogue curriculum.md (typed-section grammar, knowledge-catalogue/SPEC.md): {#timeline} sections -> kind timeline (\"### YYYY | Title\" lines become events); {#drill} -> kind drill; {#concept}/{#glossary} -> kind flashcards; [!PIÈGE] callouts -> kind quiz; {#key_takeaways} -> kind takeaways; {#method} -> kind method. One subject per curriculum domain, slide labels short. All content field shapes are renderer-ground-truth (extracted from the live brevet app's payload).\n"
   },
   {
    "name": "sprint_review",

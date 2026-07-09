@@ -2048,6 +2048,13 @@ function _rehydrateV1Surface(surface) {
       if (k === 'id') continue;
       node[k] = src[k];
     }
+    // The legacy dialect this function reconstructs keys blocks by `type` (see
+    // a2ui-private/CLAUDE.md payload contract). The top-level dispatcher tolerates
+    // `component` (atom.gs renderAtoms), but the ~11 hand-written inline recursion
+    // sites (e.g. hub's slide loop, atoms_brevet.gs) read `.type` only — found live
+    // 2026-07-09: a promoted-hub v1.0 spike rendered the hub shell but every leaf
+    // atom came out empty. Stamping type here fixes all those sites at once.
+    if (!node.type && typeof node.component === 'string') node.type = node.component;
     if (Array.isArray(src.children) && src.children.every(function(x) { return typeof x === 'string'; })) {
       node.blocks = src.children.map(function(cid) { return resolveNode(cid, seen); }).filter(Boolean);
       delete node.children;
