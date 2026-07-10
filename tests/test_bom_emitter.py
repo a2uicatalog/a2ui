@@ -1,0 +1,105 @@
+"""bom_emitter — the generic BOM-driven emitter (runbook-as-data).
+
+Locks the deterministic replacement of Prompt 3: curriculum.md + BOM YAML →
+v1.0 envelope with ONE authored template per section kind, stamped over
+dataModel arrays via the ChildList TEMPLATE variant. The pairing test runs
+the REAL emitted envelope through the REAL decoder (atoms_v1_decode.gs via
+the bundle core) and the REAL renderers — emit and decode proven together,
+on real brevet content."""
+import json
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "knowledge-catalogue"))
+
+import bom_emitter  # noqa: E402
+import gen_mcp_apps_bundle as gen  # noqa: E402
+
+BOM = ROOT / "knowledge-catalogue" / "schemas" / "national-education" / "fr" / "dnb-2026.yaml"
+MATHS = ROOT / "knowledge-catalogue" / "brevet-2026-maths.curriculum.md"
+
+
+@pytest.fixture(scope="module")
+def envelope():
+    return bom_emitter.emit(BOM, [MATHS])
+
+
+def test_parser_reads_real_curriculum():
+    front, groups = bom_emitter.parse_curriculum(MATHS)
+    assert front["id"] == "brevet-2026-maths"
+    sections = [s for g in groups for s in g["sections"]]
+    assert len(sections) == 14
+    kinds = {s["kind"] for s in sections}
+    assert {"drill", "glossary", "concept"} <= kinds
+    assert all(s["competency"] for s in sections), "every section carries its anchor"
+
+
+def test_envelope_is_template_shaped(envelope):
+    comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
+    assert "root" in comps
+    # ONE authored subtree per kind — templates are shared, not per-section
+    tpl_ids = [i for i in comps if i.startswith("tpl_")]
+    assert len(tpl_ids) == len(set(tpl_ids))
+    # every content wrapper binds children via the TEMPLATE variant
+    template_wrappers = [c for c in comps.values()
+                         if isinstance(c.get("children"), dict)]
+    assert template_wrappers, "no ChildList template bindings emitted"
+    for w in template_wrappers:
+        assert set(w["children"]) == {"componentId", "path"}
+        assert w["children"]["componentId"] in comps
+    # content lives in the data model, not in components
+    dm = envelope["createSurface"]["dataModel"]
+    maths = dm["subjects"][0]
+    assert any("drill" in sl for sl in maths["slides"])
+    drill_items = next(sl["drill"] for sl in maths["slides"] if "drill" in sl)
+    assert drill_items[0]["questions"], "drill table extracted to questions"
+
+
+def test_bom_atom_map_drives_component_choice(envelope):
+    comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
+    # fr-dnb BOM (or SPEC default): drill -> brevet_automatismes, concept -> flashcard_deck
+    assert comps["tpl_drill_atom"]["component"] == "brevet_automatismes"
+    assert comps["tpl_concept"]["component"] == "flashcard_deck"
+
+
+def test_piege_downgrade_is_declared_not_silent(envelope):
+    e = envelope["_emitter"]
+    assert e["piege_downgrades"] > 0, "maths curriculum has PIÈGE callouts"
+    comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
+    assert comps["tpl_piege"]["component"] == "callout"   # no invented MCQs
+    assert not any(c.get("component") == "knowledge_check"
+                   for c in comps.values())
+
+
+def test_pairing_emit_decodes_and_renders_real_content(envelope):
+    """The runbook-as-data proof: real curriculum in, real pixels out —
+    through the SAME decoder and renderers both surfaces ship."""
+    bundle = gen.build_bundle()
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", bundle, re.S)
+            if "a2ui-core" in b[:300]][0]
+    with tempfile.TemporaryDirectory() as td:
+        env_path = Path(td) / "env.json"
+        env_path.write_text(json.dumps(envelope, ensure_ascii=False))
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core + f"""
+var env = JSON.parse(require('fs').readFileSync({json.dumps(str(env_path))}, 'utf8'));
+var out = _rehydrateV1Surface(env.createSurface);
+var html = renderAtoms(out.blocks, {{theme: 'dark'}});
+console.log(JSON.stringify({{len: html.length,
+  err: html.indexOf('Error rendering') > -1 || html.indexOf('unknown or unsupported') > -1,
+  markers: ['Pythagore', 'Carrés parfaits', 'divisibilité', 'Mathématiques']
+    .map(function(m) {{ return html.indexOf(m) > -1; }})}}));
+""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=120)
+        assert p.returncode == 0, p.stderr[-1000:]
+        r = json.loads(p.stdout)
+    assert not r["err"], "emitted envelope rendered with errors"
+    assert all(r["markers"]), f"real content missing from render: {r['markers']}"
+    assert r["len"] > 5000
