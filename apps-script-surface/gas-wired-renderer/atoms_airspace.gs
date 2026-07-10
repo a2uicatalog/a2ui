@@ -55,6 +55,12 @@ _RENDERERS['airspace_command_deck'] = function(b) {
   var pollQid      = b.poll_question_id || '';
   var pollOpts     = b.poll_options     || [];
   var pollVals     = b.poll_values      || [];
+  // Declared fullscreen breaks out of every host container (asw-page 860px
+  // max-width, MCP Apps bundle body padding) — same escape the playbook uses.
+  var breakout     = fullscreen ?
+    '<style>html,body{margin:0;padding:0;overflow:hidden;}' +
+    '.asw-page{max-width:none!important;padding:0!important;margin:0!important;}' +
+    '.asw-page>h1{display:none!important;}</style>' : '';
 
   // ── Simulated flights ─────────────────────────────────────────────────────
   // Each flight: {callsign, type, alt ft, spd kt, bearing° from LFBO, dist nm, status, colour}
@@ -71,7 +77,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
 
   // ── Slate mode ────────────────────────────────────────────────────────────
   if (showSlate) {
-    return '<div style="background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';height:' + h + ';' +
+    return breakout + '<div style="background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';height:' + h + ';' +
       'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
       'font-family:\'Courier New\',monospace;position:relative;overflow:hidden;">' +
       '<div style="color:#00f2ff;font-size:0.65rem;letter-spacing:0.25em;opacity:0.5;margin-bottom:32px;">A2UI · AIRSPACE COMMAND DECK · BOOT SEQUENCE</div>' +
@@ -224,7 +230,7 @@ _RENDERERS['airspace_command_deck'] = function(b) {
   // ── Full HTML structure ───────────────────────────────────────────────────
   var tickerDur = Math.round(tickerText.length * 0.18 / (tickerSpeed / 45)) + 's';
 
-  return '<style>' +
+  return breakout + '<style>' +
     '@keyframes ' + uid + 'tk{from{transform:translateX(100vw);}to{transform:translateX(-100%);}}'  +
     '@keyframes ' + uid + 'blink{0%,100%{opacity:1;}50%{opacity:0.2;}}' +
     '@keyframes ' + uid + 'reticle{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}' +

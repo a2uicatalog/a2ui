@@ -217,6 +217,19 @@ console.log(JSON.stringify(results));
     assert not bad, f"preset demos broken: {json.dumps(bad, indent=1)}"
 
 
+def test_fullscreen_deck_breaks_out_of_host_chrome(core_js):
+    """height:'fullscreen' must actually take: the deck emits the host-chrome
+    breakout (bundle body padding, asw-page 860px max-width) — the 100vh div
+    alone still rendered inset 24px (the 'not full screen still' incident,
+    2026-07-10). A sized deck must NOT strip the host's chrome."""
+    breakout = ".asw-page{max-width:none!important"
+    full = _run_blocks(core_js, [{"type": "airspace_command_deck",
+                                  "height": "fullscreen"}])
+    assert breakout in full and "height:100vh" in full
+    sized = _run_blocks(core_js, [{"type": "airspace_command_deck"}])
+    assert breakout not in sized
+
+
 def test_declared_data_sources_inlined(bundle, core_js):
     """Network access is DECLARED (atoms/data-sources.yaml), never hand-wired:
     the registry must be inlined, the feed transports must read it, and the
