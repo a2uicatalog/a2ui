@@ -90,7 +90,8 @@ cases.forEach(function (c) {{
     threw: html.indexOf('THREW: ') === 0,
     error: html.indexOf('Error rendering') > -1,
     unknown: html.indexOf('unknown or unsupported atom') > -1,
-    degraded: html.indexOf('needs a live backend') > -1
+    degraded: html.indexOf('needs a live backend') > -1,
+    fetches: (html.match(/fetch\\((["'])https?:\\/\\/[^"']+\\1/g) || [])
   }};
 }});
 console.log(JSON.stringify(results));
@@ -215,6 +216,65 @@ console.log(JSON.stringify(results));
     bad = {t: r for t, r in results.items()
            if r["threw"] or r["error"] or r["unknown"] or r["len"] < 200}
     assert not bad, f"preset demos broken: {json.dumps(bad, indent=1)}"
+
+
+def test_csp_connect_conformance(sweep_results, bundle):
+    """A2 (ops runbook §8): CSP posture is catalogue DATA. Three layers:
+    declared yaml == compiled registry == bundle const (no drift between the
+    three copies); proxy_base sits inside the declared connect domains; and
+    every absolute fetch target ANY tagged atom renders resolves to a
+    declared connect domain. Upstream hosts may appear only as registry
+    declarations, never as fetch targets — the proxy is the only road out."""
+    declared = yaml.safe_load((ROOT / "atoms" / "data-sources.yaml").read_text())
+    domains = declared["csp"]["connect_domains"]
+
+    compiled = json.loads(
+        (ROOT / "public" / "catalogue" / "data-sources-v1.json").read_text())
+    assert compiled["csp"]["connect_domains"] == domains
+    assert any(compiled["proxy_base"].startswith(d) for d in domains)
+
+    inlined = re.search(r"var A2UI_DATA_SOURCES = (.+?);\n", bundle)
+    assert inlined, "registry const missing from bundle"
+    const = json.loads(inlined.group(1))
+    assert const["csp"]["connect_domains"] == domains
+    assert const["proxy_base"] == compiled["proxy_base"]
+
+    def origin_ok(url):
+        return any(url.startswith(d + "/") or url == d for d in domains)
+
+    # behavioral layer: fetch targets in every tagged atom's rendered output
+    bad = {t: r["fetches"] for t, r in sweep_results.items()
+           if any(not origin_ok(f.split("(", 1)[1][1:-1]) for f in r["fetches"])}
+    assert not bad, f"undeclared fetch origins rendered: {json.dumps(bad, indent=1)}"
+
+    # static layer: no absolute-URL fetch literal in the bundle text either
+    for quote, url in re.findall(r"""fetch\((["'])(https?://[^"']+)\1""", bundle):
+        assert origin_ok(url), f"undeclared fetch literal in bundle: {url}"
+
+
+def test_gallery_page_reconciles_with_catalog():
+    """A3 (ops runbook §8): the gallery is generated, so a generator
+    regression ships silently unless the output is reconciled against the
+    catalog: every stable mcp-apps-tagged atom gets exactly one render
+    button, every button has an entry in the examples map, and the map
+    parses. 1:1:1 — no orphans in either direction."""
+    html = (ROOT / "public" / "surfaces" / "mcp-apps" / "index.html").read_text()
+    buttons = re.findall(r'data-atom="([^"]+)"', html)
+    assert len(buttons) == len(set(buttons)), "duplicate render buttons"
+
+    m = re.search(r"A2UI_GALLERY_EXAMPLES = (.+?);\n", html)
+    assert m, "examples map missing from gallery page"
+    examples = json.loads(m.group(1))
+
+    schema = yaml.safe_load((ROOT / "atoms" / "schema.yaml").read_text())
+    tagged = {a["type"] for a in schema["blocks"]
+              if "mcp-apps" in ((a.get("surfaces") or {}).get("works_on") or [])
+              and a.get("stage", "stable") == "stable"}
+
+    assert set(buttons) == tagged, (
+        f"buttons≠catalog: extra={sorted(set(buttons)-tagged)[:5]} "
+        f"missing={sorted(tagged-set(buttons))[:5]}")
+    assert set(examples) == set(buttons), "examples map ≠ buttons"
 
 
 def test_fullscreen_deck_breaks_out_of_host_chrome(core_js):
