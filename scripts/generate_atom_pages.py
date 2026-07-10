@@ -152,6 +152,11 @@ _EXAMPLE_BLOCKS = {
         {"id": "close",
          "blocks": [{"type": "body", "text": "Wrap-up."}]}]},
     "sparkline": {"type": "sparkline", "data": [3, 5, 2, 8, 6, 9], "color": "#00f2ff"},
+    # Full-screen by default in the playground: the command deck is designed
+    # as a full-viewport surface — a 520px letterbox is the exception, not
+    # the rule (Curtis, 2026-07-10).
+    "airspace_command_deck": {"type": "airspace_command_deck", "height": "fullscreen",
+        "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control"},
 }
 
 PAGE_CSS = """
@@ -1023,7 +1028,7 @@ PLAYGROUND_PRESETS = [
         "blocks": [
             {"type": "adsb_feed", "name": "adsb1", "refresh": 15},
             {"type": "metar_feed", "name": "wx1", "station": "LFBO"},
-            {"type": "airspace_command_deck", "height": 520,
+            {"type": "airspace_command_deck", "height": "fullscreen",
              "data_source": "adsb1", "weather_source": "wx1",
              "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control",
              "ticker_text": "✈ A2UI CATALOG PLAYGROUND · MCP APPS VIEW · LIVE ADS-B VIA DECLARED DATA PROXY · SIMULATED UNTIL THE FEED ANSWERS ✈"}]}},
@@ -1075,6 +1080,13 @@ MCP_APPS_HOST_JS = r"""
   var renderBtn = document.getElementById('mcp-play-render');
   var linkBtn = document.getElementById('mcp-play-link');
   var errEl = document.getElementById('mcp-play-err');
+
+  // Public hook: the surface page's atom gallery loads examples through this.
+  window.__a2uiPlaygroundLoad = function (payload) {
+    errEl.textContent = '';
+    editor.value = JSON.stringify(normalize(payload), null, 2);
+    if (viewReady) send(payload);
+  };
 
   var presetBox = document.getElementById('mcp-presets');
   if (presetBox) {
@@ -1340,14 +1352,27 @@ def generate_surface_page(surface, atoms):
         if hero else f"{len(atoms)} atoms available on this surface"
     )
 
+    is_playground = surface == "mcp-apps"
     items_html = ""
+    gallery_examples = {}
     for atom in atoms:
         atom_type    = atom.get("type", "")
         desc         = atom.get("compact_description") or atom.get("description", "")
         display_name = atom_type.replace("_", " ").title()
-        has_preview  = atom_type in _RENDERER_TYPES and _web_renderer is not None and not is_gas
+        has_preview  = (atom_type in _RENDERER_TYPES and _web_renderer is not None
+                        and not is_gas and not is_playground)
 
-        if has_preview:
+        if is_playground:
+            # Astryx move, on our own rails: the gallery is a LIST on the
+            # left of your scroll; the render happens in the live MCP Apps
+            # view at the top. Example payloads ship in one map below.
+            block = dict(_EXAMPLE_BLOCKS.get(atom_type)
+                         or json.loads(example_payload(atom)))
+            block["component"] = atom_type
+            gallery_examples[atom_type] = block
+            action = (f'<button class="try-btn a2ui-render-btn" data-atom="{atom_type}">'
+                      f'Render in live view ↑</button>')
+        elif has_preview:
             action = live_preview(atom)
         else:
             url    = make_renderer_url(atom)
@@ -1361,6 +1386,25 @@ def generate_surface_page(surface, atoms):
   </div>
   {action}
 </div>"""
+
+    gallery_script = ""
+    if is_playground and gallery_examples:
+        examples_json = json.dumps(gallery_examples, ensure_ascii=False).replace("</script", "<\\/script")
+        gallery_script = f"""<script>
+// catalogue-left / render-right: each gallery item loads its example into
+// the live MCP Apps view at the top (window.__a2uiPlaygroundLoad from the
+// shared host JS).
+var A2UI_GALLERY_EXAMPLES = {examples_json};
+document.addEventListener('click', function (e) {{
+  var btn = e.target.closest('.a2ui-render-btn');
+  if (!btn) return;
+  var block = A2UI_GALLERY_EXAMPLES[btn.dataset.atom];
+  if (!block || !window.__a2uiPlaygroundLoad) return;
+  window.__a2uiPlaygroundLoad({{ theme: 'dark', blocks: [block] }});
+  var frame = document.querySelector('.mcp-host-frame');
+  if (frame) frame.scrollIntoView({{ behavior: 'smooth' }});
+}});
+</script>"""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1395,6 +1439,7 @@ def generate_surface_page(surface, atoms):
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
+{gallery_script}
 {_cursor_glow_html()}
 </body>
 </html>"""

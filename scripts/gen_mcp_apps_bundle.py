@@ -196,7 +196,7 @@ HANDSHAKE = """
     jsonrpc: '2.0',
     id: initId,
     method: 'ui/initialize',
-    params: { appCapabilities: { availableDisplayModes: ['inline'] } }
+    params: { appCapabilities: { availableDisplayModes: ['inline', 'fullscreen'] } }
   });
 })();
 """.strip()
