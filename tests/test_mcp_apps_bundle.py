@@ -168,6 +168,21 @@ def test_rocket_panel_sourced_from_renderer_not_handport(bundle):
     assert "position:fixed;top:0;right:0;width:50%;height:100%" in bundle
 
 
+def test_no_script_block_self_terminates(bundle):
+    # A raw `</script` inside a JS string is fine for Node's parser but ends
+    # the WHOLE <script> element for the browser's HTML parser, dumping the
+    # rest of the bundle into the DOM as text (the 'Video placeholder'
+    # incident, 2026-07-10). node --check cannot catch this; only an
+    # HTML-level check can.
+    body = bundle[bundle.index("<body"):]
+    blocks = re.findall(r"<script>(.*?)</script>", body, re.S)
+    assert len(blocks) == 3, f"expected 3 script blocks, found {len(blocks)}"
+    for i, block in enumerate(blocks):
+        assert "</script" not in block, f"script block {i} contains a raw </script"
+        # and the escape actually survived into the output
+    assert r"<\/script" in bundle
+
+
 def test_bundle_size_guard(bundle):
     # Catches accidental inclusion of Code.gs / schema snapshots / vendored
     # blobs. Raw concat is ~1.2 MB today.

@@ -910,6 +910,16 @@ MCP_APPS_HERO_HTML = """
 .mcp-host-frame iframe{width:100%;min-height:920px;border:0;display:block;background:#fff}
 .mcp-protocol-note{font-size:13px;color:var(--muted);margin-bottom:40px;padding-top:20px;border-top:1px solid var(--border)}
 .mcp-protocol-note code{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:'SF Mono',Monaco,monospace;font-size:12px;color:var(--text)}
+.mcp-playground{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:32px}
+.mcp-playground-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mcp-indigo);margin-bottom:10px}
+.mcp-playground textarea{width:100%;min-height:220px;background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:#9ecbff;resize:vertical;box-sizing:border-box}
+.mcp-playground textarea:focus{outline:none;border-color:var(--mcp-indigo)}
+.mcp-playground-row{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--mcp-indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
+.mcp-play-btn:hover{background:#818cf8}
+.mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.mcp-play-btn.ghost:hover{border-color:var(--mcp-indigo);color:var(--mcp-indigo)}
+.mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
 </style>
 
 <div class="mcp-badge">Just launched · MCP Apps surface</div>
@@ -930,6 +940,16 @@ MCP_APPS_HERO_HTML = """
 
 <div class="mcp-host-frame">
   <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html" title="A2UI MCP Apps view"></iframe>
+</div>
+
+<div class="mcp-playground">
+  <div class="mcp-playground-label">Playground — edit the payload, re-render the view</div>
+  <textarea id="mcp-playground-json" spellcheck="false" aria-label="A2UI payload JSON"></textarea>
+  <div class="mcp-playground-row">
+    <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
+    <button class="mcp-play-btn ghost" id="mcp-play-link">Copy link</button>
+    <span class="mcp-play-err" id="mcp-play-err"></span>
+  </div>
 </div>
 
 <p class="mcp-protocol-note">
@@ -971,6 +991,88 @@ MCP_APPS_HERO_HTML = """
     }
   };
 
+  // ---- playground wiring ----
+  var editor = document.getElementById('mcp-playground-json');
+  var renderBtn = document.getElementById('mcp-play-render');
+  var linkBtn = document.getElementById('mcp-play-link');
+  var errEl = document.getElementById('mcp-play-err');
+
+  var viewReady = false;
+  var hashDone = false;
+  var hashPayload = null;
+
+  function send(payload) {
+    iframe.contentWindow.postMessage({
+      jsonrpc: '2.0',
+      method: 'ui/notifications/tool-result',
+      params: {
+        content: [{ type: 'text', text: 'Rendered A2UI atoms in the MCP Apps view.' }],
+        structuredContent: payload
+      }
+    }, '*');
+    setStatus('live', 'Rendered ' + ((payload.blocks || []).length) + ' blocks via ui/notifications/tool-result');
+  }
+
+  function maybeStart() {
+    if (!viewReady || !hashDone) return;
+    var payload = hashPayload || FIXTURE.structuredContent;
+    editor.value = JSON.stringify(payload, null, 2);
+    send(payload);
+  }
+
+  // #p= in the fragment: gzip + base64url, '=' stripped — the exact encoding
+  // scripts/make_url.py emits, so agents can mint playground links with the
+  // existing tooling.
+  function b64uToBytes(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+  }
+
+  (function decodeHash() {
+    var m = location.hash.match(/[#&]p=([^&]+)/);
+    if (!m || typeof DecompressionStream === 'undefined') { hashDone = true; maybeStart(); return; }
+    try {
+      var stream = new Blob([b64uToBytes(m[1])]).stream().pipeThrough(new DecompressionStream('gzip'));
+      new Response(stream).text().then(function (txt) {
+        try { hashPayload = JSON.parse(txt); } catch (e) { hashPayload = null; }
+        hashDone = true; maybeStart();
+      }).catch(function () { hashDone = true; maybeStart(); });
+    } catch (e) { hashDone = true; maybeStart(); }
+  })();
+
+  renderBtn.addEventListener('click', function () {
+    errEl.textContent = '';
+    var payload;
+    try { payload = JSON.parse(editor.value); }
+    catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
+    if (!viewReady) { errEl.textContent = 'View not ready yet'; return; }
+    send(payload);
+  });
+
+  linkBtn.addEventListener('click', function () {
+    errEl.textContent = '';
+    var payload;
+    try { payload = JSON.parse(editor.value); }
+    catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
+    if (typeof CompressionStream === 'undefined') { errEl.textContent = 'Link encoding needs a newer browser'; return; }
+    var stream = new Blob([JSON.stringify(payload)]).stream().pipeThrough(new CompressionStream('gzip'));
+    new Response(stream).arrayBuffer().then(function (buf) {
+      var bytes = new Uint8Array(buf);
+      var bin = '';
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      var enc = btoa(bin).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
+      var url = location.origin + location.pathname + '#p=' + enc;
+      navigator.clipboard.writeText(url).then(function () {
+        linkBtn.textContent = 'Copied ✓';
+        setTimeout(function () { linkBtn.textContent = 'Copy link'; }, 2000);
+      }).catch(function () { errEl.textContent = url; });
+    });
+  });
+
   window.addEventListener('message', function (ev) {
     if (ev.source !== iframe.contentWindow) return;
     var msg = ev.data;
@@ -991,13 +1093,9 @@ MCP_APPS_HERO_HTML = """
     }
 
     if (msg.method === 'ui/notifications/initialized') {
-      setStatus('', 'View ready — delivering fixture payload…');
-      iframe.contentWindow.postMessage({
-        jsonrpc: '2.0',
-        method: 'ui/notifications/tool-result',
-        params: FIXTURE
-      }, '*');
-      setStatus('live', 'Live — rendered via ui/notifications/tool-result');
+      setStatus('', 'View ready — delivering payload…');
+      viewReady = true;
+      maybeStart();
       return;
     }
   });

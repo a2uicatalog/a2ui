@@ -154,6 +154,17 @@ def partial_body(name):
     return text[len("<script>"):-len("</script>")]
 
 
+def escape_script_close(js):
+    """`</script` inside a JS string literal is invisible to Node's parser but
+    terminates the WHOLE <script> element for the browser's HTML parser —
+    everything after it dumps into the DOM as text (the 2026-07-10 'Video
+    placeholder' incident: atom.gs carries 4 unescaped closers that the GAS
+    HtmlService pipeline never tripped over). `<\\/script` is byte-identical
+    once the string is evaluated, so the wholesale replace is safe — the same
+    transform every JS bundler applies."""
+    return js.replace("</script", "<\\/script")
+
+
 def build_bundle():
     atom_styles = (RENDERER_DIR / "AtomStyles.html").read_text().strip()
 
@@ -164,11 +175,15 @@ def build_bundle():
             assert "_RENDERERS[" in src, f"{f.name}: no renderers — wrong include?"
         core_parts.append(f"// ==== {f.name} ====\n{src}")
     core_parts.append(class_c_overrides())
-    core = "\n\n".join(core_parts)
+    core = escape_script_close("\n\n".join(core_parts))
 
-    client = "\n\n".join(
+    client = escape_script_close("\n\n".join(
         f"// ==== {name} ====\n{partial_body(name)}" for name in PARTIALS
-    )
+    ))
+
+    for label, block in (("core", core), ("client", client), ("handshake", HANDSHAKE)):
+        assert "</script" not in block, \
+            f"{label} block still contains a raw </script — would truncate in the browser"
 
     return f"""<!doctype html>
 <html>

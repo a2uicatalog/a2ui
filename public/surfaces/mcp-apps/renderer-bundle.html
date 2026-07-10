@@ -1219,7 +1219,7 @@ _RENDERERS['quiz_question'] = function(b) {
 
   var expHtml = explanation ? '<div class="asw-quiz-explain" id="' + uid + '-explain">' + _markdownToHtml(explanation) + '</div>' : '';
 
-  var initScript = '<script>(function(){ initQuiz(' + JSON.stringify(uid) + ',' + correctIdx + ',' + JSON.stringify(atomId) + '); })();</script>';
+  var initScript = '<script>(function(){ initQuiz(' + JSON.stringify(uid) + ',' + correctIdx + ',' + JSON.stringify(atomId) + '); })();<\/script>';
 
   return '<div class="asw-quiz" id="' + uid + '-quiz">' +
          '<div class="asw-quiz-label">Question</div>' +
@@ -1242,7 +1242,7 @@ _RENDERERS['fill_in_blank'] = function(b) {
     return '<input class="asw-fib-input" id="' + uid + '-inp-' + i + '" data-idx="' + i + '" placeholder="…" autocomplete="off">';
   });
 
-  var initScript = '<script>(function(){ initFillInBlank(' + JSON.stringify(uid) + ',' + JSON.stringify(atomId) + '); })();</script>';
+  var initScript = '<script>(function(){ initFillInBlank(' + JSON.stringify(uid) + ',' + JSON.stringify(atomId) + '); })();<\/script>';
 
   return '<div class="asw-fib" id="' + uid + '-fib">' +
          '<div class="asw-fib-label">Fill in the blank</div>' +
@@ -1294,7 +1294,7 @@ _RENDERERS['match_exercise'] = function(b) {
     rightsHtml += '<div class="asw-match-item" id="' + uid + '-r-' + r + '" data-side="right" data-idx="' + r + '">' + _esc(rights[r].text) + '</div>';
   }
 
-  var initScript = '<script>(function(){ initMatchExercise(' + JSON.stringify(uid) + ',' + JSON.stringify(atomId) + ',' + JSON.stringify(correctMap) + '); })();</script>';
+  var initScript = '<script>(function(){ initMatchExercise(' + JSON.stringify(uid) + ',' + JSON.stringify(atomId) + ',' + JSON.stringify(correctMap) + '); })();<\/script>';
 
   return '<div class="asw-match">' +
          '<div class="asw-match-label">Matching Exercise</div>' +
@@ -4867,7 +4867,7 @@ _RENDERERS['sheet_form'] = function(b) {
     + '.withFailureHandler(function(err){btn.disabled=false;btn.textContent="Retry";alert("Error: "+err.message);})'
     + '.a2uiSheetFormSubmit(' + JSON.stringify(sheet) + ',data,' + JSON.stringify(ssId) + ');'
     + '});'
-    + '})();</script>';
+    + '})();<\/script>';
 
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
     + titleHtml
