@@ -1913,6 +1913,7 @@ function _actionAdsbQuery(payload) {
 
 var _WIRED_ATOM_ALIASES = {
   'text_input': 'form_input',
+  'number_input': 'form_input',   // numeric variant travels via block.input_type (G3)
   'data_table': 'data_table_sortable'
 };
 
@@ -1951,6 +1952,7 @@ function _renderWiredSurface(payload, navSlug) {
     Object.keys(props).forEach(function(k) { block[k] = props[k]; });
     block.type      = _WIRED_ATOM_ALIASES[rawType] || rawType;
     block.component = el.component;
+    if (rawType === 'number_input' && !block.input_type) block.input_type = 'number';
 
     if (Array.isArray(block.columns)) {
       block.columns = block.columns.map(function(c) {

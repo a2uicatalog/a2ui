@@ -734,6 +734,13 @@ var _a2uiBridge = {
       if (typeof window._a2uiInboundFlights === 'function') {
         window._a2uiInboundFlights(Array.isArray(val) ? val : []);
       }
+    } else if (prop === 'match_rows' || prop === 'player_names') {
+      // standings_table wired mode (atoms_competition.gs): the atom registers
+      // a fold hook keyed by its data-a2ui-standings uid; route both feeds in.
+      var stEl = el.querySelector('[data-a2ui-standings]');
+      var stId = stEl && stEl.getAttribute('data-a2ui-standings');
+      var stFn = stId && window._A2UI_STANDINGS && window._A2UI_STANDINGS[stId];
+      if (stFn) stFn(prop, Array.isArray(val) ? val : []);
     } else if (prop === 'href') {
       var a = el.tagName === 'A' ? el : el.querySelector('a');
       if (a) { a.href = String(val); a.style.pointerEvents = val ? '' : 'none'; a.style.opacity = val ? '' : '0.4'; }

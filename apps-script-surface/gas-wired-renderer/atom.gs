@@ -2502,13 +2502,23 @@ _RENDERERS['form_input'] = function(b) {
   var name = b.name || ('input_' + uid);
   var placeholder = b.placeholder || '';
   var value = b.value || '';
-  var type = b.type || 'text';
+  // input_type wins over type: the wired dialect overwrites block.type with the
+  // ATOM name (Code.gs _renderWiredSurface), so `type: number` silently became
+  // text there — number_input aliases through input_type instead (G3, 2026-07-10).
+  var type = b.input_type || b.type || 'text';
   var required = b.required ? ' required' : '';
   var hint = b.hint || '';
   var error = b.error || '';
 
   var validTypes = ['text', 'email', 'number', 'url', 'password'];
   if (validTypes.indexOf(type) === -1) type = 'text';
+  var numAttrs = '';
+  if (type === 'number') {
+    if (b.min  !== undefined) numAttrs += ' min="'  + _esc(b.min)  + '"';
+    if (b.max  !== undefined) numAttrs += ' max="'  + _esc(b.max)  + '"';
+    if (b.step !== undefined) numAttrs += ' step="' + _esc(b.step) + '"';
+    numAttrs += ' inputmode="numeric"';
+  }
 
   return '<style>' +
     '.fi-wrap-' + uid + '{margin-bottom:16px;}' +
@@ -2521,7 +2531,7 @@ _RENDERERS['form_input'] = function(b) {
     '<div class="fi-wrap-' + uid + '">' +
     (label ? '<label class="fi-label" for="fi-' + uid + '">' + _esc(label) + (b.required ? ' <span style="color:#dc2626">*</span>' : '') + '</label>' : '') +
     '<input class="fi-input" id="fi-' + uid + '" type="' + _esc(type) + '" name="' + _esc(name) + '"' +
-    ' placeholder="' + _esc(placeholder) + '" value="' + _esc(value) + '"' + required + '>' +
+    ' placeholder="' + _esc(placeholder) + '" value="' + _esc(value) + '"' + numAttrs + required + '>' +
     (hint ? '<div class="fi-hint">' + _esc(hint) + '</div>' : '') +
     (error ? '<div class="fi-error">' + _esc(error) + '</div>' : '') +
     '</div>';

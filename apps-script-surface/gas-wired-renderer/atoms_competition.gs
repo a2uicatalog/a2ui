@@ -59,7 +59,86 @@ _RENDERERS['content_tabs'] = function(b) {
 //   primary_label — header for the sort column (optional, default "PTS")
 //   columns       — extra numeric column headers (optional, e.g. ["Points Won","+/-"])
 //   rows          — required [{name, played?, primary, values?[], highlight?}]
+// Wired mode (G2, americano-true-ui-gap §3): `wired: true` renders an empty
+// shell + registers a client-side FOLD over match rows delivered through the
+// DOM bridge ('match_rows' / 'player_names' props — same hook pattern as the
+// deck's 'flights'). The fold computes P/W/D/L/PF/PA/± and 3-1-0 league points
+// per player and re-renders — judgment folded into the DOMAIN atom, zero new
+// engine ops (the client derivation op set stays frozen). Row shape expected
+// from the append-only sheet: one row per round {round, mN_team_a, mN_score_a,
+// mN_team_b, mN_score_b, ...}; team strings are player NUMBERS ("1 & 8");
+// duplicate saves of a round: LAST row wins (append-only honesty).
 _RENDERERS['standings_table'] = function(b) {
+  if (b.wired) {
+    var wuid = 'stw' + Math.random().toString(36).substr(2, 6);
+    var num = 'font-variant-numeric:tabular-nums;text-align:right;';
+    var th  = 'padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
+              'color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);';
+    var td  = 'padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
+    return '<div data-a2ui-standings="' + wuid + '" style="overflow-x:auto;margin:1.2rem 0;">' +
+      '<table style="border-collapse:collapse;width:100%;">' +
+      '<thead><tr>' +
+        '<th style="' + th + num + '">#</th>' +
+        '<th style="' + th + 'text-align:left;">Player</th>' +
+        '<th style="' + th + num + '">P</th>' +
+        '<th style="' + th + num + '">PTS</th>' +
+        '<th style="' + th + num + '">PF</th>' +
+        '<th style="' + th + num + '">PA</th>' +
+        '<th style="' + th + num + '">+/-</th>' +
+      '</tr></thead>' +
+      '<tbody data-a2ui-standings-body="1"><tr><td colspan="7" style="' + td +
+        'text-align:center;color:var(--muted,#5f6368);">No scores yet — save a round below.</td></tr></tbody>' +
+      '</table></div>' +
+      '<script>(function(){' +
+      'var TD=' + JSON.stringify(td) + ',NUM=' + JSON.stringify(num) + ';' +
+      'var st={scores:null,names:null};' +
+      'function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[c];});}' +
+      'function team(s){return String(s).split("&").map(function(x){return x.trim();}).filter(Boolean);}' +
+      'function fold(){' +
+        'var el=document.querySelector("[data-a2ui-standings=\\"' + wuid + '\\"]");' +
+        'if(!el)return;var body=el.querySelector("[data-a2ui-standings-body]");if(!body)return;' +
+        'if(!Array.isArray(st.scores)||!st.scores.length)return;' +
+        // last row per round wins (append-only sheet)
+        'var byRound={};st.scores.forEach(function(r){if(r&&r.round!==undefined&&r.round!=="")byRound[r.round]=r;});' +
+        'var nameOf={};' +
+        'if(Array.isArray(st.names)&&st.names.length){var nr=st.names[st.names.length-1];' +
+          'Object.keys(nr).forEach(function(k){var m=k.match(/^p(\\d+)$/);if(m&&String(nr[k]).trim())nameOf[m[1]]=String(nr[k]).trim();});}' +
+        'var stats={};function P(n){if(!stats[n])stats[n]={n:n,played:0,w:0,d:0,l:0,pf:0,pa:0};return stats[n];}' +
+        'Object.keys(byRound).forEach(function(rk){var row=byRound[rk];' +
+          'for(var mi=1;mi<=8;mi++){' +
+            'var ta=row["m"+mi+"_team_a"],tb=row["m"+mi+"_team_b"];' +
+            'var sa=row["m"+mi+"_score_a"],sb=row["m"+mi+"_score_b"];' +
+            'if(ta===undefined||tb===undefined)continue;' +
+            'sa=parseFloat(sa);sb=parseFloat(sb);' +
+            'if(isNaN(sa)||isNaN(sb))continue;' +      // unscored match: skip, never fake zeros
+            'team(ta).forEach(function(p){var s=P(p);s.played++;s.pf+=sa;s.pa+=sb;' +
+              'if(sa>sb)s.w++;else if(sa<sb)s.l++;else s.d++;});' +
+            'team(tb).forEach(function(p){var s=P(p);s.played++;s.pf+=sb;s.pa+=sa;' +
+              'if(sb>sa)s.w++;else if(sb<sa)s.l++;else s.d++;});' +
+          '}' +
+        '});' +
+        'var list=Object.keys(stats).map(function(k){var s=stats[k];' +
+          's.pts=s.w*3+s.d;s.diff=s.pf-s.pa;return s;});' +
+        'if(!list.length)return;' +
+        'list.sort(function(a,b){return (b.pts-a.pts)||(b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n));});' +
+        'body.innerHTML=list.map(function(s,i){' +
+          'var lead=i===0;' +
+          'var rs=lead?"background:rgba(99,102,241,0.08);font-weight:700;":"";' +
+          'var label=nameOf[s.n]?nameOf[s.n]:("Player "+s.n);' +
+          'return "<tr style=\\""+rs+"\\">"+' +
+            '"<td style=\\""+TD+NUM+(lead?"color:var(--a2ui-accent,#6366f1);":"")+"\\">"+(i+1)+"</td>"+' +
+            '"<td style=\\""+TD+"\\">"+esc(label)+"</td>"+' +
+            '"<td style=\\""+TD+NUM+"\\">"+s.played+"</td>"+' +
+            '"<td style=\\""+TD+NUM+"font-weight:700;\\">"+s.pts+"</td>"+' +
+            '"<td style=\\""+TD+NUM+"\\">"+s.pf+"</td>"+' +
+            '"<td style=\\""+TD+NUM+"\\">"+s.pa+"</td>"+' +
+            '"<td style=\\""+TD+NUM+"\\">"+((s.diff>0?"+":"")+s.diff)+"</td>"+' +
+          '"</tr>";}).join("");' +
+      '}' +
+      'window._A2UI_STANDINGS=window._A2UI_STANDINGS||{};' +
+      'window._A2UI_STANDINGS["' + wuid + '"]=function(prop,val){st[prop==="player_names"?"names":"scores"]=val;fold();};' +
+      '})();<\/script>';
+  }
   var rows = (b.rows || []).slice().sort(function(x, y) { return (y.primary || 0) - (x.primary || 0); });
   if (!rows.length) return '';
   var extra = b.columns || [];
