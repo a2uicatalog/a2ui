@@ -162,6 +162,9 @@ HANDSHAKE = """
     var root = document.getElementById('a2ui-root');
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark');
     root.innerHTML = renderAtoms(payload.blocks || [], { theme: payload.theme });
+    // Overlay-aware layout: constrain flowing content to the left half only
+    // when an atom DECLARES itself a right-half overlay.
+    root.classList.toggle('a2ui-with-overlay', !!root.querySelector('[data-a2ui-overlay]'));
     // innerHTML-injected <script> tags never execute (browsers block it);
     // interactive atoms ship inline <script>, so re-create + re-append each
     // one to actually run it.
@@ -267,9 +270,10 @@ def build_bundle():
 {atom_styles}
 <style>
 body {{ padding: 24px; }}
-/* gdm_rocket_panel is a fixed right-half overlay (matches its original
-   layout) -- keep flowing content in the left half so nothing sits under it. */
-#a2ui-root {{ max-width: 50%; box-sizing: border-box; }}
+/* Applied by paint() ONLY when the payload contains a declared right-half
+   overlay atom (data-a2ui-overlay, e.g. gdm_rocket_panel) -- everything else
+   gets the full viewport. */
+#a2ui-root.a2ui-with-overlay {{ max-width: 50%; box-sizing: border-box; }}
 </style>
 </head>
 <body class="asw-page">

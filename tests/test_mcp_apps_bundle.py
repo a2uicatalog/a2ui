@@ -166,6 +166,18 @@ def test_rocket_panel_sourced_from_renderer_not_handport(bundle):
     assert not hasattr(gen, "GDM_ROCKET_PANEL_JS")
     assert "_RENDERERS['gdm_rocket_panel']" in bundle
     assert "position:fixed;top:0;right:0;width:50%;height:100%" in bundle
+    # the overlay DECLARES itself so layout can react to it
+    assert 'data-a2ui-overlay="right-half"' in bundle
+
+
+def test_layout_is_overlay_aware(bundle):
+    # The 50% content constraint applies ONLY when the rendered payload
+    # declares a right-half overlay atom — every other payload (e.g. the
+    # ATC deck) gets the full viewport. Regression for the 2026-07-10
+    # "half-screen radar" screenshot.
+    assert "a2ui-with-overlay" in bundle
+    assert "root.classList.toggle('a2ui-with-overlay'" in bundle
+    assert "#a2ui-root { max-width: 50%" not in bundle  # the old static squeeze
 
 
 def test_presets_render(core_js):

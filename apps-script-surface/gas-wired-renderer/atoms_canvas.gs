@@ -1796,7 +1796,7 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
     // Matches the original gdm-rocket-panel Lit component's layout exactly:
     // fixed, right half, full height, non-interactive overlay (z-index 50 =
     // its "back" layer default; no "front"/layer=150 variant needed here).
-    '<div id="' + uid + 'w" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
+    '<div id="' + uid + 'w" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
       'pointer-events:none;z-index:50;background:transparent;">' +
       '<canvas id="' + uid + 'c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>' +
     '</div>' +
