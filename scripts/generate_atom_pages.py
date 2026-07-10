@@ -8,6 +8,7 @@ Run:
 """
 import base64
 import json
+import re
 import sys
 import zlib
 from pathlib import Path
@@ -176,33 +177,125 @@ _EXAMPLE_BLOCKS = {
         "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control"},
 }
 
-PAGE_CSS = """
-<style>
-:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
+# ── v0.3 design system (approved 2026-07-10) ────────────────────────────────
+# Tokens = a2ui-private/tests/design_handoff_nav_theme/tokens.css v0.2 verbatim.
+# Light lives on plain :root so a page that never sets data-theme still gets a
+# full token set; lifted dark only via [data-theme="dark"] (light is the
+# default, dark is a toggle — per the approved handoff, not OS-derived).
+# Legacy var names (--card/--muted/--cyan/--green) alias into the new tokens so
+# every pre-v0.3 rule and the MCP hero inherit the theme without edits.
+SITE_BASE_CSS = """
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
+  --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
+  --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);
+  --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
+  --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);
+  --warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
+  --glow:0 4px 24px oklch(58% 0.19 277 / .14);
+  --header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
+  --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
+  --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);
+  --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
+  --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);
+  --warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);
+  --header-glass:oklch(33% 0.025 255 / .72);
+  --grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
-body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
-nav{font-size:13px;color:var(--muted);margin-bottom:32px}
-nav a{color:var(--cyan);text-decoration:none}
-nav a:hover{text-decoration:underline}
-h1{font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
-.desc{font-size:1.15rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
-.label{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-mark{width:20px;height:20px;border-radius:6px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+@media(max-width:700px){.site-nav{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.08!important}
+"""
+
+# Theme init — MUST run before first paint (inline in <head>) or dark-toggle
+# users get a light flash. Storage is try/catch-wrapped: localStorage THROWS in
+# the MCP Apps view (opaque origin — gap G4); it degrades to session-only.
+SITE_HEAD_JS = """<script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>"""
+
+SITE_FOOT_JS = """<script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+</script>"""
+
+
+def site_header(active=""):
+    """Shared sticky glass header — identical on every surface (the v0.3 nav fix)."""
+    def cur(k):
+        return ' aria-current="page"' if k == active else ""
+    return f"""<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <nav class="site-nav">
+      <a href="/"{cur('atoms')}>Atoms</a>
+      <a href="/surfaces/mcp-apps"{cur('playground')}>Playground</a>
+      <a href="/renderer"{cur('renderer')}>Renderer</a>
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>"""
+
+
+PAGE_CSS = """
+<style>""" + SITE_BASE_CSS + """
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2);text-decoration:none}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
 .section{margin-bottom:40px}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
-.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.25);color:var(--cyan)}
-.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.25);color:#ffc400}
-pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;overflow-x:auto;margin:12px 0 24px}
-pre code{color:var(--text);font-size:13px;font-family:monospace}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:var(--warn)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
 table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
 th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
 td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
-td:first-child{color:var(--text);font-weight:600;font-family:monospace}
-.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-decoration:none}
-.back:hover{border-color:var(--cyan);color:var(--cyan)}
-.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--bg);background:var(--cyan);border-radius:6px;padding:8px 18px;text-decoration:none;letter-spacing:.03em}
-.try-btn:hover{background:#00d4e0}
-.preview-box{background:#fff;border-radius:8px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
 .preview-box *{max-width:100%}
 .preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
 .preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
@@ -210,8 +303,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:monospace}
 .preview-box h2,.preview-box h3{color:#111}
 .preview-box a{color:#0969da}
 .preview-box ul{color:#333}
-footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-footer a{color:var(--cyan);text-decoration:none}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
 </style>
 """
 
@@ -640,12 +734,15 @@ def render_page(atom):
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{desc or compact}">
+  {SITE_HEAD_JS}
   {PAGE_CSS}
 </head>
 <body>
-  <nav>
-    <a href="https://{DOMAIN}">A2UI Catalog</a> /
-    <a href="https://{DOMAIN}/.well-known/ai-catalog.json">ARD Catalog</a> /
+  {site_header("atoms")}
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
     atoms / {atom_type}
   </nav>
 
@@ -676,79 +773,83 @@ def render_page(atom):
     <pre><code>{ard_entry(atom)}</code></pre>
   </div>
 
-  <a class="back" href="https://{DOMAIN}/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
   {try_btn}
 
-  <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
-    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>
+  <div class="deploy-box">
+    <div class="label">Deploy your own renderer</div>
     <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
     <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
 cd apps-script-surface/gas-schema-renderer
 clasp push &amp;&amp; clasp deploy</code></pre>
-    <a href="https://{DOMAIN}/renderer" style="display:inline-block;margin-top:12px;font-size:12px;color:#818cf8;text-decoration:none;">Full deploy guide →</a>
+    <a href="/renderer">Full deploy guide →</a>
   </div>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span>MIT License</span>
   </footer>
+  </div>
+  {SITE_FOOT_JS}
 {_cursor_glow_html()}
 </body>
 </html>"""
 
 
 INDEX_CSS = """
-<style>
-:root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
-body{max-width:1100px;margin:0 auto;padding:48px 24px 96px}
-header{margin-bottom:40px}
-h1{font-size:2.8rem;font-weight:900;letter-spacing:-2px;margin-bottom:6px;color:#fff;text-shadow:0 0 30px rgba(0,242,255,.7),0 0 60px rgba(0,242,255,.4),0 0 100px rgba(0,242,255,.2)}
-.tagline{font-size:1.15rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:.01em}
-.sub{color:var(--muted);font-size:1rem;margin-bottom:24px}
-.sub a{color:var(--cyan);text-decoration:none}
-.launch-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px 18px;margin-bottom:24px;text-decoration:none;transition:border-color .15s,background .15s}
-.launch-banner:hover{border-color:#6366f1;background:rgba(99,102,241,.14)}
-.launch-badge{flex-shrink:0;padding:4px 12px;border-radius:999px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.5);color:#8183f4;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+<style>""" + SITE_BASE_CSS + """
+header.hero{margin-bottom:36px;position:relative}
+.halo{position:absolute;inset:-90px -10% auto;height:260px;pointer-events:none;background:radial-gradient(ellipse 55% 100% at 50% 0%,oklch(58% 0.19 277 / .10),transparent 70%)}
+:root[data-theme="dark"] .halo{background:radial-gradient(ellipse 55% 100% at 50% 0%,oklch(72% 0.16 277 / .14),transparent 70%)}
+h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;margin-bottom:2px;text-wrap:balance}
+.tagline{position:relative;font-size:1.15rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content}
+.sub{position:relative;color:var(--muted);font-size:1rem;margin-bottom:14px}
+.sub a{color:var(--accent-2);text-decoration:none}
+.hero-stats{position:relative;display:flex;gap:26px;margin-bottom:22px}
+.hero-stats div{font-size:12px;color:var(--muted)}
+.hero-stats b{display:block;font-size:19px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.launch-banner{position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:22px;text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.launch-banner:hover{border-color:var(--accent);box-shadow:var(--glow)}
+.launch-badge{flex-shrink:0;padding:4px 12px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
 .launch-text{flex:1;min-width:200px;font-size:13px;color:var(--text)}
-.launch-arrow{flex-shrink:0;font-size:12px;font-weight:700;color:#8183f4}
-.hero-demo{display:grid;grid-template-columns:1fr 44px 1fr;align-items:start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px}
+.launch-arrow{flex-shrink:0;font-size:12px;font-weight:700;color:var(--accent)}
+.hero-demo{position:relative;display:grid;grid-template-columns:1fr 44px 1fr;align-items:start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:22px;box-shadow:var(--shadow)}
 .hero-demo-arrow{align-self:center}
 .hero-demo-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.hero-demo-json{background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-size:12.5px;line-height:1.55;color:#9ecbff;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;margin:0}
-.hero-demo-arrow{font-size:24px;color:var(--cyan);text-align:center}
-.hero-demo-render{min-width:0}
-.hero-demo-render h2{font-size:1.25rem;margin:0 0 10px;color:var(--text)}
+.hero-demo-json{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-size:12.5px;line-height:1.55;color:var(--text);overflow-x:auto;font-family:ui-monospace,'SF Mono',Monaco,monospace;margin:0}
+.hero-demo-arrow{font-size:24px;color:var(--accent);text-align:center}
+.hero-demo-render{min-width:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 18px;color:#1a1a1a}
+.hero-demo-render h2{font-size:1.25rem;margin:0 0 10px;color:#111}
 @media(max-width:760px){.hero-demo{grid-template-columns:1fr;gap:8px}.hero-demo-arrow{transform:rotate(90deg);padding:4px 0}}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
-#search{flex:1;min-width:220px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:14px;color:var(--text);outline:none}
-#search:focus{border-color:var(--cyan)}
+#search{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;font-size:14px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+#search:focus{border-color:var(--accent);box-shadow:var(--glow)}
 #search::placeholder{color:var(--muted)}
 .filters{display:flex;gap:6px;flex-wrap:wrap}
-.filter{font-size:13px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:.03em}
-.filter.active,.filter:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,242,255,.07)}
-.count{font-size:12px;color:var(--muted);margin-left:auto}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.atom-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;display:block;transition:border-color .15s,background .15s}
-.atom-card:hover{border-color:var(--cyan);background:rgba(0,242,255,.04)}
-.atom-card h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.filter{font-size:13px;font-weight:650;padding:5px 14px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;letter-spacing:.02em;text-decoration:none;transition:all .15s}
+.filter:hover{border-color:var(--border-strong);color:var(--text)}
+.filter.active{background:var(--accent-soft-bg);color:var(--accent);border-color:transparent}
+.count{font-size:12px;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.atom-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform .16s ease,border-color .16s,box-shadow .16s;content-visibility:auto;contain-intrinsic-size:auto 240px}
+.atom-card:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-2px)}
+.stage{height:104px;overflow:hidden;flex-shrink:0;background:#fff;background-image:radial-gradient(#e9ebf3 1px,transparent 1px);background-size:14px 14px;border-bottom:1px solid var(--border)}
+.stage-inner{width:200%;transform:scale(.5);transform-origin:top left;padding:16px;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a}
+.stage-inner *{max-width:100%}
+.stage-empty{display:grid;place-items:center}
+.stage-empty code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12px;color:#6b7280;background:#f2f3f8;border:1px solid #e2e4ee;border-radius:6px;padding:4px 10px}
+.card-meta{padding:12px 15px 13px;display:flex;flex-direction:column;flex:1}
+.atom-card h3{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px}
 .atom-card p{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-footer{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;margin-top:8px}
+.card-footer{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;margin-top:auto}
 .badges{display:flex;flex-wrap:wrap;gap:4px;flex:1;align-items:center}
-.badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px}
-.bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.2);color:var(--cyan)}
-.bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.2);color:#ffc400}
-.bnew{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.4);color:#8183f4}
-.badge-more{font-size:12px;color:var(--muted);white-space:nowrap}
-.origin{font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;letter-spacing:.06em;white-space:nowrap;flex-shrink:0}
-.origin-a2ui{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc}
-.origin-uiverse{background:rgba(236,72,153,.12);border:1px solid rgba(236,72,153,.3);color:#f9a8d4}
-.origin-openui{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
-.origin-other{background:rgba(156,163,175,.1);border:1px solid rgba(156,163,175,.25);color:#9ca3af}
+.badge{font-size:11px;font-weight:650;padding:3px 9px;border-radius:6px}
+.bs{background:var(--surface-2);color:var(--muted)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));color:var(--warn)}
+.bnew{background:var(--accent-soft-bg);color:var(--accent)}
+.badge-more{font-size:11px;color:var(--muted);white-space:nowrap}
+.origin{font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;background:var(--surface-2);color:var(--muted)}
 .hidden{display:none}
-footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-footer a{color:var(--cyan);text-decoration:none}
 </style>
 """
 
@@ -784,6 +885,53 @@ document.querySelectorAll('.filter').forEach(btn => {
 search.addEventListener('input', update);
 </script>
 """
+
+
+# Preview-first cards (v0.3): the hub card renders a MINIATURE of its atom —
+# the catalog's own thesis (JSON in, UI out) applied to the browse page.
+# Guards (all logged, never silent): script-bearing previews are skipped
+# (467 inline scripts on one page), oversized previews are skipped (page
+# weight), and skipped atoms fall back to a mono type-chip stage so the grid
+# rhythm holds. content-visibility:auto keeps offscreen cards unrendered.
+_PREVIEW_MAX_CHARS = 3500
+_preview_stats = {"rendered": 0, "no_renderer": 0, "script": 0, "oversize": 0, "error": 0}
+
+
+def card_stage(atom):
+    atom_type = atom.get("type", "")
+    reason = None
+    html = ""
+    if atom_type not in _RENDERER_TYPES or _web_renderer is None:
+        reason = "no_renderer"
+    else:
+        block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
+        try:
+            html = _web_renderer.render([block])
+        except Exception:
+            reason = "error"
+        else:
+            low = html.lower()
+            if not html.strip():
+                reason = "error"
+            elif "<script" in low:
+                reason = "script"
+            elif "<iframe" in low:
+                # embeds (YouTube etc.) would fire real network loads per card
+                reason = "script"
+            elif len(html) > _PREVIEW_MAX_CHARS:
+                reason = "oversize"
+            elif low.count("<div") != low.count("</div"):
+                # unbalanced markup would eat the card's own structure
+                reason = "error"
+    if reason:
+        _preview_stats[reason] += 1
+        return f'<div class="stage stage-empty"><code>{atom_type}</code></div>'
+    # The whole card is an <a>; nested anchors are illegal HTML and make the
+    # parser close the card early (meta spills out unstyled). Previews are
+    # pointer-events:none decoration — neutralize links to spans.
+    html = re.sub(r"<a\b", "<span", html).replace("</a>", "</span>")
+    _preview_stats["rendered"] += 1
+    return f'<div class="stage"><div class="stage-inner">{html}</div></div>'
 
 
 def generate_index(atoms):
@@ -837,8 +985,9 @@ def generate_index(atoms):
         cards_html += (
             f'<a class="atom-card" href="/atoms/{atom_type}" '
             f'data-name="{atom_type}" data-desc="{desc.lower()}" data-surfaces="{surfaces_str}">'
-            f'<h3>{display}</h3><p>{desc}</p>'
-            f'<div class="card-footer"><div class="badges">{badges}</div>{origin_html}</div></a>\n'
+            f'{card_stage(atom)}'
+            f'<div class="card-meta"><h3>{display}</h3><p>{desc}</p>'
+            f'<div class="card-footer"><div class="badges">{badges}</div>{origin_html}</div></div></a>\n'
         )
 
     # The concept, performed rather than described: a real payload rendered by
@@ -861,13 +1010,22 @@ def generate_index(atoms):
   <title>A2UI Atomic Catalog</title>
   <meta name="description" content="467 typed UI atoms for web, Google Meet, Apps Script, and Chat. ARD-compliant catalog.">
   <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json">
+  {SITE_HEAD_JS}
   {INDEX_CSS}
 </head>
 <body>
-  <header>
+  {site_header("atoms")}
+  <div class="wrap">
+  <header class="hero">
+    <div class="halo"></div>
     <h1>A2UI Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
     <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
+    <div class="hero-stats">
+      <div><b>{len(atoms)}</b>atoms</div>
+      <div><b>{len([s for s in all_surfaces if s not in HIDDEN_SURFACES])}</b>surfaces</div>
+      <div><b>v1.0.0</b>spec</div>
+    </div>
     <a class="launch-banner" href="/surfaces/mcp-apps">
       <span class="launch-badge">Just launched</span>
       <span class="launch-text">MCP Apps is a first-class surface — catalog atoms and curated content, live inside a sandboxed MCP host</span>
@@ -896,7 +1054,9 @@ def generate_index(atoms):
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
+  </div>
   {INDEX_JS}
+  {SITE_FOOT_JS}
 {_cursor_glow_html()}
 </body>
 </html>"""
@@ -929,14 +1089,14 @@ MCP_APPS_HERO_HTML = """
 .mcp-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
 .mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
-.mcp-status-dot.err{background:#f85149}
+.mcp-status-dot.err{background:var(--negative)}
 .mcp-host-frame{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px}
 .mcp-host-frame iframe{width:100%;min-height:920px;border:0;display:block;background:#fff}
 .mcp-protocol-note{font-size:13px;color:var(--muted);margin-bottom:40px;padding-top:20px;border-top:1px solid var(--border)}
 .mcp-protocol-note code{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:'SF Mono',Monaco,monospace;font-size:12px;color:var(--text)}
 .mcp-playground{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:32px}
 .mcp-playground-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mcp-indigo);margin-bottom:10px}
-.mcp-playground textarea{width:100%;min-height:220px;background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:#9ecbff;resize:vertical;box-sizing:border-box}
+.mcp-playground textarea{width:100%;min-height:220px;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:var(--text);resize:vertical;box-sizing:border-box}
 .mcp-playground textarea:focus{outline:none;border-color:var(--mcp-indigo)}
 .mcp-playground-row{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--mcp-indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
@@ -1266,7 +1426,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   label.play-chip{cursor:pointer}
   .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
   .mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
-  .mcp-status-dot.err{background:#f85149}
+  .mcp-status-dot.err{background:var(--negative)}
   #mcp-drawer-toggle{display:none}
   .play-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:rgba(12,17,23,.97);backdrop-filter:blur(10px);border-left:1px solid var(--border);padding:64px 18px 18px;transform:translateX(100%);transition:transform .25s ease;z-index:9;display:flex;flex-direction:column;gap:12px}
   #mcp-drawer-toggle:checked ~ .play-drawer{transform:translateX(0)}
@@ -1347,8 +1507,10 @@ def _cursor_glow_html():
                 break
         i += 1
     fn = effects[start:i + 1] + ";"
+    # v0.3: brand indigo (the atom's own default colour), dark-tuned screen
+    # blend; the light theme re-blends it via the SITE_BASE_CSS override.
     js = ("var _RENDERERS = {};\n" + fn +
-          "\nconsole.log(_RENDERERS['cursor_glow']({colour:'#00f2ff', size: 460, opacity: 0.12}));")
+          "\nconsole.log(_RENDERERS['cursor_glow']({colour:'#6366f1', size: 460, opacity: 0.12}));")
     try:
         out = subprocess.run(["node", "-e", js], capture_output=True, text=True, timeout=30)
         assert out.returncode == 0, out.stderr
@@ -1417,7 +1579,8 @@ document.addEventListener('click', function (e) {{
   if (!btn) return;
   var block = A2UI_GALLERY_EXAMPLES[btn.dataset.atom];
   if (!block || !window.__a2uiPlaygroundLoad) return;
-  window.__a2uiPlaygroundLoad({{ theme: 'dark', blocks: [block] }});
+  var siteTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  window.__a2uiPlaygroundLoad({{ theme: siteTheme, blocks: [block] }});
   var frame = document.querySelector('.mcp-host-frame');
   if (frame) frame.scrollIntoView({{ behavior: 'smooth' }});
 }});
@@ -1430,20 +1593,23 @@ document.addEventListener('click', function (e) {{
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display} Atoms — A2UI Atomic Catalog</title>
   <meta name="description" content="{len(atoms)} A2UI atoms for the {display} surface.">
+  {SITE_HEAD_JS}
   {PAGE_CSS}
   <style>
   .surface-atom{{border-bottom:1px solid var(--border);padding:28px 0}}
   .surface-atom:last-child{{border-bottom:none}}
   .sa-name{{font-size:1.1rem;font-weight:700;color:var(--text);text-decoration:none}}
-  .sa-name:hover{{color:var(--cyan)}}
+  .sa-name:hover{{color:var(--accent)}}
   .sa-desc{{font-size:14px;color:var(--muted);margin:4px 0 12px}}
-  .preview-box{{background:#fff;border-radius:8px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}}
+  .preview-box{{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}}
   .preview-box *{{max-width:100%}}
   </style>
 </head>
 <body>
-  <nav>
-    <a href="https://{DOMAIN}">A2UI Catalog</a> / surfaces / {surface}
+  {site_header("playground" if surface == "mcp-apps" else "atoms")}
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / surfaces / {surface}
   </nav>
 
   <h1>{display}</h1>
@@ -1456,6 +1622,8 @@ document.addEventListener('click', function (e) {{
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
+  </div>
+  {SITE_FOOT_JS}
 {gallery_script}
 {_cursor_glow_html()}
 </body>
@@ -1492,6 +1660,13 @@ def main():
 
     index_path = ROOT / "public" / "index.html"
     index_path.write_text(generate_index(unique))
+    # Never truncate silently: say exactly which hub cards got a live preview
+    # stage and why the rest fell back to the type-chip stage.
+    print(f"hub previews: {_preview_stats['rendered']} rendered, "
+          f"fallbacks — no_renderer {_preview_stats['no_renderer']}, "
+          f"script {_preview_stats['script']}, oversize {_preview_stats['oversize']}, "
+          f"error {_preview_stats['error']}; "
+          f"index.html {index_path.stat().st_size // 1024} KiB")
 
     # Surface pages
     surfaces_dir = ROOT / "public" / "surfaces"

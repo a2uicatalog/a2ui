@@ -5,12 +5,58 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Deploy your renderer — A2UI Catalog</title>
   <meta name="description" content="Deploy your own A2UI renderer in 4 commands. Open source, MIT licensed. You own the URL, you own the deployment.">
+  <script>
+  (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+  document.documentElement.setAttribute('data-theme',t)})();
+  </script>
   <style>
-    :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--indigo:#6366f1;--green:#3fb950}
+    /* v0.3 tokens — keep in sync with SITE_BASE_CSS in scripts/generate_atom_pages.py
+       (this page is hand-maintained, not generator-emitted) */
+    :root{
+      color-scheme:light;
+      --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
+      --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
+      --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);
+      --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
+      --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+      --code-bg:oklch(96% 0.01 255);--radius:12px;
+      --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
+      --glow:0 4px 24px oklch(58% 0.19 277 / .14);
+      --header-glass:oklch(100% 0 0 / .72);
+      --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+      --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--indigo:var(--accent);
+    }
+    :root[data-theme="dark"]{
+      color-scheme:dark;
+      --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
+      --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
+      --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);
+      --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
+      --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+      --code-bg:oklch(23% 0.02 255);
+      --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+      --glow:0 4px 28px oklch(72% 0.16 277 / .22);
+      --header-glass:oklch(33% 0.025 255 / .72);
+      --grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+    }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
-    body{max-width:860px;margin:0 auto;padding:48px 24px 96px}
-    a{color:var(--cyan);text-decoration:none}
+    html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+    .wrap{max-width:860px;margin:0 auto;padding:36px 24px 96px}
+    a{color:var(--accent-2);text-decoration:none}
+    a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+    .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+    .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+    .logo-mark{width:20px;height:20px;border-radius:6px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+    .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+    .site-nav a{font-size:13px;font-weight:600;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+    .site-nav a:hover{color:var(--text);background:var(--surface-2);text-decoration:none}
+    .site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+    .theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+    .theme-btn:hover{border-color:var(--border-strong)}
+    .gh-pill{font-size:12px;font-weight:650;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+    .gh-pill:hover{border-color:var(--border-strong);text-decoration:none}
+    @media(max-width:700px){.site-nav{display:none}}
     a:hover{text-decoration:underline}
 
     .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:40px}
@@ -30,7 +76,7 @@
     .step-body h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;margin-top:8px}
     .step-body p{font-size:14px;color:var(--muted);margin-bottom:12px}
 
-    pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px 20px;overflow-x:auto;font-size:13px;font-family:'SF Mono',Monaco,monospace;color:var(--text);position:relative}
+    pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:18px 20px;overflow-x:auto;font-size:13px;font-family:'SF Mono',Monaco,monospace;color:var(--text);position:relative}
     .copy-btn{position:absolute;top:10px;right:10px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:5px;color:var(--indigo);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.04em}
     .copy-btn:hover{background:rgba(99,102,241,.25)}
     .copy-btn.copied{color:var(--green);border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.1)}
@@ -43,10 +89,10 @@
     .feature p{font-size:13px;color:var(--muted);line-height:1.5}
 
     .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid var(--border)}
-    .btn-primary{display:inline-block;padding:12px 24px;background:var(--indigo);color:#fff;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.03em}
-    .btn-primary:hover{background:#818cf8;text-decoration:none}
-    .btn-secondary{display:inline-block;padding:12px 24px;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:14px;font-weight:600}
-    .btn-secondary:hover{border-color:var(--cyan);color:var(--cyan);text-decoration:none}
+    .btn-primary{display:inline-block;padding:12px 24px;background:var(--accent);color:var(--accent-contrast);border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.03em;transition:filter .15s,box-shadow .15s}
+    .btn-primary:hover{filter:brightness(1.08);box-shadow:var(--glow);text-decoration:none}
+    .btn-secondary{display:inline-block;padding:12px 24px;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:14px;font-weight:600;background:var(--surface)}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
 
     .note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:24px 0}
     .note strong{color:var(--text)}
@@ -55,6 +101,17 @@
   </style>
 </head>
 <body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <nav class="site-nav">
+      <a href="/">Atoms</a>
+      <a href="/surfaces/mcp-apps">Playground</a>
+      <a href="/renderer" aria-current="page">Renderer</a>
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
 
   <div class="breadcrumb">
     <a href="/">A2UI Catalog</a>
@@ -173,8 +230,15 @@ function doGet() {
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span>MIT License</span>
   </footer>
+  </div>
 
   <script>
+    document.addEventListener('click',function(e){
+      var b=e.target.closest('.theme-btn');if(!b)return;
+      var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+      r.setAttribute('data-theme',t);
+      try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+    });
     function copy(id, btn) {
       const pre = document.getElementById(id);
       const text = pre.innerText.replace(/COPY\s*$/, '').trim();
