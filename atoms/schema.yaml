@@ -10,6 +10,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     series_label: string
     series_url: url
@@ -60,6 +61,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
   source: *id001
@@ -73,6 +75,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: blockquote styling stripped — renders as plain text
@@ -89,6 +92,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as monospace text, no syntax highlighting
@@ -107,6 +111,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: monospace background stripped — use bullet_list instead
@@ -126,6 +131,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     items:
     - label: string (optional)
@@ -141,6 +147,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: hr not supported in Chat cards — omit or use heading instead
@@ -152,6 +159,7 @@ blocks:
     works_on:
     - web
     - google-meet-stage
+    - mcp-apps
     degraded_on:
     - surface: google-apps-script-web
       note: iframe embeds may be blocked by google-apps-script-web CSP in IFRAME sandbox
@@ -203,6 +211,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: external images may be blocked by Chat security policy — use Chat-hosted
@@ -222,6 +231,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: table layout may reflow — use two separate image blocks instead
@@ -246,6 +256,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: SVG may not render — use PNG export instead
@@ -263,6 +274,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: use repo_links instead — no network fetch at stage render time
@@ -289,6 +301,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: list styling stripped — renders as plain links
@@ -308,6 +321,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
     tags: list[string] (optional)
@@ -321,6 +335,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: border-left and background colour stripped — use bold text prefix instead
@@ -340,6 +355,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: custom list styling stripped — use bullet_list with manual numbering
@@ -360,6 +376,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: HTML tables not supported in Chat cards — use bullet_list or key_value
@@ -377,6 +394,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -401,6 +419,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: table layout stripped — use bullet_list with bold keys instead
@@ -422,6 +441,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: colour panels may not export cleanly — use two separate code blocks
@@ -448,6 +468,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: complex table layout not supported — use key_value + code block instead
@@ -478,6 +499,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: CSS :target lightbox may not work in iframe — images show without lightbox
@@ -504,6 +526,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -532,6 +555,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: only first slide renders — use gallery instead
@@ -557,6 +581,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: flexbox layout and custom styling stripped — use bullet_list with bold
@@ -581,6 +606,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: callout bubbles may not render inline — consider code + steps instead
@@ -609,6 +635,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: glow animations not rendered — displays as flat card
@@ -632,6 +659,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: animation not rendered — shows static bar
@@ -655,6 +683,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: background colours may vary — test or use plain text labels
@@ -681,6 +710,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -708,6 +738,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -739,6 +770,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -769,6 +801,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -797,6 +830,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -823,6 +857,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Only the metric value, label, and percentage will be rendered as text.
@@ -856,6 +891,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (descriptive label for the metric, e.g., 'Sales')
     current_value: string (the current formatted value, e.g., '$12,345')
@@ -877,6 +913,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -905,6 +942,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -936,6 +974,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     trend_direction: enum (up, down, stable) - determines the icon or arrow direction
     label: string (descriptive text for the trend, e.g., 'Improving', 'Declining',
@@ -955,6 +994,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a series of linked text elements without visual separators
@@ -979,6 +1019,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a set of buttons or text links. Complex styling and active
@@ -1011,6 +1052,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text list with emoji status markers; no connectors
@@ -1038,6 +1080,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a series of buttons or text links. Visual tab styling and active
@@ -1065,6 +1108,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a list of hyperlinks. Internal document anchors are not supported;
@@ -1085,6 +1129,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a simple list of questions and answers without interactive
@@ -1109,6 +1154,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     term: string (the term itself)
     definition: string (the explanation)
@@ -1129,6 +1175,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     number: integer (the footnote number)
     text: string (the footnote content)
@@ -1146,6 +1193,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a simple blockquote with text attribution; avatar image is
@@ -1174,6 +1222,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     value: string (the prominent number/statistic, e.g., "99%", "1.2M")
     label: string (descriptive text for the stat, e.g., "customer satisfaction")
@@ -1192,6 +1241,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1219,6 +1269,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1246,6 +1297,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1276,6 +1328,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1302,6 +1355,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1331,6 +1385,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a clickable link to the audio file, no embedded player.
@@ -1356,6 +1411,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     audio_url: string
     label: string
@@ -1372,6 +1428,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as an image followed by a clickable link to the PDF, without complex
@@ -1399,6 +1456,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     document_url: string
     label: string
@@ -1416,6 +1474,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as an image followed by a clickable link to the video, no play
@@ -1440,6 +1499,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a basic card with image, title, description, and link, without
@@ -1470,6 +1530,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as plain monospace text block; no colour highlighting.
@@ -1501,6 +1562,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders code snippets stacked vertically instead of side-by-side.
@@ -1524,6 +1586,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1552,6 +1615,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     image_url: string
     alt_text: string
@@ -1566,6 +1630,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a basic card with text and button; no custom icons, complex
@@ -1591,6 +1656,7 @@ blocks:
     - web
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Fixed positioning relative to Meet iframe; renders at iframe edge
@@ -1622,6 +1688,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1647,6 +1714,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a basic card with image, title, text, and button; limited layout
@@ -1669,6 +1737,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -1687,6 +1756,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as plain text; no custom background colors, rounded corners, or
@@ -1712,6 +1782,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as basic text; no custom icons, colors, or complex inline styling.
@@ -1730,6 +1801,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Can display static stars using Unicode characters or images, but no interactive
@@ -1755,6 +1827,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static arc at target value without mount animation
@@ -1781,6 +1854,7 @@ blocks:
     - google-meet-stage
     - google-chat
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Renders as a basic block with title, description, and button; limited
@@ -1804,6 +1878,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a series of lists or key-value pairs due to lack of table support.
@@ -1829,6 +1904,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     plan_name: string
     price: string
@@ -1852,6 +1928,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as stacked individual cards or sections within a single card.
@@ -1874,6 +1951,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     subject: string
     pros: array
@@ -1891,6 +1969,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as stacked lists of attributes and values for each item.
@@ -1915,6 +1994,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a list of key-value pairs.
@@ -1938,6 +2018,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a simplified list of products with their features, losing grid
@@ -1960,6 +2041,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as two stacked cards, losing the explicit 'VS' visual separation.
@@ -1989,6 +2071,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     items: array
 - type: capability_checklist
@@ -2004,6 +2087,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a simplified list of capabilities with text indicators for
@@ -2024,6 +2108,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2048,6 +2133,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2071,6 +2157,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2094,6 +2181,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2117,6 +2205,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2139,6 +2228,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2162,6 +2252,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2185,6 +2276,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2208,6 +2300,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2231,6 +2324,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -2259,6 +2353,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and author name; avatar and complex styling are
@@ -2282,6 +2377,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as text (e.g., '4.5 stars') or using emoji stars; visual styling
@@ -2303,6 +2399,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a limited number of small images or a text count; stacking/overlapping
@@ -2327,6 +2424,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a basic text list; avatars and rich formatting are not supported.
@@ -2349,6 +2447,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a limited number of stacked images or a text list of names;
@@ -2369,6 +2468,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and icon; banner styling and rich layout are not
@@ -2394,6 +2494,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and publication logo; card styling and rich layout
@@ -2420,6 +2521,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and expert name; avatar and rich formatting are
@@ -2446,6 +2548,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as basic text and author name; star rating may be shown as emojis
@@ -2470,6 +2573,7 @@ blocks:
     works_on:
     - web
     - google-meet-stage
+    - mcp-apps
     degraded_on:
     - surface: google-apps-script-web
       note: social platform iframes generally blocked by X-Frame-Options
@@ -2495,6 +2599,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Interactive copy-to-clipboard actions and prompt animations are disabled.
@@ -2521,6 +2626,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Nested toggle states and hover highlights are completely unavailable.
@@ -2543,6 +2649,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Tab switching logic feels slow or becomes unresponsive.
@@ -2566,6 +2673,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Layout shifts or responsive styling can clip wide URL strings.
@@ -2591,6 +2699,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Copy shortcuts and secret-masking toggle utilities are disabled.
@@ -2613,6 +2722,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Converts the warning wrapper box into a standard unstyled text list.
@@ -2634,6 +2744,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Discards button styles and shows plain text characters in brackets.
@@ -2655,6 +2766,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Wide table blocks introduce harsh horizontal scrolling on restricted screen
@@ -2679,6 +2791,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as unstyled plain text in brackets instead of a colored badge.
@@ -2699,6 +2812,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Box styling lost, collapses into standard text with manual prefix.
@@ -2719,6 +2833,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Converted into basic text without protective boundary boxes.
@@ -2737,6 +2852,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Interactive copy mechanics are disabled.
@@ -2758,6 +2874,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Clipboard API operations are blocked or unsupported.
@@ -2779,6 +2896,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: High-frequency scrollbars are restricted or difficult to navigate.
@@ -2800,6 +2918,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Dynamic node toggles and mouse interaction fully disabled.
@@ -2821,6 +2940,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Outer borders disappear, presenting as plain bullet lists.
@@ -2840,6 +2960,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Outer wrapper styling drops, showing standard paragraph text.
@@ -2859,6 +2980,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Target icons convert back to standard text bullets.
@@ -2878,6 +3000,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Timeline vertical paths and relative positioning can misalign.
@@ -2901,6 +3024,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Multi-column grouping panels flatten to markdown segments.
@@ -2923,6 +3047,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Rich link metadata cards degrade into simple bracketed URLs.
@@ -2942,6 +3067,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: File size badges and download icons are discarded.
@@ -2961,6 +3087,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Floating side positions collapse inline due to confined viewport.
@@ -2983,6 +3110,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as unstyled plain text instead of a color-coded label.
@@ -3003,6 +3131,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Collapses into plain unbordered body copy sentences.
@@ -3022,6 +3151,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Interactive checking performs sluggishly.
@@ -3043,6 +3173,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Hover tooltips and interactive gestures fail to initialise.
@@ -3065,6 +3196,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Falls back to raw text timing statement.
@@ -3084,6 +3216,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Live progression trackers fail to update.
@@ -3106,6 +3239,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: JavaScript popup triggers are blocked in restricted contexts.
@@ -3128,6 +3262,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Form input handling may block submissions.
@@ -3150,6 +3285,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Avatar drops, flattens to generic markdown text.
@@ -3172,6 +3308,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Flexbox card sizing fails to size uniformly.
@@ -3193,6 +3330,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Indexed list flattens into single unstyled lines.
@@ -3213,6 +3351,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Count animations and click actions trigger slowly.
@@ -3235,6 +3374,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   fields:
     mode: string (optional, "conviction_card"|"stat_card"|"carousel_slide", default
       "conviction_card")
@@ -3257,6 +3397,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Clip-to-copy actions are unavailable.
@@ -3279,6 +3420,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Callout cards break into fundamental text lines.
@@ -3299,6 +3441,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Async profile follow tracking may fail to sync.
@@ -3321,6 +3464,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: High frequency scroll monitoring triggers suffer from visual frame latency.
@@ -3343,6 +3487,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Sticky placement logic loses layout sync relative to video stages.
@@ -3364,6 +3509,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Cover visuals drop, returning unformatted markdown headers.
@@ -3385,6 +3531,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Scroll animation shifts generate noticeable redraw lag.
@@ -3406,6 +3553,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Progress bars convert to basic markdown links.
@@ -3425,6 +3573,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Live sandboxed tabs and result viewports fail to initialize.
@@ -3448,6 +3597,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Virtual environments hit thread execution limits within stages.
@@ -3469,6 +3619,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Script restrictions fallback to basic text links.
@@ -3489,6 +3640,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Resizing widgets fail to track width variations in streams.
@@ -3511,6 +3663,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Slide transitions update sluggishly over video layers.
@@ -3533,6 +3686,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Multi-frame rendering degrades during active screen streams.
@@ -3557,6 +3711,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Vector redraw calls strain stage runtime layers.
@@ -3581,6 +3736,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: CSS grid collapses; falls back to inline color names.
@@ -3596,6 +3752,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Sandboxed iframes blocked by stage security policy.
@@ -3621,6 +3778,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Renders as plain table.
@@ -3637,6 +3795,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Chart.js canvas rendering inconsistent in stage iframe.
@@ -3659,6 +3818,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Canvas rendering inconsistent in stage iframe.
@@ -3681,6 +3841,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Sorting interaction requires JS not available in stage.
@@ -3702,6 +3863,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Renders as plain text values.
@@ -3722,6 +3884,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: SVG sparklines may not render.
@@ -3740,6 +3903,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Colour indicators may not render.
@@ -3758,6 +3922,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Colour blocks may collapse.
@@ -3775,6 +3940,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Keyboard events captured by Meet.
@@ -3797,6 +3963,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Renders as plain link.
@@ -3816,6 +3983,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Renders as plain text line.
@@ -3838,6 +4006,7 @@ blocks:
     - web
     - email
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Footnotes not visible in viewport-fitted stage.
@@ -3855,6 +4024,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Overlay positioning unreliable in stage grid.
@@ -3874,6 +4044,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Expand interaction requires JS not available.
@@ -3892,6 +4063,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Voting interaction requires JS not available.
@@ -3912,6 +4084,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Hover not available; abbreviation shown plain.
@@ -3933,6 +4106,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Clipboard API may be blocked.
@@ -3954,6 +4128,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -3975,6 +4150,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -3998,6 +4174,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -4020,6 +4197,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -4043,6 +4221,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -4068,6 +4247,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -4095,6 +4275,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Google Chat has its own card input model — use key_value or action buttons
@@ -4137,6 +4318,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Use Chat card input widget instead
@@ -4169,6 +4351,7 @@ blocks:
   surfaces:
     works_on:
     - web
+    - mcp-apps
     incompatible_on:
     - surface: google-apps-script-web
       reason: no wired renderer yet — use form_input (label + required) on GAS surfaces
@@ -4198,6 +4381,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Use Chat card dropdown widget instead
@@ -4229,6 +4413,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Use Chat card radio widget instead
@@ -4262,6 +4447,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Use Chat card multi-select widget instead
@@ -4294,6 +4480,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Toggle switches render correctly; value capture requires stage-level routing
@@ -4324,6 +4511,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Non-functional in Chat cards
@@ -4356,6 +4544,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: Non-functional in Chat cards
@@ -4387,6 +4576,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: []
     incompatible_on:
     - surface: google-chat
@@ -4419,6 +4609,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Chips render correctly; click actions need stage WebSocket routing to
@@ -4453,6 +4644,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Cards render and are selectable; value capture requires stage-level routing
@@ -4486,6 +4678,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Renders and is interactive; action_url POST requires stage-level routing
@@ -4516,6 +4709,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     items:
       type: array
@@ -4532,6 +4726,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as plain code block without slot highlighting
@@ -4557,6 +4752,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     name: string. Model display name, e.g. "Claude Sonnet 4.6".
     provider: string (optional). Provider name, e.g. "Anthropic".
@@ -4582,6 +4778,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     user_label: string (optional, default "You"). Label above the user bubble.
     user: string. The user prompt text.
@@ -4602,6 +4799,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). Heading above the grid.
     items:
@@ -4622,6 +4820,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     average: number. Overall average rating (e.g. 4.3).
     total: number. Total number of ratings.
@@ -4643,6 +4842,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). Heading above the roadmap.
     periods:
@@ -4664,6 +4864,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). Heading above the list, e.g. "Notifications".
     items:
@@ -4682,6 +4883,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain text prefix with emoji icon; no colour or border styling
@@ -4708,6 +4910,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as space-separated text labels; no chip styling
@@ -4730,6 +4933,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on: null
     incompatible_on:
     - surface: google-chat
@@ -4763,6 +4967,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: some markup stripped by Chat card renderer; tables and code blocks fall
@@ -4787,6 +4992,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: SVG may not render; falls back to percentage list
@@ -4821,6 +5027,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     variant: string. Display variant — "info", "success", "warning", "neutral".
     title: string. Short bold label (e.g. "Tip", "Note", "Good to know").
@@ -4842,6 +5049,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain numbered list item; no card styling or excerpt block
@@ -4864,6 +5072,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as sequential key-value blocks; side-by-side layout not supported
@@ -4892,6 +5101,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain percentage text e.g. Label 82%; no bar visualisation
@@ -4915,6 +5125,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as "Used X / Y tokens (Z%)" plain text; no visual meter
@@ -4945,6 +5156,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain text with price; no image or badge styling
@@ -4974,6 +5186,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain order summary text; no colour or badge styling
@@ -5001,6 +5214,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as a simple text list of product names and quantities
@@ -5026,6 +5240,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain text with key and summary; no type icon or status badge
@@ -5055,6 +5270,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: multi-column layout collapses; renders as sequential column headings with
@@ -5084,6 +5300,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as plain uppercase text label; no colour background
@@ -5109,6 +5326,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: renders as a plain HTML table; no selection checkboxes or sort indicators
@@ -5141,6 +5359,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: renders as an indented plain text tree; no expand/collapse indicators
@@ -5165,6 +5384,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: renders as a static colour grid; tooltips unavailable
@@ -5191,6 +5411,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static select; no interactivity
@@ -5220,6 +5441,7 @@ blocks:
     - web
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Grid collapses to single column on narrow stage panels
@@ -5248,6 +5470,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a flat link list
@@ -5277,6 +5500,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: No custom form widget support
@@ -5303,6 +5527,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     incompatible_on:
     - surface: google-chat
       reason: No custom input widget support
@@ -5332,6 +5557,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     accent: string (optional, default hex for all bars)
@@ -5353,6 +5579,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     cols: integer (optional, default 4)
     accent: string (optional, default hex)
@@ -5371,6 +5598,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   children:
     blocks:
       shape: simple
@@ -5392,6 +5620,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     accent: string (optional, default hex)
@@ -5413,6 +5642,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     current: integer (required, 1-based index of active step)
     accent: string (optional, hex, default "#6366f1")
@@ -5431,6 +5661,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   children:
     left:
       shape: wrapper_single
@@ -5455,6 +5686,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (required, alias heading)
     subtitle: string (optional, alias subtext)
@@ -5479,6 +5711,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     accent: string (optional, default hex for all items)
@@ -5499,6 +5732,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     text: string (optional, markdown — renderer degrades to empty; provide title and/or text)
@@ -5518,6 +5752,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   children:
     blocks:
       shape: simple
@@ -5542,6 +5777,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     cols: integer (optional, default 4)
     accent: string (optional, default hex for all metrics)
@@ -5561,6 +5797,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     accent: string (optional, hex, default "#6366f1")
@@ -5581,6 +5818,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (required, markdown)
     subtitle: string (optional, markdown)
@@ -5602,6 +5840,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, default "← Back")
     url: string (optional, href)
@@ -5622,6 +5861,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     label: string (optional, centered in divider line)
     style: string (optional, "line"|"dashed"|"dots", default "line")
@@ -5639,6 +5879,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, group heading)
     layout: string (optional, "wrap"|"scroll", default "wrap")
@@ -5656,6 +5897,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   children:
     items:
       shape: wrapper_list
@@ -5679,6 +5921,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     name: string (required)
     role: string (optional)
@@ -5701,6 +5944,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     date: string (optional)
@@ -5721,6 +5965,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     risks: array (required). Array of {level ("critical"|"high"|"medium"|"low"), title,
@@ -5738,6 +5983,7 @@ blocks:
     - web
     - google-apps-script-web
     - pdf
+    - mcp-apps
   fields:
     title: string (optional)
     items: array (required). Array of {action, owner?, due?, status? ("open"|"in_progress"|"done")}
@@ -5755,6 +6001,7 @@ blocks:
     - web
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Grid collapses to single column on narrow panels
@@ -5784,6 +6031,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Background color may not render in all stage environments
@@ -5808,6 +6056,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as static final values; no animation
@@ -5837,6 +6086,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a linked thumbnail image only
@@ -5866,6 +6116,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Renders as a static bar list; no transitions
@@ -5896,6 +6147,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: email
       note: Renders as a static button list; no selection state
@@ -5927,6 +6179,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static icon and message only
@@ -5956,6 +6209,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as empty grey boxes without animation
@@ -5984,6 +6238,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static single-line row without animation
@@ -6018,6 +6273,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as fully-visible static text without animation
@@ -6053,6 +6309,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static card with a solid border; animation not captured
@@ -6088,6 +6345,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static gradient panel without animation
@@ -6122,6 +6380,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: background-image patterns may not render in Chat card containers
@@ -6154,6 +6413,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static styled button without animation
@@ -6189,6 +6449,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: CSS transform may not render correctly in all PDF engines
@@ -6221,6 +6482,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static dark panel without animation
@@ -6254,6 +6516,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-apps-script-side-panel
       note: Use direction "none" — translation offsets can clip against the 300px
@@ -6300,6 +6563,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static button without glow or animation
@@ -6335,6 +6599,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-apps-script-side-panel
       note: SVG width is constrained to 300px; use short from_label/to_label (≤6 chars)
@@ -6374,6 +6639,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static panel showing the final text only
@@ -6413,6 +6679,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders all words stacked vertically (overflow visible); use first word
@@ -6452,6 +6719,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static coloured circle without ring animation
@@ -6485,6 +6753,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as static completed text; no animation
@@ -6516,6 +6785,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as static number; no animation
@@ -6546,6 +6816,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static placeholder bubble; no animation
@@ -6572,6 +6843,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as plain text time string
@@ -6602,6 +6874,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as flat-coloured text (first gradient stop)
@@ -6632,6 +6905,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Content renders visible immediately (no scroll context)
@@ -6665,6 +6939,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as the final resolved text only
@@ -6694,6 +6969,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a fully-drawn static SVG path
@@ -6723,6 +6999,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-side-panel
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Renders as a flat dark card; mouse events may not propagate through Meet
@@ -6758,6 +7035,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: CSS :checked feedback works inside iframe but radio reset across slides
@@ -6791,6 +7069,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Inputs render but JS submit handler may be sandboxed — test in target
@@ -6824,6 +7103,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Click events work inside iframe; rendered as two-column grid
@@ -6852,6 +7132,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text block with no toggle — hint always visible
@@ -6883,6 +7164,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text badge name and description — no icon or visual
@@ -6914,6 +7196,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text score line — no visual card or animation
@@ -6950,6 +7233,7 @@ blocks:
     - web
     - google-meet-stage
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: pdf
       note: Renders as a static labelled progress bar — no animation or level-up effect
@@ -6980,6 +7264,7 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-meet-stage
       note: Renders as a simplified prev/next pill row — localStorage persistence
@@ -7017,6 +7302,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Renders as a plain text list of module titles and completion percentages
@@ -7043,6 +7329,7 @@ blocks:
     - google-meet-stage
     - pdf
     - google-apps-script-web
+    - mcp-apps
     degraded_on:
     - surface: google-chat
       note: Highlight background stripped — renders as plain text with annotation
@@ -7065,6 +7352,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: drive.readonly
   fields:
@@ -7082,6 +7373,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: spreadsheets
   fields:
@@ -7099,6 +7394,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: gmail.readonly
   fields:
@@ -7116,6 +7415,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: calendar.readonly
   fields:
@@ -7132,6 +7435,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: userinfo.email
   fields:
@@ -7148,6 +7455,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string. The button text.
     function_name: string. The name of the server-side V8 JavaScript function to call.
@@ -7164,6 +7472,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: calendar.readonly
   fields:
@@ -7180,6 +7492,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: spreadsheets
   fields:
@@ -7202,6 +7518,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -7246,6 +7566,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -7281,6 +7605,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -7324,6 +7652,10 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   processing:
     required_scope: spreadsheets
   fields:
@@ -7348,6 +7680,7 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
   connectors:
   - id: gas-native
     surfaces:
@@ -7392,6 +7725,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     colour: string (optional). Orb colour. Default
     size: integer (optional). Orb diameter in px. Default 380.
@@ -7411,6 +7745,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     colour: string (optional). Dot colour. Default
     length: integer (optional). Number of chain dots. Default 16.
@@ -7430,6 +7765,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     count: integer (optional). Particles per click. Default 14.
     colours: array (optional). Array of hex colour strings.
@@ -7451,6 +7787,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     radius: integer (optional). Spotlight radius px. Default 180.
     darkness: number (optional). Overlay opacity 0–1. Default 0.82.
@@ -7469,6 +7806,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     label: string (optional). Text label for the default pill style.
     content: string (optional). Raw HTML to use instead of the default pill.
@@ -7490,6 +7828,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     content: string (optional). Inner HTML rendered inside the card.
     title: string (optional). Card heading rendered above content.
@@ -7553,6 +7892,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string. Heading text.
     gradient: string (optional). CSS gradient value. Default indigo→violet→pink.
@@ -7574,6 +7914,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string. Quote body text.
     attribution: string (optional). Name or source shown below quote.
@@ -7594,6 +7935,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     value: string. The stat number or short value.
     prefix: string (optional). Text before value (e.g. "$", "~").
@@ -7616,6 +7958,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string. Text to reveal word by word.
     colour: string (optional). Text colour. Default rgba(255,255,255,0.92).
@@ -7637,6 +7980,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string. Label text (uppercased automatically).
     colour: string (optional). Accent colour. Default
@@ -7655,6 +7999,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     value: integer. Target number to count to.
     label: string (optional). Descriptor shown below the number.
@@ -7678,6 +8023,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string. Body text with **highlighted** words wrapped in double asterisks.
     size: string (optional). Font-size. Default 1.2rem.
@@ -7698,6 +8044,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string. Text content.
     gradient: string (optional). CSS gradient applied to text. Default indigo→pink.
@@ -7719,6 +8066,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     count: integer (optional). Number of particles. Default 65.
     colour: string (optional). Hex colour for particles and lines. Default
@@ -7741,6 +8089,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     nodes: array (optional). Array of {id, label} objects. Defaults to 6 labelled
       nodes.
@@ -7764,6 +8113,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     grid: integer (optional). Grid dimension N (N×N). Default 16.
     height_scale: number (optional). Vertical exaggeration multiplier. Default 1.0.
@@ -7789,6 +8139,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). HUD title line. Default "LFBO RWY 32L — A321neo DEPARTURE".
     airline: string (optional). ICAO airline code for accent colour — AIB, EZY, AFR,
@@ -7808,6 +8159,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). HUD title. Default "KOUROU ELA-4 — HEAVY LIFT INJECTION
       PROFILE".
@@ -7822,6 +8174,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). HUD title. Default "LFBO HELIPAD 2 — AIRBUS H160 HOVER
       PROFILE".
@@ -7838,6 +8191,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     airline: string (optional). Airline ICAO for A321neo accent — AIB, EZY, AFR, BAW,
       DLH, RYR. Default AIB.
@@ -7859,6 +8213,7 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
   fields:
     chyron_title: string (optional). Top-left headline overlay.
     chyron_subtitle: string (optional). Top-left subtitle — supports interpolated
@@ -7892,6 +8247,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   processing:
     required_scope: script.external_request
   fields:
@@ -8008,6 +8364,7 @@ blocks:
   surfaces:
     works_on: &id006
     - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
   source: *id007
@@ -8093,6 +8450,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     nav_slug: string (required). Slug of the destination named page.
     label: string (optional). Button label. Default "Continue →".
@@ -8170,6 +8528,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional). Card heading text.
     content: string (optional). Inner HTML content of the card.
@@ -8435,6 +8794,7 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-chat
+    - mcp-apps
   children:
     messages:
       shape: wrapper_list
@@ -9000,6 +9360,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -9042,6 +9406,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -9084,6 +9452,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -9126,6 +9498,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders sample data — live Google Workspace data requires an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -9162,6 +9538,10 @@ blocks:
     works_on:
     - google-apps-script-web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders fully but without persistence — progress and live data need an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -9193,6 +9573,10 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders fully but without persistence — progress and live data need an Apps Script deployment
   processing:
     pagination: hub_aggregating
   children:
@@ -9221,6 +9605,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     question: string (required). The comprehension question.
     options: array (required). Array of answer strings.
@@ -9239,6 +9624,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   processing:
     required_scope:
     - drive
@@ -9266,6 +9652,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     scenario: string (required). The situation or challenge presented to the learner.
     context: string (optional). Background context shown in italics above the scenario.
@@ -9284,6 +9671,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   processing:
     required_scope:
     - drive
@@ -9306,6 +9694,10 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders fully but without persistence — progress and live data need an Apps Script deployment
   fields:
     course: string (required). Course name on the certificate.
     issuer: string (optional). Issuing organisation name. Default "A2UI Learning".
@@ -9327,6 +9719,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     title: string (optional). Chart heading. Default "Skill Profile".
     accent: string (optional). Fill/stroke colour for current polygon. Default
@@ -9344,6 +9737,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     title: string (optional). Section heading. Default "Achievements".
     columns: integer (optional). Grid columns, max 6. Default 4.
@@ -9362,6 +9756,10 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders fully but without persistence — progress and live data need an Apps Script deployment
   processing:
     required_scope:
     - drive
@@ -9384,6 +9782,10 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders fully but without persistence — progress and live data need an Apps Script deployment
   fields:
     youtube_id: string (required). YouTube video ID.
     title: string (optional). Section heading above the player.
@@ -9402,6 +9804,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   connectors:
   - id: gas-native
     surfaces:
@@ -9434,6 +9837,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   processing:
     required_scope:
     - drive
@@ -9455,6 +9859,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     text: string (required). Body text passage. Annotated terms are replaced server-side.
     notes: array (required). Array of {term, explanation, color?} objects. First match
@@ -9472,6 +9877,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   processing:
     required_scope:
     - drive
@@ -9494,6 +9900,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     title: string (required). Case study title.
     situation: string (required). The scenario narrative.
@@ -9514,6 +9921,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     label: string (optional). Timer heading. Default "Study Timer".
     focus_mins: integer (optional). Focus period in minutes. Default 25.
@@ -9532,6 +9940,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     title: string (optional). Table heading. Default "Assessment Rubric".
     levels: array (optional). Performance level column headers. Default [Beginning,
@@ -9552,6 +9961,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   processing:
     required_scope:
     - drive
@@ -9575,6 +9985,10 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: renders fully but without persistence — progress and live data need an Apps Script deployment
   connectors:
   - id: gas-native
     surfaces:
@@ -9608,6 +10022,7 @@ blocks:
     - google-apps-script-web
     - web
     - google-meet-stage
+    - mcp-apps
   fields:
     label: string (optional). Small uppercase label above the bar.
     layout: string (optional). "horizontal" (default) or "vertical".
@@ -9627,6 +10042,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     accent: hex colour string. Sets --a2ui-accent CSS var used by all atoms as default
       accent.
@@ -9647,6 +10063,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     label: string (default "Print this page")
     align: left, center, or right
@@ -9666,6 +10083,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   processing:
     required_scope: drive.readonly
   fields:
@@ -9690,6 +10108,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     q: address or place name to search (required)
     height: iframe height in px (default 360)
@@ -9710,6 +10129,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
     degraded_on:
     - surface: web
       note: Renders a static form preview only — submission requires Apps Script runtime
@@ -9739,6 +10159,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   children:
     blocks:
       shape: simple
@@ -9762,6 +10183,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     # field was documented as `type`, which COLLIDES with the block discriminator
     # (unsettable in the blocks dialect) and never matched the runtime — the
@@ -9784,6 +10206,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     items: array of {text?, label?, icon?, image_url?, url?}
     title: optional label above the marquee strip
@@ -9808,6 +10231,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     color: dot colour (default
     size: sm, md (default), lg
@@ -9828,6 +10252,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     color: dot colour (default var(--a2ui-accent))
     size: sm, md (default), lg
@@ -9846,6 +10271,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     value: numeric value 0-100 (required)
     size: ring diameter in px (default 100)
@@ -9869,6 +10295,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     trigger: button (default) or load
     label: button label (default Celebrate!)
@@ -9890,6 +10317,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     label: button text (required)
     url: optional link target
@@ -9911,6 +10339,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     color: wave fill colour (default var(--a2ui-accent))
     height: wave height in px (default 60)
@@ -9932,6 +10361,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     icon: emoji or character to float (required)
     label: optional caption below
@@ -9953,6 +10383,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     text: the text to render (required)
     size: font-size CSS value (default 2rem)
@@ -9976,6 +10407,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     value: the number or string to display (required)
     prefix: text before the number
@@ -9999,6 +10431,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   children:
     blocks:
       shape: simple
@@ -10020,6 +10453,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   children:
     blocks:
       shape: simple
@@ -10045,6 +10479,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     duration_sec: total countdown in seconds (required, default 60)
     size: ring diameter in px (default 80)
@@ -10064,6 +10499,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
   fields:
     name: icon ligature name (required, e.g. "home", "check_circle", "rocket_launch")
     size: font-size CSS value (default 24px)
@@ -10087,6 +10523,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
   fields:
     name: icon ligature name (required)
     icon_size: icon size in px (default 24)
@@ -10110,6 +10547,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
   fields:
     items: array of {name or icon, label or text, color?}
     icon_size: px (default 20)
@@ -10130,6 +10568,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     app: app name (required) — gmail, drive, docs, sheets, slides, calendar, meet,
       forms, chat, classroom, keep, sites, vault, groups, tasks, contacts, jamboard,
@@ -10151,6 +10590,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     apps: array of app names (default gmail, drive, docs, sheets, slides, meet)
     title: optional label above the strip
@@ -10172,6 +10612,7 @@ blocks:
     - web
     - google-apps-script-web
     - google-apps-script-side-panel
+    - mcp-apps
   fields:
     apps: array of app names (default all 20 known apps)
     title: optional section heading
@@ -10193,6 +10634,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: optional section heading
     cols: grid columns (default 3)
@@ -10215,6 +10657,7 @@ blocks:
     - google-meet-stage
     - google-apps-script-side-panel
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: optional heading
     default_icon: fallback icon for items without one (default check_circle)
@@ -10234,6 +10677,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   children:
     subjects:
       shape: wrapper_list
@@ -10255,6 +10699,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     links: array (required) of {label, target (block id to scroll to)}
   source:
@@ -10269,6 +10714,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, step title above the command)
     command: string (required, the shell command; empty for manual steps)
@@ -10285,6 +10731,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional)
     placeholder: string (optional)
@@ -10319,6 +10766,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional, default "SLA Timer")
     severity: string (optional, e.g. "P0", default "P0")
@@ -10334,6 +10782,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     cards: array (required) of {front, back}
     accent: string (optional, hex, default "#6366f1")
@@ -10351,6 +10800,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     domain: string (optional, subject tag)
     difficulty: string (optional)
@@ -10369,6 +10819,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     events: array (required) of {date, title, desc}
@@ -10384,6 +10835,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     questions: array (required) of {question, answer}
     duration: integer (optional, seconds, default 1200)
@@ -10398,6 +10850,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     passage: string (required, the text)
     source: string (optional, attribution line)
@@ -10414,6 +10867,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (required)
     badge: string (optional)
@@ -10436,6 +10890,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, default "Assembled from")
     sources: array (required) of {catalogue, what, icon (optional), color (optional hex), target
@@ -10452,6 +10907,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     cert: string (required, certification name)
     holder: string (required, rights holder)
@@ -10467,6 +10923,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, default "BREAKING")
     title: string (required)
@@ -10485,6 +10942,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     items: array (required) of {title, url (optional), source (optional), tag (optional), time
@@ -10501,6 +10959,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     items: array (required) of {title, body, source (optional), tag (optional)}
@@ -10517,6 +10976,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     airport: string (optional, ICAO, default "LFBO")
     airport_name: string (optional, default "TOULOUSE-BLAGNAC")
@@ -10536,6 +10996,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   processing:
     required_scope: script.external_request
   fields:
@@ -10555,6 +11016,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   processing:
     required_scope: userinfo.email
   fields:
@@ -10572,6 +11034,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, default "Create Meeting")
     join_label: string (optional, default "Join Meeting")
@@ -10587,6 +11050,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     subtitle: string (optional)
@@ -10602,6 +11066,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, default "Send Status to Chat")
     label_busy: string (optional)
@@ -10620,6 +11085,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional, default "Create Chat Space")
     join_label: string (optional, default "Open Chat Space")
@@ -10636,6 +11102,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   processing:
     required_scope: userinfo.email
   fields:
@@ -10654,6 +11121,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   processing:
     required_scope: spreadsheets
   fields:
@@ -10673,6 +11141,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     label: string (optional)
   source:
@@ -10687,6 +11156,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     surface_id: string (optional, shared session key, default "default")
     interval: integer (optional, seconds between refreshes, default 30)
@@ -10704,6 +11174,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   processing:
     required_scope: spreadsheets
   fields:
@@ -10720,6 +11191,7 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     position: string (optional, default "bottom-right")
     dark_bg: string (optional, hex, default "#0f172a")

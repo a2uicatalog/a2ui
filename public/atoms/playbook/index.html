@@ -56,7 +56,7 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
@@ -64,7 +64,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="color:#9ca3af;font-style:italic;padding:12px;">No slides</div></div>
+  <div class="preview-box"><div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:12px;background:#fff;overflow:hidden;"><div id="pbd93fes0" style="display:block;padding:24px;min-height:120px;"></div><div id="pbd93fes1" style="display:none;padding:24px;min-height:120px;"></div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#f9fafb;border-top:1px solid #e5e7eb;"><button onclick="(function(){var cur=parseInt(document.getElementById('pbd93fen').dataset.n||0);var next=Math.max(0,cur-1);document.getElementById('pbd93fes'+cur).style.display='none';document.getElementById('pbd93fes'+next).style.display='block';document.getElementById('pbd93fen').textContent=(next+1)+'/2';document.getElementById('pbd93fen').dataset.n=next;})()" style="padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;">← Prev</button><span id="pbd93fen" data-n="0" style="font-size:0.82rem;color:#9ca3af;">1/2</span><button onclick="(function(){var cur=parseInt(document.getElementById('pbd93fen').dataset.n||0);var next=Math.min(1,cur+1);document.getElementById('pbd93fes'+cur).style.display='none';document.getElementById('pbd93fes'+next).style.display='block';document.getElementById('pbd93fen').textContent=(next+1)+'/2';document.getElementById('pbd93fen').dataset.n=next;})()" style="padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;">Next →</button></div></div></div>
 </div>
 
   <div class="section">
@@ -87,7 +87,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/playbook",
   "capabilities": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
   ],
   "description": "Full-screen multi-slide presentation deck \u2014 each slide is its own atom block array, with shared data feeds and slide navigation",
   "representativeQueries": [
@@ -99,7 +100,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQCshJrEzKz89W0lFQKslIzQULpiQWgQWScvKTs4uBItHVSiWVBWC5ApiG2thaAE0PqyJIAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

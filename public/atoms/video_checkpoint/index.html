@@ -56,10 +56,14 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>renders fully but without persistence — progress and live data need an Apps Script deployment</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
@@ -100,7 +104,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "capabilities": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
   ],
   "description": "YouTube video with interactive quiz questions injected at specified timestamps. Video pauses at each checkpoint and the learner must answer before playback resumes. Correct/wrong feedback shown with explanation. Checkpoint state tracked per-session; completed checkpoints are skipped on replay.",
   "representativeQueries": [

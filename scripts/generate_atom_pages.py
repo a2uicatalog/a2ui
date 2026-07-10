@@ -89,6 +89,69 @@ _EXAMPLE_BLOCKS = {
             {"line": 1, "note": "The atom type — matches schema.yaml"},
             {"line": 2, "note": "The primary display value"},
         ]},
+    # Added 2026-07-10 — the mcp-apps all-atoms sweep exposed that
+    # example_payload() emits junk (true/1) for these atoms' array fields;
+    # shapes below are read from the renderer source (ground truth).
+    "breadcrumb": {"type": "breadcrumb", "items": [
+        {"label": "Catalog", "slug": "catalog"},
+        {"label": "Atoms", "slug": "atoms"},
+        {"label": "Breadcrumb"}]},
+    "chip_group": {"type": "chip_group", "chips": [
+        {"label": "Web", "active": True},
+        {"label": "Meet"},
+        {"label": "Chat", "url": "#"}]},
+    "checklist_interactive": {"type": "checklist_interactive", "items": [
+        {"label": "Read the brief"},
+        {"label": "Run the tests"},
+        {"label": "Ship it"}]},
+    "data_grid": {"type": "data_grid", "title": "Deployments",
+        "columns": [{"header": "Name", "key": "name"},
+                    {"header": "Status", "key": "status"}],
+        "rows": [{"name": "web", "status": "live"},
+                 {"name": "meet", "status": "beta"}]},
+    "call_mood_board": {"type": "call_mood_board", "title": "Room mood",
+        "moods": [
+            {"mood": "Focused", "icon": "🎯", "intensity": 80, "color": "#6366f1"},
+            {"mood": "Energised", "icon": "⚡", "intensity": 65, "color": "#00f2ff"}]},
+    "module_map": {"type": "module_map", "title": "Course map", "columns": 2,
+        "modules": [
+            {"title": "Basics", "description": "Start here", "duration": "10 min", "icon": "📘"},
+            {"title": "Advanced", "description": "Go deeper", "duration": "25 min", "icon": "🚀"}]},
+    "punch_card": {"type": "punch_card", "title": "Commit activity",
+        "data": [{"day": 1, "hour": 9, "count": 5},
+                 {"day": 2, "hour": 14, "count": 9},
+                 {"day": 4, "hour": 11, "count": 3}]},
+    "testimonial_card": {"type": "testimonial_card",
+        "quote": "The catalog cut our build time in half.",
+        "author_name": "Ada L.", "author_title": "Platform Lead", "rating": 5},
+    "annotation_highlight": {"type": "annotation_highlight",
+        "text": "The renderer walks the block list and dispatches by type.",
+        "notes": [{"term": "renderer", "explanation": "turns JSON into HTML"},
+                  {"term": "type", "explanation": "the dispatch key"}]},
+    "atom_anatomy": {"type": "atom_anatomy", "label": "stat_card",
+        "schema": {"type": "stat_card", "value": "1,234", "label": "Daily users"}},
+    "brevet_automatismes": {"type": "brevet_automatismes", "duration": 90,
+        "questions": [{"question": "7 × 8 ?"}, {"question": "Racine de 81 ?"}]},
+    "carousel": {"type": "carousel", "slides": [
+        {"url": "https://picsum.photos/seed/a2ui1/800/400", "label": "Slide one"},
+        {"url": "https://picsum.photos/seed/a2ui2/800/400", "label": "Slide two"}]},
+    "catalogue_provenance": {"type": "catalogue_provenance", "label": "Sources",
+        "sources": [{"catalogue": "a2ui-atoms-v1", "color": "#00f2ff"},
+                    {"catalogue": "gdm-v0.2", "color": "#6366f1"}]},
+    "chat_sequence": {"type": "chat_sequence", "messages": [
+        {"role": "user", "name": "Ana", "text": "Ship it?"},
+        {"role": "agent", "name": "Bot", "text": "Tests are green.", "align": "right"}]},
+    "hub": {"type": "hub", "subjects": [
+        {"label": "Maths", "color": "#6366f1", "slides": [
+            {"blocks": [{"type": "heading", "text": "Fractions"}]}]},
+        {"label": "Physics", "color": "#00f2ff", "slides": [
+            {"blocks": [{"type": "body", "text": "Forces and motion."}]}]}]},
+    "playbook": {"type": "playbook", "slides": [
+        {"id": "intro", "accent": "#00f2ff",
+         "blocks": [{"type": "heading", "text": "Kickoff"}]},
+        {"id": "close",
+         "blocks": [{"type": "body", "text": "Wrap-up."}]}]},
+    "sparkline": {"type": "sparkline", "data": [3, 5, 2, 8, 6, 9], "color": "#00f2ff"},
 }
 
 PAGE_CSS = """
@@ -627,7 +690,8 @@ h1{font-size:2.8rem;font-weight:900;letter-spacing:-2px;margin-bottom:6px;color:
 .launch-badge{flex-shrink:0;padding:4px 12px;border-radius:999px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.5);color:#8183f4;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
 .launch-text{flex:1;min-width:200px;font-size:13px;color:var(--text)}
 .launch-arrow{flex-shrink:0;font-size:12px;font-weight:700;color:#8183f4}
-.hero-demo{display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px}
+.hero-demo{display:grid;grid-template-columns:1fr 44px 1fr;align-items:start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px}
+.hero-demo-arrow{align-self:center}
 .hero-demo-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .hero-demo-json{background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-size:12.5px;line-height:1.55;color:#9ecbff;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;margin:0}
 .hero-demo-arrow{font-size:24px;color:var(--cyan);text-align:center}

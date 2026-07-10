@@ -56,10 +56,14 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>renders sample data — live Google Workspace data requires an Apps Script deployment</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
@@ -91,7 +95,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "url": "https://a2uicatalog.ai/atoms/drive_storage_usage",
   "capabilities": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
   ],
   "description": "Google Drive storage quota displayed as a labelled progress bar \u2014 used GB, total GB, and percentage. Bar colour shifts to amber above 70% and red above 90%. On GAS uses DriveApp; elsewhere pass used_gb and total_gb fields.",
   "representativeQueries": [

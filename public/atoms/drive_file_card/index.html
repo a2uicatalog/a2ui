@@ -56,10 +56,14 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>renders sample data — live Google Workspace data requires an Apps Script deployment</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
@@ -92,7 +96,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "url": "https://a2uicatalog.ai/atoms/drive_file_card",
   "capabilities": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
   ],
   "description": "Single Drive file card \u2014 coloured file-type badge (DOC/XLS/PPT/PDF), file name, optional description, and an \"Open \u2192\" button. Works on any surface using static name/mime/url fields. On GAS, file_id triggers live lookup via DriveApp to populate name and mime automatically.",
   "representativeQueries": [

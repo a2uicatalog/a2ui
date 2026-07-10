@@ -56,10 +56,14 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>renders sample data — live Google Workspace data requires an Apps Script deployment</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
@@ -98,7 +102,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "url": "https://a2uicatalog.ai/atoms/drive_folder_contents",
   "capabilities": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
   ],
   "description": "Responsive grid of files and subfolders inside a Drive folder. Subfolders appear first, each item shows a coloured file-type badge and name, clicking opens in Drive. On GAS uses DriveApp with folder_id; on other surfaces renders from items[] array or Drive REST API with folder_id + auth_token.",
   "representativeQueries": [

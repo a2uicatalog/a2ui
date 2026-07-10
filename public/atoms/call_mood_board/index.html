@@ -56,12 +56,59 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box">
+    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+      
+        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#d946ef; font-weight:900;">⬡</span> Room mood
+          </div>
+        </div>
+        
+      
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:20px;">
+      
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:0.85rem; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#6366f1; box-shadow:0 0 8px #6366f1; display:inline-block;"></span>
+              Focused
+            </span>
+            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:#6366f1;">80%</span>
+          </div>
+          <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+            <div style="width:80%; height:100%; background:linear-gradient(90deg, #6366f188, #6366f1); border-radius:10px; box-shadow:0 0 6px #6366f166;"></div>
+          </div>
+        </div>
+        
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:0.85rem; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#00f2ff; box-shadow:0 0 8px #00f2ff; display:inline-block;"></span>
+              Energised
+            </span>
+            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:#00f2ff;">65%</span>
+          </div>
+          <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+            <div style="width:65%; height:100%; background:linear-gradient(90deg, #00f2ff88, #00f2ff); border-radius:10px; box-shadow:0 0 6px #00f2ff66;"></div>
+          </div>
+        </div>
+        
+    </div>
+    
+      
+      
+    </div>
+    </div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -100,7 +147,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "capabilities": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
   ],
   "description": "Renders a premium, aesthetic call emotion summary and theme board showing detected sentiments, dominant moods with color codings, active themes, and word weightings.",
   "representativeQueries": [

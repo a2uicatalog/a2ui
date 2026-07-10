@@ -2355,8 +2355,12 @@
       "title": "Presentation",
       "alwaysResolved": false,
       "whenToUse": "Use for fullscreen multi-slide presentation surfaces (playbook).",
-      "atomCount": 1,
+      "atomCount": 2,
       "atoms": [
+        {
+          "type": "gdm_rocket_panel",
+          "description": "isometric rocket launch canvas animation, fixed right-half overlay"
+        },
         {
           "type": "playbook",
           "description": "multi-slide fullscreen presentation playbook",

@@ -361,6 +361,34 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">horizontally scrollable card carousel</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box">
+<style>
+.cfe8339{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
+  box-shadow:0 4px 24px rgba(0,0,0,0.12);}
+.cfe8339 input[type=radio]{display:none;}
+.cfe8339-track{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:200%;}
+.cfe8339-slide{width:50%;flex:0 0 50%;position:relative;}
+.cfe8339-slide img{width:100%;display:block;max-height:480px;object-fit:cover;}
+.cfe8339-caption{position:absolute;bottom:0;left:0;right:0;padding:14px 18px;
+  background:linear-gradient(transparent,rgba(0,0,0,0.72));color:#fff;}
+.cfe8339-caption strong{display:block;font-size:1rem;margin-bottom:2px;}
+.cfe8339-caption span{font-size:0.82rem;opacity:0.8;}
+.cfe8339-dots{display:flex;justify-content:center;gap:8px;padding:12px;background:#111;}
+.cfe8339-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);
+  cursor:pointer;transition:all 0.2s;display:block;border:none;}
+.cfe8339-arrows{position:absolute;top:50%;transform:translateY(-50%);width:100%;
+  display:flex;justify-content:space-between;padding:0 12px;pointer-events:none;z-index:10;box-sizing:border-box;}
+.cfe8339-arrow{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(4px);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;cursor:pointer;pointer-events:all;transition:background 0.2s;text-decoration:none;
+  border:1px solid rgba(255,255,255,0.2);}
+.cfe8339-arrow:hover{background:rgba(255,255,255,0.28);}
+</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-track{transform:translateX(-0%);}
+#cfe8339_s1:checked ~ .cfe8339-dots .cfe8339-dot:nth-child(1){background:#1a73e8;transform:scale(1.25);}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-track{transform:translateX(-50%);}
+#cfe8339_s2:checked ~ .cfe8339-dots .cfe8339-dot:nth-child(2){background:#1a73e8;transform:scale(1.25);}</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-prev{display:flex;} #cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-next{display:flex;}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-prev{display:flex;} #cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-next{display:flex;}</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-ap {display:none;} #cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-ap[data-t="2"]{display:flex;}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-ap {display:none;} #cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-ap[data-t="1"]{display:flex;}</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-an {display:none;} #cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-an[data-t="2"]{display:flex;}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-an {display:none;} #cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-an[data-t="1"]{display:flex;}</style><div class="cfe8339"><input type="radio" id="cfe8339_s1" name="cfe8339" checked><input type="radio" id="cfe8339_s2" name="cfe8339" ><div class="cfe8339-inner"><div class="cfe8339-track"><div class="cfe8339-slide"><img src="https://picsum.photos/seed/a2ui1/800/400" alt="Slide one" loading="lazy"/><div class="cfe8339-caption"><strong>Slide one</strong></div></div><div class="cfe8339-slide"><img src="https://picsum.photos/seed/a2ui2/800/400" alt="Slide two" loading="lazy"/><div class="cfe8339-caption"><strong>Slide two</strong></div></div></div><div class="cfe8339-arrows"><div style="display:flex;"><label for="cfe8339_s1" class="cfe8339-arrow cfe8339-ap" data-t="1">‹</label><label for="cfe8339_s2" class="cfe8339-arrow cfe8339-ap" data-t="2">‹</label></div><div style="display:flex;"><label for="cfe8339_s1" class="cfe8339-arrow cfe8339-an" data-t="1">›</label><label for="cfe8339_s2" class="cfe8339-arrow cfe8339-an" data-t="2">›</label></div></div></div><div class="cfe8339-dots"><label for="cfe8339_s1" class="cfe8339-dot"></label><label for="cfe8339_s2" class="cfe8339-dot"></label></div></div></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -423,6 +451,10 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">inline SVG trend line chart general trends.</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><svg width="120" height="32" style="display:inline-block;vertical-align:middle;"><polygon points="0,32 0.0,26.0 24.0,18.0 48.0,30.0 72.0,6.0 96.0,14.0 120.0,2.0 120,32" fill="#00f2ff" fill-opacity="0.1"/><polyline points="0.0,26.0 24.0,18.0 48.0,30.0 72.0,6.0 96.0,14.0 120.0,2.0" fill="none" stroke="#00f2ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -480,11 +512,11 @@ footer a{color:var(--cyan);text-decoration:none}
         
     <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="donut_140505925466176_grad" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id="donut_139951561745792_grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#6366f1" />
           <stop offset="100%" stop-color="#6366f1" stop-opacity="0.6" />
         </linearGradient>
-        <filter id="donut_140505925466176_glow" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="donut_139951561745792_glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -493,9 +525,9 @@ footer a{color:var(--cyan);text-decoration:none}
         </filter>
       </defs>
       <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
-      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_140505925466176_grad)" stroke-width="10" 
+      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_139951561745792_grad)" stroke-width="10" 
               stroke-dasharray="251.327" stroke-dashoffset="0.0"
-              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_140505925466176_glow)" />
+              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_139951561745792_glow)" />
       <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">75</text>
       <text x="50" y="64" fill="rgba(255,255,255,0.4)" font-size="7" font-weight="600" font-family="monospace" text-anchor="middle">100.0%</text>
     </svg>
@@ -570,6 +602,10 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">navigation breadcrumb trail structure.</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><nav style="margin:0.5rem 0;"><span style="color:#374151;font-size:0.84rem;">Catalog</span><span style="margin:0 6px;color:#d1d5db;">/</span><span style="color:#374151;font-size:0.84rem;">Atoms</span><span style="margin:0 6px;color:#d1d5db;">/</span><span style="color:#374151;font-size:0.84rem;">Breadcrumb</span></nav></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -601,7 +637,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div id="1bcbb865" style="margin:1rem 0;"><style>#1bcbb865 input{display:none;}</style><div style="border-bottom:2px solid #e5e7eb;display:flex;flex-wrap:wrap;"></div></div></div>
+  <div class="preview-box"><div id="709dc4a4" style="margin:1rem 0;"><style>#709dc4a4 input{display:none;}</style><div style="border-bottom:2px solid #e5e7eb;display:flex;flex-wrap:wrap;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -689,7 +725,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="border-bottom:1px dotted #9ca3af;cursor:help;" onmouseenter="document.getElementById('2ac1b7d6').style.display='block'" onmouseleave="document.getElementById('2ac1b7d6').style.display='none'">Click to trigger</span><div id="2ac1b7d6" style="display:none;position:absolute;z-index:10;bottom:calc(100%+6px);left:0;background:#111827;color:#f9fafb;border-radius:6px;padding:6px 10px;font-size:0.78rem;white-space:nowrap;max-width:220px;"></div></span></div>
+  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="border-bottom:1px dotted #9ca3af;cursor:help;" onmouseenter="document.getElementById('200d8b47').style.display='block'" onmouseleave="document.getElementById('200d8b47').style.display='none'">Click to trigger</span><div id="200d8b47" style="display:none;position:absolute;z-index:10;bottom:calc(100%+6px);left:0;background:#111827;color:#f9fafb;border-radius:6px;padding:6px 10px;font-size:0.78rem;white-space:nowrap;max-width:220px;"></div></span></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -700,7 +736,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="color:#7c3aed;cursor:default;border-bottom:1px dashed #7c3aed;" onmouseenter="document.getElementById('59329636').style.display='block'" onmouseleave="document.getElementById('59329636').style.display='none'">Hover me</span><div id="59329636" style="display:none;position:absolute;z-index:10;bottom:calc(100% + 8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;min-width:200px;box-shadow:0 4px 20px rgba(0,0,0,0.1);font-size:0.84rem;color:#374151;"></div></span></div>
+  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="color:#7c3aed;cursor:default;border-bottom:1px dashed #7c3aed;" onmouseenter="document.getElementById('cca894b9').style.display='block'" onmouseleave="document.getElementById('cca894b9').style.display='none'">Hover me</span><div id="cca894b9" style="display:none;position:absolute;z-index:10;bottom:calc(100% + 8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;min-width:200px;box-shadow:0 4px 20px rgba(0,0,0,0.1);font-size:0.84rem;color:#374151;"></div></span></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -850,7 +886,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div id="0b0a704f" style="display:flex;align-items:center;gap:10px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:10px 16px;font-size:0.88rem;margin:0.75rem 0;position:relative;"><span>ℹ️</span><span></span><button onclick="document.getElementById('0b0a704f').style.display='none'" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:1rem;">×</button></div></div>
+  <div class="preview-box"><div id="aeeeb983" style="display:flex;align-items:center;gap:10px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:10px 16px;font-size:0.88rem;margin:0.75rem 0;position:relative;"><span>ℹ️</span><span></span><button onclick="document.getElementById('aeeeb983').style.display='none'" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:1rem;">×</button></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -883,7 +919,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;"><style>@keyframes a2ui-spin{to{transform:rotate(360deg)}}#7e5235fb{animation:a2ui-spin 0.8s linear infinite;}</style><div id="7e5235fb" style="width:md;height:md;border:3px solid #6366f133;border-top-color:#6366f1;border-radius:50%;"></div></div></div>
+  <div class="preview-box"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;"><style>@keyframes a2ui-spin{to{transform:rotate(360deg)}}#8a9d298b{animation:a2ui-spin 0.8s linear infinite;}</style><div id="8a9d298b" style="width:md;height:md;border:3px solid #6366f133;border-top-color:#6366f1;border-radius:50%;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1088,7 +1124,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;"><div style="position:absolute;left:25%;top:30%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('3f1a22b9_s0');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">1</button><div id="3f1a22b9_s0" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature A</strong><br></div></div><div style="position:absolute;left:60%;top:70%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('3f1a22b9_s1');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">2</button><div id="3f1a22b9_s1" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature B</strong><br></div></div></div></div>
+  <div class="preview-box"><div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;"><div style="position:absolute;left:25%;top:30%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('b4bfded4_s0');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">1</button><div id="b4bfded4_s0" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature A</strong><br></div></div><div style="position:absolute;left:60%;top:70%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('b4bfded4_s1');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">2</button><div id="b4bfded4_s1" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature B</strong><br></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1110,7 +1146,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sr8237 input:checked ~ label,.sr8237 label:hover,.sr8237 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr8237" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr8237_5" name="sr8237" value="5" style="display:none;"><input type="radio" id="sr8237_4" name="sr8237" value="4" style="display:none;"><input type="radio" id="sr8237_3" name="sr8237" value="3" style="display:none;"><input type="radio" id="sr8237_2" name="sr8237" value="2" style="display:none;"><input type="radio" id="sr8237_1" name="sr8237" value="1" style="display:none;"><label for="sr8237_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr8237_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr8237_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr8237_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr8237_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
+  <div class="preview-box"><style>.sr76831 input:checked ~ label,.sr76831 label:hover,.sr76831 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr76831" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr76831_5" name="sr76831" value="5" style="display:none;"><input type="radio" id="sr76831_4" name="sr76831" value="4" style="display:none;"><input type="radio" id="sr76831_3" name="sr76831" value="3" style="display:none;"><input type="radio" id="sr76831_2" name="sr76831" value="2" style="display:none;"><input type="radio" id="sr76831_1" name="sr76831" value="1" style="display:none;"><label for="sr76831_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr76831_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr76831_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr76831_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr76831_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1121,7 +1157,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sgc43194 input{display:none;}.sgc43194 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc43194 label:last-of-type{border-right:none;}.sgc43194 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc43194" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;"><input type="radio" id="sgc43194_a" name="Segmented Control_43194" value="a"><label for="sgc43194_a">Option A</label><input type="radio" id="sgc43194_b" name="Segmented Control_43194" value="b"><label for="sgc43194_b">Option B</label><input type="radio" id="sgc43194_c" name="Segmented Control_43194" value="c"><label for="sgc43194_c">Option C</label></div></div></div>
+  <div class="preview-box"><style>.sgc43132 input{display:none;}.sgc43132 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc43132 label:last-of-type{border-right:none;}.sgc43132 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc43132" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;"><input type="radio" id="sgc43132_a" name="Segmented Control_43132" value="a"><label for="sgc43132_a">Option A</label><input type="radio" id="sgc43132_b" name="Segmented Control_43132" value="b"><label for="sgc43132_b">Option B</label><input type="radio" id="sgc43132_c" name="Segmented Control_43132" value="c"><label for="sgc43132_c">Option C</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1139,7 +1175,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.ccg23800 input{display:none;}.ccg23800 label{display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:0.88rem;color:#374151;transition:border-color .15s,background .15s;}.ccg23800 input:checked+label{border-color:#1a73e8;background:#f0f4ff;color:#1a73e8;}.ccg23800 .box{width:18px;height:18px;border:2px solid #dadce0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s;}.ccg23800 input:checked+label .box{border-color:#1a73e8;background:#1a73e8;}</style><div class="ccg23800" style="margin:1rem 0;"><div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">Group label</div><div style="display:flex;flex-direction:column;gap:6px;"><div><input type="checkbox" id="ccg23800_0" name="Custom Checkbox Group" value="a"><label for="ccg23800_0"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option A</label></div><div><input type="checkbox" id="ccg23800_1" name="Custom Checkbox Group" value="b"><label for="ccg23800_1"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option B</label></div><div><input type="checkbox" id="ccg23800_2" name="Custom Checkbox Group" value="c"><label for="ccg23800_2"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option C</label></div></div></div></div>
+  <div class="preview-box"><style>.ccg44862 input{display:none;}.ccg44862 label{display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:0.88rem;color:#374151;transition:border-color .15s,background .15s;}.ccg44862 input:checked+label{border-color:#1a73e8;background:#f0f4ff;color:#1a73e8;}.ccg44862 .box{width:18px;height:18px;border:2px solid #dadce0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s;}.ccg44862 input:checked+label .box{border-color:#1a73e8;background:#1a73e8;}</style><div class="ccg44862" style="margin:1rem 0;"><div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">Group label</div><div style="display:flex;flex-direction:column;gap:6px;"><div><input type="checkbox" id="ccg44862_0" name="Custom Checkbox Group" value="a"><label for="ccg44862_0"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option A</label></div><div><input type="checkbox" id="ccg44862_1" name="Custom Checkbox Group" value="b"><label for="ccg44862_1"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option B</label></div><div><input type="checkbox" id="ccg44862_2" name="Custom Checkbox Group" value="c"><label for="ccg44862_2"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option C</label></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1161,7 +1197,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 22px;"><div style="margin-bottom:12px;"><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span></div><blockquote style="margin:0 0 16px;font-size:0.93rem;color:#374151;line-height:1.65;font-style:italic;">&ldquo;A concise description of the content.&rdquo;</blockquote><div style="display:flex;align-items:center;gap:10px;"><img src="https://example.com" alt="Author Name" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;"><div><div style="font-size:0.87rem;font-weight:700;color:#111827;">Author Name</div><div style="font-size:0.78rem;color:#6b7280;">Author title</div></div></div></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 22px;"><div style="margin-bottom:12px;"><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span><span style="color:#facc15;font-size:1rem;">★</span></div><blockquote style="margin:0 0 16px;font-size:0.93rem;color:#374151;line-height:1.65;font-style:italic;">&ldquo;The catalog cut our build time in half.&rdquo;</blockquote><div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">A</div><div><div style="font-size:0.87rem;font-weight:700;color:#111827;">Ada L.</div><div style="font-size:0.78rem;color:#6b7280;">Platform Lead</div></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1293,7 +1329,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;"><div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;gap:0;"><label for="tc-67932-0" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid #7c3aed;color:#7c3aed;">Tab 1</label><label for="tc-67932-1" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid transparent;color:#9ca3af;">Tab 2</label></div><div style="display:block"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div><div style="display:none"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div></div></div>
+  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;"><div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;gap:0;"><label for="tc-39117-0" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid #7c3aed;color:#7c3aed;">Tab 1</label><label for="tc-39117-1" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid transparent;color:#9ca3af;">Tab 2</label></div><div style="display:block"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div><div style="display:none"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1536,6 +1572,10 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">interactive task tracking checklist for article milestones</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin:1rem 0;"><label style="display:flex;align-items:flex-start;gap:10px;padding:8px 4px;cursor:pointer;"><input type="checkbox"  style="margin-top:2px;accent-color:#6366f1;"><span style="font-size:0.88rem;color:#374151;"></span></label><label style="display:flex;align-items:flex-start;gap:10px;padding:8px 4px;cursor:pointer;"><input type="checkbox"  style="margin-top:2px;accent-color:#6366f1;"><span style="font-size:0.88rem;color:#374151;"></span></label><label style="display:flex;align-items:flex-start;gap:10px;padding:8px 4px;cursor:pointer;"><input type="checkbox"  style="margin-top:2px;accent-color:#6366f1;"><span style="font-size:0.88rem;color:#374151;"></span></label></div></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -1688,7 +1728,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div id="6bcbdb18" style="position:fixed;top:0;left:0;width:0%;height:4px;background:#6366f1;z-index:9999;transition:width 0.1s;"></div><script>(function(){var b=document.getElementById("6bcbdb18");window.addEventListener("scroll",function(){var d=document.documentElement;var pct=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100).toFixed(1);b.style.width=pct+"%";});})();</script></div>
+  <div class="preview-box"><div id="116df37c" style="position:fixed;top:0;left:0;width:0%;height:4px;background:#6366f1;z-index:9999;transition:width 0.1s;"></div><script>(function(){var b=document.getElementById("116df37c");window.addEventListener("scroll",function(){var d=document.documentElement;var pct=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100).toFixed(1);b.style.width=pct+"%";});})();</script></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1860,11 +1900,11 @@ footer a{color:var(--cyan);text-decoration:none}
         <svg viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
           <defs>
             
-        <linearGradient id="bar_grad_bar_140505916845632_0" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="bar_grad_bar_139951574305408_0" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#3b82f6" />
           <stop offset="100%" stop-color="#2563eb" stop-opacity="0.3" />
         </linearGradient>
-        <filter id="bar_glow_bar_140505916845632_0" x="-10%" y="-10%" width="120%" height="120%">
+        <filter id="bar_glow_bar_139951574305408_0" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -1873,11 +1913,11 @@ footer a{color:var(--cyan);text-decoration:none}
         </filter>
         
 
-        <linearGradient id="bar_grad_bar_140505916845632_1" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="bar_grad_bar_139951574305408_1" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#10b981" />
           <stop offset="100%" stop-color="#059669" stop-opacity="0.3" />
         </linearGradient>
-        <filter id="bar_glow_bar_140505916845632_1" x="-10%" y="-10%" width="120%" height="120%">
+        <filter id="bar_glow_bar_139951574305408_1" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -1907,28 +1947,28 @@ footer a{color:var(--cyan);text-decoration:none}
           <text x="112.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category A</text><text x="217.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category B</text><text x="322.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category C</text><text x="427.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category D</text>
           <!-- Bars -->
           
-                <rect x="75.75" y="54.375" width="34.75" height="105.625" fill="url(#bar_grad_bar_140505916845632_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_0)" />
+                <rect x="75.75" y="54.375" width="34.75" height="105.625" fill="url(#bar_grad_bar_139951574305408_0)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_0)" />
                 
 
-                <rect x="112.5" y="114.5" width="34.75" height="45.5" fill="url(#bar_grad_bar_140505916845632_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_1)" />
+                <rect x="112.5" y="114.5" width="34.75" height="45.5" fill="url(#bar_grad_bar_139951574305408_1)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_1)" />
                 
 
-                <rect x="180.75" y="64.125" width="34.75" height="95.875" fill="url(#bar_grad_bar_140505916845632_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_0)" />
+                <rect x="180.75" y="64.125" width="34.75" height="95.875" fill="url(#bar_grad_bar_139951574305408_0)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_0)" />
                 
 
-                <rect x="217.5" y="82.0" width="34.75" height="78.0" fill="url(#bar_grad_bar_140505916845632_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_1)" />
+                <rect x="217.5" y="82.0" width="34.75" height="78.0" fill="url(#bar_grad_bar_139951574305408_1)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_1)" />
                 
 
-                <rect x="285.75" y="30.0" width="34.75" height="130.0" fill="url(#bar_grad_bar_140505916845632_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_0)" />
+                <rect x="285.75" y="30.0" width="34.75" height="130.0" fill="url(#bar_grad_bar_139951574305408_0)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_0)" />
                 
 
-                <rect x="322.5" y="95.0" width="34.75" height="65.0" fill="url(#bar_grad_bar_140505916845632_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_1)" />
+                <rect x="322.5" y="95.0" width="34.75" height="65.0" fill="url(#bar_grad_bar_139951574305408_1)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_1)" />
                 
 
-                <rect x="390.75" y="43.0" width="34.75" height="117.0" fill="url(#bar_grad_bar_140505916845632_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_0)" />
+                <rect x="390.75" y="43.0" width="34.75" height="117.0" fill="url(#bar_grad_bar_139951574305408_0)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_0)" />
                 
 
-                <rect x="427.5" y="70.625" width="34.75" height="89.375" fill="url(#bar_grad_bar_140505916845632_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140505916845632_1)" />
+                <rect x="427.5" y="70.625" width="34.75" height="89.375" fill="url(#bar_grad_bar_139951574305408_1)" rx="3" ry="3" filter="url(#bar_glow_bar_139951574305408_1)" />
                 
         </svg>
       </div>
@@ -1951,11 +1991,11 @@ footer a{color:var(--cyan);text-decoration:none}
         <svg viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
           <defs>
             
-        <linearGradient id="grad_line_140505916947392_0" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="grad_line_139951561995392_0" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22" />
           <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
         </linearGradient>
-        <filter id="glow_line_140505916947392_0" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="glow_line_139951561995392_0" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -1964,11 +2004,11 @@ footer a{color:var(--cyan);text-decoration:none}
         </filter>
         
 
-        <linearGradient id="grad_line_140505916947392_1" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="grad_line_139951561995392_1" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#10b981" stop-opacity="0.22" />
           <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
         </linearGradient>
-        <filter id="glow_line_140505916947392_1" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="glow_line_139951561995392_1" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -1997,14 +2037,14 @@ footer a{color:var(--cyan);text-decoration:none}
           <!-- X-Axes -->
           <text x="60.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category A</text><text x="200.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category B</text><text x="340.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category C</text><text x="480.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category D</text>
           <!-- Series -->
-          <polygon points="60,160 60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0 480,160" fill="url(#grad_line_140505916947392_0)" />
-<polyline points="60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0" fill="none" stroke="#3b82f6" stroke-width="2.5" filter="url(#glow_line_140505916947392_0)" stroke-linecap="round" stroke-linejoin="round" />
+          <polygon points="60,160 60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0 480,160" fill="url(#grad_line_139951561995392_0)" />
+<polyline points="60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0" fill="none" stroke="#3b82f6" stroke-width="2.5" filter="url(#glow_line_139951561995392_0)" stroke-linecap="round" stroke-linejoin="round" />
 <circle cx="60.0" cy="67.5" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
 <circle cx="200.0" cy="82.5" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
 <circle cx="340.0" cy="30.0" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
 <circle cx="480.0" cy="50.0" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
-<polygon points="60,160 60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5 480,160" fill="url(#grad_line_140505916947392_1)" />
-<polyline points="60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5" fill="none" stroke="#10b981" stroke-width="2.5" filter="url(#glow_line_140505916947392_1)" stroke-linecap="round" stroke-linejoin="round" />
+<polygon points="60,160 60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5 480,160" fill="url(#grad_line_139951561995392_1)" />
+<polyline points="60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5" fill="none" stroke="#10b981" stroke-width="2.5" filter="url(#glow_line_139951561995392_1)" stroke-linecap="round" stroke-linejoin="round" />
 <circle cx="60.0" cy="160.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
 <circle cx="200.0" cy="110.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
 <circle cx="340.0" cy="130.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
@@ -2054,11 +2094,11 @@ footer a{color:var(--cyan);text-decoration:none}
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_140505916849152_0" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_139951571061184_0" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_140505916849152_0" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_139951571061184_0" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -2066,8 +2106,8 @@ footer a{color:var(--cyan);text-decoration:none}
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140505916849152_0)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_140505916849152_0)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139951571061184_0)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_139951571061184_0)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#a855f7" stroke-width="2" />
             </svg>
           </div>
@@ -2081,11 +2121,11 @@ footer a{color:var(--cyan);text-decoration:none}
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_140505916849152_1" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_139951571061184_1" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_140505916849152_1" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_139951571061184_1" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -2093,8 +2133,8 @@ footer a{color:var(--cyan);text-decoration:none}
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140505916849152_1)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_140505916849152_1)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139951571061184_1)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_139951571061184_1)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#10b981" stroke-width="2" />
             </svg>
           </div>
@@ -2249,12 +2289,12 @@ footer a{color:var(--cyan);text-decoration:none}
     <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
       <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="gauge_sla_140505916849152_grad" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="gauge_sla_139951571061184_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
             <stop offset="60%" stop-color="#f59e0b" />
             <stop offset="100%" stop-color="#10b981" />
           </linearGradient>
-          <filter id="gauge_sla_140505916849152_glow" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id="gauge_sla_139951571061184_glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -2265,14 +2305,14 @@ footer a{color:var(--cyan);text-decoration:none}
         
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />
         
-        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_140505916849152_grad)" stroke-width="14" stroke-linecap="round"
-              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_140505916849152_glow)" />
+        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_139951571061184_grad)" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_139951571061184_glow)" />
               
         <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         
-        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_140505916849152_glow)" />
+        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_139951571061184_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="#10b981" stroke-width="3" />
         
         <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">75.0</text>
@@ -2308,6 +2348,53 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">visual summary board of call sentiments moods and active themes</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box">
+    <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+      
+        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#d946ef; font-weight:900;">⬡</span> Room mood
+          </div>
+        </div>
+        
+      
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:20px;">
+      
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:0.85rem; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#6366f1; box-shadow:0 0 8px #6366f1; display:inline-block;"></span>
+              Focused
+            </span>
+            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:#6366f1;">80%</span>
+          </div>
+          <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+            <div style="width:80%; height:100%; background:linear-gradient(90deg, #6366f188, #6366f1); border-radius:10px; box-shadow:0 0 6px #6366f166;"></div>
+          </div>
+        </div>
+        
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:0.85rem; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; border-radius:50%; background:#00f2ff; box-shadow:0 0 8px #00f2ff; display:inline-block;"></span>
+              Energised
+            </span>
+            <span style="font-size:0.75rem; font-family:monospace; font-weight:800; color:#00f2ff;">65%</span>
+          </div>
+          <div style="width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+            <div style="width:65%; height:100%; background:linear-gradient(90deg, #00f2ff88, #00f2ff); border-radius:10px; box-shadow:0 0 6px #00f2ff66;"></div>
+          </div>
+        </div>
+        
+    </div>
+    
+      
+      
+    </div>
+    </div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -2562,7 +2649,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.vs705368 label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}.vs705368 label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}.vs705368 label:hover{border-color:#9ca3af;}.vs705368 input{position:absolute;opacity:0;width:0;height:0;}</style><div style="margin:0.75rem 0;"><div class="vs705368" style="display:flex;flex-direction:column;gap:8px;"><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label></div></div></div>
+  <div class="preview-box"><style>.vs610093 label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}.vs610093 label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}.vs610093 label:hover{border-color:#9ca3af;}.vs610093 input{position:absolute;opacity:0;width:0;height:0;}</style><div style="margin:0.75rem 0;"><div class="vs610093" style="display:flex;flex-direction:column;gap:8px;"><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2710,6 +2797,10 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">enterprise data grid with typed columns, row selection, and</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;"><div style="font-weight:700;font-size:.9rem;padding:10px 12px;background:#1e293b;color:#f8fafc;border-radius:8px 8px 0 0;">Deployments</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f9fafb;"><th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">Name</th><th style="padding:8px 12px;text-align:left;font-size:.75rem;font-weight:600;color:#6b7280;">Status</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">web</td><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">live</td></tr><tr style="background:#f9fafb;"><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">meet</td><td style="padding:8px 12px;font-size:.82rem;color:#374151;border-bottom:1px solid #f3f4f6;">beta</td></tr></tbody></table></div></div></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -2741,7 +2832,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;"><input list="00c1223c_dl" placeholder="Type to search..." style="border:1.5px solid #e5e7eb;border-radius:6px;padding:8px 12px;font-size:0.88rem;width:100%;max-width:300px;outline:none;"><datalist id="00c1223c_dl"><option value="a">Option A</option><option value="b">Option B</option><option value="c">Option C</option></datalist></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;"><input list="1cd3c42e_dl" placeholder="Type to search..." style="border:1.5px solid #e5e7eb;border-radius:6px;padding:8px 12px;font-size:0.88rem;width:100%;max-width:300px;outline:none;"><datalist id="1cd3c42e_dl"><option value="a">Option A</option><option value="b">Option B</option><option value="c">Option C</option></datalist></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2774,7 +2865,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;"><div style="border:1.5px solid #e5e7eb;border-radius:8px;padding:6px;"><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="c48582e6_12730b3d" value="a"  style="accent-color:#6366f1;">Option A</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="c48582e6_a2e43c8f" value="b"  style="accent-color:#6366f1;">Option B</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="c48582e6_909a8a05" value="c"  style="accent-color:#6366f1;">Option C</label></div></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;"><div style="border:1.5px solid #e5e7eb;border-radius:8px;padding:6px;"><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="ea9ae658_d09f5124" value="a"  style="accent-color:#6366f1;">Option A</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="ea9ae658_2f295e52" value="b"  style="accent-color:#6366f1;">Option B</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="ea9ae658_1c0ffc19" value="c"  style="accent-color:#6366f1;">Option C</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2785,7 +2876,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;"><label style="display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px;">Enter OTP</label><div style="display:flex;gap:8px;align-items:center;"><input id="a657301f_0" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('a657301f_1');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('a657301f_-1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="a657301f_1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('a657301f_2');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('a657301f_0');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="a657301f_2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('a657301f_3');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('a657301f_1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="a657301f_3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('a657301f_4');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('a657301f_2');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="a657301f_4" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('a657301f_5');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('a657301f_3');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="a657301f_5" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('a657301f_6');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('a657301f_4');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"></div></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;"><label style="display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px;">Enter OTP</label><div style="display:flex;gap:8px;align-items:center;"><input id="9340824a_0" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('9340824a_1');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('9340824a_-1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="9340824a_1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('9340824a_2');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('9340824a_0');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="9340824a_2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('9340824a_3');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('9340824a_1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="9340824a_3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('9340824a_4');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('9340824a_2');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="9340824a_4" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('9340824a_5');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('9340824a_3');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="9340824a_5" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('9340824a_6');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('9340824a_4');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2959,6 +3050,10 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">chip/tag row — label, color, url, active state; wrap or scroll layout</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><style>#80dc6a72 input{display:none;}#80dc6a72 input:checked+label{background:#6366f1;color:#fff;border-color:#6366f1;}</style><div id="80dc6a72" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="80dc6a72_0" name="80dc6a72" value="Web"><label for="80dc6a72_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="80dc6a72_1" name="80dc6a72" value="Meet"><label for="80dc6a72_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="80dc6a72_2" name="80dc6a72" value="Chat"><label for="80dc6a72_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -3041,7 +3136,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="text-align:center;padding:16px;"><div id="b0a12f7f" style="font-size:2.5rem;font-weight:900;color:#111827;">0</div><script>(function(){var el=document.getElementById("b0a12f7f"),start=0,target=0,dur=2000,step=target/dur*16;var iv=setInterval(function(){start=Math.min(start+step,target);el.textContent=""+Math.round(start)+"";if(start>=target)clearInterval(iv);},16);})();</script></div></div>
+  <div class="preview-box"><div style="text-align:center;padding:16px;"><div id="adf3b6e6" style="font-size:2.5rem;font-weight:900;color:#111827;">0</div><script>(function(){var el=document.getElementById("adf3b6e6"),start=0,target=0,dur=2000,step=target/dur*16;var iv=setInterval(function(){start=Math.min(start+step,target);el.textContent=""+Math.round(start)+"";if(start>=target)clearInterval(iv);},16);})();</script></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3074,7 +3169,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.vbg95284 label{display:inline-block;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:0.87rem;font-weight:500;color:#cbd5e1;border:1px solid #334155;background:#1e293b;transition:all .15s;}.vbg95284 input:checked+label,.vbg95284 label:hover{background:#1a73e8;border-color:#1a73e8;color:#fff;}.vbg95284 input{display:none;}</style><div class="vbg95284" style="margin:1rem 0;background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;"><div style="display:flex;flex-wrap:wrap;gap:8px;"></div></div></div>
+  <div class="preview-box"><style>.vbg65970 label{display:inline-block;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:0.87rem;font-weight:500;color:#cbd5e1;border:1px solid #334155;background:#1e293b;transition:all .15s;}.vbg65970 input:checked+label,.vbg65970 label:hover{background:#1a73e8;border-color:#1a73e8;color:#fff;}.vbg65970 input{display:none;}</style><div class="vbg65970" style="margin:1rem 0;background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;"><div style="display:flex;flex-wrap:wrap;gap:8px;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3085,7 +3180,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>@keyframes ep_fall32949{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(220px) rotate(540deg);opacity:0}}@keyframes ep_trophy32949{0%{transform:scale(0) rotate(-12deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}.ep_p32949{position:absolute;border-radius:2px;animation:ep_fall32949 var(--d,1.4s) var(--dl,0s) ease-in forwards;}</style><div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;"><div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;"><div class="ep_p32949" style="left:5%;background:#ff6b6b;width:7px;height:11px;--d:1.1s;--dl:0.0s;transform:rotate(0deg);"></div><div class="ep_p32949" style="left:42%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.07s;transform:rotate(21deg);"></div><div class="ep_p32949" style="left:79%;background:#6bcb77;width:9px;height:7px;--d:1.2s;--dl:0.14s;transform:rotate(42deg);"></div><div class="ep_p32949" style="left:20%;background:#4d96ff;width:7px;height:7px;--d:1.3s;--dl:0.21s;transform:rotate(63deg);"></div><div class="ep_p32949" style="left:57%;background:#ff6bd6;width:9px;height:11px;--d:1.3s;--dl:0.28s;transform:rotate(84deg);"></div><div class="ep_p32949" style="left:94%;background:#00f2ff;width:9px;height:7px;--d:1.4s;--dl:0.35s;transform:rotate(105deg);"></div><div class="ep_p32949" style="left:35%;background:#ff8c00;width:7px;height:7px;--d:1.5s;--dl:0.42s;transform:rotate(126deg);"></div><div class="ep_p32949" style="left:72%;background:#c084fc;width:9px;height:7px;--d:1.5s;--dl:0.49s;transform:rotate(147deg);"></div><div class="ep_p32949" style="left:13%;background:#ff6b6b;width:9px;height:11px;--d:1.6s;--dl:0.56s;transform:rotate(168deg);"></div><div class="ep_p32949" style="left:50%;background:#ffd93d;width:7px;height:7px;--d:1.6s;--dl:0.63s;transform:rotate(189deg);"></div><div class="ep_p32949" style="left:87%;background:#6bcb77;width:9px;height:7px;--d:1.7s;--dl:0.7s;transform:rotate(210deg);"></div><div class="ep_p32949" style="left:28%;background:#4d96ff;width:9px;height:7px;--d:1.8s;--dl:0.77s;transform:rotate(231deg);"></div><div class="ep_p32949" style="left:65%;background:#ff6bd6;width:7px;height:11px;--d:1.8s;--dl:0.84s;transform:rotate(252deg);"></div><div class="ep_p32949" style="left:6%;background:#00f2ff;width:9px;height:7px;--d:1.9s;--dl:0.91s;transform:rotate(273deg);"></div><div class="ep_p32949" style="left:43%;background:#ff8c00;width:9px;height:7px;--d:1.9s;--dl:0.98s;transform:rotate(294deg);"></div><div class="ep_p32949" style="left:80%;background:#c084fc;width:7px;height:7px;--d:2.0s;--dl:1.05s;transform:rotate(315deg);"></div><div class="ep_p32949" style="left:21%;background:#ff6b6b;width:9px;height:11px;--d:1.2s;--dl:0.02s;transform:rotate(336deg);"></div><div class="ep_p32949" style="left:58%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.09s;transform:rotate(357deg);"></div><div class="ep_p32949" style="left:95%;background:#6bcb77;width:7px;height:7px;--d:1.3s;--dl:0.16s;transform:rotate(18deg);"></div><div class="ep_p32949" style="left:36%;background:#4d96ff;width:9px;height:7px;--d:1.3s;--dl:0.23s;transform:rotate(39deg);"></div><div class="ep_p32949" style="left:73%;background:#ff6bd6;width:9px;height:11px;--d:1.4s;--dl:0.3s;transform:rotate(60deg);"></div><div class="ep_p32949" style="left:14%;background:#00f2ff;width:7px;height:7px;--d:1.5s;--dl:0.37s;transform:rotate(81deg);"></div><div class="ep_p32949" style="left:51%;background:#ff8c00;width:9px;height:7px;--d:1.5s;--dl:0.44s;transform:rotate(102deg);"></div><div class="ep_p32949" style="left:88%;background:#c084fc;width:9px;height:7px;--d:1.6s;--dl:0.51s;transform:rotate(123deg);"></div><div class="ep_p32949" style="left:29%;background:#ff6b6b;width:7px;height:11px;--d:1.6s;--dl:0.58s;transform:rotate(144deg);"></div><div class="ep_p32949" style="left:66%;background:#ffd93d;width:9px;height:7px;--d:1.7s;--dl:0.65s;transform:rotate(165deg);"></div></div><div style="font-size:3.2rem;z-index:1;">🎉</div></div></div></div>
+  <div class="preview-box"><style>@keyframes ep_fall56036{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(220px) rotate(540deg);opacity:0}}@keyframes ep_trophy56036{0%{transform:scale(0) rotate(-12deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}.ep_p56036{position:absolute;border-radius:2px;animation:ep_fall56036 var(--d,1.4s) var(--dl,0s) ease-in forwards;}</style><div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;"><div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;"><div class="ep_p56036" style="left:5%;background:#ff6b6b;width:7px;height:11px;--d:1.1s;--dl:0.0s;transform:rotate(0deg);"></div><div class="ep_p56036" style="left:42%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.07s;transform:rotate(21deg);"></div><div class="ep_p56036" style="left:79%;background:#6bcb77;width:9px;height:7px;--d:1.2s;--dl:0.14s;transform:rotate(42deg);"></div><div class="ep_p56036" style="left:20%;background:#4d96ff;width:7px;height:7px;--d:1.3s;--dl:0.21s;transform:rotate(63deg);"></div><div class="ep_p56036" style="left:57%;background:#ff6bd6;width:9px;height:11px;--d:1.3s;--dl:0.28s;transform:rotate(84deg);"></div><div class="ep_p56036" style="left:94%;background:#00f2ff;width:9px;height:7px;--d:1.4s;--dl:0.35s;transform:rotate(105deg);"></div><div class="ep_p56036" style="left:35%;background:#ff8c00;width:7px;height:7px;--d:1.5s;--dl:0.42s;transform:rotate(126deg);"></div><div class="ep_p56036" style="left:72%;background:#c084fc;width:9px;height:7px;--d:1.5s;--dl:0.49s;transform:rotate(147deg);"></div><div class="ep_p56036" style="left:13%;background:#ff6b6b;width:9px;height:11px;--d:1.6s;--dl:0.56s;transform:rotate(168deg);"></div><div class="ep_p56036" style="left:50%;background:#ffd93d;width:7px;height:7px;--d:1.6s;--dl:0.63s;transform:rotate(189deg);"></div><div class="ep_p56036" style="left:87%;background:#6bcb77;width:9px;height:7px;--d:1.7s;--dl:0.7s;transform:rotate(210deg);"></div><div class="ep_p56036" style="left:28%;background:#4d96ff;width:9px;height:7px;--d:1.8s;--dl:0.77s;transform:rotate(231deg);"></div><div class="ep_p56036" style="left:65%;background:#ff6bd6;width:7px;height:11px;--d:1.8s;--dl:0.84s;transform:rotate(252deg);"></div><div class="ep_p56036" style="left:6%;background:#00f2ff;width:9px;height:7px;--d:1.9s;--dl:0.91s;transform:rotate(273deg);"></div><div class="ep_p56036" style="left:43%;background:#ff8c00;width:9px;height:7px;--d:1.9s;--dl:0.98s;transform:rotate(294deg);"></div><div class="ep_p56036" style="left:80%;background:#c084fc;width:7px;height:7px;--d:2.0s;--dl:1.05s;transform:rotate(315deg);"></div><div class="ep_p56036" style="left:21%;background:#ff6b6b;width:9px;height:11px;--d:1.2s;--dl:0.02s;transform:rotate(336deg);"></div><div class="ep_p56036" style="left:58%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.09s;transform:rotate(357deg);"></div><div class="ep_p56036" style="left:95%;background:#6bcb77;width:7px;height:7px;--d:1.3s;--dl:0.16s;transform:rotate(18deg);"></div><div class="ep_p56036" style="left:36%;background:#4d96ff;width:9px;height:7px;--d:1.3s;--dl:0.23s;transform:rotate(39deg);"></div><div class="ep_p56036" style="left:73%;background:#ff6bd6;width:9px;height:11px;--d:1.4s;--dl:0.3s;transform:rotate(60deg);"></div><div class="ep_p56036" style="left:14%;background:#00f2ff;width:7px;height:7px;--d:1.5s;--dl:0.37s;transform:rotate(81deg);"></div><div class="ep_p56036" style="left:51%;background:#ff8c00;width:9px;height:7px;--d:1.5s;--dl:0.44s;transform:rotate(102deg);"></div><div class="ep_p56036" style="left:88%;background:#c084fc;width:9px;height:7px;--d:1.6s;--dl:0.51s;transform:rotate(123deg);"></div><div class="ep_p56036" style="left:29%;background:#ff6b6b;width:7px;height:11px;--d:1.6s;--dl:0.58s;transform:rotate(144deg);"></div><div class="ep_p56036" style="left:66%;background:#ffd93d;width:9px;height:7px;--d:1.7s;--dl:0.65s;transform:rotate(165deg);"></div></div><div style="font-size:3.2rem;z-index:1;">🎉</div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3096,7 +3191,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>@keyframes ssc_sh50568{0%{background-position:-200% 0}100%{background-position:200% 0}}.ssc50568{background:linear-gradient(90deg,#1e293b 25%,#2d3a4a 50%,#1e293b 75%);background-size:200% 100%;animation:ssc_sh50568 1.8s infinite linear;border-radius:4px;}</style><div style="margin:1rem 0;"><div style=""><div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px;"><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;"><div class="ssc50568" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;"><div class="ssc50568" style="height:12px;width:50%;margin-bottom:7px;"></div><div class="ssc50568" style="height:9px;width:32%;"></div></div></div><div class="ssc50568" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc50568" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc50568" style="height:11px;width:70%;margin-bottom:8px;"></div></div></div></div></div>
+  <div class="preview-box"><style>@keyframes ssc_sh95518{0%{background-position:-200% 0}100%{background-position:200% 0}}.ssc95518{background:linear-gradient(90deg,#1e293b 25%,#2d3a4a 50%,#1e293b 75%);background-size:200% 100%;animation:ssc_sh95518 1.8s infinite linear;border-radius:4px;}</style><div style="margin:1rem 0;"><div style=""><div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px;"><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;"><div class="ssc95518" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;"><div class="ssc95518" style="height:12px;width:50%;margin-bottom:7px;"></div><div class="ssc95518" style="height:9px;width:32%;"></div></div></div><div class="ssc95518" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc95518" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc95518" style="height:11px;width:70%;margin-bottom:8px;"></div></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3261,7 +3356,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span id="b7233e2f" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("b7233e2f");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
+  <div class="preview-box"><span id="e93589af" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("e93589af");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3272,7 +3367,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="display:inline-block;text-align:center;"><style>@keyframes a2ui-odob75edc4f{from{transform:translateY(0);}to{transform:translateY(-90.91%);}}</style><div style="font-size:2rem;font-weight:900;font-family:monospace;color:#111827;"><span style="display:inline-block;overflow:hidden;height:1.2em;vertical-align:bottom;"><span style="display:flex;flex-direction:column;animation:a2ui-odob75edc4f 0.6s ease-out forwards;"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>1</span></span></span></div></div></div>
+  <div class="preview-box"><div style="display:inline-block;text-align:center;"><style>@keyframes a2ui-odo4fd07b42{from{transform:translateY(0);}to{transform:translateY(-90.91%);}}</style><div style="font-size:2rem;font-weight:900;font-family:monospace;color:#111827;"><span style="display:inline-block;overflow:hidden;height:1.2em;vertical-align:bottom;"><span style="display:flex;flex-direction:column;animation:a2ui-odo4fd07b42 0.6s ease-out forwards;"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>1</span></span></span></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3616,7 +3711,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="width:100%;height:280px;background:#0a0f1d;border-radius:10px;overflow:hidden;position:relative;"><canvas id="plx2da3fb" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("plx2da3fb"),x=c.getContext("2d"),W,H,nodes=[];function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();window.addEventListener("resize",resize);for(var i=0;i<80;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.7,vy:(Math.random()-0.5)*0.7});(function loop(){requestAnimationFrame(loop);x.fillStyle="#0a0f1d";x.fillRect(0,0,W,H);nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;x.beginPath();x.arc(n.x,n.y,2.5,0,Math.PI*2);x.fillStyle="#6366f1";x.fill();});for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(nodes[i].x,nodes[i].y);x.lineTo(nodes[j].x,nodes[j].y);x.strokeStyle="rgba(99,102,241,"+(1-d/110)+")";x.lineWidth=0.6;x.stroke();}}})();})();</script></div></div>
+  <div class="preview-box"><div style="width:100%;height:280px;background:#0a0f1d;border-radius:10px;overflow:hidden;position:relative;"><canvas id="plxaa02f2" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("plxaa02f2"),x=c.getContext("2d"),W,H,nodes=[];function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();window.addEventListener("resize",resize);for(var i=0;i<80;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.7,vy:(Math.random()-0.5)*0.7});(function loop(){requestAnimationFrame(loop);x.fillStyle="#0a0f1d";x.fillRect(0,0,W,H);nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;x.beginPath();x.arc(n.x,n.y,2.5,0,Math.PI*2);x.fillStyle="#6366f1";x.fill();});for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(nodes[i].x,nodes[i].y);x.lineTo(nodes[j].x,nodes[j].y);x.strokeStyle="rgba(99,102,241,"+(1-d/110)+")";x.lineWidth=0.6;x.stroke();}}})();})();</script></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3638,7 +3733,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="width:100%;height:320px;background:#0d1117;border-radius:10px;overflow:hidden;position:relative;"><canvas id="isofb626f" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("isofb626f"),x=c.getContext("2d");var W,H;function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();var t=0;(function loop(){requestAnimationFrame(loop);x.fillStyle="#0d1117";x.fillRect(0,0,W,H);var cols=16,rows=16,cx=W/2,cy=H*0.45,s=W/cols*0.9;for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){var dx=(i-cols/2)*s,dy=(j-rows/2)*s,dz=Math.sin((i+j)*0.4+t)*12;var ix=cx+dx-dy,iy=cy+(dx+dy)*0.5-dz;x.beginPath();x.arc(ix,iy,1.5,0,Math.PI*2);x.fillStyle="#6366f1";x.globalAlpha=0.6+dz/24;x.fill();x.globalAlpha=1;}t+=0.015;})();})();</script></div></div>
+  <div class="preview-box"><div style="width:100%;height:320px;background:#0d1117;border-radius:10px;overflow:hidden;position:relative;"><canvas id="isob2357c" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("isob2357c"),x=c.getContext("2d");var W,H;function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();var t=0;(function loop(){requestAnimationFrame(loop);x.fillStyle="#0d1117";x.fillRect(0,0,W,H);var cols=16,rows=16,cx=W/2,cy=H*0.45,s=W/cols*0.9;for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){var dx=(i-cols/2)*s,dy=(j-rows/2)*s,dz=Math.sin((i+j)*0.4+t)*12;var ix=cx+dx-dy,iy=cy+(dx+dy)*0.5-dz;x.beginPath();x.arc(ix,iy,1.5,0,Math.PI*2);x.fillStyle="#6366f1";x.globalAlpha=0.6+dz/24;x.fill();x.globalAlpha=1;}t+=0.015;})();})();</script></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3658,6 +3753,10 @@ footer a{color:var(--cyan);text-decoration:none}
     <p class="sa-desc">course curriculum grid — module cards with live locked/available/complete status from progress_store</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div style="font-weight:700;margin-bottom:12px;">Course map</div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"><a href="#" style="text-decoration:none;"><div style="border-radius:14px;padding:20px;min-height:150px;box-sizing:border-box;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;transition:border-color 0.2s;height:100%;"><div style="font-size:1.5rem;margin-bottom:8px;">📘</div><div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;"></div><div style="font-size:0.8rem;color:#6b7280;">Start here</div></div></a><a href="#" style="text-decoration:none;"><div style="border-radius:14px;padding:20px;min-height:150px;box-sizing:border-box;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;transition:border-color 0.2s;height:100%;"><div style="font-size:1.5rem;margin-bottom:8px;">🚀</div><div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;"></div><div style="font-size:0.8rem;color:#6b7280;">Go deeper</div></div></a></div></div></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -3780,7 +3879,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="font-family:system-ui,sans-serif;line-height:1.7;margin:1rem 0;">A concise description of the content.</div></div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;line-height:1.7;margin:1rem 0;">The <mark style="background:#f59e0b;padding:1px 3px;border-radius:3px;cursor:pointer;" title="">renderer</mark> walks the block list and dispatches by <mark style="background:#f59e0b;padding:1px 3px;border-radius:3px;cursor:pointer;" title="">type</mark>.</div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3809,7 +3908,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;background:#f9fafb;border:1px solid #e5e7eb;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#6366f1;text-transform:uppercase;margin-bottom:8px;">Study Timer</div><div id="stmr45f3abdisp" style="font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;color:#6366f1;margin-bottom:16px;">25:00</div><div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;"><div style="padding:6px 14px;background:#e0e7ff;border-radius:99px;font-size:0.78rem;font-weight:600;color:#6366f1;">Focus 25m</div><div style="padding:6px 14px;background:#f0fdf4;border-radius:99px;font-size:0.78rem;font-weight:600;color:#34d399;">Break 5m</div></div><button onclick="(function(){var s=25*60,r,t=document.getElementById('stmr45f3abdisp'),b=document.getElementById('stmr45f3abbtn');if(r){clearInterval(r);r=null;b.textContent='Start';return;}b.textContent='Stop';r=setInterval(function(){s--;var m=Math.floor(s/60),sec=s%60;t.textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;if(s<=0){clearInterval(r);r=null;b.textContent='Start';}},1000)})()" id="stmr45f3abbtn" style="padding:10px 28px;border-radius:10px;background:#6366f1;color:#fff;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">Start</button></div></div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;background:#f9fafb;border:1px solid #e5e7eb;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#6366f1;text-transform:uppercase;margin-bottom:8px;">Study Timer</div><div id="stmrfec7c2disp" style="font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;color:#6366f1;margin-bottom:16px;">25:00</div><div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;"><div style="padding:6px 14px;background:#e0e7ff;border-radius:99px;font-size:0.78rem;font-weight:600;color:#6366f1;">Focus 25m</div><div style="padding:6px 14px;background:#f0fdf4;border-radius:99px;font-size:0.78rem;font-weight:600;color:#34d399;">Break 5m</div></div><button onclick="(function(){var s=25*60,r,t=document.getElementById('stmrfec7c2disp'),b=document.getElementById('stmrfec7c2btn');if(r){clearInterval(r);r=null;b.textContent='Start';return;}b.textContent='Stop';r=setInterval(function(){s--;var m=Math.floor(s/60),sec=s%60;t.textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;if(s<=0){clearInterval(r);r=null;b.textContent='Start';}},1000)})()" id="stmrfec7c2btn" style="padding:10px 28px;border-radius:10px;background:#6366f1;color:#fff;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">Start</button></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3831,7 +3930,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div onclick="document.getElementById('spc3b0a49card').style.transform=document.getElementById('spc3b0a49card').style.transform?'':' rotateY(180deg)'" style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;"><div id="spc3b0a49card" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;"><div style="position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;border-radius:14px;background:linear-gradient(135deg,#a78bfa22,#a78bfa11);border:1px solid #a78bfa44;padding:20px;"><span style="font-size:1.1rem;font-weight:600;">What is an atom?</span></div><div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;border-radius:14px;background:#f0fdf4;border:1px solid #34d39944;padding:20px;"><span style="font-size:0.95rem;">A self-contained UI block with a type and fields.</span></div></div></div><div style="display:flex;gap:8px;font-size:0.8rem;"><button style="flex:1;padding:8px;border-radius:8px;background:#fee2e2;border:none;cursor:pointer;font-weight:600;">Again</button><button style="flex:1;padding:8px;border-radius:8px;background:#fef9c3;border:none;cursor:pointer;font-weight:600;">Hard</button><button style="flex:1;padding:8px;border-radius:8px;background:#dcfce7;border:none;cursor:pointer;font-weight:600;">Good</button><button style="flex:1;padding:8px;border-radius:8px;background:#dbeafe;border:none;cursor:pointer;font-weight:600;">Easy</button></div></div></div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div onclick="document.getElementById('spc00c55ecard').style.transform=document.getElementById('spc00c55ecard').style.transform?'':' rotateY(180deg)'" style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;"><div id="spc00c55ecard" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;"><div style="position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;border-radius:14px;background:linear-gradient(135deg,#a78bfa22,#a78bfa11);border:1px solid #a78bfa44;padding:20px;"><span style="font-size:1.1rem;font-weight:600;">What is an atom?</span></div><div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;border-radius:14px;background:#f0fdf4;border:1px solid #34d39944;padding:20px;"><span style="font-size:0.95rem;">A self-contained UI block with a type and fields.</span></div></div></div><div style="display:flex;gap:8px;font-size:0.8rem;"><button style="flex:1;padding:8px;border-radius:8px;background:#fee2e2;border:none;cursor:pointer;font-weight:600;">Again</button><button style="flex:1;padding:8px;border-radius:8px;background:#fef9c3;border:none;cursor:pointer;font-weight:600;">Hard</button><button style="flex:1;padding:8px;border-radius:8px;background:#dcfce7;border:none;cursor:pointer;font-weight:600;">Good</button><button style="flex:1;padding:8px;border-radius:8px;background:#dbeafe;border:none;cursor:pointer;font-weight:600;">Easy</button></div></div></div>
 </div>
 </div>
 <div class="surface-atom">

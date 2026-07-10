@@ -56,12 +56,20 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>renders fully but without persistence — progress and live data need an Apps Script deployment</td></tr></tbody></table>
+</div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div style="font-weight:700;margin-bottom:12px;">Course map</div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"><a href="#" style="text-decoration:none;"><div style="border-radius:14px;padding:20px;min-height:150px;box-sizing:border-box;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;transition:border-color 0.2s;height:100%;"><div style="font-size:1.5rem;margin-bottom:8px;">📘</div><div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;"></div><div style="font-size:0.8rem;color:#6b7280;">Start here</div></div></a><a href="#" style="text-decoration:none;"><div style="border-radius:14px;padding:20px;min-height:150px;box-sizing:border-box;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;transition:border-color 0.2s;height:100%;"><div style="font-size:1.5rem;margin-bottom:8px;">🚀</div><div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;"></div><div style="font-size:0.8rem;color:#6b7280;">Go deeper</div></div></a></div></div></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -86,7 +94,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "capabilities": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
   ],
   "description": "Visual curriculum grid showing all modules in a course. Each card displays module icon, title, description, duration, and a live status badge (locked/Start/Done) driven by progress_store. Locked modules are greyed out. Completed modules turn green. Cards navigate to module url on click.",
   "representativeQueries": [

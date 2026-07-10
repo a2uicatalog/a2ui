@@ -48,7 +48,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "body": {
@@ -81,7 +82,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "heading": {
@@ -114,7 +116,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "subheading": {
@@ -147,7 +150,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "quote": {
@@ -183,7 +187,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "code": {
@@ -218,7 +223,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pipeline": {
@@ -249,7 +255,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "bullet_list": {
@@ -282,7 +289,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "divider": {
@@ -310,7 +318,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "youtube": {
@@ -343,7 +352,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "image": {
@@ -387,7 +397,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "image_pair": {
@@ -422,7 +433,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "diagram": {
@@ -457,7 +469,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "github_repo_card": {
@@ -494,7 +507,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "repo_links": {
@@ -526,7 +540,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "closing": {
@@ -563,7 +578,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "callout": {
@@ -601,7 +617,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "steps": {
@@ -632,7 +649,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "table": {
@@ -672,7 +690,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tabs": {
@@ -706,7 +725,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "key_value": {
@@ -742,7 +762,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "before_after": {
@@ -792,7 +813,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "api_reference": {
@@ -851,7 +873,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gallery": {
@@ -887,7 +910,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "video_pair": {
@@ -925,7 +949,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "carousel": {
@@ -963,7 +988,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "timeline": {
@@ -1002,7 +1028,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "annotated_code": {
@@ -1044,7 +1071,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "stat_card": {
@@ -1090,7 +1118,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "progress_bar": {
@@ -1136,7 +1165,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "badge_group": {
@@ -1170,7 +1200,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sparkline": {
@@ -1216,7 +1247,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "heatmap": {
@@ -1262,7 +1294,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "punch_card": {
@@ -1308,7 +1341,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sankey_flow": {
@@ -1346,7 +1380,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "cohort_retention": {
@@ -1388,7 +1423,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "donut_stat": {
@@ -1438,7 +1474,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "metric_delta": {
@@ -1491,7 +1528,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "task_list": {
@@ -1525,7 +1563,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sentiment_summary": {
@@ -1567,7 +1606,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "trend_indicator": {
@@ -1612,7 +1652,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "breadcrumb": {
@@ -1642,7 +1683,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pagination": {
@@ -1684,7 +1726,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "stepper": {
@@ -1727,7 +1770,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tab_bar": {
@@ -1757,7 +1801,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "anchor_list": {
@@ -1789,7 +1834,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "faq_accordion": {
@@ -1820,7 +1866,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "glossary_term": {
@@ -1863,7 +1910,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "footnote": {
@@ -1904,7 +1952,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "blockquote_with_avatar": {
@@ -1945,7 +1994,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pull_stat": {
@@ -1988,7 +2038,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "accordion_item": {
@@ -2022,7 +2073,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tooltip": {
@@ -2056,7 +2108,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "hover_card": {
@@ -2098,7 +2151,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "collapsible_panel": {
@@ -2136,7 +2190,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "css_modal": {
@@ -2178,7 +2233,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "audio_player": {
@@ -2220,7 +2276,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "audio_link": {
@@ -2261,7 +2318,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pdf_preview": {
@@ -2303,7 +2361,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "document_link": {
@@ -2344,7 +2403,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "video_thumbnail": {
@@ -2386,7 +2446,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "video_card": {
@@ -2432,7 +2493,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "code_diff": {
@@ -2483,7 +2545,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "code_snippet_pair": {
@@ -2529,7 +2592,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "framed_screenshot": {
@@ -2571,7 +2635,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "image_with_caption": {
@@ -2616,7 +2681,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "alert_banner": {
@@ -2662,7 +2728,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "toast_notification": {
@@ -2702,7 +2769,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "loading_skeleton": {
@@ -2740,7 +2808,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "empty_state": {
@@ -2786,7 +2855,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "spinner": {
@@ -2820,7 +2890,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "status_pill": {
@@ -2858,7 +2929,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "inline_feedback_message": {
@@ -2896,7 +2968,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "rating_stars": {
@@ -2934,7 +3007,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "progress_circle": {
@@ -2976,7 +3050,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "action_required_card": {
@@ -3024,7 +3099,8 @@
     "web",
     "google-meet-stage",
     "google-chat",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "feature_matrix": {
@@ -3059,7 +3135,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pricing_tier_card": {
@@ -3120,7 +3197,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pricing_tier_group": {
@@ -3151,7 +3229,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pros_cons_list": {
@@ -3192,7 +3271,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "side_by_side_spec": {
@@ -3231,7 +3311,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "product_spec_table": {
@@ -3266,7 +3347,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "comparison_grid": {
@@ -3301,7 +3383,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "versus_block": {
@@ -3355,7 +3438,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "rating_comparison": {
@@ -3388,7 +3472,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "capability_checklist": {
@@ -3423,7 +3508,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "toggle_switch": {
@@ -3461,7 +3547,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "expandable_text": {
@@ -3499,7 +3586,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "flip_card": {
@@ -3537,7 +3625,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "image_hotspots": {
@@ -3575,7 +3664,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "css_dropdown_menu": {
@@ -3609,7 +3699,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "star_rating_input": {
@@ -3647,7 +3738,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "segmented_control": {
@@ -3685,7 +3777,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "zoomable_image": {
@@ -3723,7 +3816,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "custom_checkbox_group": {
@@ -3761,7 +3855,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "css_slide_panel": {
@@ -3799,7 +3894,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "testimonial_card": {
@@ -3846,7 +3942,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "star_rating_display": {
@@ -3885,7 +3982,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "avatar_group": {
@@ -3924,7 +4022,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "contributor_list": {
@@ -3959,7 +4058,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "customer_logo_grid": {
@@ -3994,7 +4094,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "social_proof_banner": {
@@ -4037,7 +4138,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "media_mention_card": {
@@ -4084,7 +4186,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "expert_endorsement": {
@@ -4131,7 +4234,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "review_callout": {
@@ -4178,7 +4282,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "social_feed_embed": {
@@ -4215,7 +4320,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "terminal_block": {
@@ -4252,7 +4358,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "file_tree": {
@@ -4281,7 +4388,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tabbed_code": {
@@ -4310,7 +4418,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "http_request_block": {
@@ -4352,7 +4461,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "env_var_list": {
@@ -4381,7 +4491,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "prerequisite_checklist": {
@@ -4414,7 +4525,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "keyboard_shortcut": {
@@ -4447,7 +4559,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "api_param_table": {
@@ -4477,7 +4590,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "version_badge": {
@@ -4510,7 +4624,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "deprecation_notice": {
@@ -4543,7 +4658,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "experimental_banner": {
@@ -4572,7 +4688,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "cli_command": {
@@ -4601,7 +4718,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "copy_code_button": {
@@ -4630,7 +4748,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "log_output": {
@@ -4659,7 +4778,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "json_tree_viewer": {
@@ -4688,7 +4808,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "key_takeaways": {
@@ -4717,7 +4838,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "summary_box": {
@@ -4746,7 +4868,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "learning_objectives": {
@@ -4775,7 +4898,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "changelog_entry": {
@@ -4812,7 +4936,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "release_notes": {
@@ -4853,7 +4978,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "further_reading": {
@@ -4882,7 +5008,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "resources_list": {
@@ -4911,7 +5038,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sidebar_note": {
@@ -4944,7 +5072,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "difficulty_badge": {
@@ -4973,7 +5102,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "caution_block": {
@@ -5002,7 +5132,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "checklist_interactive": {
@@ -5031,7 +5162,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "glossary_inline": {
@@ -5064,7 +5196,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "time_estimate": {
@@ -5093,7 +5226,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "progress_checkpoint": {
@@ -5126,7 +5260,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "social_share_bar": {
@@ -5159,7 +5294,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "newsletter_cta": {
@@ -5192,7 +5328,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "author_bio_card": {
@@ -5233,7 +5370,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "related_posts_grid": {
@@ -5262,7 +5400,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "series_overview_card": {
@@ -5295,7 +5434,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "reaction_group": {
@@ -5324,7 +5464,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "linkedin_post_image": {
@@ -5381,7 +5522,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "share_quote": {
@@ -5414,7 +5556,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "follow_cta": {
@@ -5447,7 +5590,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "follow_button": {
@@ -5480,7 +5624,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "reading_progress_bar": {
@@ -5509,7 +5654,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "table_of_contents": {
@@ -5538,7 +5684,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "article_hero": {
@@ -5575,7 +5722,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "scroll_to_top": {
@@ -5604,7 +5752,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "article_series_nav": {
@@ -5637,7 +5786,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "embed_codepen": {
@@ -5669,7 +5819,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "embed_stackblitz": {
@@ -5697,7 +5848,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "embed_gist": {
@@ -5725,7 +5877,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "embed_tweet": {
@@ -5753,7 +5906,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "embed_google_slides": {
@@ -5781,7 +5935,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "lottie_animation": {
@@ -5813,7 +5968,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "figma_embed": {
@@ -5841,7 +5997,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "color_swatch_grid": {
@@ -5871,7 +6028,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "live_demo_embed": {
@@ -5903,7 +6061,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "web"
+    "web",
+    "mcp-apps"
    ]
   },
   "benchmark_comparison": {
@@ -5933,7 +6092,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "chartjs_bar": {
@@ -5966,7 +6126,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "chartjs_line": {
@@ -5999,7 +6160,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "data_table_sortable": {
@@ -6032,7 +6194,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ],
    "x-aliases": [
     "data_table"
@@ -6073,7 +6236,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "mini_sparkline_set": {
@@ -6103,7 +6267,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "status_dashboard": {
@@ -6133,7 +6298,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "uptime_timeline": {
@@ -6163,7 +6329,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "command_palette": {
@@ -6192,7 +6359,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "search_result_card": {
@@ -6230,7 +6398,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "post_metadata_bar": {
@@ -6267,7 +6436,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "footnote_group": {
@@ -6297,7 +6467,8 @@
    "x-surfaces": [
     "web",
     "email",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "notification_badge": {
@@ -6330,7 +6501,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "expandable_list": {
@@ -6359,7 +6531,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "poll_block": {
@@ -6392,7 +6565,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "abbr_tooltip": {
@@ -6425,7 +6599,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "copy_to_clipboard": {
@@ -6459,7 +6634,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "conversion_funnel": {
@@ -6493,7 +6669,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gauge_sla": {
@@ -6539,7 +6716,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "stacked_area": {
@@ -6577,7 +6755,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "scatter_trend": {
@@ -6619,7 +6798,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "call_mood_board": {
@@ -6661,7 +6841,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "github_activity_grid": {
@@ -6707,7 +6888,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form": {
@@ -6750,7 +6932,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form_input": {
@@ -6797,7 +6980,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ],
    "x-aliases": [
     "text_input"
@@ -6847,7 +7031,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form_radio_group": {
@@ -6894,7 +7079,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form_checkbox_group": {
@@ -6936,7 +7122,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form_switch_group": {
@@ -6974,7 +7161,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form_slider": {
@@ -7032,7 +7220,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "form_date_picker": {
@@ -7079,7 +7268,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "modal": {
@@ -7121,7 +7311,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "follow_up_chips": {
@@ -7155,7 +7346,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "choicebox_group": {
@@ -7205,7 +7397,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "feedback_prompt": {
@@ -7247,7 +7440,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "entity_list": {
@@ -7280,7 +7474,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "prompt_template": {
@@ -7323,7 +7518,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "model_card": {
@@ -7376,7 +7572,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "conversation_snippet": {
@@ -7425,7 +7622,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "shortcut_legend": {
@@ -7462,7 +7660,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "rating_summary_bar": {
@@ -7507,7 +7706,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "roadmap_card": {
@@ -7544,7 +7744,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "notification_stack": {
@@ -7581,7 +7782,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "inline_alert": {
@@ -7623,7 +7825,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tag_block": {
@@ -7659,7 +7862,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "variant_selector": {
@@ -7701,7 +7905,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "markdown_block": {
@@ -7737,7 +7942,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "chartjs_pie": {
@@ -7788,7 +7994,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "text_callout": {
@@ -7829,7 +8036,8 @@
     "google-chat",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "source_citation": {
@@ -7865,7 +8073,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "llm_comparison_table": {
@@ -7904,7 +8113,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "confidence_bar": {
@@ -7948,7 +8158,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "token_budget_meter": {
@@ -8007,7 +8218,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "product_thumbnail": {
@@ -8067,7 +8279,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "order_status_card": {
@@ -8119,7 +8332,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "inventory_table": {
@@ -8155,7 +8369,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "jira_ticket": {
@@ -8215,7 +8430,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sprint_board": {
@@ -8250,7 +8466,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "lozenge": {
@@ -8290,7 +8507,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "data_grid": {
@@ -8337,7 +8555,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tree_view": {
@@ -8373,7 +8592,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "heatmap_calendar": {
@@ -8420,7 +8640,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "combobox": {
@@ -8471,7 +8692,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "feature_grid": {
@@ -8513,7 +8735,8 @@
    "x-surfaces": [
     "web",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "navigation_menu": {
@@ -8554,7 +8777,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "multi_select_input": {
@@ -8600,7 +8824,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "otp_input": {
@@ -8637,7 +8862,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "skill_bars": {
@@ -8688,7 +8914,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "icon_stat_row": {
@@ -8727,7 +8954,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "color_section": {
@@ -8769,7 +8997,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tag_cloud": {
@@ -8816,7 +9045,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "step_progress": {
@@ -8856,7 +9086,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "split_pane": {
@@ -8889,7 +9120,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gradient_hero": {
@@ -8952,7 +9184,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "icon_list": {
@@ -8995,7 +9228,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "highlight_box": {
@@ -9041,7 +9275,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "two_tone_card": {
@@ -9091,7 +9326,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "metric_row": {
@@ -9130,7 +9366,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "numbered_list": {
@@ -9173,7 +9410,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "page_header": {
@@ -9228,7 +9466,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "back_button": {
@@ -9273,7 +9512,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "section_break": {
@@ -9311,7 +9551,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "chip_group": {
@@ -9349,7 +9590,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "columns": {
@@ -9392,7 +9634,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "person_card": {
@@ -9451,7 +9694,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "agenda_block": {
@@ -9493,7 +9737,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "risk_flag": {
@@ -9528,7 +9773,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "action_items": {
@@ -9563,7 +9809,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "pdf"
+    "pdf",
+    "mcp-apps"
    ]
   },
   "bento_grid": {
@@ -9601,7 +9848,8 @@
    "x-surfaces": [
     "web",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "cta_section": {
@@ -9648,7 +9896,8 @@
     "web",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "animated_counter": {
@@ -9681,7 +9930,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "media_stream_card": {
@@ -9720,7 +9970,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "live_aggregator": {
@@ -9762,7 +10013,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "vote_button_group": {
@@ -9804,7 +10056,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "effect_overlay": {
@@ -9847,7 +10100,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "skeleton_stage_card": {
@@ -9885,7 +10139,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "marquee_strip": {
@@ -9933,7 +10188,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "typewriter_text": {
@@ -9987,7 +10243,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "animated_border_card": {
@@ -10040,7 +10297,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "aurora_background": {
@@ -10089,7 +10347,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "dot_grid_background": {
@@ -10143,7 +10402,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "shimmer_button": {
@@ -10195,7 +10455,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "card_stack": {
@@ -10237,7 +10498,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "meteor_shower": {
@@ -10286,7 +10548,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "blur_fade_in": {
@@ -10342,7 +10605,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "glow_button": {
@@ -10395,7 +10659,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "animated_beam": {
@@ -10452,7 +10717,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "encrypted_reveal": {
@@ -10513,7 +10779,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "word_flip": {
@@ -10567,7 +10834,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sonar_pulse": {
@@ -10612,7 +10880,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "typewriter": {
@@ -10665,7 +10934,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "number_odometer": {
@@ -10715,7 +10985,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "typing_indicator": {
@@ -10749,7 +11020,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "countdown_timer": {
@@ -10798,7 +11070,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gradient_text": {
@@ -10852,7 +11125,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "reveal_on_scroll": {
@@ -10900,7 +11174,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "word_scramble": {
@@ -10950,7 +11225,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "svg_path_draw": {
@@ -10995,7 +11271,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "parallax_card": {
@@ -11044,7 +11321,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "quiz_question": {
@@ -11088,7 +11366,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "fill_in_blank": {
@@ -11129,7 +11408,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "match_exercise": {
@@ -11162,7 +11442,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "hint_reveal": {
@@ -11200,7 +11481,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "achievement_badge": {
@@ -11255,7 +11537,8 @@
     "google-meet-stage",
     "email",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "score_summary": {
@@ -11311,7 +11594,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "xp_bar": {
@@ -11358,7 +11642,8 @@
    "x-surfaces": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "lesson_nav": {
@@ -11411,7 +11696,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "course_progress_card": {
@@ -11450,7 +11736,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "highlighted_text": {
@@ -11493,7 +11780,8 @@
     "web",
     "google-meet-stage",
     "pdf",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "drive_file_list": {
@@ -11525,7 +11813,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sheet_preview": {
@@ -11561,7 +11850,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gmail_summary": {
@@ -11593,7 +11883,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "calendar_upcoming": {
@@ -11621,7 +11912,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "user_greeting": {
@@ -11649,7 +11941,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "script_run_button": {
@@ -11685,7 +11978,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "calendar_today": {
@@ -11717,7 +12011,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "sheet_stats": {
@@ -11765,7 +12060,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gmail_unread_count": {
@@ -11810,7 +12106,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "user_profile_card": {
@@ -11851,7 +12148,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "drive_storage_usage": {
@@ -11896,7 +12194,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "sheet_form_submit": {
@@ -11944,7 +12243,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tasks_today": {
@@ -11989,7 +12289,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "cursor_glow": {
@@ -12035,7 +12336,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "cursor_trail": {
@@ -12077,7 +12379,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "particle_burst": {
@@ -12123,7 +12426,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "spotlight_cursor": {
@@ -12165,7 +12469,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "magnetic_element": {
@@ -12211,7 +12516,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "tilt_card": {
@@ -12261,7 +12567,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "doc_ai_summary": {
@@ -12403,7 +12710,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "display_quote": {
@@ -12449,7 +12757,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "split_stat": {
@@ -12503,7 +12812,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "word_reveal": {
@@ -12557,7 +12867,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "section_label": {
@@ -12595,7 +12906,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "count_up_stat": {
@@ -12649,7 +12961,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "text_highlight": {
@@ -12695,7 +13008,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "reveal_line": {
@@ -12745,7 +13059,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "canvas_plexus": {
@@ -12799,7 +13114,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "spring_nodes": {
@@ -12849,7 +13165,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "isometric_mesh": {
@@ -12903,7 +13220,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "geo_iso_takeoff": {
@@ -12939,7 +13257,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "geo_iso_rocket_launch": {
@@ -12971,7 +13290,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "geo_iso_heli_hover": {
@@ -13003,7 +13323,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "geo_iso_fleet": {
@@ -13043,7 +13364,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "airspace_command_deck": {
@@ -13128,7 +13450,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "data_source": {
@@ -13177,7 +13500,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "adsb_feed": {
@@ -13349,7 +13673,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "text_block": {
@@ -13377,7 +13702,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "blockquote": {
@@ -13409,7 +13735,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "spacer": {
@@ -13437,7 +13764,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tag_chip": {
@@ -13469,7 +13797,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "badge": {
@@ -13501,7 +13830,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "inline_code": {
@@ -13529,7 +13859,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "code_block": {
@@ -13561,7 +13892,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "link_button": {
@@ -13593,7 +13925,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "cta_button": {
@@ -13629,7 +13962,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "nav_link": {
@@ -13676,7 +14010,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "info_card": {
@@ -13708,7 +14043,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "ai_build_trace": {
@@ -13752,7 +14088,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gemini_prompt": {
@@ -13788,7 +14125,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "dark_hero": {
@@ -13840,7 +14178,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "glowing_stat": {
@@ -13892,7 +14231,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "glass_card": {
@@ -13944,7 +14284,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gradient_border_card": {
@@ -13996,7 +14337,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "floating_orbs": {
@@ -14036,7 +14378,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "neon_text": {
@@ -14084,7 +14427,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "dark_feature_grid": {
@@ -14120,7 +14464,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "dark_divider": {
@@ -14156,7 +14501,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "ambient_gradient": {
@@ -14188,7 +14534,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "depth_stack": {
@@ -14220,7 +14567,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "scramble_reveal": {
@@ -14252,7 +14600,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "scroll_trigger": {
@@ -14292,7 +14641,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "flow_connector": {
@@ -14332,7 +14682,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "live_metric": {
@@ -14384,7 +14735,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "deadline_ticker": {
@@ -14416,7 +14768,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "pattern_background": {
@@ -14460,7 +14813,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "glitch_text": {
@@ -14492,7 +14846,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "neon_glow": {
@@ -14528,7 +14883,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "magnetic_button": {
@@ -14560,7 +14916,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "confetti_trigger": {
@@ -14592,7 +14949,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "floating_particles": {
@@ -14620,7 +14978,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "parallax_section": {
@@ -14648,7 +15007,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "scroll_progress": {
@@ -14680,7 +15040,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "live_clock": {
@@ -14716,7 +15077,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "decision_tree": {
@@ -14748,7 +15110,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "step_reveal_sequence": {
@@ -14776,7 +15139,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "chat_sequence": {
@@ -14804,7 +15168,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "tooltip_glossary": {
@@ -14836,7 +15201,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "focus_lens": {
@@ -14868,7 +15234,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "terminal_boot": {
@@ -14904,7 +15271,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "stagger_list": {
@@ -14940,7 +15308,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "liquid_button": {
@@ -14972,7 +15341,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "highlight_sweep": {
@@ -15012,7 +15382,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "progress_reveal": {
@@ -15056,7 +15427,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "big_reveal": {
@@ -15100,7 +15472,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "kinetic_headline": {
@@ -15144,7 +15517,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "text_reveal_mask": {
@@ -15184,7 +15558,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "split_reveal": {
@@ -15224,7 +15599,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "mesh_gradient": {
@@ -15264,7 +15640,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "stripe_background": {
@@ -15308,7 +15685,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "status_timeline": {
@@ -15340,7 +15718,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "counter_group": {
@@ -15368,7 +15747,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "orbit_diagram": {
@@ -15408,7 +15788,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "noise_card": {
@@ -15448,7 +15829,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "comparison_morph": {
@@ -15484,7 +15866,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "word_cloud": {
@@ -15536,7 +15919,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "quiz_set": {
@@ -15584,7 +15968,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "globe_3d": {
@@ -15636,7 +16021,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "geo_mercator_radar": {
@@ -15680,7 +16066,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "geo_contour_waves": {
@@ -15720,7 +16107,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "multi_surface": {
@@ -15752,7 +16140,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "geo_europe_airspace": {
@@ -15792,7 +16181,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "feed_status": {
@@ -15828,7 +16218,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "playbook": {
@@ -15864,7 +16255,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "surface_unlocked": {
@@ -15904,7 +16296,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "schema_reveal": {
@@ -15936,7 +16329,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "url_anatomy": {
@@ -15964,7 +16358,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "schema_qr": {
@@ -16004,7 +16399,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "take_away_card": {
@@ -16048,7 +16444,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "next_step_strip": {
@@ -16080,7 +16477,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "copy_prompt": {
@@ -16116,7 +16514,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "atom_anatomy": {
@@ -16152,7 +16551,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "renderer_stats": {
@@ -16188,7 +16588,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "prompt_to_schema": {
@@ -16232,7 +16633,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "before_after_stack": {
@@ -16280,7 +16682,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "live_vote": {
@@ -16328,7 +16731,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "reaction_shower": {
@@ -16372,7 +16776,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "raise_hand": {
@@ -16420,7 +16825,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "surface_map": {
@@ -16456,7 +16862,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "speed_counter": {
@@ -16492,7 +16899,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "live_edit": {
@@ -16528,7 +16936,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "gmail_inbox": {
@@ -16573,7 +16982,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "drive_recent_files": {
@@ -16618,7 +17028,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "drive_folder_contents": {
@@ -16663,7 +17074,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "drive_file_card": {
@@ -16710,7 +17122,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "progress_store": {
@@ -16740,7 +17153,8 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "google-apps-script-web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "module_map": {
@@ -16779,7 +17193,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "knowledge_check": {
@@ -16824,7 +17239,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "quiz_result_summary": {
@@ -16886,7 +17302,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "scenario_branch": {
@@ -16930,7 +17347,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "completion_gate": {
@@ -16969,7 +17387,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "certification_card": {
@@ -17020,7 +17439,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "skill_radar": {
@@ -17059,7 +17479,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "badge_showcase": {
@@ -17098,7 +17519,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "learning_path_selector": {
@@ -17137,7 +17559,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "video_checkpoint": {
@@ -17177,7 +17600,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "cohort_progress_board": {
@@ -17220,7 +17644,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "reflection_prompt": {
@@ -17263,7 +17688,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "annotation_highlight": {
@@ -17299,7 +17725,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "onboarding_stepper": {
@@ -17338,7 +17765,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "case_study_card": {
@@ -17390,7 +17818,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "study_timer": {
@@ -17432,7 +17861,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "rubric_card": {
@@ -17475,7 +17905,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "spaced_repetition_card": {
@@ -17519,7 +17950,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "leaderboard_card": {
@@ -17566,7 +17998,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "nav_bar": {
@@ -17617,7 +18050,8 @@
    "x-surfaces": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
    ]
   },
   "palette": {
@@ -17663,7 +18097,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "print_button": {
@@ -17707,7 +18142,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "drive_image": {
@@ -17753,7 +18189,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "maps_embed": {
@@ -17793,7 +18230,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "sheet_form": {
@@ -17838,7 +18276,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "reveal": {
@@ -17882,7 +18321,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "skeleton": {
@@ -17924,7 +18364,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "marquee": {
@@ -17979,7 +18420,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "pulse_dot": {
@@ -18021,7 +18463,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "loading_dots": {
@@ -18060,7 +18503,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "progress_ring": {
@@ -18111,7 +18555,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "confetti_burst": {
@@ -18158,7 +18603,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "ripple_button": {
@@ -18207,7 +18653,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "wave_divider": {
@@ -18252,7 +18699,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "floating_badge": {
@@ -18298,7 +18746,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "shimmer_text": {
@@ -18350,7 +18799,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "number_flip": {
@@ -18404,7 +18854,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "spotlight_card": {
@@ -18442,7 +18893,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "animated_border": {
@@ -18495,7 +18947,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "countdown_ring": {
@@ -18535,7 +18988,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "google_icon": {
@@ -18589,7 +19043,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "icon_badge": {
@@ -18644,7 +19099,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "icon_row": {
@@ -18690,7 +19146,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "workspace_logo": {
@@ -18729,7 +19186,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "workspace_logo_strip": {
@@ -18777,7 +19235,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "workspace_logo_grid": {
@@ -18822,7 +19281,8 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
-    "google-apps-script-side-panel"
+    "google-apps-script-side-panel",
+    "mcp-apps"
    ]
   },
   "icon_feature_grid": {
@@ -18872,7 +19332,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "icon_checklist": {
@@ -18918,7 +19379,8 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   }
  },

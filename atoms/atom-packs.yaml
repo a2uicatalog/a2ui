@@ -526,4 +526,5 @@ a2ui-ops-v1:
 - toast_notification
 - vote_button_group
 a2ui-presentation-v1:
+- gdm_rocket_panel
 - playbook

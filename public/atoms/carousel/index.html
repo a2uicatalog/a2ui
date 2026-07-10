@@ -56,7 +56,7 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
@@ -66,6 +66,34 @@ footer a{color:var(--cyan);text-decoration:none}
 </div>
 
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box">
+<style>
+.cfe8339{position:relative;overflow:hidden;border-radius:12px;background:#000;margin:1.5rem 0;
+  box-shadow:0 4px 24px rgba(0,0,0,0.12);}
+.cfe8339 input[type=radio]{display:none;}
+.cfe8339-track{display:flex;transition:transform 0.45s cubic-bezier(0.77,0,0.175,1);width:200%;}
+.cfe8339-slide{width:50%;flex:0 0 50%;position:relative;}
+.cfe8339-slide img{width:100%;display:block;max-height:480px;object-fit:cover;}
+.cfe8339-caption{position:absolute;bottom:0;left:0;right:0;padding:14px 18px;
+  background:linear-gradient(transparent,rgba(0,0,0,0.72));color:#fff;}
+.cfe8339-caption strong{display:block;font-size:1rem;margin-bottom:2px;}
+.cfe8339-caption span{font-size:0.82rem;opacity:0.8;}
+.cfe8339-dots{display:flex;justify-content:center;gap:8px;padding:12px;background:#111;}
+.cfe8339-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);
+  cursor:pointer;transition:all 0.2s;display:block;border:none;}
+.cfe8339-arrows{position:absolute;top:50%;transform:translateY(-50%);width:100%;
+  display:flex;justify-content:space-between;padding:0 12px;pointer-events:none;z-index:10;box-sizing:border-box;}
+.cfe8339-arrow{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(4px);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;cursor:pointer;pointer-events:all;transition:background 0.2s;text-decoration:none;
+  border:1px solid rgba(255,255,255,0.2);}
+.cfe8339-arrow:hover{background:rgba(255,255,255,0.28);}
+</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-track{transform:translateX(-0%);}
+#cfe8339_s1:checked ~ .cfe8339-dots .cfe8339-dot:nth-child(1){background:#1a73e8;transform:scale(1.25);}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-track{transform:translateX(-50%);}
+#cfe8339_s2:checked ~ .cfe8339-dots .cfe8339-dot:nth-child(2){background:#1a73e8;transform:scale(1.25);}</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-prev{display:flex;} #cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-next{display:flex;}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-prev{display:flex;} #cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-arrows .cfe8339-next{display:flex;}</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-ap {display:none;} #cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-ap[data-t="2"]{display:flex;}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-ap {display:none;} #cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-ap[data-t="1"]{display:flex;}</style><style>#cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-an {display:none;} #cfe8339_s1:checked ~ .cfe8339-inner .cfe8339-an[data-t="2"]{display:flex;}</style><style>#cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-an {display:none;} #cfe8339_s2:checked ~ .cfe8339-inner .cfe8339-an[data-t="1"]{display:flex;}</style><div class="cfe8339"><input type="radio" id="cfe8339_s1" name="cfe8339" checked><input type="radio" id="cfe8339_s2" name="cfe8339" ><div class="cfe8339-inner"><div class="cfe8339-track"><div class="cfe8339-slide"><img src="https://picsum.photos/seed/a2ui1/800/400" alt="Slide one" loading="lazy"/><div class="cfe8339-caption"><strong>Slide one</strong></div></div><div class="cfe8339-slide"><img src="https://picsum.photos/seed/a2ui2/800/400" alt="Slide two" loading="lazy"/><div class="cfe8339-caption"><strong>Slide two</strong></div></div></div><div class="cfe8339-arrows"><div style="display:flex;"><label for="cfe8339_s1" class="cfe8339-arrow cfe8339-ap" data-t="1">‹</label><label for="cfe8339_s2" class="cfe8339-arrow cfe8339-ap" data-t="2">‹</label></div><div style="display:flex;"><label for="cfe8339_s1" class="cfe8339-arrow cfe8339-an" data-t="1">›</label><label for="cfe8339_s2" class="cfe8339-arrow cfe8339-an" data-t="2">›</label></div></div></div><div class="cfe8339-dots"><label for="cfe8339_s1" class="cfe8339-dot"></label><label for="cfe8339_s2" class="cfe8339-dot"></label></div></div></div>
+</div>
 
   <div class="section">
     <div class="label">Fields</div>
@@ -89,7 +117,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "capabilities": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
   ],
   "description": "CSS-only sliding carousel with dot indicators and prev/next arrows",
   "representativeQueries": [

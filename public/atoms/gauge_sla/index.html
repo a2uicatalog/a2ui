@@ -56,7 +56,7 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
@@ -71,12 +71,12 @@ footer a{color:var(--cyan);text-decoration:none}
     <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
       <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="gauge_sla_140505916942720_grad" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="gauge_sla_139951562486720_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
             <stop offset="60%" stop-color="#f59e0b" />
             <stop offset="100%" stop-color="#10b981" />
           </linearGradient>
-          <filter id="gauge_sla_140505916942720_glow" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id="gauge_sla_139951562486720_glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -87,14 +87,14 @@ footer a{color:var(--cyan);text-decoration:none}
         
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />
         
-        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_140505916942720_grad)" stroke-width="14" stroke-linecap="round"
-              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_140505916942720_glow)" />
+        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_139951562486720_grad)" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_139951562486720_glow)" />
               
         <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         
-        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_140505916942720_glow)" />
+        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_139951562486720_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="#10b981" stroke-width="3" />
         
         <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">75.0</text>
@@ -130,7 +130,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "capabilities": [
     "web",
     "google-meet-stage",
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
   ],
   "description": "Renders a semi-circular radial gauge track with high contrast status quadrants, a glowing needle tick, and a prominent central KPI readout.",
   "representativeQueries": [

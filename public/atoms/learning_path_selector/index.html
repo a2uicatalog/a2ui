@@ -56,10 +56,14 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>renders fully but without persistence — progress and live data need an Apps Script deployment</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
@@ -99,7 +103,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "capabilities": [
     "google-apps-script-web",
     "web",
-    "google-meet-stage"
+    "google-meet-stage",
+    "mcp-apps"
   ],
   "description": "Path chooser presented at course entry. Shows 2-4 role or level path cards (icon, title, description, duration). Learner clicks to select \u2014 selection is stored in progress_store via setPath() and optionally navigates to a path-specific url. Selected path can drive personalised module_map content.",
   "representativeQueries": [
