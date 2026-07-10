@@ -1,0 +1,3 @@
+# Short shareable alias for the full-screen catalog playground (MCP Apps view).
+# Fragment (#p=...) survives redirects — browsers reattach it client-side.
+/play /surfaces/mcp-apps/play/ 302

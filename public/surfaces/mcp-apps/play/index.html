@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
+  <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
+  <style>
+  :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--indigo:#6366f1;--green:#3fb950}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  #mcp-view{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
+  .play-bar{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}
+  .play-bar>*{pointer-events:auto}
+  .play-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+  a.play-chip:hover,label.play-chip:hover{border-color:var(--indigo);color:var(--indigo)}
+  label.play-chip{cursor:pointer}
+  .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
+  .mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
+  .mcp-status-dot.err{background:#f85149}
+  #mcp-drawer-toggle{display:none}
+  .play-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:rgba(12,17,23,.97);backdrop-filter:blur(10px);border-left:1px solid var(--border);padding:64px 18px 18px;transform:translateX(100%);transition:transform .25s ease;z-index:9;display:flex;flex-direction:column;gap:12px}
+  #mcp-drawer-toggle:checked ~ .play-drawer{transform:translateX(0)}
+  .play-drawer-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--indigo)}
+  .play-drawer textarea{flex:1;width:100%;background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:#9ecbff;resize:none}
+  .play-drawer textarea:focus{outline:none;border-color:var(--indigo)}
+  .play-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
+  .mcp-play-btn:hover{background:#818cf8}
+  .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+  .mcp-play-btn.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+  .mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
+  </style>
+</head>
+<body>
+  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html" title="A2UI MCP Apps view"></iframe>
+
+  <div class="play-bar">
+    <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
+    <span class="play-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
+    <label class="play-chip" for="mcp-drawer-toggle">✏ Payload</label>
+  </div>
+
+  <input type="checkbox" id="mcp-drawer-toggle">
+  <aside class="play-drawer">
+    <div class="play-drawer-label">Paste an A2UI payload — full {"blocks": []}, a bare array, or a single block</div>
+    <textarea id="mcp-playground-json" spellcheck="false" aria-label="A2UI payload JSON"></textarea>
+    <div class="play-row">
+      <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
+      <button class="mcp-play-btn ghost" id="mcp-play-link">Copy link</button>
+      <span class="mcp-play-err" id="mcp-play-err"></span>
+    </div>
+  </aside>
+
+<script>
+(function () {
+  var iframe = document.getElementById('mcp-view');
+  var dot = document.getElementById('mcp-status-dot');
+  var text = document.getElementById('mcp-status-text');
+
+  function setStatus(cls, msg) {
+    dot.className = 'mcp-status-dot' + (cls ? ' ' + cls : '');
+    text.textContent = msg;
+  }
+
+  var FIXTURE = {
+    content: [{ type: 'text', text: 'Rendered A2UI atoms in the MCP Apps view.' }],
+    structuredContent: {
+      theme: 'dark',
+      blocks: [
+        { type: 'heading', level: 2, text: 'Catalog atoms — and curated content — live inside an MCP App' },
+        { type: 'gdm_rocket_panel' },
+        { type: 'body', text: 'The launch animation above is **not a catalog atom** — it\'s hand-curated content, rendered through the same block dispatch as everything below. Both arrived over the same **ui/notifications/tool-result** message a real MCP server sends after a tool call.' },
+        { type: 'paragraph', text: 'The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page, matching MCP Apps\' security model — true for the curated visual above and the catalog atoms below alike.' },
+        {
+          type: 'flashcard_deck',
+          accent: '#00b8c4',
+          label_front: 'PROTOCOL',
+          label_back: 'ANSWER',
+          cards: [
+            { front: 'What delivers this payload?', back: 'ui/notifications/tool-result, sent by the Host after ui/initialize completes.' },
+            { front: 'What renders it?', back: 'A ported slice of the same renderAtoms() the GAS catalog renderer uses in production.' },
+            { front: 'Where\'s the model in this loop?', back: 'Between chat and tool call — the view itself only talks to the Host, never the network.' }
+          ]
+        }
+      ]
+    }
+  };
+
+  // ---- playground wiring ----
+  var editor = document.getElementById('mcp-playground-json');
+  var renderBtn = document.getElementById('mcp-play-render');
+  var linkBtn = document.getElementById('mcp-play-link');
+  var errEl = document.getElementById('mcp-play-err');
+
+  var viewReady = false;
+  var hashDone = false;
+  var hashPayload = null;
+
+  // Be generous with pasted schemas: a full {"blocks": []} payload, a bare
+  // array of blocks, or a single block object all render. Copy-paste from a
+  // post should just work.
+  function normalize(payload) {
+    if (Array.isArray(payload)) return { theme: 'dark', blocks: payload };
+    if (payload && !payload.blocks && (payload.type || payload.component)) {
+      return { theme: 'dark', blocks: [payload] };
+    }
+    return payload || {};
+  }
+
+  function send(payload) {
+    payload = normalize(payload);
+    iframe.contentWindow.postMessage({
+      jsonrpc: '2.0',
+      method: 'ui/notifications/tool-result',
+      params: {
+        content: [{ type: 'text', text: 'Rendered A2UI atoms in the MCP Apps view.' }],
+        structuredContent: payload
+      }
+    }, '*');
+    setStatus('live', 'Rendered ' + ((payload.blocks || []).length) + ' blocks via ui/notifications/tool-result');
+  }
+
+  function maybeStart() {
+    if (!viewReady || !hashDone) return;
+    var payload = normalize(hashPayload || FIXTURE.structuredContent);
+    editor.value = JSON.stringify(payload, null, 2);
+    send(payload);
+  }
+
+  // #p= in the fragment: gzip + base64url, '=' stripped — the exact encoding
+  // scripts/make_url.py emits, so agents can mint playground links with the
+  // existing tooling.
+  function b64uToBytes(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+  }
+
+  (function decodeHash() {
+    var m = location.hash.match(/[#&]p=([^&]+)/);
+    if (!m || typeof DecompressionStream === 'undefined') { hashDone = true; maybeStart(); return; }
+    try {
+      var stream = new Blob([b64uToBytes(m[1])]).stream().pipeThrough(new DecompressionStream('gzip'));
+      new Response(stream).text().then(function (txt) {
+        try { hashPayload = JSON.parse(txt); } catch (e) { hashPayload = null; }
+        hashDone = true; maybeStart();
+      }).catch(function () { hashDone = true; maybeStart(); });
+    } catch (e) { hashDone = true; maybeStart(); }
+  })();
+
+  renderBtn.addEventListener('click', function () {
+    errEl.textContent = '';
+    var payload;
+    try { payload = JSON.parse(editor.value); }
+    catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
+    if (!viewReady) { errEl.textContent = 'View not ready yet'; return; }
+    send(payload);
+  });
+
+  linkBtn.addEventListener('click', function () {
+    errEl.textContent = '';
+    var payload;
+    try { payload = normalize(JSON.parse(editor.value)); }
+    catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
+    if (typeof CompressionStream === 'undefined') { errEl.textContent = 'Link encoding needs a newer browser'; return; }
+    var stream = new Blob([JSON.stringify(payload)]).stream().pipeThrough(new CompressionStream('gzip'));
+    new Response(stream).arrayBuffer().then(function (buf) {
+      var bytes = new Uint8Array(buf);
+      var bin = '';
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      var enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      var url = location.origin + location.pathname + '#p=' + enc;
+      navigator.clipboard.writeText(url).then(function () {
+        linkBtn.textContent = 'Copied ✓';
+        setTimeout(function () { linkBtn.textContent = 'Copy link'; }, 2000);
+      }).catch(function () { errEl.textContent = url; });
+    });
+  });
+
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== iframe.contentWindow) return;
+    var msg = ev.data;
+    if (!msg || msg.jsonrpc !== '2.0') return;
+
+    if (msg.method === 'ui/initialize') {
+      setStatus('', 'Handshake: ui/initialize received, replying…');
+      iframe.contentWindow.postMessage({
+        jsonrpc: '2.0',
+        id: msg.id,
+        result: {
+          protocolVersion: '2026-01-26',
+          hostContext: { theme: 'dark', displayMode: 'inline' },
+          capabilities: { serverTools: {}, logging: {} }
+        }
+      }, '*');
+      return;
+    }
+
+    if (msg.method === 'ui/notifications/initialized') {
+      setStatus('', 'View ready — delivering payload…');
+      viewReady = true;
+      maybeStart();
+      return;
+    }
+  });
+
+  setTimeout(function () {
+    if (dot.className.indexOf('live') === -1) {
+      setStatus('err', 'No response from view — check console');
+    }
+  }, 5000);
+})();
+</script>
+</body>
+</html>

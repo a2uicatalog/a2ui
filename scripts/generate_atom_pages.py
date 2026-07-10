@@ -943,7 +943,7 @@ MCP_APPS_HERO_HTML = """
 </div>
 
 <div class="mcp-playground">
-  <div class="mcp-playground-label">Playground — edit the payload, re-render the view</div>
+  <div class="mcp-playground-label">Playground — edit the payload, re-render the view · <a href="./play/" style="color:var(--mcp-indigo)">Open full-screen →</a></div>
   <textarea id="mcp-playground-json" spellcheck="false" aria-label="A2UI payload JSON"></textarea>
   <div class="mcp-playground-row">
     <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
@@ -957,6 +957,14 @@ MCP_APPS_HERO_HTML = """
 </p>
 
 <script>
+__MCP_APPS_HOST_JS__
+</script>
+"""
+
+# Host-side handshake + playground logic, shared VERBATIM by the surface-page
+# hero and the full-screen play page (same element ids in both DOMs) — one
+# implementation, zero drift. Substituted into both page templates below.
+MCP_APPS_HOST_JS = r"""
 (function () {
   var iframe = document.getElementById('mcp-view');
   var dot = document.getElementById('mcp-status-dot');
@@ -974,8 +982,8 @@ MCP_APPS_HERO_HTML = """
       blocks: [
         { type: 'heading', level: 2, text: 'Catalog atoms — and curated content — live inside an MCP App' },
         { type: 'gdm_rocket_panel' },
-        { type: 'body', text: 'The launch animation above is **not a catalog atom** — it\\'s hand-curated content, rendered through the same block dispatch as everything below. Both arrived over the same **ui/notifications/tool-result** message a real MCP server sends after a tool call.' },
-        { type: 'paragraph', text: 'The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page, matching MCP Apps\\' security model — true for the curated visual above and the catalog atoms below alike.' },
+        { type: 'body', text: 'The launch animation above is **not a catalog atom** — it\'s hand-curated content, rendered through the same block dispatch as everything below. Both arrived over the same **ui/notifications/tool-result** message a real MCP server sends after a tool call.' },
+        { type: 'paragraph', text: 'The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page, matching MCP Apps\' security model — true for the curated visual above and the catalog atoms below alike.' },
         {
           type: 'flashcard_deck',
           accent: '#00b8c4',
@@ -984,7 +992,7 @@ MCP_APPS_HERO_HTML = """
           cards: [
             { front: 'What delivers this payload?', back: 'ui/notifications/tool-result, sent by the Host after ui/initialize completes.' },
             { front: 'What renders it?', back: 'A ported slice of the same renderAtoms() the GAS catalog renderer uses in production.' },
-            { front: 'Where\\'s the model in this loop?', back: 'Between chat and tool call — the view itself only talks to the Host, never the network.' }
+            { front: 'Where\'s the model in this loop?', back: 'Between chat and tool call — the view itself only talks to the Host, never the network.' }
           ]
         }
       ]
@@ -1001,7 +1009,19 @@ MCP_APPS_HERO_HTML = """
   var hashDone = false;
   var hashPayload = null;
 
+  // Be generous with pasted schemas: a full {"blocks": []} payload, a bare
+  // array of blocks, or a single block object all render. Copy-paste from a
+  // post should just work.
+  function normalize(payload) {
+    if (Array.isArray(payload)) return { theme: 'dark', blocks: payload };
+    if (payload && !payload.blocks && (payload.type || payload.component)) {
+      return { theme: 'dark', blocks: [payload] };
+    }
+    return payload || {};
+  }
+
   function send(payload) {
+    payload = normalize(payload);
     iframe.contentWindow.postMessage({
       jsonrpc: '2.0',
       method: 'ui/notifications/tool-result',
@@ -1015,7 +1035,7 @@ MCP_APPS_HERO_HTML = """
 
   function maybeStart() {
     if (!viewReady || !hashDone) return;
-    var payload = hashPayload || FIXTURE.structuredContent;
+    var payload = normalize(hashPayload || FIXTURE.structuredContent);
     editor.value = JSON.stringify(payload, null, 2);
     send(payload);
   }
@@ -1056,7 +1076,7 @@ MCP_APPS_HERO_HTML = """
   linkBtn.addEventListener('click', function () {
     errEl.textContent = '';
     var payload;
-    try { payload = JSON.parse(editor.value); }
+    try { payload = normalize(JSON.parse(editor.value)); }
     catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
     if (typeof CompressionStream === 'undefined') { errEl.textContent = 'Link encoding needs a newer browser'; return; }
     var stream = new Blob([JSON.stringify(payload)]).stream().pipeThrough(new CompressionStream('gzip'));
@@ -1064,7 +1084,7 @@ MCP_APPS_HERO_HTML = """
       var bytes = new Uint8Array(buf);
       var bin = '';
       for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-      var enc = btoa(bin).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
+      var enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       var url = location.origin + location.pathname + '#p=' + enc;
       navigator.clipboard.writeText(url).then(function () {
         linkBtn.textContent = 'Copied ✓';
@@ -1106,14 +1126,79 @@ MCP_APPS_HERO_HTML = """
     }
   }, 5000);
 })();
+""".strip()
+
+
+# Full-screen play page — the catalog playground for MCP Apps. Edge-to-edge
+# View (like a GAS ?p= link renders full-page), floating chip bar, payload
+# drawer. Same element ids as the hero -> same MCP_APPS_HOST_JS verbatim.
+MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
+  <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
+  <style>
+  :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--indigo:#6366f1;--green:#3fb950}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  #mcp-view{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
+  .play-bar{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}
+  .play-bar>*{pointer-events:auto}
+  .play-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+  a.play-chip:hover,label.play-chip:hover{border-color:var(--indigo);color:var(--indigo)}
+  label.play-chip{cursor:pointer}
+  .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
+  .mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
+  .mcp-status-dot.err{background:#f85149}
+  #mcp-drawer-toggle{display:none}
+  .play-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:rgba(12,17,23,.97);backdrop-filter:blur(10px);border-left:1px solid var(--border);padding:64px 18px 18px;transform:translateX(100%);transition:transform .25s ease;z-index:9;display:flex;flex-direction:column;gap:12px}
+  #mcp-drawer-toggle:checked ~ .play-drawer{transform:translateX(0)}
+  .play-drawer-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--indigo)}
+  .play-drawer textarea{flex:1;width:100%;background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:#9ecbff;resize:none}
+  .play-drawer textarea:focus{outline:none;border-color:var(--indigo)}
+  .play-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
+  .mcp-play-btn:hover{background:#818cf8}
+  .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+  .mcp-play-btn.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+  .mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
+  </style>
+</head>
+<body>
+  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html" title="A2UI MCP Apps view"></iframe>
+
+  <div class="play-bar">
+    <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
+    <span class="play-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
+    <label class="play-chip" for="mcp-drawer-toggle">✏ Payload</label>
+  </div>
+
+  <input type="checkbox" id="mcp-drawer-toggle">
+  <aside class="play-drawer">
+    <div class="play-drawer-label">Paste an A2UI payload — full {"blocks": []}, a bare array, or a single block</div>
+    <textarea id="mcp-playground-json" spellcheck="false" aria-label="A2UI payload JSON"></textarea>
+    <div class="play-row">
+      <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
+      <button class="mcp-play-btn ghost" id="mcp-play-link">Copy link</button>
+      <span class="mcp-play-err" id="mcp-play-err"></span>
+    </div>
+  </aside>
+
+<script>
+__MCP_APPS_HOST_JS__
 </script>
+</body>
+</html>
 """
 
 
 def generate_surface_page(surface, atoms):
     display = SURFACE_NAMES.get(surface, surface)
     is_gas  = surface in GAS_SURFACES
-    hero    = MCP_APPS_HERO_HTML if surface == "mcp-apps" else ""
+    hero    = (MCP_APPS_HERO_HTML.replace("__MCP_APPS_HOST_JS__", MCP_APPS_HOST_JS)
+               if surface == "mcp-apps" else "")
     atoms_lead = (
         f"{len(atoms)} catalog atoms also render on this surface"
         if hero else f"{len(atoms)} atoms available on this surface"
@@ -1221,6 +1306,14 @@ def main():
         sdir = surfaces_dir / surface
         sdir.mkdir(parents=True, exist_ok=True)
         (sdir / "index.html").write_text(generate_surface_page(surface, surface_atoms))
+
+    # Full-screen playground — the catalog playground for MCP Apps
+    if "mcp-apps" in surface_map:
+        play_dir = surfaces_dir / "mcp-apps" / "play"
+        play_dir.mkdir(parents=True, exist_ok=True)
+        (play_dir / "index.html").write_text(
+            MCP_APPS_PLAY_HTML.replace("__MCP_APPS_HOST_JS__", MCP_APPS_HOST_JS))
+        print(f"✓ full-screen playground → {play_dir}/index.html")
 
     print(f"✓ {count} atom pages → {OUTPUT_DIR}")
     print(f"✓ {len(surface_map)} surface pages → {surfaces_dir}")
