@@ -28,6 +28,13 @@ GAS_RENDERER = "https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpX
 # filter UI — visible to agents querying the catalog, not shown as filter pills.
 HIDDEN_SURFACES = {"gas-fakes"}
 
+# Surfaces worth an individual chip on every index card. Most atoms share the
+# same 5-7 surfaces, so per-card chips for all of them are wallpaper — the
+# index shows chips only for notable surfaces (new/highlighted) and degraded
+# ones, and collapses the rest to a count. The filter row above the grid is
+# the authoritative "which atoms work on X" view.
+NOTABLE_SURFACES = {"mcp-apps"}
+
 sys.path.insert(0, str(ROOT / "renderers"))
 try:
     import web_article as _web_renderer
@@ -617,15 +624,22 @@ h1{font-size:2.8rem;font-weight:900;letter-spacing:-2px;margin-bottom:6px;color:
 .sub a{color:var(--cyan);text-decoration:none}
 .launch-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px 18px;margin-bottom:24px;text-decoration:none;transition:border-color .15s,background .15s}
 .launch-banner:hover{border-color:#6366f1;background:rgba(99,102,241,.14)}
-.launch-badge{flex-shrink:0;padding:3px 10px;border-radius:999px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.5);color:#8183f4;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.launch-badge{flex-shrink:0;padding:4px 12px;border-radius:999px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.5);color:#8183f4;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
 .launch-text{flex:1;min-width:200px;font-size:13px;color:var(--text)}
 .launch-arrow{flex-shrink:0;font-size:12px;font-weight:700;color:#8183f4}
+.hero-demo{display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px}
+.hero-demo-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.hero-demo-json{background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-size:12.5px;line-height:1.55;color:#9ecbff;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;margin:0}
+.hero-demo-arrow{font-size:24px;color:var(--cyan);text-align:center}
+.hero-demo-render{min-width:0}
+.hero-demo-render h2{font-size:1.25rem;margin:0 0 10px;color:var(--text)}
+@media(max-width:760px){.hero-demo{grid-template-columns:1fr;gap:8px}.hero-demo-arrow{transform:rotate(90deg);padding:4px 0}}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
 #search{flex:1;min-width:220px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:14px;color:var(--text);outline:none}
 #search:focus{border-color:var(--cyan)}
 #search::placeholder{color:var(--muted)}
 .filters{display:flex;gap:6px;flex-wrap:wrap}
-.filter{font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:.04em}
+.filter{font-size:13px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:.03em}
 .filter.active,.filter:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,242,255,.07)}
 .count{font-size:12px;color:var(--muted);margin-left:auto}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
@@ -634,10 +648,12 @@ h1{font-size:2.8rem;font-weight:900;letter-spacing:-2px;margin-bottom:6px;color:
 .atom-card h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
 .atom-card p{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-footer{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;margin-top:8px}
-.badges{display:flex;flex-wrap:wrap;gap:4px;flex:1}
-.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px}
+.badges{display:flex;flex-wrap:wrap;gap:4px;flex:1;align-items:center}
+.badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px}
 .bs{background:rgba(0,242,255,.08);border:1px solid rgba(0,242,255,.2);color:var(--cyan)}
 .bd{background:rgba(255,196,0,.08);border:1px solid rgba(255,196,0,.2);color:#ffc400}
+.bnew{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.4);color:#8183f4}
+.badge-more{font-size:12px;color:var(--muted);white-space:nowrap}
 .origin{font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;letter-spacing:.06em;white-space:nowrap;flex-shrink:0}
 .origin-a2ui{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc}
 .origin-uiverse{background:rgba(236,72,153,.12);border:1px solid rgba(236,72,153,.3);color:#f9a8d4}
@@ -693,7 +709,8 @@ def generate_index(atoms):
     filter_pills = '<button class="filter active" data-surface="all">All</button>'
     for s in sorted(all_surfaces):
         if s not in HIDDEN_SURFACES:
-            filter_pills += f'<a class="filter" href="/surfaces/{s}" data-surface="{s}">{s}</a>'
+            label = SURFACE_NAMES.get(s, s)
+            filter_pills += f'<a class="filter" href="/surfaces/{s}" data-surface="{s}">{label}</a>'
 
     cards_html = ""
     for atom in atoms:
@@ -707,10 +724,28 @@ def generate_index(atoms):
         origin_cls = {"a2ui": "origin-a2ui", "uiverse": "origin-uiverse", "openui": "origin-openui"}.get(source, "origin-other")
         origin_html = f'<span class="origin {origin_cls}">{origin_label}</span>'
         visible_surfaces = [s for s in surfaces if s not in HIDDEN_SURFACES]
-        badges    = "".join(
-            f'<span class="badge {"bd" if s in degraded else "bs"}">{s}</span>'
-            for s in visible_surfaces
+        # Chip inversion: chips only for notable/degraded surfaces; the common
+        # bulk collapses to a count (data-surfaces keeps the full list, so the
+        # filter row is unaffected). Small surface lists just show everything.
+        if len(visible_surfaces) <= 3:
+            shown = visible_surfaces
+        else:
+            shown = [s for s in visible_surfaces
+                     if s in NOTABLE_SURFACES or s in degraded]
+        rest = [s for s in visible_surfaces if s not in shown]
+
+        def _chip_cls(s):
+            if s in degraded:
+                return "bd"
+            return "bnew" if s in NOTABLE_SURFACES else "bs"
+
+        badges = "".join(
+            f'<span class="badge {_chip_cls(s)}">{SURFACE_NAMES.get(s, s)}</span>'
+            for s in shown
         )
+        if rest:
+            more_label = f"+{len(rest)} surfaces" if shown else f"{len(rest)} surfaces"
+            badges += f'<span class="badge-more">{more_label}</span>'
         surfaces_str = " ".join(visible_surfaces)
         cards_html += (
             f'<a class="atom-card" href="/atoms/{atom_type}" '
@@ -718,6 +753,18 @@ def generate_index(atoms):
             f'<h3>{display}</h3><p>{desc}</p>'
             f'<div class="card-footer"><div class="badges">{badges}</div>{origin_html}</div></a>\n'
         )
+
+    # The concept, performed rather than described: a real payload rendered by
+    # the real web renderer at generate time. This is the one artifact on the
+    # page that shows what an "atom" IS — JSON in, UI out.
+    demo_blocks = [
+        {"type": "heading", "text": "Q2 Review"},
+        {"type": "stat_card", "value": "1,234", "label": "Daily users", "delta": "+12%", "is_up": True},
+        {"type": "progress_bar", "value": 72, "label": "Quarter target"},
+    ]
+    demo_json = json.dumps({"blocks": demo_blocks}, indent=2)
+    demo_json = demo_json.replace("&", "&amp;").replace("<", "&lt;")
+    demo_render = _web_renderer.render(demo_blocks)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -739,6 +786,17 @@ def generate_index(atoms):
       <span class="launch-text">MCP Apps is a first-class surface — catalog atoms and curated content, live inside a sandboxed MCP host</span>
       <span class="launch-arrow">See it launch →</span>
     </a>
+    <div class="hero-demo">
+      <div class="hero-demo-col">
+        <div class="hero-demo-label">An agent emits JSON</div>
+        <pre class="hero-demo-json">{demo_json}</pre>
+      </div>
+      <div class="hero-demo-arrow">→</div>
+      <div class="hero-demo-col">
+        <div class="hero-demo-label">A surface renders it</div>
+        <div class="hero-demo-render">{demo_render}</div>
+      </div>
+    </div>
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off">
       <div class="filters">{filter_pills}</div>
@@ -777,7 +835,7 @@ GAS_SURFACES = {"google-meet-stage", "google-apps-script-web", "google-apps-scri
 MCP_APPS_HERO_HTML = """
 <style>
 :root{--mcp-indigo:#6366f1}
-.mcp-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:var(--mcp-indigo);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+.mcp-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:var(--mcp-indigo);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
 .mcp-note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:0 0 20px}
 .mcp-note strong{color:var(--text)}
 .mcp-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
