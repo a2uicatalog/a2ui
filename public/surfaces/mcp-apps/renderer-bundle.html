@@ -6881,7 +6881,7 @@ _RENDERERS['ripple_button'] = function(b) {
   var css = '<style>'
     + '@keyframes ' + uid + '-rip{to{transform:scale(4);opacity:0;}}'
     + '#' + uid + '{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;'
-    + 'background:' + accent + ';color:#fff;border:none;border-radius:10px;'
+    + 'background:' + accent + ';color:' + (b.text_color || '#fff') + ';border:none;border-radius:10px;'
     + 'padding:10px 24px;font-size:' + size + ';font-weight:700;cursor:pointer;font-family:inherit;' + full + '}'
     + '#' + uid + ':disabled{opacity:0.4;cursor:not-allowed;}'
     + '.' + uid + '-r{position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);'
@@ -13707,7 +13707,7 @@ _RENDERERS['standings_table'] = function(b) {
       '</table></div>' +
       '<script>(function(){' +
       'var TD=' + JSON.stringify(td) + ',NUM=' + JSON.stringify(num) + ';' +
-      'var st={scores:null,names:null};' +
+      'var st={scores:null,names:null,mode:"310"};' +
       'function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[c];});}' +
       'function team(s){return String(s).split("&").map(function(x){return x.trim();}).filter(Boolean);}' +
       'function fold(){' +
@@ -13736,7 +13736,10 @@ _RENDERERS['standings_table'] = function(b) {
         'var list=Object.keys(stats).map(function(k){var s=stats[k];' +
           's.pts=s.w*3+s.d;s.diff=s.pf-s.pa;return s;});' +
         'if(!list.length)return;' +
-        'list.sort(function(a,b){return (b.pts-a.pts)||(b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n));});' +
+        // mode "310" ranks by league points; anything else = Points Only (PF primary)
+        'list.sort(function(a,b){return st.mode==="310"' +
+          '?((b.pts-a.pts)||(b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n)))' +
+          ':((b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n)));});' +
         'body.innerHTML=list.map(function(s,i){' +
           'var lead=i===0;' +
           'var rs=lead?"background:rgba(99,102,241,0.08);font-weight:700;":"";' +
@@ -13752,7 +13755,10 @@ _RENDERERS['standings_table'] = function(b) {
           '"</tr>";}).join("");' +
       '}' +
       'window._A2UI_STANDINGS=window._A2UI_STANDINGS||{};' +
-      'window._A2UI_STANDINGS["' + wuid + '"]=function(prop,val){st[prop==="player_names"?"names":"scores"]=val;fold();};' +
+      'window._A2UI_STANDINGS["' + wuid + '"]=function(prop,val){' +
+        'if(prop==="player_names")st.names=val;' +
+        'else if(prop==="standings_mode")st.mode=(val===false||val==="points")?"points":"310";' +
+        'else st.scores=val;fold();};' +
       '})();<\/script>';
   }
   var rows = (b.rows || []).slice().sort(function(x, y) { return (y.primary || 0) - (x.primary || 0); });
@@ -21162,13 +21168,13 @@ var _a2uiBridge = {
       if (typeof window._a2uiInboundFlights === 'function') {
         window._a2uiInboundFlights(Array.isArray(val) ? val : []);
       }
-    } else if (prop === 'match_rows' || prop === 'player_names') {
+    } else if (prop === 'match_rows' || prop === 'player_names' || prop === 'standings_mode') {
       // standings_table wired mode (atoms_competition.gs): the atom registers
       // a fold hook keyed by its data-a2ui-standings uid; route both feeds in.
       var stEl = el.querySelector('[data-a2ui-standings]');
       var stId = stEl && stEl.getAttribute('data-a2ui-standings');
       var stFn = stId && window._A2UI_STANDINGS && window._A2UI_STANDINGS[stId];
-      if (stFn) stFn(prop, Array.isArray(val) ? val : []);
+      if (stFn) stFn(prop, prop === 'standings_mode' ? val : (Array.isArray(val) ? val : []));
     } else if (prop === 'href') {
       var a = el.tagName === 'A' ? el : el.querySelector('a');
       if (a) { a.href = String(val); a.style.pointerEvents = val ? '' : 'none'; a.style.opacity = val ? '' : '0.4'; }

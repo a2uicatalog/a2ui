@@ -280,7 +280,7 @@ _RENDERERS['ripple_button'] = function(b) {
   var css = '<style>'
     + '@keyframes ' + uid + '-rip{to{transform:scale(4);opacity:0;}}'
     + '#' + uid + '{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;'
-    + 'background:' + accent + ';color:#fff;border:none;border-radius:10px;'
+    + 'background:' + accent + ';color:' + (b.text_color || '#fff') + ';border:none;border-radius:10px;'
     + 'padding:10px 24px;font-size:' + size + ';font-weight:700;cursor:pointer;font-family:inherit;' + full + '}'
     + '#' + uid + ':disabled{opacity:0.4;cursor:not-allowed;}'
     + '.' + uid + '-r{position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);'

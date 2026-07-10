@@ -1946,6 +1946,17 @@ function _renderWiredSurface(payload, navSlug) {
       return;
     }
     if (rawType === 'row_close') { content += '</div>'; return; }
+    // group_open/group_close: styled container that RESPECTS step visibility —
+    // section cards / per-round panels spanning several layout elements
+    // (row_open ignores step by design; added 2026-07-10 for the americano app).
+    if (rawType === 'group_open') {
+      var gp = el.props || {};
+      var gStep = (el.step !== undefined) ? ' data-a2ui-step="' + el.step + '"' : '';
+      var gHide = (el.step !== undefined && el.step !== 0) ? 'display:none;' : '';
+      content += '<div' + gStep + ' style="' + gHide + (gp.style || '') + '">';
+      return;
+    }
+    if (rawType === 'group_close') { content += '</div>'; return; }
 
     var props = el.props || {};
     var block = {};

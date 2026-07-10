@@ -105,3 +105,41 @@ def test_fold_computes_310_standings_with_tiebreakers(core_js):
 def test_fold_empty_scores_keeps_placeholder(core_js):
     out = _run_fold(core_js, [], NAME_ROWS)
     assert out == "", "no scores -> fold never rewrites the placeholder body"
+
+
+def test_fold_mode_toggle_resorts(core_js):
+    """standings_mode wire: '310' ranks by league points; points-only ranks by
+    PF. One decisive fixture: P9+P10 win narrowly (3pts, low PF); P11+P12 lose
+    but score heavily (0pts, high PF)."""
+    rows = [{"round": 1, "m1_team_a": "9 & 10", "m1_score_a": 11,
+             "m1_team_b": "11 & 12", "m1_score_b": 9},
+            {"round": 2, "m1_team_a": "11 & 12", "m1_score_a": 25,
+             "m1_team_b": "13 & 14", "m1_score_b": 24},
+            {"round": 3, "m1_team_a": "9 & 10", "m1_score_a": 5,
+             "m1_team_b": "13 & 14", "m1_score_b": 0}]
+    # P9: 2 wins -> 6pts, PF 16. P11: 1 win -> 3pts, PF 34.
+    # 3-1-0 ranks P9 first; points-only ranks P11 first.
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core_js + f"""
+var html = renderAtoms([{{type:'standings_table', wired:true}}], {{theme:'light'}});
+var uid = html.match(/data-a2ui-standings="([^"]+)"/)[1];
+var body = {{ innerHTML: '' }};
+var el = {{ querySelector: function(s) {{ return s.indexOf('standings-body') > -1 ? body : null; }} }};
+global.document = {{ querySelector: function(s) {{ return s.indexOf(uid) > -1 ? el : null; }} }};
+(html.match(/<script>([\\s\\S]*?)<\\/script>/g) || []).forEach(function(s) {{
+  eval(s.replace(/^<script>/, '').replace(/<\\/script>$/, ''));
+}});
+var hook = window._A2UI_STANDINGS[uid];
+hook('match_rows', {json.dumps(rows)});
+var by310 = body.innerHTML;
+hook('standings_mode', false);
+var byPoints = body.innerHTML;
+console.log(JSON.stringify({{w310: by310.indexOf('Player 9') < by310.indexOf('Player 11'),
+                            wPts: byPoints.indexOf('Player 11') < byPoints.indexOf('Player 9')}}));
+""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
+        assert p.returncode == 0, p.stderr[-500:]
+        r = json.loads(p.stdout)
+    assert r["w310"], "3-1-0 mode: winners (P9) rank above high scorers (P11)"
+    assert r["wPts"], "points mode: high scorers (P11) rank above winners (P9)"

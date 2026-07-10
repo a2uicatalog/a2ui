@@ -91,7 +91,7 @@ _RENDERERS['standings_table'] = function(b) {
       '</table></div>' +
       '<script>(function(){' +
       'var TD=' + JSON.stringify(td) + ',NUM=' + JSON.stringify(num) + ';' +
-      'var st={scores:null,names:null};' +
+      'var st={scores:null,names:null,mode:"310"};' +
       'function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[c];});}' +
       'function team(s){return String(s).split("&").map(function(x){return x.trim();}).filter(Boolean);}' +
       'function fold(){' +
@@ -120,7 +120,10 @@ _RENDERERS['standings_table'] = function(b) {
         'var list=Object.keys(stats).map(function(k){var s=stats[k];' +
           's.pts=s.w*3+s.d;s.diff=s.pf-s.pa;return s;});' +
         'if(!list.length)return;' +
-        'list.sort(function(a,b){return (b.pts-a.pts)||(b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n));});' +
+        // mode "310" ranks by league points; anything else = Points Only (PF primary)
+        'list.sort(function(a,b){return st.mode==="310"' +
+          '?((b.pts-a.pts)||(b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n)))' +
+          ':((b.pf-a.pf)||(b.diff-a.diff)||String(a.n).localeCompare(String(b.n)));});' +
         'body.innerHTML=list.map(function(s,i){' +
           'var lead=i===0;' +
           'var rs=lead?"background:rgba(99,102,241,0.08);font-weight:700;":"";' +
@@ -136,7 +139,10 @@ _RENDERERS['standings_table'] = function(b) {
           '"</tr>";}).join("");' +
       '}' +
       'window._A2UI_STANDINGS=window._A2UI_STANDINGS||{};' +
-      'window._A2UI_STANDINGS["' + wuid + '"]=function(prop,val){st[prop==="player_names"?"names":"scores"]=val;fold();};' +
+      'window._A2UI_STANDINGS["' + wuid + '"]=function(prop,val){' +
+        'if(prop==="player_names")st.names=val;' +
+        'else if(prop==="standings_mode")st.mode=(val===false||val==="points")?"points":"310";' +
+        'else st.scores=val;fold();};' +
       '})();<\/script>';
   }
   var rows = (b.rows || []).slice().sort(function(x, y) { return (y.primary || 0) - (x.primary || 0); });
