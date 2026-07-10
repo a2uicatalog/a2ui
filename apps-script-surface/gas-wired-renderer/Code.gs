@@ -38,6 +38,9 @@ function _ga4PageView(nav, p) {
 }
 
 function doGet(e) {
+  // request-scoped variant selector for wired template expansion (?n=8|12|16);
+  // GAS executes one invocation per request, so a global stash is safe.
+  _A2UI_VARIANT = (e && e.parameter && e.parameter.n) || '';
   var p        = e && e.parameter && e.parameter.p;
   var slide    = e && e.parameter && e.parameter.slide;
   var deck     = e && e.parameter && e.parameter.deck;
@@ -457,6 +460,7 @@ function a2uiAction(type, payload) {
   try {
     switch (type) {
       case 'gas:sheet_append':       result = _actionSheetAppend(payload);       break;
+      case 'gas:sheet_clear':        result = _actionSheetClear(payload);        break;
       case 'gas:sheet_batch_append': result = _actionSheetBatchAppend(payload);  break;
       case 'gas:sheet_query':        result = _actionSheetQuery(payload);        break;
       case 'gas:sheet_upsert':       result = _actionSheetUpsert(payload);       break;
@@ -888,6 +892,20 @@ function _findSheet_(name) {
 }
 
 // ─── Action implementations ───────────────────────────────────────────────────
+
+// gas:sheet_clear — wipe all DATA rows, keep the header. The "new tournament"
+// reset verb (declared in spec/gas-actions-v1.yaml). Destructive but bounded:
+// one named sheet, header preserved, missing sheet is a clean no-op.
+function _actionSheetClear(payload) {
+  var cfg = payload.config || {};
+  var sheetName = cfg.sheet || 'A2UI_Data';
+  var sheet = _findSheet_(sheetName);
+  if (!sheet) return { ok: true, data: { cleared_rows: 0 } };
+  var last = sheet.getLastRow();
+  if (last < 2) return { ok: true, data: { cleared_rows: 0 } };
+  sheet.getRange(2, 1, last - 1, Math.max(sheet.getLastColumn(), 1)).clearContent();
+  return { ok: true, data: { cleared_rows: last - 1 } };
+}
 
 function _actionSheetAppend(payload) {
   var cfg       = payload.config || {};
@@ -1930,7 +1948,16 @@ function _resolveInitialRows(wireExpr, statePrimitives) {
   return null;
 }
 
+var _A2UI_VARIANT = '';
+
 function _renderWiredSurface(payload, navSlug) {
+  // Template expansion (atoms_wired_expand.gs): variants + repeat templates
+  // resolve server-side BEFORE any rendering — the client engine only ever
+  // sees concrete state/actions/layout.
+  if (payload.variants || payload.wired_templates) {
+    var selfUrl = _getWebAppUrl() + (payload._p ? '?p=' + payload._p : '');
+    payload = _expandWiredSurface(payload, _A2UI_VARIANT, selfUrl);
+  }
   var title      = payload.title || 'A2UI Wired Surface';
   var theme      = payload.theme || 'light';
   var layout     = payload.layout || [];

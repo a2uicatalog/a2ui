@@ -19118,6 +19118,127 @@ _RENDERERS['Tabs'] = function(b) {
 };
 
 
+// ==== atoms_wired_expand.gs ====
+// atoms_wired_expand.gs — server-side template expansion for the WIRED dialect.
+//
+// The ChildList template decode (atoms_v1_decode.gs) married into wired
+// surfaces: a payload may declare `variants` (named data sets, selected by
+// URL ?n=<key>) and `wired_templates` — repeat templates that expand into
+// concrete state_primitives / actions / layout BEFORE rendering. The client
+// engine never changes: it only ever sees the expanded, concrete schema.
+// Pure string/JSON work (no DOM, no GAS services) — Node-testable, and ships
+// in the MCP Apps bundle by concatenation like the v1.0 decoder.
+//
+// Payload contract:
+//   variants:        { "8": {rounds: [...], courts: 2, ...}, "12": {...} }
+//   default_variant: "8"
+//   wired_templates: { state: [...], actions: [...], layout: [...] }
+//     — each array may contain plain entries (copied through, tokens
+//       substituted against the variant data) or repeat entries:
+//       { "repeat": "<variantDataKey>", "template": [ ...entries... ] }
+//     — inside a repeat, tokens resolve per item:
+//         {{i}} 1-based index · {{i0}} 0-based · {{item.field}} item value
+//       plus {{variant}} (the selected key), {{self_url}} (this page's stable
+//       ?p= URL, for variant-switch links) and {{data.field}} (variant data).
+//     — an entry with "if": "item.<field>" is included only when that field
+//       is truthy on the current item (ragged data, e.g. courts per round).
+//     — "step": "{{i0}}" coerces back to an integer after substitution.
+//
+// Honesty: an unknown ?n= falls back to default_variant — never a blank page.
+
+function _a2uiSubstitute(value, ctx) {
+  if (typeof value === 'string') {
+    var replaced = value.replace(/\{\{([\w.]+)\}\}/g, function(_, path) {
+      if (path === 'i')  return String(ctx.i);
+      if (path === 'i0') return String(ctx.i0);
+      if (path === 'variant')  return String(ctx.variant);
+      if (path === 'self_url') return String(ctx.self_url || '');
+      var parts = path.split('.');
+      var root = parts[0] === 'item' ? ctx.item : parts[0] === 'data' ? ctx.data : null;
+      if (!root) return '';
+      var cur = root;
+      for (var i = 1; i < parts.length; i++) {
+        cur = (cur === null || cur === undefined) ? undefined : cur[parts[i]];
+      }
+      return (cur === undefined || cur === null) ? '' : String(cur);
+    });
+    return replaced;
+  }
+  if (Array.isArray(value)) {
+    return value.map(function(v) { return _a2uiSubstitute(v, ctx); });
+  }
+  if (value && typeof value === 'object') {
+    var out = {};
+    for (var k in value) out[k] = _a2uiSubstitute(value[k], ctx);
+    return out;
+  }
+  return value;
+}
+
+function _a2uiItemTruthy(item, ref) {
+  if (typeof ref !== 'string' || ref.indexOf('item.') !== 0) return true;
+  var cur = item;
+  var parts = ref.slice(5).split('.');
+  for (var i = 0; i < parts.length; i++) {
+    cur = (cur === null || cur === undefined) ? undefined : cur[parts[i]];
+  }
+  return !(cur === undefined || cur === null || cur === '' || cur === false);
+}
+
+function _a2uiExpandList(entries, data, baseCtx) {
+  var out = [];
+  (entries || []).forEach(function(entry) {
+    if (entry && typeof entry === 'object' && entry.repeat) {
+      var arr = data[entry.repeat];
+      if (!Array.isArray(arr)) return;              // data absent: expand to nothing
+      arr.forEach(function(item, idx) {
+        var ctx = { i: idx + 1, i0: idx, item: item, data: data,
+                    variant: baseCtx.variant, self_url: baseCtx.self_url };
+        (entry.template || []).forEach(function(tpl) {
+          if (!_a2uiItemTruthy(item, tpl['if'])) return;
+          var el = _a2uiSubstitute(tpl, ctx);
+          delete el['if'];
+          if (typeof el.step === 'string' && /^\d+$/.test(el.step)) el.step = parseInt(el.step, 10);
+          out.push(el);
+        });
+      });
+    } else if (entry) {
+      var ctx0 = { i: 0, i0: 0, item: {}, data: data,
+                   variant: baseCtx.variant, self_url: baseCtx.self_url };
+      var plain = _a2uiSubstitute(entry, ctx0);
+      if (typeof plain.step === 'string' && /^\d+$/.test(plain.step)) plain.step = parseInt(plain.step, 10);
+      out.push(plain);
+    }
+  });
+  return out;
+}
+
+function _expandWiredSurface(payload, variantKey, selfUrl) {
+  var variants = payload.variants || {};
+  var key = (variantKey && variants[variantKey]) ? variantKey
+          : (payload.default_variant && variants[payload.default_variant]) ? payload.default_variant
+          : Object.keys(variants)[0];
+  var data = variants[key] || {};
+  var tpl  = payload.wired_templates || {};
+  var base = { variant: key || '', self_url: selfUrl || '' };
+
+  var out = {};
+  for (var k in payload) {
+    if (k === 'variants' || k === 'wired_templates' || k === 'default_variant') continue;
+    out[k] = payload[k];
+  }
+  out.state_primitives = (payload.state_primitives || []).concat(_a2uiExpandList(tpl.state, data, base));
+  out.actions          = (payload.actions          || []).concat(_a2uiExpandList(tpl.actions, data, base));
+  out.layout           = (payload.layout           || []).concat(_a2uiExpandList(tpl.layout, data, base));
+  // substitute tokens in the STATIC portions too ({{variant}}, {{self_url}},
+  // {{data.*}} in headings, stepBinding-adjacent labels, etc.)
+  var ctx0 = { i: 0, i0: 0, item: {}, data: data, variant: base.variant, self_url: base.self_url };
+  out.layout = out.layout.map(function(el) { return _a2uiSubstitute(el, ctx0); });
+  if (typeof out.title === 'string') out.title = _a2uiSubstitute(out.title, ctx0);
+  return out;
+}
+
+
 // ==== atoms_workspace.gs ====
 // atoms_workspace.gs — Workspace-native atoms (GAS server-side APIs)
 // All atoms use typeof guards so they degrade gracefully in preview mode.
@@ -20579,6 +20700,8 @@ A2UIStateEngine.prototype._initPrimitives = function(primitives) {
       case 'Computed':         self._initComputed(p);         break;
       case 'Timer':            self._initTimer(p);            break;
       case 'DerivedStore':    self._initDerivedStore(p);     break;
+      case 'StringTemplate':   self._initStringTemplate(p);   break;
+      case 'RowBinder':        self._initRowBinder(p);        break;
       default: console.warn('[A2UI] Unknown primitive: "' + p.primitive + '"');
     }
   });
@@ -20628,6 +20751,21 @@ A2UIStateEngine.prototype._resolveWires = function(primitives, actions) {
       });
     }
 
+    if (p.primitive === 'StringTemplate' && p.props && p.props.inputs) {
+      var stSpec = p.props.inputs;
+      Object.keys(stSpec).forEach(function(varName) {
+        var stExpr = stSpec[varName];
+        if (typeof stExpr !== 'string' || !stExpr.startsWith('#')) return;
+        var stParsed = self._parseWire(stExpr);
+        if (!stParsed) return;
+        self.registerListener(stParsed.nodeId, stParsed.property, function(val) {
+          var stNode = self.nodes[p.id];
+          stNode._vars[varName] = (val === null || val === undefined) ? '' : String(val);
+          stNode._recompute();
+        });
+      });
+    }
+
     if (p.wire) {
       Object.keys(p.wire).forEach(function(inputName) {
         var wireExpr = p.wire[inputName];
@@ -20638,6 +20776,8 @@ A2UIStateEngine.prototype._resolveWires = function(primitives, actions) {
           if (p.primitive === 'ArrayFilter') {
             if (inputName === 'query')  { node._query = val;                          node._recompute(); }
             if (inputName === 'source') { node._sourceData = Array.isArray(val) ? val : []; node._recompute(); }
+          } else if (p.primitive === 'RowBinder' && inputName === 'rows') {
+            node._apply(Array.isArray(val) ? val : []);
           } else {
             self.trigger(p.id, inputName, val);
           }
@@ -20986,6 +21126,60 @@ A2UIStateEngine.prototype._initComputed = function(p) {
     if (result === null || isNaN(result)) return;
     self._set(p.id, 'value',   result);
     self._set(p.id, 'display', _a2uiFormatValue(result, fmt));
+  };
+  this.nodes[p.id] = node;
+};
+
+// StringTemplate: string interpolation over named wire inputs — the text
+// sibling of Computed ('{a} & {b} vs {c}'); formatting, NOT derivation, so the
+// frozen client-derivation boundary is untouched. fallbacks fill empty vars.
+A2UIStateEngine.prototype._initStringTemplate = function(p) {
+  var self      = this;
+  var template  = (p.props && p.props.template)  || '';
+  var inputs    = (p.props && p.props.inputs)    || {};
+  var fallbacks = (p.props && p.props.fallbacks) || {};
+  var vars = {};
+  Object.keys(inputs).forEach(function(k) { vars[k] = ''; });
+  var node = { value: '', _vars: vars };
+  node._recompute = function() {
+    var out = template.replace(/\{(\w+)\}/g, function(_, name) {
+      var v = vars[name];
+      if (v === undefined || v === null || String(v).trim() === '') {
+        return fallbacks[name] !== undefined ? String(fallbacks[name]) : '';
+      }
+      return String(v);
+    });
+    self._set(p.id, 'value', out);
+  };
+  this.nodes[p.id] = node;
+  node._recompute();
+};
+
+// RowBinder: unpacks delivered query rows back into ValueStores — form
+// rehydration after reload. Pure projection of ONE delivered array (no
+// compute), declared per-field: bind: [{match:{round:'1'}, take:'m1_score_a',
+// into:'r1m1a'}]. Last matching row wins (append-only sheets).
+A2UIStateEngine.prototype._initRowBinder = function(p) {
+  var self  = this;
+  var binds = (p.props && p.props.bind) || [];
+  var node  = { count: 0 };
+  node._apply = function(rows) {
+    binds.forEach(function(spec) {
+      if (!spec || !spec.into || !spec.take) return;
+      var hit = null;
+      rows.forEach(function(r) {
+        var ok = true;
+        Object.keys(spec.match || {}).forEach(function(k) {
+          if (String(r[k]) !== String(spec.match[k])) ok = false;
+        });
+        if (ok) hit = r;                       // last match wins
+      });
+      if (hit && self.nodes[spec.into]) {
+        var v = hit[spec.take];
+        self._set(spec.into, 'value', (v === undefined || v === null) ? '' : v);
+      }
+    });
+    self._set(p.id, 'count', rows.length);
   };
   this.nodes[p.id] = node;
 };

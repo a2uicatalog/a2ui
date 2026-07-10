@@ -115,6 +115,11 @@ action_fields:
 
 actions:
 
+  sheet_clear:
+    verb: gas:sheet_clear
+    config: '{ sheet }'
+    returns: '{ ok, data: { cleared_rows } }'
+    note: 'reset verb — wipes all DATA rows, header preserved; missing sheet is a clean no-op. Destructive but bounded to ONE named sheet (the "new tournament" case, 2026-07-10).'
   sheet_append:
     description: Append a row to a Google Sheet. Auto-creates the sheet if absent.
     props:

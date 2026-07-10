@@ -252,7 +252,7 @@ def build_bundle():
     core_parts = [PRELUDE]
     # Non-renderer .gs files that legitimately ship in the bundle: PackMap (the
     # atom->catalog gate) and the v1.0 decode shim (pure functions, no DOM).
-    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs"}
+    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_wired_expand.gs"}
     for f in renderer_files():
         src = f.read_text()
         if f.name not in NON_RENDERER_GS:

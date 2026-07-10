@@ -233,6 +233,66 @@
     "isNotTriggered"
    ]
   },
+  "StringTemplate": {
+   "type": "object",
+   "description": "string interpolation over named wire inputs — the text sibling of Computed; formatting, NOT derivation (boundary untouched)",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "StringTemplate"
+      },
+      "template": {
+       "description": "string with {var} slots, e.g. '{a} & {b} vs {c} & {d}'"
+      },
+      "inputs": {
+       "description": "object — { varName: '#nodeId.field' }"
+      },
+      "fallbacks": {
+       "description": "object (optional) — { varName: literal } used when the input is empty"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "value"
+   ]
+  },
+  "RowBinder": {
+   "type": "object",
+   "description": "unpack delivered query rows back into ValueStores — form rehydration after reload; pure projection of ONE delivered array, no compute",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "RowBinder"
+      },
+      "bind": {
+       "description": "array of { match: {field: value}, take: field, into: storeId } — last matching row wins (append-only stores)"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": [
+    "count"
+   ]
+  },
   "StepNavigator": {
    "type": "object",
    "description": "tracks current step in a multi-step flow",

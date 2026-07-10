@@ -70,6 +70,20 @@ primitives:
       operator: "gt | gte | lt | lte | eq (default gte)"
       threshold: "number (default 0)"
     readable_fields: [isTriggered, isNotTriggered]
+  - id: StringTemplate
+    purpose: string interpolation over named wire inputs — the text sibling of Computed; formatting, NOT derivation (boundary untouched)
+    props:
+      template: "string with {var} slots, e.g. '{a} & {b} vs {c} & {d}'"
+      inputs: "object — { varName: '#nodeId.field' }"
+      fallbacks: "object (optional) — { varName: literal } used when the input is empty"
+    readable_fields: [value]
+  - id: RowBinder
+    purpose: unpack delivered query rows back into ValueStores — form rehydration after reload; pure projection of ONE delivered array, no compute
+    props:
+      bind: "array of { match: {field: value}, take: field, into: storeId } — last matching row wins (append-only stores)"
+    wire_inputs:
+      rows: "array — '#actionId.result'"
+    readable_fields: [count]
   - id: StepNavigator
     purpose: tracks current step in a multi-step flow
     props: { totalSteps: "integer (default 2)" }

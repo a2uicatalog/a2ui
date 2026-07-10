@@ -15,6 +15,10 @@ SRC = ROOT / "spec" / "a2ui-state.yaml"
 RENDERER_PRIMITIVES = {
     "ValueStore", "Computed", "DerivedStore", "ArrayFilter",
     "NumericThreshold", "StepNavigator", "StringValidator", "Timer",
+    # 2026-07-10: StringTemplate (text sibling of Computed — interpolation,
+    # not derivation) and RowBinder (query-row -> ValueStore rehydration,
+    # pure projection). Both declared in spec/a2ui-state.yaml.
+    "StringTemplate", "RowBinder",
 }
 
 

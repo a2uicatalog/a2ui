@@ -36,6 +36,12 @@ StringValidator — validates a string against a regex pattern
 NumericThreshold — compares a numeric source against a threshold
   props: source: #nodeId.value, operator: gt | gte | lt | lte | eq (default gte), threshold: number (default 0)
   readable fields: isTriggered, isNotTriggered
+StringTemplate — string interpolation over named wire inputs — the text sibling of Computed; formatting, NOT derivation (boundary untouched)
+  props: template: string with {var} slots, e.g. '{a} & {b} vs {c} & {d}', inputs: object — { varName: '#nodeId.field' }, fallbacks: object (optional) — { varName: literal } used when the input is empty
+  readable fields: value
+RowBinder — unpack delivered query rows back into ValueStores — form rehydration after reload; pure projection of ONE delivered array, no compute
+  props: bind: array of { match: {field: value}, take: field, into: storeId } — last matching row wins (append-only stores)
+  readable fields: count
 StepNavigator — tracks current step in a multi-step flow
   props: totalSteps: integer (default 2)
   readable fields: activeIndex
@@ -64,6 +70,7 @@ delete — delete-row button  (extra: ['delete_key', 'action_node', 'key_mem_nod
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 4. ACTION TYPES  (actions array) — from spec/gas-actions-v1.yaml
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+gas:sheet_clear — 
 gas:sheet_append — Append a row to a Google Sheet. Auto-creates the sheet if absent.
 gas:sheet_query — Load rows from a Google Sheet into the state graph. Returns an array of objects keyed by lowercased column headers. Designed to feed directly into an ArrayFilter via wire.result.
 gas:sheet_upsert — Update an existing row matched by key column, or append if not found.

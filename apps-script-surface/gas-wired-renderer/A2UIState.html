@@ -145,6 +145,8 @@ A2UIStateEngine.prototype._initPrimitives = function(primitives) {
       case 'Computed':         self._initComputed(p);         break;
       case 'Timer':            self._initTimer(p);            break;
       case 'DerivedStore':    self._initDerivedStore(p);     break;
+      case 'StringTemplate':   self._initStringTemplate(p);   break;
+      case 'RowBinder':        self._initRowBinder(p);        break;
       default: console.warn('[A2UI] Unknown primitive: "' + p.primitive + '"');
     }
   });
@@ -194,6 +196,21 @@ A2UIStateEngine.prototype._resolveWires = function(primitives, actions) {
       });
     }
 
+    if (p.primitive === 'StringTemplate' && p.props && p.props.inputs) {
+      var stSpec = p.props.inputs;
+      Object.keys(stSpec).forEach(function(varName) {
+        var stExpr = stSpec[varName];
+        if (typeof stExpr !== 'string' || !stExpr.startsWith('#')) return;
+        var stParsed = self._parseWire(stExpr);
+        if (!stParsed) return;
+        self.registerListener(stParsed.nodeId, stParsed.property, function(val) {
+          var stNode = self.nodes[p.id];
+          stNode._vars[varName] = (val === null || val === undefined) ? '' : String(val);
+          stNode._recompute();
+        });
+      });
+    }
+
     if (p.wire) {
       Object.keys(p.wire).forEach(function(inputName) {
         var wireExpr = p.wire[inputName];
@@ -204,6 +221,8 @@ A2UIStateEngine.prototype._resolveWires = function(primitives, actions) {
           if (p.primitive === 'ArrayFilter') {
             if (inputName === 'query')  { node._query = val;                          node._recompute(); }
             if (inputName === 'source') { node._sourceData = Array.isArray(val) ? val : []; node._recompute(); }
+          } else if (p.primitive === 'RowBinder' && inputName === 'rows') {
+            node._apply(Array.isArray(val) ? val : []);
           } else {
             self.trigger(p.id, inputName, val);
           }
@@ -552,6 +571,60 @@ A2UIStateEngine.prototype._initComputed = function(p) {
     if (result === null || isNaN(result)) return;
     self._set(p.id, 'value',   result);
     self._set(p.id, 'display', _a2uiFormatValue(result, fmt));
+  };
+  this.nodes[p.id] = node;
+};
+
+// StringTemplate: string interpolation over named wire inputs — the text
+// sibling of Computed ('{a} & {b} vs {c}'); formatting, NOT derivation, so the
+// frozen client-derivation boundary is untouched. fallbacks fill empty vars.
+A2UIStateEngine.prototype._initStringTemplate = function(p) {
+  var self      = this;
+  var template  = (p.props && p.props.template)  || '';
+  var inputs    = (p.props && p.props.inputs)    || {};
+  var fallbacks = (p.props && p.props.fallbacks) || {};
+  var vars = {};
+  Object.keys(inputs).forEach(function(k) { vars[k] = ''; });
+  var node = { value: '', _vars: vars };
+  node._recompute = function() {
+    var out = template.replace(/\{(\w+)\}/g, function(_, name) {
+      var v = vars[name];
+      if (v === undefined || v === null || String(v).trim() === '') {
+        return fallbacks[name] !== undefined ? String(fallbacks[name]) : '';
+      }
+      return String(v);
+    });
+    self._set(p.id, 'value', out);
+  };
+  this.nodes[p.id] = node;
+  node._recompute();
+};
+
+// RowBinder: unpacks delivered query rows back into ValueStores — form
+// rehydration after reload. Pure projection of ONE delivered array (no
+// compute), declared per-field: bind: [{match:{round:'1'}, take:'m1_score_a',
+// into:'r1m1a'}]. Last matching row wins (append-only sheets).
+A2UIStateEngine.prototype._initRowBinder = function(p) {
+  var self  = this;
+  var binds = (p.props && p.props.bind) || [];
+  var node  = { count: 0 };
+  node._apply = function(rows) {
+    binds.forEach(function(spec) {
+      if (!spec || !spec.into || !spec.take) return;
+      var hit = null;
+      rows.forEach(function(r) {
+        var ok = true;
+        Object.keys(spec.match || {}).forEach(function(k) {
+          if (String(r[k]) !== String(spec.match[k])) ok = false;
+        });
+        if (ok) hit = r;                       // last match wins
+      });
+      if (hit && self.nodes[spec.into]) {
+        var v = hit[spec.take];
+        self._set(spec.into, 'value', (v === undefined || v === null) ? '' : v);
+      }
+    });
+    self._set(p.id, 'count', rows.length);
   };
   this.nodes[p.id] = node;
 };
