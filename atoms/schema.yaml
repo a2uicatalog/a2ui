@@ -30,6 +30,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
   source: *id001
@@ -44,6 +45,7 @@ blocks:
     - email
     - pdf
     - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
   source: *id001
@@ -7991,8 +7993,9 @@ blocks:
   description: Prose paragraph block (alias for body, google-apps-script-web only)
   compact_description: prose paragraph (GAS alias for body)
   surfaces:
-    works_on: &id006
+    works_on:
     - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
   source: &id007
@@ -8003,7 +8006,8 @@ blocks:
   description: Plain text block rendered as a paragraph
   compact_description: plain text block
   surfaces:
-    works_on: *id006
+    works_on: &id006
+    - google-apps-script-web
   fields:
     text: string
   source: *id007
@@ -10721,6 +10725,24 @@ blocks:
     dark_bg: string (optional, hex, default "#0f172a")
     label_dark: string (optional, default "🌙")
     label_light: string (optional, default "☀️")
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: gdm_rocket_panel
+  stage: preview
+  description: Full-width canvas launch animation -- an isometric rocket
+    climbing through exhaust trail and sparks to a HUD telemetry readout,
+    launching once and holding at apex. Ported from the Google Meet Stage
+    add-on's gdm-rocket-panel component (used in the "Apps Script is now a
+    Workspace Core Service" playbook) -- hand-curated content, not
+    schema-generated from any renderer template.
+  compact_description: isometric rocket launch canvas animation with HUD telemetry
+  surfaces:
+    works_on:
+    - mcp-apps
+  fields:
+    height: number (optional, pixels, default 480)
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

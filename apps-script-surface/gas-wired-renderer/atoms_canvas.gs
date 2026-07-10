@@ -1784,6 +1784,151 @@ _RENDERERS['geo_iso_rocket_launch'] = function(b) {
     '})();<\/script>';
 };
 
+// ── gdm_rocket_panel ── isometric launch-once canvas animation with HUD telemetry ─────
+// Not schema-generated — hand-curated content ported from the Meet Stage add-on's
+// gdm-rocket-panel Lit component (gemini/addons/meetstudio, "Apps Script is now a
+// Workspace Core Service" playbook). Launches once and holds at apex rather than
+// the original's endless relaunch loop (a static page reads that as glitchy, not
+// ambient, the way a Meet Stage slide holding ~7s does).
+_RENDERERS['gdm_rocket_panel'] = function(b) {
+  var uid = 'grp' + Math.random().toString(36).substr(2, 6);
+  var height = b.height || 480;
+  return (
+    '<div id="' + uid + 'w" style="position:relative;width:100%;height:' + height + 'px;' +
+      'background:#05070f;border-radius:12px;overflow:hidden;margin:1.5rem 0;">' +
+      '<canvas id="' + uid + 'c" style="display:block;width:100%;height:100%;"></canvas>' +
+    '</div>' +
+    '<script>(function(){' +
+      'var canvas=document.getElementById("' + uid + 'c");if(!canvas)return;' +
+      'var ctx=canvas.getContext("2d");' +
+      'var logo=null;' +
+      'var img=new Image();img.crossOrigin="anonymous";' +
+      'img.src="https://fonts.gstatic.com/s/i/productlogos/apps_script/v10/192px.svg";' +
+      'img.onload=function(){logo=img;};' +
+      'var y=1.2,trail=[],sparks=[],raf=null,landed=false;' +
+
+      'function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||' + height + ';}' +
+      'window.addEventListener("resize",resize);resize();' +
+
+      'function drawRocket(cx,cy,w,h){' +
+        'var s=Math.min(w,h)/7;' +
+        'var pulse=0.85+0.15*Math.sin(Date.now()/90);' +
+        'var glow=ctx.createRadialGradient(cx,cy+s*1.05,0,cx,cy+s*1.05,s*1.5*pulse);' +
+        'glow.addColorStop(0,"rgba(255,255,200,0.98)");' +
+        'glow.addColorStop(0.12,"rgba(255,180,0,0.9)");' +
+        'glow.addColorStop(0.4,"rgba(255,60,0,0.55)");' +
+        'glow.addColorStop(1,"rgba(255,20,0,0)");' +
+        'ctx.beginPath();ctx.arc(cx,cy+s*1.05,s*1.5*pulse,0,Math.PI*2);' +
+        'ctx.fillStyle=glow;ctx.fill();' +
+
+        'ctx.save();ctx.translate(cx,cy);' +
+
+        'ctx.beginPath();' +
+        'ctx.moveTo(-s*0.28,s*0.55);ctx.lineTo(-s*0.72,s*1.02);ctx.lineTo(-s*0.28,s*0.82);' +
+        'ctx.closePath();ctx.fillStyle="#0077b6";ctx.fill();' +
+
+        'ctx.beginPath();' +
+        'ctx.moveTo(s*0.28,s*0.55);ctx.lineTo(s*0.72,s*1.02);ctx.lineTo(s*0.28,s*0.82);' +
+        'ctx.closePath();ctx.fillStyle="#0077b6";ctx.fill();' +
+
+        'ctx.beginPath();' +
+        'ctx.moveTo(-s*0.22,s*0.68);ctx.lineTo(-s*0.3,s*0.98);ctx.lineTo(s*0.3,s*0.98);ctx.lineTo(s*0.22,s*0.68);' +
+        'ctx.closePath();' +
+        'var bell=ctx.createLinearGradient(-s*0.3,0,s*0.3,0);' +
+        'bell.addColorStop(0,"#4cc9f0");bell.addColorStop(0.5,"#e0f7ff");bell.addColorStop(1,"#4cc9f0");' +
+        'ctx.fillStyle=bell;ctx.fill();' +
+
+        'var body=ctx.createLinearGradient(-s*0.28,0,s*0.28,0);' +
+        'body.addColorStop(0,"#0a8cce");body.addColorStop(0.25,"#00c8f0");body.addColorStop(0.55,"#c8f4ff");' +
+        'body.addColorStop(0.8,"#00c8f0");body.addColorStop(1,"#0a6ca0");' +
+        'ctx.beginPath();ctx.roundRect(-s*0.28,-s*0.6,s*0.56,s*1.3,s*0.05);' +
+        'ctx.fillStyle=body;ctx.fill();' +
+
+        'ctx.beginPath();' +
+        'ctx.moveTo(0,-s*1.05);' +
+        'ctx.bezierCurveTo(-s*0.07,-s*0.78,-s*0.24,-s*0.68,-s*0.28,-s*0.6);' +
+        'ctx.lineTo(s*0.28,-s*0.6);' +
+        'ctx.bezierCurveTo(s*0.24,-s*0.68,s*0.07,-s*0.78,0,-s*1.05);' +
+        'ctx.closePath();' +
+        'var nose=ctx.createLinearGradient(-s*0.28,0,s*0.28,0);' +
+        'nose.addColorStop(0,"#0a6ca0");nose.addColorStop(0.45,"#d8f8ff");nose.addColorStop(1,"#0a6ca0");' +
+        'ctx.fillStyle=nose;ctx.fill();' +
+
+        'var badgeSize=s*0.38,badgeX=-badgeSize/2,badgeY=-s*0.38;' +
+        'ctx.beginPath();' +
+        'ctx.roundRect(badgeX-s*0.03,badgeY-s*0.03,badgeSize+s*0.06,badgeSize+s*0.06,s*0.06);' +
+        'ctx.fillStyle="rgba(255,255,255,0.92)";ctx.fill();' +
+        'if(logo){ctx.drawImage(logo,badgeX,badgeY,badgeSize,badgeSize);}' +
+        'else{' +
+          'ctx.beginPath();ctx.arc(0,badgeY+badgeSize/2,badgeSize*0.4,0,Math.PI*2);' +
+          'ctx.fillStyle="#00c8f0";ctx.fill();' +
+        '}' +
+
+        'ctx.beginPath();ctx.roundRect(-s*0.28,s*0.2,s*0.56,s*0.06,s*0.02);' +
+        'ctx.fillStyle="rgba(255,255,255,0.25)";ctx.fill();' +
+
+        'ctx.restore();' +
+      '}' +
+
+      'function drawHud(w,h){' +
+        'var fs=Math.min(w,h)*0.026;' +
+        'var progress=Math.max(0,(1.2-y)/1.5);' +
+        'var altStr=y<0.05?"∞":Math.round(progress*28000).toLocaleString()+" ft";' +
+        'var spdStr=y<0.05?"MACH ∞":Math.round(Math.min(380,80+progress*2200))+" kt";' +
+        'ctx.font=fs+"px monospace";ctx.textAlign="right";' +
+        'ctx.fillStyle="rgba(0,255,136,0.42)";' +
+        'ctx.fillText("ALT "+altStr+"  SPD "+spdStr+"  ·  APPS SCRIPT · CORE SERVICE",w-10,h-10);' +
+      '}' +
+
+      'function loop(){' +
+        'if(!canvas.isConnected)return;' +
+        'var w=canvas.width,h=canvas.height,cx=w*0.5,s=Math.min(w,h)/7;' +
+        'ctx.clearRect(0,0,w,h);' +
+
+        'if(!landed){' +
+          'y-=0.012+(1.2-y)*0.002;' +
+          'if(y<=0.08){y=0.08;landed=true;}' +
+        '}' +
+        'var cy=y*h;' +
+
+        'if(!landed){' +
+          'trail.push({x:cx+(Math.random()-0.5)*s*0.08,y:cy+s*0.98,t:Date.now(),r:3+Math.random()*4});' +
+        '}' +
+        'trail=trail.filter(function(p){return Date.now()-p.t<260;});' +
+        'trail.forEach(function(p){' +
+          'var age=(Date.now()-p.t)/260;' +
+          'var a=(1-age)*0.75;' +
+          'var r=p.r*(1+age*3);' +
+          'var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);' +
+          'g.addColorStop(0,"rgba(255,230,100,"+a+")");' +
+          'g.addColorStop(0.4,"rgba(255,90,0,"+(a*0.7)+")");' +
+          'g.addColorStop(1,"rgba(255,20,0,0)");' +
+          'ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();' +
+        '});' +
+
+        'if(!landed&&Math.random()<0.45){' +
+          'sparks.push({x:cx+(Math.random()-0.5)*s*0.35,y:cy+s*0.98,' +
+            'vx:(Math.random()-0.5)*3,vy:1.5+Math.random()*4,life:1});' +
+        '}' +
+        'sparks=sparks.filter(function(sp){return sp.life>0;});' +
+        'sparks.forEach(function(sp){' +
+          'ctx.beginPath();ctx.arc(sp.x,sp.y,sp.life*2.8,0,Math.PI*2);' +
+          'ctx.fillStyle="rgba(255,"+Math.round(180+sp.life*75)+",40,"+sp.life+")";' +
+          'ctx.fill();' +
+          'sp.x+=sp.vx;sp.y+=sp.vy;sp.life-=0.065;' +
+        '});' +
+
+        'drawRocket(cx,cy,w,h);' +
+        'drawHud(w,h);' +
+
+        'if(landed&&trail.length===0&&sparks.length===0)return;' +
+        'raf=requestAnimationFrame(loop);' +
+      '}' +
+      'loop();' +
+    '})();<\/script>'
+  );
+};
+
 // ── geo_iso_heli_hover ── Airbus H160 solid-surface interactive rotary simulation ─────
 _RENDERERS['geo_iso_heli_hover'] = function(b) {
   var uid    = 'gihh' + Math.random().toString(36).substr(2, 6);

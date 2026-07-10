@@ -471,7 +471,7 @@ def test_carousel_works_on_meet_stage(atoms):
 
 def test_body_works_everywhere(atoms):
     works_on = atoms["body"]["surfaces"]["works_on"]
-    assert set(works_on) == {"web", "google-meet-stage", "google-chat", "email", "pdf", "google-apps-script-web"}
+    assert set(works_on) == {"web", "google-meet-stage", "google-chat", "email", "pdf", "google-apps-script-web", "mcp-apps"}
 
 
 # ── Vercel Geist-inspired atoms ───────────────────────────────────────────────

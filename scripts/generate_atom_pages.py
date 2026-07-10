@@ -615,6 +615,11 @@ h1{font-size:2.8rem;font-weight:900;letter-spacing:-2px;margin-bottom:6px;color:
 .tagline{font-size:1.15rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:.01em}
 .sub{color:var(--muted);font-size:1rem;margin-bottom:24px}
 .sub a{color:var(--cyan);text-decoration:none}
+.launch-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px 18px;margin-bottom:24px;text-decoration:none;transition:border-color .15s,background .15s}
+.launch-banner:hover{border-color:#6366f1;background:rgba(99,102,241,.14)}
+.launch-badge{flex-shrink:0;padding:3px 10px;border-radius:999px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.5);color:#8183f4;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.launch-text{flex:1;min-width:200px;font-size:13px;color:var(--text)}
+.launch-arrow{flex-shrink:0;font-size:12px;font-weight:700;color:#8183f4}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
 #search{flex:1;min-width:220px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:14px;color:var(--text);outline:none}
 #search:focus{border-color:var(--cyan)}
@@ -729,6 +734,11 @@ def generate_index(atoms):
     <h1>A2UI Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
     <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
+    <a class="launch-banner" href="/surfaces/mcp-apps">
+      <span class="launch-badge">Just launched</span>
+      <span class="launch-text">MCP Apps is a first-class surface — catalog atoms and curated content, live inside a sandboxed MCP host</span>
+      <span class="launch-arrow">See it launch →</span>
+    </a>
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off">
       <div class="filters">{filter_pills}</div>
@@ -754,14 +764,140 @@ SURFACE_NAMES = {
     "google-apps-script-side-panel":"Apps Script Side Panel",
     "email":                        "Email",
     "pdf":                          "PDF",
+    "mcp-apps":                     "MCP Apps",
 }
 
 GAS_SURFACES = {"google-meet-stage", "google-apps-script-web", "google-apps-script-side-panel", "google-chat"}
+
+# Hand-authored launch hero for the mcp-apps surface page, prepended above the
+# schema-driven atom gallery every other surface gets unmodified. Not a parallel
+# pipeline -- see generate_surface_page()'s single MCP_APPS_HERO_HTML branch.
+# Ported content: same protocol handshake + rocket demo built for
+# public/mcp-apps-demo/ this session (a2ui-private/spec/mcp-apps-surface-v0.1.md v0.2).
+MCP_APPS_HERO_HTML = """
+<style>
+:root{--mcp-indigo:#6366f1}
+.mcp-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:var(--mcp-indigo);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+.mcp-note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:0 0 20px}
+.mcp-note strong{color:var(--text)}
+.mcp-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
+.mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
+.mcp-status-dot.err{background:#f85149}
+.mcp-host-frame{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px}
+.mcp-host-frame iframe{width:100%;min-height:920px;border:0;display:block;background:#fff}
+.mcp-protocol-note{font-size:13px;color:var(--muted);margin-bottom:40px;padding-top:20px;border-top:1px solid var(--border)}
+.mcp-protocol-note code{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:'SF Mono',Monaco,monospace;font-size:12px;color:var(--text)}
+</style>
+
+<div class="mcp-badge">Just launched · MCP Apps surface</div>
+<p class="desc" style="max-width:640px;margin-bottom:24px">This page <strong>is</strong> a minimal MCP Apps Host — the same sandboxed iframe, the same <code>ui/initialize</code> JSON-RPC handshake a real chat client (claude.ai, Claude Desktop) uses to render an MCP server's UI resource. Catalog atoms and hand-curated content render side by side, both mediated the same way.</p>
+
+<div class="mcp-note">
+  <strong>What's real vs. simulated:</strong> the sandboxed iframe, the postMessage handshake, and the renderer are the genuine MCP Apps protocol and genuine catalog atom code. What's simulated is the tool call — this page feeds the view a fixed fixture payload instead of a live round-trip to <code>a2uicatalog.ai/mcp</code>, so you can see it work without installing an MCP client.
+</div>
+
+<div class="mcp-note">
+  <strong>The launch animation isn't a catalog atom (yet)</strong> — it's <code>gdm_rocket_panel</code>, hand-curated content (ported from a Google Meet Stage add-on demo, <code>stage: preview</code>), rendered in the same surface, through the same block dispatch, right alongside the stable catalog atoms below it. That's the actual point: MCP Apps' controlled opaqueness means an agent isn't limited to what's been pre-enumerated into the catalog — curated and catalog-declarative content sit side by side in one iframe, both still only reachable through the Host's mediated channel, not a raw DOM handoff.
+</div>
+
+<div class="mcp-status">
+  <span class="mcp-status-dot" id="mcp-status-dot"></span>
+  <span id="mcp-status-text">Connecting to view…</span>
+</div>
+
+<div class="mcp-host-frame">
+  <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html" title="A2UI MCP Apps view"></iframe>
+</div>
+
+<p class="mcp-protocol-note">
+  Handshake: the iframe (the <strong>View</strong>) posts <code>ui/initialize</code> to this page (the <strong>Host</strong>) on load. This page replies with a <code>McpUiInitializeResult</code>, the View acknowledges with <code>ui/notifications/initialized</code>, and this page then delivers the payload via <code>ui/notifications/tool-result</code> — the exact message sequence defined in the MCP Apps spec (<a href="https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx" target="_blank" rel="noopener">apps.mdx</a>). No <code>allow-same-origin</code> on the iframe — the View genuinely cannot reach this page's DOM.
+</p>
+
+<script>
+(function () {
+  var iframe = document.getElementById('mcp-view');
+  var dot = document.getElementById('mcp-status-dot');
+  var text = document.getElementById('mcp-status-text');
+
+  function setStatus(cls, msg) {
+    dot.className = 'mcp-status-dot' + (cls ? ' ' + cls : '');
+    text.textContent = msg;
+  }
+
+  var FIXTURE = {
+    content: [{ type: 'text', text: 'Rendered A2UI atoms in the MCP Apps view.' }],
+    structuredContent: {
+      theme: 'dark',
+      blocks: [
+        { type: 'heading', level: 2, text: 'Catalog atoms — and curated content — live inside an MCP App' },
+        { type: 'gdm_rocket_panel', height: 480 },
+        { type: 'body', text: 'The launch animation above is **not a catalog atom** — it\\'s hand-curated content, rendered through the same block dispatch as everything below. Both arrived over the same **ui/notifications/tool-result** message a real MCP server sends after a tool call.' },
+        { type: 'paragraph', text: 'The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page, matching MCP Apps\\' security model — true for the curated visual above and the catalog atoms below alike.' },
+        {
+          type: 'flashcard_deck',
+          accent: '#00b8c4',
+          label_front: 'PROTOCOL',
+          label_back: 'ANSWER',
+          cards: [
+            { front: 'What delivers this payload?', back: 'ui/notifications/tool-result, sent by the Host after ui/initialize completes.' },
+            { front: 'What renders it?', back: 'A ported slice of the same renderAtoms() the GAS catalog renderer uses in production.' },
+            { front: 'Where\\'s the model in this loop?', back: 'Between chat and tool call — the view itself only talks to the Host, never the network.' }
+          ]
+        }
+      ]
+    }
+  };
+
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== iframe.contentWindow) return;
+    var msg = ev.data;
+    if (!msg || msg.jsonrpc !== '2.0') return;
+
+    if (msg.method === 'ui/initialize') {
+      setStatus('', 'Handshake: ui/initialize received, replying…');
+      iframe.contentWindow.postMessage({
+        jsonrpc: '2.0',
+        id: msg.id,
+        result: {
+          protocolVersion: '2026-01-26',
+          hostContext: { theme: 'dark', displayMode: 'inline' },
+          capabilities: { serverTools: {}, logging: {} }
+        }
+      }, '*');
+      return;
+    }
+
+    if (msg.method === 'ui/notifications/initialized') {
+      setStatus('', 'View ready — delivering fixture payload…');
+      iframe.contentWindow.postMessage({
+        jsonrpc: '2.0',
+        method: 'ui/notifications/tool-result',
+        params: FIXTURE
+      }, '*');
+      setStatus('live', 'Live — rendered via ui/notifications/tool-result');
+      return;
+    }
+  });
+
+  setTimeout(function () {
+    if (dot.className.indexOf('live') === -1) {
+      setStatus('err', 'No response from view — check console');
+    }
+  }, 5000);
+})();
+</script>
+"""
 
 
 def generate_surface_page(surface, atoms):
     display = SURFACE_NAMES.get(surface, surface)
     is_gas  = surface in GAS_SURFACES
+    hero    = MCP_APPS_HERO_HTML if surface == "mcp-apps" else ""
+    atoms_lead = (
+        f"{len(atoms)} catalog atoms also render on this surface"
+        if hero else f"{len(atoms)} atoms available on this surface"
+    )
 
     items_html = ""
     for atom in atoms:
@@ -809,7 +945,8 @@ def generate_surface_page(surface, atoms):
   </nav>
 
   <h1>{display}</h1>
-  <p class="desc">{len(atoms)} atoms available on this surface</p>
+  {hero}
+  <p class="desc">{atoms_lead}</p>
 
   {items_html}
 
