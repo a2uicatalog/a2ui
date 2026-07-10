@@ -10731,18 +10731,19 @@ blocks:
     license: MIT
 - type: gdm_rocket_panel
   stage: preview
-  description: Full-width canvas launch animation -- an isometric rocket
+  description: Fixed-position canvas launch animation -- an isometric rocket
     climbing through exhaust trail and sparks to a HUD telemetry readout,
-    launching once and holding at apex. Ported from the Google Meet Stage
-    add-on's gdm-rocket-panel component (used in the "Apps Script is now a
-    Workspace Core Service" playbook) -- hand-curated content, not
-    schema-generated from any renderer template.
-  compact_description: isometric rocket launch canvas animation with HUD telemetry
+    launching once and holding at apex. Overlays the right half of the
+    viewport (position:fixed, non-interactive), matching the original
+    component's layout exactly. Ported from the Google Meet Stage add-on's
+    gdm-rocket-panel component (used in the "Apps Script is now a Workspace
+    Core Service" playbook) -- hand-curated content, not schema-generated
+    from any renderer template.
+  compact_description: isometric rocket launch canvas animation, fixed right-half overlay
   surfaces:
     works_on:
     - mcp-apps
-  fields:
-    height: number (optional, pixels, default 480)
+  fields: {}
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

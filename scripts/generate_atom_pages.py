@@ -831,7 +831,7 @@ MCP_APPS_HERO_HTML = """
       theme: 'dark',
       blocks: [
         { type: 'heading', level: 2, text: 'Catalog atoms — and curated content — live inside an MCP App' },
-        { type: 'gdm_rocket_panel', height: 480 },
+        { type: 'gdm_rocket_panel' },
         { type: 'body', text: 'The launch animation above is **not a catalog atom** — it\\'s hand-curated content, rendered through the same block dispatch as everything below. Both arrived over the same **ui/notifications/tool-result** message a real MCP server sends after a tool call.' },
         { type: 'paragraph', text: 'The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page, matching MCP Apps\\' security model — true for the curated visual above and the catalog atoms below alike.' },
         {

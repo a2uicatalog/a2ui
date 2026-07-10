@@ -100,12 +100,15 @@ def test_bundle_contains_curated_rocket_panel():
 
 
 def test_rocket_panel_renders_canvas_and_loop():
-    html = _run_render_atoms({"blocks": [{"type": "gdm_rocket_panel", "height": 480}]})
+    html = _run_render_atoms({"blocks": [{"type": "gdm_rocket_panel"}]})
     assert "<canvas" in html
     assert "requestAnimationFrame(loop)" in html
     assert "data:image/svg+xml;base64," in html  # inlined MCP logo badge, no network fetch
     assert "MCP APPS · A2UI CATALOG" in html  # HUD telemetry text
     assert "</script>" in html
+    # fixed right-half overlay, matching the original gdm-rocket-panel layout
+    assert "position:fixed;top:0;right:0;width:50%;height:100%" in html
+    assert "pointer-events:none" in html
 
 
 def test_unknown_atom_type_degrades_gracefully():

@@ -38,11 +38,13 @@ MCP_LOGO_DATA_URI = (
 GDM_ROCKET_PANEL_JS = r"""
 _RENDERERS['gdm_rocket_panel'] = function(b) {
   var uid = 'grp' + Math.random().toString(36).substr(2, 6);
-  var height = b.height || 480;
   return (
-    '<div id="' + uid + 'w" style="position:relative;width:100%;height:' + height + 'px;' +
-      'background:#05070f;border-radius:12px;overflow:hidden;margin:1.5rem 0;">' +
-      '<canvas id="' + uid + 'c" style="display:block;width:100%;height:100%;"></canvas>' +
+    // Matches the original gdm-rocket-panel Lit component's layout exactly:
+    // fixed, right half, full height, non-interactive overlay (z-index 50 =
+    // its "back" layer default; no "front"/layer=150 variant needed here).
+    '<div id="' + uid + 'w" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
+      'pointer-events:none;z-index:50;background:transparent;">' +
+      '<canvas id="' + uid + 'c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>' +
     '</div>' +
     '<script>(function(){' +
       'var canvas=document.getElementById("' + uid + 'c");if(!canvas)return;' +
@@ -53,7 +55,7 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
       'img.onload=function(){logo=img;};' +
       'var y=1.2,trail=[],sparks=[],raf=null,landed=false;' +
 
-      'function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||' + height + ';}' +
+      'function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||960;}' +
       'window.addEventListener("resize",resize);resize();' +
 
       'function drawRocket(cx,cy,w,h){' +
@@ -317,7 +319,12 @@ def build_bundle():
 <meta charset="utf-8">
 <title>A2UI Catalog renderer — MCP Apps View</title>
 %s
-<style>body { padding: 24px; }</style>
+<style>
+body { padding: 24px; }
+/* gdm_rocket_panel is a fixed right-half overlay (matches its original
+   layout) -- keep flowing content in the left half so nothing sits under it. */
+#a2ui-root { max-width: 50%%; box-sizing: border-box; }
+</style>
 </head>
 <body class="asw-page">
 <div id="a2ui-root"></div>
