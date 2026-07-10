@@ -418,7 +418,10 @@ _RENDERERS['hub'] = function(b) {
       var slideHtml = '';
       var blocks    = slide.blocks || [];
       for (var bi = 0; bi < blocks.length; bi++) {
-        var fn = _RENDERERS[blocks[bi].type];
+        // component || type: same dispatch fallback as atom.gs renderAtoms —
+        // this was the one inline recursion site missing it (childlist-migration
+        // v0.1 implementation notes, 2026-07-09).
+        var fn = _RENDERERS[blocks[bi].component || blocks[bi].type];
         if (fn) slideHtml += fn(blocks[bi]);
       }
       contentHtml += '<div id="' + uid + 'S' + si + 'L' + sli + '" style="display:' + (sli === 0 ? 'block' : 'none') + ';">' + slideHtml + '</div>';

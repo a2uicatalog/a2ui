@@ -2034,63 +2034,10 @@ function _renderWiredSurface(payload, navSlug) {
 // per-atom field-name knowledge — reasonable for now since none of this phase's
 // test content exercises them, but a real string property that happens to collide
 // with another component's id would misfire. Flagged, not fixed, this phase.
-function _rehydrateV1Surface(surface) {
-  var byId = {};
-  (surface.components || []).forEach(function(c) { byId[c.id] = c; });
-
-  function resolveNode(id, seen) {
-    if (seen[id]) return null;               // cycle guard
-    seen[id] = true;
-    var src = byId[id];
-    if (!src) return null;
-    var node = {};
-    for (var k in src) {
-      if (k === 'id') continue;
-      node[k] = src[k];
-    }
-    // The legacy dialect this function reconstructs keys blocks by `type` (see
-    // a2ui-private/CLAUDE.md payload contract). The top-level dispatcher tolerates
-    // `component` (atom.gs renderAtoms), but the ~11 hand-written inline recursion
-    // sites (e.g. hub's slide loop, atoms_brevet.gs) read `.type` only — found live
-    // 2026-07-09: a promoted-hub v1.0 spike rendered the hub shell but every leaf
-    // atom came out empty. Stamping type here fixes all those sites at once.
-    if (!node.type && typeof node.component === 'string') node.type = node.component;
-    if (Array.isArray(src.children) && src.children.every(function(x) { return typeof x === 'string'; })) {
-      node.blocks = src.children.map(function(cid) { return resolveNode(cid, seen); }).filter(Boolean);
-      delete node.children;
-    }
-    if (Array.isArray(src.tabs)) {
-      node.tabs = src.tabs.map(function(t) {
-        var out = {};
-        for (var k2 in t) { if (k2 !== 'child') out[k2] = t[k2]; }
-        if (t.child) out.blocks = [resolveNode(t.child, seen)].filter(Boolean);
-        return out;
-      });
-    }
-    for (var field in node) {
-      if (field === 'blocks' || field === 'tabs') continue;
-      var val = node[field];
-      if (typeof val === 'string' && byId[val]) {
-        node[field] = resolveNode(val, seen);
-      } else if (Array.isArray(val) && val.length && val.every(function(x) { return typeof x === 'string' && byId[x]; })) {
-        node[field] = val.map(function(cid) { return resolveNode(cid, seen); }).filter(Boolean);
-      }
-    }
-    return node;
-  }
-
-  var root = byId['root'];
-  var rootChildren = (root && Array.isArray(root.children))
-    ? root.children.map(function(id) { return resolveNode(id, {}); }).filter(Boolean)
-    : [];
-  var props = surface.surfaceProperties || {};
-  // hub_slug carried through 2026-07-09 (nav-budget-pagination-v0.1.md) — without this a v1.0
-  // page's hub_slug never reaches _renderFromPayload's seeding trigger, since that check runs
-  // on the REHYDRATED payload, after this function returns.
-  var out = { title: props.title, theme: props.theme, blocks: rootChildren };
-  if (props.hub_slug) out.hub_slug = props.hub_slug;
-  return out;
-}
+// _rehydrateV1Surface moved to atoms_v1_decode.gs (Phase 2, 2026-07-10) so the
+// MCP Apps bundle concatenation ships the SAME decoder — template variant,
+// data-model bindings, @index. GAS merges all .gs files into one namespace,
+// so call sites here are unchanged.
 
 function _renderFromPayload(payload, from) {
   try {

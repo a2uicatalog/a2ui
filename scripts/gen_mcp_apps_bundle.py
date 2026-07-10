@@ -159,6 +159,12 @@ HANDSHAKE = """
   function post(msg) { window.parent.postMessage(msg, '*'); }
 
   function paint(payload) {
+    // A2UI v1.0 envelope -> legacy dialect via the SAME decoder GAS uses
+    // (atoms_v1_decode.gs, concatenated into this bundle). Template variant,
+    // dataModel bindings and @index all resolve before renderAtoms sees it.
+    if (payload && !Array.isArray(payload) && payload.version === 'v1.0' && payload.createSurface) {
+      payload = _rehydrateV1Surface(payload.createSurface);
+    }
     var root = document.getElementById('a2ui-root');
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark');
     root.innerHTML = renderAtoms(payload.blocks || [], { theme: payload.theme });
@@ -244,9 +250,12 @@ def build_bundle():
     atom_styles = (RENDERER_DIR / "AtomStyles.html").read_text().strip()
 
     core_parts = [PRELUDE]
+    # Non-renderer .gs files that legitimately ship in the bundle: PackMap (the
+    # atom->catalog gate) and the v1.0 decode shim (pure functions, no DOM).
+    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs"}
     for f in renderer_files():
         src = f.read_text()
-        if f.name != "PackMap.gs":
+        if f.name not in NON_RENDERER_GS:
             assert "_RENDERERS[" in src, f"{f.name}: no renderers — wrong include?"
         core_parts.append(f"// ==== {f.name} ====\n{src}")
     core_parts.append(class_c_overrides())
