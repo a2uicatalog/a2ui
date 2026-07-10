@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>MCP Apps Atoms — A2UI Atomic Catalog</title>
-  <meta name="description" content="462 A2UI atoms for the MCP Apps surface.">
+  <meta name="description" content="463 A2UI atoms for the MCP Apps surface.">
   
 <style>
 :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--cyan:#00f2ff;--green:#3fb950}
@@ -137,7 +137,7 @@ footer a{color:var(--cyan);text-decoration:none}
   // Presets injected from PLAYGROUND_PRESETS in the generator — every payload
   // is CI-rendered through the real bundle. PRESETS[0] is the Launch demo and
   // doubles as the default fixture, so the flagship demo is itself tested.
-  var PRESETS = [{"id": "launch", "label": "Launch demo", "payload": {"theme": "dark", "blocks": [{"type": "heading", "level": 2, "text": "Catalog atoms — and curated content — live inside an MCP App"}, {"type": "gdm_rocket_panel"}, {"type": "stat_card", "value": "462", "label": "Catalog atoms on this surface", "delta": "one payload away", "is_up": true}, {"type": "body", "text": "The launch animation on the right is **not a catalog atom** — it's hand-curated content, rendered through the same block dispatch as everything here. All of it arrived over one **ui/notifications/tool-result** message, exactly as a real MCP server delivers after a tool call."}, {"type": "chip_group", "chips": [{"label": "MCP Apps", "active": true}, {"label": "Apps Script Web"}, {"label": "Meet Stage"}, {"label": "Chat"}, {"label": "Email"}, {"label": "PDF"}, {"label": "Side Panel"}, {"label": "Web"}]}, {"type": "chartjs_bar", "title": "Atoms per surface (stable)", "labels": ["GAS Web", "MCP Apps", "Web", "Meet"], "values": [460, 462, 210, 190]}, {"type": "paragraph", "text": "The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page — true for the curated visual and the catalog atoms alike."}, {"type": "flashcard_deck", "accent": "#00b8c4", "label_front": "PROTOCOL", "label_back": "ANSWER", "cards": [{"front": "What delivers this payload?", "back": "ui/notifications/tool-result, sent by the Host after ui/initialize completes."}, {"front": "What renders it?", "back": "The same renderAtoms() the GAS catalog renderer uses in production — concatenated, not rewritten."}, {"front": "Where's the model in this loop?", "back": "Between chat and tool call — the view itself only talks to the Host, never the network."}]}]}}, {"id": "dashboard", "label": "Ops dashboard", "payload": {"theme": "dark", "blocks": [{"type": "heading", "text": "Ops Review — Q3"}, {"type": "stat_card", "value": "€2.4M", "label": "Revenue", "delta": "+18%", "is_up": true}, {"type": "progress_bar", "value": 72, "label": "Quarter target"}, {"type": "chartjs_bar", "title": "Signups by week", "labels": ["W1", "W2", "W3", "W4"], "values": [120, 180, 240, 310]}, {"type": "sparkline", "data": [4, 7, 5, 9, 12, 11, 15], "color": "#00f2ff"}, {"type": "data_grid", "title": "Deployments", "columns": [{"header": "Service", "key": "name"}, {"header": "Status", "key": "status"}], "rows": [{"name": "web", "status": "live"}, {"name": "meet", "status": "beta"}, {"name": "mcp-apps", "status": "live"}]}]}}, {"id": "study", "label": "Study kit", "payload": {"theme": "dark", "blocks": [{"type": "heading", "text": "Course map"}, {"type": "module_map", "title": "A2UI in a day", "columns": 2, "modules": [{"title": "Atoms", "description": "The vocabulary", "duration": "10 min", "icon": "🧩"}, {"title": "Payloads", "description": "JSON in, UI out", "duration": "15 min", "icon": "📦"}, {"title": "Surfaces", "description": "Eight render targets", "duration": "20 min", "icon": "🖥️"}, {"title": "MCP Apps", "description": "The chat surface", "duration": "25 min", "icon": "⚡"}]}, {"type": "progress_bar", "value": 25, "label": "Module 1 of 4"}, {"type": "flashcard_deck", "accent": "#6366f1", "cards": [{"front": "What is an atom?", "back": "A typed UI block an agent can emit as JSON."}, {"front": "What renders it here?", "back": "The catalog renderer, inside a sandboxed MCP Apps view."}]}]}}, {"id": "airspace", "label": "Airspace radar", "payload": {"theme": "dark", "blocks": [{"type": "airspace_command_deck", "height": 520, "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control", "ticker_text": "✈ SIMULATED TRAFFIC · A2UI CATALOG PLAYGROUND · MCP APPS VIEW ✈"}]}}, {"id": "editorial", "label": "Editorial", "payload": {"theme": "dark", "blocks": [{"type": "article_hero", "title": "The Meeting Is the Interface", "subtitle": "Notes on agent-native UI"}, {"type": "quote", "text": "The catalog is a vocabulary. The payload is a sentence.", "attribution": "a2uithoughts.md"}, {"type": "timeline", "title": "How we got here", "events": [{"date": "May 2026", "label": "GAS jail", "text": "One URL renders a full app."}, {"date": "June 2026", "label": "Meet Stage", "text": "Same atoms, broadcast to every screen."}, {"date": "July 2026", "label": "MCP Apps", "text": "Same renderer, inside the chat surface."}]}, {"type": "key_takeaways", "items": ["Declarative payloads travel anywhere", "One renderer source, eight surfaces", "Paste a schema — that IS the demo"]}]}}, {"id": "ariane", "label": "Ariane 6", "payload": {"theme": "dark", "blocks": [{"type": "geo_iso_rocket_launch"}]}}];
+  var PRESETS = [{"id": "launch", "label": "Launch demo", "payload": {"theme": "dark", "blocks": [{"type": "heading", "level": 2, "text": "Catalog atoms — and curated content — live inside an MCP App"}, {"type": "gdm_rocket_panel"}, {"type": "stat_card", "value": "462", "label": "Catalog atoms on this surface", "delta": "one payload away", "is_up": true}, {"type": "body", "text": "The launch animation on the right is **not a catalog atom** — it's hand-curated content, rendered through the same block dispatch as everything here. All of it arrived over one **ui/notifications/tool-result** message, exactly as a real MCP server delivers after a tool call."}, {"type": "chip_group", "chips": [{"label": "MCP Apps", "active": true}, {"label": "Apps Script Web"}, {"label": "Meet Stage"}, {"label": "Chat"}, {"label": "Email"}, {"label": "PDF"}, {"label": "Side Panel"}, {"label": "Web"}]}, {"type": "chartjs_bar", "title": "Atoms per surface (stable)", "labels": ["GAS Web", "MCP Apps", "Web", "Meet"], "values": [460, 462, 210, 190]}, {"type": "paragraph", "text": "The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page — true for the curated visual and the catalog atoms alike."}, {"type": "flashcard_deck", "accent": "#00b8c4", "label_front": "PROTOCOL", "label_back": "ANSWER", "cards": [{"front": "What delivers this payload?", "back": "ui/notifications/tool-result, sent by the Host after ui/initialize completes."}, {"front": "What renders it?", "back": "The same renderAtoms() the GAS catalog renderer uses in production — concatenated, not rewritten."}, {"front": "Where's the model in this loop?", "back": "Between chat and tool call — the view itself only talks to the Host, never the network."}]}]}}, {"id": "dashboard", "label": "Ops dashboard", "payload": {"theme": "dark", "blocks": [{"type": "heading", "text": "Ops Review — Q3"}, {"type": "stat_card", "value": "€2.4M", "label": "Revenue", "delta": "+18%", "is_up": true}, {"type": "progress_bar", "value": 72, "label": "Quarter target"}, {"type": "chartjs_bar", "title": "Signups by week", "labels": ["W1", "W2", "W3", "W4"], "values": [120, 180, 240, 310]}, {"type": "sparkline", "data": [4, 7, 5, 9, 12, 11, 15], "color": "#00f2ff"}, {"type": "data_grid", "title": "Deployments", "columns": [{"header": "Service", "key": "name"}, {"header": "Status", "key": "status"}], "rows": [{"name": "web", "status": "live"}, {"name": "meet", "status": "beta"}, {"name": "mcp-apps", "status": "live"}]}]}}, {"id": "study", "label": "Study kit", "payload": {"theme": "dark", "blocks": [{"type": "heading", "text": "Course map"}, {"type": "module_map", "title": "A2UI in a day", "columns": 2, "modules": [{"title": "Atoms", "description": "The vocabulary", "duration": "10 min", "icon": "🧩"}, {"title": "Payloads", "description": "JSON in, UI out", "duration": "15 min", "icon": "📦"}, {"title": "Surfaces", "description": "Eight render targets", "duration": "20 min", "icon": "🖥️"}, {"title": "MCP Apps", "description": "The chat surface", "duration": "25 min", "icon": "⚡"}]}, {"type": "progress_bar", "value": 25, "label": "Module 1 of 4"}, {"type": "flashcard_deck", "accent": "#6366f1", "cards": [{"front": "What is an atom?", "back": "A typed UI block an agent can emit as JSON."}, {"front": "What renders it here?", "back": "The catalog renderer, inside a sandboxed MCP Apps view."}]}]}}, {"id": "airspace", "label": "Airspace radar", "payload": {"theme": "dark", "blocks": [{"type": "adsb_feed", "name": "adsb1", "refresh": 15}, {"type": "metar_feed", "name": "wx1", "station": "LFBO"}, {"type": "airspace_command_deck", "height": 520, "data_source": "adsb1", "weather_source": "wx1", "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control", "ticker_text": "✈ A2UI CATALOG PLAYGROUND · MCP APPS VIEW · LIVE ADS-B VIA DECLARED DATA PROXY · SIMULATED UNTIL THE FEED ANSWERS ✈"}]}}, {"id": "editorial", "label": "Editorial", "payload": {"theme": "dark", "blocks": [{"type": "article_hero", "title": "The Meeting Is the Interface", "subtitle": "Notes on agent-native UI"}, {"type": "quote", "text": "The catalog is a vocabulary. The payload is a sentence.", "attribution": "a2uithoughts.md"}, {"type": "timeline", "title": "How we got here", "events": [{"date": "May 2026", "label": "GAS jail", "text": "One URL renders a full app."}, {"date": "June 2026", "label": "Meet Stage", "text": "Same atoms, broadcast to every screen."}, {"date": "July 2026", "label": "MCP Apps", "text": "Same renderer, inside the chat surface."}]}, {"type": "key_takeaways", "items": ["Declarative payloads travel anywhere", "One renderer source, eight surfaces", "Paste a schema — that IS the demo"]}]}}, {"id": "ariane", "label": "Ariane 6", "payload": {"theme": "dark", "blocks": [{"type": "geo_iso_rocket_launch"}]}}];
   var FIXTURE = {
     content: [{ type: 'text', text: 'Rendered A2UI atoms in the MCP Apps view.' }],
     structuredContent: PRESETS[0].payload
@@ -287,7 +287,7 @@ footer a{color:var(--cyan);text-decoration:none}
 })();
 </script>
 
-  <p class="desc">462 catalog atoms also render on this surface</p>
+  <p class="desc">463 catalog atoms also render on this surface</p>
 
   
 <div class="surface-atom">
@@ -739,11 +739,11 @@ footer a{color:var(--cyan);text-decoration:none}
         
     <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="donut_140615563981376_grad" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id="donut_140337749252928_grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#6366f1" />
           <stop offset="100%" stop-color="#6366f1" stop-opacity="0.6" />
         </linearGradient>
-        <filter id="donut_140615563981376_glow" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="donut_140337749252928_glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -752,9 +752,9 @@ footer a{color:var(--cyan);text-decoration:none}
         </filter>
       </defs>
       <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
-      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_140615563981376_grad)" stroke-width="10" 
+      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_140337749252928_grad)" stroke-width="10" 
               stroke-dasharray="251.327" stroke-dashoffset="0.0"
-              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_140615563981376_glow)" />
+              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_140337749252928_glow)" />
       <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">75</text>
       <text x="50" y="64" fill="rgba(255,255,255,0.4)" font-size="7" font-weight="600" font-family="monospace" text-anchor="middle">100.0%</text>
     </svg>
@@ -864,7 +864,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div id="6521e5c9" style="margin:1rem 0;"><style>#6521e5c9 input{display:none;}</style><div style="border-bottom:2px solid #e5e7eb;display:flex;flex-wrap:wrap;"></div></div></div>
+  <div class="preview-box"><div id="28e9e2cf" style="margin:1rem 0;"><style>#28e9e2cf input{display:none;}</style><div style="border-bottom:2px solid #e5e7eb;display:flex;flex-wrap:wrap;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -952,7 +952,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="border-bottom:1px dotted #9ca3af;cursor:help;" onmouseenter="document.getElementById('b513fe89').style.display='block'" onmouseleave="document.getElementById('b513fe89').style.display='none'">Click to trigger</span><div id="b513fe89" style="display:none;position:absolute;z-index:10;bottom:calc(100%+6px);left:0;background:#111827;color:#f9fafb;border-radius:6px;padding:6px 10px;font-size:0.78rem;white-space:nowrap;max-width:220px;"></div></span></div>
+  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="border-bottom:1px dotted #9ca3af;cursor:help;" onmouseenter="document.getElementById('495dadce').style.display='block'" onmouseleave="document.getElementById('495dadce').style.display='none'">Click to trigger</span><div id="495dadce" style="display:none;position:absolute;z-index:10;bottom:calc(100%+6px);left:0;background:#111827;color:#f9fafb;border-radius:6px;padding:6px 10px;font-size:0.78rem;white-space:nowrap;max-width:220px;"></div></span></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -963,7 +963,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="color:#7c3aed;cursor:default;border-bottom:1px dashed #7c3aed;" onmouseenter="document.getElementById('58577201').style.display='block'" onmouseleave="document.getElementById('58577201').style.display='none'">Hover me</span><div id="58577201" style="display:none;position:absolute;z-index:10;bottom:calc(100% + 8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;min-width:200px;box-shadow:0 4px 20px rgba(0,0,0,0.1);font-size:0.84rem;color:#374151;"></div></span></div>
+  <div class="preview-box"><span style="position:relative;display:inline-block;"><span style="color:#7c3aed;cursor:default;border-bottom:1px dashed #7c3aed;" onmouseenter="document.getElementById('d231dd2d').style.display='block'" onmouseleave="document.getElementById('d231dd2d').style.display='none'">Hover me</span><div id="d231dd2d" style="display:none;position:absolute;z-index:10;bottom:calc(100% + 8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;min-width:200px;box-shadow:0 4px 20px rgba(0,0,0,0.1);font-size:0.84rem;color:#374151;"></div></span></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1113,7 +1113,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div id="45226c8d" style="display:flex;align-items:center;gap:10px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:10px 16px;font-size:0.88rem;margin:0.75rem 0;position:relative;"><span>ℹ️</span><span></span><button onclick="document.getElementById('45226c8d').style.display='none'" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:1rem;">×</button></div></div>
+  <div class="preview-box"><div id="68ca011c" style="display:flex;align-items:center;gap:10px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:10px 16px;font-size:0.88rem;margin:0.75rem 0;position:relative;"><span>ℹ️</span><span></span><button onclick="document.getElementById('68ca011c').style.display='none'" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b7280;font-size:1rem;">×</button></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1146,7 +1146,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;"><style>@keyframes a2ui-spin{to{transform:rotate(360deg)}}#025bd51c{animation:a2ui-spin 0.8s linear infinite;}</style><div id="025bd51c" style="width:md;height:md;border:3px solid #6366f133;border-top-color:#6366f1;border-radius:50%;"></div></div></div>
+  <div class="preview-box"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;"><style>@keyframes a2ui-spin{to{transform:rotate(360deg)}}#dca83d76{animation:a2ui-spin 0.8s linear infinite;}</style><div id="dca83d76" style="width:md;height:md;border:3px solid #6366f133;border-top-color:#6366f1;border-radius:50%;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1351,7 +1351,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;"><div style="position:absolute;left:25%;top:30%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('15d018eb_s0');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">1</button><div id="15d018eb_s0" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature A</strong><br></div></div><div style="position:absolute;left:60%;top:70%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('15d018eb_s1');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">2</button><div id="15d018eb_s1" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature B</strong><br></div></div></div></div>
+  <div class="preview-box"><div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;"><div style="position:absolute;left:25%;top:30%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('4b5ed16a_s0');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">1</button><div id="4b5ed16a_s0" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature A</strong><br></div></div><div style="position:absolute;left:60%;top:70%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('4b5ed16a_s1');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">2</button><div id="4b5ed16a_s1" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature B</strong><br></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1373,7 +1373,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sr81770 input:checked ~ label,.sr81770 label:hover,.sr81770 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr81770" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr81770_5" name="sr81770" value="5" style="display:none;"><input type="radio" id="sr81770_4" name="sr81770" value="4" style="display:none;"><input type="radio" id="sr81770_3" name="sr81770" value="3" style="display:none;"><input type="radio" id="sr81770_2" name="sr81770" value="2" style="display:none;"><input type="radio" id="sr81770_1" name="sr81770" value="1" style="display:none;"><label for="sr81770_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr81770_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr81770_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr81770_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr81770_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
+  <div class="preview-box"><style>.sr85101 input:checked ~ label,.sr85101 label:hover,.sr85101 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr85101" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr85101_5" name="sr85101" value="5" style="display:none;"><input type="radio" id="sr85101_4" name="sr85101" value="4" style="display:none;"><input type="radio" id="sr85101_3" name="sr85101" value="3" style="display:none;"><input type="radio" id="sr85101_2" name="sr85101" value="2" style="display:none;"><input type="radio" id="sr85101_1" name="sr85101" value="1" style="display:none;"><label for="sr85101_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr85101_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr85101_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr85101_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr85101_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1384,7 +1384,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sgc48681 input{display:none;}.sgc48681 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc48681 label:last-of-type{border-right:none;}.sgc48681 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc48681" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;"><input type="radio" id="sgc48681_a" name="Segmented Control_48681" value="a"><label for="sgc48681_a">Option A</label><input type="radio" id="sgc48681_b" name="Segmented Control_48681" value="b"><label for="sgc48681_b">Option B</label><input type="radio" id="sgc48681_c" name="Segmented Control_48681" value="c"><label for="sgc48681_c">Option C</label></div></div></div>
+  <div class="preview-box"><style>.sgc43729 input{display:none;}.sgc43729 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc43729 label:last-of-type{border-right:none;}.sgc43729 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc43729" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;"><input type="radio" id="sgc43729_a" name="Segmented Control_43729" value="a"><label for="sgc43729_a">Option A</label><input type="radio" id="sgc43729_b" name="Segmented Control_43729" value="b"><label for="sgc43729_b">Option B</label><input type="radio" id="sgc43729_c" name="Segmented Control_43729" value="c"><label for="sgc43729_c">Option C</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1402,7 +1402,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.ccg73070 input{display:none;}.ccg73070 label{display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:0.88rem;color:#374151;transition:border-color .15s,background .15s;}.ccg73070 input:checked+label{border-color:#1a73e8;background:#f0f4ff;color:#1a73e8;}.ccg73070 .box{width:18px;height:18px;border:2px solid #dadce0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s;}.ccg73070 input:checked+label .box{border-color:#1a73e8;background:#1a73e8;}</style><div class="ccg73070" style="margin:1rem 0;"><div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">Group label</div><div style="display:flex;flex-direction:column;gap:6px;"><div><input type="checkbox" id="ccg73070_0" name="Custom Checkbox Group" value="a"><label for="ccg73070_0"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option A</label></div><div><input type="checkbox" id="ccg73070_1" name="Custom Checkbox Group" value="b"><label for="ccg73070_1"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option B</label></div><div><input type="checkbox" id="ccg73070_2" name="Custom Checkbox Group" value="c"><label for="ccg73070_2"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option C</label></div></div></div></div>
+  <div class="preview-box"><style>.ccg1384 input{display:none;}.ccg1384 label{display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:0.88rem;color:#374151;transition:border-color .15s,background .15s;}.ccg1384 input:checked+label{border-color:#1a73e8;background:#f0f4ff;color:#1a73e8;}.ccg1384 .box{width:18px;height:18px;border:2px solid #dadce0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s;}.ccg1384 input:checked+label .box{border-color:#1a73e8;background:#1a73e8;}</style><div class="ccg1384" style="margin:1rem 0;"><div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:8px;">Group label</div><div style="display:flex;flex-direction:column;gap:6px;"><div><input type="checkbox" id="ccg1384_0" name="Custom Checkbox Group" value="a"><label for="ccg1384_0"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option A</label></div><div><input type="checkbox" id="ccg1384_1" name="Custom Checkbox Group" value="b"><label for="ccg1384_1"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option B</label></div><div><input type="checkbox" id="ccg1384_2" name="Custom Checkbox Group" value="c"><label for="ccg1384_2"><span class="box"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,8 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Option C</label></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1556,7 +1556,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;"><div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;gap:0;"><label for="tc-4619-0" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid #7c3aed;color:#7c3aed;">Tab 1</label><label for="tc-4619-1" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid transparent;color:#9ca3af;">Tab 2</label></div><div style="display:block"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div><div style="display:none"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div></div></div>
+  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;"><div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;gap:0;"><label for="tc-33922-0" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid #7c3aed;color:#7c3aed;">Tab 1</label><label for="tc-33922-1" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid transparent;color:#9ca3af;">Tab 2</label></div><div style="display:block"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div><div style="display:none"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1955,7 +1955,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div id="debae84c" style="position:fixed;top:0;left:0;width:0%;height:4px;background:#6366f1;z-index:9999;transition:width 0.1s;"></div><script>(function(){var b=document.getElementById("debae84c");window.addEventListener("scroll",function(){var d=document.documentElement;var pct=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100).toFixed(1);b.style.width=pct+"%";});})();</script></div>
+  <div class="preview-box"><div id="ceb04b6c" style="position:fixed;top:0;left:0;width:0%;height:4px;background:#6366f1;z-index:9999;transition:width 0.1s;"></div><script>(function(){var b=document.getElementById("ceb04b6c");window.addEventListener("scroll",function(){var d=document.documentElement;var pct=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100).toFixed(1);b.style.width=pct+"%";});})();</script></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2127,11 +2127,11 @@ footer a{color:var(--cyan);text-decoration:none}
         <svg viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
           <defs>
             
-        <linearGradient id="bar_grad_bar_140615547866368_0" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="bar_grad_bar_140337749257536_0" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#3b82f6" />
           <stop offset="100%" stop-color="#2563eb" stop-opacity="0.3" />
         </linearGradient>
-        <filter id="bar_glow_bar_140615547866368_0" x="-10%" y="-10%" width="120%" height="120%">
+        <filter id="bar_glow_bar_140337749257536_0" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -2140,11 +2140,11 @@ footer a{color:var(--cyan);text-decoration:none}
         </filter>
         
 
-        <linearGradient id="bar_grad_bar_140615547866368_1" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="bar_grad_bar_140337749257536_1" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#10b981" />
           <stop offset="100%" stop-color="#059669" stop-opacity="0.3" />
         </linearGradient>
-        <filter id="bar_glow_bar_140615547866368_1" x="-10%" y="-10%" width="120%" height="120%">
+        <filter id="bar_glow_bar_140337749257536_1" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -2174,28 +2174,28 @@ footer a{color:var(--cyan);text-decoration:none}
           <text x="112.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category A</text><text x="217.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category B</text><text x="322.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category C</text><text x="427.5" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category D</text>
           <!-- Bars -->
           
-                <rect x="75.75" y="54.375" width="34.75" height="105.625" fill="url(#bar_grad_bar_140615547866368_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_0)" />
+                <rect x="75.75" y="54.375" width="34.75" height="105.625" fill="url(#bar_grad_bar_140337749257536_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_0)" />
                 
 
-                <rect x="112.5" y="114.5" width="34.75" height="45.5" fill="url(#bar_grad_bar_140615547866368_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_1)" />
+                <rect x="112.5" y="114.5" width="34.75" height="45.5" fill="url(#bar_grad_bar_140337749257536_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_1)" />
                 
 
-                <rect x="180.75" y="64.125" width="34.75" height="95.875" fill="url(#bar_grad_bar_140615547866368_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_0)" />
+                <rect x="180.75" y="64.125" width="34.75" height="95.875" fill="url(#bar_grad_bar_140337749257536_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_0)" />
                 
 
-                <rect x="217.5" y="82.0" width="34.75" height="78.0" fill="url(#bar_grad_bar_140615547866368_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_1)" />
+                <rect x="217.5" y="82.0" width="34.75" height="78.0" fill="url(#bar_grad_bar_140337749257536_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_1)" />
                 
 
-                <rect x="285.75" y="30.0" width="34.75" height="130.0" fill="url(#bar_grad_bar_140615547866368_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_0)" />
+                <rect x="285.75" y="30.0" width="34.75" height="130.0" fill="url(#bar_grad_bar_140337749257536_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_0)" />
                 
 
-                <rect x="322.5" y="95.0" width="34.75" height="65.0" fill="url(#bar_grad_bar_140615547866368_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_1)" />
+                <rect x="322.5" y="95.0" width="34.75" height="65.0" fill="url(#bar_grad_bar_140337749257536_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_1)" />
                 
 
-                <rect x="390.75" y="43.0" width="34.75" height="117.0" fill="url(#bar_grad_bar_140615547866368_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_0)" />
+                <rect x="390.75" y="43.0" width="34.75" height="117.0" fill="url(#bar_grad_bar_140337749257536_0)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_0)" />
                 
 
-                <rect x="427.5" y="70.625" width="34.75" height="89.375" fill="url(#bar_grad_bar_140615547866368_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140615547866368_1)" />
+                <rect x="427.5" y="70.625" width="34.75" height="89.375" fill="url(#bar_grad_bar_140337749257536_1)" rx="3" ry="3" filter="url(#bar_glow_bar_140337749257536_1)" />
                 
         </svg>
       </div>
@@ -2218,11 +2218,11 @@ footer a{color:var(--cyan);text-decoration:none}
         <svg viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
           <defs>
             
-        <linearGradient id="grad_line_140615547868928_0" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="grad_line_140337749189760_0" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22" />
           <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
         </linearGradient>
-        <filter id="glow_line_140615547868928_0" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="glow_line_140337749189760_0" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -2231,11 +2231,11 @@ footer a{color:var(--cyan);text-decoration:none}
         </filter>
         
 
-        <linearGradient id="grad_line_140615547868928_1" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="grad_line_140337749189760_1" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#10b981" stop-opacity="0.22" />
           <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
         </linearGradient>
-        <filter id="glow_line_140615547868928_1" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id="glow_line_140337749189760_1" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
@@ -2264,14 +2264,14 @@ footer a{color:var(--cyan);text-decoration:none}
           <!-- X-Axes -->
           <text x="60.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category A</text><text x="200.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category B</text><text x="340.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category C</text><text x="480.0" y="180" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="middle">Category D</text>
           <!-- Series -->
-          <polygon points="60,160 60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0 480,160" fill="url(#grad_line_140615547868928_0)" />
-<polyline points="60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0" fill="none" stroke="#3b82f6" stroke-width="2.5" filter="url(#glow_line_140615547868928_0)" stroke-linecap="round" stroke-linejoin="round" />
+          <polygon points="60,160 60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0 480,160" fill="url(#grad_line_140337749189760_0)" />
+<polyline points="60.0,67.5 200.0,82.5 340.0,30.0 480.0,50.0" fill="none" stroke="#3b82f6" stroke-width="2.5" filter="url(#glow_line_140337749189760_0)" stroke-linecap="round" stroke-linejoin="round" />
 <circle cx="60.0" cy="67.5" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
 <circle cx="200.0" cy="82.5" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
 <circle cx="340.0" cy="30.0" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
 <circle cx="480.0" cy="50.0" r="3.5" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
-<polygon points="60,160 60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5 480,160" fill="url(#grad_line_140615547868928_1)" />
-<polyline points="60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5" fill="none" stroke="#10b981" stroke-width="2.5" filter="url(#glow_line_140615547868928_1)" stroke-linecap="round" stroke-linejoin="round" />
+<polygon points="60,160 60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5 480,160" fill="url(#grad_line_140337749189760_1)" />
+<polyline points="60.0,160.0 200.0,110.0 340.0,130.0 480.0,92.5" fill="none" stroke="#10b981" stroke-width="2.5" filter="url(#glow_line_140337749189760_1)" stroke-linecap="round" stroke-linejoin="round" />
 <circle cx="60.0" cy="160.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
 <circle cx="200.0" cy="110.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
 <circle cx="340.0" cy="130.0" r="3.5" fill="#0f172a" stroke="#10b981" stroke-width="2" />
@@ -2321,11 +2321,11 @@ footer a{color:var(--cyan);text-decoration:none}
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_140615561099712_0" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_140337749189568_0" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_140615561099712_0" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_140337749189568_0" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -2333,8 +2333,8 @@ footer a{color:var(--cyan);text-decoration:none}
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140615561099712_0)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_140615561099712_0)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140337749189568_0)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_140337749189568_0)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#a855f7" stroke-width="2" />
             </svg>
           </div>
@@ -2348,11 +2348,11 @@ footer a{color:var(--cyan);text-decoration:none}
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_140615561099712_1" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_140337749189568_1" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_140615561099712_1" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_140337749189568_1" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -2360,8 +2360,8 @@ footer a{color:var(--cyan);text-decoration:none}
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140615561099712_1)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_140615561099712_1)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140337749189568_1)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_140337749189568_1)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#10b981" stroke-width="2" />
             </svg>
           </div>
@@ -2516,12 +2516,12 @@ footer a{color:var(--cyan);text-decoration:none}
     <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
       <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="gauge_sla_140615561099712_grad" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="gauge_sla_140337749189568_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
             <stop offset="60%" stop-color="#f59e0b" />
             <stop offset="100%" stop-color="#10b981" />
           </linearGradient>
-          <filter id="gauge_sla_140615561099712_glow" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id="gauge_sla_140337749189568_glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -2532,14 +2532,14 @@ footer a{color:var(--cyan);text-decoration:none}
         
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />
         
-        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_140615561099712_grad)" stroke-width="14" stroke-linecap="round"
-              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_140615561099712_glow)" />
+        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_140337749189568_grad)" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_140337749189568_glow)" />
               
         <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         
-        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_140615561099712_glow)" />
+        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_140337749189568_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="#10b981" stroke-width="3" />
         
         <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">75.0</text>
@@ -2876,7 +2876,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.vs47853 label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}.vs47853 label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}.vs47853 label:hover{border-color:#9ca3af;}.vs47853 input{position:absolute;opacity:0;width:0;height:0;}</style><div style="margin:0.75rem 0;"><div class="vs47853" style="display:flex;flex-direction:column;gap:8px;"><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label></div></div></div>
+  <div class="preview-box"><style>.vs820133 label{display:block;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}.vs820133 label:has(input:checked){border-color:#1a73e8;background:#eff6ff;}.vs820133 label:hover{border-color:#9ca3af;}.vs820133 input{position:absolute;opacity:0;width:0;height:0;}</style><div style="margin:0.75rem 0;"><div class="vs820133" style="display:flex;flex-direction:column;gap:8px;"><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label><label><input type="radio" name="Variant Selector" value="" checked><div style="font-size:0.85rem;font-weight:600;color:#111827;"></div></label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3059,7 +3059,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;"><input list="d35d26c0_dl" placeholder="Type to search..." style="border:1.5px solid #e5e7eb;border-radius:6px;padding:8px 12px;font-size:0.88rem;width:100%;max-width:300px;outline:none;"><datalist id="d35d26c0_dl"><option value="a">Option A</option><option value="b">Option B</option><option value="c">Option C</option></datalist></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;"><input list="2e5fdeb5_dl" placeholder="Type to search..." style="border:1.5px solid #e5e7eb;border-radius:6px;padding:8px 12px;font-size:0.88rem;width:100%;max-width:300px;outline:none;"><datalist id="2e5fdeb5_dl"><option value="a">Option A</option><option value="b">Option B</option><option value="c">Option C</option></datalist></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3092,7 +3092,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;"><div style="border:1.5px solid #e5e7eb;border-radius:8px;padding:6px;"><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="310c83de_0885bd1b" value="a"  style="accent-color:#6366f1;">Option A</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="310c83de_d0473a33" value="b"  style="accent-color:#6366f1;">Option B</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="310c83de_334aa57c" value="c"  style="accent-color:#6366f1;">Option C</label></div></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;"><div style="border:1.5px solid #e5e7eb;border-radius:8px;padding:6px;"><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="8308afaa_5e4fedd5" value="a"  style="accent-color:#6366f1;">Option A</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="8308afaa_8f01874e" value="b"  style="accent-color:#6366f1;">Option B</label><label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.88rem;"><input type="checkbox" id="8308afaa_38af473d" value="c"  style="accent-color:#6366f1;">Option C</label></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3103,7 +3103,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;"><label style="display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px;">Enter OTP</label><div style="display:flex;gap:8px;align-items:center;"><input id="85e10b28_0" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('85e10b28_1');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('85e10b28_-1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="85e10b28_1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('85e10b28_2');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('85e10b28_0');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="85e10b28_2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('85e10b28_3');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('85e10b28_1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="85e10b28_3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('85e10b28_4');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('85e10b28_2');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="85e10b28_4" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('85e10b28_5');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('85e10b28_3');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="85e10b28_5" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('85e10b28_6');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('85e10b28_4');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"></div></div></div>
+  <div class="preview-box"><div style="margin:1rem 0;"><label style="display:block;font-size:0.82rem;font-weight:600;margin-bottom:8px;">Enter OTP</label><div style="display:flex;gap:8px;align-items:center;"><input id="124ac105_0" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('124ac105_1');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('124ac105_-1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="124ac105_1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('124ac105_2');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('124ac105_0');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="124ac105_2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('124ac105_3');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('124ac105_1');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="124ac105_3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('124ac105_4');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('124ac105_2');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="124ac105_4" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('124ac105_5');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('124ac105_3');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"><input id="124ac105_5" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="this.value=this.value.replace(/[^0-9]/,'');if(this.value){var next=document.getElementById('124ac105_6');if(next)next.focus();}" onkeydown="if(event.key==='Backspace'&&!this.value){var prev=document.getElementById('124ac105_4');if(prev){prev.focus();prev.value='';}}" style="width:40px;height:44px;text-align:center;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:6px;outline:none;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3279,7 +3279,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>#a5e6707a input{display:none;}#a5e6707a input:checked+label{background:#6366f1;color:#fff;border-color:#6366f1;}</style><div id="a5e6707a" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="a5e6707a_0" name="a5e6707a" value="Web"><label for="a5e6707a_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="a5e6707a_1" name="a5e6707a" value="Meet"><label for="a5e6707a_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="a5e6707a_2" name="a5e6707a" value="Chat"><label for="a5e6707a_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
+  <div class="preview-box"><style>#781fd2a1 input{display:none;}#781fd2a1 input:checked+label{background:#6366f1;color:#fff;border-color:#6366f1;}</style><div id="781fd2a1" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="781fd2a1_0" name="781fd2a1" value="Web"><label for="781fd2a1_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="781fd2a1_1" name="781fd2a1" value="Meet"><label for="781fd2a1_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="781fd2a1_2" name="781fd2a1" value="Chat"><label for="781fd2a1_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3363,7 +3363,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="text-align:center;padding:16px;"><div id="a22c8880" style="font-size:2.5rem;font-weight:900;color:#111827;">0</div><script>(function(){var el=document.getElementById("a22c8880"),start=0,target=0,dur=2000,step=target/dur*16;var iv=setInterval(function(){start=Math.min(start+step,target);el.textContent=""+Math.round(start)+"";if(start>=target)clearInterval(iv);},16);})();</script></div></div>
+  <div class="preview-box"><div style="text-align:center;padding:16px;"><div id="56ff64b7" style="font-size:2.5rem;font-weight:900;color:#111827;">0</div><script>(function(){var el=document.getElementById("56ff64b7"),start=0,target=0,dur=2000,step=target/dur*16;var iv=setInterval(function(){start=Math.min(start+step,target);el.textContent=""+Math.round(start)+"";if(start>=target)clearInterval(iv);},16);})();</script></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3396,7 +3396,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.vbg93309 label{display:inline-block;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:0.87rem;font-weight:500;color:#cbd5e1;border:1px solid #334155;background:#1e293b;transition:all .15s;}.vbg93309 input:checked+label,.vbg93309 label:hover{background:#1a73e8;border-color:#1a73e8;color:#fff;}.vbg93309 input{display:none;}</style><div class="vbg93309" style="margin:1rem 0;background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;"><div style="display:flex;flex-wrap:wrap;gap:8px;"></div></div></div>
+  <div class="preview-box"><style>.vbg77467 label{display:inline-block;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:0.87rem;font-weight:500;color:#cbd5e1;border:1px solid #334155;background:#1e293b;transition:all .15s;}.vbg77467 input:checked+label,.vbg77467 label:hover{background:#1a73e8;border-color:#1a73e8;color:#fff;}.vbg77467 input{display:none;}</style><div class="vbg77467" style="margin:1rem 0;background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:16px 18px;"><div style="display:flex;flex-wrap:wrap;gap:8px;"></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3407,7 +3407,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>@keyframes ep_fall23349{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(220px) rotate(540deg);opacity:0}}@keyframes ep_trophy23349{0%{transform:scale(0) rotate(-12deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}.ep_p23349{position:absolute;border-radius:2px;animation:ep_fall23349 var(--d,1.4s) var(--dl,0s) ease-in forwards;}</style><div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;"><div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;"><div class="ep_p23349" style="left:5%;background:#ff6b6b;width:7px;height:11px;--d:1.1s;--dl:0.0s;transform:rotate(0deg);"></div><div class="ep_p23349" style="left:42%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.07s;transform:rotate(21deg);"></div><div class="ep_p23349" style="left:79%;background:#6bcb77;width:9px;height:7px;--d:1.2s;--dl:0.14s;transform:rotate(42deg);"></div><div class="ep_p23349" style="left:20%;background:#4d96ff;width:7px;height:7px;--d:1.3s;--dl:0.21s;transform:rotate(63deg);"></div><div class="ep_p23349" style="left:57%;background:#ff6bd6;width:9px;height:11px;--d:1.3s;--dl:0.28s;transform:rotate(84deg);"></div><div class="ep_p23349" style="left:94%;background:#00f2ff;width:9px;height:7px;--d:1.4s;--dl:0.35s;transform:rotate(105deg);"></div><div class="ep_p23349" style="left:35%;background:#ff8c00;width:7px;height:7px;--d:1.5s;--dl:0.42s;transform:rotate(126deg);"></div><div class="ep_p23349" style="left:72%;background:#c084fc;width:9px;height:7px;--d:1.5s;--dl:0.49s;transform:rotate(147deg);"></div><div class="ep_p23349" style="left:13%;background:#ff6b6b;width:9px;height:11px;--d:1.6s;--dl:0.56s;transform:rotate(168deg);"></div><div class="ep_p23349" style="left:50%;background:#ffd93d;width:7px;height:7px;--d:1.6s;--dl:0.63s;transform:rotate(189deg);"></div><div class="ep_p23349" style="left:87%;background:#6bcb77;width:9px;height:7px;--d:1.7s;--dl:0.7s;transform:rotate(210deg);"></div><div class="ep_p23349" style="left:28%;background:#4d96ff;width:9px;height:7px;--d:1.8s;--dl:0.77s;transform:rotate(231deg);"></div><div class="ep_p23349" style="left:65%;background:#ff6bd6;width:7px;height:11px;--d:1.8s;--dl:0.84s;transform:rotate(252deg);"></div><div class="ep_p23349" style="left:6%;background:#00f2ff;width:9px;height:7px;--d:1.9s;--dl:0.91s;transform:rotate(273deg);"></div><div class="ep_p23349" style="left:43%;background:#ff8c00;width:9px;height:7px;--d:1.9s;--dl:0.98s;transform:rotate(294deg);"></div><div class="ep_p23349" style="left:80%;background:#c084fc;width:7px;height:7px;--d:2.0s;--dl:1.05s;transform:rotate(315deg);"></div><div class="ep_p23349" style="left:21%;background:#ff6b6b;width:9px;height:11px;--d:1.2s;--dl:0.02s;transform:rotate(336deg);"></div><div class="ep_p23349" style="left:58%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.09s;transform:rotate(357deg);"></div><div class="ep_p23349" style="left:95%;background:#6bcb77;width:7px;height:7px;--d:1.3s;--dl:0.16s;transform:rotate(18deg);"></div><div class="ep_p23349" style="left:36%;background:#4d96ff;width:9px;height:7px;--d:1.3s;--dl:0.23s;transform:rotate(39deg);"></div><div class="ep_p23349" style="left:73%;background:#ff6bd6;width:9px;height:11px;--d:1.4s;--dl:0.3s;transform:rotate(60deg);"></div><div class="ep_p23349" style="left:14%;background:#00f2ff;width:7px;height:7px;--d:1.5s;--dl:0.37s;transform:rotate(81deg);"></div><div class="ep_p23349" style="left:51%;background:#ff8c00;width:9px;height:7px;--d:1.5s;--dl:0.44s;transform:rotate(102deg);"></div><div class="ep_p23349" style="left:88%;background:#c084fc;width:9px;height:7px;--d:1.6s;--dl:0.51s;transform:rotate(123deg);"></div><div class="ep_p23349" style="left:29%;background:#ff6b6b;width:7px;height:11px;--d:1.6s;--dl:0.58s;transform:rotate(144deg);"></div><div class="ep_p23349" style="left:66%;background:#ffd93d;width:9px;height:7px;--d:1.7s;--dl:0.65s;transform:rotate(165deg);"></div></div><div style="font-size:3.2rem;z-index:1;">🎉</div></div></div></div>
+  <div class="preview-box"><style>@keyframes ep_fall2608{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(220px) rotate(540deg);opacity:0}}@keyframes ep_trophy2608{0%{transform:scale(0) rotate(-12deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}.ep_p2608{position:absolute;border-radius:2px;animation:ep_fall2608 var(--d,1.4s) var(--dl,0s) ease-in forwards;}</style><div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;"><div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;"><div class="ep_p2608" style="left:5%;background:#ff6b6b;width:7px;height:11px;--d:1.1s;--dl:0.0s;transform:rotate(0deg);"></div><div class="ep_p2608" style="left:42%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.07s;transform:rotate(21deg);"></div><div class="ep_p2608" style="left:79%;background:#6bcb77;width:9px;height:7px;--d:1.2s;--dl:0.14s;transform:rotate(42deg);"></div><div class="ep_p2608" style="left:20%;background:#4d96ff;width:7px;height:7px;--d:1.3s;--dl:0.21s;transform:rotate(63deg);"></div><div class="ep_p2608" style="left:57%;background:#ff6bd6;width:9px;height:11px;--d:1.3s;--dl:0.28s;transform:rotate(84deg);"></div><div class="ep_p2608" style="left:94%;background:#00f2ff;width:9px;height:7px;--d:1.4s;--dl:0.35s;transform:rotate(105deg);"></div><div class="ep_p2608" style="left:35%;background:#ff8c00;width:7px;height:7px;--d:1.5s;--dl:0.42s;transform:rotate(126deg);"></div><div class="ep_p2608" style="left:72%;background:#c084fc;width:9px;height:7px;--d:1.5s;--dl:0.49s;transform:rotate(147deg);"></div><div class="ep_p2608" style="left:13%;background:#ff6b6b;width:9px;height:11px;--d:1.6s;--dl:0.56s;transform:rotate(168deg);"></div><div class="ep_p2608" style="left:50%;background:#ffd93d;width:7px;height:7px;--d:1.6s;--dl:0.63s;transform:rotate(189deg);"></div><div class="ep_p2608" style="left:87%;background:#6bcb77;width:9px;height:7px;--d:1.7s;--dl:0.7s;transform:rotate(210deg);"></div><div class="ep_p2608" style="left:28%;background:#4d96ff;width:9px;height:7px;--d:1.8s;--dl:0.77s;transform:rotate(231deg);"></div><div class="ep_p2608" style="left:65%;background:#ff6bd6;width:7px;height:11px;--d:1.8s;--dl:0.84s;transform:rotate(252deg);"></div><div class="ep_p2608" style="left:6%;background:#00f2ff;width:9px;height:7px;--d:1.9s;--dl:0.91s;transform:rotate(273deg);"></div><div class="ep_p2608" style="left:43%;background:#ff8c00;width:9px;height:7px;--d:1.9s;--dl:0.98s;transform:rotate(294deg);"></div><div class="ep_p2608" style="left:80%;background:#c084fc;width:7px;height:7px;--d:2.0s;--dl:1.05s;transform:rotate(315deg);"></div><div class="ep_p2608" style="left:21%;background:#ff6b6b;width:9px;height:11px;--d:1.2s;--dl:0.02s;transform:rotate(336deg);"></div><div class="ep_p2608" style="left:58%;background:#ffd93d;width:9px;height:7px;--d:1.2s;--dl:0.09s;transform:rotate(357deg);"></div><div class="ep_p2608" style="left:95%;background:#6bcb77;width:7px;height:7px;--d:1.3s;--dl:0.16s;transform:rotate(18deg);"></div><div class="ep_p2608" style="left:36%;background:#4d96ff;width:9px;height:7px;--d:1.3s;--dl:0.23s;transform:rotate(39deg);"></div><div class="ep_p2608" style="left:73%;background:#ff6bd6;width:9px;height:11px;--d:1.4s;--dl:0.3s;transform:rotate(60deg);"></div><div class="ep_p2608" style="left:14%;background:#00f2ff;width:7px;height:7px;--d:1.5s;--dl:0.37s;transform:rotate(81deg);"></div><div class="ep_p2608" style="left:51%;background:#ff8c00;width:9px;height:7px;--d:1.5s;--dl:0.44s;transform:rotate(102deg);"></div><div class="ep_p2608" style="left:88%;background:#c084fc;width:9px;height:7px;--d:1.6s;--dl:0.51s;transform:rotate(123deg);"></div><div class="ep_p2608" style="left:29%;background:#ff6b6b;width:7px;height:11px;--d:1.6s;--dl:0.58s;transform:rotate(144deg);"></div><div class="ep_p2608" style="left:66%;background:#ffd93d;width:9px;height:7px;--d:1.7s;--dl:0.65s;transform:rotate(165deg);"></div></div><div style="font-size:3.2rem;z-index:1;">🎉</div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3418,7 +3418,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>@keyframes ssc_sh928{0%{background-position:-200% 0}100%{background-position:200% 0}}.ssc928{background:linear-gradient(90deg,#1e293b 25%,#2d3a4a 50%,#1e293b 75%);background-size:200% 100%;animation:ssc_sh928 1.8s infinite linear;border-radius:4px;}</style><div style="margin:1rem 0;"><div style=""><div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px;"><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;"><div class="ssc928" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;"><div class="ssc928" style="height:12px;width:50%;margin-bottom:7px;"></div><div class="ssc928" style="height:9px;width:32%;"></div></div></div><div class="ssc928" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc928" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc928" style="height:11px;width:70%;margin-bottom:8px;"></div></div></div></div></div>
+  <div class="preview-box"><style>@keyframes ssc_sh5643{0%{background-position:-200% 0}100%{background-position:200% 0}}.ssc5643{background:linear-gradient(90deg,#1e293b 25%,#2d3a4a 50%,#1e293b 75%);background-size:200% 100%;animation:ssc_sh5643 1.8s infinite linear;border-radius:4px;}</style><div style="margin:1rem 0;"><div style=""><div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px;"><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;"><div class="ssc5643" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div style="flex:1;"><div class="ssc5643" style="height:12px;width:50%;margin-bottom:7px;"></div><div class="ssc5643" style="height:9px;width:32%;"></div></div></div><div class="ssc5643" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc5643" style="height:11px;width:100%;margin-bottom:8px;"></div><div class="ssc5643" style="height:11px;width:70%;margin-bottom:8px;"></div></div></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3583,7 +3583,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span id="af8c3b88" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("af8c3b88");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
+  <div class="preview-box"><span id="18b8e30b" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("18b8e30b");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -3594,7 +3594,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="display:inline-block;text-align:center;"><style>@keyframes a2ui-odo4544b143{from{transform:translateY(0);}to{transform:translateY(-90.91%);}}</style><div style="font-size:2rem;font-weight:900;font-family:monospace;color:#111827;"><span style="display:inline-block;overflow:hidden;height:1.2em;vertical-align:bottom;"><span style="display:flex;flex-direction:column;animation:a2ui-odo4544b143 0.6s ease-out forwards;"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>1</span></span></span></div></div></div>
+  <div class="preview-box"><div style="display:inline-block;text-align:center;"><style>@keyframes a2ui-odo0e5eb842{from{transform:translateY(0);}to{transform:translateY(-90.91%);}}</style><div style="font-size:2rem;font-weight:900;font-family:monospace;color:#111827;"><span style="display:inline-block;overflow:hidden;height:1.2em;vertical-align:bottom;"><span style="display:flex;flex-direction:column;animation:a2ui-odo0e5eb842 0.6s ease-out forwards;"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>1</span></span></span></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -4073,7 +4073,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="width:100%;height:280px;background:#0a0f1d;border-radius:10px;overflow:hidden;position:relative;"><canvas id="plxf94109" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("plxf94109"),x=c.getContext("2d"),W,H,nodes=[];function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();window.addEventListener("resize",resize);for(var i=0;i<80;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.7,vy:(Math.random()-0.5)*0.7});(function loop(){requestAnimationFrame(loop);x.fillStyle="#0a0f1d";x.fillRect(0,0,W,H);nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;x.beginPath();x.arc(n.x,n.y,2.5,0,Math.PI*2);x.fillStyle="#6366f1";x.fill();});for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(nodes[i].x,nodes[i].y);x.lineTo(nodes[j].x,nodes[j].y);x.strokeStyle="rgba(99,102,241,"+(1-d/110)+")";x.lineWidth=0.6;x.stroke();}}})();})();</script></div></div>
+  <div class="preview-box"><div style="width:100%;height:280px;background:#0a0f1d;border-radius:10px;overflow:hidden;position:relative;"><canvas id="plx7a82a1" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("plx7a82a1"),x=c.getContext("2d"),W,H,nodes=[];function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();window.addEventListener("resize",resize);for(var i=0;i<80;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.7,vy:(Math.random()-0.5)*0.7});(function loop(){requestAnimationFrame(loop);x.fillStyle="#0a0f1d";x.fillRect(0,0,W,H);nodes.forEach(function(n){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;x.beginPath();x.arc(n.x,n.y,2.5,0,Math.PI*2);x.fillStyle="#6366f1";x.fill();});for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){x.beginPath();x.moveTo(nodes[i].x,nodes[i].y);x.lineTo(nodes[j].x,nodes[j].y);x.strokeStyle="rgba(99,102,241,"+(1-d/110)+")";x.lineWidth=0.6;x.stroke();}}})();})();</script></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -4095,7 +4095,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="width:100%;height:320px;background:#0d1117;border-radius:10px;overflow:hidden;position:relative;"><canvas id="iso9daa21" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("iso9daa21"),x=c.getContext("2d");var W,H;function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();var t=0;(function loop(){requestAnimationFrame(loop);x.fillStyle="#0d1117";x.fillRect(0,0,W,H);var cols=16,rows=16,cx=W/2,cy=H*0.45,s=W/cols*0.9;for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){var dx=(i-cols/2)*s,dy=(j-rows/2)*s,dz=Math.sin((i+j)*0.4+t)*12;var ix=cx+dx-dy,iy=cy+(dx+dy)*0.5-dz;x.beginPath();x.arc(ix,iy,1.5,0,Math.PI*2);x.fillStyle="#6366f1";x.globalAlpha=0.6+dz/24;x.fill();x.globalAlpha=1;}t+=0.015;})();})();</script></div></div>
+  <div class="preview-box"><div style="width:100%;height:320px;background:#0d1117;border-radius:10px;overflow:hidden;position:relative;"><canvas id="iso890321" style="width:100%;height:100%;display:block;"></canvas><script>(function(){var c=document.getElementById("iso890321"),x=c.getContext("2d");var W,H;function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}resize();var t=0;(function loop(){requestAnimationFrame(loop);x.fillStyle="#0d1117";x.fillRect(0,0,W,H);var cols=16,rows=16,cx=W/2,cy=H*0.45,s=W/cols*0.9;for(var i=0;i<cols;i++)for(var j=0;j<rows;j++){var dx=(i-cols/2)*s,dy=(j-rows/2)*s,dz=Math.sin((i+j)*0.4+t)*12;var ix=cx+dx-dy,iy=cy+(dx+dy)*0.5-dz;x.beginPath();x.arc(ix,iy,1.5,0,Math.PI*2);x.fillStyle="#6366f1";x.globalAlpha=0.6+dz/24;x.fill();x.globalAlpha=1;}t+=0.015;})();})();</script></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -4162,6 +4162,17 @@ footer a{color:var(--cyan);text-decoration:none}
 <div class="section">
   <div class="label">Live preview</div>
   <div class="preview-box"><div style="margin:1rem 0;padding:10px 14px;border:1px dashed #d1d5db;border-radius:8px;background:#f9fafb;display:flex;align-items:center;gap:10px;"><span style="font-size:1rem;">🗄️</span><div><div style="font-size:0.82rem;font-weight:600;color:#374151;">Data Source</div><a href="1" style="color:#6366f1;font-size:0.78rem;">1</a><br></div></div></div>
+</div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/metar_feed">Metar Feed</a>
+    <p class="sa-desc">live METAR weather feed — parsed wind, temp, QNH for an ICAO station</p>
+  </div>
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;font-size:0.82rem;color:#1d4ed8;">✈️ METAR — <strong></strong> · Live weather data requires server-side fetch.</div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -5299,7 +5310,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;background:#f9fafb;border:1px solid #e5e7eb;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#6366f1;text-transform:uppercase;margin-bottom:8px;">Study Timer</div><div id="stmr36d4acdisp" style="font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;color:#6366f1;margin-bottom:16px;">25:00</div><div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;"><div style="padding:6px 14px;background:#e0e7ff;border-radius:99px;font-size:0.78rem;font-weight:600;color:#6366f1;">Focus 25m</div><div style="padding:6px 14px;background:#f0fdf4;border-radius:99px;font-size:0.78rem;font-weight:600;color:#34d399;">Break 5m</div></div><button onclick="(function(){var s=25*60,r,t=document.getElementById('stmr36d4acdisp'),b=document.getElementById('stmr36d4acbtn');if(r){clearInterval(r);r=null;b.textContent='Start';return;}b.textContent='Stop';r=setInterval(function(){s--;var m=Math.floor(s/60),sec=s%60;t.textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;if(s<=0){clearInterval(r);r=null;b.textContent='Start';}},1000)})()" id="stmr36d4acbtn" style="padding:10px 28px;border-radius:10px;background:#6366f1;color:#fff;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">Start</button></div></div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;background:#f9fafb;border:1px solid #e5e7eb;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#6366f1;text-transform:uppercase;margin-bottom:8px;">Study Timer</div><div id="stmr0d3611disp" style="font-size:3rem;font-weight:800;font-variant-numeric:tabular-nums;color:#6366f1;margin-bottom:16px;">25:00</div><div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;"><div style="padding:6px 14px;background:#e0e7ff;border-radius:99px;font-size:0.78rem;font-weight:600;color:#6366f1;">Focus 25m</div><div style="padding:6px 14px;background:#f0fdf4;border-radius:99px;font-size:0.78rem;font-weight:600;color:#34d399;">Break 5m</div></div><button onclick="(function(){var s=25*60,r,t=document.getElementById('stmr0d3611disp'),b=document.getElementById('stmr0d3611btn');if(r){clearInterval(r);r=null;b.textContent='Start';return;}b.textContent='Stop';r=setInterval(function(){s--;var m=Math.floor(s/60),sec=s%60;t.textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;if(s<=0){clearInterval(r);r=null;b.textContent='Start';}},1000)})()" id="stmr0d3611btn" style="padding:10px 28px;border-radius:10px;background:#6366f1;color:#fff;border:none;cursor:pointer;font-weight:700;font-size:0.9rem;">Start</button></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -5321,7 +5332,7 @@ footer a{color:var(--cyan);text-decoration:none}
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div onclick="document.getElementById('spcca240dcard').style.transform=document.getElementById('spcca240dcard').style.transform?'':' rotateY(180deg)'" style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;"><div id="spcca240dcard" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;"><div style="position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;border-radius:14px;background:linear-gradient(135deg,#a78bfa22,#a78bfa11);border:1px solid #a78bfa44;padding:20px;"><span style="font-size:1.1rem;font-weight:600;">What is an atom?</span></div><div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;border-radius:14px;background:#f0fdf4;border:1px solid #34d39944;padding:20px;"><span style="font-size:0.95rem;">A self-contained UI block with a type and fields.</span></div></div></div><div style="display:flex;gap:8px;font-size:0.8rem;"><button style="flex:1;padding:8px;border-radius:8px;background:#fee2e2;border:none;cursor:pointer;font-weight:600;">Again</button><button style="flex:1;padding:8px;border-radius:8px;background:#fef9c3;border:none;cursor:pointer;font-weight:600;">Hard</button><button style="flex:1;padding:8px;border-radius:8px;background:#dcfce7;border:none;cursor:pointer;font-weight:600;">Good</button><button style="flex:1;padding:8px;border-radius:8px;background:#dbeafe;border:none;cursor:pointer;font-weight:600;">Easy</button></div></div></div>
+  <div class="preview-box"><div style="font-family:system-ui,sans-serif;"><div onclick="document.getElementById('spc8d56fdcard').style.transform=document.getElementById('spc8d56fdcard').style.transform?'':' rotateY(180deg)'" style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;"><div id="spc8d56fdcard" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;"><div style="position:absolute;inset:0;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;border-radius:14px;background:linear-gradient(135deg,#a78bfa22,#a78bfa11);border:1px solid #a78bfa44;padding:20px;"><span style="font-size:1.1rem;font-weight:600;">What is an atom?</span></div><div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;border-radius:14px;background:#f0fdf4;border:1px solid #34d39944;padding:20px;"><span style="font-size:0.95rem;">A self-contained UI block with a type and fields.</span></div></div></div><div style="display:flex;gap:8px;font-size:0.8rem;"><button style="flex:1;padding:8px;border-radius:8px;background:#fee2e2;border:none;cursor:pointer;font-weight:600;">Again</button><button style="flex:1;padding:8px;border-radius:8px;background:#fef9c3;border:none;cursor:pointer;font-weight:600;">Hard</button><button style="flex:1;padding:8px;border-radius:8px;background:#dcfce7;border:none;cursor:pointer;font-weight:600;">Good</button><button style="flex:1;padding:8px;border-radius:8px;background:#dbeafe;border:none;cursor:pointer;font-weight:600;">Easy</button></div></div></div>
 </div>
 </div>
 <div class="surface-atom">

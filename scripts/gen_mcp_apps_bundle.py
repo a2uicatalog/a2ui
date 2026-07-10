@@ -23,6 +23,7 @@ window/document at load time; the core never does outside emitted strings).
 Output is generated, never hand-edited:
 public/surfaces/mcp-apps/renderer-bundle.html
 """
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,8 +39,11 @@ EXCLUDE_FILES = {"atoms_schema_snapshot.gs"}
 # fallbacks. data_source joined the list empirically: the all-atoms sweep
 # caught it calling CacheService at render time (it's part of the live-feed
 # family with adsb_feed/metar_feed).
+# (adsb_feed and metar_feed graduated 2026-07-10: they now ship registry-
+# driven browser transports over the DECLARED data proxy — see
+# atoms/data-sources.yaml and DATA_FEEDS_JS below.)
 CLASS_C = ["doc_ai_summary", "multi_doc_ai_brief", "gemini_handoff",
-           "adsb_feed", "metar_feed", "firestore_read", "data_source"]
+           "firestore_read", "data_source"]
 
 PARTIALS = ["AtomScripts.html", "A2UIState.html", "A2uiUpdates.html"]
 
@@ -91,6 +95,62 @@ window.__a2uiAtomCount = Object.keys(_RENDERERS).length;
 """ % quoted
 
 
+DATA_FEEDS_JS = r"""
+// ---- declared-data-source feed transports (browser) ----
+// adsb_feed / metar_feed over the DECLARED proxy (A2UI_DATA_SOURCES,
+// compiled from atoms/data-sources.yaml). Same dispatch contract as the GAS
+// originals: window.A2UI_DATA[name] + window.A2UI_CALLBACKS[name](data).
+// Reuses the bundle's own pure normalizers (_normaliseAdsbLol, _parseMETAR).
+// Until the worker proxy route is deployed, fetches fail silently -> feeds
+// stay quiet -> consumers remain in their simulated/fallback mode by design.
+// Client polling is clamped to the declared min_client_refresh_s/cache_ttl_s
+// (polling faster than the edge cache never reaches the upstream).
+_RENDERERS['adsb_feed'] = function (b) {
+  var reg = (typeof A2UI_DATA_SOURCES !== 'undefined') && A2UI_DATA_SOURCES.sources.adsb;
+  if (!reg) return '<!-- a2ui: adsb data source not declared -->';
+  var name = b.name || 'adsb';
+  var clat = b.center_lat !== undefined ? b.center_lat : reg.params.lat['default'];
+  var clon = b.center_lon !== undefined ? b.center_lon : reg.params.lon['default'];
+  var dist = Math.min(b.radius_nm !== undefined ? b.radius_nm : reg.params.dist['default'], reg.params.dist.max);
+  var filterGnd = b.filter_ground !== false;
+  var refresh = Math.max(b.refresh !== undefined ? b.refresh : reg.min_client_refresh_s,
+                         reg.min_client_refresh_s, reg.cache_ttl_s);
+  var url = A2UI_DATA_SOURCES.proxy_base + '/adsb?lat=' + encodeURIComponent(clat) +
+            '&lon=' + encodeURIComponent(clon) + '&dist=' + encodeURIComponent(dist);
+  return '<script>(function(){' +
+    'window.A2UI_DATA=window.A2UI_DATA||{};window.A2UI_CALLBACKS=window.A2UI_CALLBACKS||{};' +
+    'function dispatch(flights){window.A2UI_DATA["' + _esc(name) + '"]=flights;' +
+      'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];if(typeof cb==="function")cb(flights);}' +
+    'function pull(){fetch("' + url + '").then(function(r){if(!r.ok)throw 0;return r.json();})' +
+      '.then(function(raw){dispatch(_normaliseAdsbLol(raw,' + (filterGnd ? 'true' : 'false') + '));})' +
+      '.catch(function(){});}' +
+    'setTimeout(pull,120);' +
+    'setInterval(pull,' + Math.round(refresh * 1000) + ');' +
+  '})();<\/script>';
+};
+
+_RENDERERS['metar_feed'] = function (b) {
+  var reg = (typeof A2UI_DATA_SOURCES !== 'undefined') && A2UI_DATA_SOURCES.sources.metar;
+  if (!reg) return '<!-- a2ui: metar data source not declared -->';
+  var name = b.name || 'metar';
+  var station = String(b.station || reg.params.station['default']).toUpperCase();
+  var refresh = Math.max(b.refresh !== undefined ? b.refresh : reg.min_client_refresh_s,
+                         reg.min_client_refresh_s);
+  var url = A2UI_DATA_SOURCES.proxy_base + '/metar?station=' + encodeURIComponent(station);
+  return '<script>(function(){' +
+    'window.A2UI_DATA=window.A2UI_DATA||{};window.A2UI_CALLBACKS=window.A2UI_CALLBACKS||{};' +
+    'function dispatch(d){window.A2UI_DATA["' + _esc(name) + '"]=d;' +
+      'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];if(typeof cb==="function")cb(d);}' +
+    'function pull(){fetch("' + url + '").then(function(r){if(!r.ok)throw 0;return r.text();})' +
+      '.then(function(t){var raw=(t||"").trim().split("\\n")[0].trim();' +
+      'if(raw)dispatch(_parseMETAR(raw));}).catch(function(){});}' +
+    'setTimeout(pull,150);' +
+    'setInterval(pull,' + Math.round(refresh * 1000) + ');' +
+  '})();<\/script>';
+};
+""".strip()
+
+
 HANDSHAKE = """
 // ---- MCP Apps View protocol handshake (spec 2026-01-26, apps.mdx) ----
 (function() {
@@ -139,6 +199,18 @@ HANDSHAKE = """
 """.strip()
 
 
+
+
+def data_sources_js():
+    """The declared network-access registry, inlined for the View. Single
+    source: atoms/data-sources.yaml via gen_data_sources.build()."""
+    import json as _json
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from gen_data_sources import build as _build_registry
+    return ("// ---- declared data-source registry (atoms/data-sources.yaml) ----\n"
+            "var A2UI_DATA_SOURCES = " +
+            _json.dumps(_build_registry(), ensure_ascii=False) + ";")
+
 def renderer_files():
     """GAS load order: PackMap + atom.gs first, then atoms_* sorted — the
     order production runs in (last definition wins, e.g. globe_3d)."""
@@ -175,6 +247,8 @@ def build_bundle():
             assert "_RENDERERS[" in src, f"{f.name}: no renderers — wrong include?"
         core_parts.append(f"// ==== {f.name} ====\n{src}")
     core_parts.append(class_c_overrides())
+    core_parts.append(data_sources_js())
+    core_parts.append(DATA_FEEDS_JS)
     core = escape_script_close("\n\n".join(core_parts))
 
     client = escape_script_close("\n\n".join(

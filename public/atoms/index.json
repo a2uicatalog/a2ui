@@ -3309,7 +3309,8 @@
    "type": "metar_feed",
    "compact": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station",
    "surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   {

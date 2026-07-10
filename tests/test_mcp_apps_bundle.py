@@ -205,6 +205,40 @@ console.log(JSON.stringify(results));
     assert not bad, f"preset demos broken: {json.dumps(bad, indent=1)}"
 
 
+def test_declared_data_sources_inlined(bundle, core_js):
+    """Network access is DECLARED (atoms/data-sources.yaml), never hand-wired:
+    the registry must be inlined, the feed transports must read it, and the
+    proxy base must match the declaration."""
+    assert "var A2UI_DATA_SOURCES = " in core_js
+    assert '"data:adsb:read"' in core_js       # access scope travels with the registry
+    assert "declared-data-source feed transports" in core_js
+    # graduated feeds must NOT be class-C degraded cards anymore
+    assert "adsb_feed" not in gen.CLASS_C and "metar_feed" not in gen.CLASS_C
+
+
+def test_feed_transports_render_declared_proxy_urls(core_js):
+    out = _run_blocks(core_js, [
+        {"type": "adsb_feed", "name": "adsb1", "refresh": 15},
+        {"type": "metar_feed", "name": "wx1", "station": "LFBO"},
+    ])
+    assert "https://a2uicatalog.ai/api/data/adsb?lat=" in out
+    assert "https://a2uicatalog.ai/api/data/metar?station=LFBO" in out
+    assert "Error rendering" not in out
+    # polling clamped to the DECLARED floor (min_client_refresh_s), so client
+    # refresh can never outrun the edge cache into the CF pipe
+    assert "setInterval(pull,15000)" in out
+
+
+def _run_blocks(core_js, blocks):
+    with tempfile.TemporaryDirectory() as td:
+        driver = Path(td) / "d.js"
+        driver.write_text("global.window = global;\n" + core_js +
+                          f"\nconsole.log(renderAtoms({json.dumps(blocks)}, {{theme:'dark'}}));")
+        proc = subprocess.run(["node", str(driver)], capture_output=True, text=True, timeout=60)
+        assert proc.returncode == 0, proc.stderr[-500:]
+        return proc.stdout
+
+
 def test_no_script_block_self_terminates(bundle):
     # A raw `</script` inside a JS string is fine for Node's parser but ends
     # the WHOLE <script> element for the browser's HTML parser, dumping the

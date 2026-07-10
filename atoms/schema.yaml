@@ -8271,10 +8271,20 @@ blocks:
     — keep cache TTL >= 15s.
   compact_description: OpenSky Network ADS-B live flight positions for a bounding
     box
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: live data flows via the declared data proxy (atoms/data-sources.yaml);
+        until the proxy answers, the feed stays silent and consumers fall back
+        to their simulated mode
   publishes:
     connector: name (visual atoms bind via data_source field)
     schema: array of {callsign, lat, lon, alt_ft, spd_kt, hdg, on_ground, squawk}
-    transport: adsb.lol REST API via GAS UrlFetchApp + google.script.run setInterval
+    transport: adsb.lol REST API via GAS UrlFetchApp + google.script.run setInterval;
+      on mcp-apps via the declared data proxy (data:adsb:read)
   surfaces:
     works_on:
     - google-apps-script-web
@@ -8305,6 +8315,11 @@ blocks:
   surfaces:
     works_on:
     - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: live data flows via the declared data proxy (atoms/data-sources.yaml);
+        until the proxy answers, the feed stays silent
   processing:
     required_scope: script.external_request
   fields:

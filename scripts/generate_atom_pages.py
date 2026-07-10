@@ -1021,9 +1021,12 @@ PLAYGROUND_PRESETS = [
     {"id": "airspace", "label": "Airspace radar", "payload": {
         "theme": "dark",
         "blocks": [
+            {"type": "adsb_feed", "name": "adsb1", "refresh": 15},
+            {"type": "metar_feed", "name": "wx1", "station": "LFBO"},
             {"type": "airspace_command_deck", "height": 520,
+             "data_source": "adsb1", "weather_source": "wx1",
              "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control",
-             "ticker_text": "✈ SIMULATED TRAFFIC · A2UI CATALOG PLAYGROUND · MCP APPS VIEW ✈"}]}},
+             "ticker_text": "✈ A2UI CATALOG PLAYGROUND · MCP APPS VIEW · LIVE ADS-B VIA DECLARED DATA PROXY · SIMULATED UNTIL THE FEED ANSWERS ✈"}]}},
     {"id": "editorial", "label": "Editorial", "payload": {
         "theme": "dark",
         "blocks": [

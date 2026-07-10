@@ -56,10 +56,14 @@ footer a{color:var(--cyan);text-decoration:none}
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">google-apps-script-web</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>live data flows via the declared data proxy (atoms/data-sources.yaml); until the proxy answers, the feed stays silent</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
@@ -87,7 +91,8 @@ footer a{color:var(--cyan);text-decoration:none}
   "type": "application/vnd.a2ui.atom+json",
   "url": "https://a2uicatalog.ai/atoms/metar_feed",
   "capabilities": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
   ],
   "description": "METAR weather for an ICAO station via aviationweather.gov. Fetches server-side on render (cached), refreshes client-side every refresh seconds. Publishes {wind, temp, qnh, raw} to the named feed. Visual atoms bind to it by name and receive updates without a page reload.",
   "representativeQueries": [
@@ -99,7 +104,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <a class="back" href="https://a2uicatalog.ai/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  <a class="try-btn" href="https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec?p=H4sIAAAAAAACA6tWKsksyUlVslJQ8k0tSSxScEtNTVHSUVAqyUjNBQunJBZlgwSScvKTs4uBItHVSiWVBWC5XJCW-DSQltrYWgB7FjG6TAAAAA" target="_blank" rel="noopener">Try it live →</a>
+  
 
   <div style="margin-top:40px;padding:20px 24px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:10px;">
     <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#818cf8;margin-bottom:10px;">Deploy your own renderer</div>

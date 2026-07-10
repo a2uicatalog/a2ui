@@ -19649,7 +19649,7 @@ _RENDERERS['sla_timer_display'] = function(b) {
 // These atoms perform real render-time server fetches with no browser path.
 // Until the host-mediated tools/call data path exists (Phase 2 server
 // wiring), they render an honest placeholder instead of an error callout.
-['doc_ai_summary','multi_doc_ai_brief','gemini_handoff','adsb_feed','metar_feed','firestore_read','data_source'].forEach(function (t) {
+['doc_ai_summary','multi_doc_ai_brief','gemini_handoff','firestore_read','data_source'].forEach(function (t) {
   _RENDERERS[t] = function (b) {
     return '<div class="asw-degraded-card">' +
       '<div class="asw-degraded-title">\u26a1 ' + _esc(t) + ' needs a live backend</div>' +
@@ -19660,6 +19660,62 @@ _RENDERERS['sla_timer_display'] = function(b) {
 });
 window.__a2uiAtomCount = Object.keys(_RENDERERS).length;
 
+
+// ---- declared data-source registry (atoms/data-sources.yaml) ----
+var A2UI_DATA_SOURCES = {"catalogId": "a2ui-data-sources-v1", "version": 1, "csp": {"connect_domains": ["https://a2uicatalog.ai"]}, "proxy_base": "https://a2uicatalog.ai/api/data", "sources": {"adsb": {"description": "Live ADS-B traffic via adsb.lol (free, no auth). Feeds adsb_feed -> airspace_command_deck and friends.", "upstream": "https://api.adsb.lol/v2/lat/{lat}/lon/{lon}/dist/{dist}", "params": {"lat": {"type": "number", "default": 43.629}, "lon": {"type": "number", "default": 1.363}, "dist": {"type": "number", "default": 40, "max": 60}}, "cache_ttl_s": 10, "min_client_refresh_s": 15, "limits": {"per_ip_per_min": 12, "upstream_per_min": 20}, "project_fields": {"root": "ac", "fields": ["flight", "hex", "lat", "lon", "alt_baro", "gs", "track", "squawk"]}, "content_type": "application/json", "access": {"tier": "public", "scope": "data:adsb:read"}, "consumers": ["adsb_feed"]}, "metar": {"description": "METAR weather via aviationweather.gov. Feeds metar_feed.", "upstream": "https://aviationweather.gov/api/data/metar?ids={station}&format=raw&hours=1", "params": {"station": {"type": "string", "pattern": "^[A-Z0-9]{4}$", "default": "LFBO"}}, "cache_ttl_s": 300, "min_client_refresh_s": 60, "limits": {"per_ip_per_min": 6, "upstream_per_min": 6}, "content_type": "text/plain", "access": {"tier": "public", "scope": "data:metar:read"}, "consumers": ["metar_feed"]}}};
+
+// ---- declared-data-source feed transports (browser) ----
+// adsb_feed / metar_feed over the DECLARED proxy (A2UI_DATA_SOURCES,
+// compiled from atoms/data-sources.yaml). Same dispatch contract as the GAS
+// originals: window.A2UI_DATA[name] + window.A2UI_CALLBACKS[name](data).
+// Reuses the bundle's own pure normalizers (_normaliseAdsbLol, _parseMETAR).
+// Until the worker proxy route is deployed, fetches fail silently -> feeds
+// stay quiet -> consumers remain in their simulated/fallback mode by design.
+// Client polling is clamped to the declared min_client_refresh_s/cache_ttl_s
+// (polling faster than the edge cache never reaches the upstream).
+_RENDERERS['adsb_feed'] = function (b) {
+  var reg = (typeof A2UI_DATA_SOURCES !== 'undefined') && A2UI_DATA_SOURCES.sources.adsb;
+  if (!reg) return '<!-- a2ui: adsb data source not declared -->';
+  var name = b.name || 'adsb';
+  var clat = b.center_lat !== undefined ? b.center_lat : reg.params.lat['default'];
+  var clon = b.center_lon !== undefined ? b.center_lon : reg.params.lon['default'];
+  var dist = Math.min(b.radius_nm !== undefined ? b.radius_nm : reg.params.dist['default'], reg.params.dist.max);
+  var filterGnd = b.filter_ground !== false;
+  var refresh = Math.max(b.refresh !== undefined ? b.refresh : reg.min_client_refresh_s,
+                         reg.min_client_refresh_s, reg.cache_ttl_s);
+  var url = A2UI_DATA_SOURCES.proxy_base + '/adsb?lat=' + encodeURIComponent(clat) +
+            '&lon=' + encodeURIComponent(clon) + '&dist=' + encodeURIComponent(dist);
+  return '<script>(function(){' +
+    'window.A2UI_DATA=window.A2UI_DATA||{};window.A2UI_CALLBACKS=window.A2UI_CALLBACKS||{};' +
+    'function dispatch(flights){window.A2UI_DATA["' + _esc(name) + '"]=flights;' +
+      'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];if(typeof cb==="function")cb(flights);}' +
+    'function pull(){fetch("' + url + '").then(function(r){if(!r.ok)throw 0;return r.json();})' +
+      '.then(function(raw){dispatch(_normaliseAdsbLol(raw,' + (filterGnd ? 'true' : 'false') + '));})' +
+      '.catch(function(){});}' +
+    'setTimeout(pull,120);' +
+    'setInterval(pull,' + Math.round(refresh * 1000) + ');' +
+  '})();<\/script>';
+};
+
+_RENDERERS['metar_feed'] = function (b) {
+  var reg = (typeof A2UI_DATA_SOURCES !== 'undefined') && A2UI_DATA_SOURCES.sources.metar;
+  if (!reg) return '<!-- a2ui: metar data source not declared -->';
+  var name = b.name || 'metar';
+  var station = String(b.station || reg.params.station['default']).toUpperCase();
+  var refresh = Math.max(b.refresh !== undefined ? b.refresh : reg.min_client_refresh_s,
+                         reg.min_client_refresh_s);
+  var url = A2UI_DATA_SOURCES.proxy_base + '/metar?station=' + encodeURIComponent(station);
+  return '<script>(function(){' +
+    'window.A2UI_DATA=window.A2UI_DATA||{};window.A2UI_CALLBACKS=window.A2UI_CALLBACKS||{};' +
+    'function dispatch(d){window.A2UI_DATA["' + _esc(name) + '"]=d;' +
+      'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];if(typeof cb==="function")cb(d);}' +
+    'function pull(){fetch("' + url + '").then(function(r){if(!r.ok)throw 0;return r.text();})' +
+      '.then(function(t){var raw=(t||"").trim().split("\\n")[0].trim();' +
+      'if(raw)dispatch(_parseMETAR(raw));}).catch(function(){});}' +
+    'setTimeout(pull,150);' +
+    'setInterval(pull,' + Math.round(refresh * 1000) + ');' +
+  '})();<\/script>';
+};
 </script>
 <script>
 // ---- a2ui-client partials (touch window/document at load) ----

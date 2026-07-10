@@ -1,0 +1,87 @@
+# data-sources.yaml — declared network data access for A2UI surfaces.
+#
+# THE RULE: no renderer, bundle, or worker route touches an external data
+# host unless it is declared here. This file is the single source of truth;
+# gen_data_sources.py compiles it into:
+#   - public/catalogue/data-sources-v1.json   (public, agent-readable registry)
+#   - the browser bundle's A2UI_DATA_SOURCES const (via gen_mcp_apps_bundle)
+#   - the mcp-worker proxy table (via a2ui-private sync, deployed separately)
+# The csp.connect_domains list below is ALSO what the Phase-2 ui:// resource
+# declares as _meta.ui.csp.connectDomains — CSP posture is catalogue data,
+# not code.
+#
+# CF-pipe discipline (every knob is declared, none implied):
+#   cache_ttl_s      — edge-cache lifetime; bounds upstream fetches to
+#                      <= 60/ttl per minute PER PARAM TUPLE no matter how
+#                      many viewers are connected
+#   per_ip_per_min   — per-visitor request ceiling at the proxy
+#   upstream_per_min — global upstream budget for the source (belt+braces
+#                      over the cache); exceeded -> serve stale or 429
+#   project_fields   — response projection: strip everything the consumers
+#                      don't read BEFORE it leaves the worker (adsb.lol
+#                      payloads are ~50KB raw; projected ~4KB -> ~92% less
+#                      egress through the CF pipe)
+#   min_client_refresh_s — bundles clamp their polling to max(this,
+#                      cache_ttl_s); polling faster than the cache TTL only
+#                      burns the visitor's battery, never the pipe
+
+# Access control (declared per source, enforced wherever the source is
+# served — worker proxy now, MCP tool gate and host CSP in Phase 2):
+#   access.tier:
+#     public     — anonymous, rate-limited only (demo-grade data)
+#     keyed      — requires a capability key (the x-demo-bypass pattern,
+#                  per-key limits; how hidden/by-URL pages get data)
+#     user       — requires an authenticated human (OAuth session at the
+#                  proxy; the browser playground case)
+#     agent      — requires an authenticated MCP client (MCP OAuth 2.1;
+#                  the agent-in-the-loop case — claude.ai calling tools
+#                  that read this source on the user's behalf)
+#   access.scope — the scope string checked by ALL enforcement points; one
+#                  vocabulary shared by human sessions and agent tokens, so
+#                  a human in the playground and an agent in chat are
+#                  authorized by the SAME declaration.
+#   Tiers compose upward: a `user` or `agent` principal always satisfies
+#   `keyed` and `public`.
+
+version: 1
+
+csp:
+  connect_domains:
+    - https://a2uicatalog.ai
+
+proxy_base: https://a2uicatalog.ai/api/data
+
+sources:
+  adsb:
+    description: Live ADS-B traffic via adsb.lol (free, no auth). Feeds
+      adsb_feed -> airspace_command_deck and friends.
+    upstream: "https://api.adsb.lol/v2/lat/{lat}/lon/{lon}/dist/{dist}"
+    params:
+      lat: {type: number, default: 43.629}
+      lon: {type: number, default: 1.363}
+      dist: {type: number, default: 40, max: 60}
+    cache_ttl_s: 10
+    min_client_refresh_s: 15
+    limits:
+      per_ip_per_min: 12
+      upstream_per_min: 20
+    project_fields:
+      root: ac
+      fields: [flight, hex, lat, lon, alt_baro, gs, track, squawk]
+    content_type: application/json
+    access: {tier: public, scope: "data:adsb:read"}
+    consumers: [adsb_feed]
+
+  metar:
+    description: METAR weather via aviationweather.gov. Feeds metar_feed.
+    upstream: "https://aviationweather.gov/api/data/metar?ids={station}&format=raw&hours=1"
+    params:
+      station: {type: string, pattern: "^[A-Z0-9]{4}$", default: LFBO}
+    cache_ttl_s: 300
+    min_client_refresh_s: 60
+    limits:
+      per_ip_per_min: 6
+      upstream_per_min: 6
+    content_type: text/plain
+    access: {tier: public, scope: "data:metar:read"}
+    consumers: [metar_feed]

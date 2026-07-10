@@ -13597,7 +13597,8 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps"
    ]
   },
   "firestore_read": {

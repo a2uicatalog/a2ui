@@ -155,6 +155,16 @@ generators:
     source: atoms/atom-packs.yaml + atoms/schema.yaml
     outputs: [public/catalogue/index.json]              # the agent's deterministic catalog SELECTION menu (id+whenToUse+atoms)
     publish: ci (Cloudflare)
+  gen_data_sources:
+    script: scripts/gen_data_sources.py
+    source: atoms/data-sources.yaml
+    outputs: [public/catalogue/data-sources-v1.json]
+    publish: ci (deploy.yml on push -> Cloudflare). The DECLARED network-access
+      registry — sources, access tiers/scopes, CSP connect domains, cache/rate/
+      egress budgets. Consumed by gen_mcp_apps_bundle (inlined as
+      A2UI_DATA_SOURCES) and by the mcp-worker proxy table (a2ui-private sync);
+      the Phase-2 ui:// resource derives csp.connectDomains from it. Network
+      access changes happen HERE, nowhere else.
   gen_mcp_apps_bundle:
     script: scripts/gen_mcp_apps_bundle.py
     source: apps-script-surface/gas-wired-renderer/ — verbatim concatenation

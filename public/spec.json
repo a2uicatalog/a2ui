@@ -11166,7 +11166,14 @@
    "compact_description": "live METAR weather feed — parsed wind, temp, QNH for an ICAO station",
    "surfaces": {
     "works_on": [
-     "google-apps-script-web"
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "mcp-apps",
+      "note": "live data flows via the declared data proxy (atoms/data-sources.yaml); until the proxy answers, the feed stays silent"
+     }
     ]
    },
    "fields": {

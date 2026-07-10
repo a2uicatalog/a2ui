@@ -5943,7 +5943,8 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/metar_feed",
       "capabilities": [
-        "google-apps-script-web"
+        "google-apps-script-web",
+        "mcp-apps"
       ],
       "description": "METAR weather for an ICAO station via aviationweather.gov. Fetches server-side on render (cached), refreshes client-side every refresh seconds. Publishes {wind, temp, qnh, raw} to the named feed. Visual atoms bind to it by name and receive updates without a page reload.",
       "representativeQueries": [
