@@ -265,7 +265,7 @@ def site_header(active=""):
     <nav class="site-nav">
       <a href="/"{cur('atoms')}>Atoms</a>
       <a href="/surfaces/mcp-apps"{cur('playground')}>Playground</a>
-      <a href="/renderer"{cur('renderer')}>Renderer</a>
+      <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -777,8 +777,8 @@ def render_page(atom):
   {try_btn}
 
   <div class="deploy-box">
-    <div class="label">Deploy your own renderer</div>
-    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
     <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
 cd apps-script-surface/gas-schema-renderer
 clasp push &amp;&amp; clasp deploy</code></pre>

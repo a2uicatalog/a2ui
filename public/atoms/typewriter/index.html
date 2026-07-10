@@ -104,7 +104,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <nav class="site-nav">
       <a href="/" aria-current="page">Atoms</a>
       <a href="/surfaces/mcp-apps">Playground</a>
-      <a href="/renderer">Renderer</a>
+      <a href="/renderer">Apps Script Renderer</a>
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -133,7 +133,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><span id="3a9f3356" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("3a9f3356");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
+  <div class="preview-box"><span id="c440fe03" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("c440fe03");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
 </div>
 
   <div class="section">
@@ -175,8 +175,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 
   <div class="deploy-box">
-    <div class="label">Deploy your own renderer</div>
-    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is open source. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
     <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
 cd apps-script-surface/gas-schema-renderer
 clasp push &amp;&amp; clasp deploy</code></pre>
