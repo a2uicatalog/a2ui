@@ -499,6 +499,7 @@
 | `presence_surface` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `sheet_badge` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `theme_toggle` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `gdm_rocket_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 
