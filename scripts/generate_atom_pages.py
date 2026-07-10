@@ -670,6 +670,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span>MIT License</span>
   </footer>
+{_cursor_glow_html()}
 </body>
 </html>"""
 
@@ -874,6 +875,7 @@ def generate_index(atoms):
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   {INDEX_JS}
+{_cursor_glow_html()}
 </body>
 </html>"""
 
@@ -920,6 +922,9 @@ MCP_APPS_HERO_HTML = """
 .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .mcp-play-btn.ghost:hover{border-color:var(--mcp-indigo);color:var(--mcp-indigo)}
 .mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
+.mcp-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.mcp-preset-chip{padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.03em}
+.mcp-preset-chip:hover{border-color:var(--mcp-indigo,#6366f1);color:var(--mcp-indigo,#6366f1)}
 </style>
 
 <div class="mcp-badge">Just launched · MCP Apps surface</div>
@@ -944,6 +949,7 @@ MCP_APPS_HERO_HTML = """
 
 <div class="mcp-playground">
   <div class="mcp-playground-label">Playground — edit the payload, re-render the view · <a href="./play/" style="color:var(--mcp-indigo)">Open full-screen →</a></div>
+  <div class="mcp-presets" id="mcp-presets"></div>
   <textarea id="mcp-playground-json" spellcheck="false" aria-label="A2UI payload JSON"></textarea>
   <div class="mcp-playground-row">
     <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
@@ -961,6 +967,83 @@ __MCP_APPS_HOST_JS__
 </script>
 """
 
+# Hand-picked demo schemas for the playground preset chips. Every payload
+# here is covered by tests/test_mcp_apps_bundle.py::test_presets_render —
+# a demo that rots fails CI, it doesn't fail on stage. Injected into
+# MCP_APPS_HOST_JS below; chips render in both the hero and the play page.
+PLAYGROUND_PRESETS = [
+    {"id": "launch", "label": "Launch demo", "payload": {
+        "theme": "dark",
+        "blocks": [
+            {"type": "heading", "level": 2, "text": "Catalog atoms — and curated content — live inside an MCP App"},
+            {"type": "gdm_rocket_panel"},
+            {"type": "stat_card", "value": "462", "label": "Catalog atoms on this surface", "delta": "one payload away", "is_up": True},
+            {"type": "body", "text": "The launch animation on the right is **not a catalog atom** — it's hand-curated content, rendered through the same block dispatch as everything here. All of it arrived over one **ui/notifications/tool-result** message, exactly as a real MCP server delivers after a tool call."},
+            {"type": "chip_group", "chips": [
+                {"label": "MCP Apps", "active": True}, {"label": "Apps Script Web"},
+                {"label": "Meet Stage"}, {"label": "Chat"}, {"label": "Email"},
+                {"label": "PDF"}, {"label": "Side Panel"}, {"label": "Web"}]},
+            {"type": "chartjs_bar", "title": "Atoms per surface (stable)",
+             "labels": ["GAS Web", "MCP Apps", "Web", "Meet"], "values": [460, 462, 210, 190]},
+            {"type": "paragraph", "text": "The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page — true for the curated visual and the catalog atoms alike."},
+            {"type": "flashcard_deck", "accent": "#00b8c4", "label_front": "PROTOCOL", "label_back": "ANSWER",
+             "cards": [
+                {"front": "What delivers this payload?", "back": "ui/notifications/tool-result, sent by the Host after ui/initialize completes."},
+                {"front": "What renders it?", "back": "The same renderAtoms() the GAS catalog renderer uses in production — concatenated, not rewritten."},
+                {"front": "Where's the model in this loop?", "back": "Between chat and tool call — the view itself only talks to the Host, never the network."}]},
+        ]}},
+    {"id": "dashboard", "label": "Ops dashboard", "payload": {
+        "theme": "dark",
+        "blocks": [
+            {"type": "heading", "text": "Ops Review — Q3"},
+            {"type": "stat_card", "value": "€2.4M", "label": "Revenue", "delta": "+18%", "is_up": True},
+            {"type": "progress_bar", "value": 72, "label": "Quarter target"},
+            {"type": "chartjs_bar", "title": "Signups by week", "labels": ["W1", "W2", "W3", "W4"], "values": [120, 180, 240, 310]},
+            {"type": "sparkline", "data": [4, 7, 5, 9, 12, 11, 15], "color": "#00f2ff"},
+            {"type": "data_grid", "title": "Deployments",
+             "columns": [{"header": "Service", "key": "name"}, {"header": "Status", "key": "status"}],
+             "rows": [{"name": "web", "status": "live"}, {"name": "meet", "status": "beta"}, {"name": "mcp-apps", "status": "live"}]},
+        ]}},
+    {"id": "study", "label": "Study kit", "payload": {
+        "theme": "dark",
+        "blocks": [
+            {"type": "heading", "text": "Course map"},
+            {"type": "module_map", "title": "A2UI in a day", "columns": 2, "modules": [
+                {"title": "Atoms", "description": "The vocabulary", "duration": "10 min", "icon": "🧩"},
+                {"title": "Payloads", "description": "JSON in, UI out", "duration": "15 min", "icon": "📦"},
+                {"title": "Surfaces", "description": "Eight render targets", "duration": "20 min", "icon": "🖥️"},
+                {"title": "MCP Apps", "description": "The chat surface", "duration": "25 min", "icon": "⚡"}]},
+            {"type": "progress_bar", "value": 25, "label": "Module 1 of 4"},
+            {"type": "flashcard_deck", "accent": "#6366f1", "cards": [
+                {"front": "What is an atom?", "back": "A typed UI block an agent can emit as JSON."},
+                {"front": "What renders it here?", "back": "The catalog renderer, inside a sandboxed MCP Apps view."}]},
+        ]}},
+    {"id": "airspace", "label": "Airspace radar", "payload": {
+        "theme": "dark",
+        "blocks": [
+            {"type": "airspace_command_deck", "height": 520,
+             "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control",
+             "ticker_text": "✈ SIMULATED TRAFFIC · A2UI CATALOG PLAYGROUND · MCP APPS VIEW ✈"}]}},
+    {"id": "editorial", "label": "Editorial", "payload": {
+        "theme": "dark",
+        "blocks": [
+            {"type": "article_hero", "title": "The Meeting Is the Interface", "subtitle": "Notes on agent-native UI"},
+            {"type": "quote", "text": "The catalog is a vocabulary. The payload is a sentence.", "attribution": "a2uithoughts.md"},
+            {"type": "timeline", "title": "How we got here", "events": [
+                {"date": "May 2026", "label": "GAS jail", "text": "One URL renders a full app."},
+                {"date": "June 2026", "label": "Meet Stage", "text": "Same atoms, broadcast to every screen."},
+                {"date": "July 2026", "label": "MCP Apps", "text": "Same renderer, inside the chat surface."}]},
+            {"type": "key_takeaways", "items": [
+                "Declarative payloads travel anywhere",
+                "One renderer source, eight surfaces",
+                "Paste a schema — that IS the demo"]},
+        ]}},
+    {"id": "ariane", "label": "Ariane 6", "payload": {
+        "theme": "dark",
+        "blocks": [{"type": "geo_iso_rocket_launch"}]}},
+]
+
+
 # Host-side handshake + playground logic, shared VERBATIM by the surface-page
 # hero and the full-screen play page (same element ids in both DOMs) — one
 # implementation, zero drift. Substituted into both page templates below.
@@ -975,28 +1058,13 @@ MCP_APPS_HOST_JS = r"""
     text.textContent = msg;
   }
 
+  // Presets injected from PLAYGROUND_PRESETS in the generator — every payload
+  // is CI-rendered through the real bundle. PRESETS[0] is the Launch demo and
+  // doubles as the default fixture, so the flagship demo is itself tested.
+  var PRESETS = __MCP_APPS_PRESETS__;
   var FIXTURE = {
     content: [{ type: 'text', text: 'Rendered A2UI atoms in the MCP Apps view.' }],
-    structuredContent: {
-      theme: 'dark',
-      blocks: [
-        { type: 'heading', level: 2, text: 'Catalog atoms — and curated content — live inside an MCP App' },
-        { type: 'gdm_rocket_panel' },
-        { type: 'body', text: 'The launch animation above is **not a catalog atom** — it\'s hand-curated content, rendered through the same block dispatch as everything below. Both arrived over the same **ui/notifications/tool-result** message a real MCP server sends after a tool call.' },
-        { type: 'paragraph', text: 'The sandbox has no `allow-same-origin`: this view cannot read or touch the parent page, matching MCP Apps\' security model — true for the curated visual above and the catalog atoms below alike.' },
-        {
-          type: 'flashcard_deck',
-          accent: '#00b8c4',
-          label_front: 'PROTOCOL',
-          label_back: 'ANSWER',
-          cards: [
-            { front: 'What delivers this payload?', back: 'ui/notifications/tool-result, sent by the Host after ui/initialize completes.' },
-            { front: 'What renders it?', back: 'A ported slice of the same renderAtoms() the GAS catalog renderer uses in production.' },
-            { front: 'Where\'s the model in this loop?', back: 'Between chat and tool call — the view itself only talks to the Host, never the network.' }
-          ]
-        }
-      ]
-    }
+    structuredContent: PRESETS[0].payload
   };
 
   // ---- playground wiring ----
@@ -1004,6 +1072,21 @@ MCP_APPS_HOST_JS = r"""
   var renderBtn = document.getElementById('mcp-play-render');
   var linkBtn = document.getElementById('mcp-play-link');
   var errEl = document.getElementById('mcp-play-err');
+
+  var presetBox = document.getElementById('mcp-presets');
+  if (presetBox) {
+    PRESETS.forEach(function (p) {
+      var btn = document.createElement('button');
+      btn.className = 'mcp-preset-chip';
+      btn.textContent = p.label;
+      btn.addEventListener('click', function () {
+        errEl.textContent = '';
+        editor.value = JSON.stringify(normalize(p.payload), null, 2);
+        if (viewReady) send(p.payload);
+      });
+      presetBox.appendChild(btn);
+    });
+  }
 
   var viewReady = false;
   var hashDone = false;
@@ -1164,6 +1247,9 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
   .mcp-play-btn.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
   .mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
+.mcp-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.mcp-preset-chip{padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.03em}
+.mcp-preset-chip:hover{border-color:var(--mcp-indigo,#6366f1);color:var(--mcp-indigo,#6366f1)}
   </style>
 </head>
 <body>
@@ -1178,6 +1264,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   <input type="checkbox" id="mcp-drawer-toggle">
   <aside class="play-drawer">
     <div class="play-drawer-label">Paste an A2UI payload — full {"blocks": []}, a bare array, or a single block</div>
+    <div class="mcp-presets" id="mcp-presets"></div>
     <textarea id="mcp-playground-json" spellcheck="false" aria-label="A2UI payload JSON"></textarea>
     <div class="play-row">
       <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
@@ -1189,15 +1276,61 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
 <script>
 __MCP_APPS_HOST_JS__
 </script>
+__MCP_GLOW__
 </body>
 </html>
 """
 
 
+def _mcp_apps_host_js():
+    """Host JS with the CI-tested demo presets injected."""
+    return MCP_APPS_HOST_JS.replace(
+        "__MCP_APPS_PRESETS__", json.dumps(PLAYGROUND_PRESETS, ensure_ascii=False))
+
+
+_CURSOR_GLOW_CACHE = None
+
+def _cursor_glow_html():
+    """Site-wide cursor glow = the catalog's OWN cursor_glow atom, rendered at
+    build time via Node from the real atoms_effects.gs source (no hand-fork).
+    The atom emits its closer as <\\/script> for GAS's innerHTML injection
+    path; a STATIC page needs the literal closer or the element never
+    terminates (mirror image of the 2026-07-10 bundle bug) — hence the
+    unescape. Empty string (with a loud warning) if Node is unavailable."""
+    global _CURSOR_GLOW_CACHE
+    if _CURSOR_GLOW_CACHE is not None:
+        return _CURSOR_GLOW_CACHE
+    import subprocess
+    effects = (ROOT / "apps-script-surface" / "gas-wired-renderer" / "atoms_effects.gs").read_text()
+    anchor = "_RENDERERS['cursor_glow'] = function"
+    start = effects.index(anchor)
+    i = effects.index("{", start)
+    depth = 0
+    while i < len(effects):
+        if effects[i] == "{":
+            depth += 1
+        elif effects[i] == "}":
+            depth -= 1
+            if depth == 0:
+                break
+        i += 1
+    fn = effects[start:i + 1] + ";"
+    js = ("var _RENDERERS = {};\n" + fn +
+          "\nconsole.log(_RENDERERS['cursor_glow']({colour:'#00f2ff', size: 460, opacity: 0.12}));")
+    try:
+        out = subprocess.run(["node", "-e", js], capture_output=True, text=True, timeout=30)
+        assert out.returncode == 0, out.stderr
+        _CURSOR_GLOW_CACHE = out.stdout.strip().replace("<\\/script>", "</script>")
+    except Exception as e:
+        print(f"WARNING: cursor_glow render failed ({e}) — pages ship WITHOUT the glow", file=sys.stderr)
+        _CURSOR_GLOW_CACHE = ""
+    return _CURSOR_GLOW_CACHE
+
+
 def generate_surface_page(surface, atoms):
     display = SURFACE_NAMES.get(surface, surface)
     is_gas  = surface in GAS_SURFACES
-    hero    = (MCP_APPS_HERO_HTML.replace("__MCP_APPS_HOST_JS__", MCP_APPS_HOST_JS)
+    hero    = (MCP_APPS_HERO_HTML.replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
                if surface == "mcp-apps" else "")
     atoms_lead = (
         f"{len(atoms)} catalog atoms also render on this surface"
@@ -1259,6 +1392,7 @@ def generate_surface_page(surface, atoms):
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
+{_cursor_glow_html()}
 </body>
 </html>"""
 
@@ -1312,7 +1446,8 @@ def main():
         play_dir = surfaces_dir / "mcp-apps" / "play"
         play_dir.mkdir(parents=True, exist_ok=True)
         (play_dir / "index.html").write_text(
-            MCP_APPS_PLAY_HTML.replace("__MCP_APPS_HOST_JS__", MCP_APPS_HOST_JS))
+            MCP_APPS_PLAY_HTML.replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
+            .replace("__MCP_GLOW__", _cursor_glow_html()))
         print(f"✓ full-screen playground → {play_dir}/index.html")
 
     print(f"✓ {count} atom pages → {OUTPUT_DIR}")

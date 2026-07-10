@@ -168,6 +168,43 @@ def test_rocket_panel_sourced_from_renderer_not_handport(bundle):
     assert "position:fixed;top:0;right:0;width:50%;height:100%" in bundle
 
 
+def test_presets_render(core_js):
+    """Every hand-picked playground demo renders cleanly through the real
+    bundle — a rotted demo fails CI, not on stage. PRESETS[0] doubles as the
+    default fixture, so the flagship Launch demo is covered too."""
+    cases = [{"type": p["id"], "block": None, "payload": p["payload"]}
+             for p in gap.PLAYGROUND_PRESETS]
+    with tempfile.TemporaryDirectory() as td:
+        cases_path = Path(td) / "presets.json"
+        cases_path.write_text(json.dumps(cases))
+        driver = Path(td) / "driver.js"
+        driver.write_text(
+            "global.window = global;\n" + core_js + f"""
+var fs = require('fs');
+var cases = JSON.parse(fs.readFileSync({json.dumps(str(cases_path))}, 'utf8'));
+var results = {{}};
+cases.forEach(function (c) {{
+  var html = '';
+  try {{ html = renderAtoms(c.payload.blocks, {{theme: c.payload.theme}}); }}
+  catch (e) {{ html = 'THREW: ' + e.message; }}
+  results[c.type] = {{
+    len: html.length,
+    threw: html.indexOf('THREW: ') === 0,
+    error: html.indexOf('Error rendering') > -1,
+    unknown: html.indexOf('unknown or unsupported atom') > -1
+  }};
+}});
+console.log(JSON.stringify(results));
+""")
+        proc = subprocess.run(["node", str(driver)], capture_output=True,
+                              text=True, timeout=60)
+        assert proc.returncode == 0, proc.stderr[-1000:]
+        results = json.loads(proc.stdout)
+    bad = {t: r for t, r in results.items()
+           if r["threw"] or r["error"] or r["unknown"] or r["len"] < 200}
+    assert not bad, f"preset demos broken: {json.dumps(bad, indent=1)}"
+
+
 def test_no_script_block_self_terminates(bundle):
     # A raw `</script` inside a JS string is fine for Node's parser but ends
     # the WHOLE <script> element for the browser's HTML parser, dumping the
