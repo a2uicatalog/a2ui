@@ -1802,8 +1802,8 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
       'var canvas=document.getElementById("' + uid + 'c");if(!canvas)return;' +
       'var ctx=canvas.getContext("2d");' +
       'var logo=null;' +
-      'var img=new Image();img.crossOrigin="anonymous";' +
-      'img.src="https://fonts.gstatic.com/s/i/productlogos/apps_script/v10/192px.svg";' +
+      'var img=new Image();' +
+      'img.src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xOV8xMykiPgo8cGF0aCBkPSJNMTggODQuODUyOEw4NS44ODIyIDE2Ljk3MDZDOTUuMjU0OCA3LjU5Nzk4IDExMC40NTEgNy41OTc5OCAxMTkuODIzIDE2Ljk3MDZWMTYuOTcwNkMxMjkuMTk2IDI2LjM0MzEgMTI5LjE5NiA0MS41MzkxIDExOS44MjMgNTAuOTExN0w2OC41NTgxIDEwMi4xNzciIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNNjkuMjY1MiAxMDEuNDdMMTE5LjgyMyA1MC45MTE3QzEyOS4xOTYgNDEuNTM5MSAxNDQuMzkyIDQxLjUzOTEgMTUzLjc2NSA1MC45MTE3TDE1NC4xMTggNTEuMjY1MkMxNjMuNDkxIDYwLjYzNzggMTYzLjQ5MSA3NS44MzM4IDE1NC4xMTggODUuMjA2M0w5Mi43MjQ4IDE0Ni42Qzg5LjYwMDYgMTQ5LjcyNCA4OS42MDA2IDE1NC43ODkgOTIuNzI0OCAxNTcuOTEzTDEwNS4zMzEgMTcwLjUyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTEwMi44NTMgMzMuOTQxMUw1Mi42NDgyIDg0LjE0NTdDNDMuMjc1NiA5My41MTgzIDQzLjI3NTYgMTA4LjcxNCA1Mi42NDgyIDExOC4wODdWMTE4LjA4N0M2Mi4wMjA4IDEyNy40NTkgNzcuMjE2NyAxMjcuNDU5IDg2LjU4OTMgMTE4LjA4N0wxMzYuNzk0IDY3Ljg4MjIiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzE5XzEzIj4KPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==";' +
       'img.onload=function(){logo=img;};' +
       'var y=1.2,trail=[],sparks=[],raf=null,landed=false;' +
 
@@ -1877,7 +1877,7 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
         'var spdStr=y<0.05?"MACH ∞":Math.round(Math.min(380,80+progress*2200))+" kt";' +
         'ctx.font=fs+"px monospace";ctx.textAlign="right";' +
         'ctx.fillStyle="rgba(0,255,136,0.42)";' +
-        'ctx.fillText("ALT "+altStr+"  SPD "+spdStr+"  ·  APPS SCRIPT · CORE SERVICE",w-10,h-10);' +
+        'ctx.fillText("ALT "+altStr+"  SPD "+spdStr+"  ·  MCP APPS · A2UI CATALOG",w-10,h-10);' +
       '}' +
 
       'function loop(){' +

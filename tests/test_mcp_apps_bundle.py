@@ -103,8 +103,8 @@ def test_rocket_panel_renders_canvas_and_loop():
     html = _run_render_atoms({"blocks": [{"type": "gdm_rocket_panel", "height": 480}]})
     assert "<canvas" in html
     assert "requestAnimationFrame(loop)" in html
-    assert "fonts.gstatic.com" in html  # Apps Script logo badge
-    assert "APPS SCRIPT · CORE SERVICE" in html  # HUD telemetry text
+    assert "data:image/svg+xml;base64," in html  # inlined MCP logo badge, no network fetch
+    assert "MCP APPS · A2UI CATALOG" in html  # HUD telemetry text
     assert "</script>" in html
 
 
