@@ -28,6 +28,7 @@ a2ui-atoms-v1:
 - callout
 - chip_group
 - code
+- content_tabs
 - code_block
 - code_diff
 - collapsible_panel
@@ -528,3 +529,7 @@ a2ui-ops-v1:
 a2ui-presentation-v1:
 - gdm_rocket_panel
 - playbook
+
+a2ui-competition-v1:
+- match_schedule
+- standings_table

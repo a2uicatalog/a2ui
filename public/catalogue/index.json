@@ -10,7 +10,7 @@
       "title": "A2UI base atoms",
       "alwaysResolved": true,
       "whenToUse": "The standard catalog — structure, text, data display, inputs, actions and the wired state connectors. ALWAYS resolved; every surface uses it.",
-      "atomCount": 99,
+      "atomCount": 93,
       "atoms": [
         {
           "type": "accordion_item",
@@ -150,10 +150,6 @@
           "description": "date or date-range picker input"
         },
         {
-          "type": "form_field",
-          "description": "labelled input with hint & inline error"
-        },
-        {
           "type": "form_input",
           "description": "single labelled input field"
         },
@@ -174,10 +170,6 @@
           "description": "group of labelled toggle switches"
         },
         {
-          "type": "form_textarea",
-          "description": "multi-line text input area"
-        },
-        {
           "type": "google_icon",
           "description": "single Material Symbol icon"
         },
@@ -188,16 +180,6 @@
         {
           "type": "highlight_box",
           "description": "highlight box — gradient/solid/outline style, icon, title, text"
-        },
-        {
-          "type": "hub",
-          "description": "deck navigation shell with subjects and slides",
-          "children": {
-            "subjects": {
-              "shape": "wrapper_list",
-              "inner_path": "slides.blocks"
-            }
-          }
         },
         {
           "type": "icon_list",
@@ -238,13 +220,6 @@
         {
           "type": "link_button",
           "description": "text hyperlink button"
-        },
-        {
-          "type": "live_refresh",
-          "description": "interval action re-runner with live indicator",
-          "processing": {
-            "required_scope": "script.external_request"
-          }
         },
         {
           "type": "markdown_block",
@@ -311,10 +286,6 @@
         {
           "type": "paragraph",
           "description": "prose paragraph (GAS alias for body)"
-        },
-        {
-          "type": "presence_surface",
-          "description": "presence heartbeat pinger for shared sessions"
         },
         {
           "type": "print_button",
@@ -451,10 +422,6 @@
           "description": "lightweight tinted inline tip or note block no icon"
         },
         {
-          "type": "theme_toggle",
-          "description": "floating light dark theme switch"
-        },
-        {
           "type": "timeline",
           "description": "chronological event timeline"
         },
@@ -478,7 +445,7 @@
       "title": "Aviation, ATC & geo",
       "alwaysResolved": false,
       "whenToUse": "Use for air-traffic / geospatial surfaces — radar, ADS-B feeds, airspace maps, isometric fleet and 3-D geo views.",
-      "atomCount": 16,
+      "atomCount": 15,
       "atoms": [
         {
           "type": "adsb_feed",
@@ -494,10 +461,6 @@
         {
           "type": "canvas_plexus",
           "description": "animated particle plexus with proximity lines and mouse repulsion"
-        },
-        {
-          "type": "fids_board",
-          "description": "auto-refreshing airport departures arrivals board"
         },
         {
           "type": "geo_contour_waves",
@@ -654,7 +617,7 @@
       "title": "General UI & content",
       "alwaysResolved": false,
       "whenToUse": "Use for general content/UI beyond the base primitives — richer cards, media, tags, comparison and steppers not in core.",
-      "atomCount": 73,
+      "atomCount": 71,
       "atoms": [
         {
           "type": "action_required_card",
@@ -821,10 +784,6 @@
           "description": "inline success error or warning message for validation feedback or hints."
         },
         {
-          "type": "jump_nav",
-          "description": "anchor pill buttons scrolling to page sections"
-        },
-        {
           "type": "lozenge",
           "description": "Atlassian-semantic status pill with defined appearance variants"
         },
@@ -913,10 +872,6 @@
           "description": "glassmorphic structured checklist with priority and assignee badges"
         },
         {
-          "type": "text_analysis",
-          "description": "passage with tappable highlighted excerpts"
-        },
-        {
           "type": "text_highlight",
           "description": "prose sentence with **marked** words highlighted in accent colour"
         },
@@ -961,7 +916,7 @@
       "title": "Editorial & long-form",
       "alwaysResolved": false,
       "whenToUse": "Use for articles/blog posts — intros, footnotes, table of contents, series navigation, further reading, social share.",
-      "atomCount": 26,
+      "atomCount": 24,
       "atoms": [
         {
           "type": "abbr_tooltip",
@@ -1008,16 +963,8 @@
           "description": "definition term with explanation more details."
         },
         {
-          "type": "headline_list",
-          "description": "ranked linked headline list"
-        },
-        {
           "type": "intro",
           "description": "series link or transparency note at article top"
-        },
-        {
-          "type": "news_digest",
-          "description": "compact tagged news summary digest"
         },
         {
           "type": "particle_burst",
@@ -1511,7 +1458,7 @@
       "title": "Google Workspace (live data)",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface shows the signed-in user's OWN live Google Workspace data — Gmail, Drive, Calendar, Sheets, Tasks, Chat, Meet. Server-fetched, per-user.",
-      "atomCount": 37,
+      "atomCount": 28,
       "atoms": [
         {
           "type": "action_items",
@@ -1540,42 +1487,12 @@
           "description": "visual summary board of call sentiments moods and active themes"
         },
         {
-          "type": "chat_card",
-          "description": "chat card style live status panel"
-        },
-        {
-          "type": "chat_send_button",
-          "description": "send status to Chat webhook button"
-        },
-        {
           "type": "chat_sequence",
           "description": "animated chat conversation thread"
         },
         {
-          "type": "chat_space_button",
-          "description": "create or open Chat space button"
-        },
-        {
-          "type": "chat_thread",
-          "description": "role-routed chat thread with composer & tool calls",
-          "children": {
-            "messages": {
-              "shape": "wrapper_list",
-              "inner_path": "block",
-              "conditional": "only present on items where kind: atom"
-            }
-          }
-        },
-        {
           "type": "conversation_snippet",
           "description": "user prompt and AI response as chat bubbles"
-        },
-        {
-          "type": "csv_import",
-          "description": "CSV file import into sheet button",
-          "processing": {
-            "required_scope": "spreadsheets"
-          }
         },
         {
           "type": "doc_ai_summary",
@@ -1652,17 +1569,6 @@
           "description": "calendar month heatmap with date-value density colouring"
         },
         {
-          "type": "me",
-          "description": "current user identity chip",
-          "processing": {
-            "required_scope": "userinfo.email"
-          }
-        },
-        {
-          "type": "meet_button",
-          "description": "create or join Google Meet button"
-        },
-        {
           "type": "multi_doc_ai_brief",
           "description": "multi-doc briefing pack — one Gemini summary card per Google Doc",
           "processing": {
@@ -1670,22 +1576,8 @@
           }
         },
         {
-          "type": "people_picker",
-          "description": "directory people search and assign input",
-          "processing": {
-            "required_scope": "userinfo.email"
-          }
-        },
-        {
           "type": "sentiment_summary",
           "description": "meeting sentiment analyzer with index arc and timeline chart"
-        },
-        {
-          "type": "sheet_badge",
-          "description": "open backing sheet link badge",
-          "processing": {
-            "required_scope": "spreadsheets"
-          }
         },
         {
           "type": "sheet_form",
@@ -1739,27 +1631,15 @@
       "title": "Learning & assessment",
       "alwaysResolved": false,
       "whenToUse": "Use for education/LMS surfaces — quizzes, flashcards, cohorts, progress tracking, rubrics, scenarios, certificates.",
-      "atomCount": 34,
+      "atomCount": 29,
       "atoms": [
         {
           "type": "achievement_badge",
           "description": "unlockable achievement badge with locked/unlocked state and optional date"
         },
         {
-          "type": "brevet_automatismes",
-          "description": "timed rapid question drill with countdown"
-        },
-        {
-          "type": "brevet_timeline",
-          "description": "dated vertical revision timeline"
-        },
-        {
           "type": "capability_checklist",
           "description": "feature capability tick list per tier capability using checkmarks"
-        },
-        {
-          "type": "cert_disclaimer",
-          "description": "certification study material disclaimer"
         },
         {
           "type": "certification_card",
@@ -1801,10 +1681,6 @@
         {
           "type": "fill_in_blank",
           "description": "cloze-test sentence with inline inputs and correct/wrong highlight on submit"
-        },
-        {
-          "type": "flashcard_deck",
-          "description": "flip-card deck of question answer pairs"
         },
         {
           "type": "knowledge_check",
@@ -1893,10 +1769,6 @@
         {
           "type": "scenario_branch",
           "description": "branching scenario — situation + choices + consequence reveal with good/neutral/bad outcome"
-        },
-        {
-          "type": "scenario_case",
-          "description": "scenario question with scored options and rationale reveal"
         },
         {
           "type": "score_summary",
@@ -2083,7 +1955,7 @@
       "title": "Catalog & AI meta",
       "alwaysResolved": false,
       "whenToUse": "Use for surfaces ABOUT the catalog or AI tooling — atom anatomy, schema reveal, prompt-to-schema, Gemini handoff, model cards.",
-      "atomCount": 18,
+      "atomCount": 15,
       "atoms": [
         {
           "type": "ai_build_trace",
@@ -2099,20 +1971,8 @@
           }
         },
         {
-          "type": "catalogue_provenance",
-          "description": "assembled-from source attribution strip"
-        },
-        {
           "type": "copy_prompt",
           "description": "copyable monospace prompt/code block"
-        },
-        {
-          "type": "domain_brief",
-          "description": "subject overview card with key facts and scope"
-        },
-        {
-          "type": "gemini_handoff",
-          "description": "copy prompt to clipboard and open Gemini"
         },
         {
           "type": "gemini_prompt",
@@ -2170,7 +2030,7 @@
       "title": "Status & ops",
       "alwaysResolved": false,
       "whenToUse": "Use for operational dashboards — status/SLA, Jira, sprint boards, notifications, changelogs, live polls and votes.",
-      "atomCount": 43,
+      "atomCount": 39,
       "atoms": [
         {
           "type": "api_param_table",
@@ -2179,10 +2039,6 @@
         {
           "type": "api_reference",
           "description": "API endpoint method parameters and response docs returns, example"
-        },
-        {
-          "type": "breaking_banner",
-          "description": "pulsing breaking-news banner with headline"
         },
         {
           "type": "changelog_entry",
@@ -2195,10 +2051,6 @@
         {
           "type": "command_palette",
           "description": "keyboard-driven command palette with shortcut hints"
-        },
-        {
-          "type": "command_step",
-          "description": "copyable command with completion checkbox"
         },
         {
           "type": "countdown_ring",
@@ -2292,10 +2144,6 @@
           "description": "poll with question options and vote count bars"
         },
         {
-          "type": "presence_bar",
-          "description": "live viewer count presence bar"
-        },
-        {
           "type": "product_spec_table",
           "description": "product specifications in a clean table a single product."
         },
@@ -2322,10 +2170,6 @@
         {
           "type": "shortcut_legend",
           "description": "keyboard shortcut cheat-sheet grid with key combos and labels"
-        },
-        {
-          "type": "sla_timer_display",
-          "description": "live SLA timer card with severity state"
         },
         {
           "type": "sprint_board",
@@ -2355,12 +2199,8 @@
       "title": "Presentation",
       "alwaysResolved": false,
       "whenToUse": "Use for fullscreen multi-slide presentation surfaces (playbook).",
-      "atomCount": 2,
+      "atomCount": 1,
       "atoms": [
-        {
-          "type": "gdm_rocket_panel",
-          "description": "isometric rocket launch canvas animation, fixed right-half overlay"
-        },
         {
           "type": "playbook",
           "description": "multi-slide fullscreen presentation playbook",

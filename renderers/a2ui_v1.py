@@ -275,6 +275,24 @@ def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids
     return cid
 
 
+def _emit_content_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids: _IdGen) -> str:
+    """content_tabs (tabs[].{label, blocks}) -> real A2UI Tabs — the DIRECT
+    standard mapping: per-tab labels as `tabs: [{label, child}]`, one Column
+    child per pane (spec's own Tabs contract, same shape _emit_hub composes
+    two levels of). Unlike legacy `tabs` (code panes forced through
+    color_section Columns with labels dropped), content_tabs is label-lossless.
+    Lossiness: `accent` and `default_index` only (no Tabs equivalent)."""
+    out_tabs: List[Dict[str, Any]] = []
+    for tab in b.get("tabs", []):
+        pane_blocks = _bracket_rows(tab.get("blocks", []))
+        children = [_emit_block(sb, components, ids) for sb in pane_blocks]
+        col_id = ids.take({"type": "content_tab_pane"})
+        components.append({"id": col_id, "component": "Column", "children": children})
+        out_tabs.append({"label": tab.get("label", ""), "child": col_id})
+    components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
+    return cid
+
+
 # ── Phase 0: schema-driven children (spec/childlist-migration-v0.1.md) ──────────
 _ATOM_CHILDREN_CACHE: Optional[Dict[str, Dict[str, Any]]] = None
 
@@ -284,7 +302,8 @@ _ATOM_CHILDREN_CACHE: Optional[Dict[str, Dict[str, Any]]] = None
 # block in schema.yaml routes through _emit_declared_children instead.
 _EXPLICITLY_HANDLED_TYPES = {
     "hub", "columns", "_column_item", "color_section", "info_card", "card",
-    "glass_card", "tabs", "modal", "split_pane", "_split_pane_side", "row_bracket",
+    "glass_card", "tabs", "content_tabs", "modal", "split_pane",
+    "_split_pane_side", "row_bracket",
 }
 
 
@@ -390,6 +409,8 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
 
     if b.get("type") == "hub":
         return _emit_hub(b, cid, components, ids)
+    if b.get("type") == "content_tabs":
+        return _emit_content_tabs(b, cid, components, ids)
 
     btype = b.get("type")
     if btype not in _EXPLICITLY_HANDLED_TYPES and btype in _atom_children_schema():

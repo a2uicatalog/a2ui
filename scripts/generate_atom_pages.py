@@ -46,6 +46,23 @@ except Exception as e:
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
 _EXAMPLE_BLOCKS = {
+    "content_tabs": {"type": "content_tabs", "accent": "#6366f1", "tabs": [
+        {"label": "4 Players", "blocks": [
+            {"type": "body", "text": "One court, three rounds — every player partners with every other exactly once."},
+            {"type": "match_schedule", "rounds": [
+                {"label": "Round 1", "matches": [{"court": "Court 1", "team_a": ["P1", "P4"], "team_b": ["P2", "P3"]}]}]}]},
+        {"label": "8 Players", "blocks": [
+            {"type": "body", "text": "Two courts, seven rounds — a full partner rotation."}]}]},
+    "standings_table": {"type": "standings_table", "primary_label": "PTS",
+        "columns": ["Won", "Lost", "+/-"],
+        "rows": [
+            {"name": "Jesus", "played": 11, "primary": 27, "values": [181, 120, 61], "highlight": "leader"},
+            {"name": "Colt", "played": 11, "primary": 27, "values": [174, 136, 38]},
+            {"name": "Sean", "played": 11, "primary": 22, "values": [167, 110, 57]}]},
+    "match_schedule": {"type": "match_schedule", "layout": "cards", "rounds": [
+        {"label": "Round 1", "matches": [
+            {"court": "Court 1", "team_a": ["Player 1", "Player 8"], "team_b": ["Player 2", "Player 7"], "score_a": 21, "score_b": 17},
+            {"court": "Court 2", "team_a": ["Player 3", "Player 6"], "team_b": ["Player 4", "Player 5"]}]}]},
     "body":        {"type": "body", "text": "This is a body paragraph. It supports **bold**, *italic*, and `inline code` via lightweight markdown."},
     "heading":     {"type": "heading", "text": "Section Heading"},
     "subheading":  {"type": "subheading", "text": "Subheading text"},

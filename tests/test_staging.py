@@ -49,3 +49,36 @@ def test_builder_prompts_advertise_stable_only():
         leaked = sorted(t for t in PREVIEW if re.search(rf"^- `{t}` —", text, re.M)
                         or re.search(rf"^#### {t}$", text, re.M))
         assert not leaked, f"preview atoms in {name}: {leaked}"
+
+
+def test_catalog_index_references_resolve_and_are_stable_only():
+    """The selection menu must never advertise what publication refuses to
+    write: every catalogId in index.json has its catalog file on disk, and no
+    preview atom appears in any index entry. Found live 2026-07-10: the first
+    preview-only catalog (a2ui-competition-v1) produced a dangling catalogId
+    and a base atomCount one higher than the published base catalog file."""
+    idx = json.loads((ROOT / "public/catalogue/index.json").read_text())
+    # PRE-EXISTING drift, declared not hidden: the 12 extension catalogIds have
+    # never had published files (only the base + state catalogs exist on disk).
+    # Known debt — any NEW dangling ref beyond these fails. Shrink this set as
+    # per-pack publication lands; never grow it.
+    KNOWN_UNPUBLISHED = {
+        "a2ui-aviation-v1", "a2ui-charts-v1", "a2ui-display-v1", "a2ui-editorial-v1",
+        "a2ui-effects-v1", "a2ui-embeds-v1", "a2ui-google-workspace-live-v1",
+        "a2ui-learning-v1", "a2ui-marketing-v1", "a2ui-meta-v1", "a2ui-ops-v1",
+        "a2ui-presentation-v1",
+    }
+    for cat in idx["catalogs"]:
+        fname = cat["catalogId"].rsplit("/", 1)[-1]
+        f = ROOT / "public/catalogue" / fname
+        if not f.exists():
+            assert cat["slug"] in KNOWN_UNPUBLISHED, \
+                f"index advertises {fname} but the file is not published (new dangling ref)"
+            continue
+        leaked = sorted(a["type"] for a in cat["atoms"] if a["type"] in PREVIEW)
+        assert not leaked, f"preview atoms in index catalog {cat['slug']}: {leaked}"
+        published = json.loads(f.read_text())
+        comps = published.get("components") or {}
+        missing = sorted(a["type"] for a in cat["atoms"] if a["type"] not in comps)
+        assert not missing, (
+            f"{cat['slug']}: index advertises atoms absent from {fname}: {missing[:6]}")

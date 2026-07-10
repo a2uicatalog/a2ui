@@ -53,6 +53,9 @@ CATALOG_META = {
     "a2ui-charts-v1": ("Data visualisation",
         "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, "
         "gauges, funnels, trend viz."),
+    "a2ui-competition-v1": ("Competition & tournaments",
+        "Use for ranked competition surfaces — league/tournament standings with semantic "
+        "highlights, round-by-round match schedules (table or courtside cards)."),
     "a2ui-marketing-v1": ("Marketing & landing",
         "Use for landing/marketing pages — pricing tables, testimonials, hero banners, "
         "feature grids, ratings, social proof."),
@@ -83,6 +86,16 @@ def _atom_descriptions():
     d = yaml.safe_load(open(SCHEMA))
     return {b["type"]: (b.get("compact_description") or b.get("description") or "")
             for b in d["blocks"] if isinstance(b, dict) and b.get("type")}
+
+
+def _stable_atoms():
+    """Staging filter — same rule as gen_public_catalog.py: only stable atoms
+    are published; preview stays repo-only. Without this the index advertises
+    catalogId files gen_public_catalog never writes (found 2026-07-10 when the
+    first preview-only catalog, a2ui-competition-v1, produced a dangling ref)."""
+    d = yaml.safe_load(open(SCHEMA))
+    return {b["type"] for b in d["blocks"]
+            if isinstance(b, dict) and b.get("type") and b.get("stage", "stable") == "stable"}
 
 
 def _atom_processing():
@@ -119,11 +132,14 @@ def main():
         raise SystemExit(f"✗ no when-to-use declared for catalog(s): {', '.join(missing)} "
                          f"(add to CATALOG_META in scripts/gen_catalog_index.py)")
 
+    stable = _stable_atoms()
     catalogs = []
     order = [BASE_SLUG] + sorted(c for c in part if c != BASE_SLUG)
     for slug in order:
         title, when = CATALOG_META[slug]
-        atoms = sorted(part[slug])
+        atoms = sorted(a for a in part[slug] if a in stable)
+        if not atoms:
+            continue  # preview-only catalog: repo-only until an atom promotes
         catalogs.append({
             "catalogId": f"{BASE_URL}/catalogue/{slug}.json",
             "slug": slug,

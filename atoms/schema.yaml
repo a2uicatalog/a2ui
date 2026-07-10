@@ -11235,3 +11235,86 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: content_tabs
+  stage: preview
+  description: 'Tabbed panels where each pane holds real nested atom blocks — the generic
+    multi-section single-page container ("several distinct views of one payload") without
+    needing named-page infrastructure. Unlike `tabs` (code-oriented, single content string
+    per pane), each pane runs the shared block renderer over its own blocks array, like
+    color_section/columns do for their children.'
+  compact_description: tabbed panels holding nested atom blocks
+  surfaces:
+    works_on:
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on: null
+    incompatible_on:
+    - surface: google-chat
+      reason: CSS radio button trick not supported — use sequential sections
+    - surface: email
+      reason: CSS :checked not supported in email — use sequential sections
+    - surface: pdf
+      reason: interactive CSS not renderable — use sequential sections
+  children:
+    tabs:
+      shape: wrapper_list
+      inner_path: blocks
+  fields:
+    accent: string (optional). Active-tab underline colour.
+    default_index: integer (optional, default 0). Which tab is open on load.
+    tabs:
+    - label: string
+      blocks: array of atom blocks
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: standings_table
+  stage: preview
+  description: 'Ranked competition/league standings table — rank, name, optional
+    played count, a mode-dependent primary sort metric, and extra numeric columns
+    (e.g. points won/lost, +/- differential). Sort is the renderer''s job (descending
+    by primary); highlight is a semantic state name ("leader") so payloads never
+    hard-code state styling. All numeric columns render tabular-nums. Any ranked
+    competition: leagues, fantasy, hackathon judging, contest results.'
+  compact_description: ranked standings/leaderboard table with semantic highlights
+  surfaces:
+    works_on:
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on: null
+  fields:
+    primary_label: string (optional, default "PTS"). Header for the main sort column.
+    columns: array of strings (optional). Extra numeric column headers, aligned to rows[].values.
+    rows: 'array (required) of {name: string, played: integer (optional), primary: number
+      (sorted descending by renderer), values: array of numbers (optional, aligned to
+      columns), highlight: string (optional semantic state, e.g. "leader")}'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: match_schedule
+  stage: preview
+  description: 'Round-by-round schedule of team/player matchups across courts — structured
+    teams (arrays of names) instead of hand-joined strings, optional per-match scores.
+    layout "table" is the reference/printable shape (one row per round, one column per
+    court); layout "cards" renders one card per match for narrow/courtside viewports.
+    Any round-based pairing: tournaments, round-robins, scheduling rotations.'
+  compact_description: round-by-round matchup schedule, table or cards layout
+  surfaces:
+    works_on:
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on: null
+  fields:
+    layout: string (optional). "table" (default) or "cards".
+    rounds: 'array (required) of {label: string (optional, defaults "Round N"), matches:
+      array of {court: string (optional), team_a: array of strings, team_b: array of
+      strings, score_a: number (optional), score_b: number (optional)}}'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
