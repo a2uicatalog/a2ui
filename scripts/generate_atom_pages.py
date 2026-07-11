@@ -1349,8 +1349,15 @@ MCP_APPS_HOST_JS = r"""
   (function decodeHash() {
     // ?id= — a published short link (publish_url): payload BY REFERENCE from
     // /s/<id>.json, no size ceiling, nothing in the fragment but the session.
-    var pid = (location.search.match(/[?&]id=([a-f0-9]{8,32})/) || [])[1];
+    var pid = (location.search.match(/[?&]id=([a-z0-9][a-z0-9-]{2,63})/) || [])[1];
     if (pid) {
+      // Published links are END-USER artifacts: hide the dev chrome (chip bar,
+      // payload drawer) unless ?chrome=1 asks for it back. #p= playground
+      // links keep their chrome — that's the workbench.
+      if (!/[?&]chrome=1/.test(location.search)) {
+        document.querySelectorAll('.play-bar, .play-drawer, #mcp-drawer-toggle')
+          .forEach(function (el) { el.style.display = 'none'; });
+      }
       fetch('/s/' + pid + '.json')
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
         .then(function (j) { hashPayload = j; hashDone = true; maybeStart(); })
