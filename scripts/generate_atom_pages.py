@@ -1136,6 +1136,7 @@ MCP_APPS_HERO_HTML = """
   <div class="mcp-playground-row">
     <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
     <button class="mcp-play-btn ghost" id="mcp-play-link">Copy link</button>
+    <button class="mcp-play-btn ghost" id="mcp-play-publish">Short link…</button>
     <span class="mcp-play-err" id="mcp-play-err"></span>
   </div>
 </div>
@@ -1256,6 +1257,48 @@ MCP_APPS_HOST_JS = r"""
   var editor = document.getElementById('mcp-playground-json');
   var renderBtn = document.getElementById('mcp-play-render');
   var linkBtn = document.getElementById('mcp-play-link');
+  var editorTouched = false;
+  if (typeof editor !== 'undefined' && editor) {
+    editor.addEventListener('input', function () { editorTouched = true; });
+  }
+
+  // ── Create short link: the HUMAN consent gate (mirror of the agent-side
+  // acknowledge_storage schema requirement). Two-step, in-page, terms first.
+  var publishBtn = document.getElementById('mcp-play-publish');
+  if (publishBtn) publishBtn.addEventListener('click', function () {
+    errEl.textContent = '';
+    if (publishBtn.getAttribute('data-armed') !== '1') {
+      publishBtn.setAttribute('data-armed', '1');
+      publishBtn.textContent = 'Store & create — yes';
+      errEl.textContent = 'Short links work by STORING this payload on a2uicatalog.ai for one week. ' +
+        'Anyone with the link can view it. You get a delete code to remove it early. ' +
+        'Click again to proceed, or wait to cancel.';
+      setTimeout(function () {
+        publishBtn.setAttribute('data-armed', '0');
+        publishBtn.textContent = 'Short link…';
+      }, 15000);
+      return;
+    }
+    publishBtn.setAttribute('data-armed', '0');
+    publishBtn.textContent = 'Short link…';
+    var payload;
+    try { payload = normalize(JSON.parse(editor.value)); }
+    catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
+    errEl.textContent = 'Publishing…';
+    fetch('/mcp', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 'pub-web', method: 'tools/call',
+        params: { name: 'publish_url', arguments: { payload: payload, acknowledge_storage: true } } }) })
+      .then(function (r) { return r.json(); })
+      .then(function (resp) {
+        var sc = resp && resp.result && resp.result.structuredContent;
+        if (!sc || !sc.ok) { errEl.textContent = (sc && sc.error) || 'publish failed'; return; }
+        var short = sc.short_url + location.hash;
+        navigator.clipboard.writeText(short)['catch'](function () {});
+        errEl.textContent = 'Copied: ' + short + ' — stored until ' + sc.stored_until +
+          '. Delete code (shown once, save it): ' + sc.delete_token;
+      })
+      ['catch'](function (e) { errEl.textContent = String(e && e.message || e); });
+  });
   var errEl = document.getElementById('mcp-play-err');
 
   // Public hook: the surface page's atom gallery loads examples through this.
@@ -1357,6 +1400,10 @@ MCP_APPS_HOST_JS = r"""
       if (!/[?&]chrome=1/.test(location.search)) {
         document.querySelectorAll('.play-bar, .play-drawer, #mcp-drawer-toggle')
           .forEach(function (el) { el.style.display = 'none'; });
+        // Keep the SHORT url in the address bar (what was shared = what is
+        // seen = what gets re-shared). Same-origin path swap, session
+        // fragment preserved.
+        try { history.replaceState(null, '', '/s/' + pid + location.hash); } catch (e) {}
       }
       fetch('/s/' + pid + '.json')
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -1389,6 +1436,19 @@ MCP_APPS_HOST_JS = r"""
 
   linkBtn.addEventListener('click', function () {
     errEl.textContent = '';
+    // Page loaded from a PUBLISHED link and payload untouched: copy the short
+    // form — that copy already exists, no new storage event. Everything else
+    // copies the long nothing-stored data-URL; publishing is the explicit
+    // "Short link…" flow above, never a side effect of copying.
+    var pubId = (location.search.match(/[?&]id=([a-z0-9][a-z0-9-]{2,63})/) || [])[1]
+             || (location.pathname.match(/^\/s\/([a-z0-9][a-z0-9-]{2,63})$/) || [])[1];
+    if (pubId && !editorTouched) {
+      var short = 'https://a2uicatalog.ai/s/' + pubId + location.hash;
+      navigator.clipboard.writeText(short).then(function () {
+        errEl.textContent = 'Short link copied';
+      })['catch'](function () { errEl.textContent = short; });
+      return;
+    }
     var payload;
     try { payload = normalize(JSON.parse(editor.value)); }
     catch (e) { errEl.textContent = 'Invalid JSON: ' + e.message; return; }
@@ -1522,6 +1582,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
     <div class="play-row">
       <button class="mcp-play-btn" id="mcp-play-render">Render →</button>
       <button class="mcp-play-btn ghost" id="mcp-play-link">Copy link</button>
+      <button class="mcp-play-btn ghost" id="mcp-play-publish">Short link…</button>
       <span class="mcp-play-err" id="mcp-play-err"></span>
     </div>
   </aside>
