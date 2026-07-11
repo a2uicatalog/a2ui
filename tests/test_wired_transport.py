@@ -229,3 +229,93 @@ def test_play_host_passes_envelopes_through():
     assert "a2ui_wired_surface" in js.split("function normalize")[1].split("}")[3] or \
            "a2ui_wired_surface" in js[js.index("function normalize"):js.index("function send")]
     assert "createSurface" in js[js.index("function normalize"):js.index("function send")]
+
+
+def test_mcp_verb_maps_to_host_tool_and_paints_result():
+    """mcp:distill_document routes to the host bridge; a returned surface with
+    paint_result repaints the view via window._A2UI_PAINT; a structured lint
+    report ({ok:false}) lands on the action's error surface instead."""
+    schema = {
+        "type": "a2ui_wired_surface",
+        "app": {"id": "knowledge-distillery"},
+        "state_primitives": [
+            {"id": "md", "primitive": "ValueStore", "props": {"initialValue": "# Doc"}},
+        ],
+        "actions": [
+            {"id": "distill", "type": "mcp:distill_document", "paint_result": True,
+             "props": {"collect": {"markdown": "#md.value", "domain": "training"}}},
+        ],
+        "layout": [],
+    }
+    r = _node(BOOT_STUB + ENGINE + f"""
+var painted = [], calls = [];
+window._A2UI_PAINT = function (p) {{ painted.push(p); }};
+window._A2UI_HOST_BRIDGE = {{ callTool: function (name, args) {{
+  calls.push({{ name: name, args: args }});
+  return Promise.resolve({{ structuredContent:
+    {{ type: 'a2ui_wired_surface', title: 'Distilled', layout: [], state_primitives: [], actions: [] }} }});
+}} }};
+window._a2uiBootWiredSurface({json.dumps(schema)});
+var eng = window._a2uiEngine;
+eng.nodes.distill._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ calls: calls, painted: painted.length,
+    title: painted[0] && painted[0].title, ok: eng.nodes.distill.isSuccess }}));
+}}, 20);
+""")
+    assert r["calls"][0]["name"] == "distill_document"
+    assert r["calls"][0]["args"] == {"markdown": "# Doc", "domain": "training"}
+    assert r["painted"] == 1 and r["title"] == "Distilled"
+    assert r["ok"] is True
+
+
+def test_mcp_verb_lint_report_and_no_host_are_declared_errors():
+    schema = {
+        "type": "a2ui_wired_surface",
+        "app": {"id": "knowledge-distillery"},
+        "state_primitives": [],
+        "actions": [{"id": "distill", "type": "mcp:distill_document", "props": {"collect": {}}}],
+        "layout": [],
+    }
+    lint = _node(BOOT_STUB + ENGINE + f"""
+window._A2UI_HOST_BRIDGE = {{ callTool: function () {{
+  return Promise.resolve({{ structuredContent:
+    {{ ok: false, error: 'E01: missing YAML frontmatter block', errors: ['E01'] }} }});
+}} }};
+window._a2uiBootWiredSurface({json.dumps(schema)});
+var eng = window._a2uiEngine;
+eng.nodes.distill._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ err: eng.nodes.distill.isError, msg: eng.nodes.distill.error }}));
+}}, 20);
+""")
+    assert lint["err"] is True and "E01" in lint["msg"]
+    inert = _node(BOOT_STUB + ENGINE + f"""
+window._a2uiBootWiredSurface({json.dumps(schema)});
+var eng = window._a2uiEngine;
+eng.nodes.distill._run();
+console.log(JSON.stringify({{ err: eng.nodes.distill.isError, msg: eng.nodes.distill.error }}));
+""")
+    assert inert["err"] is True and "MCP Apps host" in inert["msg"]
+
+
+def test_play_host_forwards_distill_document():
+    import generate_atom_pages as gap4
+    js = gap4.MCP_APPS_HOST_JS
+    assert "distill_document: 1" in js
+
+
+def test_bundle_exposes_paint_sink():
+    bundle = gen.build_bundle()
+    assert "window._A2UI_PAINT = paint" in bundle
+
+
+def test_form_input_textarea_variant():
+    core = gen.build_bundle()
+    blocks = re.findall(r"<script>\n(.*?)\n</script>", core, re.S)
+    core_js = [b for b in blocks if "a2ui-core" in b[:300]][0]
+    r = _node("global.window = global;\n" + core_js + """
+var html = renderAtoms([{type:'form_input', input_type:'textarea', label:'Doc', rows:14}], {theme:'light'});
+console.log(JSON.stringify({ta: html.indexOf('<textarea') > -1, rows: html.indexOf('rows="14"') > -1}));
+""")
+    assert r["ta"] and r["rows"]

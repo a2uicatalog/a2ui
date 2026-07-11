@@ -9,6 +9,28 @@ var MAX_PATTERN_LENGTH = 200;
 // host (JSON-RPC tools/call over the MCP Apps bridge; sheet verbs map onto the
 // worker's store_* tools) → none (DECLARED error state — never a dead button).
 function _a2uiActionTransport(type, req, onOk, onFail) {
+  // mcp:* verbs — HOST-ONLY tool calls (wired-transport: scope grows
+  // verb-by-verb). Checked before the GAS branch: the GAS server has no
+  // handler for these, so on the Apps Script surface they refuse declaratively.
+  if (type.indexOf('mcp:') === 0) {
+    var MCP_VERBS = { 'mcp:distill_document': 'distill_document' };
+    var mcpTool = MCP_VERBS[type];
+    if (!mcpTool) {
+      onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this button is inert here.' });
+      return;
+    }
+    if (!(window._A2UI_HOST_BRIDGE && typeof window._A2UI_HOST_BRIDGE.callTool === 'function')) {
+      onOk({ ok: false, error: 'Verb ' + type + ' needs an MCP Apps host — this button is inert here.' });
+      return;
+    }
+    window._A2UI_HOST_BRIDGE.callTool(mcpTool, req.data || {}).then(function(res) {
+      var sc = res && res.structuredContent;
+      if (sc && sc.ok === false) { onOk(sc); return; }   // structured report (e.g. lint errors)
+      if (sc) { onOk({ ok: true, data: sc }); return; }  // tool result IS the data (e.g. compiled surface)
+      onOk({ ok: false, error: 'empty host response' });
+    })['catch'](function(e) { onFail(e); });
+    return;
+  }
   // Detect the REAL GAS client, not the RunChain polyfill AtomScripts ships
   // for web hosts (it implements fetchDataSource but NOT a2uiAction — routing
   // on `google.script.run` alone threw inside the view, 2026-07-11).
@@ -735,6 +757,20 @@ A2UIStateEngine.prototype._initAction = function(p) {
             var n = self.nodes[nid];
             if (n && n._setValue) n._setValue(n._initialValue !== undefined ? n._initialValue : '');
           });
+        }
+        // paint_result: the action's returned data IS a surface — repaint the
+        // view with it (the distill demo's "become the app you described").
+        // Host provides window._A2UI_PAINT (the bundle's paint()); absence is
+        // a DECLARED error, never a silent no-op.
+        if (r.ok && p.paint_result && r.data &&
+            (r.data.type === 'a2ui_wired_surface' || r.data.blocks || r.data.createSurface)) {
+          if (typeof window._A2UI_PAINT === 'function') {
+            window._A2UI_PAINT(r.data);
+          } else {
+            self._set(p.id, 'isError', true);
+            self._set(p.id, 'isSuccess', false);
+            self._set(p.id, 'error', 'Compiled, but this host cannot repaint surfaces.');
+          }
         }
       });
     var _onFail = (function(e) {

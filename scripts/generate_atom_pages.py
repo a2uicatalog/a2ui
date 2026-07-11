@@ -1497,7 +1497,7 @@ MCP_APPS_HOST_JS = r"""
     // origin) and reply with the matching JSON-RPC id. Only app-callable
     // tools pass — the spec's host-side visibility enforcement.
     if (msg.method === 'tools/call' && msg.id !== undefined) {
-      var APP_TOOLS = { store_append: 1, store_read: 1, store_clear: 1, render_ping: 1 };
+      var APP_TOOLS = { store_append: 1, store_read: 1, store_clear: 1, render_ping: 1, distill_document: 1 };
       var toolName = msg.params && msg.params.name;
       if (!APP_TOOLS[toolName]) {
         iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id,

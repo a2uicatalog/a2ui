@@ -240,6 +240,10 @@ HANDSHAKE = """
   }
   setTimeout(reportSize, 150);
 
+  // The wired engine's paint sink (paint_result actions — e.g. distill:
+  // the returned surface REPLACES the view). Same paint() the handshake uses.
+  window._A2UI_PAINT = paint;
+
   // View->host tool calls (spec: plain JSON-RPC tools/call over the bridge;
   // the host enforces app-visibility). Powers the wired dialect's host
   // transport (_a2uiActionTransport in the A2UIState partial).

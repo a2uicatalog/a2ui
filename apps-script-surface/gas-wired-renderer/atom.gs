@@ -2510,7 +2510,7 @@ _RENDERERS['form_input'] = function(b) {
   var hint = b.hint || '';
   var error = b.error || '';
 
-  var validTypes = ['text', 'email', 'number', 'url', 'password'];
+  var validTypes = ['text', 'email', 'number', 'url', 'password', 'textarea'];
   if (validTypes.indexOf(type) === -1) type = 'text';
   var numAttrs = '';
   if (type === 'number') {
@@ -2519,6 +2519,11 @@ _RENDERERS['form_input'] = function(b) {
     if (b.step !== undefined) numAttrs += ' step="' + _esc(b.step) + '"';
     numAttrs += ' inputmode="numeric"';
   }
+  var control = type === 'textarea'
+    ? '<textarea class="fi-input" id="fi-' + uid + '" name="' + _esc(name) + '" rows="' + (parseInt(b.rows, 10) || 10) + '"' +
+      ' placeholder="' + _esc(placeholder) + '" style="resize:vertical;font-family:ui-monospace,monospace;"' + required + '>' + _esc(value) + '</textarea>'
+    : '<input class="fi-input" id="fi-' + uid + '" type="' + _esc(type) + '" name="' + _esc(name) + '"' +
+      ' placeholder="' + _esc(placeholder) + '" value="' + _esc(value) + '"' + numAttrs + required + '>';
 
   return '<style>' +
     '.fi-wrap-' + uid + '{margin-bottom:16px;}' +
@@ -2530,8 +2535,7 @@ _RENDERERS['form_input'] = function(b) {
     '</style>' +
     '<div class="fi-wrap-' + uid + '">' +
     (label ? '<label class="fi-label" for="fi-' + uid + '">' + _esc(label) + (b.required ? ' <span style="color:#dc2626">*</span>' : '') + '</label>' : '') +
-    '<input class="fi-input" id="fi-' + uid + '" type="' + _esc(type) + '" name="' + _esc(name) + '"' +
-    ' placeholder="' + _esc(placeholder) + '" value="' + _esc(value) + '"' + numAttrs + required + '>' +
+    control +
     (hint ? '<div class="fi-hint">' + _esc(hint) + '</div>' : '') +
     (error ? '<div class="fi-error">' + _esc(error) + '</div>' : '') +
     '</div>';
