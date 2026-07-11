@@ -157,8 +157,9 @@ A2UIStateEngine.prototype.compileWires = function(layoutEl, domBridge) {
     var parsed = self._parseWire(wireExpr);
     if (!parsed) return;
     self.registerListener(parsed.nodeId, parsed.property, function(val) {
-      var safeVal = typeof val === 'string' ? _a2uiSanitize(val) : val;
-      domBridge.setProp(layoutEl.id, propName, safeVal);
+      // Deliver RAW: text/value sinks assign via textContent/.value (escaping
+      // here shows literal &amp;), and every innerHTML sink sanitizes per-cell.
+      domBridge.setProp(layoutEl.id, propName, val);
     });
   });
 };

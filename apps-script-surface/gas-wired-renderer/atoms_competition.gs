@@ -71,10 +71,13 @@ _RENDERERS['content_tabs'] = function(b) {
 _RENDERERS['standings_table'] = function(b) {
   if (b.wired) {
     var wuid = 'stw' + Math.random().toString(36).substr(2, 6);
+    // cells declare their own background/border: host pages ship global
+    // table CSS (tr:nth-child(even) td { background: var(--surface) }) that
+    // turns even rows dark-on-dark inside a light card.
     var num = 'font-variant-numeric:tabular-nums;text-align:right;';
-    var th  = 'padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
+    var th  = 'background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
               'color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);';
-    var td  = 'padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
+    var td  = 'background:transparent;border:none;padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
     return '<div data-a2ui-standings="' + wuid + '" style="overflow-x:auto;margin:1.2rem 0;">' +
       '<table style="border-collapse:collapse;width:100%;">' +
       '<thead><tr>' +
@@ -149,9 +152,9 @@ _RENDERERS['standings_table'] = function(b) {
   if (!rows.length) return '';
   var extra = b.columns || [];
   var num = 'font-variant-numeric:tabular-nums;text-align:right;';
-  var th  = 'padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
+  var th  = 'background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
             'color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);';
-  var td  = 'padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
+  var td  = 'background:transparent;border:none;padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
 
   var head = '<tr>' +
     '<th style="' + th + num + '">#</th>' +
@@ -225,9 +228,9 @@ _RENDERERS['match_schedule'] = function(b) {
       if (courts.indexOf(c) === -1) courts.push(c);
     });
   });
-  var th = 'padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
+  var th = 'background:transparent;border:none;padding:8px 12px;font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;' +
            'color:var(--muted,#5f6368);border-bottom:2px solid var(--border,#e8eaed);text-align:left;';
-  var td = 'padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
+  var td = 'background:transparent;border:none;padding:9px 12px;font-size:0.88rem;border-bottom:1px solid var(--border,#e8eaed);';
 
   var head = '<tr><th style="' + th + '">Round</th>' +
     courts.map(function(c) { return '<th style="' + th + '">' + _esc(c) + '</th>'; }).join('') + '</tr>';

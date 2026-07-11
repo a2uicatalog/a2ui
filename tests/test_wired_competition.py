@@ -143,3 +143,26 @@ console.log(JSON.stringify({{w310: by310.indexOf('Player 9') < by310.indexOf('Pl
         r = json.loads(p.stdout)
     assert r["w310"], "3-1-0 mode: winners (P9) rank above high scorers (P11)"
     assert r["wPts"], "points mode: high scorers (P11) rank above winners (P9)"
+
+
+def test_competition_table_cells_own_their_background(core_js):
+    """The invisible-row incident: host pages ship global table CSS
+    (tr:nth-child(even) td { background: var(--surface) }) that turned even
+    standings rows dark-on-dark inside the cream card. Every competition-atom
+    cell must declare its own background/border so page CSS cannot bleed in."""
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core_js + """
+var standings = renderAtoms([{type:'standings_table', wired:true}], {theme:'dark'});
+var sched = renderAtoms([{type:'match_schedule', rounds:[{matches:[
+  {court:'Court 1', team_a:['A','B'], team_b:['C','D'], score_a:4, score_b:9}]}]}],
+  {theme:'dark'});
+console.log(JSON.stringify({standings: standings, sched: sched}));
+""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
+        assert p.returncode == 0, p.stderr[-500:]
+        r = json.loads(p.stdout)
+    for name, html in r.items():
+        for cell in re.findall(r"<t[dh] style=\"([^\"]*)\"", html):
+            assert "background:transparent" in cell, (name, cell)
+            assert "border:none" in cell, (name, cell)

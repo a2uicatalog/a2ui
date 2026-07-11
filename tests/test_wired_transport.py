@@ -137,6 +137,37 @@ def test_americano_payload_rehydrates_names():
     assert {"match": {}, "take": "p1", "into": "p1"} in b["props"]["bind"]
 
 
+def test_wire_delivery_is_raw_not_html_escaped():
+    """The americano '&amp;' incident: values delivered to the DOM bridge must
+    arrive RAW — text sinks write via textContent, so escaping at delivery
+    displays literal '&amp;'. innerHTML sinks sanitize per-cell themselves."""
+    schema = {
+        "type": "a2ui_wired_surface",
+        "app": {"id": "amp-check"},
+        "state_primitives": [
+            {"id": "lbl", "primitive": "StringTemplate",
+             "props": {"template": "{a} & {b}  vs  {c}",
+                       "inputs": {"a": "#s.value", "b": "#s.value", "c": "#s.value"},
+                       "fallbacks": {"a": "P1", "b": "P2", "c": "P3"}}},
+            {"id": "s", "primitive": "ValueStore", "props": {"initialValue": ""}},
+        ],
+        "actions": [],
+        "layout": [{"atom": "body", "id": "match-label",
+                    "props": {"text": "Court 1"},
+                    "wire": {"text": "#lbl.value"}}],
+    }
+    r = _node(BOOT_STUB + ENGINE + f"""
+var writes = [];
+window._a2uiBootWiredSurface({json.dumps(schema)});
+window._a2uiEngine.compileWires({json.dumps(schema["layout"][0])},
+  {{ setProp: function (id, prop, val) {{ writes.push(val); }} }});
+window._a2uiEngine.trigger('s', 'setValue', 'Ann & Bob <3');
+console.log(JSON.stringify(writes));
+""")
+    assert any("Ann & Bob <3" in str(w) for w in r), r
+    assert not any("&amp;" in str(w) or "&lt;" in str(w) for w in r), r
+
+
 def test_host_transport_refuses_unmapped_verbs():
     r = _node(BOOT_STUB + ENGINE + f"""
 window._A2UI_HOST_BRIDGE = {{ callTool: function () {{
