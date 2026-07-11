@@ -4341,6 +4341,39 @@ blocks:
     name: OpenUI / Thesys
     url: https://github.com/thesysdev/openui
     license: MIT
+- type: file_upload
+  description: File picker that reads a local file's TEXT into another atom's
+    input/textarea (by id, via target_id), dispatching a real input event —
+    no dedicated wiring needed, it feeds the SAME onChange wire manual typing
+    uses. Plain text/markdown files read directly. PDF files are extracted
+    client-side via vendored PDF.js — MCP APPS SURFACE ONLY (needs
+    window._a2uiExtractPdfText; on GAS it refuses declaratively, never
+    silently, and tells the user to paste text instead).
+  compact_description: file picker -> extracted text into another field
+  stage: preview
+  surfaces:
+    works_on:
+    - mcp-apps
+    incompatible_on:
+    - surface: google-apps-script-web
+      reason: PDF extraction is not vendored into the GAS surface — plain
+        text/markdown files still work, but the atom is MCP-Apps-first
+    - surface: email
+      reason: File inputs non-functional in email
+    - surface: pdf
+      reason: Static only
+    - surface: google-chat
+      reason: No file-input widget in Chat cards
+  fields:
+    label: string (optional). Label above the file input.
+    accept: 'string (optional). File input accept attribute. Default:
+      ''.pdf,.md,.markdown,.txt''.'
+    target_id: string. The id of the atom (textarea/form_input) whose value
+      gets set to the extracted text.
+  source:
+    name: PDF.js (Mozilla)
+    url: https://mozilla.github.io/pdf.js/
+    license: Apache-2.0
 - type: form_field
   description: Field wrapper — a labelled input with optional hint text and an inline
     error line (red border + message). Use when a field needs guidance or validation

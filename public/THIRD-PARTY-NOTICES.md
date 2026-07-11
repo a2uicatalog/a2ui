@@ -6,6 +6,26 @@ documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a
 `source` field in `atoms/schema.yaml` identifying its origin.
 
+**One declared exception: PDF.js** (below) is vendored WHOLESALE, unmodified,
+not recompiled — a real binary-format parser is out of scope to reimplement.
+It ships only inside the MCP Apps bundle (`file_upload` atom's PDF branch),
+never fetched at runtime, so the CSP-clean/self-contained invariant
+(`mcpUiCsp()`, `resourceDomains: []`) holds even though this policy's general
+rule does not.
+
+---
+
+## PDF.js (Mozilla)
+
+- **Project:** PDF.js — client-side PDF rendering and text extraction
+- **Website:** https://mozilla.github.io/pdf.js/
+- **License:** Apache License 2.0
+- **Copyright:** Copyright 2026 Mozilla Foundation
+- **Vendored as:** `apps-script-surface/gas-wired-renderer/vendor/pdfjs/pdf.min.mjs`
+  (legacy build, unmodified, main-thread mode — no separate worker file
+  inlined; see `LICENSE` alongside it)
+- **Used by:** the `file_upload` atom's PDF branch (MCP Apps surface only)
+
 ---
 
 ## UIverse.io community

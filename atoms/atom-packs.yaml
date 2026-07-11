@@ -43,6 +43,7 @@ a2ui-atoms-v1:
 - divider
 - empty_state
 - file_tree
+- file_upload
 - firestore_read
 - form
 - form_checkbox_group

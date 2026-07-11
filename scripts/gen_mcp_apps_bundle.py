@@ -29,6 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RENDERER_DIR = ROOT / "apps-script-surface" / "gas-wired-renderer"
 OUT = ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html"
+PDFJS_PATH = RENDERER_DIR / "vendor" / "pdfjs" / "pdf.min.mjs"
 
 # atoms_schema_snapshot.gs: 124 KB of docs, zero _RENDERERS entries.
 EXCLUDE_FILES = {"atoms_schema_snapshot.gs"}
@@ -307,6 +308,29 @@ def partial_body(name):
     return text[len("<script>"):-len("</script>")]
 
 
+def pdfjs_module_block():
+    """MCP-Apps-surface-only, main-thread mode (no separate worker file):
+    getDocument/getTextContent never touch canvas, so pdf.js's font/render
+    machinery is unused — only the fake-worker text-extraction path runs.
+    THIRD-PARTY-NOTICES.md carries the vendoring exception for this file."""
+    vendored = PDFJS_PATH.read_text()
+    bridge = """
+window.pdfjsLib = { getDocument: getDocument, GlobalWorkerOptions: GlobalWorkerOptions, version: version };
+window._a2uiExtractPdfText = async function (file) {
+  var buf = await file.arrayBuffer();
+  var doc = await window.pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
+  var parts = [];
+  for (var i = 1; i <= doc.numPages; i++) {
+    var page = await doc.getPage(i);
+    var content = await page.getTextContent();
+    parts.push(content.items.map(function (it) { return it.str || ''; }).join(' '));
+  }
+  return parts.join('\\n\\n').trim();
+};
+"""
+    return escape_script_close(vendored + "\n" + bridge)
+
+
 def escape_script_close(js):
     """`</script` inside a JS string literal is invisible to Node's parser but
     terminates the WHOLE <script> element for the browser's HTML parser —
@@ -368,6 +392,9 @@ body {{ padding: 24px; }}
 <script>
 // ---- a2ui-client partials (touch window/document at load) ----
 {client}
+</script>
+<script type="module">
+{pdfjs_module_block()}
 </script>
 <script>
 {HANDSHAKE}

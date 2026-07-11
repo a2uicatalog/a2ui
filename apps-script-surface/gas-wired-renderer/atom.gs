@@ -2541,6 +2541,54 @@ _RENDERERS['form_input'] = function(b) {
     '</div>';
 };
 
+// file_upload — reads a local file and feeds its TEXT into another atom's
+// textarea/input (by id), dispatching a real 'input' event so the wired
+// engine's existing onChange binding picks it up — no new engine plumbing.
+// PDF branch needs window._a2uiExtractPdfText (vendored pdf.js, MCP Apps
+// bundle only — see THIRD-PARTY-NOTICES.md); absent on GAS, it refuses
+// declaratively rather than failing silently. Plain text/markdown files
+// read via FileReader everywhere.
+_RENDERERS['file_upload'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var label = b.label || 'Upload a file';
+  var accept = b.accept || '.pdf,.md,.markdown,.txt';
+  var targetId = b.target_id || '';
+  return '<div style="margin-bottom:12px;">' +
+    (label ? '<label style="display:block;font-size:14px;font-weight:600;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</label>' : '') +
+    '<input type="file" id="fu-' + uid + '" accept="' + _esc(accept) + '" ' +
+      'style="display:block;width:100%;font-size:13px;color:var(--muted,#6b7280);">' +
+    '<div id="fu-status-' + uid + '" style="font-size:12px;color:var(--muted,#6b7280);margin-top:4px;"></div>' +
+    '<script>(function(){' +
+      'var inp=document.getElementById("fu-' + uid + '");' +
+      'var status=document.getElementById("fu-status-' + uid + '");' +
+      'inp.addEventListener("change",function(){' +
+        'var f=inp.files&&inp.files[0];if(!f)return;' +
+        'var isPdf=/\\.pdf$/i.test(f.name)||f.type==="application/pdf";' +
+        'status.textContent="Reading "+f.name+"…";' +
+        'function deliver(text){' +
+          'var host=document.getElementById("a2ui-' + _esc(targetId) + '");' +
+          'var el=host&&host.querySelector("input:not([type=checkbox]),textarea");' +
+          'if(!el){status.textContent="No target field \\"' + _esc(targetId) + '\\" found.";return;}' +
+          'el.value=text;el.dispatchEvent(new Event("input",{bubbles:true}));' +
+          'status.textContent="Loaded "+f.name+" ("+text.length+" chars).";' +
+        '}' +
+        'if(isPdf){' +
+          'if(typeof window._a2uiExtractPdfText!=="function"){' +
+            'status.textContent="PDF extraction needs the MCP Apps host — paste text instead.";return;}' +
+          'status.textContent="Extracting text from "+f.name+"…";' +
+          'window._a2uiExtractPdfText(f).then(deliver)[\'catch\'](function(e){' +
+            'status.textContent="Could not read PDF: "+(e&&e.message||e);});' +
+        '}else{' +
+          'var r=new FileReader();' +
+          'r.onload=function(){deliver(String(r.result||""));};' +
+          'r.onerror=function(){status.textContent="Could not read file.";};' +
+          'r.readAsText(f);' +
+        '}' +
+      '});' +
+    '})();<\/script>' +
+    '</div>';
+};
+
 _RENDERERS['form_select'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var label = b.label || '';

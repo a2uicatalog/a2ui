@@ -319,3 +319,43 @@ var html = renderAtoms([{type:'form_input', input_type:'textarea', label:'Doc', 
 console.log(JSON.stringify({ta: html.indexOf('<textarea') > -1, rows: html.indexOf('rows="14"') > -1}));
 """)
     assert r["ta"] and r["rows"]
+
+
+def test_file_upload_atom_renders_and_declares_pdf_refusal(core_js):
+    """file_upload: file input wired to target_id via getElementById('a2ui-'+id);
+    the PDF branch checks for window._a2uiExtractPdfText and refuses
+    declaratively (never silently) when the host doesn't provide it."""
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core_js + """
+var html = renderAtoms([{type:'file_upload', label:'Upload', target_id:'md-input'}], {theme:'dark'});
+console.log(JSON.stringify({
+  hasFileInput: html.indexOf('type="file"') > -1,
+  targetsMdInput: html.indexOf('a2ui-md-input') > -1,
+  checksExtractor: html.indexOf('_a2uiExtractPdfText') > -1,
+  declaredRefusal: html.indexOf('needs the MCP Apps host') > -1,
+}));
+""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
+        assert p.returncode == 0, p.stderr[-500:]
+        r = json.loads(p.stdout)
+    assert r["hasFileInput"] and r["targetsMdInput"]
+    assert r["checksExtractor"] and r["declaredRefusal"]
+
+
+def test_bundle_vendors_pdfjs_module_only_for_mcp_apps():
+    """pdf.js ships INSIDE the MCP Apps bundle (module script), never in the
+    GAS clasp project — vendor/ must stay out of apps-script-surface's
+    tracked .gs/.html files (checked structurally: not concatenated into
+    the a2ui-core block, only into the standalone module script)."""
+    bundle = gen.build_bundle()
+    assert '<script type="module">' in bundle
+    assert "window._a2uiExtractPdfText" in bundle
+    blocks = re.findall(r"<script>\n(.*?)\n</script>", bundle, re.S)
+    core_js_block = [b for b in blocks if "a2ui-core" in b[:300]][0]
+    # core (atom.gs) may REFERENCE the global (typeof check) but must not
+    # DEFINE it — the ~500KB vendored library lives only in the module script.
+    assert "window._a2uiExtractPdfText = " not in core_js_block, \
+        "pdf.js definition must live in its own module script, not the shared core block"
+    assert "typeof window._a2uiExtractPdfText" in core_js_block, \
+        "file_upload atom (in core) should still declare-check for the extractor"
