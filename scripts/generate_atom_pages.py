@@ -1289,6 +1289,13 @@ MCP_APPS_HOST_JS = r"""
   // post should just work.
   function normalize(payload) {
     if (Array.isArray(payload)) return { theme: 'dark', blocks: payload };
+    // Envelopes pass through UNTOUCHED — the view decodes/boots them itself.
+    // Without this, a wired surface (type, no blocks) got wrapped as a single
+    // unknown ATOM (the black-page incident, 2026-07-11).
+    if (payload && (payload.type === 'a2ui_wired_surface' ||
+                    (payload.version === 'v1.0' && payload.createSurface))) {
+      return payload;
+    }
     if (payload && !payload.blocks && (payload.type || payload.component)) {
       return { theme: 'dark', blocks: [payload] };
     }

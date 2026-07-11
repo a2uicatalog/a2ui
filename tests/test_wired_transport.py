@@ -154,3 +154,13 @@ console.log(JSON.stringify({{ len: html.length,
     assert r["standings"] and r["numeric"]
     assert r["steps"] > 20          # per-round stepped elements materialized
     assert r["len"] > 30000
+
+
+def test_play_host_passes_envelopes_through():
+    """The black-page incident: /play's normalize() must NOT wrap wired
+    surfaces or v1.0 envelopes as a single atom block."""
+    import generate_atom_pages as gap2
+    js = gap2.MCP_APPS_HOST_JS
+    assert "a2ui_wired_surface" in js.split("function normalize")[1].split("}")[3] or \
+           "a2ui_wired_surface" in js[js.index("function normalize"):js.index("function send")]
+    assert "createSurface" in js[js.index("function normalize"):js.index("function send")]
