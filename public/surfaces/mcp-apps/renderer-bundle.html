@@ -22187,8 +22187,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if (msg.method === 'ui/notifications/tool-result') {
       var result = msg.params || {};
       paint(result.structuredContent || {});
+      reportSize();
     }
   });
+
+  // ui/notifications/size-changed — REQUIRED for flexible-height hosts: they
+  // size the iframe FROM this notification (spec: "hosts MUST listen"), and
+  // without it the view mounts at zero height — the claude.ai
+  // rendered-but-invisible incident, 2026-07-11. Debounced ResizeObserver
+  // where available; explicit reportSize() after every paint regardless.
+  var _lastW = 0, _lastH = 0, _sizeT = null;
+  function reportSize() {
+    var w = Math.ceil(document.documentElement.scrollWidth || 0);
+    var h = Math.ceil(document.documentElement.scrollHeight || 0);
+    if (!h || (w === _lastW && h === _lastH)) return;
+    _lastW = w; _lastH = h;
+    post({ jsonrpc: '2.0', method: 'ui/notifications/size-changed',
+           params: { width: w, height: h } });
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(function () {
+      clearTimeout(_sizeT);
+      _sizeT = setTimeout(reportSize, 80);
+    }).observe(document.documentElement);
+  }
+  setTimeout(reportSize, 150);
 
   post({
     jsonrpc: '2.0',

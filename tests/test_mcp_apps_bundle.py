@@ -344,3 +344,15 @@ def test_bundle_size_guard(bundle):
     # blobs. Raw concat is ~1.2 MB today.
     assert len(bundle) < 2_000_000, f"bundle ballooned to {len(bundle)} bytes"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
+
+
+def test_view_reports_size_changed(bundle):
+    """The rendered-but-invisible incident (claude.ai, 2026-07-11): flexible-
+    height hosts size the iframe FROM ui/notifications/size-changed — a view
+    that never sends it mounts at zero height. The handshake must send it
+    after every paint and on resize."""
+    handshake = bundle[bundle.rindex("MCP Apps View protocol handshake"):]
+    assert "ui/notifications/size-changed" in handshake
+    assert "reportSize()" in handshake and "ResizeObserver" in handshake
+    # sent after paint, not only on observer (first paint must always report)
+    assert handshake.index("paint(result.structuredContent") < handshake.index("reportSize();")
