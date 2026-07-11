@@ -170,7 +170,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </div>
 
 <div class="mcp-host-frame">
-  <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html?v=8ea7090d4d" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html?v=aaebb0034d" title="A2UI MCP Apps view"></iframe>
 </div>
 
 <div class="mcp-playground">
@@ -250,6 +250,18 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     // unknown ATOM (the black-page incident, 2026-07-11).
     if (payload && (payload.type === 'a2ui_wired_surface' ||
                     (payload.version === 'v1.0' && payload.createSurface))) {
+      // Session token from the link (&t=): injected as app.session so the
+      // view's action transport namespaces the store per tournament/session.
+      var tk = (location.hash.match(/[#&]t=([\w-]{1,64})/) || [])[1];
+      if (tk && payload.type === 'a2ui_wired_surface') {
+        var appCfg = {};
+        Object.keys(payload.app || {}).forEach(function (k) { appCfg[k] = payload.app[k]; });
+        appCfg.session = tk;
+        var wrapped = {};
+        Object.keys(payload).forEach(function (k) { wrapped[k] = payload[k]; });
+        wrapped.app = appCfg;
+        return wrapped;
+      }
       return payload;
     }
     if (payload && !payload.blocks && (payload.type || payload.component)) {

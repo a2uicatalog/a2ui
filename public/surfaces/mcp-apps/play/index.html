@@ -36,7 +36,7 @@
   </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html?v=8ea7090d4d" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html?v=aaebb0034d" title="A2UI MCP Apps view"></iframe>
 
   <div class="play-bar">
     <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
@@ -118,6 +118,18 @@
     // unknown ATOM (the black-page incident, 2026-07-11).
     if (payload && (payload.type === 'a2ui_wired_surface' ||
                     (payload.version === 'v1.0' && payload.createSurface))) {
+      // Session token from the link (&t=): injected as app.session so the
+      // view's action transport namespaces the store per tournament/session.
+      var tk = (location.hash.match(/[#&]t=([\w-]{1,64})/) || [])[1];
+      if (tk && payload.type === 'a2ui_wired_surface') {
+        var appCfg = {};
+        Object.keys(payload.app || {}).forEach(function (k) { appCfg[k] = payload.app[k]; });
+        appCfg.session = tk;
+        var wrapped = {};
+        Object.keys(payload).forEach(function (k) { wrapped[k] = payload[k]; });
+        wrapped.app = appCfg;
+        return wrapped;
+      }
       return payload;
     }
     if (payload && !payload.blocks && (payload.type || payload.component)) {

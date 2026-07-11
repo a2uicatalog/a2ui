@@ -103,6 +103,40 @@ setTimeout(function () {{
     assert r["rows"] == [{"round": 1, "m1_score_a": 21}]
 
 
+def test_host_transport_session_isolates_store():
+    """&t= token (injected by the host as app.session) namespaces the store —
+    one link, one tournament; no token = the app's shared default."""
+    schema = dict(SCHEMA, app={"id": "americano-night", "session": "t-abc123"})
+    r = _node(BOOT_STUB + ENGINE + f"""
+var calls = [];
+window._A2UI_HOST_BRIDGE = {{ callTool: function (name, args) {{
+  calls.push(args.store);
+  return Promise.resolve({{ structuredContent: {{ ok: true, data: [] }} }});
+}} }};
+window._a2uiBootWiredSurface({json.dumps(schema)});
+window._a2uiEngine.nodes.save_round_1._run();
+setTimeout(function () {{ console.log(JSON.stringify(calls)); }}, 20);
+""")
+    assert r == ["wired:americano-night:t-abc123:A2UI_Americano_8_Scores"]
+
+
+def test_play_host_injects_session_token():
+    import generate_atom_pages as gap3
+    js = gap3.MCP_APPS_HOST_JS
+    seg = js[js.index("function normalize"):js.index("function send")]
+    assert "[#&]t=" in seg and "session" in seg
+
+
+def test_americano_payload_rehydrates_names():
+    payload = json.loads(Path("/home/curtis/a2ui-private/tests/americano_wired.json").read_text())
+    binders = [s for s in payload["wired_templates"]["state"]
+               if isinstance(s, dict) and s.get("id") == "binder_players"]
+    assert len(binders) == 1
+    b = binders[0]
+    assert b["wire"]["rows"] == "#load_players.result"
+    assert {"match": {}, "take": "p1", "into": "p1"} in b["props"]["bind"]
+
+
 def test_host_transport_refuses_unmapped_verbs():
     r = _node(BOOT_STUB + ENGINE + f"""
 window._A2UI_HOST_BRIDGE = {{ callTool: function () {{

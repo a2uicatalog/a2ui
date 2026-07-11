@@ -20683,8 +20683,12 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this action needs the Apps Script surface.' });
       return;
     }
-    var store = 'wired:' + ((req.appConfig && req.appConfig.id) || 'app') + ':' +
-                ((req.config && req.config.sheet) || 'data');
+    // Session isolation (wired-transport v0.1.1): the host injects
+    // app.session from the link's &t= token — one link, one tournament.
+    // No token = the app's shared default store (backward compatible).
+    var store = 'wired:' + ((req.appConfig && req.appConfig.id) || 'app') +
+                ((req.appConfig && req.appConfig.session) ? ':' + req.appConfig.session : '') +
+                ':' + ((req.config && req.config.sheet) || 'data');
     var args = tool === 'store_append' ? { store: store, record: req.data }
              : tool === 'store_clear'  ? { store: store }
              : { store: store, limit: 500 };
