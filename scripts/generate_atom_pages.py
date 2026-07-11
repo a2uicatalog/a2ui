@@ -1126,7 +1126,12 @@ MCP_APPS_HERO_HTML = """
 </div>
 
 <div class="mcp-host-frame">
-  <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
+  <!-- allow-popups(-to-escape-sandbox): every link-bearing atom emits
+       target="_blank" — without these tokens the sandbox silently
+       swallows ALL outbound clicks (no error, nothing happens). Found
+       2026-07-11 auditing chip_group; -escape-sandbox keeps the new tab
+       itself unsandboxed rather than inheriting these restrictions. -->
+  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" src="./renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 </div>
 
 <div class="mcp-playground">
@@ -1566,7 +1571,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" src="/surfaces/mcp-apps/renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 
   <div class="play-bar">
     <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>

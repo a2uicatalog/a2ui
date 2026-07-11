@@ -3665,7 +3665,7 @@ _RENDERERS['chip_group'] = function(b) {
   var chipsHtml = chips.map(function(c) {
     var bg     = c.active ? (c.color || '#6366f1') : (c.color ? c.color + '18' : '#f3f4f6');
     var tc     = c.active ? '#fff' : (c.color || '#374151');
-    var tag    = c.url ? 'a href="' + _esc(c.url) + '"' : 'span';
+    var tag    = c.url ? 'a href="' + _esc(c.url) + '" target="_blank" rel="noopener"' : 'span';
     var endTag = c.url ? 'a' : 'span';
     return '<' + tag + ' style="display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (c.url ? 'pointer' : 'default') + ';">' + _esc(c.label || '') + '</' + endTag + '>';
   }).join('');

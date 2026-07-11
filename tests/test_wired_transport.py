@@ -359,3 +359,35 @@ def test_bundle_vendors_pdfjs_module_only_for_mcp_apps():
         "pdf.js definition must live in its own module script, not the shared core block"
     assert "typeof window._a2uiExtractPdfText" in core_js_block, \
         "file_upload atom (in core) should still declare-check for the extractor"
+
+
+def test_mcp_apps_iframe_permits_outbound_links():
+    """2026-07-11: sandbox="allow-scripts" alone silently swallows every
+    target="_blank" click across the WHOLE MCP Apps surface (chip_group,
+    hover_card, social_share_bar, etc. all emit target="_blank" already —
+    none of them worked). allow-popups(-to-escape-sandbox) must be present
+    on BOTH iframe declarations (the /play page and the atom-detail preview)."""
+    import generate_atom_pages as gap5
+    src = open(gap5.__file__).read()
+    occurrences = src.count('id="mcp-view"')
+    assert occurrences >= 2, "expected the /play and atom-preview iframes"
+    for line in src.splitlines():
+        if 'id="mcp-view"' in line:
+            assert 'allow-popups' in line and 'allow-popups-to-escape-sandbox' in line, line
+
+
+def test_chip_group_links_open_in_new_tab(core_js):
+    """chip_group was the one link-bearing atom missing target=_blank —
+    without it (and without the iframe fix above) a link click inside the
+    sandboxed MCP Apps view does nothing, with no error surfaced anywhere."""
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core_js + """
+var html = renderAtoms([{type:'chip_group', chips:[{label:'Docs', url:'https://example.com'}]}], {theme:'dark'});
+console.log(JSON.stringify({blank: html.indexOf('target="_blank"') > -1,
+                            noopener: html.indexOf('rel="noopener"') > -1}));
+""")
+        p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=60)
+        assert p.returncode == 0, p.stderr[-500:]
+        r = json.loads(p.stdout)
+    assert r["blank"] and r["noopener"]
