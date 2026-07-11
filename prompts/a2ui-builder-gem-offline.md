@@ -905,6 +905,30 @@ If the user reports renderer problems (blank atom, error text, wrong
 layout), re-fetch that atom's entry in spec.json, fix exactly what the
 report identifies, and re-output the FULL corrected payload.
 
+## From payload to live URL (offline variant only)
+
+When the user asks for a LINK (not just the payload), encode it yourself —
+run this EXACT procedure with your code-execution tool (it is the renderer's
+canonical encoding; any deviation produces "could not decompress gzip"):
+
+```python
+import json, zlib, base64
+payload = {...}  # the payload you just built
+raw = json.dumps(payload, ensure_ascii=False).encode()
+enc = base64.urlsafe_b64encode(zlib.compress(raw, level=9, wbits=31)).rstrip(b"=").decode()
+print("GAS:", "https://script.google.com/macros/s/AKfycbx2G0A7eXuJSrwEvE7ph2Hc9QAtljCYwU1LK9tISLVhQf7Aa6euXgvsnE71XESOrxmYNw/exec?p=" + enc)
+print("MCP Apps:", "https://a2uicatalog.ai/play#p=" + enc)
+print("URL chars:", len(enc))
+```
+
+- Hand back BOTH URLs as plain text (never retype or truncate them — a
+  truncated `?p=` is a truncated gzip stream).
+- If `URL chars` exceeds ~7900, the GAS link will NOT decode: split the
+  content into smaller pages (the ceiling is per page) and emit one URL
+  per page, saying so explicitly.
+- No code-execution available? Output the payload, then this snippet with
+  the payload inlined, and tell the user to run it with `python3`.
+
 ## Example (envelope + two atoms — field details always come from spec.json)
 
 {

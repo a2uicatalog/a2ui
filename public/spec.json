@@ -6,7 +6,6 @@
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
- "builderPrompt": "https://a2uicatalog.ai/prompts/a2ui-builder-gem.md",
  "thirdPartyNotices": "https://a2uicatalog.ai/THIRD-PARTY-NOTICES.md",
  "attributionModel": "Three tiers: 'source' credits derived or adapted work (vendor name + license); 'source_inspiration' credits a visual/pattern origin with no code derivation; atoms with source a2uicatalog and no inspiration field are original. Full notices and per-vendor manifests at /THIRD-PARTY-NOTICES.md and /vendors/.",
  "atoms": [

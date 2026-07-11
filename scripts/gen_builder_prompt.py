@@ -173,6 +173,34 @@ does not exist.
 """
 
 
+OFFLINE_URL_SECTION = """\
+## From payload to live URL (offline variant only)
+
+When the user asks for a LINK (not just the payload), encode it yourself —
+run this EXACT procedure with your code-execution tool (it is the renderer's
+canonical encoding; any deviation produces "could not decompress gzip"):
+
+```python
+import json, zlib, base64
+payload = {{...}}  # the payload you just built
+raw = json.dumps(payload, ensure_ascii=False).encode()
+enc = base64.urlsafe_b64encode(zlib.compress(raw, level=9, wbits=31)).rstrip(b"=").decode()
+print("GAS:", "{gas_exec}?p=" + enc)
+print("MCP Apps:", "{base}/play#p=" + enc)
+print("URL chars:", len(enc))
+```
+
+- Hand back BOTH URLs as plain text (never retype or truncate them — a
+  truncated `?p=` is a truncated gzip stream).
+- If `URL chars` exceeds ~7900, the GAS link will NOT decode: split the
+  content into smaller pages (the ceiling is per page) and emit one URL
+  per page, saying so explicitly.
+- No code-execution available? Output the payload, then this snippet with
+  the payload inlined, and tell the user to run it with `python3`.
+
+"""
+
+
 def _online_source_section():
     idx = TEMPLATE.index("## Payload envelope")
     return TEMPLATE[:idx], TEMPLATE[idx:]
@@ -212,6 +240,11 @@ def main():
                      core_contracts="\n\n".join(core_lines),
                      compact_index="\n".join(compact_lines))
                + tail)
+    import make_url as _mu  # canonical ?p= encoding + deployment resolution
+    offline = offline.replace(
+        "## Example",
+        OFFLINE_URL_SECTION.format(gas_exec=_mu.RENDERERS["gem"], base=BASE_URL)
+        + "## Example", 1)
     offline = offline.replace("{atom_count}", str(atom_count)).replace("{base}", BASE_URL)
     offline = offline.replace("{{", "{").replace("}}", "}")
     offline = offline.replace("# Gem: A2UI Payload Builder",
@@ -219,6 +252,16 @@ def main():
     with open(OUTPUT_OFFLINE, "w") as f:
         f.write(offline)
     print(f"✅ {os.path.relpath(OUTPUT_OFFLINE, ROOT)} ({os.path.getsize(OUTPUT_OFFLINE)/1024:.1f} KB, {len(CORE_ATOMS)} core contracts + {atom_count}-atom index)")
+
+    # Gem builder is PRIVATE for now (unpublished 2026-07-11): mirror the
+    # pasteable offline variant into the private repo when present (absent
+    # in CI checkouts — skip silently there, never fail the build).
+    private_dir = os.path.join(ROOT, "..", "a2ui-private", "prompts")
+    if os.path.isdir(os.path.dirname(private_dir)) and os.path.isdir(private_dir):
+        mirror = os.path.join(private_dir, "a2ui-builder-gem-offline.md")
+        with open(mirror, "w") as f:
+            f.write(offline)
+        print(f"✅ mirrored offline gem -> {os.path.relpath(mirror, ROOT)}")
 
 
 if __name__ == "__main__":

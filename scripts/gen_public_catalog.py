@@ -119,7 +119,8 @@ def gen_spec(blocks):
         "compactIndex": f"{BASE_URL}/atoms/index.json",
         "runbooks": f"{BASE_URL}/runbooks/index.json",
         "trainingPrompt": f"{BASE_URL}/prompts/training-md-gem.md",
-        "builderPrompt": f"{BASE_URL}/prompts/a2ui-builder-gem.md",
+        # builderPrompt withdrawn 2026-07-11 — gem builder is private for now
+        # (see project.yaml published_prompts); restore the field on re-publication.
         "thirdPartyNotices": f"{BASE_URL}/THIRD-PARTY-NOTICES.md",
         "attributionModel": ("Three tiers: 'source' credits derived or adapted work "
                              "(vendor name + license); 'source_inspiration' credits a "

@@ -67,6 +67,10 @@ published_knowledge:
   - sampledocs/vite-getting-started.training.md
 
 published_prompts:
+  # Gem builder stays SERVED (files below remain on the site) but is not
+  # ADVERTISED in the catalogue while pre-launch: spec.json's builderPrompt
+  # field withdrawn 2026-07-11 (gen_public_catalog.py) — restore it there
+  # on launch. Offline variant also mirrors to ../a2ui-private/prompts/.
   - a2ui-builder-gem.md
   - a2ui-builder-gem-offline.md
   - training-md-gem.md
