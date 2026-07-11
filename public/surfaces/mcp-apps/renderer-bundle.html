@@ -20665,7 +20665,11 @@ var MAX_PATTERN_LENGTH = 200;
 // host (JSON-RPC tools/call over the MCP Apps bridge; sheet verbs map onto the
 // worker's store_* tools) → none (DECLARED error state — never a dead button).
 function _a2uiActionTransport(type, req, onOk, onFail) {
-  if (typeof google !== 'undefined' && google.script && google.script.run) {
+  // Detect the REAL GAS client, not the RunChain polyfill AtomScripts ships
+  // for web hosts (it implements fetchDataSource but NOT a2uiAction — routing
+  // on `google.script.run` alone threw inside the view, 2026-07-11).
+  if (typeof google !== 'undefined' && google.script && google.script.run &&
+      typeof google.script.run.a2uiAction === 'function') {
     google.script.run.withSuccessHandler(onOk).withFailureHandler(onFail)
       .a2uiAction(type, req);
     return;
