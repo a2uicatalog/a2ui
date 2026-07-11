@@ -184,6 +184,7 @@
 | `github_activity_grid` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `form` | ✅ | — | — | ❌ | ❌ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
 | `form_input` | ✅ | — | — | ❌ | ❌ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
+| `file_upload` | — | — | — | ❌ | ❌ | ❌ | [PDF.js (Mozilla)](https://mozilla.github.io/pdf.js/) |
 | `form_field` | ✅ | — | — | ❌ | — | ❌ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `form_select` | ✅ | — | — | ❌ | ❌ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
 | `form_radio_group` | ✅ | — | — | ❌ | ❌ | ✅ | [ Thesys](https://github.com/thesysdev/openui) |
