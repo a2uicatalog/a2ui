@@ -171,6 +171,19 @@
   }
 
   (function decodeHash() {
+    // ?id= — a published short link (publish_url): payload BY REFERENCE from
+    // /s/<id>.json, no size ceiling, nothing in the fragment but the session.
+    var pid = (location.search.match(/[?&]id=([a-f0-9]{8,32})/) || [])[1];
+    if (pid) {
+      fetch('/s/' + pid + '.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) { hashPayload = j; hashDone = true; maybeStart(); })
+        .catch(function () {
+          setStatus('err', 'Published link unknown or expired (links live one week)');
+          hashDone = true; maybeStart();
+        });
+      return;
+    }
     var m = location.hash.match(/[#&]p=([^&]+)/);
     if (!m || typeof DecompressionStream === 'undefined') { hashDone = true; maybeStart(); return; }
     try {
