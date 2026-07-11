@@ -1393,6 +1393,28 @@ MCP_APPS_HOST_JS = r"""
       maybeStart();
       return;
     }
+
+    // View->host tools/call (wired-transport v0.1): forward to /mcp (same
+    // origin) and reply with the matching JSON-RPC id. Only app-callable
+    // tools pass — the spec's host-side visibility enforcement.
+    if (msg.method === 'tools/call' && msg.id !== undefined) {
+      var APP_TOOLS = { store_append: 1, store_read: 1, store_clear: 1, render_ping: 1 };
+      var toolName = msg.params && msg.params.name;
+      if (!APP_TOOLS[toolName]) {
+        iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id,
+          error: { code: -32601, message: 'tool not app-callable from this host: ' + toolName } }, '*');
+        return;
+      }
+      fetch('/mcp', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: msg.id, method: 'tools/call', params: msg.params }) })
+        .then(function (r) { return r.json(); })
+        .then(function (resp) { iframe.contentWindow.postMessage(resp, '*'); })
+        .catch(function (e) {
+          iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id,
+            error: { code: -32603, message: String(e && e.message || e) } }, '*');
+        });
+      return;
+    }
   });
 
   setTimeout(function () {

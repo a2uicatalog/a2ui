@@ -19239,6 +19239,107 @@ function _expandWiredSurface(payload, variantKey, selfUrl) {
 }
 
 
+// ==== atoms_wired_render.gs ====
+// atoms_wired_render.gs — the wired dialect's layout->HTML loop, extracted from
+// Code.gs as a PURE function (spec/wired-transport-v0.1.md, a2ui-private —
+// same move as atoms_v1_decode.gs): GAS keeps behavior by delegation, the MCP
+// Apps bundle gets the SAME renderer by concatenation. No HtmlService, no GAS
+// services — Node-testable. Returns the content HTML only; the caller owns
+// the page shell (GAS: AtomPage template + A2UIState include; view: paint()).
+
+var _WIRED_ATOM_ALIASES = {
+  'text_input': 'form_input',
+  'number_input': 'form_input',   // numeric variant travels via block.input_type (G3)
+  'data_table': 'data_table_sortable'
+};
+
+function _resolveInitialRows(wireExpr, statePrimitives) {
+  if (!wireExpr || !wireExpr.startsWith('#')) return null;
+  var dot    = wireExpr.indexOf('.');
+  var nodeId = wireExpr.slice(1, dot);
+  for (var i = 0; i < statePrimitives.length; i++) {
+    var p = statePrimitives[i];
+    if (p.id !== nodeId) continue;
+    if (p.primitive === 'ArrayFilter' && p.props && Array.isArray(p.props.source)) return p.props.source;
+    if (p.primitive === 'ValueStore'  && p.props && Array.isArray(p.props.initialValue)) return p.props.initialValue;
+  }
+  return null;
+}
+
+var _A2UI_VARIANT = '';
+
+
+function _a2uiRenderWiredLayout(payload) {
+  var theme      = payload.theme || 'light';
+  var layout     = payload.layout || [];
+  var primitives = payload.state_primitives || [];
+  var content    = '';
+
+  layout.forEach(function(el) {
+    var rawType = el.atom || el.type;
+    // Layout structure primitives — not atoms, just HTML wrappers
+    if (rawType === 'row_open') {
+      var p = el.props || {};
+      content += '<div style="display:flex;gap:' + (p.gap || '24px') + ';align-items:' + (p.align || 'stretch') + ';' + (p.style || '') + '">';
+      return;
+    }
+    if (rawType === 'row_close') { content += '</div>'; return; }
+    // group_open/group_close: styled container that RESPECTS step visibility —
+    // section cards / per-round panels spanning several layout elements
+    // (row_open ignores step by design; added 2026-07-10 for the americano app).
+    if (rawType === 'group_open') {
+      var gp = el.props || {};
+      var gStep = (el.step !== undefined) ? ' data-a2ui-step="' + el.step + '"' : '';
+      var gHide = (el.step !== undefined && el.step !== 0) ? 'display:none;' : '';
+      content += '<div' + gStep + ' style="' + gHide + (gp.style || '') + '">';
+      return;
+    }
+    if (rawType === 'group_close') { content += '</div>'; return; }
+
+    var props = el.props || {};
+    var block = {};
+    Object.keys(props).forEach(function(k) { block[k] = props[k]; });
+    block.type      = _WIRED_ATOM_ALIASES[rawType] || rawType;
+    block.component = el.component;
+    if (rawType === 'number_input' && !block.input_type) block.input_type = 'number';
+
+    if (Array.isArray(block.columns)) {
+      block.columns = block.columns.map(function(c) {
+        if (typeof c === 'string') {
+          return { key: c, label: c.charAt(0).toUpperCase() + c.slice(1).replace(/_/g, ' ') };
+        }
+        return c;
+      });
+    }
+
+    if (el.wire && el.wire.rows && !block.rows) {
+      var initRows = _resolveInitialRows(el.wire.rows, primitives);
+      if (initRows) block.rows = initRows;
+    }
+
+    var atomHtml = renderAtoms([block], { theme: theme });
+
+    if (el.id) {
+      var stepAttr  = (el.step !== undefined) ? ' data-a2ui-step="' + el.step + '"' : '';
+      var stepStyle = (el.step !== undefined && el.step !== 0) ? 'display:none;' : '';
+      var csStyle   = el.container_style ? el.container_style : '';
+      var combinedStyle = (stepStyle + csStyle) ? ' style="' + (stepStyle + csStyle).replace(/"/g, "'") + '"' : '';
+      var colsAttr  = block.columns
+        ? ' data-a2ui-columns="' + JSON.stringify(block.columns).replace(/"/g, '&quot;') + '"'
+        : '';
+      var emptyAttr = block.emptyMessage
+        ? ' data-a2ui-empty="' + String(block.emptyMessage).replace(/"/g, '&quot;') + '"'
+        : '';
+      content += '<div id="a2ui-' + el.id + '"' + stepAttr + combinedStyle + colsAttr + emptyAttr + '>' + atomHtml + '</div>';
+    } else {
+      content += atomHtml;
+    }
+  });
+
+  return content;
+}
+
+
 // ==== atoms_workspace.gs ====
 // atoms_workspace.gs — Workspace-native atoms (GAS server-side APIs)
 // All atoms use typeof guards so they degrade gracefully in preview mode.
@@ -20559,6 +20660,38 @@ _RENDERERS['metar_feed'] = function (b) {
 
 var VALID_ID = /^[a-zA-Z0-9_-]+$/;
 var MAX_PATTERN_LENGTH = 200;
+// ─── Action transport (spec/wired-transport-v0.1.md, a2ui-private) ───────────
+// Selected by CAPABILITY, never by payload flag: gas (google.script.run) →
+// host (JSON-RPC tools/call over the MCP Apps bridge; sheet verbs map onto the
+// worker's store_* tools) → none (DECLARED error state — never a dead button).
+function _a2uiActionTransport(type, req, onOk, onFail) {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(onOk).withFailureHandler(onFail)
+      .a2uiAction(type, req);
+    return;
+  }
+  if (window._A2UI_HOST_BRIDGE && typeof window._A2UI_HOST_BRIDGE.callTool === 'function') {
+    var VERBS = { 'gas:sheet_append': 'store_append',
+                  'gas:sheet_query':  'store_read',
+                  'gas:sheet_clear':  'store_clear' };
+    var tool = VERBS[type];
+    if (!tool) {
+      onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this action needs the Apps Script surface.' });
+      return;
+    }
+    var store = 'wired:' + ((req.appConfig && req.appConfig.id) || 'app') + ':' +
+                ((req.config && req.config.sheet) || 'data');
+    var args = tool === 'store_append' ? { store: store, record: req.data }
+             : tool === 'store_clear'  ? { store: store }
+             : { store: store, limit: 500 };
+    window._A2UI_HOST_BRIDGE.callTool(tool, args).then(function(res) {
+      onOk((res && res.structuredContent) || { ok: false, error: 'empty host response' });
+    })['catch'](function(e) { onFail(e); });
+    return;
+  }
+  onOk({ ok: false, error: 'This app needs a backend this host cannot reach — its buttons are inert here.' });
+}
+
 var OUTPUT_WIRE_PROPS = { onChange: 1, onClick: 1, onToggle: 1, onRowClick: 1, onFlightClick: 1, onSearch: 1, onAssign: 1, setDone: 1 };
 
 function A2UIStateEngine(spec) {
@@ -21227,8 +21360,7 @@ A2UIStateEngine.prototype._initAction = function(p) {
     self._set(p.id, 'isSuccess', false);
     self._set(p.id, 'isError',   false);
 
-    google.script.run
-      .withSuccessHandler(function(r) {
+    var _onOk = (function(r) {
         if (thisGen !== lastGen) { console.log('[A2UI] stale', p.id, thisGen, lastGen); return; }
         if (!r) { console.error('[A2UI] null response for', p.id, '— server returned nothing'); self._set(p.id, 'isPending', false); self._set(p.id, 'isError', true); self._set(p.id, 'error', 'Server returned null'); return; }
         console.log('[A2UI]', p.id, 'ok='+r.ok, 'rows='+(r.data?r.data.length:'null'), r.error||'');
@@ -21251,8 +21383,8 @@ A2UIStateEngine.prototype._initAction = function(p) {
             if (n && n._setValue) n._setValue(n._initialValue !== undefined ? n._initialValue : '');
           });
         }
-      })
-      .withFailureHandler(function(e) {
+      });
+    var _onFail = (function(e) {
         if (thisGen !== lastGen) return;
         console.error('[A2UI] failure', p.id, e && (e.message || JSON.stringify(e)));
         self._set(p.id, 'isPending', false);
@@ -21260,8 +21392,9 @@ A2UIStateEngine.prototype._initAction = function(p) {
         self._set(p.id, 'isSuccess', false);
         self._set(p.id, 'isError',   true);
         self._set(p.id, 'error',     (e && e.message) || 'Unknown error');
-      })
-      .a2uiAction(p.type, { data: collected, config: config, appConfig: (window.__A2UI_SCHEMA__ || {}).app || {} });
+      });
+    _a2uiActionTransport(p.type, { data: collected, config: config,
+        appConfig: (window.__A2UI_SCHEMA__ || {}).app || {} }, _onOk, _onFail);
   };
 
   this.nodes[p.id] = node;
@@ -21868,9 +22001,13 @@ function _a2uiBindRowClicks(wrapEl) {
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', function() {
-  var schema = window.__A2UI_SCHEMA__;
+// Boot is CALLABLE (wired-transport v0.1): GAS pages boot on DOMContentLoaded
+// as ever; the MCP Apps view calls _a2uiBootWiredSurface(schema) after paint(),
+// long after DOMContentLoaded fired.
+window._a2uiBootWiredSurface = function(schema) {
+  schema = schema || window.__A2UI_SCHEMA__;
   if (!schema || schema.type !== 'a2ui_wired_surface') return;
+  window.__A2UI_SCHEMA__ = schema;
 
   window._a2uiSchema  = schema;
   window._a2uiEngine = new A2UIStateEngine(schema);
@@ -22064,6 +22201,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   };
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  window._a2uiBootWiredSurface(window.__A2UI_SCHEMA__);
 });
 
 
@@ -22159,13 +22300,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     var root = document.getElementById('a2ui-root');
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark');
+    // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
+    // layout with the SAME extracted loop GAS uses, then boot the state engine —
+    // actions route through _a2uiActionTransport (host tools/call on this surface).
+    if (payload.type === 'a2ui_wired_surface') {
+      if (payload.variants || payload.wired_templates) {
+        payload = _expandWiredSurface(payload, '', '');
+      }
+      root.innerHTML = _a2uiRenderWiredLayout(payload);
+      _reExecuteScripts(root);
+      if (typeof window._a2uiBootWiredSurface === 'function') {
+        window._a2uiBootWiredSurface(payload);
+      }
+      reportSize();
+      return;
+    }
     root.innerHTML = renderAtoms(payload.blocks || [], { theme: payload.theme });
     // Overlay-aware layout: constrain flowing content to the left half only
     // when an atom DECLARES itself a right-half overlay.
     root.classList.toggle('a2ui-with-overlay', !!root.querySelector('[data-a2ui-overlay]'));
-    // innerHTML-injected <script> tags never execute (browsers block it);
-    // interactive atoms ship inline <script>, so re-create + re-append each
-    // one to actually run it.
+    _reExecuteScripts(root);
+  }
+
+  // innerHTML-injected <script> tags never execute (browsers block it);
+  // interactive atoms ship inline <script>, so re-create + re-append each
+  // one to actually run it.
+  function _reExecuteScripts(root) {
     var scripts = root.querySelectorAll('script');
     for (var i = 0; i < scripts.length; i++) {
       var old = scripts[i];
@@ -22212,6 +22372,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }).observe(document.documentElement);
   }
   setTimeout(reportSize, 150);
+
+  // View->host tool calls (spec: plain JSON-RPC tools/call over the bridge;
+  // the host enforces app-visibility). Powers the wired dialect's host
+  // transport (_a2uiActionTransport in the A2UIState partial).
+  var _pending = {};
+  window._A2UI_HOST_BRIDGE = {
+    callTool: function (name, args) {
+      return new Promise(function (resolve, reject) {
+        var id = 'tc-' + Math.random().toString(36).slice(2);
+        _pending[id] = { resolve: resolve, reject: reject };
+        setTimeout(function () {
+          if (_pending[id]) { delete _pending[id]; reject(new Error('host tools/call timeout: ' + name)); }
+        }, 15000);
+        post({ jsonrpc: '2.0', id: id, method: 'tools/call',
+               params: { name: name, arguments: args || {} } });
+      });
+    }
+  };
+  window.addEventListener('message', function (ev) {
+    var msg = ev.data;
+    if (!msg || msg.jsonrpc !== '2.0' || !_pending[msg.id]) return;
+    var pend = _pending[msg.id];
+    delete _pending[msg.id];
+    if (msg.error) pend.reject(new Error(msg.error.message || 'tools/call failed'));
+    else pend.resolve(msg.result);
+  });
 
   post({
     jsonrpc: '2.0',

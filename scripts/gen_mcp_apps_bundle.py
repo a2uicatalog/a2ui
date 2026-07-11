@@ -167,13 +167,32 @@ HANDSHAKE = """
     }
     var root = document.getElementById('a2ui-root');
     document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark');
+    // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
+    // layout with the SAME extracted loop GAS uses, then boot the state engine —
+    // actions route through _a2uiActionTransport (host tools/call on this surface).
+    if (payload.type === 'a2ui_wired_surface') {
+      if (payload.variants || payload.wired_templates) {
+        payload = _expandWiredSurface(payload, '', '');
+      }
+      root.innerHTML = _a2uiRenderWiredLayout(payload);
+      _reExecuteScripts(root);
+      if (typeof window._a2uiBootWiredSurface === 'function') {
+        window._a2uiBootWiredSurface(payload);
+      }
+      reportSize();
+      return;
+    }
     root.innerHTML = renderAtoms(payload.blocks || [], { theme: payload.theme });
     // Overlay-aware layout: constrain flowing content to the left half only
     // when an atom DECLARES itself a right-half overlay.
     root.classList.toggle('a2ui-with-overlay', !!root.querySelector('[data-a2ui-overlay]'));
-    // innerHTML-injected <script> tags never execute (browsers block it);
-    // interactive atoms ship inline <script>, so re-create + re-append each
-    // one to actually run it.
+    _reExecuteScripts(root);
+  }
+
+  // innerHTML-injected <script> tags never execute (browsers block it);
+  // interactive atoms ship inline <script>, so re-create + re-append each
+  // one to actually run it.
+  function _reExecuteScripts(root) {
     var scripts = root.querySelectorAll('script');
     for (var i = 0; i < scripts.length; i++) {
       var old = scripts[i];
@@ -220,6 +239,32 @@ HANDSHAKE = """
     }).observe(document.documentElement);
   }
   setTimeout(reportSize, 150);
+
+  // View->host tool calls (spec: plain JSON-RPC tools/call over the bridge;
+  // the host enforces app-visibility). Powers the wired dialect's host
+  // transport (_a2uiActionTransport in the A2UIState partial).
+  var _pending = {};
+  window._A2UI_HOST_BRIDGE = {
+    callTool: function (name, args) {
+      return new Promise(function (resolve, reject) {
+        var id = 'tc-' + Math.random().toString(36).slice(2);
+        _pending[id] = { resolve: resolve, reject: reject };
+        setTimeout(function () {
+          if (_pending[id]) { delete _pending[id]; reject(new Error('host tools/call timeout: ' + name)); }
+        }, 15000);
+        post({ jsonrpc: '2.0', id: id, method: 'tools/call',
+               params: { name: name, arguments: args || {} } });
+      });
+    }
+  };
+  window.addEventListener('message', function (ev) {
+    var msg = ev.data;
+    if (!msg || msg.jsonrpc !== '2.0' || !_pending[msg.id]) return;
+    var pend = _pending[msg.id];
+    delete _pending[msg.id];
+    if (msg.error) pend.reject(new Error(msg.error.message || 'tools/call failed'));
+    else pend.resolve(msg.result);
+  });
 
   post({
     jsonrpc: '2.0',
@@ -275,7 +320,7 @@ def build_bundle():
     core_parts = [PRELUDE]
     # Non-renderer .gs files that legitimately ship in the bundle: PackMap (the
     # atom->catalog gate) and the v1.0 decode shim (pure functions, no DOM).
-    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_wired_expand.gs"}
+    NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_wired_expand.gs", "atoms_wired_render.gs"}
     for f in renderer_files():
         src = f.read_text()
         if f.name not in NON_RENDERER_GS:

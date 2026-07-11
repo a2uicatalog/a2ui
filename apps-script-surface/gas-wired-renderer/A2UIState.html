@@ -4,6 +4,38 @@
 
 var VALID_ID = /^[a-zA-Z0-9_-]+$/;
 var MAX_PATTERN_LENGTH = 200;
+// ─── Action transport (spec/wired-transport-v0.1.md, a2ui-private) ───────────
+// Selected by CAPABILITY, never by payload flag: gas (google.script.run) →
+// host (JSON-RPC tools/call over the MCP Apps bridge; sheet verbs map onto the
+// worker's store_* tools) → none (DECLARED error state — never a dead button).
+function _a2uiActionTransport(type, req, onOk, onFail) {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(onOk).withFailureHandler(onFail)
+      .a2uiAction(type, req);
+    return;
+  }
+  if (window._A2UI_HOST_BRIDGE && typeof window._A2UI_HOST_BRIDGE.callTool === 'function') {
+    var VERBS = { 'gas:sheet_append': 'store_append',
+                  'gas:sheet_query':  'store_read',
+                  'gas:sheet_clear':  'store_clear' };
+    var tool = VERBS[type];
+    if (!tool) {
+      onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this action needs the Apps Script surface.' });
+      return;
+    }
+    var store = 'wired:' + ((req.appConfig && req.appConfig.id) || 'app') + ':' +
+                ((req.config && req.config.sheet) || 'data');
+    var args = tool === 'store_append' ? { store: store, record: req.data }
+             : tool === 'store_clear'  ? { store: store }
+             : { store: store, limit: 500 };
+    window._A2UI_HOST_BRIDGE.callTool(tool, args).then(function(res) {
+      onOk((res && res.structuredContent) || { ok: false, error: 'empty host response' });
+    })['catch'](function(e) { onFail(e); });
+    return;
+  }
+  onOk({ ok: false, error: 'This app needs a backend this host cannot reach — its buttons are inert here.' });
+}
+
 var OUTPUT_WIRE_PROPS = { onChange: 1, onClick: 1, onToggle: 1, onRowClick: 1, onFlightClick: 1, onSearch: 1, onAssign: 1, setDone: 1 };
 
 function A2UIStateEngine(spec) {
@@ -672,8 +704,7 @@ A2UIStateEngine.prototype._initAction = function(p) {
     self._set(p.id, 'isSuccess', false);
     self._set(p.id, 'isError',   false);
 
-    google.script.run
-      .withSuccessHandler(function(r) {
+    var _onOk = (function(r) {
         if (thisGen !== lastGen) { console.log('[A2UI] stale', p.id, thisGen, lastGen); return; }
         if (!r) { console.error('[A2UI] null response for', p.id, '— server returned nothing'); self._set(p.id, 'isPending', false); self._set(p.id, 'isError', true); self._set(p.id, 'error', 'Server returned null'); return; }
         console.log('[A2UI]', p.id, 'ok='+r.ok, 'rows='+(r.data?r.data.length:'null'), r.error||'');
@@ -696,8 +727,8 @@ A2UIStateEngine.prototype._initAction = function(p) {
             if (n && n._setValue) n._setValue(n._initialValue !== undefined ? n._initialValue : '');
           });
         }
-      })
-      .withFailureHandler(function(e) {
+      });
+    var _onFail = (function(e) {
         if (thisGen !== lastGen) return;
         console.error('[A2UI] failure', p.id, e && (e.message || JSON.stringify(e)));
         self._set(p.id, 'isPending', false);
@@ -705,8 +736,9 @@ A2UIStateEngine.prototype._initAction = function(p) {
         self._set(p.id, 'isSuccess', false);
         self._set(p.id, 'isError',   true);
         self._set(p.id, 'error',     (e && e.message) || 'Unknown error');
-      })
-      .a2uiAction(p.type, { data: collected, config: config, appConfig: (window.__A2UI_SCHEMA__ || {}).app || {} });
+      });
+    _a2uiActionTransport(p.type, { data: collected, config: config,
+        appConfig: (window.__A2UI_SCHEMA__ || {}).app || {} }, _onOk, _onFail);
   };
 
   this.nodes[p.id] = node;
@@ -1313,9 +1345,13 @@ function _a2uiBindRowClicks(wrapEl) {
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', function() {
-  var schema = window.__A2UI_SCHEMA__;
+// Boot is CALLABLE (wired-transport v0.1): GAS pages boot on DOMContentLoaded
+// as ever; the MCP Apps view calls _a2uiBootWiredSurface(schema) after paint(),
+// long after DOMContentLoaded fired.
+window._a2uiBootWiredSurface = function(schema) {
+  schema = schema || window.__A2UI_SCHEMA__;
   if (!schema || schema.type !== 'a2ui_wired_surface') return;
+  window.__A2UI_SCHEMA__ = schema;
 
   window._a2uiSchema  = schema;
   window._a2uiEngine = new A2UIStateEngine(schema);
@@ -1509,5 +1545,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   };
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  window._a2uiBootWiredSurface(window.__A2UI_SCHEMA__);
 });
 </script>

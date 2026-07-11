@@ -354,5 +354,7 @@ def test_view_reports_size_changed(bundle):
     handshake = bundle[bundle.rindex("MCP Apps View protocol handshake"):]
     assert "ui/notifications/size-changed" in handshake
     assert "reportSize()" in handshake and "ResizeObserver" in handshake
-    # sent after paint, not only on observer (first paint must always report)
-    assert handshake.index("paint(result.structuredContent") < handshake.index("reportSize();")
+    # sent after paint, not only on observer (first paint must always report):
+    # the tool-result handler itself must pair paint(...) with reportSize()
+    handler = handshake[handshake.index("ui/notifications/tool-result'"):][:400]
+    assert "paint(result.structuredContent" in handler and "reportSize();" in handler
