@@ -1126,7 +1126,7 @@ MCP_APPS_HERO_HTML = """
 </div>
 
 <div class="mcp-host-frame">
-  <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts" src="./renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 </div>
 
 <div class="mcp-playground">
@@ -1474,7 +1474,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts" src="/surfaces/mcp-apps/renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 
   <div class="play-bar">
     <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
@@ -1553,7 +1553,8 @@ def _cursor_glow_html():
 def generate_surface_page(surface, atoms):
     display = SURFACE_NAMES.get(surface, surface)
     is_gas  = surface in GAS_SURFACES
-    hero    = (MCP_APPS_HERO_HTML.replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
+    hero    = (MCP_APPS_HERO_HTML.replace("__BUNDLE_HASH__", _bundle_hash())
+               .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
                if surface == "mcp-apps" else "")
     atoms_lead = (
         f"{len(atoms)} catalog atoms also render on this surface"
@@ -1659,6 +1660,15 @@ document.addEventListener('click', function (e) {{
 </html>"""
 
 
+def _bundle_hash():
+    """Content hash of the generated bundle — stamped into iframe src as a
+    cache-buster (edge caches served a STALE bundle behind a fixed URL; the
+    americano cache-HIT incident, 2026-07-11)."""
+    import hashlib
+    f = ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html"
+    return hashlib.sha1(f.read_bytes()).hexdigest()[:10] if f.exists() else "0"
+
+
 def main():
     with open(SCHEMA) as f:
         raw = yaml.safe_load(f)
@@ -1715,7 +1725,8 @@ def main():
         play_dir = surfaces_dir / "mcp-apps" / "play"
         play_dir.mkdir(parents=True, exist_ok=True)
         (play_dir / "index.html").write_text(
-            MCP_APPS_PLAY_HTML.replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
+            MCP_APPS_PLAY_HTML.replace("__BUNDLE_HASH__", _bundle_hash())
+            .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
             .replace("__MCP_GLOW__", _cursor_glow_html()))
         print(f"✓ full-screen playground → {play_dir}/index.html")
 
