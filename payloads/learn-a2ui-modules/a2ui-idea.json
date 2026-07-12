@@ -3,6 +3,19 @@
   "theme": "dark",
   "blocks": [
     {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "The A2UI idea",
+          "is_current": true
+        }
+      ]
+    },
+    {
       "type": "heading",
       "text": "The A2UI idea"
     },
@@ -70,6 +83,15 @@
       ],
       "correct": 1,
       "explanation": "Dispatch is the whole model: `type` looks up one pre-built, audited renderer function in the registry. The agent never ships behavior — only data."
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "The A2UI idea",
+      "prev_title": "Learn A2UI + MCP",
+      "prev_url": "/s/learn-a2ui",
+      "next_title": "Atoms, catalogs & graduation",
+      "next_url": "/s/learn-a2ui-atoms-catalogs"
     }
   ]
 }

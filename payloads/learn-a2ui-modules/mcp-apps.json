@@ -3,6 +3,19 @@
   "theme": "dark",
   "blocks": [
     {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "MCP Apps & controlled opaqueness",
+          "is_current": true
+        }
+      ]
+    },
+    {
       "type": "heading",
       "text": "MCP Apps & controlled opaqueness"
     },
@@ -71,6 +84,15 @@
         "No allow-same-origin: the mediated channel is the View's only capability",
         "A2UI + MCP Apps compose: declarative cargo inside a mediated sandbox — audited at both layers"
       ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "MCP Apps & controlled opaqueness",
+      "prev_title": "MCP fundamentals",
+      "prev_url": "/s/learn-a2ui-mcp-fundamentals",
+      "next_title": "Back to modules",
+      "next_url": "/s/learn-a2ui"
     }
   ]
 }

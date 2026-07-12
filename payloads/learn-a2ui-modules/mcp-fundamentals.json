@@ -3,6 +3,19 @@
   "theme": "dark",
   "blocks": [
     {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "MCP fundamentals",
+          "is_current": true
+        }
+      ]
+    },
+    {
       "type": "heading",
       "text": "MCP fundamentals"
     },
@@ -83,6 +96,15 @@
         "The server never sees the chat — the host mediates everything",
         "Consent and validation live at the host, by design"
       ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "MCP fundamentals",
+      "prev_title": "Surfaces & the ?p= URL model",
+      "prev_url": "/s/learn-a2ui-surfaces-p-model",
+      "next_title": "MCP Apps & controlled opaqueness",
+      "next_url": "/s/learn-a2ui-mcp-apps"
     }
   ]
 }

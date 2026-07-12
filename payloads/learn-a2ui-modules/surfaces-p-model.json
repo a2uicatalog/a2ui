@@ -3,6 +3,19 @@
   "theme": "dark",
   "blocks": [
     {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "Surfaces & the ?p= URL model",
+          "is_current": true
+        }
+      ]
+    },
+    {
       "type": "heading",
       "text": "Surfaces & the ?p= URL model"
     },
@@ -75,6 +88,15 @@
         "module_map adapts per environment: page: (runtime ?p=) on GAS, url: (pre-published) on MCP Apps",
         "Paginate (module_map) to stay shareable; graduate (emit_deployment) for no limits"
       ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "Surfaces & the ?p= URL model",
+      "prev_title": "Atoms, catalogs & graduation",
+      "prev_url": "/s/learn-a2ui-atoms-catalogs",
+      "next_title": "MCP fundamentals",
+      "next_url": "/s/learn-a2ui-mcp-fundamentals"
     }
   ]
 }
