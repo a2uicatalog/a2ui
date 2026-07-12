@@ -1062,9 +1062,7 @@ def generate_index(atoms):
     # the real web renderer at generate time. This is the one artifact on the
     # page that shows what an "atom" IS — JSON in, UI out.
     demo_blocks = [
-        {"type": "heading", "text": "Q2 Review"},
-        {"type": "stat_card", "value": "1,234", "label": "Daily users", "delta": "+12%", "is_up": True},
-        {"type": "progress_bar", "value": 72, "label": "Quarter target"},
+        {"type": "gradient_heading", "text": "One schema. Any surface."},
     ]
     demo_json = json.dumps({"blocks": demo_blocks}, indent=2)
     demo_json = demo_json.replace("&", "&amp;").replace("<", "&lt;")
@@ -1079,7 +1077,7 @@ def generate_index(atoms):
     # the page's own live cursor_glow or leak outside a clipped preview box.
     _SHOWCASE_BLOCKS = [
         ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
-        ("kinetic_headline", {"type": "kinetic_headline", "text": "Built for agents.", "style": "up"}),
+        ("kinetic_headline", {"type": "kinetic_headline", "text": "Declarative for agents, useful for humans.", "style": "up", "size": "clamp(1.2rem,2.6vw,1.7rem)"}),
         ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
         ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": "467 atoms, every surface"}),
         ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
