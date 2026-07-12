@@ -1940,13 +1940,18 @@ function _renderFromPayload(payload, from) {
  * Render the AirspaceFullscreen HTML template without spawning a nested worker.
  * In gas-fakes, HtmlTemplate.evaluate() spawns a second Worker thread inside the
  * already-running page Worker (each loads all .gs files fresh). Replacing with direct
- * string injection eliminates the nested spawn and is safe because AirspaceFullscreen.html
- * only has two scriptlets: <?= title ?> (escaped) and <?!= content ?> (raw).
+ * string injection eliminates the nested spawn — deliberately NOT using GAS scriptlet
+ * syntax (<?= ?> / <?!= ?>) for the placeholders: createHtmlOutputFromFile().getContent()
+ * HTML-escapes that exact tag shape at the file-storage level even when the template
+ * engine (HtmlTemplate.evaluate()) is never invoked, which silently breaks a plain
+ * string .replace() against it — masked for a long time because AirspaceFullscreen.html
+ * was missing from this renderer entirely (found + fixed 2026-07-12, this bug right
+ * behind it). {{TITLE}} / {{CONTENT}} are inert to GAS and survive getContent() verbatim.
  */
 function _renderFullscreenHtml(title, content) {
   var html = HtmlService.createHtmlOutputFromFile('AirspaceFullscreen').getContent();
   var safe = (title || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  html = html.replace('<?= title ?>', safe).replace('<?!= content ?>', content || '');
+  html = html.replace('{{TITLE}}', safe).replace('{{CONTENT}}', content || '');
   return HtmlService.createHtmlOutput(html)
     .setTitle(title || '')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

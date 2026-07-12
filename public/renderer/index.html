@@ -97,6 +97,23 @@
     .note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:24px 0}
     .note strong{color:var(--text)}
 
+    /* Try-it-now demo tabs — pill pattern borrowed from the MCP playground preset chips */
+    .try-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);margin-bottom:6px}
+    .try-lead{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:640px}
+    .try-lead strong{color:var(--text)}
+    .demo-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+    .demo-tab{font:inherit;display:flex;align-items:baseline;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:700;letter-spacing:.02em;transition:color .15s,border-color .15s,background .15s}
+    .demo-tab .k{font-size:10px;font-weight:800;letter-spacing:.09em;opacity:.65}
+    .demo-tab:hover{border-color:var(--indigo);color:var(--indigo)}
+    .demo-tab[aria-selected="true"]{border-color:var(--indigo);color:var(--indigo);background:var(--accent-soft-bg)}
+    .demo-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:48px;box-shadow:var(--shadow)}
+    .demo-panel[hidden]{display:none}
+    .demo-panel h3{font-size:16px;font-weight:800;margin-bottom:8px}
+    .demo-panel p{font-size:14px;color:var(--muted);margin-bottom:14px;max-width:640px}
+    .demo-panel p strong,.demo-panel p code{color:var(--text)}
+    .demo-cta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .demo-url{margin:0;padding:10px 88px 10px 14px;font-size:12.5px;flex:1;min-width:230px}
+
     footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
   </style>
 </head>
@@ -119,10 +136,50 @@
     Deploy your Google Apps Script renderer
   </div>
 
-  <h1>Deploy your own Google&nbsp;Apps&nbsp;Script renderer</h1>
-  <p class="lead">The renderer is a <strong>Google Apps Script web app you deploy once</strong>, then call with any payload from the catalog. Open source, MIT licensed. You own the URL — no dependency on the demo endpoint.</p>
+  <h1>The Google&nbsp;Apps&nbsp;Script renderer</h1>
+  <p class="lead">A <strong>Google Apps Script web app you deploy once</strong>, then call with any payload from the catalog. Open source, MIT licensed. You own the URL — no dependency on the demo endpoint.</p>
 
-  <p style="font-size:13px;color:var(--muted);margin:-8px 0 32px;">Prerequisites: <strong>Node.js 18+</strong> (for <code>npm</code>, used to install clasp in step 2) and a Google account.</p>
+  <div class="try-kicker">Try it now — no setup</div>
+  <p class="try-lead">Three <strong>permanent short links</strong> into a live deployment of this exact renderer — the same code the steps below put in your own account. Each demo proves a different capability.</p>
+
+  <div class="demo-tabs" role="tablist" aria-label="Renderer demos">
+    <button class="demo-tab" role="tab" id="tab-atc" aria-controls="panel-atc" aria-selected="true"><span class="k">DEMO 1</span>ATC Ops Deck</button>
+    <button class="demo-tab" role="tab" id="tab-americano" aria-controls="panel-americano" aria-selected="false"><span class="k">DEMO 2</span>Americano Night</button>
+    <button class="demo-tab" role="tab" id="tab-learn" aria-controls="panel-learn" aria-selected="false"><span class="k">DEMO 3</span>Learn A2UI + MCP</button>
+  </div>
+
+  <div class="demo-panel" id="panel-atc" role="tabpanel" aria-labelledby="tab-atc">
+    <h3>ATC Ops Deck — live data in a link</h3>
+    <p>A slide playbook over Toulouse-Blagnac: <strong>live ADS-B and METAR feeds</strong>, an isometric takeoff scene, and a fullscreen airspace command deck with a real-time traffic ticker. Everything arrives as one declarative payload — the aircraft on the radar are actually up there right now.</p>
+    <p>Proves: playbook slides, data-source atoms, fullscreen breakout — in a plain shareable link.</p>
+    <div class="demo-cta">
+      <a class="btn-primary" href="https://a2uicatalog.ai/s/atc" target="_blank" rel="noopener">Open demo →</a>
+      <pre class="demo-url" id="url-atc">https://a2uicatalog.ai/s/atc<button class="copy-btn" onclick="copy('url-atc',this)">COPY</button></pre>
+    </div>
+  </div>
+
+  <div class="demo-panel" id="panel-americano" role="tabpanel" aria-labelledby="tab-americano" hidden>
+    <h3>Americano Night — a wired, interactive app</h3>
+    <p>A padel tournament night as a <strong>wired surface</strong>: live scoring, rotation schedules, standings that update as you tap — state stores, actions, and sessions, still expressed as one declarative payload. Open it on two phones with the same link and score together.</p>
+    <p>Proves: the wired dialect — real interactivity without the agent writing a line of imperative code.</p>
+    <div class="demo-cta">
+      <a class="btn-primary" href="https://a2uicatalog.ai/s/americano#t=renderer-demo" target="_blank" rel="noopener">Open demo →</a>
+      <pre class="demo-url" id="url-americano">https://a2uicatalog.ai/s/americano<button class="copy-btn" onclick="copy('url-americano',this)">COPY</button></pre>
+    </div>
+  </div>
+
+  <div class="demo-panel" id="panel-learn" role="tabpanel" aria-labelledby="tab-learn" hidden>
+    <h3>Learn A2UI + MCP — the in-depth brief</h3>
+    <p>A five-module curriculum on <strong>A2UI and the Model Context Protocol</strong>: the payload contract, atoms and the graduation pipeline, the <code>?p=</code> URL model, MCP fundamentals, and MCP Apps' sandboxed handshake. Flashcards, knowledge checks, and worked examples throughout.</p>
+    <p>Proves: <code>module_map</code> pagination — each module card auto-encodes into its own self-contained page, so depth is unbounded while every link stays under the URL ceiling. Module 3 explains the exact mechanism that built the page you'll be reading.</p>
+    <div class="demo-cta">
+      <a class="btn-primary" href="https://a2uicatalog.ai/s/learn-a2ui" target="_blank" rel="noopener">Open demo →</a>
+      <pre class="demo-url" id="url-learn">https://a2uicatalog.ai/s/learn-a2ui<button class="copy-btn" onclick="copy('url-learn',this)">COPY</button></pre>
+    </div>
+  </div>
+
+  <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">Deploy your own</h2>
+  <p style="font-size:13px;color:var(--muted);margin:0 0 32px;">Prerequisites: <strong>Node.js 18+</strong> (for <code>npm</code>, used to install clasp in step 2) and a Google account.</p>
 
   <div class="steps">
 
@@ -250,6 +307,17 @@ function doGet() {
         setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
       });
     }
+    // Try-it-now demo tabs
+    document.querySelectorAll('.demo-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.demo-tab').forEach(function (t) {
+          t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.demo-panel').forEach(function (p) {
+          p.hidden = (p.id !== tab.getAttribute('aria-controls'));
+        });
+      });
+    });
   </script>
 
 </body>
