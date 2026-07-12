@@ -1263,6 +1263,84 @@ MCP_APPS_HERO_HTML = """
 <script>
 __MCP_APPS_HOST_JS__
 </script>
+
+<script>
+/* Graduation flyby — the rocket that earned its way out of this page's
+   off-catalog slot climbs the right edge once per visit, then removes
+   itself from the DOM. Standalone page chrome: the atom's real renderer
+   lives inside the sandboxed iframe and can't reach this document (that's
+   the point of the sandbox), so this is a compact re-draw in the same
+   visual language. Skipped entirely under prefers-reduced-motion. */
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var cv = document.createElement('canvas');
+  cv.style.cssText = 'position:fixed;top:0;right:0;width:200px;height:100%;pointer-events:none;z-index:60;';
+  document.body.appendChild(cv);
+  var ctx = cv.getContext('2d');
+  function resize(){ cv.width = 200; cv.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  var trail = [], t0 = null, DUR = 4600, S = 26;
+  function drawRocket(cx, cy, s){
+    var pulse = 0.85 + 0.15*Math.sin(Date.now()/90);
+    var glow = ctx.createRadialGradient(cx, cy+s*1.05, 0, cx, cy+s*1.05, s*1.5*pulse);
+    glow.addColorStop(0,'rgba(255,255,200,0.98)');
+    glow.addColorStop(0.12,'rgba(255,180,0,0.9)');
+    glow.addColorStop(0.4,'rgba(255,60,0,0.55)');
+    glow.addColorStop(1,'rgba(255,20,0,0)');
+    ctx.beginPath(); ctx.arc(cx, cy+s*1.05, s*1.5*pulse, 0, Math.PI*2);
+    ctx.fillStyle = glow; ctx.fill();
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.beginPath(); ctx.moveTo(-s*0.28,s*0.55); ctx.lineTo(-s*0.72,s*1.02); ctx.lineTo(-s*0.28,s*0.82);
+    ctx.closePath(); ctx.fillStyle = '#0077b6'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(s*0.28,s*0.55); ctx.lineTo(s*0.72,s*1.02); ctx.lineTo(s*0.28,s*0.82);
+    ctx.closePath(); ctx.fillStyle = '#0077b6'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-s*0.22,s*0.68); ctx.lineTo(-s*0.3,s*0.98); ctx.lineTo(s*0.3,s*0.98); ctx.lineTo(s*0.22,s*0.68);
+    ctx.closePath();
+    var bell = ctx.createLinearGradient(-s*0.3,0,s*0.3,0);
+    bell.addColorStop(0,'#4cc9f0'); bell.addColorStop(0.5,'#e0f7ff'); bell.addColorStop(1,'#4cc9f0');
+    ctx.fillStyle = bell; ctx.fill();
+    var body = ctx.createLinearGradient(-s*0.28,0,s*0.28,0);
+    body.addColorStop(0,'#0a8cce'); body.addColorStop(0.25,'#00c8f0'); body.addColorStop(0.55,'#c8f4ff');
+    body.addColorStop(0.8,'#00c8f0'); body.addColorStop(1,'#0a6ca0');
+    ctx.beginPath(); ctx.roundRect(-s*0.28,-s*0.6,s*0.56,s*1.3,s*0.05);
+    ctx.fillStyle = body; ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(0,-s*1.05);
+    ctx.bezierCurveTo(-s*0.07,-s*0.78,-s*0.24,-s*0.68,-s*0.28,-s*0.6);
+    ctx.lineTo(s*0.28,-s*0.6);
+    ctx.bezierCurveTo(s*0.24,-s*0.68,s*0.07,-s*0.78,0,-s*1.05);
+    ctx.closePath();
+    var nose = ctx.createLinearGradient(-s*0.28,0,s*0.28,0);
+    nose.addColorStop(0,'#0a6ca0'); nose.addColorStop(0.45,'#d8f8ff'); nose.addColorStop(1,'#0a6ca0');
+    ctx.fillStyle = nose; ctx.fill();
+    ctx.restore();
+  }
+  function frame(ts){
+    if (!t0) t0 = ts;
+    var p = (ts - t0) / DUR;
+    if (p > 1.2) { cv.remove(); return; }   // rocket gone AND trail faded
+    var h = cv.height, cx = cv.width*0.5 + Math.sin(p*9)*3;
+    // accelerating climb: below the fold -> off the top
+    var cy = (h + S*2) - (h + S*6) * p * p * (0.35 + 0.65*p);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    if (p <= 1) {
+      trail.push({x: cx + (Math.random()-0.5)*S*0.08, y: cy + S*0.98, t: Date.now(), r: 2 + Math.random()*3});
+    }
+    trail = trail.filter(function(q){ return Date.now() - q.t < 300; });
+    trail.forEach(function(q){
+      var age = (Date.now() - q.t) / 300, a = (1-age)*0.7, r = q.r*(1+age*3);
+      var g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, r);
+      g.addColorStop(0, 'rgba(255,230,100,' + a + ')');
+      g.addColorStop(0.4, 'rgba(255,90,0,' + (a*0.7) + ')');
+      g.addColorStop(1, 'rgba(255,20,0,0)');
+      ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, Math.PI*2); ctx.fillStyle = g; ctx.fill();
+    });
+    if (p <= 1) drawRocket(cx, cy, S);
+    requestAnimationFrame(frame);
+  }
+  setTimeout(function(){ requestAnimationFrame(frame); }, 900);
+})();
+</script>
 """
 
 # Hand-picked demo schemas for the playground preset chips. Every payload
