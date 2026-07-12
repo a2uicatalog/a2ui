@@ -18,7 +18,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 467 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 468 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -8294,6 +8294,21 @@
         "show a checklist items with Material icons",
         "checklist where each item has a material symbol icon (not just a check mark). good for capability or requirements lists",
         "render a icon checklist"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:gdm_rocket_panel",
+      "displayName": "Gdm Rocket Panel",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/gdm_rocket_panel",
+      "capabilities": [
+        "mcp-apps"
+      ],
+      "description": "Fixed-position canvas launch animation -- an isometric rocket climbing through exhaust trail and sparks to a HUD telemetry readout. Overlays one half of the viewport (position:fixed, non-interactive). Ported from the Google Meet Stage add-on's gdm-rocket-panel component (used in the \"Apps Script is now a Workspace Core Service\" playbook); graduated from stage:preview after serving as the mcp-apps page's off-catalog demo content -- the catalog's intake pipeline working as designed.",
+      "representativeQueries": [
+        "show a isometric rocket launch canvas animation, fixed half-viewport overlay",
+        "fixed-position canvas launch animation -- an isometric rocket climbing through exhaust trail and sparks to a hud",
+        "render a gdm rocket panel"
       ]
     }
   ]

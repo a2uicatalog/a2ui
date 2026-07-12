@@ -184,9 +184,11 @@ HANDSHAKE = """
       return;
     }
     root.innerHTML = renderAtoms(payload.blocks || [], { theme: payload.theme });
-    // Overlay-aware layout: constrain flowing content to the left half only
-    // when an atom DECLARES itself a right-half overlay.
+    // Overlay-aware layout: constrain flowing content to the opposite half
+    // when an atom DECLARES itself a half-viewport overlay (right by default;
+    // left-half overlays push content right instead).
     root.classList.toggle('a2ui-with-overlay', !!root.querySelector('[data-a2ui-overlay]'));
+    root.classList.toggle('a2ui-overlay-left', !!root.querySelector('[data-a2ui-overlay="left-half"]'));
     _reExecuteScripts(root);
   }
 
@@ -375,10 +377,12 @@ def build_bundle():
 {atom_styles}
 <style>
 body {{ padding: 24px; }}
-/* Applied by paint() ONLY when the payload contains a declared right-half
-   overlay atom (data-a2ui-overlay, e.g. gdm_rocket_panel) -- everything else
-   gets the full viewport. */
+/* Applied by paint() ONLY when the payload contains a declared half-viewport
+   overlay atom (data-a2ui-overlay, e.g. gdm_rocket_panel, iso_fireworks_panel)
+   -- everything else gets the full viewport. Right-half overlays (default)
+   squeeze content left; left-half overlays push it right. */
 #a2ui-root.a2ui-with-overlay {{ max-width: 50%; box-sizing: border-box; }}
+#a2ui-root.a2ui-with-overlay.a2ui-overlay-left {{ margin-left: 50%; }}
 </style>
 </head>
 <body class="asw-page">

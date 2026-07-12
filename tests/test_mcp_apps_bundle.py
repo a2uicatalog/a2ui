@@ -163,21 +163,33 @@ def test_bundle_includes_pack_map_and_partials(bundle):
 
 def test_rocket_panel_sourced_from_renderer_not_handport(bundle):
     # The v1 hand-port (GDM_ROCKET_PANEL_JS) is gone; the rocket now comes
-    # from atoms_canvas.gs via concat — single source of truth.
+    # from atoms_canvas.gs via concat — single source of truth. Graduated
+    # 2026-07-12: position/layer/loop are field-driven, so assert the field
+    # branches rather than a single hardcoded position string.
     assert not hasattr(gen, "GDM_ROCKET_PANEL_JS")
     assert "_RENDERERS['gdm_rocket_panel']" in bundle
-    assert "position:fixed;top:0;right:0;width:50%;height:100%" in bundle
-    # the overlay DECLARES itself so layout can react to it
+    assert "'left:0;' : 'right:0;'" in bundle          # side: both branches
+    assert "side + '-half" in bundle                   # overlay still self-declares
+    assert "b.layer === 'front' ? 150 : 50" in bundle  # layer: the two z variants
+    assert "var LOOP=" in bundle                       # loop: relaunch wiring
+
+
+def test_fireworks_panel_present(bundle):
+    # The current off-catalog resident (iso_fireworks_panel, stage:preview,
+    # field-less) — same overlay contract the rocket had before graduating.
+    assert "_RENDERERS['iso_fireworks_panel']" in bundle
     assert 'data-a2ui-overlay="right-half"' in bundle
+    assert "prefers-reduced-motion" in bundle
 
 
 def test_layout_is_overlay_aware(bundle):
     # The 50% content constraint applies ONLY when the rendered payload
-    # declares a right-half overlay atom — every other payload (e.g. the
+    # declares a half-viewport overlay atom — every other payload (e.g. the
     # ATC deck) gets the full viewport. Regression for the 2026-07-10
-    # "half-screen radar" screenshot.
+    # "half-screen radar" screenshot. Left-half overlays push content right.
     assert "a2ui-with-overlay" in bundle
     assert "root.classList.toggle('a2ui-with-overlay'" in bundle
+    assert "a2ui-overlay-left" in bundle
     assert "#a2ui-root { max-width: 50%" not in bundle  # the old static squeeze
 
 

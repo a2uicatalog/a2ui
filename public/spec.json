@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 467,
+ "atomCount": 468,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -14436,6 +14436,26 @@
     "filled": "filled icon variant (default true)",
     "accent": "default icon colour",
     "items": "array of strings or {text, icon?, sublabel?, color?}"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "gdm_rocket_panel",
+   "description": "Fixed-position canvas launch animation -- an isometric rocket climbing through exhaust trail and sparks to a HUD telemetry readout. Overlays one half of the viewport (position:fixed, non-interactive). Ported from the Google Meet Stage add-on's gdm-rocket-panel component (used in the \"Apps Script is now a Workspace Core Service\" playbook); graduated from stage:preview after serving as the mcp-apps page's off-catalog demo content -- the catalog's intake pipeline working as designed.",
+   "compact_description": "isometric rocket launch canvas animation, fixed half-viewport overlay",
+   "surfaces": {
+    "works_on": [
+     "mcp-apps"
+    ]
+   },
+   "fields": {
+    "side": "string (optional, right|left, default right -- which viewport half the overlay claims)",
+    "layer": "string (optional, back|front, default back -- back is z-index 50, front 150, matching the original component's layer variants)",
+    "loop": "boolean (optional, default false -- false launches once and holds at apex; true restores the original's ambient relaunch loop)"
    },
    "source": {
     "name": "a2uicatalog",

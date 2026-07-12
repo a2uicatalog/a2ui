@@ -1227,7 +1227,7 @@ MCP_APPS_HERO_HTML = """
 </div>
 
 <div class="mcp-note">
-  <strong>The launch animation isn't a catalog atom (yet)</strong> — it's <code>gdm_rocket_panel</code>, hand-curated content (ported from a Google Meet Stage add-on demo, <code>stage: preview</code>), rendered in the same surface, through the same block dispatch, right alongside the stable catalog atoms below it. That's the actual point: MCP Apps' controlled opaqueness means an agent isn't limited to what's been pre-enumerated into the catalog — curated and catalog-declarative content sit side by side in one iframe, both still only reachable through the Host's mediated channel, not a raw DOM handoff.
+  <strong>The fireworks aren't a catalog atom</strong> — that's <code>iso_fireworks_panel</code>, hand-curated content (<code>stage: preview</code>, no typed fields), rendered in the same surface, through the same block dispatch, right alongside the stable catalog atoms below it. The rocket that used to hold this slot? It <strong>graduated</strong>: <code>gdm_rocket_panel</code> is now a stable catalog atom with typed fields (<code>side</code>, <code>layer</code>, <code>loop</code>) and a published page. That's the actual point: MCP Apps' controlled opaqueness isn't just coexistence — it's the catalog's intake pipeline. Curated content ships first through the Host's mediated channel (never a raw DOM handoff), and what proves out becomes schema.
 </div>
 
 <div class="mcp-status">
@@ -1274,9 +1274,9 @@ PLAYGROUND_PRESETS = [
         "theme": "dark",
         "blocks": [
             {"type": "heading", "level": 2, "text": "Catalog atoms — and curated content — live inside an MCP App"},
-            {"type": "gdm_rocket_panel"},
-            {"type": "stat_card", "value": "462", "label": "Catalog atoms on this surface", "delta": "one payload away", "is_up": True},
-            {"type": "body", "text": "The launch animation on the right is **not a catalog atom** — it's hand-curated content, rendered through the same block dispatch as everything here. All of it arrived over one **ui/notifications/tool-result** message, exactly as a real MCP server delivers after a tool call."},
+            {"type": "iso_fireworks_panel"},
+            {"type": "stat_card", "value": "1", "label": "Atom just graduated", "delta": "preview → stable", "is_up": True},
+            {"type": "body", "text": "The fireworks on the right are **not a catalog atom** — hand-curated content, rendered through the same block dispatch as everything here. The rocket that used to hold this slot just **graduated** into the catalog as `gdm_rocket_panel`, a stable atom with typed fields (see the Rocket preset). All of it arrived over one **ui/notifications/tool-result** message, exactly as a real MCP server delivers after a tool call."},
             {"type": "chip_group", "chips": [
                 {"label": "MCP Apps", "active": True}, {"label": "Apps Script Web"},
                 {"label": "Meet Stage"}, {"label": "Chat"}, {"label": "Email"},
@@ -1289,6 +1289,15 @@ PLAYGROUND_PRESETS = [
                 {"front": "What delivers this payload?", "back": "ui/notifications/tool-result, sent by the Host after ui/initialize completes."},
                 {"front": "What renders it?", "back": "The same renderAtoms() the GAS catalog renderer uses in production — concatenated, not rewritten."},
                 {"front": "Where's the model in this loop?", "back": "Between chat and tool call — the view itself only talks to the Host, never the network."}]},
+        ]}},
+    {"id": "rocket", "label": "Rocket (graduated)", "payload": {
+        "theme": "dark",
+        "blocks": [
+            {"type": "heading", "level": 2, "text": "gdm_rocket_panel — graduated preview → stable"},
+            {"type": "gdm_rocket_panel", "side": "right", "loop": True},
+            {"type": "body", "text": "This launch animation began as hand-curated, field-less content in this demo's off-catalog slot. It has since **graduated into the catalog**: typed fields, schema validation, a published atom page. This render sets `loop: true` — the original Meet Stage component's ambient relaunch, now a field instead of a fork."},
+            {"type": "stat_card", "value": "3", "label": "Typed fields earned", "delta": "side · layer · loop", "is_up": True},
+            {"type": "paragraph", "text": "The fireworks in the Launch demo now hold the off-catalog slot this rocket came through. Same doorway, next candidate."},
         ]}},
     {"id": "dashboard", "label": "Ops dashboard", "payload": {
         "theme": "dark",

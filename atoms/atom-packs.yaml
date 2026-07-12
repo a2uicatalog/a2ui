@@ -529,6 +529,7 @@ a2ui-ops-v1:
 - vote_button_group
 a2ui-presentation-v1:
 - gdm_rocket_panel
+- iso_fireworks_panel
 - playbook
 
 a2ui-competition-v1:

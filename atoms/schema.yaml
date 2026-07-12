@@ -11250,16 +11250,36 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: gdm_rocket_panel
-  stage: preview
   description: Fixed-position canvas launch animation -- an isometric rocket
-    climbing through exhaust trail and sparks to a HUD telemetry readout,
-    launching once and holding at apex. Overlays the right half of the
-    viewport (position:fixed, non-interactive), matching the original
-    component's layout exactly. Ported from the Google Meet Stage add-on's
-    gdm-rocket-panel component (used in the "Apps Script is now a Workspace
-    Core Service" playbook) -- hand-curated content, not schema-generated
-    from any renderer template.
-  compact_description: isometric rocket launch canvas animation, fixed right-half overlay
+    climbing through exhaust trail and sparks to a HUD telemetry readout.
+    Overlays one half of the viewport (position:fixed, non-interactive).
+    Ported from the Google Meet Stage add-on's gdm-rocket-panel component
+    (used in the "Apps Script is now a Workspace Core Service" playbook);
+    graduated from stage:preview after serving as the mcp-apps page's
+    off-catalog demo content -- the catalog's intake pipeline working as
+    designed.
+  compact_description: isometric rocket launch canvas animation, fixed half-viewport overlay
+  surfaces:
+    works_on:
+    - mcp-apps
+  fields:
+    side: string (optional, right|left, default right -- which viewport half the overlay claims)
+    layer: string (optional, back|front, default back -- back is z-index 50, front 150, matching the original component's layer variants)
+    loop: boolean (optional, default false -- false launches once and holds at apex; true restores the original's ambient relaunch loop)
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: iso_fireworks_panel
+  stage: preview
+  description: Fixed-position canvas fireworks display -- a slowly rotating
+    isometric ground grid launching shells that burst into 3D particle
+    spheres with ground reflections and additive glow. Overlays the right
+    half of the viewport (position:fixed, non-interactive). Hand-curated
+    content, not schema-generated -- the current resident of the mcp-apps
+    page's off-catalog slot, holding the doorway the graduated
+    gdm_rocket_panel came through. Deliberately field-less while in preview.
+  compact_description: rotating isometric 3D fireworks canvas, fixed right-half overlay
   surfaces:
     works_on:
     - mcp-apps

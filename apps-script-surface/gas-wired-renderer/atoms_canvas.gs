@@ -1784,25 +1784,33 @@ _RENDERERS['geo_iso_rocket_launch'] = function(b) {
     '})();<\/script>';
 };
 
-// ── gdm_rocket_panel ── isometric launch-once canvas animation with HUD telemetry ─────
-// Not schema-generated — hand-curated content ported from the Meet Stage add-on's
-// gdm-rocket-panel Lit component (gemini/addons/meetstudio, "Apps Script is now a
-// Workspace Core Service" playbook). Launches once and holds at apex rather than
-// the original's endless relaunch loop (a static page reads that as glitchy, not
-// ambient, the way a Meet Stage slide holding ~7s does).
+// ── gdm_rocket_panel ── isometric launch canvas animation with HUD telemetry ──────────
+// GRADUATED preview → stable: started life as hand-curated content ported from the
+// Meet Stage add-on's gdm-rocket-panel Lit component (gemini/addons/meetstudio,
+// "Apps Script is now a Workspace Core Service" playbook), shipped field-less through
+// the mcp-apps off-catalog slot, then earned typed fields:
+//   side:  "right" (default) | "left"  — which viewport half the overlay claims
+//   layer: "back" (default, z-index 50) | "front" (z-index 150) — the original
+//          Lit component's two layer variants
+//   loop:  false (default, launch once and hold at apex — a static page reads an
+//          endless relaunch as glitchy) | true (the original's ambient relaunch loop)
 _RENDERERS['gdm_rocket_panel'] = function(b) {
-  var uid = 'grp' + Math.random().toString(36).substr(2, 6);
+  var uid  = 'grp' + Math.random().toString(36).substr(2, 6);
+  var side = b.side === 'left' ? 'left' : 'right';
+  var z    = b.layer === 'front' ? 150 : 50;
+  var loop = b.loop === true;
   return (
-    // Matches the original gdm-rocket-panel Lit component's layout exactly:
-    // fixed, right half, full height, non-interactive overlay (z-index 50 =
-    // its "back" layer default; no "front"/layer=150 variant needed here).
-    '<div id="' + uid + 'w" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
-      'pointer-events:none;z-index:50;background:transparent;">' +
+    // Matches the original gdm-rocket-panel Lit component's layout:
+    // fixed, half-width, full height, non-interactive overlay.
+    '<div id="' + uid + 'w" data-a2ui-overlay="' + side + '-half" style="position:fixed;top:0;' +
+      (side === 'left' ? 'left:0;' : 'right:0;') + 'width:50%;height:100%;' +
+      'pointer-events:none;z-index:' + z + ';background:transparent;">' +
       '<canvas id="' + uid + 'c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>' +
     '</div>' +
     '<script>(function(){' +
       'var canvas=document.getElementById("' + uid + 'c");if(!canvas)return;' +
       'var ctx=canvas.getContext("2d");' +
+      'var LOOP=' + (loop ? 'true' : 'false') + ',holdT=null;' +
       'var logo=null;' +
       'var img=new Image();' +
       'img.src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8xOV8xMykiPgo8cGF0aCBkPSJNMTggODQuODUyOEw4NS44ODIyIDE2Ljk3MDZDOTUuMjU0OCA3LjU5Nzk4IDExMC40NTEgNy41OTc5OCAxMTkuODIzIDE2Ljk3MDZWMTYuOTcwNkMxMjkuMTk2IDI2LjM0MzEgMTI5LjE5NiA0MS41MzkxIDExOS44MjMgNTAuOTExN0w2OC41NTgxIDEwMi4xNzciIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNNjkuMjY1MiAxMDEuNDdMMTE5LjgyMyA1MC45MTE3QzEyOS4xOTYgNDEuNTM5MSAxNDQuMzkyIDQxLjUzOTEgMTUzLjc2NSA1MC45MTE3TDE1NC4xMTggNTEuMjY1MkMxNjMuNDkxIDYwLjYzNzggMTYzLjQ5MSA3NS44MzM4IDE1NC4xMTggODUuMjA2M0w5Mi43MjQ4IDE0Ni42Qzg5LjYwMDYgMTQ5LjcyNCA4OS42MDA2IDE1NC43ODkgOTIuNzI0OCAxNTcuOTEzTDEwNS4zMzEgMTcwLjUyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTEwMi44NTMgMzMuOTQxMUw1Mi42NDgyIDg0LjE0NTdDNDMuMjc1NiA5My41MTgzIDQzLjI3NTYgMTA4LjcxNCA1Mi42NDgyIDExOC4wODdWMTE4LjA4N0M2Mi4wMjA4IDEyNy40NTkgNzcuMjE2NyAxMjcuNDU5IDg2LjU4OTMgMTE4LjA4N0wxMzYuNzk0IDY3Ljg4MjIiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzE5XzEzIj4KPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==";' +
@@ -1923,10 +1931,153 @@ _RENDERERS['gdm_rocket_panel'] = function(b) {
         'drawRocket(cx,cy,w,h);' +
         'drawHud(w,h);' +
 
-        'if(landed&&trail.length===0&&sparks.length===0)return;' +
+        'if(landed&&trail.length===0&&sparks.length===0){' +
+          // loop:true restores the original Lit component's ambient relaunch —
+          // hold ~2.6s at apex, then reset to the pad and fly again.
+          'if(LOOP&&!holdT){holdT=setTimeout(function(){' +
+            'holdT=null;y=1.2;landed=false;raf=requestAnimationFrame(loop);' +
+          '},2600);}' +
+          'return;' +
+        '}' +
         'raf=requestAnimationFrame(loop);' +
       '}' +
       'loop();' +
+    '})();<\/script>'
+  );
+};
+
+// ── iso_fireworks_panel ── isometric fireworks canvas — the off-catalog resident ──────
+// Hand-curated content, NOT schema-generated: stage:preview, fields:{} by design.
+// This is the current occupant of the mcp-apps page's off-catalog slot — the living
+// demo that curated content and catalog atoms ride the same mediated channel. The
+// previous occupant (gdm_rocket_panel) graduated to a stable typed atom; this piece
+// holds the doorway until it earns fields of its own.
+// Slowly-rotating isometric ground grid, shells launched from grid points, bursts as
+// true 3D particle spheres projected through the same iso transform, ground
+// reflections, additive glow. Ambient randomized cadence (episodic bursts read as
+// ambient, unlike a relaunching rocket). prefers-reduced-motion → one static frame.
+_RENDERERS['iso_fireworks_panel'] = function(b) {
+  var uid = 'ifw' + Math.random().toString(36).substr(2, 6);
+  return (
+    '<div id="' + uid + 'w" data-a2ui-overlay="right-half" style="position:fixed;top:0;right:0;width:50%;height:100%;' +
+      'pointer-events:none;z-index:50;background:transparent;">' +
+      '<canvas id="' + uid + 'c" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>' +
+    '</div>' +
+    '<script>(function(){' +
+      'var canvas=document.getElementById("' + uid + 'c");if(!canvas)return;' +
+      'var ctx=canvas.getContext("2d");' +
+      'function resize(){canvas.width=canvas.offsetWidth||540;canvas.height=canvas.offsetHeight||960;}' +
+      'window.addEventListener("resize",resize);resize();' +
+
+      // Isometric projection with a slow global yaw — the whole scene (grid,
+      // shells, bursts) rotates through one transform, which is what sells 3D.
+      'var CA=0.866,SA=0.5,rot=0;' +
+      'function iso(x,y,z){' +
+        'var w=canvas.width,h=canvas.height,s=Math.min(w,h)/16;' +
+        'var c=Math.cos(rot),sn=Math.sin(rot);' +
+        'var xr=x*c+z*sn,zr=z*c-x*sn;' +
+        'return{x:w*0.5+(xr-zr)*CA*s,y:h*0.82+(xr+zr)*SA*s*0.55-y*s};}' +
+
+      'var PALETTES=[' +
+        '["255,224,130","255,150,0"],' +      // gold
+        '["190,244,255","0,200,240"],' +      // cyan (rocket family blues)
+        '["255,190,240","236,72,153"],' +     // magenta
+        '["235,235,255","140,150,255"]' +     // ice white/indigo
+      '];' +
+      'var PADS=[[-2.4,-1.1],[0,-2.6],[2.4,-0.6],[1.1,2.1]];' +
+      'var shells=[],parts=[],nextLaunch=Date.now()+400;' +
+
+      'function drawGrid(){' +
+        'ctx.strokeStyle="rgba(99,102,241,0.16)";ctx.lineWidth=1;' +
+        'for(var i=-4;i<=4;i++){' +
+          'var a=iso(i,0,-4),b2=iso(i,0,4);' +
+          'ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();' +
+          'var c2=iso(-4,0,i),d=iso(4,0,i);' +
+          'ctx.beginPath();ctx.moveTo(c2.x,c2.y);ctx.lineTo(d.x,d.y);ctx.stroke();' +
+        '}' +
+        'PADS.forEach(function(p){' +
+          'var q=iso(p[0],0,p[1]);' +
+          'ctx.beginPath();ctx.arc(q.x,q.y,2.5,0,Math.PI*2);' +
+          'ctx.fillStyle="rgba(99,102,241,0.5)";ctx.fill();' +
+        '});' +
+      '}' +
+
+      'function burst(x,y,z){' +
+        'var pal=PALETTES[Math.floor(Math.random()*PALETTES.length)];' +
+        'var n=70+Math.floor(Math.random()*40);' +
+        'for(var i=0;i<n;i++){' +
+          // uniform-ish sphere: random 3-vector, normalized, random speed
+          'var ux=Math.random()*2-1,uy=Math.random()*2-1,uz=Math.random()*2-1;' +
+          'var m=Math.sqrt(ux*ux+uy*uy+uz*uz)||1,sp=(0.045+Math.random()*0.05);' +
+          'parts.push({x:x,y:y,z:z,vx:ux/m*sp,vy:uy/m*sp,vz:uz/m*sp,' +
+            'life:1,decay:0.008+Math.random()*0.007,col:pal});' +
+        '}' +
+      '}' +
+
+      'function step(){' +
+        'var now=Date.now();' +
+        'if(now>nextLaunch&&shells.length<3){' +
+          'var pad=PADS[Math.floor(Math.random()*PADS.length)];' +
+          'shells.push({x:pad[0],z:pad[1],y:0,vy:0.13+Math.random()*0.04,' +
+            'apex:4.2+Math.random()*2.2,tw:[]});' +
+          'nextLaunch=now+1200+Math.random()*1400;' +
+        '}' +
+        'shells=shells.filter(function(s){' +
+          's.y+=s.vy;s.vy-=0.0011;' +
+          's.tw.push({x:s.x,y:s.y,z:s.z,life:1});' +
+          'if(s.tw.length>14)s.tw.shift();' +
+          'if(s.vy<=0.015||s.y>=s.apex){' +
+            'burst(s.x,s.y,s.z);' +
+            'if(Math.random()<0.28)burst(s.x,s.y*0.92,s.z);' + // occasional double-burst
+            'return false;}' +
+          'return true;});' +
+        'parts=parts.filter(function(p){' +
+          'p.x+=p.vx;p.y+=p.vy;p.z+=p.vz;' +
+          'p.vy-=0.0016;p.vx*=0.985;p.vz*=0.985;' + // gravity + drag
+          'p.life-=p.decay;return p.life>0&&p.y>-0.2;});' +
+      '}' +
+
+      'function draw(){' +
+        'var w=canvas.width,h=canvas.height;' +
+        'ctx.clearRect(0,0,w,h);' +
+        'drawGrid();' +
+        'ctx.globalCompositeOperation="lighter";' +
+        'shells.forEach(function(s){' +
+          's.tw.forEach(function(t,i){' +
+            'var q=iso(t.x,t.y,t.z),a=(i/s.tw.length)*0.6;' +
+            'ctx.beginPath();ctx.arc(q.x,q.y,1.6,0,Math.PI*2);' +
+            'ctx.fillStyle="rgba(255,214,120,"+a+")";ctx.fill();});' +
+          'var q2=iso(s.x,s.y,s.z);' +
+          'ctx.beginPath();ctx.arc(q2.x,q2.y,2.4,0,Math.PI*2);' +
+          'ctx.fillStyle="rgba(255,240,190,0.95)";ctx.fill();});' +
+        'parts.forEach(function(p){' +
+          'var q=iso(p.x,p.y,p.z),r=1.1+p.life*1.9;' +
+          'var g=ctx.createRadialGradient(q.x,q.y,0,q.x,q.y,r*2.4);' +
+          'g.addColorStop(0,"rgba("+p.col[0]+","+p.life+")");' +
+          'g.addColorStop(0.5,"rgba("+p.col[1]+","+(p.life*0.55)+")");' +
+          'g.addColorStop(1,"rgba("+p.col[1]+",0)");' +
+          'ctx.beginPath();ctx.arc(q.x,q.y,r*2.4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();' +
+          // ground reflection: same particle projected below the grid plane
+          'if(p.y>0){var qr=iso(p.x,-p.y*0.55,p.z);' +
+            'ctx.beginPath();ctx.arc(qr.x,qr.y,r*1.4,0,Math.PI*2);' +
+            'ctx.fillStyle="rgba("+p.col[1]+","+(p.life*0.12)+")";ctx.fill();}' +
+        '});' +
+        'ctx.globalCompositeOperation="source-over";' +
+      '}' +
+
+      'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;' +
+      'if(RM){' +
+        // one static mid-life burst, no animation
+        'burst(0,3.4,0);' +
+        'for(var i=0;i<24;i++)step();' +
+        'draw();return;' +
+      '}' +
+      'function frame(){' +
+        'if(!canvas.isConnected)return;' +
+        'rot+=0.0012;step();draw();' +
+        'requestAnimationFrame(frame);' +
+      '}' +
+      'frame();' +
     '})();<\/script>'
   );
 };

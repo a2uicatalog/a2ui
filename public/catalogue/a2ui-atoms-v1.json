@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (467 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (468 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -19381,6 +19381,42 @@
     "google-meet-stage",
     "google-apps-script-side-panel",
     "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "gdm_rocket_panel": {
+   "type": "object",
+   "description": "Fixed-position canvas launch animation -- an isometric rocket climbing through exhaust trail and sparks to a HUD telemetry readout. Overlays one half of the viewport (position:fixed, non-interactive). Ported from the Google Meet Stage add-on's gdm-rocket-panel component (used in the \"Apps Script is now a Workspace Core Service\" playbook); graduated from stage:preview after serving as the mcp-apps page's off-catalog demo content -- the catalog's intake pipeline working as designed.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "gdm_rocket_panel"
+      },
+      "side": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, right|left, default right -- which viewport half the overlay claims)"
+      },
+      "layer": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, back|front, default back -- back is z-index 50, front 150, matching the original component's layer variants)"
+      },
+      "loop": {
+       "description": "boolean (optional, default false -- false launches once and holds at apex; true restores the original's ambient relaunch loop)",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
     "mcp-apps"
    ]
   }
