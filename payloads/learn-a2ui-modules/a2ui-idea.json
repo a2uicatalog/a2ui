@@ -1,0 +1,75 @@
+{
+  "title": "The A2UI idea",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "heading",
+      "text": "The A2UI idea"
+    },
+    {
+      "type": "body",
+      "text": "Agents are excellent at emitting **structured data** and unreliable at writing bespoke frontend code. A2UI resolves that mismatch: the agent emits a declarative JSON payload; a renderer maps every block to a vetted, pre-built component. The UI is *data*, not code."
+    },
+    {
+      "type": "steps",
+      "items": [
+        {
+          "label": "Compose",
+          "text": "The agent emits one payload: {\"title\", \"theme\", \"blocks\": [...]}"
+        },
+        {
+          "label": "Type",
+          "text": "Every block is keyed by `type` (never `component`) plus typed fields — e.g. {\"type\": \"stat_card\", \"value\": \"99.98%\", \"label\": \"Uptime\"}"
+        },
+        {
+          "label": "Dispatch",
+          "text": "The renderer looks up the type in its registry and calls that one renderer function with the block"
+        },
+        {
+          "label": "Fail visible",
+          "text": "Unknown fields are ignored; unknown types render a visible error — never a silent drop"
+        }
+      ]
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "Payload",
+          "language": "json",
+          "code": "{\n  \"theme\": \"dark\",\n  \"blocks\": [\n    {\"type\": \"stat_card\", \"value\": \"99.98%\",\n     \"label\": \"Uptime\", \"is_up\": true},\n    {\"type\": \"progress_bar\", \"value\": 72,\n     \"label\": \"Quarter target\"}\n  ]\n}"
+        },
+        {
+          "label": "What renders",
+          "language": "text",
+          "code": "A stat card with an upward delta and a\nprogress bar — identical on every surface\nthat carries those atoms. No HTML written."
+        }
+      ]
+    },
+    {
+      "type": "body",
+      "text": "**Why declarative beats generated code:** a payload is reviewable at a glance, validatable against a schema before it ever renders, carries no script-injection surface, ports across surfaces unchanged, and caches like data because it *is* data. Generated HTML/JS has none of those properties."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "A2UI = agent emits typed JSON blocks; renderer supplies all presentation",
+        "Blocks are keyed by `type`; fields are the atom's typed contract",
+        "Declarative payloads are reviewable, validatable, portable, and injection-free",
+        "The renderer's registry is the security boundary: only vetted components ever run"
+      ]
+    },
+    {
+      "type": "knowledge_check",
+      "question": "What does a block's `type` field do?",
+      "options": [
+        "Names a CSS class applied to the block",
+        "Selects which vetted renderer function receives the block",
+        "Declares the JavaScript framework to load",
+        "Sets the block's z-index layer"
+      ],
+      "correct": 1,
+      "explanation": "Dispatch is the whole model: `type` looks up one pre-built, audited renderer function in the registry. The agent never ships behavior — only data."
+    }
+  ]
+}

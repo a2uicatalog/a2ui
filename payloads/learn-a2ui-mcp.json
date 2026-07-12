@@ -6,12 +6,12 @@
       "type": "dark_hero",
       "badge": "THE BRIEF",
       "heading": "Learn A2UI + MCP",
-      "subtext": "Declarative agent UI and the protocol that carries it — five modules, each a self-contained page minted from this one payload.",
+      "subtext": "Declarative agent UI and the protocol that carries it — five modules, each its own self-contained page.",
       "align": "center"
     },
     {
       "type": "body",
-      "text": "This is a **module_map hub**: one payload whose module pages auto-encoded into their own shareable `?p=` URLs at render time. By module 3 you'll know exactly how this page was made."
+      "text": "This is a **module_map hub**: five permanently-published short links, one per module. By module 3 you'll know exactly why — and the other way this same atom can build its sub-pages."
     },
     {
       "type": "module_map",
@@ -24,38 +24,7 @@
           "description": "Declarative UI for agents — payload contract, JSON in, UI out",
           "icon": "💡",
           "duration": "8 min",
-          "page": [
-            { "type": "heading", "text": "The A2UI idea" },
-            { "type": "body", "text": "Agents are excellent at emitting **structured data** and unreliable at writing bespoke frontend code. A2UI resolves that mismatch: the agent emits a declarative JSON payload; a renderer maps every block to a vetted, pre-built component. The UI is *data*, not code." },
-            { "type": "steps", "items": [
-              { "label": "Compose", "text": "The agent emits one payload: {\"title\", \"theme\", \"blocks\": [...]}" },
-              { "label": "Type", "text": "Every block is keyed by `type` (never `component`) plus typed fields — e.g. {\"type\": \"stat_card\", \"value\": \"99.98%\", \"label\": \"Uptime\"}" },
-              { "label": "Dispatch", "text": "The renderer looks up the type in its registry and calls that one renderer function with the block" },
-              { "label": "Fail visible", "text": "Unknown fields are ignored; unknown types render a visible error — never a silent drop" }
-            ]},
-            { "type": "tabbed_code", "tabs": [
-              { "label": "Payload", "language": "json", "code": "{\n  \"theme\": \"dark\",\n  \"blocks\": [\n    {\"type\": \"stat_card\", \"value\": \"99.98%\",\n     \"label\": \"Uptime\", \"is_up\": true},\n    {\"type\": \"progress_bar\", \"value\": 72,\n     \"label\": \"Quarter target\"}\n  ]\n}" },
-              { "label": "What renders", "language": "text", "code": "A stat card with an upward delta and a\nprogress bar — identical on every surface\nthat carries those atoms. No HTML written." }
-            ]},
-            { "type": "body", "text": "**Why declarative beats generated code:** a payload is reviewable at a glance, validatable against a schema before it ever renders, carries no script-injection surface, ports across surfaces unchanged, and caches like data because it *is* data. Generated HTML/JS has none of those properties." },
-            { "type": "key_takeaways", "points": [
-              "A2UI = agent emits typed JSON blocks; renderer supplies all presentation",
-              "Blocks are keyed by `type`; fields are the atom's typed contract",
-              "Declarative payloads are reviewable, validatable, portable, and injection-free",
-              "The renderer's registry is the security boundary: only vetted components ever run"
-            ]},
-            { "type": "knowledge_check",
-              "question": "What does a block's `type` field do?",
-              "options": [
-                "Names a CSS class applied to the block",
-                "Selects which vetted renderer function receives the block",
-                "Declares the JavaScript framework to load",
-                "Sets the block's z-index layer"
-              ],
-              "correct": 1,
-              "explanation": "Dispatch is the whole model: `type` looks up one pre-built, audited renderer function in the registry. The agent never ships behavior — only data."
-            }
-          ]
+          "url": "/s/learn-a2ui-a2ui-idea"
         },
         {
           "id": "atoms-catalogs",
@@ -63,30 +32,7 @@
           "description": "The typed vocabulary, machine-readable discovery, and the preview → stable pipeline",
           "icon": "🧩",
           "duration": "9 min",
-          "page": [
-            { "type": "heading", "text": "Atoms, catalogs & graduation" },
-            { "type": "body", "text": "An **atom** is one typed UI contract: a `type` name, documented fields, and a renderer implementation per surface. The A2UI Catalog ships 468 stable atoms — from `paragraph` to `airspace_command_deck` — grouped into **packs** (charts, effects, presentation, competition…) so a host can enable exactly the vocabulary it wants." },
-            { "type": "body", "text": "Discovery is machine-readable: the **ARD catalog** at `/.well-known/ai-catalog.json` lists every stable atom with its fields and surfaces, so an agent can learn the vocabulary without a human in the loop. Builder prompts are generated from the same schema — one source of truth, no drift." },
-            { "type": "body", "text": "Atoms have a lifecycle. **`stage: preview`** atoms live in the repo only — no published page, no catalog entry, no schema promises; they may even be deliberately field-less. **Stable** atoms get an atom page, catalog entries, schema validation, and contract tests. Promotion is enforced by CI: publish artifacts must exactly equal the stable set." },
-            { "type": "callout", "kind": "tip", "title": "A worked example — the rocket", "text": "gdm_rocket_panel shipped as hand-curated, field-less preview content inside the MCP Apps demo page. Once proven, it graduated: typed fields (side, layer, loop), a published page, catalog entries. A fireworks animation now holds the preview slot it came from. That doorway — curated first, schema when proven — is the catalog's intake pipeline." },
-            { "type": "knowledge_check",
-              "question": "Does a `stage: preview` atom appear in /.well-known/ai-catalog.json?",
-              "options": [
-                "Yes — everything in the repo is published",
-                "Yes, but flagged as experimental",
-                "No — only stable atoms are published; preview stays repo-only",
-                "Only if it belongs to a pack"
-              ],
-              "correct": 2,
-              "explanation": "Every published artifact (spec.json, atom pages, the ARD catalog, builder prompts) is generated from the stable set only — and tests fail the build if they ever diverge."
-            },
-            { "type": "key_takeaways", "points": [
-              "Atom = typed contract + per-surface renderer; packs group the vocabulary",
-              "Agents discover atoms via the ARD catalog — no human docs required",
-              "preview → stable is a tested, enforced pipeline, not a convention",
-              "Curated one-off content is the intake funnel for new atoms"
-            ]}
-          ]
+          "url": "/s/learn-a2ui-atoms-catalogs"
         },
         {
           "id": "surfaces-p-model",
@@ -94,38 +40,7 @@
           "description": "One payload, eight render targets — and how a whole app fits in a link",
           "icon": "🔗",
           "duration": "9 min",
-          "page": [
-            { "type": "heading", "text": "Surfaces & the ?p= URL model" },
-            { "type": "body", "text": "The same payload renders on **eight surfaces**: web, Google Apps Script web apps, Meet stage, Chat, side panel, email, PDF, and MCP Apps. Each surface implements the atoms it supports; the payload doesn't change. That's the portability dividend of keeping UI as data." },
-            { "type": "steps", "items": [
-              { "label": "Serialize", "text": "JSON → gzip (level 9, wbits 31) → URL-safe base64, padding stripped" },
-              { "label": "Ship", "text": "The blob rides in the URL itself: .../exec?p=<blob> — the link IS the app, nothing stored anywhere" },
-              { "label": "Decode", "text": "The renderer reverses the encoding and dispatches blocks as usual" }
-            ]},
-            { "type": "body", "text": "**Ceilings, per page:** ~2,000 characters is copy-safe (terminals and chat clients truncate long lines); ~8,000 is the hard decode limit on Apps Script. A truncated `?p=` is a truncated gzip stream — it fails loudly, not partially." },
-            { "type": "steps", "items": [
-              { "label": "Scale path A — paginate", "text": "module_map modules carrying a page: array are auto-encoded into self-contained ?p= sub-pages at render time. The page you are reading right now was minted exactly that way from the hub payload." },
-              { "label": "Scale path B — graduate", "text": "emit_deployment bakes the payload into a standing Apps Script app — no URL, no size limit, server-side named pages. Best for real, reusable content." }
-            ]},
-            { "type": "callout", "kind": "tip", "title": "You are inside the example", "text": "This module opened from a hub card. No one saved this page anywhere — the renderer encoded it from the hub's payload and stamped a back-link. Depth is unbounded across pages while every individual link stays under the ceiling." },
-            { "type": "knowledge_check",
-              "question": "A payload encodes to 12,000 characters. What's the right move?",
-              "options": [
-                "Ship it — URLs have no practical limit",
-                "Truncate the base64 to 8,000 characters",
-                "Split into module_map pages, or graduate it into a standing app",
-                "Switch the payload to XML"
-              ],
-              "correct": 2,
-              "explanation": "The ~8k ceiling is per page and hard (GAS can't decode past it) — and truncating gzip destroys the stream. Pagination and graduation are the two designed scale paths."
-            },
-            { "type": "key_takeaways", "points": [
-              "One payload, eight surfaces — the payload never changes",
-              "?p= links are apps with zero storage: the URL carries the gzipped payload",
-              "~2k copy-safe, ~8k hard — per page, never truncate",
-              "Paginate (module_map) to stay shareable; graduate (emit_deployment) for no limits"
-            ]}
-          ]
+          "url": "/s/learn-a2ui-surfaces-p-model"
         },
         {
           "id": "mcp-fundamentals",
@@ -133,41 +48,7 @@
           "description": "Hosts, servers, tools — and where the model actually sits in the loop",
           "icon": "🔌",
           "duration": "10 min",
-          "page": [
-            { "type": "heading", "text": "MCP fundamentals" },
-            { "type": "body", "text": "The **Model Context Protocol** is the open standard that connects AI applications to tools and data. Three roles: the **Host** (the chat app — claude.ai, Claude Desktop, an IDE), the **Client** (the protocol endpoint the host embeds, one per server), and the **Server** (exposes tools, resources, and prompts). Transport is **JSON-RPC 2.0** over stdio or HTTP." },
-            { "type": "steps", "items": [
-              { "label": "initialize", "text": "Client and server exchange capabilities and protocol versions" },
-              { "label": "tools/list", "text": "The server advertises its tools — name, description, JSON-Schema input contract" },
-              { "label": "model decides", "text": "Tool descriptions enter the model's context; the model chooses when a tool call serves the conversation" },
-              { "label": "tools/call", "text": "The host executes the call against the server and returns the result into context" }
-            ]},
-            { "type": "body", "text": "**Where the model sits:** between the conversation and the tool call. The server never sees the chat; the host mediates everything — consent prompts, rate limits, result routing. A tool's JSON-Schema is a *contract*, not a suggestion: hosts validate arguments before anything executes." },
-            { "type": "flashcard_deck", "accent": "#6366f1", "label_front": "TERM", "label_back": "DEFINITION", "cards": [
-              { "front": "Host", "back": "The AI application the user talks to. Owns consent, execution, and what enters the model's context." },
-              { "front": "Server", "back": "A process exposing tools/resources/prompts over JSON-RPC. Never sees the conversation — only the calls the host forwards." },
-              { "front": "Tool", "back": "A callable capability with a name, description, and JSON-Schema input contract. The description is what the model reasons over." },
-              { "front": "Resource", "back": "Addressable content (files, data, UI templates) a server exposes by URI for hosts to read." },
-              { "front": "JSON-RPC 2.0", "back": "The wire framing: request {jsonrpc, id, method, params} → response {result | error}. Notifications omit the id." }
-            ]},
-            { "type": "knowledge_check",
-              "question": "Which party decides whether a tool call actually executes?",
-              "options": [
-                "The server — it owns the tool",
-                "The model — it emitted the call",
-                "The host — it mediates consent and execution",
-                "The transport layer"
-              ],
-              "correct": 2,
-              "explanation": "The model proposes; the host disposes. Consent, validation, execution, and what flows back into context are all host responsibilities — that mediation is MCP's security model."
-            },
-            { "type": "key_takeaways", "points": [
-              "MCP = host ↔ client ↔ server over JSON-RPC 2.0",
-              "Tools are typed contracts; descriptions are what the model reasons over",
-              "The server never sees the chat — the host mediates everything",
-              "Consent and validation live at the host, by design"
-            ]}
-          ]
+          "url": "/s/learn-a2ui-mcp-fundamentals"
         },
         {
           "id": "mcp-apps",
@@ -175,30 +56,7 @@
           "description": "Tool results that render UI — the handshake, the sandbox, and why it matters",
           "icon": "⚡",
           "duration": "10 min",
-          "page": [
-            { "type": "heading", "text": "MCP Apps & controlled opaqueness" },
-            { "type": "body", "text": "**MCP Apps** extends MCP so a tool result can carry an interactive UI. The server declares a UI resource; the host renders it in a **sandboxed iframe** (the *View*) and delivers data to it over a mediated postMessage channel. The model stays in the loop for tool calls — the View itself never talks to the network." },
-            { "type": "steps", "items": [
-              { "label": "1 · ui/initialize", "text": "The View posts ui/initialize to the Host as soon as it loads" },
-              { "label": "2 · InitializeResult", "text": "The Host replies with McpUiInitializeResult — capabilities, display modes" },
-              { "label": "3 · initialized", "text": "The View acknowledges with the ui/notifications/initialized notification" },
-              { "label": "4 · tool-result", "text": "The Host delivers the payload via ui/notifications/tool-result — the View renders it" }
-            ]},
-            { "type": "body", "text": "**The sandbox is the point.** The iframe runs without `allow-same-origin`: the View genuinely cannot read or touch the host page's DOM, cookies, or storage. Every capability it has arrives through the declared message channel. For an A2UI View, the payload that arrives is declarative blocks — so even *inside* the sandbox, nothing executes that wasn't pre-vetted." },
-            { "type": "body", "text": "**Controlled opaqueness:** because the View is opaque to the host but its *inputs* are mediated, curated one-off content and catalog-declarative atoms can ship side by side in one iframe — same channel, same sandbox, same audit story. That is what lets new components prove themselves in production before they graduate into the typed catalog." },
-            { "type": "flashcard_deck", "accent": "#22d3ee", "label_front": "PROTOCOL", "label_back": "ANSWER", "cards": [
-              { "front": "What delivers the payload to the View?", "back": "ui/notifications/tool-result, sent by the Host after the ui/initialize handshake completes." },
-              { "front": "Why no allow-same-origin?", "back": "It severs the View from the host DOM entirely — the postMessage channel becomes the only doorway, and it's mediated." },
-              { "front": "Where does A2UI fit?", "back": "A2UI payloads are the natural cargo: declarative blocks mean the View renders vetted components, not arbitrary code — defense in depth inside the sandbox." },
-              { "front": "What is controlled opaqueness?", "back": "The host can't see into the View, but everything entering it is mediated — so curated and catalog content coexist safely, and proven pieces graduate into the schema." }
-            ]},
-            { "type": "key_takeaways", "points": [
-              "MCP Apps = tool results that render UI in a host-sandboxed iframe",
-              "Four-message handshake: ui/initialize → result → initialized → tool-result",
-              "No allow-same-origin: the mediated channel is the View's only capability",
-              "A2UI + MCP Apps compose: declarative cargo inside a mediated sandbox — audited at both layers"
-            ]}
-          ]
+          "url": "/s/learn-a2ui-mcp-apps"
         }
       ]
     },

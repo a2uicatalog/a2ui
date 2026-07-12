@@ -1,0 +1,80 @@
+{
+  "title": "Surfaces & the ?p= URL model",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "heading",
+      "text": "Surfaces & the ?p= URL model"
+    },
+    {
+      "type": "body",
+      "text": "The same payload renders on **eight surfaces**: web, Google Apps Script web apps, Meet stage, Chat, side panel, email, PDF, and MCP Apps. Each surface implements the atoms it supports; the payload doesn't change. That's the portability dividend of keeping UI as data."
+    },
+    {
+      "type": "steps",
+      "items": [
+        {
+          "label": "Serialize",
+          "text": "JSON → gzip (level 9, wbits 31) → URL-safe base64, padding stripped"
+        },
+        {
+          "label": "Ship",
+          "text": "The blob rides in the URL itself: .../exec?p=<blob> — the link IS the app, nothing stored anywhere"
+        },
+        {
+          "label": "Decode",
+          "text": "The renderer reverses the encoding and dispatches blocks as usual"
+        }
+      ]
+    },
+    {
+      "type": "body",
+      "text": "**Ceilings, per page:** ~2,000 characters is copy-safe (terminals and chat clients truncate long lines); ~8,000 is the hard decode limit on Apps Script. A truncated `?p=` is a truncated gzip stream — it fails loudly, not partially."
+    },
+    {
+      "type": "steps",
+      "items": [
+        {
+          "label": "Scale path A — paginate",
+          "text": "module_map modules carrying a page: array auto-encode into self-contained ?p= sub-pages at render time — a real Apps Script Utilities.gzip() call, GAS-server-side. Simple, no publishing step."
+        },
+        {
+          "label": "Scale path A′ — pre-publish",
+          "text": "Browsers can't run that same encode synchronously (no sync gzip in JS), so on MCP Apps, module_map cards carry a url: to an already-minted permanent link instead — same atom, same card, a different mechanism chosen for the environment it's rendering in."
+        },
+        {
+          "label": "Scale path B — graduate",
+          "text": "emit_deployment bakes the payload into a standing Apps Script app — no URL, no size limit, server-side named pages. Best for real, reusable content."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "You are inside the example — the other path",
+      "text": "This module is its own permanently-published short link (minted via publish_url), not a runtime ?p= encode — that's Scale path A′ above. The module_map atom looks identical either way; only the mechanism behind url: vs page: changes with where it's rendered."
+    },
+    {
+      "type": "knowledge_check",
+      "question": "A payload encodes to 12,000 characters. What's the right move?",
+      "options": [
+        "Ship it — URLs have no practical limit",
+        "Truncate the base64 to 8,000 characters",
+        "Split into module_map pages, or graduate it into a standing app",
+        "Switch the payload to XML"
+      ],
+      "correct": 2,
+      "explanation": "The ~8k ceiling is per page and hard (GAS can't decode past it) — and truncating gzip destroys the stream. Pagination and graduation are the two designed scale paths."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "One payload, eight surfaces — the payload never changes",
+        "?p= links are apps with zero storage: the URL carries the gzipped payload",
+        "~2k copy-safe, ~8k hard — per page, never truncate",
+        "module_map adapts per environment: page: (runtime ?p=) on GAS, url: (pre-published) on MCP Apps",
+        "Paginate (module_map) to stay shareable; graduate (emit_deployment) for no limits"
+      ]
+    }
+  ]
+}
