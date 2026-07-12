@@ -1335,7 +1335,17 @@ __MCP_APPS_HOST_JS__
       g.addColorStop(1, 'rgba(255,20,0,0)');
       ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, Math.PI*2); ctx.fillStyle = g; ctx.fill();
     });
-    if (p <= 1) drawRocket(cx, cy, S);
+    if (p <= 1) {
+      drawRocket(cx, cy, S);
+      /* the telemetry overlay from the atom version, towed below the rocket */
+      var alt = Math.round(p*28000).toLocaleString(), spd = Math.round(80 + p*2200);
+      ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center';
+      /* ink follows the page theme — black was invisible on dark, green on light */
+      ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'dark'
+        ? 'rgba(235,245,255,0.75)' : 'rgba(0,0,0,0.85)';
+      ctx.fillText('MCP APPS · A2UI CATALOG', cx, Math.min(h-16, cy + S*2.6));
+      ctx.fillText('ALT ' + alt + ' ft · ' + (spd > 380 ? 'MACH 2+' : spd + ' kt'), cx, Math.min(h-4, cy + S*2.6 + 13));
+    }
     requestAnimationFrame(frame);
   }
   setTimeout(function(){ requestAnimationFrame(frame); }, 900);
