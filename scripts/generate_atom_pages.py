@@ -1240,8 +1240,17 @@ MCP_APPS_HERO_HTML = """
        target="_blank" — without these tokens the sandbox silently
        swallows ALL outbound clicks (no error, nothing happens). Found
        2026-07-11 auditing chip_group; -escape-sandbox keeps the new tab
-       itself unsandboxed rather than inheriting these restrictions. -->
-  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" src="./renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
+       itself unsandboxed rather than inheriting these restrictions.
+       allow-top-navigation-by-user-activation: module_map cards emit
+       target="_top" (same-tab navigation to a sub-page, e.g. a published
+       /s/ short link) — without this, a real user click on a card is
+       silently swallowed the same way. User-activation-gated only (no
+       programmatic/blind redirect capability); a deliberate, explicit
+       widening of the sandbox — content rendered here (including
+       hand-curated, non-catalog blocks) can now redirect the top-level
+       page on a genuine click. Found 2026-07-12 via the learn-a2ui-mcp
+       demo's module_map hub. -->
+  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="./renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 </div>
 
 <div class="mcp-playground">
@@ -1779,7 +1788,7 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" src="/surfaces/mcp-apps/renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="/surfaces/mcp-apps/renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 
   <div class="play-bar">
     <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
