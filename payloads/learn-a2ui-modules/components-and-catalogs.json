@@ -1,0 +1,180 @@
+{
+  "title": "Components & catalogs",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "Components & catalogs",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Components & catalogs"
+    },
+    {
+      "type": "body",
+      "text": "A2UI represents a UI tree as a **flat list**, not nested JSON. Each component has an `id` and references its children by ID. The client stores every component in a map and reconstructs the tree at render time — the spec calls this **the adjacency list model**."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "Flat list (the wire format)",
+          "language": "json",
+          "code": "[\n  {\"id\": \"root\", \"component\": \"Column\",\n   \"children\": [\"title\", \"button\"]},\n  {\"id\": \"title\", \"component\": \"Text\", \"text\": \"Welcome\"},\n  {\"id\": \"button\", \"component\": \"Button\", \"child\": \"button_label\"}\n]"
+        },
+        {
+          "label": "What it means (the tree)",
+          "language": "text",
+          "code": "Column\n├── Text: \"Welcome\"\n└── Button"
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "info",
+      "title": "Why flat, not nested?",
+      "text": "Order stops mattering. The server can send component definitions in any sequence, and can reference a child ID that doesn't exist yet — the client buffers and fills gaps as they arrive. Exactly one component must have id \"root\"; until it exists, nothing renders."
+    },
+    {
+      "type": "heading",
+      "text": "The Basic Catalog — 18 components"
+    },
+    {
+      "type": "body",
+      "text": "A2UI ships one baseline component set, the **Basic Catalog**. Any A2UI-conformant client understands these 18 without needing anything else declared."
+    },
+    {
+      "type": "table",
+      "caption": "The real Basic Catalog (catalogs/basic/catalog.json)",
+      "headers": [
+        "Component",
+        "What it is"
+      ],
+      "rows": [
+        [
+          "Text",
+          "Displays text, supports simple Markdown"
+        ],
+        [
+          "Image",
+          "Displays an image from a URL"
+        ],
+        [
+          "Icon",
+          "A system-provided icon from a predefined list"
+        ],
+        [
+          "Video",
+          "Plays a video from a URL"
+        ],
+        [
+          "AudioPlayer",
+          "Plays audio from a URL"
+        ],
+        [
+          "Row",
+          "Horizontal layout container"
+        ],
+        [
+          "Column",
+          "Vertical layout container"
+        ],
+        [
+          "List",
+          "Scrollable list of components"
+        ],
+        [
+          "Card",
+          "A container with card-like styling"
+        ],
+        [
+          "Tabs",
+          "A set of tabs, each with a title and child"
+        ],
+        [
+          "Divider",
+          "A horizontal or vertical dividing line"
+        ],
+        [
+          "Modal",
+          "A dialog over the main content"
+        ],
+        [
+          "Button",
+          "Dispatches an action on click"
+        ],
+        [
+          "CheckBox",
+          "A checkbox with a label and boolean value"
+        ],
+        [
+          "TextField",
+          "A field for user text input"
+        ],
+        [
+          "DateTimeInput",
+          "An input for date and/or time"
+        ],
+        [
+          "ChoicePicker",
+          "Selecting one or more options"
+        ],
+        [
+          "Slider",
+          "A numeric value within a range"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Catalogs — Basic vs Custom"
+    },
+    {
+      "type": "body",
+      "text": "A **catalog** is a JSON Schema file declaring exactly which components, functions, and surface properties an agent may reference. The Basic Catalog is one such file; most production systems define their own **Custom Catalog** — a design system the agent is constrained to, nothing more, nothing less."
+    },
+    {
+      "type": "body",
+      "text": "One precise, easy-to-miss detail: `catalogId` is **a string identifier, conventionally URI-shaped, but not required to be a resolvable URI**. Client and server just need to agree out-of-band on what a given catalogId means. a2uicatalog makes its own choice here — it uses a genuinely resolvable URL (`a2uicatalog.ai/catalogue/a2ui-atoms-v1.json`) as its catalogId, so a fetching client actually *can* dereference it — a stricter, more convenient convention than the spec requires, not a spec requirement itself."
+    },
+    {
+      "type": "knowledge_check",
+      "question": "Per the real spec, does catalogId have to point to a real, downloadable file?",
+      "options": [
+        "Yes — the spec mandates it always be dereferenceable",
+        "No — it just needs to be a string both sides agree on; URI-shaped by convention only",
+        "Only for extension components, not the Basic Catalog",
+        "Only when using the MCP transport binding"
+      ],
+      "correct": 1,
+      "explanation": "The spec is explicit: catalogId is conventionally URI-formatted to avoid naming collisions, but is not required to be resolvable. a2uicatalog's choice to make its own catalogId a real fetchable URL is a stricter convention it adopted, not a spec mandate."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "Components are a flat list with ID references — the adjacency list model — not nested JSON",
+        "Exactly one component must carry id: \"root\"",
+        "The Basic Catalog is 18 named components; anything outside it needs a Custom Catalog",
+        "catalogId is a well-known string agreed out-of-band — URI-shaped by convention, not required to resolve"
+      ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "Components & catalogs",
+      "prev_title": "The message envelope",
+      "prev_url": "/s/learn-a2ui-the-envelope",
+      "next_title": "Data binding, paths & scope",
+      "next_url": "/s/learn-a2ui-data-binding"
+    }
+  ]
+}

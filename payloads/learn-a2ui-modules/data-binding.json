@@ -1,0 +1,127 @@
+{
+  "title": "Data binding, paths & scope",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "Data binding, paths & scope",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Data binding, paths & scope"
+    },
+    {
+      "type": "body",
+      "text": "Every surface has a **data model** — a plain JSON tree, addressed by **JSON Pointer** (RFC 6901). `updateDataModel` writes to it with upsert semantics: path exists → updated; doesn't exist → created; value is `null` → the key is deleted."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "Update a field",
+          "language": "json",
+          "code": "{\n  \"version\": \"v1.0\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"surface_123\",\n    \"path\": \"/user/firstName\",\n    \"value\": \"Alice\"\n  }\n}"
+        },
+        {
+          "label": "Delete a field",
+          "language": "json",
+          "code": "{\n  \"version\": \"v1.0\",\n  \"updateDataModel\": {\n    \"surfaceId\": \"surface_123\",\n    \"path\": \"/user/tempData\",\n    \"value\": null\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Root scope vs collection scope"
+    },
+    {
+      "type": "body",
+      "text": "Paths starting with `/` are **absolute** — always resolved from the data model's root, regardless of where the component sits in the tree. But when a container's children are generated from an array (a **template**), each generated instance gets its own **collection scope** — inside it, a path with no leading slash is **relative** to that item."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "Data",
+          "language": "json",
+          "code": "{\n  \"company\": \"Acme Corp\",\n  \"employees\": [\n    {\"name\": \"Alice\"},\n    {\"name\": \"Bob\"}\n  ]\n}"
+        },
+        {
+          "label": "Template component",
+          "language": "json",
+          "code": "{\"id\": \"name_text\", \"component\": \"Text\",\n \"text\": {\"path\": \"name\"}}\n// relative -> resolves to /employees/N/name per item\n\n{\"id\": \"company_text\", \"component\": \"Text\",\n \"text\": {\"path\": \"/company\"}}\n// absolute -> always \"Acme Corp\", regardless of nesting"
+        }
+      ]
+    },
+    {
+      "type": "knowledge_check",
+      "question": "Inside a template iterating over /employees, a Text component binds to path \"role\" (no leading slash). What does it resolve to for the 3rd employee?",
+      "options": [
+        "/role",
+        "/employees/role",
+        "/employees/2/role",
+        "It's invalid — relative paths aren't allowed in templates"
+      ],
+      "correct": 2,
+      "explanation": "No leading slash = relative to the current collection scope. For the 3rd item (index 2) of /employees, that's /employees/2/role."
+    },
+    {
+      "type": "heading",
+      "text": "Two-way binding — inputs write immediately, locally"
+    },
+    {
+      "type": "body",
+      "text": "TextField, CheckBox, Slider, ChoicePicker, and DateTimeInput establish **two-way binding**: the moment a user types or toggles, the client updates its **local** copy of the data model — instantly, with zero network traffic. If a Text label is bound to the same path, it updates live too, because the local data model is a single shared source of truth."
+    },
+    {
+      "type": "callout",
+      "kind": "warning",
+      "title": "Nothing reaches the server until an Action fires",
+      "text": "Keystrokes never trigger a request on their own. State only travels back to the server when a discrete user Action is dispatched (e.g. a Button click) — and only the paths that action's `context` explicitly references."
+    },
+    {
+      "type": "heading",
+      "text": "formatString — mixing literal text with data"
+    },
+    {
+      "type": "body",
+      "text": "`formatString` interpolates `${...}` expressions inside a string: `${/user/firstName}` (absolute path), `${firstName}` (relative, resolved against the current scope), or a nested function call like `${formatDate(value:${/currentDate}, format:'yyyy-MM-dd')}`."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "formatString example",
+          "language": "json",
+          "code": "{\n  \"id\": \"user_welcome\",\n  \"component\": \"Text\",\n  \"text\": {\n    \"call\": \"formatString\",\n    \"args\": {\n      \"value\": \"Hello, ${/user/firstName}! Welcome back to ${/appName}.\"\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "The data model is one JSON tree per surface, addressed by JSON Pointer",
+        "Absolute paths (leading /) always resolve from root; relative paths only exist inside a template's collection scope",
+        "Two-way binding is local and instant — nothing reaches the server until an Action dispatches",
+        "formatString's ${...} syntax mixes literal text with path bindings and function calls, including nesting"
+      ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "Data binding, paths & scope",
+      "prev_title": "Components & catalogs",
+      "prev_url": "/s/learn-a2ui-components-and-catalogs",
+      "next_title": "Actions, functions & the LLM loop",
+      "next_url": "/s/learn-a2ui-actions-and-functions"
+    }
+  ]
+}

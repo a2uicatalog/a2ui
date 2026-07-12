@@ -1,0 +1,125 @@
+{
+  "title": "Transports & the MCP relationship",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "Transports & the MCP relationship",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Transports & the MCP relationship"
+    },
+    {
+      "type": "body",
+      "text": "A2UI is **transport-agnostic by design**. It defines the JSON message structure and the semantic contract between server and client — not how those bytes travel. A transport just needs three things: reliable, in-order delivery; clear message framing; and a way to carry metadata (for capability exchange and, if used, client data-model sync)."
+    },
+    {
+      "type": "table",
+      "caption": "Named transport bindings in the v1.0 spec",
+      "headers": [
+        "Transport",
+        "Role"
+      ],
+      "rows": [
+        [
+          "AG-UI",
+          "The standard binding for agent-to-user interaction; convenient framework integrations"
+        ],
+        [
+          "A2A (Agent-to-Agent)",
+          "A dedicated extension mapping A2UI envelopes into A2A protocol messages"
+        ],
+        [
+          "MCP (Model Context Protocol)",
+          "A2UI carried over MCP tool calls, tool outputs, or resource subscriptions"
+        ],
+        [
+          "SSE + JSON-RPC / WebSockets / REST",
+          "General-purpose streaming or request/response, no special integration"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "info",
+      "title": "The one-line version",
+      "text": "MCP is one of several possible carriers for the A2UI message stream. A2UI is not built into MCP, and MCP is not required to use A2UI."
+    },
+    {
+      "type": "heading",
+      "text": "A2UI and MCP Apps — complementary, not competing"
+    },
+    {
+      "type": "body",
+      "text": "This is genuinely easy to conflate, so it's worth stating precisely, sourced from Google's own joint post with the MCP Apps team: **MCP Apps** renders creative-freedom iframes using standard web tech — flexible, but with real hurdles in performance and security isolation. **A2UI** renders natively through the host's own component library — consistent and secure, but the agent is restricted to whatever's in the active catalog. Neither is a superset of the other."
+    },
+    {
+      "type": "table",
+      "caption": "Three named integration patterns",
+      "headers": [
+        "Pattern",
+        "What it means"
+      ],
+      "rows": [
+        [
+          "A2UI over MCP",
+          "Serve A2UI payloads as MCP Resources or via MCP Tool calls — native rendering, no iframe at all"
+        ],
+        [
+          "MCP Apps in A2UI",
+          "Embed an MCP App (iframe) inside an A2UI component for a state-heavy custom widget"
+        ],
+        [
+          "A2UI in MCP Apps",
+          "An MCP App ships its own A2UI renderer, injecting dynamic agent-driven UI into an existing iframe app"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "warning",
+      "title": "What this site's own demos actually are",
+      "text": "Worth being precise about, since you're reading this inside exactly this setup: a2uicatalog's MCP Apps surface runs its own **blocks-dialect renderer inside an MCP Apps sandboxed iframe** (the ui/initialize handshake, tool-result delivery). That is NOT literally a stream of A2UI protocol messages arriving over MCP — it's a2uicatalog's own dialect, rendered natively in-page. The catalogue's a2ui-emit tool can convert that same content into real, conformant A2UI v1.0 createSurface messages on request — the two are related but genuinely distinct paths, and this brief has been careful to name which one it's teaching at each point."
+    },
+    {
+      "type": "knowledge_check",
+      "question": "Is A2UI a layer that sits inside MCP, requiring MCP to function?",
+      "options": [
+        "Yes — A2UI messages are always MCP tool outputs",
+        "No — A2UI is transport-agnostic; MCP is one of several optional carriers (AG-UI, A2A, SSE, WebSockets, REST are others)",
+        "Yes, but only for MCP Apps specifically",
+        "No — A2UI predates and has no relationship to MCP at all"
+      ],
+      "correct": 1,
+      "explanation": "A2UI defines the message/component contract independent of transport. MCP carrying A2UI (\"A2UI over MCP\") is one recognized pattern among several named transport bindings — not a dependency."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "A2UI defines the message contract, not the transport — AG-UI, A2A, MCP, SSE, WebSockets, and REST are all valid carriers",
+        "A2UI and MCP Apps solve different problems (safe native rendering vs creative-freedom iframes) and are designed to compose, not compete",
+        "Three named integration patterns exist: A2UI over MCP, MCP Apps in A2UI, A2UI in MCP Apps",
+        "a2uicatalog's own MCP Apps demos use its blocks dialect inside the MCP Apps handshake — not raw A2UI streaming, though convertible via a2ui-emit"
+      ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "Transports & the MCP relationship",
+      "prev_title": "Actions, functions & the LLM loop",
+      "prev_url": "/s/learn-a2ui-actions-and-functions",
+      "next_title": "a2uicatalog in the ecosystem",
+      "next_url": "/s/learn-a2ui-a2uicatalog-in-the-ecosystem"
+    }
+  ]
+}

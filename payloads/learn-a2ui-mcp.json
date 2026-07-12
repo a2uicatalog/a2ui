@@ -6,63 +6,81 @@
       "type": "dark_hero",
       "badge": "THE BRIEF",
       "heading": "Learn A2UI + MCP",
-      "subtext": "Declarative agent UI and the protocol that carries it — five modules, each its own self-contained page.",
+      "subtext": "Google's real A2UI protocol, grounded in its own spec — and exactly where a2uicatalog sits relative to it. Seven modules, each its own self-contained page.",
       "align": "center"
     },
     {
-      "type": "body",
-      "text": "This is a **module_map hub**: five permanently-published short links, one per module. By module 3 you'll know exactly why — and the other way this same atom can build its sub-pages."
+      "type": "callout",
+      "kind": "info",
+      "title": "Grounded in the real spec, not this catalogue's own dialect",
+      "text": "A2UI is Google's open protocol (a2ui.org, Apache 2.0) — a2uicatalog.ai is an independent, third-party implementation built on it, not the protocol itself. Every protocol claim in this brief traces to the real v1.0 specification; module 1 opens with the distinction, and module 7 closes with exactly how a2uicatalog relates to it."
     },
     {
       "type": "module_map",
-      "title": "The brief — five modules",
+      "title": "The brief — seven modules",
       "columns": 2,
       "modules": [
         {
-          "id": "a2ui-idea",
-          "title": "The A2UI idea",
-          "description": "Declarative UI for agents — payload contract, JSON in, UI out",
+          "id": "what-a2ui-is",
+          "title": "What A2UI actually is",
+          "description": "Real attribution, the trust-boundary problem it solves, version reality, and where a2uicatalog fits",
           "icon": "💡",
+          "duration": "6 min",
+          "url": "/s/learn-a2ui-what-a2ui-is"
+        },
+        {
+          "id": "the-envelope",
+          "title": "The message envelope",
+          "description": "All 9 real message types, a verbatim spec example, and progressive rendering",
+          "icon": "✉️",
           "duration": "8 min",
-          "url": "/s/learn-a2ui-a2ui-idea"
+          "url": "/s/learn-a2ui-the-envelope"
         },
         {
-          "id": "atoms-catalogs",
-          "title": "Atoms, catalogs & graduation",
-          "description": "The typed vocabulary, machine-readable discovery, and the preview → stable pipeline",
+          "id": "components-and-catalogs",
+          "title": "Components & catalogs",
+          "description": "The adjacency-list model, the real 18-component Basic Catalog, and what catalogId actually is",
           "icon": "🧩",
-          "duration": "9 min",
-          "url": "/s/learn-a2ui-atoms-catalogs"
+          "duration": "8 min",
+          "url": "/s/learn-a2ui-components-and-catalogs"
         },
         {
-          "id": "surfaces-p-model",
-          "title": "Surfaces & the ?p= URL model",
-          "description": "One payload, eight render targets — and how a whole app fits in a link",
+          "id": "data-binding",
+          "title": "Data binding, paths & scope",
+          "description": "JSON Pointer paths, root vs collection scope, two-way binding, formatString",
           "icon": "🔗",
+          "duration": "8 min",
+          "url": "/s/learn-a2ui-data-binding"
+        },
+        {
+          "id": "actions-and-functions",
+          "title": "Actions, functions & the LLM loop",
+          "description": "action/actionResponse, callFunction/functionResponse, execution boundaries, the generate-validate loop",
+          "icon": "⚙️",
           "duration": "9 min",
-          "url": "/s/learn-a2ui-surfaces-p-model"
+          "url": "/s/learn-a2ui-actions-and-functions"
         },
         {
-          "id": "mcp-fundamentals",
-          "title": "MCP fundamentals",
-          "description": "Hosts, servers, tools — and where the model actually sits in the loop",
-          "icon": "🔌",
-          "duration": "10 min",
-          "url": "/s/learn-a2ui-mcp-fundamentals"
+          "id": "transports-and-mcp",
+          "title": "Transports & the MCP relationship",
+          "description": "Transport-agnostic by design, and the real A2UI <-> MCP Apps integration patterns",
+          "icon": "🚀",
+          "duration": "8 min",
+          "url": "/s/learn-a2ui-transports-and-mcp"
         },
         {
-          "id": "mcp-apps",
-          "title": "MCP Apps & controlled opaqueness",
-          "description": "Tool results that render UI — the handshake, the sandbox, and why it matters",
-          "icon": "⚡",
-          "duration": "10 min",
-          "url": "/s/learn-a2ui-mcp-apps"
+          "id": "a2uicatalog-in-the-ecosystem",
+          "title": "a2uicatalog in the ecosystem",
+          "description": "A live-checked, honest look at where this catalogue sits relative to the real protocol",
+          "icon": "🏗️",
+          "duration": "8 min",
+          "url": "/s/learn-a2ui-a2uicatalog-in-the-ecosystem"
         }
       ]
     },
     {
       "type": "body",
-      "text": "Built with the A2UI Catalog — 468 typed atoms, rendered by the open-source Apps Script renderer this brief teaches. Browse the vocabulary at a2uicatalog.ai."
+      "text": "Built with the A2UI Catalog — 468 typed atoms, an independent implementation of Google's A2UI protocol. Browse the vocabulary at a2uicatalog.ai."
     }
   ]
 }

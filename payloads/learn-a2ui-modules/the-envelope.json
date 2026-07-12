@@ -1,0 +1,162 @@
+{
+  "title": "The message envelope",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "The message envelope",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "The message envelope"
+    },
+    {
+      "type": "body",
+      "text": "A2UI is a **stream of JSON messages**, server to client. Every message is one JSON object carrying exactly one of six top-level keys — that key names the message type. The client parses each object and incrementally builds or updates the UI as messages arrive."
+    },
+    {
+      "type": "table",
+      "caption": "Server → client message types",
+      "headers": [
+        "Message",
+        "Purpose"
+      ],
+      "rows": [
+        [
+          "createSurface",
+          "Create a new surface and begin rendering it"
+        ],
+        [
+          "updateComponents",
+          "Add or update component definitions in an existing surface"
+        ],
+        [
+          "updateDataModel",
+          "Insert or replace data at a JSON Pointer path in the surface's data model"
+        ],
+        [
+          "deleteSurface",
+          "Remove a surface and everything in it"
+        ],
+        [
+          "callFunction",
+          "Ask the client to execute a function it has registered"
+        ],
+        [
+          "actionResponse",
+          "Answer a client-initiated action that requested a response"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "info",
+      "title": "A surface, precisely",
+      "text": "A **surface** is one addressable UI region, identified by a `surfaceId` that's fixed for its lifetime — to change its catalogId you must delete and recreate it. Exactly one component in a surface's tree must carry `id: \"root\"`."
+    },
+    {
+      "type": "heading",
+      "text": "A real example, verbatim from the spec"
+    },
+    {
+      "type": "body",
+      "text": "This is the actual createSurface example from a2ui.org's v1.0 specification — not paraphrased."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "createSurface",
+          "language": "json",
+          "code": "{\n  \"version\": \"v1.0\",\n  \"createSurface\": {\n    \"surfaceId\": \"user_profile_card\",\n    \"catalogId\": \"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json\",\n    \"surfaceProperties\": {\n      \"agentDisplayName\": \"Weather Bot\"\n    },\n    \"sendDataModel\": true,\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"Column\",\n        \"children\": [\"user_name\"]\n      },\n      {\n        \"id\": \"user_name\",\n        \"component\": \"Text\",\n        \"text\": {\"path\": \"/name\"}\n      }\n    ],\n    \"dataModel\": {\n      \"name\": \"John Doe\"\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "body",
+      "text": "Notice: `text: {\"path\": \"/name\"}` isn't literal text — it's a **data binding**. The component tree and the data that fills it are sent separately and can update independently. That's the \"separation of structure and data\" this whole protocol is built around."
+    },
+    {
+      "type": "heading",
+      "text": "The other direction — client to server"
+    },
+    {
+      "type": "body",
+      "text": "The client can talk back too, via exactly one of three message types: `action` (a user interaction, like a button click), `functionResponse` (the result of a server-requested `callFunction`), or `error` (something went wrong client-side — an invalid function call, a boundary violation)."
+    },
+    {
+      "type": "steps",
+      "items": [
+        {
+          "label": "1",
+          "text": "Server: createSurface(surfaceId: \"main\") — the surface is created"
+        },
+        {
+          "label": "2",
+          "text": "Server: updateComponents(surfaceId: \"main\", components: [...]) — the tree is populated"
+        },
+        {
+          "label": "3",
+          "text": "Server: updateDataModel(surfaceId: \"main\", path: \"/user\", value: \"Alice\") — data arrives"
+        },
+        {
+          "label": "4",
+          "text": "Client renders. User interacts → client sends action(name: \"submit\", context: {...})"
+        },
+        {
+          "label": "5",
+          "text": "Time passes. Server sends more updateComponents/updateDataModel as things change"
+        },
+        {
+          "label": "6",
+          "text": "Server: deleteSurface(surfaceId: \"main\") — torn down when no longer needed"
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "Progressive rendering, by design",
+      "text": "A component can reference a child or a data path that hasn't arrived yet. The spec says clients should handle this gracefully — a placeholder, not an error — because messages are allowed to arrive in a sequence where later ones fill in earlier gaps. Rendering can start the moment `root` exists."
+    },
+    {
+      "type": "knowledge_check",
+      "question": "A JSON message arrives with both a `createSurface` key and an `updateComponents` key. What should happen?",
+      "options": [
+        "The client processes both, createSurface first",
+        "This is invalid — every message carries exactly one top-level message-type key",
+        "The client ignores updateComponents on the first message",
+        "It's valid shorthand for combining two calls"
+      ],
+      "correct": 1,
+      "explanation": "The envelope schema requires exactly one message-type key per JSON object. A message with two is malformed."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "6 server→client message types, 3 client→server — nine total, each object carries exactly one",
+        "createSurface can now embed initial components AND dataModel directly (a v1.0 change — v0.9 needed separate follow-up messages)",
+        "Structure (components) and data (dataModel) are always sent and updated independently",
+        "Progressive rendering is a first-class design goal, not an implementation detail"
+      ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "The message envelope",
+      "prev_title": "What A2UI actually is",
+      "prev_url": "/s/learn-a2ui-what-a2ui-is",
+      "next_title": "Components & catalogs",
+      "next_url": "/s/learn-a2ui-components-and-catalogs"
+    }
+  ]
+}

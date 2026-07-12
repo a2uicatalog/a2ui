@@ -1,0 +1,124 @@
+{
+  "title": "a2uicatalog in the ecosystem",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "a2uicatalog in the ecosystem",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "a2uicatalog in the ecosystem"
+    },
+    {
+      "type": "body",
+      "text": "With the real protocol now on the table, here's exactly how a2uicatalog.ai sits relative to it — including a correction to language used elsewhere in this codebase."
+    },
+    {
+      "type": "callout",
+      "kind": "warning",
+      "title": "A correction, stated plainly",
+      "text": "a2uicatalog's own emitter code describes itself as covering \"conformance tiers 1+2\" with \"standard-mappable\" atoms. Those are a2uicatalog's own terms — not language the real A2UI spec uses anywhere. The real, load-bearing mechanism underneath that framing is genuine spec vocabulary: the Basic Catalog vs. Custom Catalog system, and catalogId-scoped extension components (module 3). The tiering is a useful internal way to talk about it; it just isn't Google's terminology, and shouldn't be presented as such."
+    },
+    {
+      "type": "heading",
+      "text": "The real numbers, checked live against the schema"
+    },
+    {
+      "type": "body",
+      "text": "a2uicatalog ships 468 stable atoms. Of those, 19 have a direct mapping to one of the 18 real Basic Catalog components (module 3's table) — things like `heading` -> `Text`, `progress_bar` -> a styled `Column`. The remaining 449 travel as **extension components** under a2uicatalog's own catalogId: valid, correct A2UI behavior — a host without that catalog simply skips them, which the spec treats as expected, not an error."
+    },
+    {
+      "type": "table",
+      "caption": "a2uicatalog's atom split (live count)",
+      "headers": [
+        "Category",
+        "Count",
+        "What happens on a bare A2UI host"
+      ],
+      "rows": [
+        [
+          "Maps to a Basic Catalog component",
+          "19",
+          "Renders anywhere, no catalog needed"
+        ],
+        [
+          "Extension component (a2uicatalog's own catalogId)",
+          "449",
+          "Renders only if the host loads a2uicatalog's catalog"
+        ],
+        [
+          "Total stable atoms",
+          "468",
+          "—"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "The blocks dialect is a convenience, not the protocol"
+    },
+    {
+      "type": "body",
+      "text": "Every payload in this brief has used a2uicatalog's own authoring shape: `{title, theme, blocks: [...]}`, blocks keyed by `type`. It's simpler to hand-write than the real adjacency-list format, and it's what this catalogue's atom pages, playgrounds, and demos all use directly. The `a2ui-emit` tool is the bridge: it walks that dialect and produces a genuine, spec-conformant `createSurface` message — auto-minting deterministic component IDs, building the flat adjacency list, mapping the 19 standard-mappable atoms to their real Basic Catalog components, and passing everything else through as extension components under a2uicatalog's catalogId."
+    },
+    {
+      "type": "heading",
+      "text": "Curated content and the graduation pipeline"
+    },
+    {
+      "type": "body",
+      "text": "Atoms have a lifecycle independent of the protocol question above. **`stage: preview`** atoms live in the repo only — no published page, no catalog entry, sometimes deliberately no typed fields at all. **Stable** atoms get an atom page, catalog entries, schema validation, contract tests — and CI enforces that every published artifact matches the stable set exactly."
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "A worked example — the rocket",
+      "text": "gdm_rocket_panel shipped as hand-curated, field-less preview content inside this same MCP Apps surface. Once proven, it graduated: typed fields (side, layer, loop), a published page, catalog entries. A fireworks animation now holds the preview slot it came from. Curated first, schema when proven — that doorway is the catalog's intake pipeline, and it's a2uicatalog's own design choice, layered on top of (not defined by) the real protocol."
+    },
+    {
+      "type": "knowledge_check",
+      "question": "Are \"conformance tiers 1+2\" and \"standard-mappable\" terms used in Google's A2UI spec?",
+      "options": [
+        "Yes, they're defined in the v1.0 catalog rules",
+        "No — they're a2uicatalog's own framing, built on the spec's real Basic/Custom-catalog and catalogId mechanism",
+        "Only in the v0.9 spec, removed in v1.0",
+        "Yes, but only in the MCP transport binding docs"
+      ],
+      "correct": 1,
+      "explanation": "This is the correction this module opened with. The underlying mechanism (Basic Catalog, Custom Catalog, catalogId-scoped extensions) is real and load-bearing spec vocabulary; the tier/standard-mappable labels on top of it are a2uicatalog's own."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "a2uicatalog is an independent catalog + renderer on top of A2UI, not the protocol itself",
+        "\"Conformance tiers\" / \"standard-mappable\" are a2uicatalog's own terms for the real Basic/Custom-catalog mechanism, not Google's",
+        "19 of 468 stable atoms map to real Basic Catalog components; the rest are valid extension components under a2uicatalog's catalogId",
+        "The blocks dialect is an authoring convenience; a2ui-emit converts it into genuine, spec-conformant A2UI v1.0 messages",
+        "preview -> stable is a2uicatalog's own tested pipeline, orthogonal to A2UI protocol conformance"
+      ]
+    },
+    {
+      "type": "body",
+      "text": "That's the brief. You now know the real protocol — its message envelope, component model, data binding, actions, transports, and its actual relationship to MCP Apps — plus exactly where a2uicatalog sits relative to all of it."
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "a2uicatalog in the ecosystem",
+      "prev_title": "Transports & the MCP relationship",
+      "prev_url": "/s/learn-a2ui-transports-and-mcp",
+      "next_title": "Back to modules",
+      "next_url": "/s/learn-a2ui"
+    }
+  ]
+}

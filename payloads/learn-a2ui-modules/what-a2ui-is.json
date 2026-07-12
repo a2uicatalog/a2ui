@@ -1,0 +1,93 @@
+{
+  "title": "What A2UI actually is",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "What A2UI actually is",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "What A2UI actually is"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "Attribution, up front",
+      "text": "A2UI (Agent2UI) is an open, Apache 2.0-licensed protocol **created by Google**, with contributions from CopilotKit and the open source community. Its home is a2ui.org; the reference repository is github.com/a2ui-project/a2ui. a2uicatalog.ai is an independent, third-party catalog and renderer built *on* this protocol — it does not define it."
+    },
+    {
+      "type": "body",
+      "text": "The problem A2UI solves is specific: **how can an AI agent safely send a rich, interactive UI across a trust boundary?** Two bad answers dominate practice — ship raw HTML/JS (arbitrary code execution risk) or restrict agents to plain text (no UI at all). A2UI's answer: the agent sends **declarative component descriptions** — JSON, never code — and the client renders them using its own native, pre-approved widgets."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "Security first: the client owns a trusted catalog of components (Card, Button, TextField…); the agent can only reference components in that catalog, never inject arbitrary markup or scripts",
+        "Structure and data are deliberately separated — a component tree and a data model, updated independently",
+        "The protocol is JSON-based and designed for streaming: a renderer can begin drawing before the full payload has arrived"
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "warning",
+      "title": "Version reality — it's not finished",
+      "text": "As of this writing, A2UI's current *production* release is **v0.9.1** (stable). **v1.0 is a release candidate** — not yet stable, still open to breaking changes if enough implementer feedback demands it. a2uicatalog's own protocol emitter targets v1.0. Building against a candidate spec is a real, live tradeoff worth knowing, not a footnote."
+    },
+    {
+      "type": "heading",
+      "text": "Where a2uicatalog fits"
+    },
+    {
+      "type": "body",
+      "text": "a2uicatalog.ai is a **catalog implementation**: 468 typed UI atoms, a renderer that runs them on eight surfaces, and a simpler JSON authoring shape — `{title, theme, blocks: [...]}`, blocks keyed by `type` — that this whole curriculum has been using. That shape is **not** the A2UI wire protocol. It's a convenience dialect the catalogue converts *into* real, conformant A2UI v1.0 `createSurface` messages via its own `a2ui-emit` tool."
+    },
+    {
+      "type": "steps",
+      "items": [
+        {
+          "label": "Author",
+          "text": "Write in the catalogue's blocks dialect — the shape used throughout this brief"
+        },
+        {
+          "label": "Convert",
+          "text": "a2ui-emit walks the blocks and produces a real, spec-conformant createSurface message"
+        },
+        {
+          "label": "Render",
+          "text": "Any A2UI-conformant client that understands the referenced catalog can render the result — not just a2uicatalog's own renderer"
+        }
+      ]
+    },
+    {
+      "type": "knowledge_check",
+      "question": "Who created the A2UI protocol?",
+      "options": [
+        "a2uicatalog.ai, which later opened it up",
+        "Google, as an open Apache 2.0 project with outside contributions",
+        "A vendor-neutral standards body with no single author",
+        "It emerged from the MCP specification"
+      ],
+      "correct": 1,
+      "explanation": "A2UI is Google-created and Apache 2.0 licensed. a2uicatalog is a downstream, independent implementation — this distinction is the whole point of this module."
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "What A2UI actually is",
+      "prev_title": "Learn A2UI + MCP",
+      "prev_url": "/s/learn-a2ui",
+      "next_title": "The message envelope",
+      "next_url": "/s/learn-a2ui-the-envelope"
+    }
+  ]
+}

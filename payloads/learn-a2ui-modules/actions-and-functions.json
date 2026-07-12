@@ -1,0 +1,132 @@
+{
+  "title": "Actions, functions & the LLM loop",
+  "theme": "dark",
+  "blocks": [
+    {
+      "type": "breadcrumb",
+      "items": [
+        {
+          "label": "Learn A2UI + MCP",
+          "url": "/s/learn-a2ui"
+        },
+        {
+          "label": "Actions, functions & the LLM loop",
+          "is_current": true
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Actions, functions & the LLM loop"
+    },
+    {
+      "type": "body",
+      "text": "Interactive components attach an `action`. Two kinds: a **server action** (`event`, sent over the network) or a **local action** (`functionCall`, executed entirely on the client)."
+    },
+    {
+      "type": "flashcard_deck",
+      "accent": "#6366f1",
+      "label_front": "MESSAGE",
+      "label_back": "DIRECTION & PURPOSE",
+      "cards": [
+        {
+          "front": "action",
+          "back": "Client → Server. A user interacted with a component that has a server action. Carries sourceComponentId, context, and optionally wantResponse + actionId."
+        },
+        {
+          "front": "actionResponse",
+          "back": "Server → Client. Answers an action that set wantResponse: true, matched by actionId. Exactly one of value or error."
+        },
+        {
+          "front": "callFunction",
+          "back": "Server → Client. Ask the client to run a function IT has registered — never raw code sent over the wire. Carries functionCallId."
+        },
+        {
+          "front": "functionResponse",
+          "back": "Client → Server. The successful result of a callFunction, keyed by functionCallId. A FAILED call goes back as a separate error message instead — functionResponse itself carries no error field."
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Execution boundaries — the real security mechanism"
+    },
+    {
+      "type": "body",
+      "text": "Every catalog function declares `callableFrom`: `clientOnly`, `remoteOnly`, or `clientOrRemote` (defaults to `clientOnly` if omitted). When a server sends `callFunction` for a name the client's catalog marks `clientOnly` — or a name it doesn't recognize at all — the client MUST refuse and reply with a client-to-server `error`, code `INVALID_FUNCTION_CALL`. This is verified at runtime against the live catalog, not validated on the wire."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "Rejected call",
+          "language": "json",
+          "code": "{\n  \"version\": \"v1.0\",\n  \"error\": {\n    \"code\": \"INVALID_FUNCTION_CALL\",\n    \"message\": \"Function 'validateLocalInput' is clientOnly and cannot be invoked remotely.\",\n    \"functionCallId\": \"get_device_resolution_123\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "Why this matters",
+      "text": "This is the concrete mechanism behind A2UI's headline security claim: an agent can request behavior, never inject behavior. Functions are named, catalog-registered, and boundary-checked — the agent supplies a name and arguments, never a script body."
+    },
+    {
+      "type": "heading",
+      "text": "Validation — checks"
+    },
+    {
+      "type": "body",
+      "text": "Input components (and Buttons) can declare `checks` — each a function call that must return a boolean. A failing check shows its message; on a Button, a failing check disables it entirely, letting a button's enabled state depend on live form validity."
+    },
+    {
+      "type": "tabbed_code",
+      "tabs": [
+        {
+          "label": "Field validation",
+          "language": "json",
+          "code": "\"checks\": [\n  {\"call\": \"required\",\n   \"args\": {\"value\": {\"path\": \"/formData/zip\"}},\n   \"message\": \"Zip code is required\"},\n  {\"call\": \"regex\",\n   \"args\": {\"value\": {\"path\": \"/formData/zip\"}, \"pattern\": \"^[0-9]{5}$\"},\n   \"message\": \"Must be a 5-digit zip code\"}\n]"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "How agents actually generate valid A2UI"
+    },
+    {
+      "type": "body",
+      "text": "The spec names a specific authoring loop for LLM-driven generation: **prompt → generate → validate**. The prompt includes the target UI description, the A2UI schema (including the active catalog), and example payloads. The LLM generates JSON. It's validated against the schema; failures are reported back to the LLM in the standard `VALIDATION_FAILED` shape (`code`, `surfaceId`, `path`, `message`) so it can self-correct in the next turn."
+    },
+    {
+      "type": "knowledge_check",
+      "question": "A server sends callFunction for a function the client's catalog doesn't recognize at all. What must the client do?",
+      "options": [
+        "Silently ignore the call",
+        "Execute it anyway if the args look safe",
+        "Reject it and send back an error with code INVALID_FUNCTION_CALL",
+        "Ask the user for permission first"
+      ],
+      "correct": 2,
+      "explanation": "Unrecognized functions are treated the same as clientOnly functions called remotely — immediate rejection, INVALID_FUNCTION_CALL. No code ever runs that wasn't already registered and boundary-checked."
+    },
+    {
+      "type": "key_takeaways",
+      "points": [
+        "action/actionResponse handles client-initiated, server-answered interactions",
+        "callFunction/functionResponse is server-initiated RPC — the client runs code it already registered, never code sent over the wire",
+        "callableFrom (clientOnly/remoteOnly/clientOrRemote) is the real, runtime-enforced security boundary",
+        "checks give components live validation and can gate a Button's enabled state",
+        "Generation is a loop: prompt with schema+examples -> LLM generates -> validate -> report errors back for self-correction"
+      ]
+    },
+    {
+      "type": "lesson_nav",
+      "module_label": "Learn A2UI + MCP",
+      "current_title": "Actions, functions & the LLM loop",
+      "prev_title": "Data binding, paths & scope",
+      "prev_url": "/s/learn-a2ui-data-binding",
+      "next_title": "Transports & the MCP relationship",
+      "next_url": "/s/learn-a2ui-transports-and-mcp"
+    }
+  ]
+}
