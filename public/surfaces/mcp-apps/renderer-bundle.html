@@ -5624,7 +5624,11 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       '<div style="overflow:hidden;flex:1;">' +
         '<div id="' + uid + 'tkr" style="white-space:nowrap;font-size:' + tickerSize + ';font-weight:700;color:rgba(255,255,255,0.88);' +
           'animation:' + uid + 'tk ' + tickerDur + ' linear infinite;">' +
-          _esc(tickerText) + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + _esc(tickerText) +
+          // Matches the status pill's own hardcoded SIM default (above) — JS
+          // (renderTicker) overwrites both together the instant either the
+          // data feed or the weather feed answers, so this is a same-tick
+          // correct default, never a claim that briefly lies before JS runs.
+          '○ SIMULATED — ' + _esc(tickerText) + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;○ SIMULATED — ' + _esc(tickerText) +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -5907,10 +5911,18 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       '}' +
 
       // ── Live flight update from adsb_feed ────────────────────────────────
+      // _TKR_LIVE tracks the SAME live/sim signal the status pill shows —
+      // the ticker's LIVE/SIMULATED prefix (renderTicker, below) reads it
+      // too, so the scrolling marquee can never claim "LIVE" while the pill
+      // quietly says SIM. Payload-authored ticker_text stays free-form
+      // marquee copy; the prefix is the one claim the renderer itself owns.
+      'var _TKR_LIVE=false;' +
       'function setDataStatus(live,count){' +
         'var el=document.getElementById("' + uid + 'status");' +
         'var dot=document.getElementById("' + uid + 'sdot");' +
         'var lbl=document.getElementById("' + uid + 'slbl");' +
+        '_TKR_LIVE=live;' +
+        'renderTicker();' +
         'if(!el)return;' +
         'var c=live?"#34c759":"#ff3b30";' +
         'el.style.background=live?"rgba(52,199,89,0.12)":"rgba(255,59,48,0.12)";' +
@@ -5964,6 +5976,27 @@ _RENDERERS['airspace_command_deck'] = function(b) {
       // Template strings for client-side {{weather.*}} interpolation
       'var _CSUB=' + JSON.stringify(chyronSub) + ';' +
       'var _TKRT=' + JSON.stringify(tickerText) + ';' +
+      'var _wxLast=null;' +
+
+      // Client-side template interpolation for chyron subtitle and ticker
+      'function _wi(s,wx){' +
+        'wx=wx||{};' +
+        'return s.replace(/\\{\\{weather\\.wind\\}\\}/g,wx.wind||"—")' +
+                '.replace(/\\{\\{weather\\.temp\\}\\}/g,wx.temp||"—")' +
+                '.replace(/\\{\\{weather\\.pressure\\}\\}/g,wx.qnh||"—")' +
+                '.replace(/\\{\\{weather\\.raw\\}\\}/g,wx.raw||"");' +
+      '}' +
+
+      // Single source of truth for ticker content — called by BOTH the
+      // weather update and the data-status flip, so neither can clobber the
+      // other's contribution (weather text vs the LIVE/SIMULATED prefix).
+      'function renderTicker(){' +
+        'var tk=document.getElementById("' + uid + 'tkr");' +
+        'if(!tk)return;' +
+        'var prefix=_TKR_LIVE?"\\u25cf LIVE — ":"\\u25cb SIMULATED — ";' +
+        'var t=prefix+_wi(_TKRT,_wxLast);' +
+        'tk.textContent=t+"     "+t;' +
+      '}' +
 
       // ── Weather panel update from metar_feed ─────────────────────────────
       'function updateWeather(wx){' +
@@ -5973,17 +6006,10 @@ _RENDERERS['airspace_command_deck'] = function(b) {
         'if(we&&wx.wind)we.textContent=wx.wind;' +
         'if(te&&wx.temp)te.textContent=wx.temp;' +
         'if(qe&&wx.qnh)qe.textContent=wx.qnh;' +
-        // Client-side template interpolation for chyron subtitle and ticker
-        'function _wi(s){' +
-          'return s.replace(/\\{\\{weather\\.wind\\}\\}/g,wx.wind||"—")' +
-                  '.replace(/\\{\\{weather\\.temp\\}\\}/g,wx.temp||"—")' +
-                  '.replace(/\\{\\{weather\\.pressure\\}\\}/g,wx.qnh||"—")' +
-                  '.replace(/\\{\\{weather\\.raw\\}\\}/g,wx.raw||"");' +
-        '}' +
+        '_wxLast=wx;' +
         'var cs=document.getElementById("' + uid + 'csub");' +
-        'if(cs)cs.textContent=_wi(_CSUB);' +
-        'var tk=document.getElementById("' + uid + 'tkr");' +
-        'if(tk){var t=_wi(_TKRT);tk.textContent=t+"     "+t;}' +
+        'if(cs)cs.textContent=_wi(_CSUB,wx);' +
+        'renderTicker();' +
       '}' +
 
       // ── Subscribe to data feeds (chained so multiple slides share one feed) ──
