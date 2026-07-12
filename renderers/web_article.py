@@ -19080,7 +19080,7 @@ def _render_terminal_boot(b: dict) -> str:
             '(function tick(){'
             'if(i>=lines.length)return;'
             'if(j<=lines[i].length){'
-            'el.innerHTML+=(j===0?"<div>":"")+lines[i][j-1]||"";'
+            'if(j===0){el.innerHTML+="<div>";}else{el.innerHTML+=lines[i][j-1]||"";}'
             'j++;setTimeout(tick,' + str(speed) + ');'
             '}else{'
             'el.innerHTML+="</div>";'

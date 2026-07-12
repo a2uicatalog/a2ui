@@ -235,7 +235,7 @@ footer a{color:var(--accent-2);text-decoration:none}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
    carrying the atom's z-index:9000. */
-:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.08!important}
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
 """
 
 # Theme init — MUST run before first paint (inline in <head>) or dark-toggle
@@ -808,6 +808,14 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .hero-stats{position:relative;display:flex;gap:26px;margin-bottom:22px}
 .hero-stats div{font-size:12px;color:var(--muted)}
 .hero-stats b{display:block;font-size:19px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.entry-paths{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.entry-path{display:block;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
+.entry-path:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-1px)}
+.entry-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.entry-path h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.1px}
+.entry-path p{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0}
+.entry-path code{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:11.5px;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+@media(max-width:760px){.entry-paths{grid-template-columns:1fr}}
 .launch-banner{position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:22px;text-decoration:none;transition:border-color .15s,box-shadow .15s}
 .launch-banner:hover{border-color:var(--accent);box-shadow:var(--glow)}
 .launch-badge{flex-shrink:0;padding:4px 12px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
@@ -821,6 +829,19 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .hero-demo-render{min-width:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 18px;color:#1a1a1a}
 .hero-demo-render h2{font-size:1.25rem;margin:0 0 10px;color:#111}
 @media(max-width:760px){.hero-demo{grid-template-columns:1fr;gap:8px}.hero-demo-arrow{transform:rotate(90deg);padding:4px 0}}
+.showcase-frame{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}
+.showcase-bar{display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.showcase-traffic{display:flex;gap:5px}
+.showcase-traffic i{width:8px;height:8px;border-radius:50%;background:var(--border-strong);display:block;opacity:.7}
+.showcase-label{font-size:11.5px;color:var(--muted);font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.showcase-name{color:var(--accent);font-weight:700}
+.showcase-stage{position:relative;height:168px;background:#0b0f1a}
+.showcase-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;transition:opacity .5s ease;pointer-events:none}
+.showcase-slide.active{opacity:1;pointer-events:auto}
+.showcase-nav{display:flex;justify-content:center;gap:6px;padding:10px;background:var(--surface)}
+.showcase-dot{width:6px;height:6px;padding:0;border-radius:50%;border:none;background:var(--border-strong);cursor:pointer;transition:background .15s,transform .15s}
+.showcase-dot.active{background:var(--accent);transform:scale(1.3)}
+@media(prefers-reduced-motion:reduce){.showcase-slide{transition:none}}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
 #search{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;font-size:14px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
 #search:focus{border-color:var(--accent);box-shadow:var(--glow)}
@@ -934,6 +955,53 @@ def card_stage(atom):
     return f'<div class="stage"><div class="stage-inner">{html}</div></div>'
 
 
+def _showcase_html(slides):
+    """Small browser mockup, cross-fading through hand-picked striking atoms —
+    lands above the fold so a first-time visitor sees something impressive
+    before they'd ever scroll to the grid. See _SHOWCASE_BLOCKS for selection
+    criteria (self-contained only — no document/window-scoped effects)."""
+    if not slides:
+        return ""
+    dots = "".join(
+        f'<button class="showcase-dot{" active" if i == 0 else ""}" data-i="{i}" '
+        f'aria-label="Show {name}"></button>'
+        for i, (name, _) in enumerate(slides)
+    )
+    def _neutralize(html):
+        return re.sub(r"<a\b", "<span", html).replace("</a>", "</span>")
+
+    panes = "".join(
+        f'<div class="showcase-slide{" active" if i == 0 else ""}" data-i="{i}">'
+        f'{_neutralize(html)}</div>'
+        for i, (name, html) in enumerate(slides)
+    )
+    return f'''<div class="showcase-frame">
+      <div class="showcase-bar">
+        <span class="showcase-traffic"><i></i><i></i><i></i></span>
+        <span class="showcase-label">a2uicatalog.ai/atoms/<b class="showcase-name">{slides[0][0]}</b></span>
+      </div>
+      <div class="showcase-stage">{panes}</div>
+      <div class="showcase-nav">{dots}</div>
+    </div>
+    <script>(function(){{
+      var names={json.dumps([n for n, _ in slides])};
+      var slides=document.querySelectorAll(".showcase-slide"),dots=document.querySelectorAll(".showcase-dot"),
+          label=document.querySelector(".showcase-name");
+      if(!slides.length)return;
+      var i=0;
+      function show(n){{
+        i=n;
+        slides.forEach(function(s,k){{s.classList.toggle("active",k===i)}});
+        dots.forEach(function(d,k){{d.classList.toggle("active",k===i)}});
+        if(label)label.textContent=names[i];
+      }}
+      dots.forEach(function(d){{d.addEventListener("click",function(){{show(+d.dataset.i)}})}});
+      if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){{
+        setInterval(function(){{show((i+1)%slides.length)}},3200);
+      }}
+    }})();</script>'''
+
+
 def generate_index(atoms):
     all_surfaces = []
     for atom in atoms:
@@ -1002,6 +1070,32 @@ def generate_index(atoms):
     demo_json = demo_json.replace("&", "&amp;").replace("<", "&lt;")
     demo_render = _web_renderer.render(demo_blocks)
 
+    # Showcase strip — a curated set of visually striking atoms, cross-fading
+    # in a small browser mockup right in the hero (above the fold on load).
+    # First-page impression matters: if something looks cool immediately,
+    # visitors stick around before scrolling. Hand-picked, not random — and
+    # deliberately excludes viewport-following effects (cursor_glow/cursor_trail/
+    # spotlight_cursor) that attach to document/window and would either fight
+    # the page's own live cursor_glow or leak outside a clipped preview box.
+    _SHOWCASE_BLOCKS = [
+        ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
+        ("kinetic_headline", {"type": "kinetic_headline", "text": "Built for agents.", "style": "up"}),
+        ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
+        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": "467 atoms, every surface"}),
+        ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
+        ("animated_counter", {"type": "animated_counter", "counters": [{"value": 467, "label": "atoms", "color": "#f4f4f5"}]}),
+    ]
+    showcase_slides = []
+    for name, block in _SHOWCASE_BLOCKS:
+        try:
+            html = _web_renderer.render([block])
+            if html.strip():
+                showcase_slides.append((name, html))
+        except Exception as e:
+            print(f"WARNING: showcase atom '{name}' failed to render ({e}) — skipped", file=sys.stderr)
+    if not showcase_slides:
+        print("WARNING: all showcase atoms failed to render — showcase strip omitted", file=sys.stderr)
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1026,6 +1120,23 @@ def generate_index(atoms):
       <div><b>{len([s for s in all_surfaces if s not in HIDDEN_SURFACES])}</b>surfaces</div>
       <div><b>v1.0.0</b>spec</div>
     </div>
+    <div class="entry-paths">
+      <a class="entry-path" href="#grid">
+        <span class="entry-kicker">Browse</span>
+        <h3>Explore the catalog</h3>
+        <p>Search and preview {len(atoms)} atoms live, right on this page.</p>
+      </a>
+      <a class="entry-path" href="/surfaces/mcp-apps">
+        <span class="entry-kicker">Integrate</span>
+        <h3>Connect an agent</h3>
+        <p>MCP server at <code>a2uicatalog.ai/mcp</code> — an agent composes real UI from this vocabulary.</p>
+      </a>
+      <a class="entry-path" href="/renderer">
+        <span class="entry-kicker">Self-host</span>
+        <h3>Deploy your own renderer</h3>
+        <p>Apps Script web app, 4 commands — you own the URL.</p>
+      </a>
+    </div>
     <a class="launch-banner" href="/surfaces/mcp-apps">
       <span class="launch-badge">Just launched</span>
       <span class="launch-text">MCP Apps is a first-class surface — catalog atoms and curated content, live inside a sandboxed MCP host</span>
@@ -1042,13 +1153,14 @@ def generate_index(atoms):
         <div class="hero-demo-render">{demo_render}</div>
       </div>
     </div>
+    {_showcase_html(showcase_slides)}
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off">
       <div class="filters">{filter_pills}</div>
       <span class="count" id="count">{len(atoms)} atoms</span>
     </div>
   </header>
-  <div class="grid">
+  <div class="grid" id="grid">
 {cards_html}  </div>
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>

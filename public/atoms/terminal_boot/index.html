@@ -61,7 +61,7 @@ footer a{color:var(--accent-2);text-decoration:none}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
    carrying the atom's z-index:9000. */
-:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.08!important}
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
 
 .wrap{max-width:860px}
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
@@ -129,7 +129,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1rem 0;border-radius:10px;overflow:hidden;background:#0d1117;"><div style="background:#1c1c1c;padding:8px 14px;display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:50%;background:#ff5f56;"></span><span style="width:12px;height:12px;border-radius:50%;background:#febc2e;"></span><span style="width:12px;height:12px;border-radius:50%;background:#27c93f;"></span></div><div id="tb43caa" style="padding:16px 20px;font-family:ui-monospace,monospace;font-size:0.82rem;line-height:1.8;color:#cdd6f4;min-height:80px;"></div></div><script>(function(){var el=document.getElementById("tb43caa");var lines=["$ npm install a2ui","added 42 packages","✓ Done in 1.2s"];var i=0,j=0;(function tick(){if(i>=lines.length)return;if(j<=lines[i].length){el.innerHTML+=(j===0?"<div>":"")+lines[i][j-1]||"";j++;setTimeout(tick,60);}else{el.innerHTML+="</div>";i++;j=0;setTimeout(tick,200);}})();})();</script></div>
+  <div class="preview-box"><div style="margin:1rem 0;border-radius:10px;overflow:hidden;background:#0d1117;"><div style="background:#1c1c1c;padding:8px 14px;display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:50%;background:#ff5f56;"></span><span style="width:12px;height:12px;border-radius:50%;background:#febc2e;"></span><span style="width:12px;height:12px;border-radius:50%;background:#27c93f;"></span></div><div id="tb43caa" style="padding:16px 20px;font-family:ui-monospace,monospace;font-size:0.82rem;line-height:1.8;color:#cdd6f4;min-height:80px;"></div></div><script>(function(){var el=document.getElementById("tb43caa");var lines=["$ npm install a2ui","added 42 packages","✓ Done in 1.2s"];var i=0,j=0;(function tick(){if(i>=lines.length)return;if(j<=lines[i].length){if(j===0){el.innerHTML+="<div>";}else{el.innerHTML+=lines[i][j-1]||"";}j++;setTimeout(tick,60);}else{el.innerHTML+="</div>";i++;j=0;setTimeout(tick,200);}})();})();</script></div>
 </div>
 
   <div class="section">

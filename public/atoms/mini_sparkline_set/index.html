@@ -61,7 +61,7 @@ footer a{color:var(--accent-2);text-decoration:none}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
    carrying the atom's z-index:9000. */
-:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.08!important}
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
 
 .wrap{max-width:860px}
 nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
@@ -142,11 +142,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_139847842882880_0" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_139649394682112_0" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_139847842882880_0" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_139649394682112_0" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -154,8 +154,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139847842882880_0)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_139847842882880_0)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139649394682112_0)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_139649394682112_0)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#a855f7" stroke-width="2" />
             </svg>
           </div>
@@ -169,11 +169,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_139847842882880_1" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_139649394682112_1" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_139847842882880_1" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_139649394682112_1" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -181,8 +181,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139847842882880_1)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_139847842882880_1)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139649394682112_1)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_139649394682112_1)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#10b981" stroke-width="2" />
             </svg>
           </div>
