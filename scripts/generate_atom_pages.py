@@ -264,7 +264,7 @@ def site_header(active=""):
     <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
     <nav class="site-nav">
       <a href="/"{cur('atoms')}>Atoms</a>
-      <a href="/surfaces/mcp-apps"{cur('playground')}>Playground</a>
+      <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
