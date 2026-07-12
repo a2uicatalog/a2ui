@@ -1266,11 +1266,12 @@ __MCP_APPS_HOST_JS__
 
 <script>
 /* Graduation flyby — the rocket that earned its way out of this page's
-   off-catalog slot climbs the right edge once per visit, then removes
-   itself from the DOM. Standalone page chrome: the atom's real renderer
-   lives inside the sandboxed iframe and can't reach this document (that's
-   the point of the sandbox), so this is a compact re-draw in the same
-   visual language. Skipped entirely under prefers-reduced-motion. */
+   off-catalog slot climbs the right edge on a continuous loop (each pass
+   starts below the fold, so there's a natural beat between launches).
+   Standalone page chrome: the atom's real renderer lives inside the
+   sandboxed iframe and can't reach this document (that's the point of the
+   sandbox), so this is a compact re-draw in the same visual language.
+   Skipped entirely under prefers-reduced-motion. */
 (function(){
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var cv = document.createElement('canvas');
@@ -1318,7 +1319,7 @@ __MCP_APPS_HOST_JS__
   function frame(ts){
     if (!t0) t0 = ts;
     var p = (ts - t0) / DUR;
-    if (p > 1.2) { cv.remove(); return; }   // rocket gone AND trail faded
+    if (p > 1.2) { t0 = ts; trail = []; p = 0; }   // trail faded — relaunch
     var h = cv.height, cx = cv.width*0.5 + Math.sin(p*9)*3;
     // accelerating climb: below the fold -> off the top
     var cy = (h + S*2) - (h + S*6) * p * p * (0.35 + 0.65*p);

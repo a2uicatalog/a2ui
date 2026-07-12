@@ -292,11 +292,12 @@ def test_gallery_page_reconciles_with_catalog():
 def test_graduation_flyby_on_surface_page():
     """The rocket flyby is outer-page chrome (the atom's renderer is jailed
     inside the iframe) — assert it ships on the mcp-apps surface page, honors
-    reduced motion, and self-removes so it can't linger as a perf cost."""
+    reduced motion, and loops (relaunch reset, not one-shot removal)."""
     html = (ROOT / "public" / "surfaces" / "mcp-apps" / "index.html").read_text()
     assert "Graduation flyby" in html
     assert "prefers-reduced-motion" in html
-    assert "cv.remove()" in html
+    assert "relaunch" in html
+    assert "cv.remove()" not in html
 
 
 def test_fullscreen_deck_breaks_out_of_host_chrome(core_js):
