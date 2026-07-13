@@ -266,6 +266,7 @@ def site_header(active=""):
       <a href="/"{cur('atoms')}>Atoms</a>
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
+      <a href="/blog"{cur('blog')}>Blog</a>
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
