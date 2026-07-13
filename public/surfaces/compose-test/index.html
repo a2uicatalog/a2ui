@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>compose test (internal, unlinked)</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--indigo:#6366f1;--green:#3fb950;--red:#f85149}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:32px 20px}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:15px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px}
+  p.sub{color:var(--muted);font-size:13px;margin:0 0 24px}
+  textarea{width:100%;min-height:80px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical}
+  textarea:focus{outline:none;border-color:var(--indigo)}
+  .row{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  button{padding:9px 20px;border-radius:8px;border:none;background:var(--indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
+  button:hover{background:#818cf8}
+  button:disabled{opacity:.5;cursor:default}
+  .status{font-size:12.5px;color:var(--muted);flex:1}
+  .status.err{color:var(--red)}
+  .status.ok{color:var(--green)}
+  pre{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:11.5px;line-height:1.5;overflow-x:auto;margin-top:16px;color:#9ecbff;white-space:pre-wrap;word-break:break-word}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .preset{padding:5px 12px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11.5px}
+  .preset:hover{border-color:var(--indigo);color:var(--indigo)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Compose test — internal, unlinked</h1>
+  <p class="sub">Calls POST /api/compose (two-stage Workers AI), then hands the returned blocks to the existing MCP Apps player via the same #p= encoding used everywhere else. Not linked from any nav — bookmark the URL.</p>
+
+  <textarea id="prompt" placeholder="Describe what you want, e.g. &quot;Show a card displaying our total user registrations at 12,345.&quot;"></textarea>
+  <div class="presets" id="presets"></div>
+  <div class="row">
+    <button id="go">Compose &amp; render →</button>
+    <span class="status" id="status"></span>
+  </div>
+  <pre id="raw" style="display:none"></pre>
+</div>
+
+<script>
+(function () {
+  var PRESETS = [
+    "Show a card displaying our total user registrations at 12,345.",
+    "Put a heading saying Executive Summary at the top, then show an error alert banner stating that syncing failed.",
+    "Build a short comparison table showing Item and Cost for Bread and Milk.",
+    "Add a simple paragraph saying Welcome to the dashboard.",
+  ];
+  var presetBox = document.getElementById('presets');
+  PRESETS.forEach(function (p) {
+    var b = document.createElement('button');
+    b.className = 'preset';
+    b.textContent = p.length > 40 ? p.slice(0, 40) + '…' : p;
+    b.title = p;
+    b.addEventListener('click', function () { document.getElementById('prompt').value = p; });
+    presetBox.appendChild(b);
+  });
+
+  var promptEl = document.getElementById('prompt');
+  var goBtn = document.getElementById('go');
+  var statusEl = document.getElementById('status');
+  var rawEl = document.getElementById('raw');
+
+  function setStatus(cls, msg) {
+    statusEl.className = 'status' + (cls ? ' ' + cls : '');
+    statusEl.textContent = msg;
+  }
+
+  async function encodeToPUrl(payload) {
+    var stream = new Blob([JSON.stringify(payload)]).stream().pipeThrough(new CompressionStream('gzip'));
+    var buf = await new Response(stream).arrayBuffer();
+    var bytes = new Uint8Array(buf);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    var enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return '/surfaces/mcp-apps/play/#p=' + enc;
+  }
+
+  goBtn.addEventListener('click', async function () {
+    var prompt = promptEl.value.trim();
+    if (!prompt) { setStatus('err', 'type a prompt first'); return; }
+
+    goBtn.disabled = true;
+    rawEl.style.display = 'none';
+    setStatus('', 'calling /api/compose…');
+
+    try {
+      var res = await fetch('/api/compose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt }),
+      });
+      var data = await res.json();
+      rawEl.textContent = JSON.stringify(data, null, 2);
+      rawEl.style.display = 'block';
+
+      if (!res.ok || !data.ok) {
+        setStatus('err', 'error: ' + (data.error || res.status));
+        return;
+      }
+      if (!data.blocks || !data.blocks.length) {
+        setStatus('err', 'no blocks returned (matched: ' + JSON.stringify(data.matched || []) + ')');
+        return;
+      }
+      setStatus('ok', 'matched ' + JSON.stringify(data.matched) + ' via ' + data.routing +
+        (data.degraded ? ' (degraded: single-atom retry)' : '') + ' — redirecting to renderer…');
+
+      var url = await encodeToPUrl({ theme: 'dark', blocks: data.blocks });
+      setTimeout(function () { location.href = url; }, 600);
+    } catch (e) {
+      setStatus('err', 'error: ' + (e && e.message || e));
+    } finally {
+      goBtn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
