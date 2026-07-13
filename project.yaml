@@ -121,6 +121,11 @@ generators:
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
     outputs: [README.md]              # only the block between compat-matrix markers
     publish: repo-committed (GitHub renders it)
+  gen_atom_json_schemas:
+    script: scripts/gen_atom_json_schemas.py
+    source: atoms/schema.yaml
+    outputs: [public/catalogue/atoms-json-schema.json]  # strict per-atom JSON Schema, for LLM response_format constraints
+    publish: ci (deploy.yml on push -> Cloudflare)
   gen_schema_snapshot:
     script: scripts/gen_schema_snapshot.py
     source: atoms/schema.yaml
