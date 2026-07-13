@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="examples/efficiency-claim.png" alt="A2UI — 35× fewer output tokens. Identical UI." width="100%">
-
 # A2UI Catalogue
 
 **A component vocabulary for agent-driven interfaces.**  
@@ -12,6 +10,8 @@ The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation
 [![Surfaces](https://img.shields.io/badge/surfaces-5-a78bfa?style=flat-square&labelColor=04060f)](spec/)
 [![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=04060f)](LICENSE)
 [![A2UI](https://img.shields.io/badge/spec-v0.9_draft-f472b6?style=flat-square&labelColor=04060f)](spec/)
+
+*Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; the official spec lives at [a2ui.org](https://a2ui.org).*
 
 </div>
 
@@ -27,7 +27,7 @@ OpenUI     287 tok  ███████████████████
 A2UI        68 tok  ████
 ```
 
-**35× fewer output tokens. Identical UI.** The renderer expands a 68-token atom reference into 2,395 tokens of compiled HTML server-side — it never re-enters the model's context window.
+Fewer tokens to describe the same UI. The model names an atom; the renderer expands it into the full HTML server-side, and that expansion never re-enters the model's context window. (The efficiency framing here is still being validated — see `benchmarks/BENCHMARK.md` for the current methodology.)
 
 ---
 
@@ -117,9 +117,9 @@ Atoms declare which surfaces they support at the schema level. An agent picks an
 ```json
 [{
   "type": "stat_card",
-  "label": "Output tokens saved",
-  "value": "97%",
-  "delta": "+35×"
+  "label": "Atoms published",
+  "value": "450+",
+  "delta": "+12 this week"
 }]
 ```
 

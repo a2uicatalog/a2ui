@@ -788,6 +788,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
     <span>MIT License</span>
   </footer>
   </div>
@@ -1163,6 +1164,7 @@ def generate_index(atoms):
 {cards_html}  </div>
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   </div>
@@ -1966,6 +1968,7 @@ document.addEventListener('click', function (e) {{
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   </div>
