@@ -108,6 +108,17 @@ def advanced_parse_field(raw_string: str):
         except Exception:
             pass
 
+    # list[string] / list[list[string]] — MUST come before the keyword fallbacks:
+    # "list[string]" contains the substring "string", so without this branch it
+    # was misclassified as a plain string. Found live 2026-07-13 when constrained
+    # output produced "headers": "['Item', 'Cost']" — a string holding a
+    # Python-repr list — for table.headers (declared list[string]). The adopted
+    # round-3 outsourced parser had silently dropped round 1's list[...] handler.
+    list_match = re.match(r"^list\[(.+)\]$", re.sub(r"\(.*?\)", "", s).strip())
+    if list_match:
+        inner, _ = advanced_parse_field(list_match.group(1))
+        return {"type": "array", "items": inner}, is_optional
+
     array_obj_match = re.search(r"(?:array of\s*|list of\s*)?\{\s*([^}]+)\s*\}", s, re.IGNORECASE)
     if array_obj_match:
         tokens = re.split(r",\s*", array_obj_match.group(1))

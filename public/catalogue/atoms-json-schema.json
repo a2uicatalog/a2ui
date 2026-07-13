@@ -132,7 +132,10 @@
             "const": "pipeline"
           },
           "steps": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -375,7 +378,10 @@
             "type": "string"
           },
           "tags": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -457,10 +463,19 @@
             "type": "string"
           },
           "headers": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "rows": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
         "required": [
