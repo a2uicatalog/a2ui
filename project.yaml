@@ -126,6 +126,11 @@ generators:
     source: atoms/schema.yaml
     outputs: [public/catalogue/atoms-json-schema.json]  # strict per-atom JSON Schema, for LLM response_format constraints
     publish: ci (deploy.yml on push -> Cloudflare)
+  gen_atom_embeddings:
+    script: scripts/gen_atom_embeddings.py
+    source: public/spec.json (compact_description per atom) via a live Workers AI embedding call
+    outputs: [public/catalogue/atoms-embeddings.json]  # 384-dim vector per atom, used by mcp-worker /api/compose for cosine-similarity routing
+    publish: manual (needs Workers AI account access, not CI-callable — see script docstring; run when the published atom set changes meaningfully)
   gen_schema_snapshot:
     script: scripts/gen_schema_snapshot.py
     source: atoms/schema.yaml
