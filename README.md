@@ -9,7 +9,7 @@ The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation
 [![GAS atoms](https://img.shields.io/badge/GAS_renderer-450%2B_atoms-7c3aed?style=flat-square&labelColor=04060f)](apps-script-surface/)
 [![Surfaces](https://img.shields.io/badge/surfaces-5-a78bfa?style=flat-square&labelColor=04060f)](spec/)
 [![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=04060f)](LICENSE)
-[![A2UI](https://img.shields.io/badge/spec-v0.9_draft-f472b6?style=flat-square&labelColor=04060f)](spec/)
+[![A2UI](https://img.shields.io/badge/spec-v1.0_candidate-f472b6?style=flat-square&labelColor=04060f)](renderers/a2ui_v1.py)
 
 *Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; the official spec lives at [a2ui.org](https://a2ui.org).*
 
@@ -121,7 +121,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 | `scripts/` | Publishing pipeline to Firestore |
 | `vendors/` | Landscape analysis of 9 UI libraries mapped to A2UI atoms |
 | `benchmarks/` | OpenUI comparison benchmark — token counts across 7 scenarios |
-| `spec/` | A2UI v0.9 draft spec and gdm-v0.2 component contract |
+| `spec/` | Internal state/action contracts (gdm-v0.2, a2ui-state-v1) — the A2UI v1.0 candidate spec itself lives at [a2ui.org](https://a2ui.org/specification/v1.0-a2ui/), not vendored here |
 | `examples/` | Playbook YAML examples |
 | `knowledge-catalogue/` | Curriculum-to-atom pipeline — converts structured knowledge into A2UI blocks. Separate concern from the atom vocabulary itself; see `knowledge-catalogue/README.md`. |
 
@@ -460,13 +460,16 @@ The renderer handles HTML, CSS, SVG, and animation. The model never touches them
 
 ## On the name
 
-This catalogue is compliant with the [Google A2UI v0.9 specification](https://developers.googleblog.com/a2ui-v0-9-generative-ui/). Google established the A2- prefix for agent-interface concepts and published the v0.9 spec in June 2026 — this vocabulary is independently developed and interoperable with that spec. Not affiliated with Google.
+Google established the A2- prefix for agent-interface concepts and published the [v0.9 spec](https://developers.googleblog.com/a2ui-v0-9-generative-ui/) in June 2026; this vocabulary is independently developed and interoperable with it. Not affiliated with Google.
+
+The renderer has since moved to the [v1.0 candidate spec](https://a2ui.org/specification/v1.0-a2ui/) (`renderers/a2ui_v1.py`, `a2ui_v1_wired.py`, `a2ui_v1_updates.py`) — conformant for the standard-mappable atoms and the `blocks` dialect's full envelope (`createSurface`, `updateComponents`, `updateDataModel`, action/function RPC). One real, flagged gap: the catalogue's own *wired* (stateful) dialect is richer than v1.0's flat `dataModel` — reactive primitives (filtering, computed values, validation, timers) have no v1.0 equivalent and travel as an explicit `catalogId: a2ui-state-v1` extension. A bare v1.0 host without that extension catalog degrades gracefully (spec-correct behavior) rather than breaking, but loses that liveness. Not a blanket compliance claim — see the module docstrings for the exact scope.
 
 ## Related work
 
 | Source | Relevance |
 |---|---|
-| [A2UI v0.9 — Google Developers Blog](https://developers.googleblog.com/a2ui-v0-9-generative-ui/) | Google's A2UI spec — separates structure (agent) from implementation (renderer), no surface compatibility layer yet |
+| [A2UI v1.0 candidate — a2ui.org](https://a2ui.org/specification/v1.0-a2ui/) | Current spec this catalogue's renderer targets |
+| [A2UI v0.9 — Google Developers Blog](https://developers.googleblog.com/a2ui-v0-9-generative-ui/) | Original announcement — separates structure (agent) from implementation (renderer), no surface compatibility layer yet |
 | [MCP-UI — Interactive UI for MCP](https://mcpui.dev/guide/introduction) | Capability negotiation at client handshake level, not component level |
 | [The State of Agentic UI — CopilotKit](https://www.copilotkit.ai/blog/the-state-of-agentic-ui-comparing-ag-ui-mcp-ui-and-a2ui-protocols) | Compares AG-UI, MCP-UI, A2UI — none have atom-level surface tagging |
 | [W3C UI Specification Schema CG](https://www.w3.org/community/uispec/) | Machine-readable meta-model for cross-platform UI constraints — closest to this approach |
