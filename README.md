@@ -35,10 +35,12 @@ A few atoms, live on the site — click through to a full spec + fields table fo
 
 <table>
 <tr>
-<td width="25%"><a href="https://a2uicatalog.ai/atoms/glowing_stat/"><img src="examples/atom-glowing-stat.png" alt="glowing_stat atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/glowing_stat/"><code>glowing_stat</code></a></td>
-<td width="25%"><a href="https://a2uicatalog.ai/atoms/stat_card/"><img src="examples/atom-stat-card.png" alt="stat_card atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/stat_card/"><code>stat_card</code></a></td>
-<td width="25%"><a href="https://a2uicatalog.ai/atoms/before_after/"><img src="examples/atom-before-after.png" alt="before_after atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/before_after/"><code>before_after</code></a></td>
-<td width="25%"><a href="https://a2uicatalog.ai/atoms/annotated_code/"><img src="examples/atom-annotated-code.png" alt="annotated_code atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/annotated_code/"><code>annotated_code</code></a></td>
+<td align="center"><a href="https://a2uicatalog.ai/atoms/glowing_stat/"><img src="examples/atom-glowing-stat.png" width="240" alt="glowing_stat atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/glowing_stat/"><code>glowing_stat</code></a></td>
+<td align="center"><a href="https://a2uicatalog.ai/atoms/stat_card/"><img src="examples/atom-stat-card.png" width="240" alt="stat_card atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/stat_card/"><code>stat_card</code></a></td>
+</tr>
+<tr>
+<td align="center"><a href="https://a2uicatalog.ai/atoms/before_after/"><img src="examples/atom-before-after.png" width="390" alt="before_after atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/before_after/"><code>before_after</code></a></td>
+<td align="center"><a href="https://a2uicatalog.ai/atoms/annotated_code/"><img src="examples/atom-annotated-code.png" width="390" alt="annotated_code atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/annotated_code/"><code>annotated_code</code></a></td>
 </tr>
 </table>
 
