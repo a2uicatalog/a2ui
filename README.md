@@ -7,7 +7,7 @@ The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation
 
 [![Atoms](https://img.shields.io/badge/atoms-450%2B-00f2ff?style=flat-square&labelColor=04060f)](atoms/)
 [![GAS atoms](https://img.shields.io/badge/GAS_renderer-450%2B_atoms-7c3aed?style=flat-square&labelColor=04060f)](apps-script-surface/)
-[![Surfaces](https://img.shields.io/badge/surfaces-5-a78bfa?style=flat-square&labelColor=04060f)](spec/)
+[![Surfaces](https://img.shields.io/badge/surfaces-8-a78bfa?style=flat-square&labelColor=04060f)](spec/)
 [![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=04060f)](LICENSE)
 [![A2UI](https://img.shields.io/badge/spec-v1.0_candidate-f472b6?style=flat-square&labelColor=04060f)](renderers/a2ui_v1.py)
 
@@ -127,7 +127,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 
 ---
 
-## 450+ atoms across 5 surfaces
+## 450+ atoms across 8 surfaces
 
 Atoms declare which surfaces they support at the schema level. An agent picks an atom by name, supplies parameters, and the renderer handles the rest.
 
