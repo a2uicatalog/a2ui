@@ -29,6 +29,21 @@ A2UI        68 tok  ████
 
 Fewer tokens to describe the same UI. The model names an atom; the renderer expands it into the full HTML server-side, and that expansion never re-enters the model's context window. (The efficiency framing here is still being validated — see `benchmarks/BENCHMARK.md` for the current methodology.)
 
+> **Work in progress.** The atom vocabulary itself is stable; what it's *for* is still being explored. The live catalog and this repo are the vocabulary and its renderers — applying that vocabulary to new use cases (rendering a CLI's own output, for instance, in a sibling project not yet published) is ongoing, not finished.
+
+A few atoms, live on the site — click through to a full spec + fields table for each:
+
+<table>
+<tr>
+<td width="25%"><a href="https://a2uicatalog.ai/atoms/glowing_stat/"><img src="examples/atom-glowing-stat.png" alt="glowing_stat atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/glowing_stat/"><code>glowing_stat</code></a></td>
+<td width="25%"><a href="https://a2uicatalog.ai/atoms/stat_card/"><img src="examples/atom-stat-card.png" alt="stat_card atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/stat_card/"><code>stat_card</code></a></td>
+<td width="25%"><a href="https://a2uicatalog.ai/atoms/before_after/"><img src="examples/atom-before-after.png" alt="before_after atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/before_after/"><code>before_after</code></a></td>
+<td width="25%"><a href="https://a2uicatalog.ai/atoms/annotated_code/"><img src="examples/atom-annotated-code.png" alt="annotated_code atom preview"></a><br><a href="https://a2uicatalog.ai/atoms/annotated_code/"><code>annotated_code</code></a></td>
+</tr>
+</table>
+
+[Browse all 450+ atoms →](https://a2uicatalog.ai/)
+
 ---
 
 ## Google Apps Script renderer — try it live
