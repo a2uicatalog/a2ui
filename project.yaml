@@ -116,6 +116,11 @@ generators:
     source: atoms/schema.yaml
     outputs: [public/.well-known/ai-catalog.json]
     publish: repo-committed, served by Cloudflare
+  gen_compat_matrix:
+    script: scripts/gen_compat_matrix.py
+    source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
+    outputs: [README.md]              # only the block between compat-matrix markers
+    publish: repo-committed (GitHub renders it)
   gen_schema_snapshot:
     script: scripts/gen_schema_snapshot.py
     source: atoms/schema.yaml
