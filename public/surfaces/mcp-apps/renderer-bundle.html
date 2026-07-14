@@ -53,6 +53,18 @@
     transition: background-color 0.3s, color 0.3s;
   }
 
+  /* Custom properties cascade DOWN to descendants only — body.asw-dark-theme's
+     --bg override never reaches its own ANCESTOR html element, so html stays
+     stuck on :root's light default forever. On a short-content page (e.g. a
+     single small atom in the full-screen MCP Apps view) body doesn't fill the
+     viewport, and that permanently-white html background shows through below
+     it — a real white-screen incident (2026-07-14). min-height guarantees
+     body's own (correctly dark-themed) background paints the whole viewport
+     regardless of content height, independent of html's background entirely. */
+  body {
+    min-height: 100vh;
+  }
+
   .asw-page {
     max-width: 860px;
     margin: 0 auto;
