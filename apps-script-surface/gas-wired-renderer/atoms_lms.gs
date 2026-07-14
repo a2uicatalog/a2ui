@@ -631,7 +631,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
             'box-shadow:0 24px 48px rgba(0,0,0,0.5);">' +
             '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#334155;margin-bottom:1.2rem;">' + _esc(lblFront) + '</div>' +
             '<div style="font-size:1.1rem;font-weight:600;line-height:1.6;color:#f1f5f9;">' + front + '</div>' +
-            '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— espace / clic pour retourner —</div>' +
+            '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:#1e293b;letter-spacing:0.1em;">— space / click to flip —</div>' +
           '</div>' +
           '<div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;' +
             'transform:rotateY(180deg);' +
@@ -640,7 +640,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
             'background:' + _esc(accent) + ';box-shadow:0 24px 48px rgba(0,0,0,0.5);">' +
             '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:1.2rem;">' + _esc(lblBack) + '</div>' +
             '<div style="font-size:1.05rem;font-weight:600;line-height:1.65;color:#fff;">' + back + '</div>' +
-            '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;">— espace / clic pour retourner —</div>' +
+            '<div style="position:absolute;bottom:1.1rem;font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;">— space / click to flip —</div>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -664,13 +664,13 @@ _RENDERERS['flashcard_deck'] = function(b) {
       '<div style="display:flex;align-items:center;gap:10px;margin-top:1.4rem;">' +
         '<button id="' + uid + 'P" onclick="window[\'' + uid + '\'].prev()" disabled ' +
           'style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);' +
-          'background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;font-size:0.78rem;font-weight:600;">← Préc.</button>' +
+          'background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;font-size:0.78rem;font-weight:600;">← Prev</button>' +
         '<button onclick="window[\'' + uid + '\'].flip()" ' +
           'style="padding:8px 22px;border-radius:8px;border:none;background:' + _esc(accent) + ';' +
-          'color:#fff;cursor:pointer;font-size:0.78rem;font-weight:700;">Retourner</button>' +
+          'color:#fff;cursor:pointer;font-size:0.78rem;font-weight:700;">Flip</button>' +
         '<button id="' + uid + 'N" onclick="window[\'' + uid + '\'].next()" ' +
           'style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);' +
-          'background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:0.78rem;font-weight:600;">Suiv. →</button>' +
+          'background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-size:0.78rem;font-weight:600;">Next →</button>' +
       '</div>' +
     '</div>' +
     '<script>(function(){' +
