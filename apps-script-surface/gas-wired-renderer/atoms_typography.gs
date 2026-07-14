@@ -337,10 +337,10 @@ _RENDERERS['math_block'] = function(b) {
       'text-align:' + align + ';line-height:1.5;">' + caption + '</div>'
     : '';
 
-  return '<div style="margin:1.5rem 0;position:relative;">' +
+  return '<div class="a2ui-math" style="margin:1.5rem 0;position:relative;">' +
     '<div style="text-align:' + align + ';' +
       'font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;' +
-      'font-size:' + _esc(size) + ';color:inherit;overflow-x:auto;">' + mathml + '</div>' +
+      'font-size:' + _esc(size) + ';color:var(--text,#1f2937);overflow-x:auto;">' + mathml + '</div>' +
     numHtml + capHtml +
     '</div>';
 };

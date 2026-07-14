@@ -474,7 +474,7 @@ _RENDERERS['hub'] = function(b) {
     '<div id="' + uid + 'TOPNAV" style="position:fixed;top:0;left:0;right:0;z-index:400;background:#f8fafc;' +
     'border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 8px rgba(0,0,0,0.06);">' +
     tabsHtml + '</div>' +
-    '<div id="' + uid + 'content" style="padding-top:64px;padding-bottom:72px;background:#ffffff;">' + contentHtml + '</div>' +
+    '<div id="' + uid + 'content" style="padding-top:64px;padding-bottom:72px;background:#ffffff;box-sizing:border-box;min-height:100vh;">' + contentHtml + '</div>' +
     '<div id="' + uid + 'BOTNAV" style="position:fixed;bottom:0;left:0;right:0;z-index:400;background:#f8fafc;' +
     'border-top:1px solid rgba(0,0,0,0.08);box-shadow:0 -2px 8px rgba(0,0,0,0.06);">' +
     bottomNavHtml + '</div>' +
@@ -491,12 +491,13 @@ _RENDERERS['hub'] = function(b) {
     'function applyTheme(d){' +
     'dark=d;' +
     'var cb=d?BG:"#ffffff",navb=d?NAV:"#f8fafc";' +
+    'var cardBg=d?"#f8fafc":"#ffffff";' +  // reading surface stays light in dark mode — content atoms hardcode dark text
     'var bdr=d?"rgba(255,255,255,0.07)":"rgba(0,0,0,0.08)";' +
     'var shT=d?"0 2px 12px rgba(0,0,0,0.4)":"0 2px 8px rgba(0,0,0,0.06)";' +
     'var shB=d?"0 -2px 12px rgba(0,0,0,0.4)":"0 -2px 8px rgba(0,0,0,0.06)";' +
     'var wrap=g("body"),ct=g("content"),tn=g("TOPNAV"),bn=g("BOTNAV");' +
     'if(wrap)wrap.style.background=cb;' +
-    'if(ct)ct.style.background=cb;' +
+    'if(ct)ct.style.background=cardBg;' +
     'document.body.style.background=cb;' +
     'if(tn){tn.style.background=navb;tn.style.borderBottomColor=bdr;tn.style.boxShadow=shT;}' +
     'if(bn){bn.style.background=navb;bn.style.borderTopColor=bdr;bn.style.boxShadow=shB;}' +
@@ -532,6 +533,7 @@ _RENDERERS['hub'] = function(b) {
     'if(ns)ns.style.display="block";' +
     'window.scrollTo(0,0);' +
     '}};' +
+    'applyTheme(document.body.classList.contains("asw-dark-theme"));' +  // sync initial theme on load (auto-dark / saved pref)
     '})();<\/script>'
   );
 };

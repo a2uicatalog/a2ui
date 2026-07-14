@@ -18,6 +18,7 @@ _DARK_OVERRIDES = """
   body { background: transparent !important; color: #e8eaed !important; }
   h2, h3 { color: #00f2ff !important; }
   p, li, td, th, span { color: #e8eaed !important; }
+  .a2ui-math, .a2ui-math math, .a2ui-math math * { color: #e8eaed !important; }
   pre, code { background: #0d1117 !important; color: #cdd6f4 !important; }
   blockquote { border-color: #00f2ff !important; color: #9aa0a6 !important; }
   table { background: transparent !important; }
@@ -10480,9 +10481,9 @@ def _render_math_block(b: dict) -> str:
         f'text-align:{align};line-height:1.5;">{caption}</div>'
     ) if caption else ""
     return (
-        f'<div style="margin:1.5rem 0;position:relative;">'
+        f'<div class="a2ui-math" style="margin:1.5rem 0;position:relative;">'
         f'<div style="text-align:{align};font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;'
-        f'font-size:{size};color:inherit;overflow-x:auto;">{mathml}</div>'
+        f'font-size:{size};color:var(--text,#1f2937);overflow-x:auto;">{mathml}</div>'
         f'{num_html}{cap_html}</div>'
     )
 
