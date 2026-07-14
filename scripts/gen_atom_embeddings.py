@@ -182,6 +182,33 @@ MULTI_REP = {
         "modern dynamic splash screen",
         "eye-catching main page section",
     ],
+    # Added via the onboarding pipeline (mcp-worker/test/find-routing-gaps.mjs ->
+    # generate-multirep-candidates.mjs -> verify-multirep-candidates.mjs), 2026-07-14.
+    # 3 of 23 evidence-flagged candidates passed the collision bake-off (real hit-rate
+    # improvement, zero regressions on the 48-prompt eval set) — the other 20 either made
+    # no measurable difference or actively regressed a different prompt; see
+    # a2ui-private/mcp-worker/test/ for the full pipeline and rejected-candidate detail.
+    "star_rating_display": [
+        "show customer review ratings",
+        "display product score and reviews",
+        "star rating viewer with total reviews",
+        "read-only review score display",
+        "component to show rating and review count",
+    ],
+    "chartjs_pie": [
+        "Circular graph with multiple sections",
+        "Donut chart with customizable colors",
+        "Pie chart with interactive legend",
+        "Multi-part circle diagram with labels",
+        "Segmented pie graph with data visualization",
+    ],
+    "chartjs_line": [
+        "line graph for showing trends",
+        "interactive trend chart",
+        "displaying data over time",
+        "line chart for analytics",
+        "visualizing trend data",
+    ],
 }
 
 
