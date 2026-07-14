@@ -47,6 +47,19 @@ except Exception as e:
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
 _EXAMPLE_BLOCKS = {
+    # The generic auto-example generator (example_payload/_infer_string) only
+    # produces plain display text — fine for prose fields, but math_block's
+    # `mathml` field is inserted as raw markup, not escaped text. A plain
+    # string placeholder (e.g. "Mathml") isn't valid MathML content and
+    # renders as literally NOTHING in real browsers (MathML's content model
+    # requires token elements like <mi>/<mn>/<mo>, unlike HTML text nodes) —
+    # caught live on /atoms/math_block/, 2026-07-14. Same class of gap would
+    # hit any future atom with a markup-typed field, not just this one.
+    "math_block": {"type": "math_block",
+        "mathml": "<mi>x</mi><mo>=</mo><mfrac><mrow><mo>-</mo><mi>b</mi><mo>&#177;</mo>"
+                  "<msqrt><mrow><msup><mi>b</mi><mn>2</mn></msup><mo>-</mo><mn>4</mn>"
+                  "<mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac>",
+        "caption": "Solutions of ax² + bx + c = 0", "number": "(1)"},
     "content_tabs": {"type": "content_tabs", "accent": "#6366f1", "tabs": [
         {"label": "4 Players", "blocks": [
             {"type": "body", "text": "One court, three rounds — every player partners with every other exactly once."},
@@ -1081,9 +1094,9 @@ def generate_index(atoms):
         ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
         ("kinetic_headline", {"type": "kinetic_headline", "text": "Declarative for agents, useful for humans.", "style": "up", "size": "clamp(1.2rem,2.6vw,1.7rem)"}),
         ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
-        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": "467 atoms, every surface"}),
+        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{len(atoms)} atoms, every surface"}),
         ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
-        ("animated_counter", {"type": "animated_counter", "counters": [{"value": 467, "label": "atoms", "color": "#f4f4f5"}]}),
+        ("animated_counter", {"type": "animated_counter", "counters": [{"value": len(atoms), "label": "atoms", "color": "#f4f4f5"}]}),
     ]
     showcase_slides = []
     for name, block in _SHOWCASE_BLOCKS:
@@ -1102,7 +1115,7 @@ def generate_index(atoms):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Atomic Catalog</title>
-  <meta name="description" content="467 typed UI atoms for web, Google Meet, Apps Script, and Chat. ARD-compliant catalog.">
+  <meta name="description" content="{len(atoms)} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.">
   <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json">
   {SITE_HEAD_JS}
   {INDEX_CSS}
@@ -1114,7 +1127,7 @@ def generate_index(atoms):
     <div class="halo"></div>
     <h1>A2UI Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
-    <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
+    <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
     <div class="hero-stats">
       <div><b>{len(atoms)}</b>atoms</div>
       <div><b>{len([s for s in all_surfaces if s not in HIDDEN_SURFACES])}</b>surfaces</div>
