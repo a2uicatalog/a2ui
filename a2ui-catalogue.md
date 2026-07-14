@@ -505,6 +505,7 @@
 | `content_tabs` | — | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `standings_table` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `match_schedule` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `math_block` | ✅ | — | — | ❌ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 
