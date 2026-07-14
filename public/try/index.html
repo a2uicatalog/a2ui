@@ -107,6 +107,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 #try-submit{font:inherit;font-size:14px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:9px;padding:11px 22px;cursor:pointer;letter-spacing:.02em;transition:filter .15s,box-shadow .15s}
 #try-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 #try-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
+.try-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;letter-spacing:.02em;margin-bottom:14px}
+.try-render-btn:hover{filter:brightness(1.05)}
 .try-hint{font-size:12px;color:var(--muted)}
 .try-examples{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 26px}
 .try-example{font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s}
@@ -180,8 +182,27 @@ document.addEventListener('click',function(e){
   var submit = document.getElementById('try-submit');
   var result = document.getElementById('try-result');
   var examples = document.getElementById('try-examples');
+  var lastBlocks = null;
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+  // Same gzip+base64url #p= encoding already used by the MCP Apps playground
+  // (scripts/generate_atom_pages.py's MCP_APPS_PLAY_HTML) — reusing the real
+  // renderer instead of building a second one here.
+  function openInPlayground(blocks){
+    if (typeof CompressionStream === 'undefined') {
+      alert('Rendering needs a newer browser (CompressionStream API not available).');
+      return;
+    }
+    var stream = new Blob([JSON.stringify(blocks)]).stream().pipeThrough(new CompressionStream('gzip'));
+    new Response(stream).arrayBuffer().then(function(buf){
+      var bytes = new Uint8Array(buf);
+      var bin = '';
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      var enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      window.open('https://a2uicatalog.ai/surfaces/mcp-apps/play/#p=' + enc, '_blank', 'noopener');
+    });
+  }
 
   function render(data, status){
     if (status === 429) {
@@ -197,11 +218,16 @@ document.addEventListener('click',function(e){
     parts.push('<p class="try-status">routing: ' + esc(data.routing || '?') + scoreSuffix +
       (data.degraded ? ' &middot; degraded (single-atom retry)' : '') + '</p>');
     if (!data.matched || data.matched.length === 0) {
+      lastBlocks = null;
       parts.push('<p class="try-empty">' + esc(data.note || 'no confident match found in the catalog for this request') + '</p>');
     } else {
+      lastBlocks = (data.blocks && data.blocks.length) ? data.blocks : null;
       parts.push('<div class="try-chips">' + data.matched.map(function(t){
         return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
       }).join('') + '</div>');
+      if (lastBlocks) {
+        parts.push('<button class="try-render-btn" id="try-render" type="button">Render it →</button>');
+      }
       parts.push('<pre><code>' + esc(JSON.stringify(data.blocks || [], null, 2)) + '</code></pre>');
     }
     result.innerHTML = parts.join('\n');
@@ -237,6 +263,11 @@ document.addEventListener('click',function(e){
     if (!b) return;
     input.value = b.textContent;
     submitPrompt(b.textContent);
+  });
+  result.addEventListener('click', function(e){
+    var b = e.target.closest('#try-render');
+    if (!b || !lastBlocks) return;
+    openInPlayground(lastBlocks);
   });
 })();
   </script>
