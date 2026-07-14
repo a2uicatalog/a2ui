@@ -56,14 +56,34 @@ GROUP_RE = re.compile(r"^# (?!#)(.+)$")
 # no signal, just a much worse card that would ship unnoticed. Try each
 # pattern in turn rather than widening one regex into an unreadable mega-alternation.
 GLOSSARY_PATTERNS = [
-    re.compile(r"^-\s+\*\*(.+?)\*\*\s*[:—]\s*(.+)$"),   # - **term**: def   |  - **term** — def
-    re.compile(r"^-\s+`(.+?)`\s*[:—]\s*(.+)$"),         # - `term` — def   |  - `term`: def
-    re.compile(r"^-\s+([^:—`*]+?)\s*[:—]\s*(.+)$"),     # - term: def      |  - term — def (plain)
+    # Bullet marker is [-*] — both are valid Markdown bullets; a live
+    # 2026-07-14 extraction used * exclusively (never -), which the
+    # original -only patterns silently missed entirely (0 cards from 6 real
+    # entries, not even the 1-card body-dump fallback triggered per line —
+    # the WHOLE section fell back to a single title/body card).
+    # A parenthetical between the bold term and the separator (e.g.
+    # "* **Leonardo da Vinci** (1452-1519): ...") is real too — found in the
+    # SAME extraction as the bullet-marker fix above. The separator isn't
+    # necessarily immediately after the closing **, so anything non-colon/
+    # non-dash in between is allowed rather than required to be just whitespace.
+    re.compile(r"^[-*]\s+\*\*(.+?)\*\*[^:—]*?[:—]\s*(.+)$"),   # - **term**: def   |  * **term** (extra) — def
+
+    re.compile(r"^[-*]\s+`(.+?)`\s*[:—]\s*(.+)$"),         # - `term` — def   |  * `term`: def
+    re.compile(r"^[-*]\s+([^:—`*]+?)\s*[:—]\s*(.+)$"),     # - term: def      |  * term — def (plain)
 ]
 # Same heading-level flexibility as SECTION_RE — confirmed live 2026-07-14,
 # the same extraction nested timeline events one level deeper (#### instead
 # of ###) to match its own shifted section-heading level.
 TIMELINE_RE = re.compile(r"^#{3,5} (.+?)\s*\|\s*(.+)$")
+# A DATE-ONLY heading with the description as separate body prose (no pipe,
+# no title on the heading line at all) is a real format too — found live
+# 2026-07-14 in the SAME extraction that also used the pipe format
+# correctly elsewhere in the session, i.e. a model isn't consistent even
+# with itself run to run. Zero events extracted previously: since no line
+# ever matched TIMELINE_RE, `cur` stayed None for the whole section and the
+# body-accumulation branch never fired either — 9 real dated events lost
+# with no error at all, not even a degraded single-card fallback.
+TIMELINE_DATE_ONLY_RE = re.compile(r"^#{3,5}\s+(\d[\d\-–—\s]*\d)\s*$")
 PIEGE_RE = re.compile(r"^>\s*\[!PI[ÈE]GE\]\s*$", re.I)
 
 
@@ -262,12 +282,17 @@ def extract_section(sect):
     elif kind == "timeline":
         events, cur = [], None
         for ln in body.split("\n"):
-            tm = TIMELINE_RE.match(ln.strip())
+            stripped = ln.strip()
+            tm = TIMELINE_RE.match(stripped)
+            dm = None if tm else TIMELINE_DATE_ONLY_RE.match(stripped)
             if tm:
                 cur = {"date": tm.group(1).strip(), "title": tm.group(2).strip(), "desc": ""}
                 events.append(cur)
-            elif cur and ln.strip():
-                cur["desc"] = (cur["desc"] + " " + ln.strip()).strip()
+            elif dm:
+                cur = {"date": dm.group(1).strip(), "title": "", "desc": ""}
+                events.append(cur)
+            elif cur and stripped:
+                cur["desc"] = (cur["desc"] + " " + stripped).strip()
         item["events"] = events
     else:  # unknown kind: honest passthrough as prose
         item["text"] = body

@@ -185,6 +185,42 @@ def test_method_steps_keep_nested_content():
     assert "INSERT" in item["items"][1] and "UPDATE" in item["items"][1]
 
 
+def test_glossary_matches_asterisk_bullets_with_parenthetical():
+    """A SEVENTH real bug, found live 2026-07-14 (fresh Renaissance
+    extraction, pro-cert schema): the model used `*` bullets exclusively
+    (never `-`), AND put a parenthetical between the bold term and the
+    separator ("* **Leonardo da Vinci** (1452-1519): ..."). Both defeated
+    the existing patterns simultaneously — 6 real figures collapsed to 1
+    body-dump card."""
+    assert bom_emitter.match_glossary_line(
+        "* **Leonardo da Vinci** (1452-1519): Renaissance polymath."
+    ) == ("Leonardo da Vinci", "Renaissance polymath.")
+    assert bom_emitter.match_glossary_line("* **term** — definition") == ("term", "definition")
+
+
+def test_timeline_matches_date_only_heading():
+    """An EIGHTH real bug, same Renaissance extraction: a timeline section
+    used a DATE-ONLY heading with the description as separate body prose
+    ("### 1396" then a new paragraph) — no pipe, no title on the heading
+    line at all. Zero events were extracted: since no line ever matched the
+    pipe-separated pattern, the per-line state machine never opened an
+    event, so the body-accumulation branch never fired either. 9 real dated
+    events were lost with no error, not even a degraded fallback."""
+    sect = {"title": "Timeline", "kind": "timeline", "classes": [],
+            "weight": "medium", "competency": "c1", "body": (
+                "### 1250-1300\n"
+                "Proto-Renaissance emerges in Italy.\n"
+                "\n"
+                "### 1396\n"
+                "Greek scholarship begins in Florence.\n"
+            )}
+    item, _ = bom_emitter.extract_section(sect)
+    assert len(item["events"]) == 2
+    assert item["events"][0]["date"] == "1250-1300"
+    assert "Proto-Renaissance" in item["events"][0]["desc"]
+    assert item["events"][1]["date"] == "1396"
+
+
 def test_envelope_is_template_shaped(envelope):
     comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
     assert "root" in comps
