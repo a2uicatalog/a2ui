@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Donut Stat — A2UI Atomic Catalog</title>
-  <meta name="description" content="Renders a single key metric with a surrounding donut chart indicating">
+  <title>Math Block — A2UI Atomic Catalog</title>
+  <meta name="description" content="Native MathML equation typeset with the CSS `math` generic font family (STIX / Latin Modern Math) — no JavaScript, no external library. The agent emits standard MathML; the surface draws it. Great for maths and science content — fractions, roots, integrals, matrices — rendered with correct spacing and alignment.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -114,102 +114,56 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / donut_stat
+    atoms / math_block
   </nav>
 
-  <h1>Donut Stat</h1>
-  <p class="desc">Renders a single key metric with a surrounding donut chart indicating</p>
+  <h1>Math Block</h1>
+  <p class="desc">Native MathML equation typeset with the CSS `math` generic font family (STIX / Latin Modern Math) — no JavaScript, no external library. The agent emits standard MathML; the surface draws it. Great for maths and science content — fractions, roots, integrals, matrices — rendered with correct spacing and alignment.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
-<div class="section">
-  <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-chat</td><td>Only the metric value, label, and percentage will be rendered as text. The visual donut chart is not supported.</td></tr></tbody></table>
-</div>
 
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box">
-    <div style="margin:1.5rem 0;padding:20px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:24px;">
-      <div style="width:md;height:md;flex-shrink:0;">
-        
-    <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="donut_140609309299456_grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#6366f1" />
-          <stop offset="100%" stop-color="#6366f1" stop-opacity="0.6" />
-        </linearGradient>
-        <filter id="donut_140609309299456_glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
-      <circle cx="50" cy="50" r="40" fill="none" stroke="url(#donut_140609309299456_grad)" stroke-width="10" 
-              stroke-dasharray="251.327" stroke-dashoffset="0.0"
-              stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#donut_140609309299456_glow)" />
-      <text x="50" y="48" fill="#f1f5f9" font-size="16" font-weight="800" font-family="monospace" text-anchor="middle">75</text>
-      <text x="50" y="64" fill="rgba(255,255,255,0.4)" font-size="7" font-weight="600" font-family="monospace" text-anchor="middle">100.0%</text>
-    </svg>
-    
-      </div>
-      <div>
-        <div style="font-size:0.75rem;font-weight:700;color:#94a3b8;font-family:monospace;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;">Donut Stat</div>
-        <div style="font-size:1.5rem;font-weight:800;color:#f1f5f9;font-family:-apple-system,sans-serif;margin-bottom:6px;">
-          75 <span style="font-size:0.9rem;font-weight:400;color:rgba(255,255,255,0.4);">/ 5</span>
-        </div>
-        <div style="font-size:0.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:4px;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6366f1;"></span>
-          Progress Status: 100.0% Target Met
-        </div>
-      </div>
-    </div>
-    </div>
+  <div class="preview-box"><div style="margin:1.5rem 0;position:relative;"><div style="text-align:center;font-family:math,'Latin Modern Math','STIX Two Math',serif;font-size:clamp(1.1rem,2.5vw,1.6rem);color:inherit;overflow-x:auto;"><math display="block">Mathml</math></div></div></div>
 </div>
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>value</td><td>number (the current value, e.g., 75)</td><td>required</td></tr><tr><td>max_value</td><td>number (the maximum possible value, e.g., 100)</td><td>required</td></tr><tr><td>label</td><td>string (descriptive label for the metric, e.g., 'Completion')</td><td>required</td></tr><tr><td>unit</td><td>string (optional, unit for the value, e.g., '%')</td><td>optional</td></tr><tr><td>color</td><td>string (hex or named color for the donut segment, e.g., '#2196F3')</td><td>required</td></tr><tr><td>size</td><td>string (CSS size value, e.g., '100px')</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>mathml</td><td>string. MathML markup — inner content or a full <math> element. Active content (script, annotation-xml, on* handlers, javascript:) is stripped before the markup is rendered.</td><td>required</td></tr><tr><td>caption</td><td>string. Caption shown below the equation.</td><td>optional</td></tr><tr><td>number</td><td>string. Equation number, right-aligned (e.g. "(1)").</td><td>optional</td></tr><tr><td>align</td><td>string. 'center' (default) or 'left'.</td><td>optional</td></tr><tr><td>size</td><td>string. Equation font-size. Default clamp(1.1rem,2.5vw,1.6rem).</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "donut_stat",
-  "value": 75,
-  "max_value": 5,
-  "label": "Donut Stat",
-  "color": "#6366f1",
-  "size": "md"
+  "type": "math_block",
+  "mathml": "Mathml"
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:donut_stat",
-  "displayName": "Donut Stat",
+  "identifier": "urn:air:a2uicatalog.ai:atom:math_block",
+  "displayName": "Math Block",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/donut_stat",
+  "url": "https://a2uicatalog.ai/atoms/math_block",
   "capabilities": [
     "web",
-    "google-meet-stage",
     "google-apps-script-web",
+    "google-meet-stage",
     "mcp-apps"
   ],
-  "description": "Renders a single key metric with a surrounding donut chart indicating",
+  "description": "Native MathML equation typeset with the CSS `math` generic font family (STIX / Latin Modern Math) \u2014 no JavaScript, no external library. The agent emits standard MathML; the surface draws it. Great for maths and science content \u2014 fractions, roots, integrals, matrices \u2014 rendered with correct spacing and alignment.",
   "representativeQueries": [
-    "show a CSS ring chart with centre value and percentage its proportion or progress",
-    "renders a single key metric with a surrounding donut chart indicating",
-    "render a donut stat"
+    "show a native MathML equation typeset with the math font family",
+    "native mathml equation typeset with the css `math` generic font family (stix / latin modern math) \u2014",
+    "render a math block"
   ]
 }</code></pre>
   </div>

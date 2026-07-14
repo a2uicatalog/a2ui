@@ -16225,6 +16225,45 @@
           "type"
         ],
         "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "math_block"
+          },
+          "mathml": {
+            "type": "string",
+            "enum": [
+              "innercontentorafull<math>elementActivecontent(script",
+              "annotation-xml",
+              "on*handlers",
+              "javascript:)isstrippedbeforethemarkupisrendered"
+            ]
+          },
+          "caption": {
+            "type": "string"
+          },
+          "number": {
+            "type": "number"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "string . 'center'",
+              "'left'."
+            ]
+          },
+          "size": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "mathml"
+        ],
+        "additionalProperties": false
       }
     ]
   }

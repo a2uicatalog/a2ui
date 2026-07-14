@@ -18,7 +18,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 468 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 469 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -8309,6 +8309,24 @@
         "show a isometric rocket launch canvas animation, fixed half-viewport overlay",
         "fixed-position canvas launch animation -- an isometric rocket climbing through exhaust trail and sparks to a hud",
         "render a gdm rocket panel"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:math_block",
+      "displayName": "Math Block",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/math_block",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "google-meet-stage",
+        "mcp-apps"
+      ],
+      "description": "Native MathML equation typeset with the CSS `math` generic font family (STIX / Latin Modern Math) \u2014 no JavaScript, no external library. The agent emits standard MathML; the surface draws it. Great for maths and science content \u2014 fractions, roots, integrals, matrices \u2014 rendered with correct spacing and alignment.",
+      "representativeQueries": [
+        "show a native MathML equation typeset with the math font family",
+        "native mathml equation typeset with the css `math` generic font family (stix / latin modern math) \u2014 no javascript, no",
+        "render a math block"
       ]
     }
   ]

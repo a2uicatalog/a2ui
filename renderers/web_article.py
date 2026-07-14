@@ -10442,6 +10442,53 @@ def _render_section_label(b: dict) -> str:
 _RENDERERS["section_label"] = _render_section_label
 
 
+def _sanitize_mathml(raw: str) -> str:
+    """Defense-in-depth strip of active content from agent-authored MathML.
+    MathML can embed HTML via <annotation-xml encoding="text/html"> and carry
+    event handlers, so remove scripts, annotation-xml, on*= handlers and
+    javascript: URLs before the markup is passed through unescaped."""
+    import re
+    raw = re.sub(r'(?is)<script.*?</script>', '', raw)
+    raw = re.sub(r'(?is)<annotation-xml.*?</annotation-xml>', '', raw)
+    raw = re.sub(r'(?i)\son\w+\s*=\s*"[^"]*"', '', raw)
+    raw = re.sub(r"(?i)\son\w+\s*=\s*'[^']*'", '', raw)
+    raw = re.sub(r'(?i)\son\w+\s*=\s*[^\s>]+', '', raw)
+    raw = re.sub(r'(?i)javascript:', '', raw)
+    return raw
+
+
+def _render_math_block(b: dict) -> str:
+    """Native MathML equation, typeset with `font-family: math` (STIX/Latin
+    Modern Math) — no JS, no external library. The agent emits standard
+    MathML; the surface draws it. Works on every surface with a MathML engine
+    (all modern browsers, Baseline since 2023)."""
+    import html as _html
+    mathml = _sanitize_mathml(b.get("mathml", "") or "")
+    if "<math" not in mathml.lower():
+        mathml = '<math display="block">' + mathml + '</math>'
+    caption = _html.escape(b.get("caption", ""))
+    number = _html.escape(b.get("number", ""))
+    align = "left" if b.get("align") == "left" else "center"
+    size = _html.escape(str(b.get("size", "clamp(1.1rem,2.5vw,1.6rem)")))
+    num_html = (
+        f'<span style="position:absolute;right:0;top:50%;transform:translateY(-50%);'
+        f'font-size:0.9rem;color:var(--text-muted,#6b7280);font-family:ui-monospace,monospace;">'
+        f'{number}</span>'
+    ) if number else ""
+    cap_html = (
+        f'<div style="margin-top:8px;font-size:0.82rem;color:var(--text-muted,#6b7280);'
+        f'text-align:{align};line-height:1.5;">{caption}</div>'
+    ) if caption else ""
+    return (
+        f'<div style="margin:1.5rem 0;position:relative;">'
+        f'<div style="text-align:{align};font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;'
+        f'font-size:{size};color:inherit;overflow-x:auto;">{mathml}</div>'
+        f'{num_html}{cap_html}</div>'
+    )
+
+_RENDERERS["math_block"] = _render_math_block
+
+
 def _render_text_highlight(b: dict) -> str:
     import re, html as _html
     text   = b.get("text", "")

@@ -293,3 +293,54 @@ _RENDERERS['reveal_line'] = function(b) {
     '">' + _esc(text) + '</div>' +
     '</div>';
 };
+
+// ── math_block ────────────────────────────────────────────────────────────────
+// Native MathML equation, typeset with `font-family: math` (STIX / Latin Modern
+// Math) — no JS, no external library. The agent emits standard MathML; the
+// surface draws it. Baseline browser support since 2023. Mirrors the Python
+// renderer in renderers/web_article.py (_render_math_block).
+//
+// Fields:
+//   mathml   required. MathML markup (inner content or a full <math> element).
+//   caption  optional. Caption text shown below the equation.
+//   number   optional. Equation number, right-aligned (e.g. "(1)").
+//   align    optional. 'center' (default) | 'left'.
+//   size     optional. Equation font-size (default clamp(1.1rem,2.5vw,1.6rem)).
+function _sanitizeMathml(raw) {
+  // Defense-in-depth: MathML can embed HTML via <annotation-xml> and carry
+  // event handlers. Strip active content before passing markup through raw.
+  return String(raw || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<annotation-xml[\s\S]*?<\/annotation-xml>/gi, '')
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
+    .replace(/javascript:/gi, '');
+}
+_RENDERERS['math_block'] = function(b) {
+  var mathml = _sanitizeMathml(b.mathml);
+  if (mathml.toLowerCase().indexOf('<math') === -1) {
+    mathml = '<math display="block">' + mathml + '</math>';
+  }
+  var align   = b.align === 'left' ? 'left' : 'center';
+  var size    = b.size || 'clamp(1.1rem,2.5vw,1.6rem)';
+  var number  = b.number ? _esc(b.number) : '';
+  var caption = b.caption ? _esc(b.caption) : '';
+
+  var numHtml = number
+    ? '<span style="position:absolute;right:0;top:50%;transform:translateY(-50%);' +
+      'font-size:0.9rem;color:rgba(148,163,184,0.9);font-family:ui-monospace,monospace;">' +
+      number + '</span>'
+    : '';
+  var capHtml = caption
+    ? '<div style="margin-top:8px;font-size:0.82rem;color:rgba(148,163,184,0.9);' +
+      'text-align:' + align + ';line-height:1.5;">' + caption + '</div>'
+    : '';
+
+  return '<div style="margin:1.5rem 0;position:relative;">' +
+    '<div style="text-align:' + align + ';' +
+      'font-family:math,\'Latin Modern Math\',\'STIX Two Math\',serif;' +
+      'font-size:' + _esc(size) + ';color:inherit;overflow-x:auto;">' + mathml + '</div>' +
+    numHtml + capHtml +
+    '</div>';
+};

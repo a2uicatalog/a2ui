@@ -11371,3 +11371,32 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: math_block
+  description: Native MathML equation typeset with the CSS `math` generic font family
+    (STIX / Latin Modern Math) — no JavaScript, no external library. The agent emits
+    standard MathML; the surface draws it. Great for maths and science content —
+    fractions, roots, integrals, matrices — rendered with correct spacing and alignment.
+  compact_description: native MathML equation typeset with the math font family
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - google-meet-stage
+    - mcp-apps
+    incompatible_on:
+    - surface: email
+      reason: MathML is stripped by most email clients (Gmail etc.)
+    - surface: google-chat
+      reason: Chat cards have no MathML widget
+  fields:
+    mathml: string. MathML markup — inner content or a full <math> element. Active
+      content (script, annotation-xml, on* handlers, javascript:) is stripped before
+      the markup is rendered.
+    caption: string (optional). Caption shown below the equation.
+    number: string (optional). Equation number, right-aligned (e.g. "(1)").
+    align: string (optional). 'center' (default) or 'left'.
+    size: string (optional). Equation font-size. Default clamp(1.1rem,2.5vw,1.6rem).
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

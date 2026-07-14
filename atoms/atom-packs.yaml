@@ -199,6 +199,7 @@ a2ui-display-v1:
 - inline_feedback_message
 - jump_nav
 - lozenge
+- math_block
 - metric_comparison_card
 - metric_delta
 - navigation_menu

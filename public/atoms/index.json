@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 468,
+ "atomCount": 469,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -4550,6 +4550,16 @@
    "type": "gdm_rocket_panel",
    "compact": "isometric rocket launch canvas animation, fixed half-viewport overlay",
    "surfaces": [
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "math_block",
+   "compact": "native MathML equation typeset with the math font family",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "google-meet-stage",
     "mcp-apps"
    ]
   }

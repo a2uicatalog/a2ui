@@ -617,7 +617,7 @@
       "title": "General UI & content",
       "alwaysResolved": false,
       "whenToUse": "Use for general content/UI beyond the base primitives — richer cards, media, tags, comparison and steppers not in core.",
-      "atomCount": 71,
+      "atomCount": 72,
       "atoms": [
         {
           "type": "action_required_card",
@@ -786,6 +786,10 @@
         {
           "type": "lozenge",
           "description": "Atlassian-semantic status pill with defined appearance variants"
+        },
+        {
+          "type": "math_block",
+          "description": "native MathML equation typeset with the math font family"
         },
         {
           "type": "metric_comparison_card",

@@ -12,7 +12,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 ## Your source of truth: the live catalog
 
-The atom vocabulary (468 typed atoms) lives at https://a2uicatalog.ai. At the
+The atom vocabulary (469 typed atoms) lives at https://a2uicatalog.ai. At the
 start of every task:
 
 1. Fetch `https://a2uicatalog.ai/atoms/index.json` — the compact index: every atom's
