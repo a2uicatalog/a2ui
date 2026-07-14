@@ -264,7 +264,6 @@ def site_header(active=""):
     <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
     <nav class="site-nav">
       <a href="/"{cur('atoms')}>Atoms</a>
-      <a href="/try"{cur('try')}>Try it</a>
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
       <a href="/blog"{cur('blog')}>Blog</a>
@@ -811,8 +810,7 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .hero-stats{position:relative;display:flex;gap:26px;margin-bottom:22px}
 .hero-stats div{font-size:12px;color:var(--muted)}
 .hero-stats b{display:block;font-size:19px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
-.entry-paths{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
-@media(max-width:900px){.entry-paths{grid-template-columns:repeat(2,1fr)}}
+.entry-paths{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
 .entry-path{display:block;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
 .entry-path:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-1px)}
 .entry-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
@@ -1137,11 +1135,6 @@ def generate_index(atoms):
         <span class="entry-kicker">Self-host</span>
         <h3>Deploy your own renderer</h3>
         <p>Apps Script web app, 4 commands — you own the URL.</p>
-      </a>
-      <a class="entry-path" href="/try">
-        <span class="entry-kicker">Try it</span>
-        <h3>Type a request, get real UI</h3>
-        <p>Free-tier natural-language router picks atoms from this catalog live.</p>
       </a>
     </div>
     <a class="launch-banner" href="/surfaces/mcp-apps">
@@ -2026,6 +2019,7 @@ def render_try_page(atom_count):
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Try it — A2UI Atomic Catalog</title>
   <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
+  <meta name="robots" content="noindex, nofollow">
   {SITE_HEAD_JS}
   {PAGE_CSS}
   {TRY_PAGE_CSS}
