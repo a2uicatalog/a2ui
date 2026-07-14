@@ -264,6 +264,7 @@ def site_header(active=""):
     <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
     <nav class="site-nav">
       <a href="/"{cur('atoms')}>Atoms</a>
+      <a href="/try"{cur('try')}>Try it</a>
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
       <a href="/blog"{cur('blog')}>Blog</a>
@@ -810,7 +811,8 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .hero-stats{position:relative;display:flex;gap:26px;margin-bottom:22px}
 .hero-stats div{font-size:12px;color:var(--muted)}
 .hero-stats b{display:block;font-size:19px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
-.entry-paths{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.entry-paths{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+@media(max-width:900px){.entry-paths{grid-template-columns:repeat(2,1fr)}}
 .entry-path{display:block;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
 .entry-path:hover{border-color:var(--accent);box-shadow:var(--glow);transform:translateY(-1px)}
 .entry-kicker{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
@@ -1135,6 +1137,11 @@ def generate_index(atoms):
         <span class="entry-kicker">Self-host</span>
         <h3>Deploy your own renderer</h3>
         <p>Apps Script web app, 4 commands — you own the URL.</p>
+      </a>
+      <a class="entry-path" href="/try">
+        <span class="entry-kicker">Try it</span>
+        <h3>Type a request, get real UI</h3>
+        <p>Free-tier natural-language router picks atoms from this catalog live.</p>
       </a>
     </div>
     <a class="launch-banner" href="/surfaces/mcp-apps">
@@ -1988,6 +1995,149 @@ def _bundle_hash():
     return hashlib.sha1(f.read_bytes()).hexdigest()[:10] if f.exists() else "0"
 
 
+TRY_PAGE_CSS = """
+<style>
+.try-form{margin:20px 0 8px}
+#try-prompt{width:100%;min-height:84px;resize:vertical;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;font:inherit;font-size:15px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+#try-prompt:focus{border-color:var(--accent);box-shadow:var(--glow)}
+.try-row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+#try-submit{font:inherit;font-size:14px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:9px;padding:11px 22px;cursor:pointer;letter-spacing:.02em;transition:filter .15s,box-shadow .15s}
+#try-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+#try-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
+.try-hint{font-size:12px;color:var(--muted)}
+.try-examples{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 26px}
+.try-example{font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s}
+.try-example:hover{border-color:var(--accent);color:var(--accent)}
+#try-result{margin-top:8px}
+.try-status{font-size:13px;color:var(--muted);margin-bottom:12px}
+.try-status.err{color:var(--negative)}
+.try-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.try-chip{font-size:13px;font-weight:650;padding:5px 13px;border-radius:8px;background:var(--accent-soft-bg);color:var(--accent);text-decoration:none}
+.try-chip:hover{filter:brightness(1.05)}
+.try-empty{color:var(--muted);font-size:14px;padding:20px 0}
+</style>"""
+
+
+def render_try_page(atom_count):
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Try it — A2UI Atomic Catalog</title>
+  <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
+  {SITE_HEAD_JS}
+  {PAGE_CSS}
+  {TRY_PAGE_CSS}
+</head>
+<body>
+  {site_header("try")}
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / try
+  </nav>
+
+  <h1>Try it</h1>
+  <p class="desc">Type what you want in plain English. A free-tier Cloudflare Workers AI model
+  (embedding-based, no chat call) routes it against this catalog's {atom_count} atoms
+  and shows you which ones matched — live, against the real deployed catalog.</p>
+
+  <form class="try-form" id="try-form">
+    <textarea id="try-prompt" placeholder="e.g. a status indicator badge" maxlength="500"></textarea>
+    <div class="try-row">
+      <button id="try-submit" type="submit">Route it →</button>
+      <span class="try-hint">Free tier — 20 requests/day per IP</span>
+    </div>
+  </form>
+  <div class="try-examples" id="try-examples">
+    <button class="try-example" type="button">a status indicator badge</button>
+    <button class="try-example" type="button">setup wizard for new users</button>
+    <button class="try-example" type="button">live flight tracker for a specific area</button>
+    <button class="try-example" type="button">a box to hold extra information</button>
+    <button class="try-example" type="button">play me a song</button>
+  </div>
+
+  <div id="try-result"><p class="try-empty">Results appear here.</p></div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
+    <span>MIT License</span>
+  </footer>
+  </div>
+  {SITE_FOOT_JS}
+  <script>
+(function(){{
+  var form = document.getElementById('try-form');
+  var input = document.getElementById('try-prompt');
+  var submit = document.getElementById('try-submit');
+  var result = document.getElementById('try-result');
+  var examples = document.getElementById('try-examples');
+
+  function esc(s){{ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }}
+
+  function render(data, status){{
+    if (status === 429) {{
+      result.innerHTML = '<p class="try-status err">Daily free-tier limit reached (20/IP) — try again tomorrow.</p>';
+      return;
+    }}
+    if (!data || data.ok === false) {{
+      result.innerHTML = '<p class="try-status err">' + esc((data && data.error) || 'request failed') + '</p>';
+      return;
+    }}
+    var parts = [];
+    var scoreSuffix = (typeof data.topScore === 'number') ? (' &middot; top score: ' + data.topScore.toFixed(3)) : '';
+    parts.push('<p class="try-status">routing: ' + esc(data.routing || '?') + scoreSuffix +
+      (data.degraded ? ' &middot; degraded (single-atom retry)' : '') + '</p>');
+    if (!data.matched || data.matched.length === 0) {{
+      parts.push('<p class="try-empty">' + esc(data.note || 'no confident match found in the catalog for this request') + '</p>');
+    }} else {{
+      parts.push('<div class="try-chips">' + data.matched.map(function(t){{
+        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
+      }}).join('') + '</div>');
+      parts.push('<pre><code>' + esc(JSON.stringify(data.blocks || [], null, 2)) + '</code></pre>');
+    }}
+    result.innerHTML = parts.join('\\n');
+  }}
+
+  function submitPrompt(prompt){{
+    prompt = prompt.trim();
+    if (!prompt) return;
+    submit.disabled = true;
+    submit.textContent = 'Routing…';
+    result.innerHTML = '<p class="try-empty">Routing…</p>';
+    fetch('https://a2uicatalog.ai/api/compose', {{
+      method: 'POST',
+      headers: {{ 'Content-Type': 'application/json' }},
+      body: JSON.stringify({{ prompt: prompt }})
+    }}).then(function(res){{
+      var status = res.status;
+      return res.json().catch(function(){{ return null; }}).then(function(data){{ render(data, status); }});
+    }}).catch(function(e){{
+      result.innerHTML = '<p class="try-status err">network error: ' + esc(e.message || e) + '</p>';
+    }}).finally(function(){{
+      submit.disabled = false;
+      submit.textContent = 'Route it →';
+    }});
+  }}
+
+  form.addEventListener('submit', function(e){{
+    e.preventDefault();
+    submitPrompt(input.value);
+  }});
+  examples.addEventListener('click', function(e){{
+    var b = e.target.closest('.try-example');
+    if (!b) return;
+    input.value = b.textContent;
+    submitPrompt(b.textContent);
+  }});
+}})();
+  </script>
+{_cursor_glow_html()}
+</body>
+</html>"""
+
+
 def main():
     with open(SCHEMA) as f:
         raw = yaml.safe_load(f)
@@ -2018,6 +2168,11 @@ def main():
 
     index_path = ROOT / "public" / "index.html"
     index_path.write_text(generate_index(unique))
+
+    try_dir = ROOT / "public" / "try"
+    try_dir.mkdir(parents=True, exist_ok=True)
+    (try_dir / "index.html").write_text(render_try_page(len(unique)))
+    print(f"✓ try-it page → {try_dir}/index.html")
     # Never truncate silently: say exactly which hub cards got a live preview
     # stage and why the rest fell back to the type-chip stage.
     print(f"hub previews: {_preview_stats['rendered']} rendered, "

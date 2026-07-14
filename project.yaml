@@ -29,6 +29,7 @@ policy:
   published:
     # Everything under public/ must match one of these (or published_prompts)
     - public/index.html
+    - public/try/**
     - public/robots.txt
     - public/_headers
     - public/_redirects

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Image — A2UI Atomic Catalog</title>
-  <meta name="description" content="Single image with caption, hosted at a public URL">
+  <title>Try it — A2UI Atomic Catalog</title>
+  <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -97,13 +97,34 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
 </style>
 
+  
+<style>
+.try-form{margin:20px 0 8px}
+#try-prompt{width:100%;min-height:84px;resize:vertical;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;font:inherit;font-size:15px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+#try-prompt:focus{border-color:var(--accent);box-shadow:var(--glow)}
+.try-row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+#try-submit{font:inherit;font-size:14px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:9px;padding:11px 22px;cursor:pointer;letter-spacing:.02em;transition:filter .15s,box-shadow .15s}
+#try-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+#try-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
+.try-hint{font-size:12px;color:var(--muted)}
+.try-examples{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 26px}
+.try-example{font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s}
+.try-example:hover{border-color:var(--accent);color:var(--accent)}
+#try-result{margin-top:8px}
+.try-status{font-size:13px;color:var(--muted);margin-bottom:12px}
+.try-status.err{color:var(--negative)}
+.try-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.try-chip{font-size:13px;font-weight:650;padding:5px 13px;border-radius:8px;background:var(--accent-soft-bg);color:var(--accent);text-decoration:none}
+.try-chip:hover{filter:brightness(1.05)}
+.try-empty{color:var(--muted);font-size:14px;padding:20px 0}
+</style>
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
     <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
     <nav class="site-nav">
-      <a href="/" aria-current="page">Atoms</a>
-      <a href="/try">Try it</a>
+      <a href="/">Atoms</a>
+      <a href="/try" aria-current="page">Try it</a>
       <a href="/surfaces/mcp-apps">MCP Playground</a>
       <a href="/renderer">Apps Script Renderer</a>
       <a href="/blog">Blog</a>
@@ -113,80 +134,30 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </div></header>
   <div class="wrap">
   <nav class="crumb">
-    <a href="/">A2UI Catalog</a> /
-    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / image
+    <a href="/">A2UI Catalog</a> / try
   </nav>
 
-  <h1>Image</h1>
-  <p class="desc">Single image with caption, hosted at a public URL</p>
+  <h1>Try it</h1>
+  <p class="desc">Type what you want in plain English. A free-tier Cloudflare Workers AI model
+  (embedding-based, no chat call) routes it against this catalog's 468 atoms
+  and shows you which ones matched — live, against the real deployed catalog.</p>
 
-  <div class="section">
-    <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+  <form class="try-form" id="try-form">
+    <textarea id="try-prompt" placeholder="e.g. a status indicator badge" maxlength="500"></textarea>
+    <div class="try-row">
+      <button id="try-submit" type="submit">Route it →</button>
+      <span class="try-hint">Free tier — 20 requests/day per IP</span>
+    </div>
+  </form>
+  <div class="try-examples" id="try-examples">
+    <button class="try-example" type="button">a status indicator badge</button>
+    <button class="try-example" type="button">setup wizard for new users</button>
+    <button class="try-example" type="button">live flight tracker for a specific area</button>
+    <button class="try-example" type="button">a box to hold extra information</button>
+    <button class="try-example" type="button">play me a song</button>
   </div>
 
-  
-<div class="section">
-  <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-chat</td><td>external images may be blocked by Chat security policy — use Chat-hosted URLs</td></tr></tbody></table>
-</div>
-
-  
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1.5rem 0;text-align:center;"><img src="https://example.com" alt="Descriptive alt text for this image" style="max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto;"></div></div>
-</div>
-
-  <div class="section">
-    <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>url</td><td>string</td><td>required</td></tr><tr><td>alt</td><td>string</td><td>required</td></tr><tr><td>caption</td><td>string</td><td>optional</td></tr><tr><td>width</td><td>string</td><td>optional</td></tr></tbody></table>
-  </div>
-
-  <div class="section">
-    <div class="label">Example payload</div>
-    <pre><code>{
-  "type": "image",
-  "url": "https://example.com",
-  "alt": "Descriptive alt text for this image"
-}</code></pre>
-  </div>
-
-  <div class="section">
-    <div class="label">ARD catalog entry</div>
-    <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:image",
-  "displayName": "Image",
-  "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/image",
-  "capabilities": [
-    "web",
-    "google-meet-stage",
-    "email",
-    "pdf",
-    "google-apps-script-web",
-    "mcp-apps"
-  ],
-  "description": "Single image with caption, hosted at a public URL",
-  "representativeQueries": [
-    "show a single image with optional caption",
-    "single image with caption, hosted at a public url",
-    "render a image"
-  ]
-}</code></pre>
-  </div>
-
-  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
-  
-
-  <div class="deploy-box">
-    <div class="label">Deploy your own Google Apps Script renderer</div>
-    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
-    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
-cd apps-script-surface/gas-schema-renderer
-clasp push &amp;&amp; clasp deploy</code></pre>
-    <a href="/renderer">Full deploy guide →</a>
-  </div>
+  <div id="try-result"><p class="try-empty">Results appear here.</p></div>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
@@ -202,6 +173,73 @@ document.addEventListener('click',function(e){
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
 });
 </script>
+  <script>
+(function(){
+  var form = document.getElementById('try-form');
+  var input = document.getElementById('try-prompt');
+  var submit = document.getElementById('try-submit');
+  var result = document.getElementById('try-result');
+  var examples = document.getElementById('try-examples');
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+  function render(data, status){
+    if (status === 429) {
+      result.innerHTML = '<p class="try-status err">Daily free-tier limit reached (20/IP) — try again tomorrow.</p>';
+      return;
+    }
+    if (!data || data.ok === false) {
+      result.innerHTML = '<p class="try-status err">' + esc((data && data.error) || 'request failed') + '</p>';
+      return;
+    }
+    var parts = [];
+    var scoreSuffix = (typeof data.topScore === 'number') ? (' &middot; top score: ' + data.topScore.toFixed(3)) : '';
+    parts.push('<p class="try-status">routing: ' + esc(data.routing || '?') + scoreSuffix +
+      (data.degraded ? ' &middot; degraded (single-atom retry)' : '') + '</p>');
+    if (!data.matched || data.matched.length === 0) {
+      parts.push('<p class="try-empty">' + esc(data.note || 'no confident match found in the catalog for this request') + '</p>');
+    } else {
+      parts.push('<div class="try-chips">' + data.matched.map(function(t){
+        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
+      }).join('') + '</div>');
+      parts.push('<pre><code>' + esc(JSON.stringify(data.blocks || [], null, 2)) + '</code></pre>');
+    }
+    result.innerHTML = parts.join('\n');
+  }
+
+  function submitPrompt(prompt){
+    prompt = prompt.trim();
+    if (!prompt) return;
+    submit.disabled = true;
+    submit.textContent = 'Routing…';
+    result.innerHTML = '<p class="try-empty">Routing…</p>';
+    fetch('https://a2uicatalog.ai/api/compose', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt })
+    }).then(function(res){
+      var status = res.status;
+      return res.json().catch(function(){ return null; }).then(function(data){ render(data, status); });
+    }).catch(function(e){
+      result.innerHTML = '<p class="try-status err">network error: ' + esc(e.message || e) + '</p>';
+    }).finally(function(){
+      submit.disabled = false;
+      submit.textContent = 'Route it →';
+    });
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    submitPrompt(input.value);
+  });
+  examples.addEventListener('click', function(e){
+    var b = e.target.closest('.try-example');
+    if (!b) return;
+    input.value = b.textContent;
+    submitPrompt(b.textContent);
+  });
+})();
+  </script>
 <script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
 </body>
 </html>
