@@ -41,6 +41,51 @@ def test_parser_reads_real_curriculum():
     assert all(s["competency"] for s in sections), "every section carries its anchor"
 
 
+def test_parser_accepts_fenced_frontmatter():
+    """Real (unpolished) LLM extraction output — not hand-authored examples —
+    sometimes wraps the YAML frontmatter in a ```yml fenced code block
+    instead of bare --- delimiters. Confirmed live 2026-07-14
+    (@cf/meta/llama-3.3-70b-instruct-fp8-fast): this used to be a hard crash
+    (ValueError: curriculum.md missing YAML frontmatter) on a file a human
+    would read as obviously well-formed."""
+    text = (
+        "```yml\n"
+        "id: fenced-test\n"
+        "type: Course\n"
+        "required_competencies:\n"
+        "  - id: c1\n"
+        "    label: Test\n"
+        "    weight: high\n"
+        "```\n"
+        "\n"
+        "<!-- competency: c1 -->\n"
+        "## Some concept {#concept}\n"
+        "Body text.\n"
+    )
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "fenced.curriculum.md"
+        p.write_text(text)
+        front, groups = bom_emitter.parse_curriculum(p)
+    assert front["id"] == "fenced-test"
+    sections = [s for g in groups for s in g["sections"]]
+    assert len(sections) == 1
+    assert sections[0]["competency"] == "c1"
+
+
+def test_glossary_matches_non_bold_formats():
+    """The bold-colon format (- **term**: def) is one style among several a
+    real model actually produces. Confirmed live 2026-07-14: a glossary
+    section with backtick+em-dash lines (- `term` — def) silently collapsed
+    6 real terms into ONE flashcard containing the whole raw bullet list as
+    unreadable body text — no error, no signal, just a much worse card."""
+    assert bom_emitter.match_glossary_line("- **term**: definition") == ("term", "definition")
+    assert bom_emitter.match_glossary_line("- **term** — definition") == ("term", "definition")
+    assert bom_emitter.match_glossary_line("- `term` — definition") == ("term", "definition")
+    assert bom_emitter.match_glossary_line("- `term`: definition") == ("term", "definition")
+    assert bom_emitter.match_glossary_line("- term: definition") == ("term", "definition")
+    assert bom_emitter.match_glossary_line("not a glossary line") is None
+
+
 def test_envelope_is_template_shaped(envelope):
     comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
     assert "root" in comps

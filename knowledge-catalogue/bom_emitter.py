@@ -40,12 +40,46 @@ WEIGHT_ORDER = {"high": 0, "medium": 1, "low": 2}
 SECTION_RE = re.compile(r"^## (.+?)\s*\{#([\w-]+)((?:\s+\.[\w-]+)*)\}\s*$")
 COMPETENCY_RE = re.compile(r"^<!--\s*competency:\s*([\w-]+)\s*-->\s*$")
 GROUP_RE = re.compile(r"^# (?!#)(.+)$")
-GLOSSARY_RE = re.compile(r"^-\s+\*\*(.+?)\*\*\s*:\s*(.+)$")
+# Real LLM output (not hand-authored examples) doesn't reliably use the
+# **term**: definition bold-colon style — a live 2026-07-14 extraction wrote
+# glossary lines as `term` — definition (backticks + em-dash), which the
+# original single pattern silently missed entirely: it fell through to the
+# "no cards matched" fallback and collapsed 6 real terms into ONE flashcard
+# containing the whole raw bullet list as unreadable body text — no error,
+# no signal, just a much worse card that would ship unnoticed. Try each
+# pattern in turn rather than widening one regex into an unreadable mega-alternation.
+GLOSSARY_PATTERNS = [
+    re.compile(r"^-\s+\*\*(.+?)\*\*\s*[:—]\s*(.+)$"),   # - **term**: def   |  - **term** — def
+    re.compile(r"^-\s+`(.+?)`\s*[:—]\s*(.+)$"),         # - `term` — def   |  - `term`: def
+    re.compile(r"^-\s+([^:—`*]+?)\s*[:—]\s*(.+)$"),     # - term: def      |  - term — def (plain)
+]
 TIMELINE_RE = re.compile(r"^### (.+?)\s*\|\s*(.+)$")
 PIEGE_RE = re.compile(r"^>\s*\[!PI[ÈE]GE\]\s*$", re.I)
 
 
+def match_glossary_line(line):
+    for pat in GLOSSARY_PATTERNS:
+        m = pat.match(line)
+        if m:
+            return m.group(1).strip(), m.group(2).strip()
+    return None
+
+
+def _strip_frontmatter_fence(text):
+    """Real LLM output (not hand-authored examples) sometimes wraps the YAML
+    frontmatter in a ```yml / ```yaml fenced code block instead of bare ---
+    delimiters — confirmed live 2026-07-14 (@cf/meta/llama-3.3-70b-instruct-fp8-fast).
+    That's not a formatting nicety to reject; it's the exact same frontmatter,
+    just fenced — normalize the fence to --- before parsing rather than
+    crashing on a file that a human would read as obviously well-formed."""
+    m = re.match(r"^```ya?ml\s*\n(.*?)\n```\s*\n", text, re.S)
+    if m:
+        return "---\n" + m.group(1) + "\n---\n" + text[m.end():]
+    return text
+
+
 def parse_frontmatter(text):
+    text = _strip_frontmatter_fence(text)
     m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
     if not m:
         raise ValueError("curriculum.md missing YAML frontmatter")
@@ -141,8 +175,8 @@ def extract_section(sect):
     if kind in ("concept", "comparison"):
         item["cards"] = [{"front": title, "back": re.sub(r"\n{2,}", "\n", body)}]
     elif kind == "glossary":
-        cards = [{"front": m.group(1), "back": m.group(2)}
-                 for ln in body.split("\n") if (m := GLOSSARY_RE.match(ln.strip()))]
+        matches = [match_glossary_line(ln.strip()) for ln in body.split("\n")]
+        cards = [{"front": front, "back": back} for m in matches if m for front, back in [m]]
         item["cards"] = cards or [{"front": title, "back": body}]
     elif kind == "drill":
         rows = _md_table(body)
