@@ -194,13 +194,26 @@ document.addEventListener('click',function(e){
       alert('Rendering needs a newer browser (CompressionStream API not available).');
       return;
     }
+    // Open the tab SYNCHRONOUSLY, inside the click handler, before any async work —
+    // encoding via CompressionStream is async, and window.open() called after an
+    // await/.then() loses the user-gesture context in most browsers, which either
+    // silently blocks the popup or leaves a blank about:blank tab (reads as a white
+    // screen). Opening first and navigating it once the payload is ready avoids that.
+    var win = window.open('about:blank', '_blank');
     var stream = new Blob([JSON.stringify(blocks)]).stream().pipeThrough(new CompressionStream('gzip'));
     new Response(stream).arrayBuffer().then(function(buf){
       var bytes = new Uint8Array(buf);
       var bin = '';
       for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
       var enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      window.open('https://a2uicatalog.ai/surfaces/mcp-apps/play/#p=' + enc, '_blank', 'noopener');
+      var url = 'https://a2uicatalog.ai/surfaces/mcp-apps/play/#p=' + enc;
+      if (win && !win.closed) {
+        win.location.href = url;
+      } else {
+        // popup was blocked outright — fall back to same-tab navigation rather
+        // than leaving the user with nothing
+        window.location.href = url;
+      }
     });
   }
 
