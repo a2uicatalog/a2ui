@@ -175,8 +175,25 @@ def extract_section(sect):
     if kind in ("concept", "comparison"):
         item["cards"] = [{"front": title, "back": re.sub(r"\n{2,}", "\n", body)}]
     elif kind == "glossary":
-        matches = [match_glossary_line(ln.strip()) for ln in body.split("\n")]
-        cards = [{"front": front, "back": back} for m in matches if m for front, back in [m]]
+        # A markdown TABLE (term | definition | example...) is a real format
+        # a model produces for glossary content — confirmed live 2026-07-14
+        # in an already-shipped brevet-2026-francais.curriculum.md ("figures
+        # de style", 3 columns: term/definition/example). Table rows are a
+        # stronger structural signal than bullet lines, so try them first;
+        # _md_table already exists for "drill" sections, reused here rather
+        # than duplicating table-parsing logic.
+        rows = _md_table(body)
+        if len(rows) > 1:
+            cards = []
+            for r in rows[1:]:
+                if len(r) < 2:
+                    continue
+                term = re.sub(r"\*\*(.+?)\*\*", r"\1", r[0]).strip()
+                back = " — ".join(c.strip() for c in r[1:] if c.strip())
+                cards.append({"front": term, "back": back})
+        else:
+            matches = [match_glossary_line(ln.strip()) for ln in body.split("\n")]
+            cards = [{"front": front, "back": back} for m in matches if m for front, back in [m]]
         item["cards"] = cards or [{"front": title, "back": body}]
     elif kind == "drill":
         rows = _md_table(body)

@@ -86,6 +86,29 @@ def test_glossary_matches_non_bold_formats():
     assert bom_emitter.match_glossary_line("not a glossary line") is None
 
 
+def test_glossary_matches_table_format():
+    """A THIRD real glossary format, found live 2026-07-14 in an
+    already-shipped, previously-untested artifact
+    (brevet-2026-francais.curriculum.md, "figures de style"): a markdown
+    TABLE (term | definition | example), not a bullet list at all — no
+    bullet pattern could ever match this. Both real sections silently
+    collapsed to 1 flashcard each despite 900+/350+ chars of real table
+    content, until bom_emitter started trying _md_table() (already used for
+    drill sections) before falling back to bullet-line matching."""
+    body = (
+        "| Figure | Définition | Exemple |\n"
+        "|---|---|---|\n"
+        "| **Métaphore** | Comparaison implicite | « un long fleuve tranquille » |\n"
+        "| **Hyperbole** | Exagération forte | « je meurs de faim » |\n"
+    )
+    sect = {"title": "Figures de style", "kind": "glossary", "classes": [],
+            "weight": "medium", "competency": "c1", "body": body}
+    item, _ = bom_emitter.extract_section(sect)
+    assert len(item["cards"]) == 2
+    assert item["cards"][0]["front"] == "Métaphore"
+    assert "long fleuve" in item["cards"][0]["back"]
+
+
 def test_envelope_is_template_shaped(envelope):
     comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
     assert "root" in comps
