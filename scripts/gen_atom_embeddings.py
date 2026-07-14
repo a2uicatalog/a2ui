@@ -106,11 +106,11 @@ MULTI_REP = {
         "searchable paginated table list",
     ],
     "icon_checklist": [
-        "set of checklist items with custom check indicators and status icons",
-        "bullet list of features",
-        "ordered step-by-step points",
-        "icon list layout",
-        "visual checklist component",
+        "checklist with icons",
+        "Material Design to-do list",
+        "icon-based task list",
+        "list with customizable icons",
+        "checklist items with visual indicators",
     ],
     "user_profile_card": [
         "compact biographical overview card of an individual with photo placeholder",
@@ -208,6 +208,97 @@ MULTI_REP = {
         "displaying data over time",
         "line chart for analytics",
         "visualizing trend data",
+    ],
+    # Second onboarding-pipeline pass, 2026-07-14, run against the expanded 460-prompt
+    # eval set (test/compose-routing-eval.json, grown from 48 to cover all 468 atoms).
+    # 50 atoms flagged by find-routing-gaps.mjs; 13 passed the collision bake-off (real
+    # improvement, zero regressions) — icon_checklist's entry above was REPLACED (its new
+    # phrases outscored the original hand-curated set); the other 12 below are new
+    # additions. 37 rejected candidates are not merged; see verify-multirep-candidates.mjs
+    # output in a2ui-private for the full rejected/regression detail.
+    "reveal": [
+        "animation wrapper for my content",
+        "entrance effect for child elements",
+        "delayed animation container",
+        "staggered animation for blocks",
+        "animated intro for page sections",
+    ],
+    "sidebar_note": [
+        "a box to hold extra information",
+        "off to the side notes section",
+        "where I can add some side comments",
+        "a peripheral info container",
+        "an aside box for additional context",
+    ],
+    "embed_stackblitz": [
+        "live code editor for my project",
+        "embed a StackBlitz sandbox",
+        "dynamic coding environment",
+        "add interactive code demo",
+        "live IDE for web development examples",
+    ],
+    "lottie_animation": [
+        "animated vector graphics player",
+        "high performance animation renderer",
+        "vector animation loader",
+        "looping animation component",
+        "lightweight motion graphics viewer",
+    ],
+    "lozenge": [
+        "status indicator badge",
+        "colored label for task status",
+        "pill-shaped status component",
+        "visual status indicator with text",
+        "dynamic status badge with customizable appearance",
+    ],
+    "animated_beam": [
+        "animated line between two points",
+        "dynamic connector with labels",
+        "SVG beam with animation effect",
+        "curved link between nodes with animation",
+        "animated path with customizable speed and color",
+    ],
+    "adsb_feed": [
+        "live flight tracker for a specific area",
+        "real-time aircraft positions in a bounding box",
+        "ADS-B feed for a geographic region",
+        "flight tracking data within a defined boundary",
+        "air traffic updates for a particular zone",
+    ],
+    "badge": [
+        "small label indicator",
+        "colorful pill-shaped tag",
+        "inline notification badge",
+        "text-based status indicator",
+        "colored marker pill",
+    ],
+    "cta_button": [
+        "button to take action",
+        "link with a prompt",
+        "clickable call to action",
+        "action trigger element",
+        "interactive prompt button",
+    ],
+    "progress_store": [
+        "Store student progress",
+        "Where is my course data stored",
+        "How to save learning state",
+        "Connect to learning management system",
+        "Save user progress in the background",
+    ],
+    "accordion_item": [
+        "collapsible content box",
+        "toggleable section",
+        "click to expand panel",
+        "folding header section",
+        "expandable info block",
+    ],
+    "onboarding_stepper": [
+        "Setup wizard for new users",
+        "Guided tour for first time users",
+        "Onboarding process with multiple steps",
+        "Interactive tutorial for getting started",
+        "Step-by-step introduction to the application",
     ],
 }
 
