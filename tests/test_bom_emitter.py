@@ -109,6 +109,59 @@ def test_glossary_matches_table_format():
     assert "long fleuve" in item["cards"][0]["back"]
 
 
+def test_frontmatter_tolerates_unquoted_colon_in_value():
+    """A FOURTH real bug, found live 2026-07-14 testing a genuinely random
+    source document (Wikipedia's Kubernetes article, pro-cert schema): the
+    model wrote `source: Wikipedia: Kubernetes (fetched 2026-07-14)` — an
+    unquoted value containing its own colon, which YAML parses as an
+    illegal nested mapping ("mapping values are not allowed here"). A hard
+    crash on a line a human would read as obviously a single string."""
+    text = (
+        "---\n"
+        "id: colon-test\n"
+        "source: Wikipedia: Kubernetes (fetched 2026-07-14)\n"
+        "required_competencies: []\n"
+        "---\n"
+        "Body.\n"
+    )
+    front, _ = bom_emitter.parse_frontmatter(text)
+    assert front["source"] == "Wikipedia: Kubernetes (fetched 2026-07-14)"
+
+
+def test_section_and_timeline_accept_shifted_heading_levels():
+    """A FIFTH real bug, same Kubernetes test: the model nested a timeline
+    section one level deeper than the spec (### instead of ##, #### instead
+    of ### for its events) — apparently to reflect a perceived thematic
+    grouping, not a formatting mistake a human would even notice. Both the
+    section AND its competency anchor were silently dropped with no error;
+    the heading LEVEL carries no semantic meaning here, only the {#kind}
+    tag and the anchor do."""
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "shifted.curriculum.md"
+        p.write_text(
+            "---\n"
+            "id: shifted-test\n"
+            "required_competencies:\n"
+            "  - id: c1\n"
+            "    label: Test\n"
+            "    weight: high\n"
+            "---\n"
+            "\n"
+            "<!-- competency: c1 -->\n"
+            "### Some Timeline {#timeline}\n"
+            "#### 2020 | An event\n"
+            "It happened.\n"
+        )
+        front, groups = bom_emitter.parse_curriculum(p)
+    sections = [s for g in groups for s in g["sections"]]
+    assert len(sections) == 1
+    assert sections[0]["kind"] == "timeline"
+    assert sections[0]["competency"] == "c1"
+    item, _ = bom_emitter.extract_section(sections[0])
+    assert len(item["events"]) == 1
+    assert item["events"][0]["date"] == "2020"
+
+
 def test_envelope_is_template_shaped(envelope):
     comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
     assert "root" in comps

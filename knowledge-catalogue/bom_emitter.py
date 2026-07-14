@@ -37,7 +37,14 @@ WEIGHT_ORDER = {"high": 0, "medium": 1, "low": 2}
 
 # ── curriculum.md parser (deterministic; format per knowledge-catalogue/SPEC.md) ──
 
-SECTION_RE = re.compile(r"^## (.+?)\s*\{#([\w-]+)((?:\s+\.[\w-]+)*)\}\s*$")
+# Heading level accepts h2-h4, not just the spec's exact h2 — a real model
+# doesn't reliably keep every {#kind}-tagged section at the same nesting
+# depth (confirmed live 2026-07-14: two sections in one extraction used ###
+# instead of ##, apparently nested under a perceived thematic grouping),
+# silently dropping both the section AND its competency anchor with no
+# error. The heading LEVEL carries no semantic meaning here — only the
+# {#kind} tag and the competency anchor do — so it's safe to accept a range.
+SECTION_RE = re.compile(r"^#{2,4} (.+?)\s*\{#([\w-]+)((?:\s+\.[\w-]+)*)\}\s*$")
 COMPETENCY_RE = re.compile(r"^<!--\s*competency:\s*([\w-]+)\s*-->\s*$")
 GROUP_RE = re.compile(r"^# (?!#)(.+)$")
 # Real LLM output (not hand-authored examples) doesn't reliably use the
@@ -53,7 +60,10 @@ GLOSSARY_PATTERNS = [
     re.compile(r"^-\s+`(.+?)`\s*[:—]\s*(.+)$"),         # - `term` — def   |  - `term`: def
     re.compile(r"^-\s+([^:—`*]+?)\s*[:—]\s*(.+)$"),     # - term: def      |  - term — def (plain)
 ]
-TIMELINE_RE = re.compile(r"^### (.+?)\s*\|\s*(.+)$")
+# Same heading-level flexibility as SECTION_RE — confirmed live 2026-07-14,
+# the same extraction nested timeline events one level deeper (#### instead
+# of ###) to match its own shifted section-heading level.
+TIMELINE_RE = re.compile(r"^#{3,5} (.+?)\s*\|\s*(.+)$")
 PIEGE_RE = re.compile(r"^>\s*\[!PI[ÈE]GE\]\s*$", re.I)
 
 
@@ -78,12 +88,37 @@ def _strip_frontmatter_fence(text):
     return text
 
 
+_KV_LINE_RE = re.compile(r"^(\s*(?:-\s+)?[\w-]+:)\s+(.+)$")
+
+
+def _sanitize_scalar_colons(yaml_text):
+    """A model can write a scalar value containing its own colon without
+    quoting it (confirmed live 2026-07-14: `source: Wikipedia: Kubernetes
+    (fetched 2026-07-14)`), which YAML parses as an illegal nested mapping —
+    a hard crash ("mapping values are not allowed here") on a line a human
+    would read as obviously a single string value. Auto-quote any single-line
+    `key: value` whose value contains an unescaped colon and isn't already
+    quoted or flow-syntax, rather than rejecting well-intentioned output."""
+    out = []
+    for line in yaml_text.split("\n"):
+        m = _KV_LINE_RE.match(line)
+        if m:
+            prefix, value = m.group(1), m.group(2).rstrip()
+            starts_safe = value.startswith(('"', "'", "[", "{", "|", ">"))
+            has_bad_colon = ": " in value or value.endswith(":")
+            if not starts_safe and has_bad_colon:
+                value = '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+                line = f"{prefix} {value}"
+        out.append(line)
+    return "\n".join(out)
+
+
 def parse_frontmatter(text):
     text = _strip_frontmatter_fence(text)
     m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
     if not m:
         raise ValueError("curriculum.md missing YAML frontmatter")
-    return yaml.safe_load(m.group(1)), text[m.end():]
+    return yaml.safe_load(_sanitize_scalar_colons(m.group(1))), text[m.end():]
 
 
 def parse_curriculum(path):
