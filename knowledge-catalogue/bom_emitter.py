@@ -236,8 +236,25 @@ def extract_section(sect):
         item["questions"] = [{"q": r[0], "a": r[1]} for r in data if len(r) >= 2]
         item["no_calculator"] = "no-calculator" in sect["classes"]
     elif kind == "method":
-        steps = [re.sub(r"^\d+[.)]\s*", "", ln.strip())
-                 for ln in body.split("\n") if re.match(r"^\d+[.)]\s+", ln.strip())]
+        # A numbered step's nested sub-bullets and inline code examples
+        # (e.g. "1. DDL: ...\n   - Example: `CREATE TABLE ...`") were
+        # silently DROPPED — only the top-level numbered line was kept, real
+        # content (the actual CREATE/INSERT/UPDATE/DELETE examples in a live
+        # 2026-07-14 extraction) vanished with no error. Continuation lines
+        # (anything non-empty that isn't itself a new numbered item) now
+        # fold into the current step instead of being discarded.
+        steps, cur = [], None
+        for ln in body.split("\n"):
+            stripped = ln.strip()
+            m = re.match(r"^\d+[.)]\s+(.*)$", stripped)
+            if m:
+                if cur is not None:
+                    steps.append(cur.strip())
+                cur = m.group(1)
+            elif cur is not None and stripped:
+                cur += "\n" + stripped
+        if cur is not None:
+            steps.append(cur.strip())
         item["items"] = steps or [body]
     elif kind == "key_takeaways":
         item["points"] = [ln.strip()[2:].strip() for ln in body.split("\n")

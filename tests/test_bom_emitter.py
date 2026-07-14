@@ -162,6 +162,29 @@ def test_section_and_timeline_accept_shifted_heading_levels():
     assert item["events"][0]["date"] == "2020"
 
 
+def test_method_steps_keep_nested_content():
+    """A SIXTH real bug, found live 2026-07-14 (fresh SQL extraction, pro-cert
+    schema): a numbered step's indented sub-bullets and inline code examples
+    ("1. DDL: ...\\n   - Example: `CREATE TABLE ...`") were silently DROPPED —
+    only the bare top-level numbered line survived, discarding the actual
+    CREATE/INSERT/UPDATE/DELETE examples with no error. Verified against all
+    10 real method sections in togaf-10.curriculum.md: item counts unchanged
+    (no regression), confirming this only recovers previously-lost content."""
+    body = (
+        "1. **DDL**: governs structure.\n"
+        "   - Example: `CREATE TABLE x (id INT)`\n"
+        "2. **DML**: handles data.\n"
+        "   - **INSERT**: adds rows\n"
+        "   - **UPDATE**: modifies rows\n"
+    )
+    sect = {"title": "Languages", "kind": "method", "classes": [],
+            "weight": "medium", "competency": "c1", "body": body}
+    item, _ = bom_emitter.extract_section(sect)
+    assert len(item["items"]) == 2
+    assert "CREATE TABLE" in item["items"][0]
+    assert "INSERT" in item["items"][1] and "UPDATE" in item["items"][1]
+
+
 def test_envelope_is_template_shaped(envelope):
     comps = {c["id"]: c for c in envelope["createSurface"]["components"]}
     assert "root" in comps
