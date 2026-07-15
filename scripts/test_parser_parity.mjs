@@ -57,7 +57,12 @@ for (const fixture of FIXTURES) {
 }
 
 // Error-path parity: a file that must fail with the same codes in both.
-const bad = "---\nid: t\ndomain: training\nname: T\nsource: s\nlicense: MIT\n---\n\n# Steps\n## 1. A\ncmd: x\ndo: y\n";
+// A step with NEITHER cmd nor do is the genuine content gap that still
+// hard-errors — a step with BOTH is now auto-resolved (kept cmd, folded
+// do into note, W05 warning) rather than rejected, found live 2026-07-15:
+// prompt-only mitigation proved insufficient against real model output
+// that kept filling in both despite explicit instructions not to.
+const bad = "---\nid: t\ndomain: training\nname: T\nsource: s\nlicense: MIT\n---\n\n# Steps\n## 1. A\nnote: neither cmd nor do\n";
 const jsBad = parseTrainingMd(bad);
 const jsCodes = jsBad.report.errors.map((e) => e.split(":")[0]).sort().join(",");
 if (jsBad.payload === null && jsCodes.includes("E05")) {
@@ -65,6 +70,19 @@ if (jsBad.payload === null && jsCodes.includes("E05")) {
 } else {
   failed++;
   console.error(`❌ error-path mismatch: ${JSON.stringify(jsBad.report.errors)}`);
+}
+
+// Both cmd and do: auto-resolved (W05 warning, not E05 error) — cmd kept,
+// do folded into note, payload still emitted.
+const bothCmdDo = "---\nid: t\ndomain: training\nname: T\nsource: s\nlicense: MIT\n---\n\n# Steps\n## 1. A\ncmd: x\ndo: y\n";
+const jsBoth = parseTrainingMd(bothCmdDo);
+const jsBothCodes = jsBoth.report.errors.map((e) => e.split(":")[0]).sort().join(",");
+const jsBothWarnings = jsBoth.report.warnings.map((w) => w.split(":")[0]).sort().join(",");
+if (jsBoth.payload !== null && !jsBothCodes.includes("E05") && jsBothWarnings.includes("W05")) {
+  console.log(`✅ both cmd+do: auto-resolved with W05 warning, payload emitted`);
+} else {
+  failed++;
+  console.error(`❌ both cmd+do auto-resolve mismatch: errors=${JSON.stringify(jsBoth.report.errors)} warnings=${JSON.stringify(jsBoth.report.warnings)}`);
 }
 
 process.exit(failed ? 1 : 0);

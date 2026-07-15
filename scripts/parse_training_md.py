@@ -385,7 +385,24 @@ def _parse_phase_elements(p_lines, step_level, lint, known_atoms, phase):
                     step[key] = value
                 i += 1
             has_cmd, has_do = "cmd" in step, "do" in step
-            if has_cmd == has_do:
+            if has_cmd and has_do:
+                # Real model output sometimes fills in BOTH cmd and do for one
+                # step despite explicit instructions not to — confirmed live
+                # 2026-07-15 (@cf/meta/llama-3.3-70b-instruct-fp8-fast),
+                # recurring across multiple live requests even after tightening
+                # the extraction prompt. Prompt-only mitigation proved
+                # insufficient in practice, so auto-resolve deterministically
+                # instead of hard-rejecting the whole step: keep cmd (the more
+                # actionable/verifiable form — matches _emit's existing
+                # 'cmd' in step ? step['cmd'] : step.get('do','') preference),
+                # fold do's text into note so it's never silently dropped.
+                # Genuinely missing BOTH keys stays a hard error below — that
+                # case has no content to recover, unlike this one.
+                do_text = step.pop("do")
+                extra_note = f"Also: {do_text}"
+                step["note"] = f"{extra_note} — {step['note']}" if step.get("note") else extra_note
+                lint.warn("W05", f"step '{step['title'][:40]}' had both cmd and do — kept cmd, folded do into note")
+            elif not has_cmd and not has_do:
                 lint.error("E05", f"step '{step['title'][:40]}' must have exactly one of cmd/do")
             if "verify" not in step:
                 lint.warn("W03", f"step '{step['title'][:40]}' has no verify — done-checkbox is self-report")

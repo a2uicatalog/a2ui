@@ -154,11 +154,25 @@ def test_e04_no_steps():
     assert any(e.startswith("E04") for e in _errors(FRONTMATTER + "\n# Steps\n"))
 
 
-def test_e05_cmd_and_do():
-    md = FRONTMATTER + "\n# Steps\n## 1. Bad\ncmd: x\ndo: y\n"
-    assert any(e.startswith("E05") for e in _errors(md))
+def test_e05_neither_cmd_nor_do():
     md = FRONTMATTER + "\n# Steps\n## 1. Bad\nnote: neither\n"
     assert any(e.startswith("E05") for e in _errors(md))
+
+
+def test_both_cmd_and_do_auto_resolved_not_rejected():
+    """Real model output sometimes fills in BOTH cmd and do for one step
+    despite explicit instructions not to — confirmed live 2026-07-15
+    (@cf/meta/llama-3.3-70b-instruct-fp8-fast), recurring across multiple
+    live requests even after tightening the extraction prompt. Auto-resolve
+    deterministically instead of hard-rejecting the whole step: keep cmd,
+    fold do's text into note (never silently dropped), warn W05."""
+    md = FRONTMATTER + "\n# Steps\n## 1. Version check\ncmd: node -v\ndo: check manually\nverify: version prints\n"
+    payload, report = parse(md)
+    assert report["errors"] == [], report["errors"]
+    assert any(w.startswith("W05") for w in report["warnings"])
+    step = payload["layout"][1]
+    assert step["props"]["command"] == "node -v"
+    assert "check manually" in step["props"]["hint"]
 
 
 def test_e06_non_sequential():

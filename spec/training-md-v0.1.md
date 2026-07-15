@@ -242,7 +242,7 @@ Errors (parser rejects; message round-trips to the authoring LLM):
 | E02  | missing required frontmatter key (`id`, `domain`, `name`, `source`, `license`) |
 | E03  | `domain` is not `training` |
 | E04  | no `# Steps` section, or `# Steps` has zero steps |
-| E05  | step missing both `cmd` and `do`, or has both |
+| E05  | step missing both `cmd` and `do` (neither present) |
 | E06  | step numbering not sequential from 1 (within its phase, in phased shape) |
 | E07  | unknown key inside a step block |
 | E08  | `# Troubleshooting` or info-block entry without `::` separator |
@@ -259,6 +259,7 @@ Warnings (parse succeeds; reported in coverage output):
 | W02  | optional section absent (reported, per section, as coverage) |
 | W03  | step has no `verify` (done-checkbox will be unverified self-report) |
 | W04  | `license` is `Unknown — verify before publishing` |
+| W05  | step had both `cmd` and `do` — `cmd` kept, `do` folded into `note` |
 
 The coverage report lists W02 findings as an audit of the **source
 document**: "populated 4 of 6 sections; no Troubleshooting, no

@@ -334,7 +334,25 @@ function tpParsePhaseElements_(pLines, stepLevel, atomSet, err, warn) {
         i++;
       }
       var hasCmd = 'cmd' in step, hasDo = 'do' in step;
-      if (hasCmd === hasDo) err('E05', "step '" + step.title.slice(0, 40) + "' must have exactly one of cmd/do");
+      if (hasCmd && hasDo) {
+        // Real model output sometimes fills in BOTH cmd and do for one step
+        // despite explicit instructions not to — confirmed live 2026-07-15
+        // (@cf/meta/llama-3.3-70b-instruct-fp8-fast), recurring across
+        // multiple live requests even after tightening the extraction
+        // prompt. Prompt-only mitigation proved insufficient in practice, so
+        // auto-resolve deterministically instead of hard-rejecting the whole
+        // step: keep cmd (the more actionable/verifiable form — matches
+        // tpEmit_'s existing 'cmd' in el ? el.cmd : (el['do']||'')
+        // preference), fold do's text into note so it's never silently
+        // dropped. Genuinely missing BOTH keys stays a hard error below.
+        var doText = step['do'];
+        delete step['do'];
+        var extraNote = 'Also: ' + doText;
+        step.note = step.note ? (extraNote + ' — ' + step.note) : extraNote;
+        warn('W05', "step '" + step.title.slice(0, 40) + "' had both cmd and do — kept cmd, folded do into note");
+      } else if (!hasCmd && !hasDo) {
+        err('E05', "step '" + step.title.slice(0, 40) + "' must have exactly one of cmd/do");
+      }
       if (!('verify' in step)) warn('W03', "step '" + step.title.slice(0, 40) + "' has no verify — done-checkbox is self-report");
       elements.push(step);
       continue;
