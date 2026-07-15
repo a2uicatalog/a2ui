@@ -2247,8 +2247,9 @@ FRUGAL_PAGE_CSS = """
 #frugal-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 #frugal-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
 .frugal-hint{font-size:12px;color:var(--muted)}
-.frugal-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;letter-spacing:.02em;margin:14px 0}
+.frugal-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:11px 16px;cursor:pointer;letter-spacing:.02em}
 .frugal-render-btn:hover{filter:brightness(1.05)}
+.frugal-render-btn:disabled{opacity:.55;cursor:default;filter:none}
 #frugal-result{margin-top:8px}
 .frugal-status{font-size:13px;color:var(--muted);margin-bottom:12px}
 .frugal-status.err{color:var(--negative)}
@@ -2316,6 +2317,7 @@ def render_frugal_ai_ops_page():
     </div>
     <div class="frugal-row">
       <button id="frugal-submit" type="submit">Parse it →</button>
+      <button id="frugal-render" class="frugal-render-btn" type="button" disabled>Render it →</button>
       <span class="frugal-hint">Free tier — 5 requests/day per IP (two model calls each)</span>
     </div>
   </form>
@@ -2342,6 +2344,7 @@ def render_frugal_ai_ops_page():
   var fileInput = document.getElementById('frugal-file');
   var fileStatus = document.getElementById('frugal-file-status');
   var submit = document.getElementById('frugal-submit');
+  var renderBtn = document.getElementById('frugal-render');
   var result = document.getElementById('frugal-result');
   var activePane = 'url';
   var extractedFileText = null;
@@ -2424,6 +2427,8 @@ def render_frugal_ai_ops_page():
   }}
 
   function render(data, status){{
+    lastEnvelope = null;
+    renderBtn.disabled = true;
     if (status === 429) {{
       result.innerHTML = '<p class="frugal-status err">' + esc((data && data.error) || 'Daily free-tier limit reached (5/IP) — try again tomorrow.') + '</p>';
       return;
@@ -2434,11 +2439,14 @@ def render_frugal_ai_ops_page():
     }}
     var env = data.envelope;
     lastEnvelope = env;
+    renderBtn.disabled = false;
     var parts = [];
     var title = (env && env.createSurface && env.createSurface.surfaceProperties && env.createSurface.surfaceProperties.title) || 'Parsed result';
     parts.push('<p class="frugal-status">parsed: ' + esc(title) + '</p>');
+    if (env && env._truncated) {{
+      parts.push('<p class="frugal-status">' + esc(env._truncated.note) + '</p>');
+    }}
     parts.push(renderGrounding(env && env._grounding));
-    parts.push('<button class="frugal-render-btn" id="frugal-render" type="button">Render it →</button>');
     parts.push('<pre><code>' + esc(JSON.stringify(env, null, 2)) + '</code></pre>');
     result.innerHTML = parts.join('\\n');
   }}
@@ -2459,6 +2467,8 @@ def render_frugal_ai_ops_page():
     }}
     submit.disabled = true;
     submit.textContent = 'Parsing…';
+    renderBtn.disabled = true;
+    lastEnvelope = null;
     result.innerHTML = '<p class="frugal-empty">Parsing — this runs two model calls, may take a few seconds…</p>';
     fetch('https://a2uicatalog.ai/api/frugal-parse', {{
       method: 'POST',
@@ -2479,9 +2489,8 @@ def render_frugal_ai_ops_page():
     e.preventDefault();
     submitRequest();
   }});
-  result.addEventListener('click', function(e){{
-    var b = e.target.closest('#frugal-render');
-    if (!b || !lastEnvelope) return;
+  renderBtn.addEventListener('click', function(){{
+    if (!lastEnvelope) return;
     openInPlayground(lastEnvelope);
   }});
 }})();
