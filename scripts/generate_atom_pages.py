@@ -2213,14 +2213,33 @@ def pdfjs_module_block():
     # bare name in this module's own scope, a ReferenceError that silently
     # breaks PDF extraction). Just use what the vendored file already set.
     bridge = """
-window._a2uiExtractPdfText = async function (file) {
+// getDocument() throws 'No "GlobalWorkerOptions.workerSrc" specified.'
+// without this — pdf.js always needs a real, separately-fetchable worker
+// script, even for main-thread-only text extraction. Point it at the SAME
+// vendored file served as a static asset (public/vendors/pdfjs/pdf.min.mjs)
+// rather than duplicating ~500KB inline a second time.
+window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendors/pdfjs/pdf.min.mjs';
+// A real, large document (a 300+ page standard, say) can take a long time
+// to extract page-by-page with no visible progress — found live 2026-07-15
+// testing an actual TOGAF PDF, which just sat there with no feedback.
+// Two fixes: report progress via an optional callback, AND stop once enough
+// text has accumulated — the server truncates to its own char cap anyway
+// (see frugal-parse.js's MAX_TEXT_CHARS), so extracting hundreds of pages
+// just to throw most of them away server-side is pure waste.
+window._a2uiExtractPdfText = async function (file, onProgress) {
   var buf = await file.arrayBuffer();
   var doc = await window.pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
   var parts = [];
+  var totalChars = 0;
+  var MAX_CHARS = 250000; // headroom over the server's 200KB text cap
   for (var i = 1; i <= doc.numPages; i++) {
     var page = await doc.getPage(i);
     var content = await page.getTextContent();
-    parts.push(content.items.map(function (it) { return it.str || ''; }).join(' '));
+    var pageText = content.items.map(function (it) { return it.str || ''; }).join(' ');
+    parts.push(pageText);
+    totalChars += pageText.length;
+    if (typeof onProgress === 'function') onProgress(i, doc.numPages);
+    if (totalChars >= MAX_CHARS) break;
   }
   return parts.join('\\n\\n').trim();
 };
@@ -2247,6 +2266,8 @@ FRUGAL_PAGE_CSS = """
 #frugal-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 #frugal-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
 .frugal-hint{font-size:12px;color:var(--muted)}
+.frugal-hint-busy{color:var(--accent);font-weight:600;animation:frugal-pulse 1.1s ease-in-out infinite}
+@keyframes frugal-pulse{0%,100%{opacity:1}50%{opacity:.45}}
 .frugal-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:11px 16px;cursor:pointer;letter-spacing:.02em}
 .frugal-render-btn:hover{filter:brightness(1.05)}
 .frugal-render-btn:disabled{opacity:.55;cursor:default;filter:none}
@@ -2364,26 +2385,51 @@ def render_frugal_ai_ops_page():
     var f = fileInput.files && fileInput.files[0];
     extractedFileText = null;
     if (!f) return;
+    fileStatus.className = 'frugal-hint frugal-hint-busy';
     fileStatus.textContent = 'Reading ' + f.name + '…';
     var isPdf = /\\.pdf$/i.test(f.name) || f.type === 'application/pdf';
     if (isPdf) {{
       if (typeof window._a2uiExtractPdfText !== 'function') {{
+        fileStatus.className = 'frugal-hint';
         fileStatus.textContent = 'PDF extraction unavailable — try the Paste text tab instead.';
         return;
       }}
-      window._a2uiExtractPdfText(f).then(function(text){{
+      // PDF.js's worker handshake can silently hang with no error at all on
+      // some documents/environments (a known, longstanding pdf.js failure
+      // mode — found live 2026-07-15: a real PDF just sat at "Reading…"
+      // forever). Never leave the user staring at a stale status forever —
+      // bound it and fail honestly.
+      var pdfTimedOut = false;
+      var pdfTimer = setTimeout(function(){{
+        pdfTimedOut = true;
+        fileStatus.className = 'frugal-hint';
+        fileStatus.textContent = 'PDF extraction timed out — try the Paste text tab instead (copy the text from your PDF reader).';
+      }}, 25000);
+      window._a2uiExtractPdfText(f, function(page, total){{
+        if (!pdfTimedOut) fileStatus.textContent = 'Extracting page ' + page + ' of ' + total + '…';
+      }}).then(function(text){{
+        clearTimeout(pdfTimer);
+        if (pdfTimedOut) return;
         extractedFileText = text;
+        fileStatus.className = 'frugal-hint';
         fileStatus.textContent = 'Extracted ' + text.length + ' chars from ' + f.name + '.';
       }}).catch(function(e){{
+        clearTimeout(pdfTimer);
+        if (pdfTimedOut) return;
+        fileStatus.className = 'frugal-hint';
         fileStatus.textContent = 'Could not extract PDF text: ' + (e.message || e);
       }});
     }} else {{
       var r = new FileReader();
       r.onload = function(){{
         extractedFileText = String(r.result || '');
+        fileStatus.className = 'frugal-hint';
         fileStatus.textContent = 'Loaded ' + extractedFileText.length + ' chars from ' + f.name + '.';
       }};
-      r.onerror = function(){{ fileStatus.textContent = 'Could not read file.'; }};
+      r.onerror = function(){{
+        fileStatus.className = 'frugal-hint';
+        fileStatus.textContent = 'Could not read file.';
+      }};
       r.readAsText(f);
     }}
   }});
@@ -2469,7 +2515,7 @@ def render_frugal_ai_ops_page():
     submit.textContent = 'Parsing…';
     renderBtn.disabled = true;
     lastEnvelope = null;
-    result.innerHTML = '<p class="frugal-empty">Parsing — this runs two model calls, may take a few seconds…</p>';
+    result.innerHTML = '<p class="frugal-hint-busy">Parsing — this runs two model calls, may take a few seconds…</p>';
     fetch('https://a2uicatalog.ai/api/frugal-parse', {{
       method: 'POST',
       headers: {{ 'Content-Type': 'application/json' }},
@@ -2540,6 +2586,19 @@ def main():
     frugal_dir.mkdir(parents=True, exist_ok=True)
     (frugal_dir / "index.html").write_text(render_frugal_ai_ops_page())
     print(f"✓ frugal-ai-ops page → {frugal_dir}/index.html")
+
+    # PDF.js needs GlobalWorkerOptions.workerSrc to point at a REAL,
+    # separately-fetchable script — inlining the source alone isn't enough,
+    # it throws 'No "GlobalWorkerOptions.workerSrc" specified.' at
+    # getDocument() time (found live 2026-07-15 testing a real PDF upload,
+    # which failed silently from the user's perspective — the file_upload
+    # atom's PDF branch in the MCP Apps bundle shares this same requirement).
+    # Serve the same vendored file as a static asset so the worker it spins
+    # up can fetch it, without duplicating ~500KB in every page that inlines it.
+    pdfjs_static_dir = ROOT / "public" / "vendors" / "pdfjs"
+    pdfjs_static_dir.mkdir(parents=True, exist_ok=True)
+    (pdfjs_static_dir / "pdf.min.mjs").write_text(PDFJS_PATH.read_text())
+    print(f"✓ pdf.js worker script → {pdfjs_static_dir}/pdf.min.mjs")
     # Never truncate silently: say exactly which hub cards got a live preview
     # stage and why the rest fell back to the type-chip stage.
     print(f"hub previews: {_preview_stats['rendered']} rendered, "

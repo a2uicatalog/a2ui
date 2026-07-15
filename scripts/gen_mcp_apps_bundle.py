@@ -325,17 +325,37 @@ def pdfjs_module_block():
     either (it's declared after the broken line, same script block) —
     file_upload's PDF branch has been silently broken since this shipped;
     found live 2026-07-14 building a second page that inlines this same
-    block. Fixed by just using what the vendored file already set."""
+    block. Fixed by just using what the vendored file already set.
+
+    SECOND bug, found live 2026-07-15 testing an actual PDF upload (not just
+    checking the bridge function existed): getDocument() itself throws 'No
+    "GlobalWorkerOptions.workerSrc" specified.' — this build always needs a
+    real, separately-fetchable worker script, even for text-only extraction;
+    there is no automatic main-thread fallback. Points at the same vendored
+    file served as a static asset (public/vendors/pdfjs/pdf.min.mjs,
+    written by generate_atom_pages.py's main()) rather than duplicating
+    ~500KB inline a second time."""
     vendored = PDFJS_PATH.read_text()
     bridge = """
-window._a2uiExtractPdfText = async function (file) {
+window.pdfjsLib.GlobalWorkerOptions.workerSrc = '/vendors/pdfjs/pdf.min.mjs';
+// A real, large document can take a long time to extract page-by-page with
+// no visible progress (found live 2026-07-15 testing an actual TOGAF PDF).
+// Report progress via an optional callback, and stop once enough text has
+// accumulated rather than extracting hundreds of pages unconditionally.
+window._a2uiExtractPdfText = async function (file, onProgress) {
   var buf = await file.arrayBuffer();
   var doc = await window.pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
   var parts = [];
+  var totalChars = 0;
+  var MAX_CHARS = 250000;
   for (var i = 1; i <= doc.numPages; i++) {
     var page = await doc.getPage(i);
     var content = await page.getTextContent();
-    parts.push(content.items.map(function (it) { return it.str || ''; }).join(' '));
+    var pageText = content.items.map(function (it) { return it.str || ''; }).join(' ');
+    parts.push(pageText);
+    totalChars += pageText.length;
+    if (typeof onProgress === 'function') onProgress(i, doc.numPages);
+    if (totalChars >= MAX_CHARS) break;
   }
   return parts.join('\\n\\n').trim();
 };
