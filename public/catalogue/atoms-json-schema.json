@@ -16200,6 +16200,91 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "flashcard_deck"
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "front": {
+                  "type": "string"
+                },
+                "back": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "front",
+                "back"
+              ]
+            }
+          },
+          "accent": {
+            "type": "string"
+          },
+          "label_front": {
+            "type": "string"
+          },
+          "label_back": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "cards"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "brevet_timeline"
+          },
+          "title": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "desc": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "date",
+                "title",
+                "desc"
+              ]
+            }
+          },
+          "accent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "events"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "gdm_rocket_panel"
           },
           "side": {

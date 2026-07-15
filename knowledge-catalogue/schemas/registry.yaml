@@ -24,3 +24,11 @@ schemas:
     type: pro-cert
     render_strategy: domain_hub
     tags: [aws, gcp, pmp, template]
+
+  - id: generic-demo
+    name: "Frugal AI Ops — Live Parse Demo"
+    path: generic-demo.yaml
+    type: generic
+    render_strategy: subject_hub
+    subjects: [general]
+    tags: [demo, frugal-ai-ops, single-subject]

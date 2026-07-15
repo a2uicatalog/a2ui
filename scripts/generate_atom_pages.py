@@ -23,6 +23,7 @@ ROOT       = Path(__file__).parent.parent
 SCHEMA     = ROOT / "atoms" / "schema.yaml"
 OUTPUT_DIR = ROOT / "public" / "atoms"
 DOMAIN     = "a2uicatalog.ai"
+PDFJS_PATH = ROOT / "apps-script-surface" / "gas-wired-renderer" / "vendor" / "pdfjs" / "pdf.min.mjs"
 GAS_RENDERER = "https://script.google.com/macros/s/AKfycbwwGCeqX1jn0nnH5F-jc1dpXj1wlfJayMrF7V648oY6AgHJY-85b6-OQyWxOx5bFBMv/exec"
 
 # Surfaces present in schema + ARD manifest but hidden from the human-facing
@@ -2189,6 +2190,307 @@ def render_try_page(atom_count):
 </html>"""
 
 
+def escape_script_close(js):
+    """`</script` inside a JS string literal terminates the whole <script>
+    element for the browser's HTML parser — same fix as
+    gen_mcp_apps_bundle.py's escape_script_close(), duplicated here rather
+    than cross-imported since these are two independent page-generator
+    scripts with no existing import relationship."""
+    return js.replace("</script", "<\\/script")
+
+
+def pdfjs_module_block():
+    """Inlines the same vendored PDF.js + text-extraction bridge that
+    gen_mcp_apps_bundle.py's pdfjs_module_block() ships inside the MCP Apps
+    bundle — duplicated here (not imported) since this is a plain static
+    page, not part of that bundle. THIRD-PARTY-NOTICES.md's vendoring
+    exception covers this file regardless of which generator inlines it."""
+    vendored = PDFJS_PATH.read_text()
+    # The vendored module already assigns a complete, correctly-aliased
+    # globalThis.pdfjsLib itself (its export list renames the internal
+    # `version` binding — re-declaring `window.pdfjsLib = {..., version:
+    # version}` here would reference an identifier that doesn't exist as a
+    # bare name in this module's own scope, a ReferenceError that silently
+    # breaks PDF extraction). Just use what the vendored file already set.
+    bridge = """
+window._a2uiExtractPdfText = async function (file) {
+  var buf = await file.arrayBuffer();
+  var doc = await window.pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
+  var parts = [];
+  for (var i = 1; i <= doc.numPages; i++) {
+    var page = await doc.getPage(i);
+    var content = await page.getTextContent();
+    parts.push(content.items.map(function (it) { return it.str || ''; }).join(' '));
+  }
+  return parts.join('\\n\\n').trim();
+};
+"""
+    return escape_script_close(vendored + "\n" + bridge)
+
+
+FRUGAL_PAGE_CSS = """
+<style>
+.frugal-intro{margin:0 0 28px}
+.frugal-intro p{margin:0 0 12px}
+.frugal-tabs{display:flex;gap:6px;margin:20px 0 14px;border-bottom:1px solid var(--border)}
+.frugal-tab{font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);background:none;border:none;padding:10px 4px;margin-right:18px;cursor:pointer;border-bottom:2px solid transparent}
+.frugal-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.frugal-pane{display:none}
+.frugal-pane.active{display:block}
+#frugal-url,#frugal-text{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;font:inherit;font-size:15px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+#frugal-url:focus,#frugal-text:focus{border-color:var(--accent);box-shadow:var(--glow)}
+#frugal-text{min-height:140px;resize:vertical}
+.frugal-file-row{display:flex;align-items:center;gap:12px}
+.frugal-file-row input[type=file]{font:inherit;font-size:13px;color:var(--muted)}
+.frugal-row{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+#frugal-submit{font:inherit;font-size:14px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:9px;padding:11px 22px;cursor:pointer;letter-spacing:.02em;transition:filter .15s,box-shadow .15s}
+#frugal-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+#frugal-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
+.frugal-hint{font-size:12px;color:var(--muted)}
+.frugal-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;letter-spacing:.02em;margin:14px 0}
+.frugal-render-btn:hover{filter:brightness(1.05)}
+#frugal-result{margin-top:8px}
+.frugal-status{font-size:13px;color:var(--muted);margin-bottom:12px}
+.frugal-status.err{color:var(--negative)}
+.frugal-empty{color:var(--muted);font-size:14px;padding:20px 0}
+.frugal-grounding{border-radius:11px;border:1px solid var(--border);padding:16px 18px;margin:16px 0;background:var(--surface)}
+.frugal-grounding.clean{border-color:#22c55e55}
+.frugal-grounding.flagged{border-color:#f59e0b55}
+.frugal-grounding h3{margin:0 0 8px;font-size:14px}
+.frugal-grounding ul{margin:8px 0 0;padding-left:20px;font-size:13px;color:var(--muted)}
+.frugal-grounding li{margin-bottom:6px}
+</style>"""
+
+
+def render_frugal_ai_ops_page():
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Frugal AI Ops — A2UI Atomic Catalog</title>
+  <meta name="description" content="A live demo of frugal AI ops: a small free-tier model extracts, deterministic code structures the result, and a second pass flags anything ungrounded instead of hiding it.">
+  <meta name="robots" content="noindex, nofollow">
+  {SITE_HEAD_JS}
+  {PAGE_CSS}
+  {FRUGAL_PAGE_CSS}
+</head>
+<body>
+  {site_header("frugal-ai-ops")}
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / frugal-ai-ops
+  </nav>
+
+  <h1>Frugal AI Ops</h1>
+  <div class="frugal-intro">
+  <p>This catalog's knowledge-parsing pipeline runs a small, free-tier Cloudflare
+  Workers AI model (<code>llama-3.3-70b-instruct-fp8-fast</code>) for extraction —
+  but the actual structuring step is a deterministic, zero-AI parser
+  (<a href="https://github.com/a2uicatalog/a2ui">bom_emitter</a>), and a second
+  cheap pass checks the first model's output against the source and flags
+  anything it invented, rather than silently trusting or silently dropping it.</p>
+  <p>Try it on a real document: paste a URL or some text, or upload a
+  <code>.pdf</code>/<code>.md</code>/<code>.txt</code> file (extracted in your
+  browser — the file itself is never uploaded, only the extracted text is sent).</p>
+  </div>
+
+  <div class="frugal-tabs" id="frugal-tabs">
+    <button class="frugal-tab active" type="button" data-pane="url">URL</button>
+    <button class="frugal-tab" type="button" data-pane="text">Paste text</button>
+    <button class="frugal-tab" type="button" data-pane="file">Upload file</button>
+  </div>
+
+  <form id="frugal-form">
+    <div class="frugal-pane active" data-pane="url">
+      <input id="frugal-url" type="url" placeholder="https://example.com/some-article">
+    </div>
+    <div class="frugal-pane" data-pane="text">
+      <textarea id="frugal-text" placeholder="Paste any text here"></textarea>
+    </div>
+    <div class="frugal-pane" data-pane="file">
+      <div class="frugal-file-row">
+        <input id="frugal-file" type="file" accept=".pdf,.md,.markdown,.txt">
+        <span class="frugal-hint" id="frugal-file-status"></span>
+      </div>
+    </div>
+    <div class="frugal-row">
+      <button id="frugal-submit" type="submit">Parse it →</button>
+      <span class="frugal-hint">Free tier — 5 requests/day per IP (two model calls each)</span>
+    </div>
+  </form>
+
+  <div id="frugal-result"><p class="frugal-empty">Results appear here.</p></div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
+    <span>MIT License</span>
+  </footer>
+  </div>
+  {SITE_FOOT_JS}
+  <script type="module">
+{pdfjs_module_block()}
+  </script>
+  <script>
+(function(){{
+  var tabs = document.getElementById('frugal-tabs');
+  var panes = document.querySelectorAll('.frugal-pane');
+  var form = document.getElementById('frugal-form');
+  var urlInput = document.getElementById('frugal-url');
+  var textInput = document.getElementById('frugal-text');
+  var fileInput = document.getElementById('frugal-file');
+  var fileStatus = document.getElementById('frugal-file-status');
+  var submit = document.getElementById('frugal-submit');
+  var result = document.getElementById('frugal-result');
+  var activePane = 'url';
+  var extractedFileText = null;
+  var lastEnvelope = null;
+
+  function esc(s){{ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }}
+
+  tabs.addEventListener('click', function(e){{
+    var b = e.target.closest('.frugal-tab');
+    if (!b) return;
+    activePane = b.getAttribute('data-pane');
+    document.querySelectorAll('.frugal-tab').forEach(function(t){{ t.classList.toggle('active', t === b); }});
+    panes.forEach(function(p){{ p.classList.toggle('active', p.getAttribute('data-pane') === activePane); }});
+  }});
+
+  fileInput.addEventListener('change', function(){{
+    var f = fileInput.files && fileInput.files[0];
+    extractedFileText = null;
+    if (!f) return;
+    fileStatus.textContent = 'Reading ' + f.name + '…';
+    var isPdf = /\\.pdf$/i.test(f.name) || f.type === 'application/pdf';
+    if (isPdf) {{
+      if (typeof window._a2uiExtractPdfText !== 'function') {{
+        fileStatus.textContent = 'PDF extraction unavailable — try the Paste text tab instead.';
+        return;
+      }}
+      window._a2uiExtractPdfText(f).then(function(text){{
+        extractedFileText = text;
+        fileStatus.textContent = 'Extracted ' + text.length + ' chars from ' + f.name + '.';
+      }}).catch(function(e){{
+        fileStatus.textContent = 'Could not extract PDF text: ' + (e.message || e);
+      }});
+    }} else {{
+      var r = new FileReader();
+      r.onload = function(){{
+        extractedFileText = String(r.result || '');
+        fileStatus.textContent = 'Loaded ' + extractedFileText.length + ' chars from ' + f.name + '.';
+      }};
+      r.onerror = function(){{ fileStatus.textContent = 'Could not read file.'; }};
+      r.readAsText(f);
+    }}
+  }});
+
+  // Same gzip+base64url #p= encoding already used by /try and the MCP Apps
+  // playground — the Worker returns a full v1.0 envelope ({{version,
+  // createSurface,...}}), not a bare block array, so the WHOLE object is
+  // encoded here (the playground bundle already knows how to rehydrate
+  // exactly that shape).
+  function openInPlayground(envelope){{
+    if (typeof CompressionStream === 'undefined') {{
+      alert('Rendering needs a newer browser (CompressionStream API not available).');
+      return;
+    }}
+    var win = window.open('about:blank', '_blank');
+    var stream = new Blob([JSON.stringify(envelope)]).stream().pipeThrough(new CompressionStream('gzip'));
+    new Response(stream).arrayBuffer().then(function(buf){{
+      var bytes = new Uint8Array(buf);
+      var bin = '';
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      var enc = btoa(bin).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');
+      var url = 'https://a2uicatalog.ai/surfaces/mcp-apps/play/#p=' + enc;
+      if (win && !win.closed) {{
+        win.location.href = url;
+      }} else {{
+        window.location.href = url;
+      }}
+    }});
+  }}
+
+  function renderGrounding(g){{
+    if (!g) return '';
+    var cls = g.flagged_count ? 'flagged' : 'clean';
+    var items = (g.flagged || []).map(function(f){{
+      var extra = f.source_says ? (' — source says: ' + esc(f.source_says)) : '';
+      return '<li><strong>' + esc(f.field_or_section || '') + '</strong> (' + esc(f.kind) + '): ' +
+        esc(f.reason || '') + extra + '</li>';
+    }}).join('');
+    return '<div class="frugal-grounding ' + cls + '"><h3>Grounding check</h3><p>' + esc(g.note) + '</p>' +
+      (items ? '<ul>' + items + '</ul>' : '') + '</div>';
+  }}
+
+  function render(data, status){{
+    if (status === 429) {{
+      result.innerHTML = '<p class="frugal-status err">' + esc((data && data.error) || 'Daily free-tier limit reached (5/IP) — try again tomorrow.') + '</p>';
+      return;
+    }}
+    if (!data || data.ok === false) {{
+      result.innerHTML = '<p class="frugal-status err">' + esc((data && data.error) || 'request failed') + '</p>';
+      return;
+    }}
+    var env = data.envelope;
+    lastEnvelope = env;
+    var parts = [];
+    var title = (env && env.createSurface && env.createSurface.surfaceProperties && env.createSurface.surfaceProperties.title) || 'Parsed result';
+    parts.push('<p class="frugal-status">parsed: ' + esc(title) + '</p>');
+    parts.push(renderGrounding(env && env._grounding));
+    parts.push('<button class="frugal-render-btn" id="frugal-render" type="button">Render it →</button>');
+    parts.push('<pre><code>' + esc(JSON.stringify(env, null, 2)) + '</code></pre>');
+    result.innerHTML = parts.join('\\n');
+  }}
+
+  function submitRequest(){{
+    var body;
+    if (activePane === 'url') {{
+      var u = urlInput.value.trim();
+      if (!u) return;
+      body = {{ url: u }};
+    }} else if (activePane === 'text') {{
+      var t = textInput.value.trim();
+      if (!t) return;
+      body = {{ text: t }};
+    }} else {{
+      if (!extractedFileText) {{ fileStatus.textContent = 'Choose a file first (or wait for extraction to finish).'; return; }}
+      body = {{ text: extractedFileText }};
+    }}
+    submit.disabled = true;
+    submit.textContent = 'Parsing…';
+    result.innerHTML = '<p class="frugal-empty">Parsing — this runs two model calls, may take a few seconds…</p>';
+    fetch('https://a2uicatalog.ai/api/frugal-parse', {{
+      method: 'POST',
+      headers: {{ 'Content-Type': 'application/json' }},
+      body: JSON.stringify(body)
+    }}).then(function(res){{
+      var status = res.status;
+      return res.json().catch(function(){{ return null; }}).then(function(data){{ render(data, status); }});
+    }}).catch(function(e){{
+      result.innerHTML = '<p class="frugal-status err">network error: ' + esc(e.message || e) + '</p>';
+    }}).finally(function(){{
+      submit.disabled = false;
+      submit.textContent = 'Parse it →';
+    }});
+  }}
+
+  form.addEventListener('submit', function(e){{
+    e.preventDefault();
+    submitRequest();
+  }});
+  result.addEventListener('click', function(e){{
+    var b = e.target.closest('#frugal-render');
+    if (!b || !lastEnvelope) return;
+    openInPlayground(lastEnvelope);
+  }});
+}})();
+  </script>
+{_cursor_glow_html()}
+</body>
+</html>"""
+
+
 def main():
     with open(SCHEMA) as f:
         raw = yaml.safe_load(f)
@@ -2224,6 +2526,11 @@ def main():
     try_dir.mkdir(parents=True, exist_ok=True)
     (try_dir / "index.html").write_text(render_try_page(len(unique)))
     print(f"✓ try-it page → {try_dir}/index.html")
+
+    frugal_dir = ROOT / "public" / "frugal-ai-ops"
+    frugal_dir.mkdir(parents=True, exist_ok=True)
+    (frugal_dir / "index.html").write_text(render_frugal_ai_ops_page())
+    print(f"✓ frugal-ai-ops page → {frugal_dir}/index.html")
     # Never truncate silently: say exactly which hub cards got a live preview
     # stage and why the rest fell back to the type-chip stage.
     print(f"hub previews: {_preview_stats['rendered']} rendered, "

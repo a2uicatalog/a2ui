@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (469 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (471 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -19380,6 +19380,86 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "flashcard_deck": {
+   "type": "object",
+   "description": "Tap-to-flip study cards cycling through question/answer pairs.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "flashcard_deck"
+      },
+      "cards": {
+       "description": "array (required) of {front, back}",
+       "type": "array"
+      },
+      "accent": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, hex, default \"#6366f1\")"
+      },
+      "label_front": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, default \"QUESTION\")"
+      },
+      "label_back": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, default \"ANSWER\")"
+      }
+     },
+     "required": [
+      "component",
+      "cards"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "brevet_timeline": {
+   "type": "object",
+   "description": "Vertical dated timeline of events for study/revision pages.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "brevet_timeline"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional)"
+      },
+      "events": {
+       "description": "array (required) of {date, title, desc}",
+       "type": "array"
+      },
+      "accent": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, hex, default \"#3b82f6\")"
+      }
+     },
+     "required": [
+      "component",
+      "events"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
     "google-apps-script-web",
     "mcp-apps"
    ]

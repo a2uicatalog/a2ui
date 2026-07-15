@@ -251,9 +251,13 @@ def extract_section(sect):
             cards = [{"front": front, "back": back} for m in matches if m for front, back in [m]]
         item["cards"] = cards or [{"front": title, "back": body}]
     elif kind == "drill":
+        # Field keys must be {question, answer} — both brevet_automatismes'
+        # and faq_accordion's renderers read q.question/q.answer (confirmed
+        # in atoms_brevet.gs / atom.gs); the previous {q, a} shorthand meant
+        # every drill row rendered blank in production, silently.
         rows = _md_table(body)
         data = rows[1:] if len(rows) > 1 else []
-        item["questions"] = [{"q": r[0], "a": r[1]} for r in data if len(r) >= 2]
+        item["questions"] = [{"question": r[0], "answer": r[1]} for r in data if len(r) >= 2]
         item["no_calculator"] = "no-calculator" in sect["classes"]
     elif kind == "method":
         # A numbered step's nested sub-bullets and inline code examples

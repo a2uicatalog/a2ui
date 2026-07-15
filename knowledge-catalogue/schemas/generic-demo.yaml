@@ -1,0 +1,32 @@
+"@context": "https://schema.org"
+"@type": "CreativeWork"
+
+id: generic-demo
+name: "Frugal AI Ops — Live Parse Demo"
+description: "Generic single-subject schema for arbitrary public documents (Frugal AI Ops demo). No required_competencies, no exam structure — just whatever the source actually contains."
+source: "user-submitted (URL, paste, or upload)"
+last_updated: "2026-07-14"
+
+render_strategy: subject_hub
+hub_tab_order: [general]
+
+subjects:
+  general:
+    label: "Overview"
+    hub_icon: "📄"
+    hub_color: "#0ea5e9"
+
+# piege has no entry here — the emitter hardcodes its downgrade-to-callout
+# template regardless of atom_type_map (see bom_emitter.py template_components,
+# "piege" kind); listed in dnb-2026.yaml purely as documentation, same here.
+atom_type_map:
+  concept: flashcard_deck
+  glossary: flashcard_deck
+  drill: faq_accordion       # faq_accordion accepts b.questions as an alias
+                             # for b.items and reads .question/.answer per
+                             # row — same {question, answer} shape as
+                             # brevet_automatismes, no template change needed
+  timeline: brevet_timeline
+  method: steps
+  key_takeaways: key_takeaways
+  piege: knowledge_check

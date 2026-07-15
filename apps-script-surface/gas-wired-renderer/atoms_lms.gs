@@ -610,7 +610,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
   var cards      = b.cards        || [];
   var accent     = b.accent       || '#6366f1';
   var lblFront   = b.label_front  || 'QUESTION';
-  var lblBack    = b.label_back   || 'RÉPONSE';
+  var lblBack    = b.label_back   || 'ANSWER';
   var uid        = 'fcd' + Math.random().toString(36).substr(2, 8);
 
   if (!cards.length) return '<p style="color:#64748b;font-style:italic;text-align:center;">No flashcards provided.</p>';

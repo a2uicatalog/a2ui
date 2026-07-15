@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Mini Sparkline Set — A2UI Atomic Catalog</title>
-  <meta name="description" content="Compact grid of multiple labeled sparklines for at-a-glance multi-metric comparison.">
+  <title>Flashcard Deck — A2UI Atomic Catalog</title>
+  <meta name="description" content="Tap-to-flip study cards cycling through question/answer pairs.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -114,110 +114,38 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / mini_sparkline_set
+    atoms / flashcard_deck
   </nav>
 
-  <h1>Mini Sparkline Set</h1>
-  <p class="desc">Compact grid of multiple labeled sparklines for at-a-glance multi-metric comparison.</p>
+  <h1>Flashcard Deck</h1>
+  <p class="desc">Tap-to-flip study cards cycling through question/answer pairs.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
-<div class="section">
-  <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>email</td><td>SVG sparklines may not render.</td></tr></tbody></table>
-</div>
 
   
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box"><div style="margin:1.5rem 0;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
-        <div style="padding:16px;background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.05);border-radius:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <span style="font-size:0.75rem;font-weight:600;color:#94a3b8;font-family:monospace;letter-spacing:0.02em;">Series A</span>
-            <span style="font-size:1.1rem;font-weight:800;color:#f1f5f9;font-family:monospace;">40</span>
-          </div>
-          <div style="width:100%;height:40px;">
-            <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-              <defs>
-                <linearGradient id="spark_grad_spark_140066198391616_0" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
-                  <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
-                </linearGradient>
-                <filter id="spark_glow_spark_140066198391616_0" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur stdDeviation="1.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140066198391616_0)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_140066198391616_0)" stroke-linecap="round" stroke-linejoin="round" />
-              <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#a855f7" stroke-width="2" />
-            </svg>
-          </div>
-        </div>
-        
-        <div style="padding:16px;background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.05);border-radius:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <span style="font-size:0.75rem;font-weight:600;color:#94a3b8;font-family:monospace;letter-spacing:0.02em;">Series B</span>
-            <span style="font-size:1.1rem;font-weight:800;color:#f1f5f9;font-family:monospace;">35</span>
-          </div>
-          <div style="width:100%;height:40px;">
-            <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-              <defs>
-                <linearGradient id="spark_grad_spark_140066198391616_1" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
-                  <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
-                </linearGradient>
-                <filter id="spark_glow_spark_140066198391616_1" x="-10%" y="-10%" width="120%" height="120%">
-                  <feGaussianBlur stdDeviation="1.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140066198391616_1)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_140066198391616_1)" stroke-linecap="round" stroke-linejoin="round" />
-              <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#10b981" stroke-width="2" />
-            </svg>
-          </div>
-        </div>
-        </div></div>
-</div>
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>series</td><td>array of {label, data}. Sparkline series.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>cards</td><td>array (required) of {front, back}</td><td>required</td></tr><tr><td>accent</td><td>string (optional, hex, default "#6366f1")</td><td>optional</td></tr><tr><td>label_front</td><td>string (optional, default "QUESTION")</td><td>optional</td></tr><tr><td>label_back</td><td>string (optional, default "ANSWER")</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "mini_sparkline_set",
-  "series": [
+  "type": "flashcard_deck",
+  "cards": [
     {
-      "label": "Series A",
-      "data": [
-        10,
-        20,
-        30,
-        40
-      ]
+      "title": "Card 1",
+      "body": "First card content."
     },
     {
-      "label": "Series B",
-      "data": [
-        5,
-        15,
-        25,
-        35
-      ]
+      "title": "Card 2",
+      "body": "Second card content."
     }
   ]
 }</code></pre>
@@ -226,21 +154,19 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:mini_sparkline_set",
-  "displayName": "Mini Sparkline Set",
+  "identifier": "urn:air:a2uicatalog.ai:atom:flashcard_deck",
+  "displayName": "Flashcard Deck",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/mini_sparkline_set",
+  "url": "https://a2uicatalog.ai/atoms/flashcard_deck",
   "capabilities": [
-    "web",
-    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "Compact grid of multiple labeled sparklines for at-a-glance multi-metric comparison.",
+  "description": "Tap-to-flip study cards cycling through question/answer pairs.",
   "representativeQueries": [
-    "show a compact grid of multiple labeled sparklines",
-    "compact grid of multiple labeled sparklines for at-a-glance multi-metric comparison.",
-    "render a mini sparkline set"
+    "show a flip-card deck of question answer pairs",
+    "tap-to-flip study cards cycling through question/answer pairs.",
+    "render a flashcard deck"
   ]
 }</code></pre>
   </div>

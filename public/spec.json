@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 469,
+ "atomCount": 471,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -14436,6 +14436,49 @@
     "filled": "filled icon variant (default true)",
     "accent": "default icon colour",
     "items": "array of strings or {text, icon?, sublabel?, color?}"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "flashcard_deck",
+   "description": "Tap-to-flip study cards cycling through question/answer pairs.",
+   "compact_description": "flip-card deck of question answer pairs",
+   "surfaces": {
+    "works_on": [
+     "google-apps-script-web",
+     "mcp-apps"
+    ]
+   },
+   "fields": {
+    "cards": "array (required) of {front, back}",
+    "accent": "string (optional, hex, default \"#6366f1\")",
+    "label_front": "string (optional, default \"QUESTION\")",
+    "label_back": "string (optional, default \"ANSWER\")"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "brevet_timeline",
+   "description": "Vertical dated timeline of events for study/revision pages.",
+   "compact_description": "dated vertical revision timeline",
+   "surfaces": {
+    "works_on": [
+     "google-apps-script-web",
+     "mcp-apps"
+    ]
+   },
+   "fields": {
+    "title": "string (optional)",
+    "events": "array (required) of {date, title, desc}",
+    "accent": "string (optional, hex, default \"#3b82f6\")"
    },
    "source": {
     "name": "a2uicatalog",

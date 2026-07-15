@@ -30,6 +30,7 @@ policy:
     # Everything under public/ must match one of these (or published_prompts)
     - public/index.html
     - public/try/**
+    - public/frugal-ai-ops/**
     - public/robots.txt
     - public/_headers
     - public/_redirects

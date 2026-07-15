@@ -10824,7 +10824,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: flashcard_deck
-  stage: preview
   description: Tap-to-flip study cards cycling through question/answer pairs.
   compact_description: flip-card deck of question answer pairs
   surfaces:
@@ -10835,7 +10834,7 @@ blocks:
     cards: array (required) of {front, back}
     accent: string (optional, hex, default "#6366f1")
     label_front: string (optional, default "QUESTION")
-    label_back: string (optional, default "RÉPONSE")
+    label_back: string (optional, default "ANSWER")
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -10861,7 +10860,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: brevet_timeline
-  stage: preview
   description: Vertical dated timeline of events for study/revision pages.
   compact_description: dated vertical revision timeline
   surfaces:

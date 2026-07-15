@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 469 atoms.** One line each:
+1. **Compact index — all 471 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -377,7 +377,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 469 atoms)
+### Compact index (all 471 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -846,6 +846,8 @@ does not exist.
 - `workspace_logo_grid` — labelled grid of Workspace logos
 - `icon_feature_grid` — feature grid with Material icons
 - `icon_checklist` — checklist items with Material icons
+- `flashcard_deck` — flip-card deck of question answer pairs
+- `brevet_timeline` — dated vertical revision timeline
 - `gdm_rocket_panel` — isometric rocket launch canvas animation, fixed half-viewport overlay
 - `math_block` — native MathML equation typeset with the math font family
 ## Payload envelope (renderer contract — not in the catalog)

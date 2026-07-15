@@ -314,10 +314,20 @@ def pdfjs_module_block():
     """MCP-Apps-surface-only, main-thread mode (no separate worker file):
     getDocument/getTextContent never touch canvas, so pdf.js's font/render
     machinery is unused — only the fake-worker text-extraction path runs.
-    THIRD-PARTY-NOTICES.md carries the vendoring exception for this file."""
+    THIRD-PARTY-NOTICES.md carries the vendoring exception for this file.
+
+    The vendored module already assigns a complete, correctly-aliased
+    globalThis.pdfjsLib itself (its own export list renames the internal
+    `version` binding) — re-declaring `window.pdfjsLib = {..., version:
+    version}` here referenced an identifier that doesn't exist as a bare
+    name in this module's scope. That ReferenceError aborted the whole
+    inline module script, so window._a2uiExtractPdfText was NEVER defined
+    either (it's declared after the broken line, same script block) —
+    file_upload's PDF branch has been silently broken since this shipped;
+    found live 2026-07-14 building a second page that inlines this same
+    block. Fixed by just using what the vendored file already set."""
     vendored = PDFJS_PATH.read_text()
     bridge = """
-window.pdfjsLib = { getDocument: getDocument, GlobalWorkerOptions: GlobalWorkerOptions, version: version };
 window._a2uiExtractPdfText = async function (file) {
   var buf = await file.arrayBuffer();
   var doc = await window.pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;

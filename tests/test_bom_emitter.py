@@ -21,9 +21,14 @@ sys.path.insert(0, str(ROOT / "knowledge-catalogue"))
 
 import bom_emitter  # noqa: E402
 import gen_mcp_apps_bundle as gen  # noqa: E402
+import yaml  # noqa: E402
 
 BOM = ROOT / "knowledge-catalogue" / "schemas" / "national-education" / "fr" / "dnb-2026.yaml"
 MATHS = ROOT / "knowledge-catalogue" / "brevet-2026-maths.curriculum.md"
+GENERIC_DEMO_BOM = ROOT / "knowledge-catalogue" / "schemas" / "generic-demo.yaml"
+FIXTURES_DIR = ROOT / "knowledge-catalogue" / "tests" / "fixtures"
+STABLE_ATOMS = {b["type"] for b in yaml.safe_load((ROOT / "atoms" / "schema.yaml").read_text())["blocks"]
+                if b.get("stage", "stable") == "stable"}
 
 
 @pytest.fixture(scope="module")
@@ -283,3 +288,127 @@ console.log(JSON.stringify({{len: html.length,
     assert not r["err"], "emitted envelope rendered with errors"
     assert all(r["markers"]), f"real content missing from render: {r['markers']}"
     assert r["len"] > 5000
+
+
+def test_drill_items_use_question_answer_keys():
+    """Regression test for a real production bug found while designing the
+    generic-demo schema: both brevet_automatismes and faq_accordion's
+    renderers read q.question/q.answer (confirmed in atoms_brevet.gs and
+    atom.gs), but extract_section used to emit {q, a} — every drill row
+    rendered blank in production, silently, with no error anywhere."""
+    body = "| Question | Answer |\n|---|---|\n| 7 × 8 | 56 |\n"
+    sect = {"title": "Drill", "kind": "drill", "classes": [],
+            "weight": "medium", "competency": "c1", "body": body}
+    item, _ = bom_emitter.extract_section(sect)
+    assert item["questions"] == [{"question": "7 × 8", "answer": "56"}]
+
+
+def test_generic_demo_schema_drives_stable_atoms_only():
+    """The Frugal AI Ops demo's output must never be the first place a
+    preview atom reaches the public — generic-demo.yaml's atom_type_map
+    should resolve only to atoms that are stage: stable (or unset, which
+    defaults to stable) in atoms/schema.yaml."""
+    curriculum = (
+        "---\n"
+        "id: generic-demo-test\n"
+        "subject: general\n"
+        "required_competencies: []\n"
+        "---\n"
+        "\n"
+        "<!-- competency: c1 -->\n"
+        "## A Concept {#concept}\n"
+        "Some concept body.\n"
+        "\n"
+        "<!-- competency: c2 -->\n"
+        "## Terms {#glossary}\n"
+        "- **Term**: a definition\n"
+        "\n"
+        "<!-- competency: c3 -->\n"
+        "## Quick Drill {#drill}\n"
+        "| Question | Answer |\n"
+        "|---|---|\n"
+        "| 2+2 | 4 |\n"
+        "\n"
+        "<!-- competency: c4 -->\n"
+        "## How To {#method}\n"
+        "1. Do this.\n"
+        "2. Then that.\n"
+        "\n"
+        "<!-- competency: c5 -->\n"
+        "## Wrap-up {#key_takeaways}\n"
+        "- Point one\n"
+        "- Point two\n"
+        "\n"
+        "<!-- competency: c6 -->\n"
+        "## History {#timeline}\n"
+        "### 2020 | Event one\n"
+        "It happened.\n"
+    )
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "generic.curriculum.md"
+        p.write_text(curriculum)
+        env = bom_emitter.emit(GENERIC_DEMO_BOM, [p])
+    used = {c["component"] for c in env["createSurface"]["components"]
+            if "component" in c}
+    non_atoms = {"Column", "Tabs"}  # layout primitives, not catalogue atoms
+    atoms_used = used - non_atoms
+    not_stable = atoms_used - STABLE_ATOMS
+    assert not not_stable, f"generic-demo.yaml drives non-stable atom(s): {not_stable}"
+    assert "faq_accordion" in atoms_used
+    assert "flashcard_deck" in atoms_used
+    assert "brevet_timeline" in atoms_used
+
+
+# ── shared fixtures (knowledge-catalogue/tests/fixtures/) ────────────────────────
+# These are the parity fixtures: full curriculum.md documents, not narrow
+# function-level snippets like the tests above. They exist so a future JS
+# port of bom_emitter can be run against the SAME files and deep-compared
+# against this Python reference's output — mirroring the existing
+# scripts/test_parser_parity.mjs pattern for parse_training_md.py /
+# training_parser.gs. Kept separate from the earlier per-bug unit tests
+# above (match_glossary_line, extract_section-on-a-bare-dict, etc.) since
+# those test internal regex functions with no JS-visible equivalent —
+# moving them to files would add no parity value.
+
+def test_quirky_fixture_parses_every_section():
+    """Locks in the combined-quirks fixture used for JS/Python parity:
+    fenced frontmatter, unquoted-colon scalar, three glossary bullet styles
+    plus a table-format glossary, a drill table, method continuation lines,
+    a shifted-heading-level timeline mixing pipe and date-only formats, and
+    a piège downgrade — all in one real-shaped document."""
+    front, groups = bom_emitter.parse_curriculum(FIXTURES_DIR / "quirky-real-world.curriculum.md")
+    assert front["id"] == "quirky-real-world-test"
+    assert front["source"] == "Wikipedia: Quirky Test Document (fetched 2026-07-14)"
+    sections = [s for g in groups for s in g["sections"]]
+    assert len(sections) == 8
+    kinds = [s["kind"] for s in sections]
+    assert kinds == ["concept", "glossary", "glossary", "drill", "method",
+                      "timeline", "key_takeaways", "concept"]
+    by_title = {s["title"]: s for s in sections}
+    glossary_a, _ = bom_emitter.extract_section(by_title["Glossary A"])
+    assert [c["front"] for c in glossary_a["cards"]] == ["Alpha", "Beta", "Gamma"]
+    glossary_b, _ = bom_emitter.extract_section(by_title["Glossary B"])
+    assert [c["front"] for c in glossary_b["cards"]] == ["Delta", "Epsilon"]
+    drill, _ = bom_emitter.extract_section(by_title["Quick Drill"])
+    assert drill["questions"] == [{"question": "6 × 7", "answer": "42"},
+                                   {"question": "9 × 9", "answer": "81"}]
+    method, _ = bom_emitter.extract_section(by_title["How It Works"])
+    assert len(method["items"]) == 2
+    assert "do_thing(1)" in method["items"][0]
+    timeline, _ = bom_emitter.extract_section(by_title["Shifted Timeline"])
+    assert [e["date"] for e in timeline["events"]] == ["2020", "2021"]
+    mistake, pieges = bom_emitter.extract_section(by_title["A Common Mistake"])
+    assert pieges == ["People often confuse X with Y — the correction is Z."]
+
+
+def test_minimal_clean_fixture_parses():
+    front, groups = bom_emitter.parse_curriculum(FIXTURES_DIR / "minimal-clean.curriculum.md")
+    assert front["id"] == "minimal-clean-test"
+    sections = [s for g in groups for s in g["sections"]]
+    assert len(sections) == 1
+    assert sections[0]["kind"] == "concept"
+
+
+def test_malformed_fixture_raises_missing_frontmatter():
+    with pytest.raises(ValueError, match="missing YAML frontmatter"):
+        bom_emitter.parse_curriculum(FIXTURES_DIR / "malformed-missing-frontmatter.curriculum.md")

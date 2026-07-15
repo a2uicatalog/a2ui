@@ -18,7 +18,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 469 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 471 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -8294,6 +8294,38 @@
         "show a checklist items with Material icons",
         "checklist where each item has a material symbol icon (not just a check mark). good for capability or requirements lists",
         "render a icon checklist"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:flashcard_deck",
+      "displayName": "Flashcard Deck",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/flashcard_deck",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Tap-to-flip study cards cycling through question/answer pairs.",
+      "representativeQueries": [
+        "show a flip-card deck of question answer pairs",
+        "tap-to-flip study cards cycling through question/answer pairs",
+        "render a flashcard deck"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:brevet_timeline",
+      "displayName": "Brevet Timeline",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/brevet_timeline",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Vertical dated timeline of events for study/revision pages.",
+      "representativeQueries": [
+        "show a dated vertical revision timeline",
+        "vertical dated timeline of events for study/revision pages",
+        "render a brevet timeline"
       ]
     },
     {
