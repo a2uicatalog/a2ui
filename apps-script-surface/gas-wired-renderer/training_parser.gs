@@ -106,6 +106,19 @@ function parseTrainingMd(text, knownAtoms) {
       current.lines.push(line);
     }
   });
+  // A model naturally wants to label the intro blurb its own heading
+  // ("# Introduction") even though the spec asks for unlabeled prose
+  // before the first real section — confirmed live 2026-07-15
+  // (@cf/meta/llama-3.3-70b-instruct-fp8-fast). Fold it into the intro
+  // slot rather than rejecting it as an unknown top-level section (E12).
+  // This is the one alias tolerated, not a general "any heading before
+  // Steps is fine" rule — a genuinely wrong section name must still fail
+  // E12, so only this exact, predictable heading name is special-cased.
+  if (sections.length && sections[0].title === 'Introduction') {
+    introLines = introLines.concat(sections[0].lines);
+    sections = sections.slice(1);
+  }
+
   var intro = introLines.map(function(l) { return l.trim(); })
                         .filter(function(l) { return l; }).join(' ');
 
@@ -171,12 +184,33 @@ function tpParseAttrs_(heading) {
   return { title: title, attrs: attrs };
 }
 
+// Real model output uses several separators/bolding conventions the spec
+// doesn't ask for — confirmed live 2026-07-15 (@cf/meta/llama-3.3-70b-
+// instruct-fp8-fast) on a real translated blog article: Concepts entries
+// used "**term**: definition" (colon, not the spec's em-dash), and
+// Troubleshooting entries used "**symptom**: fix" (bold + colon, not the
+// spec's plain "symptom :: fix"). Both were silently rejected (E08) despite
+// being unambiguous key/definition pairs a human would read as correct.
+// Accept " :: ", " — ", or a bare ":" as the separator, and accept the key
+// with or without ** bold, in EITHER direction of what the spec nominally
+// asks for each section — still requires ONE of these separators to be
+// present, so a genuinely malformed bullet with no separator at all still
+// raises E08.
+var TP_KEY_DESC_RE = /^(?:\*\*(.+?)\*\*|(.+?))\s*(?:::|—|:)\s*(.+)$/;
+
+function tpSplitKeyDesc_(line) {
+  var m = line.match(TP_KEY_DESC_RE);
+  if (!m) return null;
+  var key = m[1] !== undefined ? m[1] : m[2];
+  return [key.trim(), m[3].trim()];
+}
+
 function tpParseTermBullets_(secLines, err) {
   var items = [];
   secLines.forEach(function(l) {
     if (l.indexOf('- ') !== 0) return;
-    var m = l.slice(2).trim().match(/^\*\*(.+?)\*\*\s+—\s+(.*)$/);
-    if (m) items.push({ key: m[1], description: m[2] });
+    var m = tpSplitKeyDesc_(l.slice(2).trim());
+    if (m) items.push({ key: m[0], description: m[1] });
     else err('E08', "Concepts entry not in '**term** — definition' form: " + l.slice(0, 60));
   });
   return items;
@@ -186,13 +220,12 @@ function tpParseSepBullets_(secLines, err, section) {
   var items = [];
   secLines.forEach(function(l) {
     if (l.indexOf('- ') !== 0) return;
-    if (l.indexOf(' :: ') === -1) {
+    var m = tpSplitKeyDesc_(l.slice(2).trim());
+    if (!m) {
       err('E08', section + " entry without ' :: ' separator: " + l.slice(0, 60));
       return;
     }
-    var idx = l.slice(2).indexOf(' :: ');
-    var entry = l.slice(2);
-    items.push({ key: entry.slice(0, idx).trim(), description: entry.slice(idx + 4).trim() });
+    items.push({ key: m[0], description: m[1] });
   });
   return items;
 }
@@ -321,9 +354,9 @@ function tpParsePhaseElements_(pLines, stepLevel, atomSet, err, warn) {
       i++;
       while (i < pLines.length && pLines[i].indexOf('- ') === 0) {
         var entry = pLines[i].slice(2);
-        var sepIdx = entry.indexOf(' :: ');
-        if (sepIdx === -1) err('E08', "info-block entry without ' :: ' separator: " + entry.slice(0, 60));
-        else items.push({ key: entry.slice(0, sepIdx).trim(), description: entry.slice(sepIdx + 4).trim() });
+        var kd = tpSplitKeyDesc_(entry.trim());
+        if (!kd) err('E08', "info-block entry without ' :: ' separator: " + entry.slice(0, 60));
+        else items.push({ key: kd[0], description: kd[1] });
         i++;
       }
       elements.push({ kind: 'info', title: lm[1], items: items });

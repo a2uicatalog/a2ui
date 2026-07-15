@@ -165,6 +165,18 @@ def parse(text):
         else:
             current[2].append(line)
 
+    # A model naturally wants to label the intro blurb its own heading
+    # ("# Introduction") even though the spec asks for unlabeled prose
+    # before the first real section — confirmed live 2026-07-15
+    # (@cf/meta/llama-3.3-70b-instruct-fp8-fast). Fold it into the intro
+    # slot rather than rejecting it as an unknown top-level section (E12).
+    # This is the one alias tolerated, not a general "any heading before
+    # Steps is fine" rule — a genuinely wrong section name must still fail
+    # E12, so only this exact, predictable heading name is special-cased.
+    if sections and sections[0][0] == "Introduction":
+        intro_lines = intro_lines + sections[0][2]
+        sections = sections[1:]
+
     intro = " ".join(l.strip() for l in intro_lines if l.strip())
 
     section_names = [s[0] for s in sections]
@@ -211,14 +223,37 @@ def _parse_bullets(sec_lines):
     return [l[2:].strip() for l in sec_lines if l.startswith("- ")]
 
 
+# Real model output uses several separators/bolding conventions the spec
+# doesn't ask for — confirmed live 2026-07-15 (@cf/meta/llama-3.3-70b-
+# instruct-fp8-fast) on a real translated blog article: Concepts entries
+# used "**term**: definition" (colon, not the spec's em-dash), and
+# Troubleshooting entries used "**symptom**: fix" (bold + colon, not the
+# spec's plain "symptom :: fix"). Both were silently rejected (E08) despite
+# being unambiguous key/definition pairs a human would read as correct.
+# Accept " :: ", " — ", or a bare ":" as the separator, and accept the key
+# with or without ** bold, in EITHER direction of what the spec nominally
+# asks for each section — still requires ONE of these separators to be
+# present, so a genuinely malformed bullet with no separator at all still
+# raises E08.
+_KEY_DESC_RE = re.compile(r"^(?:\*\*(.+?)\*\*|(.+?))\s*(?:::|—|:)\s*(.+)$")
+
+
+def _split_key_desc(line):
+    m = _KEY_DESC_RE.match(line)
+    if not m:
+        return None
+    key = m.group(1) if m.group(1) is not None else m.group(2)
+    return key.strip(), m.group(3).strip()
+
+
 def _parse_term_bullets(sec_lines, lint):
     items = []
     for l in sec_lines:
         if not l.startswith("- "):
             continue
-        m = re.match(r"^\*\*(.+?)\*\*\s+—\s+(.*)$", l[2:].strip())
+        m = _split_key_desc(l[2:].strip())
         if m:
-            items.append({"key": m.group(1), "description": m.group(2)})
+            items.append({"key": m[0], "description": m[1]})
         else:
             lint.error("E08", f"Concepts entry not in '**term** — definition' form: {l[:60]}")
     return items
@@ -229,11 +264,11 @@ def _parse_sep_bullets(sec_lines, lint, section):
     for l in sec_lines:
         if not l.startswith("- "):
             continue
-        if " :: " not in l:
+        m = _split_key_desc(l[2:].strip())
+        if not m:
             lint.error("E08", f"{section} entry without ' :: ' separator: {l[:60]}")
             continue
-        key, _, desc = l[2:].partition(" :: ")
-        items.append({"key": key.strip(), "description": desc.strip()})
+        items.append({"key": m[0], "description": m[1]})
     return items
 
 
@@ -369,11 +404,11 @@ def _parse_phase_elements(p_lines, step_level, lint, known_atoms, phase):
             i += 1
             while i < len(p_lines) and p_lines[i].startswith("- "):
                 entry = p_lines[i][2:]
-                if " :: " not in entry:
+                m = _split_key_desc(entry.strip())
+                if not m:
                     lint.error("E08", f"info-block entry without ' :: ' separator: {entry[:60]}")
                 else:
-                    key, _, desc = entry.partition(" :: ")
-                    items.append({"key": key.strip(), "description": desc.strip()})
+                    items.append({"key": m[0], "description": m[1]})
                 i += 1
             elements.append({"kind": "info", "title": lm.group(1), "items": items})
             continue

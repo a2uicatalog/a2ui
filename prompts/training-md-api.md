@@ -51,6 +51,14 @@ followed by one sentence explaining what the source appears to be.
    confirm success (a version command, an expected URL, a file that should
    exist, expected output). Only omit verify: when the source genuinely
    provides no check — never invent one.
+6. EVERY step has EXACTLY ONE of cmd: or do: — NEVER both, NEVER neither.
+   If the source gives a literal command to type, use cmd: only. If the
+   source only describes a manual/UI action (click, download, choose a
+   menu item) with no literal command, use do: only — do NOT also add a
+   cmd: line paraphrasing that action. Example: a step that says "download
+   and install the LTS version from the website" has NO literal command,
+   so it is do: only (no cmd: line at all), even though a later step in
+   the same source DOES have a real command like `node -v`.
 
 ## File Structure
 
@@ -97,12 +105,20 @@ Bullet list of `- **term** — definition`. One term per bullet. Definitions
 come from the source, one to three sentences.
 
 ### # Steps (REQUIRED)
-Two shapes — pick ONE, never mix them in one file:
+Only these two shapes exist — pick ONE, never mix, and never invent a
+third:
 - Flat (short workflows): each ## heading is a step.
 - Phased (multi-stage workflows): each ## heading is a phase
   (## <n> · <title>, numbered from 0 or 1), and each ### heading inside it
   is a step. A phase heading may carry `nav="short label"`. Use phases when
   the source has distinct stages (setup vs. configuration vs. deployment).
+
+A step is ALWAYS a heading (## in Flat, ### in Phased) — NEVER a plain
+numbered list item like `1. **Title**` nested under a heading. If the
+source has natural stages ("Install Node.js", "Version check", "Install
+clasp"), each stage is a ## PHASE heading, and each actual action inside
+that stage becomes its own ### step heading — do not flatten a stage's
+numbered items into list bullets instead of headings.
 
 A step heading is `<n>. <title> {#command_step}` with <n> 1-based and
 sequential (within its phase, in phased shape), followed by a key-value

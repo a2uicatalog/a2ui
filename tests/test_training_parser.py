@@ -176,6 +176,53 @@ def test_e08_missing_separator():
     assert any(e.startswith("E08") for e in _errors(md))
 
 
+def test_concepts_and_troubleshooting_tolerate_colon_and_bold_separators():
+    """Real model output uses several separators/bolding conventions the
+    spec doesn't ask for — confirmed live 2026-07-15
+    (@cf/meta/llama-3.3-70b-instruct-fp8-fast) on a real translated blog
+    article: Concepts used '**term**: definition' (colon, not the spec's
+    em-dash), and Troubleshooting used '**symptom**: fix' (bold + colon,
+    not the spec's plain 'symptom :: fix'). Both were silently rejected
+    (E08) despite being unambiguous pairs a human would read as correct."""
+    md = (FRONTMATTER + "\n# Concepts\n- **GAS**: Google Apps Script\n"
+          + MINIMAL_STEPS
+          + "\n# Troubleshooting\n- **Permission error**: run with sudo\n")
+    payload, report = parse(md)
+    assert report["errors"] == [], report["errors"]
+    assert payload["layout"][1]["props"]["items"] == [{"key": "GAS", "description": "Google Apps Script"}]
+    troubleshooting = next(b for b in payload["layout"] if b["atom"] == "accordion_item"
+                           and b["props"]["header"] == "Permission error")
+    assert troubleshooting["props"]["content"] == "run with sudo"
+
+
+def test_no_separator_at_all_still_rejected_despite_wider_tolerance():
+    """The wider separator tolerance above must not swallow a genuinely
+    malformed bullet with no separator of any kind."""
+    md = FRONTMATTER + "\n# Concepts\n- just some prose, no separator\n" + MINIMAL_STEPS
+    assert any(e.startswith("E08") for e in _errors(md))
+
+
+def test_introduction_heading_folds_into_intro_paragraph():
+    """A model naturally wants to label the intro blurb its own heading
+    ('# Introduction') even though the spec asks for unlabeled prose before
+    the first real section — confirmed live 2026-07-15
+    (@cf/meta/llama-3.3-70b-instruct-fp8-fast). Must fold into the intro
+    slot rather than reject as an unknown top-level section (E12)."""
+    md = FRONTMATTER + "\n# Introduction\nThis explains what you'll accomplish.\n" + MINIMAL_STEPS
+    payload, report = parse(md)
+    assert report["errors"] == [], report["errors"]
+    assert payload["layout"][0]["atom"] == "subheading"
+    intro_block = next(b for b in payload["layout"] if b["id"] == "intro")
+    assert intro_block["props"]["text"] == "This explains what you'll accomplish."
+
+
+def test_unknown_non_introduction_heading_still_rejected():
+    """The Introduction alias must not become a general 'any heading before
+    Steps is fine' rule — a genuinely wrong section name must still fail E12."""
+    md = FRONTMATTER + "\n# Overview\nSome prose.\n" + MINIMAL_STEPS
+    assert any(e.startswith("E12") for e in _errors(md))
+
+
 def test_e09_forbidden_key():
     md = FRONTMATTER.replace("license: MIT", "license: MIT\nrender: full") + MINIMAL_STEPS
     assert any(e.startswith("E09") for e in _errors(md))
