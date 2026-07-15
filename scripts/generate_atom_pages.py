@@ -61,6 +61,11 @@ _EXAMPLE_BLOCKS = {
                   "<msqrt><mrow><msup><mi>b</mi><mn>2</mn></msup><mo>-</mo><mn>4</mn>"
                   "<mi>a</mi><mi>c</mi></mrow></msqrt></mrow><mrow><mn>2</mn><mi>a</mi></mrow></mfrac>",
         "caption": "Solutions of ax² + bx + c = 0", "number": "(1)"},
+    # All of schema_qr's fields are (optional), so example_payload()'s
+    # auto-generation skips every one of them and produces an empty
+    # {"type": "schema_qr"} preview — the QR renders nothing without a url.
+    "schema_qr": {"type": "schema_qr", "url": "https://a2uicatalog.ai",
+        "label": "Scan to open on any device", "size": 200},
     "content_tabs": {"type": "content_tabs", "accent": "#6366f1", "tabs": [
         {"label": "4 Players", "blocks": [
             {"type": "body", "text": "One court, three rounds — every player partners with every other exactly once."},

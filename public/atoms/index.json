@@ -3892,9 +3892,14 @@
   },
   {
    "type": "schema_qr",
-   "compact": "QR code for current or given URL",
+   "compact": "self-contained QR code, optionally with a live URL input",
    "surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
     "google-apps-script-web",
+    "google-apps-script-side-panel",
     "mcp-apps"
    ]
   },

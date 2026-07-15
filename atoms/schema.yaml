@@ -9228,17 +9228,48 @@ blocks:
     accent: string (optional, hex)
   source: *id007
 - type: schema_qr
-  description: QR code for the current page URL (or a fixed URL) via Google Charts
-    API
-  compact_description: QR code for current or given URL
+  description: Self-contained QR code for a given URL (or the current page
+    URL on JS-capable surfaces) — computed via the vendored QR-Code-generator
+    library (Project Nayuki, MIT) and rendered as inline SVG, zero network
+    calls. Optionally interactive — set is_interactive to add a text input
+    that live-regenerates the QR client-side as the visitor types.
+  compact_description: self-contained QR code, optionally with a live URL input
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-meet-stage
+    - email
+    - pdf
+    - google-apps-script-web
+    - google-apps-script-side-panel
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders the static QR only — live URL entry needs a JS-capable surface.
+    - surface: pdf
+      note: Renders the static QR only — live URL entry needs a JS-capable surface.
+    - surface: google-meet-stage
+      note: Renders the static QR only — live URL entry needs a JS-capable surface.
+    - surface: google-apps-script-side-panel
+      note: Renders the static QR only — live URL entry needs a JS-capable surface.
+    incompatible_on:
+    - surface: google-chat
+      reason: cardsV2 has no inline SVG or Canvas support (only a fetch-by-URL
+        image widget) — a self-contained, zero-network QR can't be expressed
+        as a card. See `sparkline` for the same constraint.
   fields:
-    url: string (optional, fixed URL — defaults to current page URL)
+    url: string (optional, fixed URL — defaults to the current page URL on
+      JS-capable surfaces; static surfaces render nothing if omitted)
     label: string (optional)
     sub: string (optional, sub-label below QR)
     size: number (optional, px, default 220)
-  source: *id007
+    is_interactive: boolean (optional, default false). Adds a text input that
+      live-regenerates the QR client-side. Only meaningful on web,
+      google-apps-script-web, and mcp-apps — see degraded_on.
+  source:
+    name: QR-Code-generator (Project Nayuki)
+    url: https://www.nayuki.io/page/qr-code-generator-library
+    license: MIT
 - type: take_away_card
   description: Bold single-insight pull-quote card designed to be screenshotted
   compact_description: bold screenshot-ready insight card

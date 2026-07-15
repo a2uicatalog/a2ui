@@ -6,12 +6,18 @@ documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a
 `source` field in `atoms/schema.yaml` identifying its origin.
 
-**One declared exception: PDF.js** (below) is vendored WHOLESALE, unmodified,
-not recompiled — a real binary-format parser is out of scope to reimplement.
-It ships only inside the MCP Apps bundle (`file_upload` atom's PDF branch),
-never fetched at runtime, so the CSP-clean/self-contained invariant
-(`mcpUiCsp()`, `resourceDomains: []`) holds even though this policy's general
-rule does not.
+**Two declared exceptions: PDF.js and QR-Code-generator** (below) are vendored
+WHOLESALE, unmodified, not recompiled — a real binary-format parser and a
+Reed-Solomon-error-correction-coded matrix encoder are both out of scope to
+reimplement (a subtly-wrong hand-rolled QR encoder would produce codes that
+*look* right but don't scan — not a visually-catchable bug, unlike this
+policy's other adaptations, which are simple CSS/HTML patterns). PDF.js ships
+only inside the MCP Apps bundle (`file_upload` atom's PDF branch), never
+fetched at runtime, so the CSP-clean/self-contained invariant (`mcpUiCsp()`,
+`resourceDomains: []`) holds even though this policy's general rule does not.
+QR-Code-generator ships inline with every atom render (Python for static
+surfaces, the same vendored algorithm ported to JS for GAS/MCP Apps) with no
+network calls either.
 
 ---
 
@@ -25,6 +31,25 @@ rule does not.
   (legacy build, unmodified, main-thread mode — no separate worker file
   inlined; see `LICENSE` alongside it)
 - **Used by:** the `file_upload` atom's PDF branch (MCP Apps surface only)
+
+---
+
+## QR-Code-generator (Project Nayuki)
+
+- **Project:** QR-Code-generator — QR Code matrix encoder (Reed-Solomon error
+  correction, mask pattern scoring, full symbol construction)
+- **Website:** https://www.nayuki.io/page/qr-code-generator-library
+- **License:** MIT License
+- **Copyright:** Copyright (c) Project Nayuki
+- **Vendored as:** `renderers/vendor/qrcodegen.py` (Python, native
+  implementation, used server-side for the static SVG render on every
+  surface) and `apps-script-surface/gas-wired-renderer/vendor/qrcodegen/qrcodegen.js`
+  (official compiled-from-TypeScript ES6 release build, unmodified, used
+  client-side for the `schema_qr` atom's interactive mode; see `LICENSE`
+  alongside it)
+- **Used by:** the `schema_qr` atom (all surfaces for the static render;
+  `web`/`google-apps-script-web`/`mcp-apps` additionally for
+  `is_interactive: true`)
 
 ---
 

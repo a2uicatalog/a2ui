@@ -7110,13 +7110,18 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/schema_qr",
       "capabilities": [
+        "web",
+        "google-meet-stage",
+        "email",
+        "pdf",
         "google-apps-script-web",
+        "google-apps-script-side-panel",
         "mcp-apps"
       ],
-      "description": "QR code for the current page URL (or a fixed URL) via Google Charts API",
+      "description": "Self-contained QR code for a given URL (or the current page URL on JS-capable surfaces) \u2014 computed via the vendored QR-Code-generator library (Project Nayuki, MIT) and rendered as inline SVG, zero network calls. Optionally interactive \u2014 set is_interactive to add a text input that live-regenerates the QR client-side as the visitor types.",
       "representativeQueries": [
-        "show a QR code for current or given URL",
-        "qr code for the current page url (or a fixed url) via google charts api",
+        "show a self-contained QR code, optionally with a live URL input",
+        "self-contained qr code for a given url (or the current page url on js-capable surfaces) \u2014 computed via the vendored",
         "render a schema qr"
       ]
     },

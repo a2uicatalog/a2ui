@@ -95,30 +95,76 @@ _RENDERERS['url_anatomy'] = function(b) {
     + '})();<\/script>';
 };
 
-// schema_qr — generates a QR code for the current page URL via Google Charts API
-_RENDERERS['schema_qr'] = function(b) {
-  var uid   = Math.random().toString(36).substr(2, 6);
-  var size  = parseInt(b.size || 220, 10);
-  var label = b.label || 'Scan to open this page on any device';
-  var url   = b.url || '';
-  var sub   = b.sub || '';
-  if (url) {
-    var src = 'https://chart.googleapis.com/chart?chs=' + size + 'x' + size + '&cht=qr&chl=' + encodeURIComponent(url) + '&choe=UTF-8&chld=M|2';
-    return '<div style="text-align:center;padding:24px 16px;">'
-      + '<img src="' + src + '" width="' + size + '" height="' + size + '" style="border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">'
-      + '<div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-top:12px;">' + _esc(label) + '</div>'
-      + (sub ? '<div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">' + _esc(sub) + '</div>' : '')
-      + '</div>';
+// schema_qr — self-contained QR code via the vendored QR-Code-generator
+// library (Project Nayuki, MIT — vendor/qrcodegen/qrcodegen.js, loaded once
+// per page as a shared partial, not re-emitted per atom instance). Replaces
+// the old chart.googleapis.com dependency (a deprecated Google endpoint,
+// and never worked offline/in email regardless).
+function _a2uiQrSvg(qr, size) {
+  var n = qr.size, border = 4, dim = n + border * 2, d = '';
+  for (var y = 0; y < n; y++) {
+    for (var x = 0; x < n; x++) {
+      if (qr.getModule(x, y)) d += 'M' + (x + border) + ',' + (y + border) + 'h1v1h-1z';
+    }
   }
-  return '<div id="sqr-' + uid + '" style="text-align:center;padding:24px 16px;">'
-    + '<img id="sqr-img-' + uid + '" width="' + size + '" height="' + size + '" style="border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">'
-    + '<div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-top:12px;">' + _esc(label) + '</div>'
+  return '<svg viewBox="0 0 ' + dim + ' ' + dim + '" width="' + size + '" height="' + size + '" '
+    + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
+    + '<rect width="' + dim + '" height="' + dim + '" fill="#fff"/>'
+    + '<path d="' + d + '" fill="#000"/></svg>';
+}
+
+_RENDERERS['schema_qr'] = function(b) {
+  var uid           = Math.random().toString(36).substr(2, 6);
+  var size          = parseInt(b.size || 220, 10);
+  var label         = b.label || '';
+  var url           = b.url || '';
+  var sub           = b.sub || '';
+  var isInteractive = !!b.is_interactive;
+
+  // Non-interactive + a url given: render the SVG server-side right now,
+  // no script needed at all. Non-interactive + no url: falls back to the
+  // current page URL (the one context where that's meaningful), needs a
+  // tiny one-shot script. Interactive: always needs the script (live input).
+  var staticSvg = (!isInteractive && url && typeof qrcodegen !== 'undefined')
+    ? _a2uiQrSvg(qrcodegen.QrCode.encodeText(url, qrcodegen.QrCode.Ecc.MEDIUM), size)
+    : '';
+  var needsScript = isInteractive || !url;
+
+  var inputHtml = isInteractive
+    ? '<input type="text" id="qr-in-' + uid + '" placeholder="Enter a URL…" value="' + _esc(url) + '" '
+      + 'style="width:100%;max-width:' + size + 'px;margin:0.5rem auto 0;display:block;padding:6px 10px;'
+      + 'border:1px solid #d1d5db;border-radius:6px;font-size:0.85rem;box-sizing:border-box;">'
+    : '';
+
+  var scriptHtml = '';
+  if (needsScript) {
+    scriptHtml = '<script>(function(){'
+      + 'if(typeof qrcodegen==="undefined")return;'
+      + 'var wrap=document.getElementById("qr-svg-' + uid + '");'
+      + 'function render(text){'
+      + 'if(!text){wrap.innerHTML="";return;}'
+      + 'var qr=qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM);'
+      + 'var n=qr.size,border=4,dim=n+border*2,d="";'
+      + 'for(var y=0;y<n;y++)for(var x=0;x<n;x++)if(qr.getModule(x,y))d+="M"+(x+border)+","+(y+border)+"h1v1h-1z";'
+      + 'wrap.innerHTML=\'<svg viewBox="0 0 \'+dim+\' \'+dim+\'" width="' + size + '" height="' + size + '" '
+      + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
+      + '<rect width="\'+dim+\'" height="\'+dim+\'" fill="#fff"/><path d="\'+d+\'" fill="#000"/></svg>\';'
+      + '}'
+      + (isInteractive
+          ? 'var input=document.getElementById("qr-in-' + uid + '");'
+            + 'input.addEventListener("input",function(){render(input.value.trim());});'
+            + 'render(input.value.trim()||window.location.href);'
+          : 'render(' + JSON.stringify(url) + '||window.location.href);')
+      + '})();<\/script>';
+  }
+
+  return '<div style="text-align:center;padding:24px 16px;">'
+    + '<div id="qr-svg-' + uid + '">' + staticSvg + '</div>'
+    + inputHtml
+    + (label ? '<div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-top:12px;">' + _esc(label) + '</div>' : '')
     + (sub ? '<div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">' + _esc(sub) + '</div>' : '')
     + '</div>'
-    + '<script>(function(){'
-    + 'var u=encodeURIComponent(window.location.href);'
-    + 'document.getElementById("sqr-img-' + uid + '").src="https://chart.googleapis.com/chart?chs=' + size + 'x' + size + '&cht=qr&chl="+u+"&choe=UTF-8&chld=M|2";'
-    + '})();<\/script>';
+    + scriptHtml;
 };
 
 // take_away_card — bold single-insight card, designed to be screenshot-able

@@ -13108,6 +13108,9 @@
           },
           "size": {
             "type": "number"
+          },
+          "is_interactive": {
+            "type": "boolean"
           }
         },
         "required": [

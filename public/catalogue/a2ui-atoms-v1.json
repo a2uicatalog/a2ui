@@ -16365,7 +16365,7 @@
   },
   "schema_qr": {
    "type": "object",
-   "description": "QR code for the current page URL (or a fixed URL) via Google Charts API",
+   "description": "Self-contained QR code for a given URL (or the current page URL on JS-capable surfaces) — computed via the vendored QR-Code-generator library (Project Nayuki, MIT) and rendered as inline SVG, zero network calls. Optionally interactive — set is_interactive to add a text input that live-regenerates the QR client-side as the visitor types.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -16378,7 +16378,7 @@
       },
       "url": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, fixed URL — defaults to current page URL)"
+       "description": "string (optional, fixed URL — defaults to the current page URL on JS-capable surfaces; static surfaces render nothing if omitted)"
       },
       "label": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -16391,6 +16391,10 @@
       "size": {
        "description": "number (optional, px, default 220)",
        "type": "number"
+      },
+      "is_interactive": {
+       "description": "boolean (optional, default false). Adds a text input that live-regenerates the QR client-side. Only meaningful on web, google-apps-script-web, and mcp-apps — see degraded_on.",
+       "type": "boolean"
       }
      },
      "required": [
@@ -16400,7 +16404,12 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "email",
+    "pdf",
     "google-apps-script-web",
+    "google-apps-script-side-panel",
     "mcp-apps"
    ]
   },

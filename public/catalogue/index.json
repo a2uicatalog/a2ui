@@ -2024,7 +2024,7 @@
         },
         {
           "type": "schema_qr",
-          "description": "QR code for current or given URL"
+          "description": "self-contained QR code, optionally with a live URL input"
         },
         {
           "type": "surface_map",

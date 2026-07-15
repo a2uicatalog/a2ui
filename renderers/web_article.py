@@ -9,6 +9,7 @@ No markdown conversion. No Quill. No stripping surprises.
 from typing import List, Dict, Any
 import re, base64, urllib.request, urllib.error, json as _json
 from datetime import datetime, timezone
+from pathlib import Path
 import markdown as _md
 
 
@@ -19625,22 +19626,121 @@ def _render_schema_reveal(b: dict) -> str:
 _RENDERERS["schema_reveal"] = _render_schema_reveal
 
 
+_QRCODEGEN_PY_PATH = str(Path(__file__).parent / "vendor" / "qrcodegen.py")
+
+
+def _load_qrcodegen_module():
+    """Load the vendored encoder by file path rather than via a
+    `renderers.vendor.qrcodegen` package-qualified import — this module is
+    loaded both as `renderers.web_article` (normal package import) and as a
+    bare top-level `web_article` (scripts/generate_atom_pages.py inserts
+    ROOT/renderers onto sys.path and imports it directly, without ROOT
+    itself on sys.path), and only the first case can resolve a
+    package-qualified import of `renderers.vendor...`. A direct file-path
+    load works identically in both."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_a2ui_vendored_qrcodegen", _QRCODEGEN_PY_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_qrcodegen_module = None
+
+
+def _qr_svg(data: str, px: int) -> str:
+    """Self-contained inline SVG QR code via the vendored QR-Code-generator
+    library (Project Nayuki, MIT — renderers/vendor/qrcodegen.py). One
+    combined <path> for all dark modules (not one <rect> per module) to
+    keep markup size reasonable on larger QR codes."""
+    if not data:
+        return ""
+    global _qrcodegen_module
+    if _qrcodegen_module is None:
+        _qrcodegen_module = _load_qrcodegen_module()
+    QrCode = _qrcodegen_module.QrCode
+    qr = QrCode.encode_text(data, QrCode.Ecc.MEDIUM)
+    n = qr.get_size()
+    border = 4  # quiet-zone modules, per QR spec's recommended minimum
+    dim = n + border * 2
+    path = "".join(
+        f"M{x + border},{y + border}h1v1h-1z"
+        for y in range(n) for x in range(n) if qr.get_module(x, y)
+    )
+    return (f'<svg viewBox="0 0 {dim} {dim}" width="{px}" height="{px}" '
+            f'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
+            f'<rect width="{dim}" height="{dim}" fill="#fff"/>'
+            f'<path d="{path}" fill="#000"/>'
+            f'</svg>')
+
+
+_QRCODEGEN_JS_PATH = __file__.rsplit("/renderers/", 1)[0] + \
+    "/apps-script-surface/gas-wired-renderer/vendor/qrcodegen/qrcodegen.js"
+
+
+def _qr_interactive_script(uid: str, size: int) -> str:
+    """Inline the SAME vendored JS QR encoder used by the GAS/MCP Apps
+    surface (single source of truth — read directly rather than keeping a
+    second copy that could drift) so the input can live-regenerate the SVG
+    client-side. Only emitted when is_interactive is set; the `web` surface
+    (served by this renderer) already has real inline-script precedent —
+    see confetti_burst."""
+    try:
+        with open(_QRCODEGEN_JS_PATH, encoding="utf-8") as f:
+            lib = f.read()
+    except OSError:
+        return ""
+    return (
+        "<script>" + lib.replace("</script", "<\\/script") + "</script>"
+        + "<script>(function(){"
+        + f'var input=document.getElementById("qr-in-{uid}");'
+        + f'var wrap=document.getElementById("qr-svg-{uid}");'
+        + "function render(text){"
+        + "if(!text){wrap.innerHTML='';return;}"
+        + "var qr=qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM);"
+        + "var n=qr.size,border=4,dim=n+border*2,d='';"
+        + "for(var y=0;y<n;y++)for(var x=0;x<n;x++)if(qr.getModule(x,y))"
+        + "d+='M'+(x+border)+','+(y+border)+'h1v1h-1z';"
+        + f'wrap.innerHTML=\'<svg viewBox="0 0 \'+dim+\' \'+dim+\'" width="{size}" height="{size}" '
+        + 'xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img">'
+        + "<rect width=\"'+dim+'\" height=\"'+dim+'\" fill=\"#fff\"/><path d=\"'+d+'\" fill=\"#000\"/></svg>';"
+        + "}"
+        + "input.addEventListener('input',function(){render(input.value.trim());});"
+        + "render(input.value.trim());"
+        + "})();</script>"
+    )
+
+
 def _render_schema_qr(b: dict) -> str:
-    url = _esc(b.get('url', ''))
+    url = b.get('url', '')
     label = _esc(b.get('label', ''))
     sub = _esc(b.get('sub', ''))
-    size = int(b.get('size', 160))
-    qr_src = ('https://api.qrserver.com/v1/create-qr-code/?size=' + str(size) + 'x' + str(size)
-              + '&data=' + url) if url else ''
+    size = int(b.get('size', 220))
+    is_interactive = bool(b.get('is_interactive', False))
+    uid = f"{abs(hash((url, label, sub, size))) % 100000:05x}"
+
+    qr_html = _qr_svg(url, size) or (
+        '<div style="width:' + str(size) + 'px;height:' + str(size) + 'px;margin:0 auto;'
+        'border:1px dashed #d1d5db;border-radius:8px;display:flex;align-items:center;'
+        'justify-content:center;font-size:0.78rem;color:#9ca3af;">QR</div>')
+
+    input_html = ""
+    script_html = ""
+    if is_interactive:
+        input_html = (
+            '<input type="text" placeholder="Enter a URL…" value="' + _esc(url) + '" '
+            f'id="qr-in-{uid}" style="width:100%;max-width:{size}px;margin:0.5rem auto 0;display:block;'
+            'padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:0.85rem;box-sizing:border-box;">'
+        )
+        script_html = _qr_interactive_script(uid, size)
+
     return ('<div style="text-align:center;margin:1rem 0;">'
-            + ('<img src="' + qr_src + '" alt="QR" width="' + str(size) + '" height="' + str(size)
-               + '" style="border-radius:8px;border:1px solid #e5e7eb;">' if qr_src else
-               '<div style="width:' + str(size) + 'px;height:' + str(size) + 'px;margin:0 auto;'
-               'border:1px dashed #d1d5db;border-radius:8px;display:flex;align-items:center;'
-               'justify-content:center;font-size:0.78rem;color:#9ca3af;">QR</div>')
+            + f'<div id="qr-svg-{uid}">{qr_html}</div>'
+            + input_html
             + ('<div style="font-size:0.875rem;font-weight:600;color:#374151;margin-top:8px;">' + label + '</div>' if label else '')
             + ('<div style="font-size:0.78rem;color:#9ca3af;">' + sub + '</div>' if sub else '')
-            + '</div>')
+            + '</div>'
+            + script_html)
 _RENDERERS["schema_qr"] = _render_schema_qr
 
 
