@@ -43,6 +43,22 @@ function parseTrainingMd(text, knownAtoms) {
   // --- frontmatter ---------------------------------------------------------
   var fmMatch = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!fmMatch) {
+    // A real model can drop the closing --- delimiter entirely (confirmed
+    // live 2026-07-15, @cf/meta/llama-3.3-70b-instruct-fp8-fast: five clean
+    // frontmatter lines, then straight into "# Steps" with no closing ---).
+    // Tolerate it ONLY when every non-blank line up to the first top-level
+    // heading looks like a clean "key: value" line — otherwise fall through
+    // to the strict error rather than silently swallowing unrelated prose.
+    var loose = text.match(/^---\n([\s\S]*?)\n(?=# [^#\n])/);
+    if (loose) {
+      var candidateLines = loose[1].split('\n');
+      var allKv = candidateLines.every(function(l) {
+        return !l.trim() || /^[A-Za-z_][A-Za-z0-9_]*:\s*.*$/.test(l);
+      });
+      if (allKv) fmMatch = loose;
+    }
+  }
+  if (!fmMatch) {
     err('E01', 'missing or malformed frontmatter (--- block). If this was copied from Gemini\'s rendered reply, use the copy button / raw view — rendered copies collapse the frontmatter into one line');
     return { payload: null, report: tpReport_(lint, [], 0) };
   }

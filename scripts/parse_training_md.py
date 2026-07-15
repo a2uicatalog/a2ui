@@ -108,6 +108,23 @@ def parse(text):
     # --- frontmatter -----------------------------------------------------
     fm_match = re.match(r"\A---\n(.*?)\n---\n", text, re.DOTALL)
     if not fm_match:
+        # A real model can drop the closing --- delimiter entirely (confirmed
+        # live 2026-07-15, @cf/meta/llama-3.3-70b-instruct-fp8-fast: five
+        # clean frontmatter lines, then straight into "# Steps" with no
+        # closing ---). Tolerate it ONLY when the content between the
+        # opening --- and the first top-level heading parses as clean,
+        # non-empty YAML — if it doesn't, fall through to the strict error
+        # below rather than silently swallowing unrelated prose into
+        # "frontmatter".
+        loose = re.match(r"\A---\n(.*?)\n(?=# [^#\n])", text, re.DOTALL)
+        if loose:
+            try:
+                candidate = yaml.safe_load(loose.group(1))
+                if isinstance(candidate, dict) and candidate:
+                    fm_match = loose
+            except yaml.YAMLError:
+                pass
+    if not fm_match:
         lint.error("E01", "missing or malformed frontmatter (--- block). "
                    "If this was copied from Gemini's rendered reply, use the "
                    "copy button / raw view — rendered copies collapse the "

@@ -111,6 +111,32 @@ def test_e01_missing_frontmatter():
     assert any(e.startswith("E01") for e in _errors("# Steps\n"))
 
 
+def test_tolerates_missing_closing_frontmatter_delimiter():
+    """A real model can drop the closing --- delimiter entirely — confirmed
+    live 2026-07-15 (@cf/meta/llama-3.3-70b-instruct-fp8-fast): five clean
+    frontmatter lines, then straight into '# Steps' with no closing ---.
+    A human would read this as obviously well-formed; the strict two-
+    delimiter regex used to hard-reject it with E01. Tolerated ONLY when
+    the gap between the opening --- and the first heading parses as clean,
+    non-empty frontmatter — never by swallowing arbitrary prose."""
+    md = ('---\nid: install-ripgrep\ndomain: training\n'
+          'name: "Installing ripgrep"\nsource: "test"\nlicense: "Unknown — verify before publishing"\n\n'
+          '# Steps\n## 1. Install ripgrep\ncmd: sudo apt install ripgrep\nverify: rg --version\n')
+    payload, report = parse(md)
+    assert report["errors"] == [], report["errors"]
+    assert payload is not None
+    assert payload["title"] == "Installing ripgrep"
+    assert payload["layout"][1]["props"]["command"] == "sudo apt install ripgrep"
+
+
+def test_missing_closing_delimiter_still_rejected_when_gap_is_not_clean_frontmatter():
+    """The tolerance above must not swallow genuine prose or a malformed
+    frontmatter block just because a heading eventually follows — only a
+    gap that parses as clean, non-empty frontmatter is accepted."""
+    md = "---\nThis is not frontmatter at all, just a stray opening delimiter.\n\n# Steps\n## 1. A\ncmd: x\n"
+    assert any(e.startswith("E01") for e in _errors(md))
+
+
 def test_e02_missing_required_key():
     md = "---\nid: t\ndomain: training\n---\n" + MINIMAL_STEPS
     errs = _errors(md)
