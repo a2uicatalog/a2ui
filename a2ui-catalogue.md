@@ -403,7 +403,7 @@
 | `surface_unlocked` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `schema_reveal` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `url_anatomy` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
-| `schema_qr` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `schema_qr` | ✅ | — | — | ⚠️ | ⚠️ | ✅ | [QR-Code-generator (Project Nayuki)](https://www.nayuki.io/page/qr-code-generator-library) |
 | `take_away_card` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `next_step_strip` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `copy_prompt` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
