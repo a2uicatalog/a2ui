@@ -2251,6 +2251,10 @@ FRUGAL_PAGE_CSS = """
 <style>
 .frugal-intro{margin:0 0 28px}
 .frugal-intro p{margin:0 0 12px}
+.frugal-template-row{display:flex;gap:8px;margin:0 0 24px;flex-wrap:wrap}
+.frugal-template-pill{font:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s}
+.frugal-template-pill.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft-bg)}
+.frugal-template-pill:hover{border-color:var(--accent);color:var(--accent)}
 .frugal-tabs{display:flex;gap:6px;margin:20px 0 14px;border-bottom:1px solid var(--border)}
 .frugal-tab{font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);background:none;border:none;padding:10px 4px;margin-right:18px;cursor:pointer;border-bottom:2px solid transparent}
 .frugal-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -2317,6 +2321,11 @@ def render_frugal_ai_ops_page():
   browser — the file itself is never uploaded, only the extracted text is sent).</p>
   </div>
 
+  <div class="frugal-template-row" id="frugal-template-row">
+    <button class="frugal-template-pill active" type="button" data-template="learning_hub">Study hub</button>
+    <button class="frugal-template-pill" type="button" data-template="it_training">IT runbook</button>
+  </div>
+
   <div class="frugal-tabs" id="frugal-tabs">
     <button class="frugal-tab active" type="button" data-pane="url">URL</button>
     <button class="frugal-tab" type="button" data-pane="text">Paste text</button>
@@ -2357,6 +2366,7 @@ def render_frugal_ai_ops_page():
   </script>
   <script>
 (function(){{
+  var templateRow = document.getElementById('frugal-template-row');
   var tabs = document.getElementById('frugal-tabs');
   var panes = document.querySelectorAll('.frugal-pane');
   var form = document.getElementById('frugal-form');
@@ -2368,10 +2378,18 @@ def render_frugal_ai_ops_page():
   var renderBtn = document.getElementById('frugal-render');
   var result = document.getElementById('frugal-result');
   var activePane = 'url';
+  var selectedTemplate = 'learning_hub';
   var extractedFileText = null;
   var lastEnvelope = null;
 
   function esc(s){{ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }}
+
+  templateRow.addEventListener('click', function(e){{
+    var b = e.target.closest('.frugal-template-pill');
+    if (!b) return;
+    selectedTemplate = b.getAttribute('data-template');
+    document.querySelectorAll('.frugal-template-pill').forEach(function(t){{ t.classList.toggle('active', t === b); }});
+  }});
 
   tabs.addEventListener('click', function(e){{
     var b = e.target.closest('.frugal-tab');
@@ -2487,7 +2505,8 @@ def render_frugal_ai_ops_page():
     lastEnvelope = env;
     renderBtn.disabled = false;
     var parts = [];
-    var title = (env && env.createSurface && env.createSurface.surfaceProperties && env.createSurface.surfaceProperties.title) || 'Parsed result';
+    var title = (env && env.createSurface && env.createSurface.surfaceProperties && env.createSurface.surfaceProperties.title)
+             || (env && env.title) || 'Parsed result';
     parts.push('<p class="frugal-status">parsed: ' + esc(title) + '</p>');
     if (env && env._truncated) {{
       parts.push('<p class="frugal-status">' + esc(env._truncated.note) + '</p>');
@@ -2511,6 +2530,7 @@ def render_frugal_ai_ops_page():
       if (!extractedFileText) {{ fileStatus.textContent = 'Choose a file first (or wait for extraction to finish).'; return; }}
       body = {{ text: extractedFileText }};
     }}
+    body.template = selectedTemplate;
     submit.disabled = true;
     submit.textContent = 'Parsing…';
     renderBtn.disabled = true;

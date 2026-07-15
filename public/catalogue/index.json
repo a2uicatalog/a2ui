@@ -617,7 +617,7 @@
       "title": "General UI & content",
       "alwaysResolved": false,
       "whenToUse": "Use for general content/UI beyond the base primitives — richer cards, media, tags, comparison and steppers not in core.",
-      "atomCount": 72,
+      "atomCount": 73,
       "atoms": [
         {
           "type": "action_required_card",
@@ -782,6 +782,10 @@
         {
           "type": "inline_feedback_message",
           "description": "inline success error or warning message for validation feedback or hints."
+        },
+        {
+          "type": "jump_nav",
+          "description": "anchor pill buttons scrolling to page sections"
         },
         {
           "type": "lozenge",
@@ -2042,7 +2046,7 @@
       "title": "Status & ops",
       "alwaysResolved": false,
       "whenToUse": "Use for operational dashboards — status/SLA, Jira, sprint boards, notifications, changelogs, live polls and votes.",
-      "atomCount": 39,
+      "atomCount": 40,
       "atoms": [
         {
           "type": "api_param_table",
@@ -2063,6 +2067,10 @@
         {
           "type": "command_palette",
           "description": "keyboard-driven command palette with shortcut hints"
+        },
+        {
+          "type": "command_step",
+          "description": "copyable command with completion checkbox"
         },
         {
           "type": "countdown_ring",

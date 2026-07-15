@@ -10740,7 +10740,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: jump_nav
-  stage: preview
   description: Horizontal strip of pill buttons that smooth-scroll to other blocks on the page
     by id.
   compact_description: anchor pill buttons scrolling to page sections
@@ -10755,7 +10754,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: command_step
-  stage: preview
   description: Terminal-styled command with copy button and a done-checkbox. Wire done/setDone
     to a ValueStore to track completion (used by training runbooks for progress).
   compact_description: copyable command with completion checkbox

@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 471,
+ "atomCount": 473,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -14436,6 +14436,46 @@
     "filled": "filled icon variant (default true)",
     "accent": "default icon colour",
     "items": "array of strings or {text, icon?, sublabel?, color?}"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "jump_nav",
+   "description": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.",
+   "compact_description": "anchor pill buttons scrolling to page sections",
+   "surfaces": {
+    "works_on": [
+     "google-apps-script-web",
+     "mcp-apps"
+    ]
+   },
+   "fields": {
+    "links": "array (required) of {label, target (block id to scroll to)}"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "command_step",
+   "description": "Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).",
+   "compact_description": "copyable command with completion checkbox",
+   "surfaces": {
+    "works_on": [
+     "google-apps-script-web",
+     "mcp-apps"
+    ]
+   },
+   "fields": {
+    "label": "string (optional, step title above the command)",
+    "command": "string (required, the shell command; empty for manual steps)",
+    "hint": "string (optional, small helper line under the checkbox)"
    },
    "source": {
     "name": "a2uicatalog",

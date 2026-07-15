@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Animated Counter — A2UI Atomic Catalog</title>
-  <meta name="description" content="CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional prefix/suffix, and color.">
+  <title>Jump Nav — A2UI Atomic Catalog</title>
+  <meta name="description" content="Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -114,58 +114,55 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / animated_counter
+    atoms / jump_nav
   </nav>
 
-  <h1>Animated Counter</h1>
-  <p class="desc">CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional prefix/suffix, and color.</p>
+  <h1>Jump Nav</h1>
+  <p class="desc">Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
-<div class="section">
-  <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Renders as static final values; no animation</td></tr><tr><td>google-meet-stage</td><td>Animation plays; @property support varies by browser version</td></tr></tbody></table>
-</div>
 
   
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box"><div style="text-align:center;padding:16px;"><div id="f2dcab97" style="font-size:2.5rem;font-weight:900;color:#111827;">0</div><script>(function(){var el=document.getElementById("f2dcab97"),start=0,target=0,dur=2000,step=target/dur*16;var iv=setInterval(function(){start=Math.min(start+step,target);el.textContent=""+Math.round(start)+"";if(start>=target)clearInterval(iv);},16);})();</script></div></div>
-</div>
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>counters</td><td>array of objects with — value (integer), label, prefix, suffix, color (optional hex).</td><td>optional</td></tr><tr><td>duration</td><td>number. Animation duration in seconds. Default 2.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>links</td><td>array (required) of {label, target (block id to scroll to)}</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "animated_counter"
+  "type": "jump_nav",
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/a2uicatalog/a2ui"
+    }
+  ]
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:animated_counter",
-  "displayName": "Animated Counter",
+  "identifier": "urn:air:a2uicatalog.ai:atom:jump_nav",
+  "displayName": "Jump Nav",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/animated_counter",
+  "url": "https://a2uicatalog.ai/atoms/jump_nav",
   "capabilities": [
-    "web",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional prefix/suffix, and color.",
+  "description": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.",
   "representativeQueries": [
-    "show a CSS-only animated counter that counts up to target values",
-    "css @property counter animation that counts up from zero to target values without javascript. uses @",
-    "render a animated counter"
+    "show a anchor pill buttons scrolling to page sections",
+    "horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.",
+    "render a jump nav"
   ]
 }</code></pre>
   </div>

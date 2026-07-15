@@ -16200,6 +16200,62 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "jump_nav"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "target": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "target"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "links"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "command_step"
+          },
+          "label": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "hint": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "command"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "flashcard_deck"
           },
           "cards": {

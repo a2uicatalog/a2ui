@@ -152,7 +152,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-471 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+473 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | email | pdf | Source · license |
 |---|---|---|---|---|---|---|---|---|---|
@@ -233,6 +233,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `columns` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `combobox` | ✅ | ✅ | — | ✅ | — | ✅ | — | ⚠️ | [shadcn/ui](https://github.com/shadcn-ui/ui) · MIT |
 | `command_palette` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `command_step` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `comparison_grid` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `comparison_morph` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `completion_gate` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -384,6 +385,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `isometric_mesh` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `jira_ticket` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ✅ | ✅ | [Atlassian Design System](https://atlassian.design) · Apache-2.0 |
 | `json_tree_viewer` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
+| `jump_nav` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `key_takeaways` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `key_value` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `keyboard_shortcut` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |

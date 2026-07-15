@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (471 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (473 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -19380,6 +19380,74 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "jump_nav": {
+   "type": "object",
+   "description": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "jump_nav"
+      },
+      "links": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (required) of {label, target (block id to scroll to)}"
+      }
+     },
+     "required": [
+      "component",
+      "links"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "command_step": {
+   "type": "object",
+   "description": "Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "command_step"
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, step title above the command)"
+      },
+      "command": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required, the shell command; empty for manual steps)"
+      },
+      "hint": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, small helper line under the checkbox)"
+      }
+     },
+     "required": [
+      "component",
+      "command"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
     "google-apps-script-web",
     "mcp-apps"
    ]

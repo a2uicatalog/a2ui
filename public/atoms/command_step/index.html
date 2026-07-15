@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Animated Counter — A2UI Atomic Catalog</title>
-  <meta name="description" content="CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional prefix/suffix, and color.">
+  <title>Command Step — A2UI Atomic Catalog</title>
+  <meta name="description" content="Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -114,58 +114,50 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / animated_counter
+    atoms / command_step
   </nav>
 
-  <h1>Animated Counter</h1>
-  <p class="desc">CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional prefix/suffix, and color.</p>
+  <h1>Command Step</h1>
+  <p class="desc">Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
-<div class="section">
-  <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Renders as static final values; no animation</td></tr><tr><td>google-meet-stage</td><td>Animation plays; @property support varies by browser version</td></tr></tbody></table>
-</div>
 
   
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box"><div style="text-align:center;padding:16px;"><div id="f2dcab97" style="font-size:2.5rem;font-weight:900;color:#111827;">0</div><script>(function(){var el=document.getElementById("f2dcab97"),start=0,target=0,dur=2000,step=target/dur*16;var iv=setInterval(function(){start=Math.min(start+step,target);el.textContent=""+Math.round(start)+"";if(start>=target)clearInterval(iv);},16);})();</script></div></div>
-</div>
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>counters</td><td>array of objects with — value (integer), label, prefix, suffix, color (optional hex).</td><td>optional</td></tr><tr><td>duration</td><td>number. Animation duration in seconds. Default 2.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string (optional, step title above the command)</td><td>optional</td></tr><tr><td>command</td><td>string (required, the shell command; empty for manual steps)</td><td>required</td></tr><tr><td>hint</td><td>string (optional, small helper line under the checkbox)</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "animated_counter"
+  "type": "command_step",
+  "command": "npm install a2ui"
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:animated_counter",
-  "displayName": "Animated Counter",
+  "identifier": "urn:air:a2uicatalog.ai:atom:command_step",
+  "displayName": "Command Step",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/animated_counter",
+  "url": "https://a2uicatalog.ai/atoms/command_step",
   "capabilities": [
-    "web",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "CSS @property counter animation that counts up from zero to target values without JavaScript. Uses @keyframes with CSS custom properties typed as integers. Each counter has a value, label, optional prefix/suffix, and color.",
+  "description": "Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).",
   "representativeQueries": [
-    "show a CSS-only animated counter that counts up to target values",
-    "css @property counter animation that counts up from zero to target values without javascript. uses @",
-    "render a animated counter"
+    "show a copyable command with completion checkbox",
+    "terminal-styled command with copy button and a done-checkbox. wire done/setdone to a valuestore to t",
+    "render a command step"
   ]
 }</code></pre>
   </div>

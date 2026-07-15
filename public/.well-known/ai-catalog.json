@@ -18,7 +18,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 471 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 473 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -8294,6 +8294,38 @@
         "show a checklist items with Material icons",
         "checklist where each item has a material symbol icon (not just a check mark). good for capability or requirements lists",
         "render a icon checklist"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:jump_nav",
+      "displayName": "Jump Nav",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/jump_nav",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id.",
+      "representativeQueries": [
+        "show a anchor pill buttons scrolling to page sections",
+        "horizontal strip of pill buttons that smooth-scroll to other blocks on the page by id",
+        "render a jump nav"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:command_step",
+      "displayName": "Command Step",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/command_step",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Terminal-styled command with copy button and a done-checkbox. Wire done/setDone to a ValueStore to track completion (used by training runbooks for progress).",
+      "representativeQueries": [
+        "show a copyable command with completion checkbox",
+        "terminal-styled command with copy button and a done-checkbox. wire done/setdone to a valuestore to track completion",
+        "render a command step"
       ]
     },
     {
