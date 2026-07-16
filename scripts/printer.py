@@ -36,6 +36,23 @@ def _config():
     return dep['api_url'], tok
 
 
+def _cloud_run_config():
+    """Resolve the headless-render Cloud Run service's URL + token, if
+    configured. Returns (None, None) if not set up yet — callers fall back
+    to local chromium so this stays zero-config for anyone who hasn't
+    deployed the service."""
+    import yaml
+    ops = os.path.join(_ROOT, 'ops')
+    try:
+        dep = yaml.safe_load(open(os.path.join(ops, 'project-ops.yaml'))).get('deployments', {}).get('cloud-run-renderer')
+        if not dep or not dep.get('url'):
+            return None, None
+        tok = yaml.safe_load(open(os.path.join(ops, 'secrets.local.yaml'))).get('api', {}).get('render_token')
+        return dep['url'], tok
+    except FileNotFoundError:
+        return None, None
+
+
 def _chat_raster_types():
     """Atom types declaring `chat_raster: svg` in atoms/schema.yaml — one
     source of truth, so a future SVG-emitting atom becomes eligible for the
@@ -47,13 +64,18 @@ def _chat_raster_types():
 
 
 def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '') -> bytes:
-    """Render one atom block to PNG bytes.
+    """Render one atom block to PNG bytes, in one of three ways:
 
-    Atoms declared `chat_raster: svg` (the data-derived chart-family subset —
-    see atoms/schema.yaml) go through the pure-Python SVG rasterizer
-    (renderers/svg_raster.py): no browser, no chromium, just the same SVG
-    string the web renderer already produces via its `_svg_<atom>()` helper.
-    Everything else keeps using headless chromium for real CSS/DOM fidelity.
+    1. Atoms declared `chat_raster: svg` (the data-derived chart-family
+       subset — see atoms/schema.yaml) go through the pure-Python SVG
+       rasterizer (renderers/svg_raster.py): no browser at all.
+    2. Everything else goes through the headless-render Cloud Run service
+       (cloud-run-renderer/), if configured — real chromium, but running
+       as a real unattended service instead of on this machine, so an
+       agent/webhook can trigger it with nobody's laptop involved.
+    3. If the Cloud Run service isn't configured, falls back to local
+       chromium via Playwright (the original, laptop-bound path) — keeps
+       this working with zero setup for anyone who hasn't deployed it.
     """
     import web_article
     atom_type = block.get('type')
@@ -70,11 +92,19 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
                 return svg_raster.rasterize_svg_to_png(svg_string, target_width=width,
                                                         background=(11, 11, 18))
 
+    cloud_run_url, cloud_run_token = _cloud_run_config()
+    if cloud_run_url:
+        import urllib.request
+        body = json.dumps({'block': block, 'width': width, 'title': title, 'subtitle': subtitle}).encode()
+        req = urllib.request.Request(f'{cloud_run_url}/render', data=body,
+                                     headers={'Content-Type': 'application/json',
+                                              'Authorization': f'Bearer {cloud_run_token}'})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return r.read()
+
+    from render_wrap import wrap_atom_html
     frag = fn(block)
-    head = (f'<div style="color:#e5e7eb;font:700 16px system-ui;margin-bottom:4px">{title}</div>' if title else '') + \
-           (f'<div style="color:#94a3b8;font:500 12px system-ui;margin-bottom:12px">{subtitle}</div>' if subtitle else '')
-    html = (f'<!doctype html><html><body style="margin:0;background:#0b0b12;padding:24px;'
-            f'width:{width}px;font-family:system-ui">{head}{frag}</body></html>')
+    html = wrap_atom_html(frag, width, title, subtitle)
     from playwright.sync_api import sync_playwright
     exe = next((p for p in ('/usr/bin/google-chrome', '/usr/bin/chromium') if os.path.exists(p)), None)
     with sync_playwright() as pw:

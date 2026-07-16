@@ -1,0 +1,4 @@
+flask==3.0.*
+gunicorn==22.*
+markdown==3.6
+playwright==1.44.*
