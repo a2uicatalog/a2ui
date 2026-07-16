@@ -3847,14 +3847,13 @@ def _render_punch_card(b: dict) -> str:
     </div>
     """
 
-def _render_sankey_flow(b: dict) -> str:
+def _svg_sankey_flow(b: dict) -> str:
     raw_nodes = b.get("nodes", [])
     raw_links = b.get("links", [])
-    title     = b.get("title", "")
-    
+
     if not raw_links:
         return ""
-        
+
     nodes_map = {n["id"]: n for n in raw_nodes}
     
     for link in raw_links:
@@ -4048,7 +4047,7 @@ def _render_sankey_flow(b: dict) -> str:
         <text x="{rp['x'] + rp['w'] + 8}" y="{rp['y'] + rp['h']/2 + 15}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="start">{rp['total']:,.0f}</text>
         """)
         
-    svg_html = f"""
+    return f"""
     <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
       <defs>
         {"".join(gradients_html)}
@@ -4058,7 +4057,20 @@ def _render_sankey_flow(b: dict) -> str:
       {"".join(labels_html)}
     </svg>
     """
-    
+
+
+def _render_sankey_flow(b: dict) -> str:
+    raw_links = b.get("links", [])
+    title     = b.get("title", "")
+    w, h      = 640, 340  # matches the fixed canvas size in _svg_sankey_flow
+
+    if not raw_links:
+        return ""
+
+    svg_html = _svg_sankey_flow(b)
+    if not svg_html:
+        return ""
+
     header_html = ""
     if title:
         header_html = f"""
@@ -4066,7 +4078,7 @@ def _render_sankey_flow(b: dict) -> str:
           <div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px;">{title}</div>
         </div>
         """
-        
+
     return f"""
     <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
@@ -10794,7 +10806,7 @@ def _render_review_callout(b: dict) -> str:
     author  = f'<div style="margin-top:10px;font-size:.8rem;font-weight:600;color:#6b7280;">— {b.get("author_name","")}</div>' if b.get("author_name") else ""
     return f'<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;">{product}<div style="margin-bottom:10px;">{stars}</div><blockquote style="margin:0;font-size:.9rem;line-height:1.6;font-style:italic;">"{b.get("review_text","")}"</blockquote>{author}</div>'
 
-def _render_sparkline(b: dict) -> str:
+def _svg_sparkline(b: dict) -> str:
     data = b.get("data", [])
     if not data: return ""
     color = b.get("color", "#6366f1")
@@ -10806,6 +10818,10 @@ def _render_sparkline(b: dict) -> str:
     fill_pts = " ".join(f'{(i/(len(data)-1))*w:.1f},{h-((v-mn)/r)*(h-4)-2:.1f}' for i,v in enumerate(data))
     area = f"0,{h} {fill_pts} {w},{h}"
     return f'<svg width="{w}" height="{h}" style="display:inline-block;vertical-align:middle;"><polygon points="{area}" fill="{color}" fill-opacity="0.1"/><polyline points="{pts}" fill="none" stroke="{color}" stroke-width="{lw}" stroke-linejoin="round" stroke-linecap="round"/></svg>'
+
+
+def _render_sparkline(b: dict) -> str:
+    return _svg_sparkline(b)
 
 def _render_toggle_switch(b: dict) -> str:
     import random, string
@@ -15923,6 +15939,29 @@ def _render_code_diff(atom: dict) -> str:
     )
 _RENDERERS["code_diff"] = _render_code_diff
 
+def _svg_progress_circle(atom: dict) -> str:
+    """Just the ring geometry — the live web render overlays the percentage as
+    an HTML <div>, not SVG, so a raster consumer of this alone loses the
+    number (the ring's arc length still conveys magnitude). Rendered at its
+    settled end-state (stroke-dashoffset=offset) rather than the animation's
+    start state, since a raster is inherently a single still frame."""
+    import math
+    value = max(0, min(100, int(atom.get("value", 0))))
+    color = atom.get("color", "#38bdf8")
+    r     = 36
+    circ  = round(2 * math.pi * r, 2)
+    offset = round(circ * (1 - value / 100), 2)
+    return (
+        f'<svg width="100" height="100" viewBox="0 0 100 100" '
+        f'style="transform:rotate(-90deg);display:block;">'
+        f'<circle cx="50" cy="50" r="{r}" fill="none" stroke="#1e293b" stroke-width="9"/>'
+        f'<circle cx="50" cy="50" r="{r}" fill="none" stroke="{color}" '
+        f'stroke-width="9" stroke-linecap="round" '
+        f'stroke-dasharray="{circ}" stroke-dashoffset="{offset}"/>'
+        f'</svg>'
+    )
+
+
 def _render_progress_circle(atom: dict) -> str:
     import hashlib, math
     uid   = hashlib.md5(str(atom).encode()).hexdigest()[:6]
@@ -16033,37 +16072,26 @@ def _render_copy_to_clipboard(b):
             f'</span>')
 _RENDERERS["copy_to_clipboard"] = _render_copy_to_clipboard
 
-def _render_gauge_sla(b: dict) -> str:
+def _svg_gauge_sla(b: dict) -> str:
     import math
-    title = b.get("title", "")
     val = float(b.get("value", 0))
     max_val = float(b.get("max_value", 100))
     unit = b.get("unit", "")
     label = b.get("label", "SLA Status")
-    
-    header_html = ""
-    if title:
-        header_html = f"""
-        <div style="margin-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#00f2ff; font-weight:900;">◵</span> {title}
-          </div>
-        </div>
-        """
-        
+
     pct = (val / max_val) * 100 if max_val > 0 else 0
     pct = min(100.0, max(0.0, pct))
-    
+
     path_len = 314.159
     dash_offset = path_len - (pct / 100.0) * path_len
-    
+
     angle = 180 + (pct / 100.0) * 180
     rad = math.radians(angle)
     nx = 150 + 85 * math.cos(rad)
     ny = 140 + 85 * math.sin(rad)
-    
+
     gauge_id = f"gauge_sla_{id(b)}"
-    
+
     if pct >= 95:
         status_color = "#10b981"
         status_label = "HEALTHY"
@@ -16073,9 +16101,8 @@ def _render_gauge_sla(b: dict) -> str:
     else:
         status_color = "#ef4444"
         status_label = "BREACHED"
-        
-    svg_html = f"""
-    <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
+
+    return f"""
       <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="{gauge_id}_grad" x1="0" y1="0" x2="1" y2="0">
@@ -16091,25 +16118,44 @@ def _render_gauge_sla(b: dict) -> str:
             </feMerge>
           </filter>
         </defs>
-        
+
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />
-        
+
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#{gauge_id}_grad)" stroke-width="14" stroke-linecap="round"
               stroke-dasharray="{path_len}" stroke-dashoffset="{dash_offset}" filter="url(#{gauge_id}_glow)" />
-              
+
         <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
-        
+
         <line x1="150" y1="140" x2="{nx:.1f}" y2="{ny:.1f}" stroke="{status_color}" stroke-width="3" stroke-linecap="round" filter="url(#{gauge_id}_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="{status_color}" stroke-width="3" />
-        
+
         <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">{val:,.1f}{unit}</text>
         <text x="150" y="132" text-anchor="middle" font-size="8" font-weight="800" fill="{status_color}" font-family="monospace" letter-spacing="0.1em">{status_label} · {label.upper()}</text>
       </svg>
+    """
+
+
+def _render_gauge_sla(b: dict) -> str:
+    title = b.get("title", "")
+
+    header_html = ""
+    if title:
+        header_html = f"""
+        <div style="margin-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#00f2ff; font-weight:900;">◵</span> {title}
+          </div>
+        </div>
+        """
+
+    svg_html = f"""
+    <div style="width:100%; height:200px; display:flex; justify-content:center; align-items:center;">
+      {_svg_gauge_sla(b)}
     </div>
     """
-    
+
     return f"""
     <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}
@@ -16118,45 +16164,33 @@ def _render_gauge_sla(b: dict) -> str:
     """
 _RENDERERS["gauge_sla"] = _render_gauge_sla
 
-def _render_scatter_trend(b: dict) -> str:
-    title = b.get("title", "")
+def _svg_scatter_trend(b: dict) -> str:
     data_points = b.get("data_points", [])
     label_x = b.get("label_x", "X Axis")
-    label_y = b.get("label_y", "Y Axis")
-    
-    header_html = ""
-    if title:
-        header_html = f"""
-        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
-            <span style="color:#10b981; font-weight:900;">⬡</span> {title}
-          </div>
-        </div>
-        """
-        
+
     if not data_points:
         return ""
-        
+
     w, h = 520, 240
     pad_l, pad_r, pad_t, pad_b = 55, 25, 30, 45
     chart_w = w - pad_l - pad_r
     chart_h = h - pad_t - pad_b
-    
+
     xs = [float(p[0]) for p in data_points]
     ys = [float(p[1]) for p in data_points]
-    
+
     min_x, max_x = min(xs), max(xs)
     min_y, max_y = min(ys), max(ys)
-    
+
     rng_x = (max_x - min_x) or 1.0
     rng_y = (max_y - min_y) or 1.0
-    
+
     n = len(data_points)
     sum_x = sum(xs)
     sum_y = sum(ys)
     sum_xy = sum(x*y for x, y in data_points)
     sum_xx = sum(x*x for x in xs)
-    
+
     denom = (n * sum_xx - sum_x * sum_x)
     if denom != 0:
         m = (n * sum_xy - sum_x * sum_y) / denom
@@ -16164,17 +16198,17 @@ def _render_scatter_trend(b: dict) -> str:
     else:
         m = 0.0
         c = sum_y / n
-        
+
     x1_val = min_x
     y1_val = m * x1_val + c
     x2_val = max_x
     y2_val = m * x2_val + c
-    
+
     x1_proj = pad_l + ((x1_val - min_x) / rng_x) * chart_w
     y1_proj = pad_t + (1 - (y1_val - min_y) / rng_y) * chart_h
     x2_proj = pad_l + ((x2_val - min_x) / rng_x) * chart_w
     y2_proj = pad_t + (1 - (y2_val - min_y) / rng_y) * chart_h
-    
+
     grid_lines = ""
     for grid_idx in range(5):
         grid_y = pad_t + (grid_idx / 4) * chart_h
@@ -16183,7 +16217,7 @@ def _render_scatter_trend(b: dict) -> str:
         <line x1="{pad_l}" y1="{grid_y}" x2="{pad_l + chart_w}" y2="{grid_y}" stroke="rgba(255,255,255,0.05)" stroke-dasharray="3,3" />
         <text x="{pad_l - 12}" y="{grid_y + 3}" fill="rgba(255,255,255,0.4)" font-size="8.5" font-family="monospace" text-anchor="end">{grid_v:,.1f}</text>
         """
-        
+
     for tick_idx in range(5):
         tick_ratio = tick_idx / 4
         tick_x = pad_l + tick_ratio * chart_w
@@ -16192,7 +16226,7 @@ def _render_scatter_trend(b: dict) -> str:
         <line x1="{tick_x}" y1="{pad_t}" x2="{tick_x}" y2="{pad_t + chart_h}" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
         <text x="{tick_x}" y="{pad_t + chart_h + 16}" fill="rgba(255,255,255,0.4)" font-size="8.5" font-family="monospace" text-anchor="middle">{tick_v:,.1f}</text>
         """
-        
+
     dots_html = []
     for i, (px, py) in enumerate(data_points):
         cx = pad_l + ((px - min_x) / rng_x) * chart_w
@@ -16200,9 +16234,8 @@ def _render_scatter_trend(b: dict) -> str:
         dots_html.append(f"""
         <circle cx="{cx:.1f}" cy="{cy:.1f}" r="4.5" fill="#10b981" stroke="#fff" stroke-width="1.5" filter="url(#scatter_glow_{id(b)})" style="cursor:pointer;" />
         """)
-        
-    svg_html = f"""
-    <div style="width:100%; height:240px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
+
+    return f"""
       <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="scatter_glow_{id(b)}" x="-30%" y="-30%" width="160%" height="160%">
@@ -16213,18 +16246,41 @@ def _render_scatter_trend(b: dict) -> str:
             </feMerge>
           </filter>
         </defs>
-        
+
         {grid_lines}
-        
+
         <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{label_x.upper()}</text>
-        
+
         <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{id(b)})" />
-        
+
         {"".join(dots_html)}
       </svg>
+    """
+
+
+def _render_scatter_trend(b: dict) -> str:
+    title = b.get("title", "")
+    data_points = b.get("data_points", [])
+
+    header_html = ""
+    if title:
+        header_html = f"""
+        <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-size:1.15rem;font-weight:800;color:#f1f5f9;letter-spacing:-0.2px; display:flex; align-items:center; gap:8px;">
+            <span style="color:#10b981; font-weight:900;">⬡</span> {title}
+          </div>
+        </div>
+        """
+
+    if not data_points:
+        return ""
+
+    svg_html = f"""
+    <div style="width:100%; height:240px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
+      {_svg_scatter_trend(b)}
     </div>
     """
-    
+
     return f"""
     <div style="margin:1.5rem 0;padding:24px;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       {header_html}

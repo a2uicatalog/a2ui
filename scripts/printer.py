@@ -36,12 +36,40 @@ def _config():
     return dep['api_url'], tok
 
 
+def _chat_raster_types():
+    """Atom types declaring `chat_raster: svg` in atoms/schema.yaml — one
+    source of truth, so a future SVG-emitting atom becomes eligible for the
+    pure-Python raster path with a one-line schema addition, no code change
+    here."""
+    import yaml
+    schema = yaml.safe_load(open(os.path.join(_ROOT, 'atoms', 'schema.yaml')))
+    return {a['type'] for a in schema['blocks'] if a.get('chat_raster') == 'svg'}
+
+
 def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '') -> bytes:
-    """Render one atom block to PNG bytes via the web renderer + headless chromium."""
+    """Render one atom block to PNG bytes.
+
+    Atoms declared `chat_raster: svg` (the data-derived chart-family subset —
+    see atoms/schema.yaml) go through the pure-Python SVG rasterizer
+    (renderers/svg_raster.py): no browser, no chromium, just the same SVG
+    string the web renderer already produces via its `_svg_<atom>()` helper.
+    Everything else keeps using headless chromium for real CSS/DOM fidelity.
+    """
     import web_article
-    fn = getattr(web_article, '_RENDERERS', {}).get(block.get('type'))
+    atom_type = block.get('type')
+    fn = getattr(web_article, '_RENDERERS', {}).get(atom_type)
     if fn is None:
-        raise ValueError(f"web renderer has no atom '{block.get('type')}'")
+        raise ValueError(f"web renderer has no atom '{atom_type}'")
+
+    if atom_type in _chat_raster_types():
+        svg_fn = getattr(web_article, f'_svg_{atom_type}', None)
+        if svg_fn is not None:
+            svg_string = svg_fn(block)
+            if svg_string:
+                import svg_raster
+                return svg_raster.rasterize_svg_to_png(svg_string, target_width=width,
+                                                        background=(11, 11, 18))
+
     frag = fn(block)
     head = (f'<div style="color:#e5e7eb;font:700 16px system-ui;margin-bottom:4px">{title}</div>' if title else '') + \
            (f'<div style="color:#94a3b8;font:500 12px system-ui;margin-bottom:12px">{subtitle}</div>' if subtitle else '')

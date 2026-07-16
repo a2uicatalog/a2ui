@@ -699,6 +699,7 @@ blocks:
       color: green|cyan|blue|yellow|red|purple|grey
       pulse: bool (optional)
 - type: sparkline
+  chat_raster: svg
   description: Renders a small, simple line chart without axes or coordinates, showing
   compact_description: inline SVG trend line chart general trends.
   source: &id003
@@ -788,6 +789,7 @@ blocks:
     title: string (optional, title of the repository or chart, e.g., 'Commit Activity')
     subtitle: string (optional, subtitle, e.g., 'curtiskrygier/meetstudio')
 - type: sankey_flow
+  chat_raster: svg
   description: Renders a flow diagram (Sankey flow) where left-hand source nodes connect
     to right-hand target nodes via beautiful, curved gradient Bezier bands.
   compact_description: curved dual-column gradient flow diagram for financial or pipeline
@@ -1814,6 +1816,7 @@ blocks:
     max_rating: integer The maximum possible rating (e.g., 5 for 5 stars).
     is_interactive: boolean Indicates if the stars are clickable for user input.
 - type: progress_circle
+  chat_raster: svg
   description: SVG circular progress arc that animates from 0 to the target value
     on mount using CSS stroke-dashoffset transition. Percentage is displayed in the
     centre. Replaces the prior placeholder implementation with a proper animated SVG
@@ -4142,6 +4145,7 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: gauge_sla
+  chat_raster: svg
   description: Renders a semi-circular radial gauge track with high contrast status
     quadrants, a glowing needle tick, and a prominent central KPI readout.
   compact_description: radial SLA gauge with glowing pointer and large metric value
@@ -4189,6 +4193,7 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: scatter_trend
+  chat_raster: svg
   description: Renders a coordinate scatter grid representing discrete data points
     intersected by a prominent glowing linear regression line.
   compact_description: coordinate scatter plot with regression trend line

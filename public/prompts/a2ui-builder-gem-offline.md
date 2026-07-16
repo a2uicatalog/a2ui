@@ -779,7 +779,7 @@ does not exist.
 - `surface_unlocked` — achievement-style surface unlocked notification
 - `schema_reveal` — self-reveal: shows this page's own JSON schema
 - `url_anatomy` — annotated URL anatomy diagram
-- `schema_qr` — QR code for current or given URL
+- `schema_qr` — self-contained QR code, optionally with a live URL input
 - `take_away_card` — bold screenshot-ready insight card
 - `next_step_strip` — horizontal numbered next-steps strip
 - `copy_prompt` — copyable monospace prompt/code block
