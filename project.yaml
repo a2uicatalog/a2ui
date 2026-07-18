@@ -43,8 +43,10 @@ policy:
     - public/catalogue/**
     - public/vendors/**
     - public/THIRD-PARTY-NOTICES.md
+    - public/fonts/ibm-plex/**   # SIL OFL 1.1 — IBM Plex Mono/Serif, used by article_journey (use_plex_fonts, default true); see THIRD-PARTY-NOTICES.md
     - public/knowledge/**
     - public/avatar/**
+    - public/gallery/**   # article/demo screenshots referenced from the blog-drafting Google Doc — real static assets, not hosted on Drive/GAS (both have anonymous-hotlink restrictions)
 
 # Consumed by scripts/gen_public_catalog.py — the single publication
 # decision for prompts. public/prompts/ may contain exactly these.
