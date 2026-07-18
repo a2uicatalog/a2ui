@@ -13,6 +13,18 @@ from pathlib import Path
 import markdown as _md
 
 
+def _render_unknown(block: Dict[str, Any]) -> str:
+    """Fallback for a child block whose type isn't in _RENDERERS. Referenced
+    (via _RENDERERS.get(type, _render_unknown)) in 8+ places but was never
+    actually defined anywhere in this file — since dict.get()'s default
+    argument is evaluated eagerly, every one of those call sites crashed
+    with NameError on ANY children content, unconditionally, regardless of
+    whether the fallback branch was ever taken. Found live 2026-07-18
+    building demo data for the templates browser. Degrades to nothing
+    rather than raising — silent > broken for an unrecognized child type."""
+    return ""
+
+
 _DARK_OVERRIDES = """
 <style>
   /* meet-stage dark theme overrides */

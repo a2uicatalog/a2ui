@@ -68,6 +68,58 @@ _EXAMPLE_BLOCKS = {
     # {"type": "schema_qr"} preview — the QR renders nothing without a url.
     "schema_qr": {"type": "schema_qr", "url": "https://a2uicatalog.ai",
         "label": "Scan to open on any device", "size": 200},
+    # ── ChildList/ComponentId atoms (schema.yaml `children:`) — the generic
+    # auto-generator can't synthesize meaningful nested child blocks, so
+    # every one of these needs a curated example or the templates browser
+    # (/templates) shows an empty or junk container. Real leaf atoms as
+    # children throughout (body/stat_card), not placeholder text.
+    #
+    # Grounded in the ACTUAL renderer implementations, not schema.yaml's
+    # field docs, which have drifted for several of these (found live
+    # 2026-07-18 building this): modal reads `blocks`, not the documented
+    # `children`. color_section's real implementation doesn't render
+    # children at all — flat `background`/`text_color`/`content` only,
+    # despite schema.yaml documenting `accent`/`style`/`blocks` and
+    # declaring a `children:` shape. columns reads `columns` (each item
+    # either a raw block list or {blocks:[...]}), not the documented
+    # `items`. quiz_set's `correct` must equal an option's own text/value,
+    # not the documented 0-based index, and it ignores `pass_score`/
+    # `explanation`/`on_pass`/`on_fail` entirely. chat_thread has NO
+    # renderer at all — greenfield, not implemented — so it's deliberately
+    # left out here; live_preview() degrades that one card to "no live
+    # preview" rather than a broken one.
+    "modal": {"type": "modal", "title": "Deploy confirmation",
+        "trigger_label": "Open modal", "confirm_label": "Deploy", "cancel_label": "Cancel",
+        "description": "This will redeploy `a2uicatalog-full` to production.",
+        "blocks": [{"type": "stat_card", "value": "3", "label": "Files changed", "trend": "up"}]},
+    "color_section": {"type": "color_section", "background": "#EFDACE", "text_color": "#3a2a12",
+        "content": "`stage` tracks maturity; `visibility` tracks access. Conflating them means a promoted atom could accidentally go public."},
+    "split_pane": {"type": "split_pane",
+        "left": {"bg": "#EFDACE", "blocks": [{"type": "body", "text": "**Before** — six hoops, one story, no distinction between abandoned and load-bearing."}]},
+        "right": {"bg": "#DBE4D2", "blocks": [{"type": "body", "text": "**After** — five hoops in the working path, one detour clearly marked separate."}]}},
+    "two_tone_card": {"type": "two_tone_card", "title": "article_journey", "subtitle": "ComponentId/ChildList atom",
+        "accent": "#47643F", "header_theme": "dark",
+        "blocks": [{"type": "body", "text": "Each step is independently addressable by ComponentId — an agent can flip one step's status without resending the whole surface."}]},
+    "columns": {"type": "columns", "gap": "24px",
+        "columns": [
+            {"blocks": [{"type": "body", "text": "**Public** — 473 stable atoms, no auth required."}]},
+            {"blocks": [{"type": "body", "text": "**Full** — 508 atoms, gated behind Cloudflare Access."}]}]},
+    "blur_fade_in": {"type": "blur_fade_in", "title": "Fades in on load", "delay": "0.1s", "direction": "up",
+        "body": "No JavaScript — pure CSS `@keyframes` combining `filter:blur()` and `opacity`."},
+    "quiz_set": {"type": "quiz_set", "title": "BYO-MCP quick check", "accent": "#8C5B16",
+        "questions": [
+            {"question": "What does a structured JSON 404 (vs. an HTML 404) tell you?",
+             "options": ["Nothing, both mean the same thing", "The method is routed and failing on your input, not your access", "Your account lacks entitlement"],
+             "correct": "The method is routed and failing on your input, not your access"}]},
+    "reveal": {"type": "reveal", "animation": "stagger", "stagger_delay": 120,
+        "blocks": [
+            {"type": "stat_card", "value": "4", "label": "Infrastructure hoops"},
+            {"type": "stat_card", "value": "1", "label": "Abandoned detour"},
+            {"type": "stat_card", "value": "2", "label": "Now documented"}]},
+    "spotlight_card": {"type": "spotlight_card", "accent": "#D5A64E",
+        "blocks": [{"type": "heading", "text": "The error message was the documentation"}, {"type": "body", "text": "`/authorize` was built to print back a rejected redirect URI on purpose — the failure itself became the spec."}]},
+    "animated_border": {"type": "animated_border", "from": "#8C5B16", "via": "#D5A64E", "to": "#47643F", "speed": 4,
+        "blocks": [{"type": "body", "text": "A rotating conic-gradient border — pure CSS, no JS, three colour stops."}]},
     "content_tabs": {"type": "content_tabs", "accent": "#6366f1", "tabs": [
         {"label": "4 Players", "blocks": [
             {"type": "body", "text": "One court, three rounds — every player partners with every other exactly once."},
