@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;"><div style="font-weight:700;font-size:0.875rem;color:#111827;margin-bottom:10px;">Folder Contents</div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6;"><span>📄</span><a href="#" target="_blank" rel="noopener noreferrer" style="font-size:0.875rem;color:#374151;text-decoration:none;"></a></div><div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6;"><span>📄</span><a href="#" target="_blank" rel="noopener noreferrer" style="font-size:0.875rem;color:#374151;text-decoration:none;"></a></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>folder_id</td><td>string (gas-native/api). The Google Drive folder ID to browse.</td><td>required</td></tr><tr><td>title</td><td>string. Override for the folder name shown as header.</td><td>optional</td></tr><tr><td>count</td><td>integer. Max items to show. Default 12.</td><td>optional</td></tr><tr><td>items</td><td>array (static connector). File objects for non-GAS surfaces.</td><td>required</td></tr><tr><td>auth_token</td><td>string (api connector). OAuth2 bearer token for REST API.</td><td>required</td></tr></tbody></table>

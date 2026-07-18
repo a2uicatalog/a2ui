@@ -81,8 +81,12 @@ def main():
         raw = yaml.safe_load(f)
 
     blocks = raw.get("blocks", [])
-    # Staging: only stable atoms are published (stage: preview stays repo-only)
-    blocks = [b for b in blocks if b.get("stage", "stable") == "stable"]
+    # Staging: only stable, non-private atoms are published (stage: preview
+    # stays repo-only; visibility: private stays gated regardless of stage).
+    # A2UI_CATALOG_FULL=1 bypasses both, for the gated full-catalogue build.
+    _full = os.environ.get("A2UI_CATALOG_FULL") == "1"
+    blocks = [b for b in blocks if _full or (
+        b.get("stage", "stable") == "stable" and b.get("visibility") != "private")]
 
     # Deduplicate by type — keep first occurrence
     seen_types, unique = set(), []

@@ -1,0 +1,6 @@
+name = "a2uicatalog-full"
+account_id = "874e86ca2e6319749c576074fcc72b97"
+compatibility_date = "2024-09-23"
+
+[assets]
+directory = "./public-full"

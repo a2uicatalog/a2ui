@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:0.75rem 0;"><div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;"><span>Confidence Bar</span><span style="font-weight:700;color:#22c55e;">75%</span></div><div style="background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;"><div style="width:75.0%;height:100%;background:#22c55e;border-radius:4px;transition:width .4s;"></div></div></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. What is being measured, e.g. Positive Sentiment or Retrieval Relevance.</td><td>required</td></tr><tr><td>value</td><td>number. Confidence percentage 0-100.</td><td>required</td></tr><tr><td>items</td><td>array. List of {label, value} for multi-row display instead of single bar.</td><td>optional</td></tr><tr><td>color</td><td>string. Override bar fill colour. Auto-assigned green/amber/red by value band if omitted.</td><td>optional</td></tr></tbody></table>

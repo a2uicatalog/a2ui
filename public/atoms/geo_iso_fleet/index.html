@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="position:relative;margin:1rem 0;"><canvas id="gif4196d" style="width:100%;height:260px;border-radius:12px;background:#0a1628;display:block;"></canvas><div style="position:absolute;bottom:12px;left:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);">Fleet</div></div><script>(function(){var c=document.getElementById("gif4196d");c.width=c.offsetWidth||600;c.height=260;var W=c.width,H=c.height,x=c.getContext("2d");var planes=Array.from({length:6},function(_,i){return{x:Math.random()*W,y:H*0.15+i*(H*0.65/6),spd:0.4+Math.random()*0.6};});(function loop(){requestAnimationFrame(loop);x.clearRect(0,0,W,H);planes.forEach(function(p){p.x+=p.spd;if(p.x>W+30)p.x=-30;x.save();x.translate(p.x,p.y);x.fillStyle="#e0e7ff";x.beginPath();x.ellipse(0,0,16,5,0,0,Math.PI*2);x.fill();x.fillStyle="#c7d2fe";x.beginPath();x.moveTo(-4,-5);x.lineTo(8,0);x.lineTo(-4,0);x.closePath();x.fill();x.restore();});})();})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>airline</td><td>string. Airline ICAO for A321neo accent — AIB, EZY, AFR, BAW, DLH, RYR. Default AIB.</td><td>optional</td></tr><tr><td>rocket</td><td>string. ESA or CNES. Default ESA.</td><td>optional</td></tr><tr><td>livery</td><td>string. Airline ICAO for H160 livery. Default AIB.</td><td>optional</td></tr><tr><td>tab</td><td>string. Starting tab — "ac" (A321neo), "rk" (Ariane 6), "hh" (H160). Default ac.</td><td>optional</td></tr></tbody></table>

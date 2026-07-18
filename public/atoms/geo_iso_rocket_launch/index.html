@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="position:relative;margin:1rem 0;"><canvas id="gir9506f" style="width:100%;height:300px;border-radius:12px;background:#0a1628;display:block;"></canvas></div><script>(function(){var c=document.getElementById("gir9506f");c.width=c.offsetWidth||600;c.height=300;var W=c.width,H=c.height,x=c.getContext("2d");var t=0;(function loop(){requestAnimationFrame(loop);x.clearRect(0,0,W,H);var ry=H-40-Math.pow(t,1.4)*60;ry=Math.max(30,ry);x.save();x.translate(W/2,ry);x.fillStyle="#e0e7ff";x.beginPath();x.moveTo(0,-25);x.lineTo(10,10);x.lineTo(-10,10);x.closePath();x.fill();x.fillStyle="#f87171";for(var fi=0;fi<6;fi++){var fa=Math.random()*0.4-0.2;var fl=8+Math.random()*10;x.beginPath();x.moveTo(0,10);x.lineTo(fl*Math.sin(fa),10+fl*Math.cos(fa));x.strokeStyle="#fbbf24";x.lineWidth=3;x.stroke();}x.restore();t+=0.016;if(t>2.8)t=0;})();})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. HUD title. Default "KOUROU ELA-4 — HEAVY LIFT INJECTION PROFILE".</td><td>optional</td></tr><tr><td>vehicle</td><td>string. ARIANE_6 or ARIANE_5. Default ARIANE_6.</td><td>optional</td></tr></tbody></table>

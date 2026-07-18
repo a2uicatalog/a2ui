@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="text-align:center;padding:20px;"><div style="font-size:0.78rem;font-weight:700;color:#9ca3af;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Countdown</div><div id="dt7a35b" style="font-size:2rem;font-weight:700;font-family:ui-monospace,monospace;color:#6366f1;">Loading…</div><div style="font-size:0.72rem;color:#9ca3af;margin-top:4px;">Target date</div></div><script>(function(){var target=new Date('Target date');function tick(){var diff=target-Date.now();if(diff<=0){document.getElementById("dt7a35b").textContent="Done!";return;}var d=Math.floor(diff/86400000);var h=Math.floor((diff%86400000)/3600000);var m=Math.floor((diff%3600000)/60000);var s=Math.floor((diff%60000)/1000);var el=document.getElementById("dt7a35b");if(el)el.textContent=d+"d "+String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(s).padStart(2,"0")+"s";}tick();setInterval(tick,1000);})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>target_date</td><td>string (ISO date, alias: target)</td><td>required</td></tr><tr><td>label</td><td>string (optional, alias: title)</td><td>optional</td></tr></tbody></table>

@@ -1,5 +1,11 @@
 """Staging policy: stage: preview atoms are repo-only — they must not
-appear in any published artifact. CI/CD drinks from the stage field."""
+appear in any published artifact. CI/CD drinks from the stage field.
+
+visibility: private is a SEPARATE axis from stage (maturity vs. access —
+see gemini-enterprise-agent/RETRO.md §20/a2uithoughts.md for why they must
+not be conflated): a private atom stays out of the PUBLIC build regardless
+of stage, including once promoted to stable. It's only ever generated into
+the gated full-catalogue build (A2UI_CATALOG_FULL=1), never public/."""
 
 import json
 import re
@@ -11,6 +17,9 @@ ROOT = Path(__file__).parent.parent
 BLOCKS = yaml.safe_load((ROOT / "atoms/schema.yaml").read_text())["blocks"]
 PREVIEW = {b["type"] for b in BLOCKS if b.get("stage", "stable") == "preview"}
 STABLE = {b["type"] for b in BLOCKS if b.get("stage", "stable") == "stable"}
+PRIVATE = {b["type"] for b in BLOCKS if b.get("visibility") == "private"}
+NOT_PUBLIC = PREVIEW | PRIVATE
+PUBLIC = STABLE - PRIVATE
 
 
 def test_stage_values_are_known():
@@ -18,37 +27,42 @@ def test_stage_values_are_known():
     assert not bad, f"unknown stage values on: {bad}"
 
 
+def test_visibility_values_are_known():
+    bad = [b["type"] for b in BLOCKS if b.get("visibility") not in (None, "private")]
+    assert not bad, f"unknown visibility values on: {bad}"
+
+
 def test_spec_json_is_stable_only():
     spec = json.loads((ROOT / "public/spec.json").read_text())
     published = {a["type"] for a in spec["atoms"]}
-    leaked = sorted(published & PREVIEW)
-    assert not leaked, f"preview atoms leaked into public spec.json: {leaked}"
-    assert published == STABLE, "spec.json out of sync with stable set — regenerate"
+    leaked = sorted(published & NOT_PUBLIC)
+    assert not leaked, f"preview/private atoms leaked into public spec.json: {leaked}"
+    assert published == PUBLIC, "spec.json out of sync with public set — regenerate"
 
 
 def test_compact_index_is_stable_only():
     idx = json.loads((ROOT / "public/atoms/index.json").read_text())
     published = {a["type"] for a in idx["atoms"]}
-    assert not (published & PREVIEW), f"preview atoms in compact index: {sorted(published & PREVIEW)}"
+    assert not (published & NOT_PUBLIC), f"preview/private atoms in compact index: {sorted(published & NOT_PUBLIC)}"
 
 
 def test_ard_catalog_is_stable_only():
     ard = (ROOT / "public/.well-known/ai-catalog.json").read_text()
-    leaked = sorted(t for t in PREVIEW if f":atom:{t}\"" in ard or f"/atoms/{t}\"" in ard)
-    assert not leaked, f"preview atoms in ai-catalog.json: {leaked}"
+    leaked = sorted(t for t in NOT_PUBLIC if f":atom:{t}\"" in ard or f"/atoms/{t}\"" in ard)
+    assert not leaked, f"preview/private atoms in ai-catalog.json: {leaked}"
 
 
 def test_no_preview_atom_pages_published():
-    leaked = sorted(t for t in PREVIEW if (ROOT / "public/atoms" / t).exists())
-    assert not leaked, f"preview atom pages exist in public/: {leaked}"
+    leaked = sorted(t for t in NOT_PUBLIC if (ROOT / "public/atoms" / t).exists())
+    assert not leaked, f"preview/private atom pages exist in public/: {leaked}"
 
 
 def test_builder_prompts_advertise_stable_only():
     for name in ("a2ui-builder-gem.md", "a2ui-builder-gem-offline.md"):
         text = (ROOT / "prompts" / name).read_text()
-        leaked = sorted(t for t in PREVIEW if re.search(rf"^- `{t}` —", text, re.M)
+        leaked = sorted(t for t in NOT_PUBLIC if re.search(rf"^- `{t}` —", text, re.M)
                         or re.search(rf"^#### {t}$", text, re.M))
-        assert not leaked, f"preview atoms in {name}: {leaked}"
+        assert not leaked, f"preview/private atoms in {name}: {leaked}"
 
 
 def test_catalog_index_references_resolve_and_are_stable_only():
@@ -75,8 +89,8 @@ def test_catalog_index_references_resolve_and_are_stable_only():
             assert cat["slug"] in KNOWN_UNPUBLISHED, \
                 f"index advertises {fname} but the file is not published (new dangling ref)"
             continue
-        leaked = sorted(a["type"] for a in cat["atoms"] if a["type"] in PREVIEW)
-        assert not leaked, f"preview atoms in index catalog {cat['slug']}: {leaked}"
+        leaked = sorted(a["type"] for a in cat["atoms"] if a["type"] in NOT_PUBLIC)
+        assert not leaked, f"preview/private atoms in index catalog {cat['slug']}: {leaked}"
         published = json.loads(f.read_text())
         comps = published.get("components") or {}
         missing = sorted(a["type"] for a in cat["atoms"] if a["type"] not in comps)

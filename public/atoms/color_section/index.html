@@ -133,6 +133,37 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="background:#f9fafb;color:#111827;padding:24px;border-radius:10px;margin:1.5rem 0;"></div></div>
 </div>
 
+  
+<div class="section">
+  <div class="label">Templates (1 componentId in <code>blocks</code>)</div>
+  <div class="template-btns"><button type="button" class="template-btn" data-target="block-1">block-1</button></div>
+</div>
+<style>
+.template-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.template-btn{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft-bg);
+  border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:.01em}
+.template-btn:hover{filter:brightness(1.05)}
+.template-btn.active{outline:2px solid var(--accent);outline-offset:1px}
+[data-component-id].tpl-highlight{box-shadow:0 0 0 3px var(--accent, #6366f1);border-radius:10px}
+</style>
+<script>
+(function(){
+  document.querySelectorAll('.template-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-target');
+      var el = document.querySelector('.preview-box [data-component-id="' + CSS.escape(id) + '"]');
+      document.querySelectorAll('.template-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.tpl-highlight').forEach(function(e){ e.classList.remove('tpl-highlight'); });
+      if (!el) return;
+      btn.classList.add('active');
+      el.classList.add('tpl-highlight');
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(function(){ el.classList.remove('tpl-highlight'); }, 2200);
+    });
+  });
+})();
+</script>
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>accent</td><td>string (optional, hex, default "#6366f1")</td><td>optional</td></tr><tr><td>style</td><td>string (optional, "tint"|"solid"|"dark"|"light", default "tint")</td><td>optional</td></tr><tr><td>padding</td><td>string (optional, css, default "24px")</td><td>optional</td></tr><tr><td>blocks</td><td>array (required, atom blocks rendered inside)</td><td>required</td></tr></tbody></table>

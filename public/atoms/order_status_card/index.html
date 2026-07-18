@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="background:#fff;border:1px solid #e1e3e5;border-radius:8px;padding:20px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><span style="font-size:16px;font-weight:700;color:#202223;">Order number</span><div style="display:flex;align-items:center;gap:10px;"><span style="background:#fff3cd;color:#856404;font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;">Active</span></div></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>order_number</td><td>string. Order identifier, e.g. "#1042".</td><td>required</td></tr><tr><td>date</td><td>string. Order date displayed next to the order number.</td><td>optional</td></tr><tr><td>status</td><td>string. One of fulfilled | unfulfilled | partial | cancelled | refunded.</td><td>required</td></tr><tr><td>customer</td><td>string. Customer display name.</td><td>optional</td></tr><tr><td>items</td><td>array. List of {title, qty, price} line items.</td><td>optional</td></tr><tr><td>total</td><td>string. Formatted grand total, e.g. "$124.00".</td><td>optional</td></tr></tbody></table>

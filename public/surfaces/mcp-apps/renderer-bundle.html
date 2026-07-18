@@ -18927,10 +18927,22 @@ _RENDERERS['gauge_sla'] = function(b) {
   var r = 56, cx = 72, cy = 72;
   var circ = Math.PI * r;
   var dash = pct * circ;
-  var svgStyle = 'transform:rotate(-180deg)';
+  // transform-origin must be the circle's own center (cx,cy) — CSS transforms
+  // on SVG shapes default to origin (0,0), so an unqualified rotate(-180deg)
+  // physically displaces the whole circle by (-2cx,-2cy) instead of just
+  // rotating its dash phase in place (confirmed via getBoundingClientRect()
+  // against the live deployment — the arc was escaping the card entirely).
+  // dashoffset 0 (not circ/2) is what actually yields the top-half arc this
+  // gauge is meant to show; circ/2 yields a left-half arc spanning the full
+  // circle height, overflowing the 80px-tall viewBox both ways. The second
+  // dasharray value on the value arc is a large constant, not `circ` — with
+  // pct<1 the dash+gap period is shorter than the full path length, so the
+  // pattern repeats a second time and paints a stray extra segment in the
+  // hidden bottom half; a large gap guarantees it never wraps.
+  var svgStyle = 'transform:rotate(-180deg);transform-origin:' + cx + 'px ' + cy + 'px;';
   var svg = '<svg width="144" height="80" viewBox="0 0 144 80" style="overflow:visible;">'
-    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f3f4f6" stroke-width="12" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + '" stroke-linecap="round"/>'
-    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-dasharray="' + dash + ' ' + circ + '" stroke-dashoffset="' + (circ / 2) + '" style="' + svgStyle + ';transition:stroke-dasharray 0.5s;" stroke-linecap="round"/>'
+    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#f3f4f6" stroke-width="12" stroke-dasharray="' + circ + '" stroke-dashoffset="0" style="' + svgStyle + '" stroke-linecap="round"/>'
+    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-dasharray="' + dash + ' 9999" stroke-dashoffset="0" style="' + svgStyle + 'transition:stroke-dasharray 0.5s;" stroke-linecap="round"/>'
     + '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" style="font-size:20px;font-weight:700;fill:' + color + ';">' + value + unit + '</text>'
     + (label ? '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" style="font-size:10px;fill:#9ca3af;">' + label + '</text>' : '')
     + '</svg>';

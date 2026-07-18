@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1.5rem 0;padding:20px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;"><div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:12px;">Raise your hand</div><button id="rh72dd6" onclick="this.textContent='✅ Noted!';this.disabled=true;this.style.background='#d1fae5';this.style.borderColor='#10b981';this.style.color='#065f46';" style="padding:10px 24px;background:#6366f1;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;">✋ Raise Hand</button><div style="font-size:0.72rem;color:#9ca3af;margin-top:10px;">Live tallying requires write_url / sheet_url.</div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>question</td><td>string (optional, prompt text above button)</td><td>optional</td></tr><tr><td>label</td><td>string (optional, button label, default ✋ Raise hand)</td><td>optional</td></tr><tr><td>write_url</td><td>string (optional, GAS doGet URL to record hands)</td><td>optional</td></tr><tr><td>sheet_url</td><td>string (optional, Google Sheet CSV for live count)</td><td>optional</td></tr><tr><td>poll</td><td>number (optional, poll interval ms)</td><td>optional</td></tr><tr><td>accent</td><td>string (optional, hex)</td><td>optional</td></tr></tbody></table>

@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="border:1.5px solid #e2e8f0;border-radius:12px;padding:20px 24px;margin:1.2rem 0;background:#fff;"><p style="font-size:0.95rem;color:#1e293b;margin:0 0 8px;line-height:1.9;">Hello, {{name}}!</p></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>template</td><td>string. Sentence with {blank} placeholders marking each gap.</td><td>required</td></tr><tr><td>answers</td><td>list[string | list[string]]. Accepted answer(s) per blank in order. A list entry may itself be a list of acceptable alternatives.</td><td>required</td></tr><tr><td>hint</td><td>string. Shown below the exercise as a nudge.</td><td>optional</td></tr><tr><td>case_sensitive</td><td>boolean (optional, default false).</td><td>optional</td></tr></tbody></table>

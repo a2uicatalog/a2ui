@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;margin:1rem 0;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:0.82rem;"><div style="padding:6px 0;"><div style="padding:1px 14px;display:flex;background:#7f1d1d2a;border-left:3px solid #ef4444;"><span style="min-width:28px;display:inline-block;color:#7f1d1d;user-select:none;padding-right:10px;">1</span><span style="color:#fca5a5;white-space:pre;flex:1;">- Old code</span></div><div style="padding:1px 14px;display:flex;background:#0640261f;border-left:3px solid #34d399;"><span style="min-width:28px;display:inline-block;color:#064e3b;user-select:none;padding-right:10px;">1</span><span style="color:#6ee7b7;white-space:pre;flex:1;">+ New code</span></div></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>old_code</td><td>string. The original text (before state).</td><td>required</td></tr><tr><td>new_code</td><td>string. The updated text (after state).</td><td>required</td></tr><tr><td>label</td><td>string. Title shown in the header bar.</td><td>optional</td></tr><tr><td>language</td><td>string. Language badge shown in header, e.g. "python", "typescript".</td><td>optional</td></tr><tr><td>show_line_numbers</td><td>bool. Show line numbers. Default true.</td><td>optional</td></tr><tr><td>context_lines</td><td>integer. Unchanged lines shown around each change. Default 3.</td><td>optional</td></tr></tbody></table>

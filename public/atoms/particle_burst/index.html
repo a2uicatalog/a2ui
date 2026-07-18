@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><script>(function(){var cols=["#6366f1", "#a855f7", "#ec4899", "#f59e0b", "#34d399"],n=14,sz=8,dur=700,g=1.2;document.addEventListener("click",function(e){for(var i=0;i<n;i++){var el=document.createElement("div");el.style.cssText="position:fixed;width:"+sz+"px;height:"+sz+"px;border-radius:50%;pointer-events:none;z-index:9999;background:"+cols[i%cols.length]+";left:"+e.clientX+"px;top:"+e.clientY+"px;";document.body.appendChild(el);var vx=(Math.random()-0.5)*12;var vy=-(Math.random()*10+3);var t=0;var x=e.clientX;var y=e.clientY;var id=setInterval(function(elem,cx,cy,dx,dy){dy+=g*0.5;cx+=dx;cy+=dy;elem.style.left=cx+"px";elem.style.top=cy+"px";elem.style.opacity=Math.max(0,1-t/dur);t+=16;if(t>dur){clearInterval(id);elem.remove();}}.bind(null,el,x,y,vx,vy),16);}});})()</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>count</td><td>integer. Particles per click. Default 14.</td><td>optional</td></tr><tr><td>colours</td><td>array. Array of hex colour strings.</td><td>optional</td></tr><tr><td>size</td><td>integer. Particle diameter px. Default 8.</td><td>optional</td></tr><tr><td>duration</td><td>integer. Animation duration ms. Default 700.</td><td>optional</td></tr><tr><td>gravity</td><td>number. Downward pull factor. Default 1.2.</td><td>optional</td></tr></tbody></table>

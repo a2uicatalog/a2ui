@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div id="spw_815a82" style="position:relative;overflow:hidden;height:280px;background:var(--bg,#0c1117);border-radius:8px;cursor:crosshair;"><div id="sp_815a82" style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle 180px at -999px -999px,transparent 0%,transparent 180px,rgba(0,0,0) 240px);opacity:0.82;transition:none;"></div></div><script>(function(){var wrap=document.getElementById("spw_815a82");var el=document.getElementById("sp_815a82");var r=180,soft=60;wrap.addEventListener("mousemove",function(e){var rect=wrap.getBoundingClientRect();var x=e.clientX-rect.left,y=e.clientY-rect.top;el.style.background="radial-gradient(circle "+r+"px at "+x+"px "+y+"px,transparent 0%,transparent "+r+"px,rgba(0,0,0,1) "+(r+soft)+"px)";});wrap.addEventListener("mouseleave",function(){el.style.background="radial-gradient(circle "+r+"px at -999px -999px,transparent 0%,transparent "+r+"px,rgba(0,0,0,1) "+(r+soft)+"px)";});})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>radius</td><td>integer. Spotlight radius px. Default 180.</td><td>optional</td></tr><tr><td>darkness</td><td>number. Overlay opacity 0–1. Default 0.82.</td><td>optional</td></tr><tr><td>colour</td><td>string. Overlay colour. Default</td><td>optional</td></tr><tr><td>soft_edge</td><td>integer. Feather distance px beyond radius. Default 60.</td><td>optional</td></tr></tbody></table>

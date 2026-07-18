@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="font-family:system-ui,sans-serif;padding:28px;border-radius:14px;background:rgba(52,211,153,0.07);border:1px solid #34d399;text-align:center;"><div style="font-size:3rem;font-weight:800;color:#34d399;">1500%</div><div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">✅ Passed</div><div style="color:#6b7280;font-size:0.85rem;">75 / 5 correct</div><div style="margin-top:12px;"></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>score</td><td>integer (required). Number of correct answers.</td><td>required</td></tr><tr><td>total</td><td>integer (required). Total number of questions.</td><td>required</td></tr><tr><td>quiz_id</td><td>string (required). ID used to write score to progress_store.</td><td>required</td></tr><tr><td>pass_mark</td><td>integer. Percentage required to pass. Default 70.</td><td>optional</td></tr><tr><td>time_secs</td><td>integer. Time taken in seconds for display.</td><td>optional</td></tr><tr><td>questions</td><td>array. Array of {label, correct} for per-question breakdown dots.</td><td>optional</td></tr><tr><td>next_url</td><td>string. URL for Continue button (shown when passed).</td><td>optional</td></tr><tr><td>retry_url</td><td>string. URL for Retry button.</td><td>optional</td></tr></tbody></table>

@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;text-align:center;"><div style="font-size:clamp(2.5rem,6vw,4rem);font-weight:800;color:var(--a2ui-accent,#6366f1);font-variant-numeric:tabular-nums;"><span id="cu_2dae7f">0</span></div></div><script>(function(){var el=document.getElementById("cu_2dae7f");var end=1;var dur=1400;var start=performance.now();function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}(function frame(now){var t=Math.min((now-start)/dur,1);el.textContent=Math.round(ease(t)*end);if(t<1)requestAnimationFrame(frame);})( start);})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>value</td><td>integer. Target number to count to.</td><td>required</td></tr><tr><td>label</td><td>string. Descriptor shown below the number.</td><td>optional</td></tr><tr><td>prefix</td><td>string. Text before the number (e.g. "$").</td><td>optional</td></tr><tr><td>suffix</td><td>string. Text after the number (e.g. "%", "k").</td><td>optional</td></tr><tr><td>colour</td><td>string. Glow colour. Default</td><td>optional</td></tr><tr><td>duration</td><td>integer. Count-up duration ms. Default 1800.</td><td>optional</td></tr><tr><td>size</td><td>string. Font-size. Default 4rem.</td><td>optional</td></tr></tbody></table>

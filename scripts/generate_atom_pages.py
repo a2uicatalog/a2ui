@@ -8,6 +8,7 @@ Run:
 """
 import base64
 import json
+import os
 import re
 import sys
 import zlib
@@ -735,12 +736,76 @@ def live_preview(atom):
 </div>"""
 
 
+def templates_selector(atom):
+    """For atoms with a declared ChildList field (schema.yaml `children:`), list
+    each child's componentId as a clickable button that scrolls to and briefly
+    highlights the matching rendered element (tagged data-component-id by the
+    renderer). Generic over any current/future ChildList atom — not specific
+    to article_journey — driven entirely by the schema's children: declaration
+    and the curated example block, no per-atom code needed."""
+    atom_type = atom.get("type", "")
+    children = atom.get("children") or {}
+    if not children or atom_type not in _RENDERER_TYPES:
+        return ""
+    field = next(iter(children))          # e.g. "steps" for article_journey
+    block = _EXAMPLE_BLOCKS.get(atom_type) or json.loads(example_payload(atom))
+    items = block.get(field) or []
+    if not isinstance(items, list) or not items:
+        return ""
+    buttons = []
+    for i, child in enumerate(items):
+        if not isinstance(child, dict):
+            continue
+        cid = child.get("id") or f"{field[:-1] if field.endswith('s') else field}-{i + 1}"
+        label = child.get("title") or child.get("label") or child.get("badge") or cid
+        buttons.append(
+            f'<button type="button" class="template-btn" data-target="{_esc_attr(cid)}">'
+            f'{_esc_attr(str(label))}</button>')
+    if not buttons:
+        return ""
+    return f"""
+<div class="section">
+  <div class="label">Templates ({len(buttons)} componentId{'s' if len(buttons) != 1 else ''} in <code>{field}</code>)</div>
+  <div class="template-btns">{''.join(buttons)}</div>
+</div>
+<style>
+.template-btns{{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}}
+.template-btn{{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft-bg);
+  border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:.01em}}
+.template-btn:hover{{filter:brightness(1.05)}}
+.template-btn.active{{outline:2px solid var(--accent);outline-offset:1px}}
+[data-component-id].tpl-highlight{{box-shadow:0 0 0 3px var(--accent, #6366f1);border-radius:10px}}
+</style>
+<script>
+(function(){{
+  document.querySelectorAll('.template-btn').forEach(function(btn){{
+    btn.addEventListener('click', function(){{
+      var id = btn.getAttribute('data-target');
+      var el = document.querySelector('.preview-box [data-component-id="' + CSS.escape(id) + '"]');
+      document.querySelectorAll('.template-btn').forEach(function(b){{ b.classList.remove('active'); }});
+      document.querySelectorAll('.tpl-highlight').forEach(function(e){{ e.classList.remove('tpl-highlight'); }});
+      if (!el) return;
+      btn.classList.add('active');
+      el.classList.add('tpl-highlight');
+      el.scrollIntoView({{behavior:'smooth', block:'center'}});
+      setTimeout(function(){{ el.classList.remove('tpl-highlight'); }}, 2200);
+    }});
+  }});
+}})();
+</script>"""
+
+
+def _esc_attr(s):
+    return str(s).replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;')
+
+
 def render_page(atom):
     atom_type    = atom.get("type", "")
     desc         = atom.get("description", "")
     compact      = atom.get("compact_description", "")
     display_name = atom_type.replace("_", " ").title()
     preview  = live_preview(atom)
+    templates = templates_selector(atom)
     _surfaces = atom.get("surfaces", {}).get("works_on", [])
     _gas_only = _surfaces == ["google-apps-script-web"]
     try_btn  = (
@@ -777,6 +842,8 @@ def render_page(atom):
   {degraded_notes(atom)}
 
   {preview}
+
+  {templates}
 
   <div class="section">
     <div class="label">Fields</div>
@@ -2576,8 +2643,13 @@ def main():
         raw = yaml.safe_load(f)
 
     blocks = raw.get("blocks", [])
-    # Staging: only stable atoms are published (stage: preview stays repo-only)
-    blocks = [b for b in blocks if b.get("stage", "stable") == "stable"]
+    # Staging: only stable, non-private atoms are published (stage: preview
+    # stays repo-only; visibility: private stays out of the public build
+    # regardless of stage — see tests/test_staging.py). A2UI_CATALOG_FULL=1
+    # bypasses both, for the gated full-catalogue build only.
+    _full = os.environ.get("A2UI_CATALOG_FULL") == "1"
+    blocks = [b for b in blocks if _full or (
+        b.get("stage", "stable") == "stable" and b.get("visibility") != "private")]
 
     # Deduplicate by type
     seen, unique = set(), []

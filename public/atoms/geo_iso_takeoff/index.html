@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="position:relative;margin:1rem 0;"><canvas id="git56373" style="width:100%;height:260px;border-radius:12px;background:#0a1628;display:block;"></canvas><div style="position:absolute;bottom:12px;left:16px;font-size:0.78rem;color:rgba(255,255,255,0.5);"> Takeoff</div></div><script>(function(){var c=document.getElementById("git56373");c.width=c.offsetWidth||600;c.height=260;var W=c.width,H=c.height,x=c.getContext("2d");var t=0,py=H*0.75;(function loop(){requestAnimationFrame(loop);x.clearRect(0,0,W,H);x.strokeStyle="#1e40af";x.lineWidth=2;x.beginPath();x.moveTo(0,H*0.8);x.lineTo(W,H*0.8);x.stroke();var px=W*0.2+t*120%W;py=H*0.75-Math.pow(t*0.15,2)*H*0.6;py=Math.max(H*0.1,py);var angle=-Math.atan2(H*0.75-py,120*0.016)*0.3;x.save();x.translate(px,py);x.rotate(angle);x.fillStyle="#e0e7ff";x.beginPath();x.ellipse(0,0,20,6,0,0,Math.PI*2);x.fill();x.fillStyle="#c7d2fe";x.beginPath();x.moveTo(-5,-6);x.lineTo(10,0);x.lineTo(-5,0);x.closePath();x.fill();x.restore();t+=0.016;if(t>2.5)t=0;})();})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. HUD title line. Default "LFBO RWY 32L — A321neo DEPARTURE".</td><td>optional</td></tr><tr><td>airline</td><td>string. ICAO airline code for accent colour — AIB, EZY, AFR, BAW, DLH, RYR. Default AIB.</td><td>optional</td></tr><tr><td>aircraft_type</td><td>string. ICAO aircraft type code — A21N (A321neo), A320, B738. Default A21N.</td><td>optional</td></tr></tbody></table>

@@ -19970,6 +19970,201 @@ def _render_comparison_morph(b: dict) -> str:
             '</div></div>')
 _RENDERERS["comparison_morph"] = _render_comparison_morph
 
+_JOURNEY_PALETTE_LIGHT = {
+    'paper': '#EDEAE1', 'paper_raised': '#F6F4ED', 'ink': '#1B1E1A', 'ink_soft': '#565A4E',
+    'line': '#D6D0BF', 'accent': '#8C5B16', 'accent_soft': '#E4D3AC', 'blocked': '#96432A',
+    'blocked_soft': '#EFDACE', 'cleared': '#47643F', 'cleared_soft': '#DBE4D2',
+    'mono_bg': '#23261E', 'mono_fg': '#EDE8DA', 'mono_accent': '#D5A64E',
+}
+_JOURNEY_PALETTE_DARK = {
+    'paper': '#15160F', 'paper_raised': '#1D1F16', 'ink': '#EEEAE0', 'ink_soft': '#ACA997',
+    'line': '#34362A', 'accent': '#DBAD57', 'accent_soft': '#3A2F17', 'blocked': '#DD8862',
+    'blocked_soft': '#3B2419', 'cleared': '#93B382', 'cleared_soft': '#212F1E',
+    'mono_bg': '#0C0D08', 'mono_fg': '#ECE7D8', 'mono_accent': '#E7BC70',
+}
+
+def _journey_palette(b: dict) -> dict:
+    base = dict(_JOURNEY_PALETTE_DARK if b.get('theme') == 'dark' else _JOURNEY_PALETTE_LIGHT)
+    base.update({k: v for k, v in (b.get('palette') or {}).items() if k in base and v})
+    return base
+
+def _mdcode(s: str) -> str:
+    """Escape then turn `word` spans into <code>word</code> — the light markdown this atom's copy leans on."""
+    import re
+    esc = _esc(s)
+    return re.sub(r'`([^`]+)`', r'<code style="font-family:ui-monospace,\'SF Mono\',Consolas,monospace;'
+                  r'font-size:0.88em;background:var(--accent-soft,#E4D3AC);color:var(--accent,#8C5B16);'
+                  r'padding:0.05em 0.35em;border-radius:3px;">\1</code>', esc)
+
+_JOURNEY_MONO = "'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace"
+_JOURNEY_SERIF = "'IBM Plex Serif',Georgia,'Iowan Old Style','Times New Roman',serif"
+_JOURNEY_FONT_BASE = "https://a2uicatalog.ai/fonts/ibm-plex"
+_JOURNEY_FONT_FACES = (
+    ("IBM Plex Mono", 400, "normal", "ibm-plex-mono-400.woff2"),
+    ("IBM Plex Mono", 500, "normal", "ibm-plex-mono-500.woff2"),
+    ("IBM Plex Mono", 600, "normal", "ibm-plex-mono-600.woff2"),
+    ("IBM Plex Mono", 700, "normal", "ibm-plex-mono-700.woff2"),
+    ("IBM Plex Serif", 400, "normal", "ibm-plex-serif-400.woff2"),
+    ("IBM Plex Serif", 400, "italic", "ibm-plex-serif-400-italic.woff2"),
+    ("IBM Plex Serif", 600, "normal", "ibm-plex-serif-600.woff2"),
+)
+
+def _journey_font_css() -> str:
+    faces = "".join(
+        f"@font-face{{font-family:'{fam}';font-weight:{wt};font-style:{sty};"
+        f"font-display:swap;src:url({_JOURNEY_FONT_BASE}/{fname}) format('woff2');}}"
+        for fam, wt, sty, fname in _JOURNEY_FONT_FACES
+    )
+    return f"<style>{faces}</style>"
+
+def _render_journey_step(b: dict) -> str:
+    state = b.get('status', 'blocked')
+    state = state if state in ('blocked', 'cleared', 'pending') else 'blocked'
+    color_var, soft_var = (f'var(--cleared,{_JOURNEY_PALETTE_LIGHT["cleared"]})', f'var(--cleared-soft,{_JOURNEY_PALETTE_LIGHT["cleared_soft"]})') \
+        if state == 'cleared' else (f'var(--blocked,{_JOURNEY_PALETTE_LIGHT["blocked"]})', f'var(--blocked-soft,{_JOURNEY_PALETTE_LIGHT["blocked_soft"]})')
+    if b.get('color'):
+        color_var = _esc(b['color'])
+    status_label = _esc(b.get('status_label', ''))
+    status_code = _esc(b.get('status_code', ''))
+    title = _mdcode(b.get('title', ''))
+    body = _mdcode(b.get('body', ''))
+    quote = _mdcode(b.get('quote', ''))
+
+    status_row = ''
+    if status_label or status_code:
+        status_row = (
+            f'<div style="display:flex;align-items:baseline;gap:0.6rem;margin-bottom:0.5rem;flex-wrap:wrap;">'
+            + (f'<span style="font-family:{_JOURNEY_MONO};font-weight:700;font-size:0.82rem;'
+               f'padding:0.12em 0.5em;border-radius:4px;background:{soft_var};color:{color_var};">{status_label}</span>'
+               if status_label else '')
+            + (f'<span style="font-family:{_JOURNEY_MONO};font-size:0.8rem;color:var(--ink-soft,{_JOURNEY_PALETTE_LIGHT["ink_soft"]});">{status_code}</span>'
+               if status_code else '')
+            + '</div>'
+        )
+
+    quote_html = ''
+    if quote:
+        quote_html = (
+            f'<blockquote style="margin:0;background:var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]});'
+            f'color:var(--mono-fg,{_JOURNEY_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
+            f'font-size:0.86rem;line-height:1.6;padding:0.9rem 1.05rem;border-radius:8px;max-width:58ch;">'
+            f'<span style="color:var(--mono-accent,{_JOURNEY_PALETTE_LIGHT["mono_accent"]});font-weight:600;margin-right:0.5em;">&gt;</span>'
+            f'{quote}</blockquote>'
+        )
+
+    return (
+        '<div style="padding-bottom:1.6rem;">'
+        + status_row
+        + (f'<h3 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:1.08rem;line-height:1.32;'
+           f'margin:0 0 0.55rem;color:var(--ink,{_JOURNEY_PALETTE_LIGHT["ink"]});">{title}</h3>' if title else '')
+        + (f'<p style="margin:0 0 0.9rem;max-width:60ch;line-height:1.6;color:var(--ink,{_JOURNEY_PALETTE_LIGHT["ink"]});">{body}</p>' if body else '')
+        + quote_html
+        + '</div>'
+    )
+
+_RENDERERS['journey_step'] = _render_journey_step
+
+
+def _render_article_journey(b: dict) -> str:
+    pal = _journey_palette(b)
+    css_vars = ';'.join(f'--{k.replace("_", "-")}:{v}' for k, v in pal.items())
+    steps = b.get('steps') or []
+    eyebrow = _esc(b.get('eyebrow', ''))
+    title = _esc(b.get('title', ''))
+    dek = _esc(b.get('dek', ''))
+    closing = _mdcode(b.get('closing_note', '')) if b.get('closing_note') else ''
+
+    tally = ''
+    if b.get('show_tally', True) and steps:
+        chips = []
+        for s in steps:
+            st = s.get('status', 'blocked')
+            st = st if st in ('blocked', 'cleared') else 'blocked'
+            bg = 'var(--cleared-soft)' if st == 'cleared' else 'var(--blocked-soft)'
+            fg = 'var(--cleared)' if st == 'cleared' else 'var(--blocked)'
+            chips.append(
+                f'<span style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:0.74rem;'
+                f'padding:0.22em 0.55em;border-radius:5px;background:{bg};color:{fg};">{_esc(s.get("status_label", "?"))}</span>'
+            )
+        tally = (
+            '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:0.9rem 1rem;'
+            'background:var(--paper-raised);border:1px solid var(--line);border-radius:10px;margin-bottom:1.8rem;">'
+            f'<span style="font-family:{_JOURNEY_MONO};font-size:0.72rem;letter-spacing:0.07em;'
+            'text-transform:uppercase;color:var(--ink-soft);margin-right:0.35rem;">Sequence</span>'
+            + ' &rarr; '.join(chips) + '</div>'
+        )
+
+    rows = []
+    for i, step in enumerate(steps):
+        state = step.get('status', 'blocked')
+        state = state if state in ('blocked', 'cleared', 'pending') else 'blocked'
+        node_bg = 'var(--cleared-soft)' if state == 'cleared' else 'var(--blocked-soft)'
+        node_fg = 'var(--cleared)' if state == 'cleared' else 'var(--blocked)'
+        is_last = i == len(steps) - 1
+        connector = '' if is_last else '<div style="width:1.5px;flex:1;background:var(--line);margin:0.35rem 0;min-height:1.6rem;"></div>'
+        fn = _RENDERERS.get(step.get('component') or step.get('type') or 'journey_step', _render_journey_step)
+        card_html = fn(step)
+        component_id = _esc(step.get('id') or f'step-{i + 1}')
+        rows.append(
+            f'<div data-component-id="{component_id}" style="display:grid;grid-template-columns:2.4rem 1fr;gap:1rem;'
+            'scroll-margin-top:1.5rem;transition:box-shadow 0.3s,border-radius 0.3s;">'
+            '<div style="display:flex;flex-direction:column;align-items:center;">'
+            f'<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
+            f'justify-content:center;font-family:{_JOURNEY_MONO};font-weight:600;font-size:0.85rem;'
+            f'flex-shrink:0;background:{node_bg};color:{node_fg};">{_esc(step.get("badge", str(i + 1)))}</div>'
+            + connector +
+            '</div>'
+            f'<div>{card_html}</div>'
+            '</div>'
+        )
+
+    stats_html = ''
+    if b.get('show_stats', True):
+        stats = b.get('stats')
+        if not stats:
+            blocked_n = sum(1 for s in steps if s.get('status', 'blocked') != 'cleared')
+            cleared_n = sum(1 for s in steps if s.get('status') == 'cleared')
+            stats = [{'value': str(blocked_n), 'label': 'Blocking steps'}]
+            if cleared_n:
+                stats.append({'value': str(cleared_n), 'label': 'Cleared'})
+        tiles = ''.join(
+            f'<div style="background:var(--paper-raised);padding:1rem 0.9rem;">'
+            f'<span style="font-family:{_JOURNEY_MONO};font-weight:700;font-size:1.5rem;color:var(--accent);'
+            f'display:block;line-height:1;margin-bottom:0.3rem;">{_esc(s.get("value", ""))}</span>'
+            f'<span style="font-family:{_JOURNEY_MONO};font-size:0.68rem;letter-spacing:0.05em;text-transform:uppercase;'
+            f'color:var(--ink-soft);">{_esc(s.get("label", ""))}</span></div>'
+            for s in stats
+        )
+        stats_html = (
+            f'<div style="display:grid;grid-template-columns:repeat({max(len(stats), 1)},1fr);gap:1px;'
+            'background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;'
+            f'margin-top:0.5rem;">{tiles}</div>'
+        )
+
+    font_css = _journey_font_css() if b.get('use_plex_fonts', True) else ''
+
+    return (
+        font_css
+        + f'<div style="{css_vars};font-family:{_JOURNEY_SERIF};background:var(--paper);color:var(--ink);'
+        'padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;border:1px solid var(--line);">'
+        + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
+           'text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:0.6em;'
+           f'margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;background:var(--accent);'
+           f'display:inline-block;"></span>{eyebrow}</div>' if eyebrow else '')
+        + (f'<h2 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:clamp(1.4rem,3.6vw,1.9rem);'
+           f'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">{title}</h2>' if title else '')
+        + (f'<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
+           f'margin:0 0 1.6rem;">{dek}</p>' if dek else '')
+        + tally
+        + f'<div style="display:flex;flex-direction:column;gap:0;">{"".join(rows)}</div>'
+        + stats_html
+        + (f'<p style="font-style:italic;color:var(--ink-soft);max-width:58ch;margin:1.6rem 0 0;">{closing}</p>' if closing else '')
+        + '</div>'
+    )
+
+_RENDERERS['article_journey'] = _render_article_journey
+
+
 def _render_tooltip_glossary(b: dict) -> str:
     terms = b.get('terms', {})
     text = b.get('text', '')

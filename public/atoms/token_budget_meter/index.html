@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:0.75rem 0;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;"><div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;"><span style="font-size:0.8rem;font-weight:600;color:#374151;">Context window</span><span style="font-size:0.78rem;font-weight:700;color:#22c55e;">1 / 5 (20%)</span></div><div style="background:#e5e7eb;border-radius:4px;height:10px;overflow:hidden;"><div style="width:20.0%;height:100%;background:#22c55e;border-radius:4px;"></div></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>used</td><td>integer. Tokens consumed so far.</td><td>required</td></tr><tr><td>total</td><td>integer. Model context window size, e.g. 200000.</td><td>required</td></tr><tr><td>model</td><td>string. Model name shown as subtitle, e.g. "claude-sonnet-4-6".</td><td>optional</td></tr><tr><td>label</td><td>string. Override the default "Context window" heading.</td><td>optional</td></tr><tr><td>warn_at</td><td>number. Percentage threshold to shift to amber. Default 70.</td><td>optional</td></tr><tr><td>critical_at</td><td>number. Percentage threshold to shift to red. Default 90.</td><td>optional</td></tr><tr><td>animate</td><td>boolean. Count up from 0 to `used` using CSS @property animation. Bar grows in sync. Uses dark styling suited to Meet stage. Default false (static).</td><td>optional</td></tr><tr><td>duration</td><td>number. Animation duration in seconds when animate is true. Default 2.0.</td><td>optional</td></tr></tbody></table>

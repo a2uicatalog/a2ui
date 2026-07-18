@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;text-align:center;"><div id="mag_d18117" style="display:inline-block;cursor:pointer;transition:transform 0.12s ease-out;"><span style="color:#94a3b8;font-style:italic;">magnetic element</span></div></div><script>(function(){var el=document.getElementById("mag_d18117");var r=120,s=0.4;el.addEventListener("mousemove",function(e){var rect=el.getBoundingClientRect();var cx=rect.left+rect.width/2;var cy=rect.top+rect.height/2;var dx=e.clientX-cx;var dy=e.clientY-cy;var dist=Math.sqrt(dx*dx+dy*dy);if(dist<r){el.style.transform="translate("+(dx*s)+"px,"+(dy*s)+"px)";}});el.addEventListener("mouseleave",function(){el.style.transform="translate(0,0)";});})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. Text label for the default pill style.</td><td>optional</td></tr><tr><td>content</td><td>string. Raw HTML to use instead of the default pill.</td><td>optional</td></tr><tr><td>accent</td><td>string. Pill background colour. Default</td><td>optional</td></tr><tr><td>radius</td><td>integer. Activation distance px. Default 120.</td><td>optional</td></tr><tr><td>strength</td><td>number. Pull factor 0–1. Default 0.4.</td><td>optional</td></tr></tbody></table>

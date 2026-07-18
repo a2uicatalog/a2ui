@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><style>.ros_3c4c0d{opacity:0;transform:translateY(32px);transition:opacity 0.7s ease,transform 0.7s ease;}.ros_3c4c0d.visible{opacity:1;transform:translate(0);}</style><div class="ros_3c4c0d" style="padding:24px 28px;background:#f8fafc;border-left:3px solid #4f46e5;border-radius:0 10px 10px 0;margin:1rem 0;"><div style="font-weight:700;color:#0f172a;margin-bottom:6px;">Revealed on scroll</div><div style="font-size:0.9rem;color:#64748b;line-height:1.6;">This content fades in as you scroll it into view using the Intersection Observer API.</div></div><script>(function(){var el=document.currentScript.previousElementSibling;if(!el)return;var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("visible");io.unobserve(e.target);}})},{"threshold":0.15});io.observe(el);})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. Bold heading inside the block.</td><td>optional</td></tr><tr><td>body</td><td>string. Body text inside the block.</td><td>optional</td></tr><tr><td>direction</td><td>"up" | "down" | "left" | "right"  (optional, default "up"). Drift direction before reveal.</td><td>optional</td></tr><tr><td>duration</td><td>number. Transition duration in seconds. Default 0.7.</td><td>optional</td></tr><tr><td>accent</td><td>string. Left border accent colour. Default "#4f46e5".</td><td>optional</td></tr><tr><td>background</td><td>string. Block background. Default "#f8fafc".</td><td>optional</td></tr></tbody></table>

@@ -233,6 +233,7 @@ a2ui-display-v1:
 a2ui-editorial-v1:
 - abbr_tooltip
 - anchor_list
+- article_journey
 - article_series_nav
 - author_bio_card
 - closing
@@ -244,6 +245,7 @@ a2ui-editorial-v1:
 - glossary_term
 - headline_list
 - intro
+- journey_step
 - news_digest
 - particle_burst
 - post_metadata_bar

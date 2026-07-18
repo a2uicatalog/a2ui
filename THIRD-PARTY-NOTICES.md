@@ -6,18 +6,24 @@ documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a
 `source` field in `atoms/schema.yaml` identifying its origin.
 
-**Two declared exceptions: PDF.js and QR-Code-generator** (below) are vendored
-WHOLESALE, unmodified, not recompiled — a real binary-format parser and a
-Reed-Solomon-error-correction-coded matrix encoder are both out of scope to
-reimplement (a subtly-wrong hand-rolled QR encoder would produce codes that
-*look* right but don't scan — not a visually-catchable bug, unlike this
-policy's other adaptations, which are simple CSS/HTML patterns). PDF.js ships
-only inside the MCP Apps bundle (`file_upload` atom's PDF branch), never
-fetched at runtime, so the CSP-clean/self-contained invariant (`mcpUiCsp()`,
-`resourceDomains: []`) holds even though this policy's general rule does not.
-QR-Code-generator ships inline with every atom render (Python for static
-surfaces, the same vendored algorithm ported to JS for GAS/MCP Apps) with no
-network calls either.
+**Three declared exceptions: PDF.js, QR-Code-generator, and IBM Plex** (below)
+are vendored WHOLESALE, unmodified, not recompiled — a real binary-format
+parser, a Reed-Solomon-error-correction-coded matrix encoder, and a font's
+actual glyph outlines are all out of scope to reimplement (a subtly-wrong
+hand-rolled QR encoder would produce codes that *look* right but don't scan —
+not a visually-catchable bug, unlike this policy's other adaptations, which
+are simple CSS/HTML patterns). PDF.js ships only inside the MCP Apps bundle
+(`file_upload` atom's PDF branch), never fetched at runtime, so the
+CSP-clean/self-contained invariant (`mcpUiCsp()`, `resourceDomains: []`)
+holds even though this policy's general rule does not. QR-Code-generator
+ships inline with every atom render (Python for static surfaces, the same
+vendored algorithm ported to JS for GAS/MCP Apps) with no network calls
+either. **IBM Plex is the one exception that DOES introduce a runtime
+network fetch** (a `@font-face src: url(...)` against `a2uicatalog.ai`'s own
+`/fonts/` path, same-origin, opt-in per atom via `use_plex_fonts`) — on any
+surface whose CSP blocks that fetch (e.g. a strict MCP Apps `resourceDomains`
+policy), the font-family fallback stack degrades silently to system fonts;
+nothing breaks, the atom just looks plainer.
 
 ---
 
@@ -50,6 +56,25 @@ network calls either.
 - **Used by:** the `schema_qr` atom (all surfaces for the static render;
   `web`/`google-apps-script-web`/`mcp-apps` additionally for
   `is_interactive: true`)
+
+---
+
+## IBM Plex (IBM Corp.)
+
+- **Project:** IBM Plex — the IBM Plex Mono and IBM Plex Serif type families
+- **Website:** https://github.com/IBM/plex
+- **License:** SIL Open Font License, Version 1.1
+- **Copyright:** Copyright © 2017 IBM Corp. with Reserved Font Name "Plex"
+- **Vendored as:** `public/fonts/ibm-plex/ibm-plex-{mono,serif}-<weight>[-italic].woff2`
+  (7 static WOFF2 files: Mono 400/500/600/700, Serif 400/400-italic/600,
+  Latin subset, unmodified Google Fonts release builds; see `LICENSE.txt`
+  alongside them)
+- **Used by:** the `article_journey`/`journey_step` atoms when
+  `use_plex_fonts: true` (default) — an inline `@font-face` block referencing
+  these files by same-origin URL (`https://a2uicatalog.ai/fonts/ibm-plex/...`).
+  This is the one vendored asset in this policy fetched over the network at
+  render time rather than inlined; see the exceptions note above for the CSP
+  fallback behaviour.
 
 ---
 

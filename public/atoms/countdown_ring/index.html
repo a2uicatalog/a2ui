@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><style>@keyframes cr_a36130{from{stroke-dasharray:232.48 0;}to{stroke-dasharray:0 232.48;}}</style><div style="margin:1rem 0;display:inline-flex;flex-direction:column;align-items:center;"><div style="position:relative;width:80px;height:80px;"><svg width="80" height="80" style="transform:rotate(-90deg);"><circle cx="40.0" cy="40.0" r="37.0" fill="none" stroke="#334155" stroke-width="6"/><circle id="crring_a36130" cx="40.0" cy="40.0" r="37.0" fill="none" stroke="var(--a2ui-accent,#6366f1)" stroke-width="6" stroke-linecap="round" stroke-dasharray="232.48 0" style="animation:cr_a36130 60s linear forwards;"/></svg><div id="crtxt_a36130" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#f1f5f9;">60</div></div><div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;text-align:center;">Countdown Ring</div></div><script>(function(){var t=60;var el=document.getElementById("crtxt_a36130");var iv=setInterval(function(){t--;if(el)el.textContent=t;if(t<=0)clearInterval(iv);},1000);})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>duration_sec</td><td>total countdown in seconds (required, default 60)</td><td>required</td></tr><tr><td>size</td><td>ring diameter in px (default 80)</td><td>required</td></tr><tr><td>color</td><td>ring colour (default var(--a2ui-accent))</td><td>required</td></tr><tr><td>label</td><td>caption below</td><td>required</td></tr></tbody></table>

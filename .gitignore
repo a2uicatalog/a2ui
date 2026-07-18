@@ -82,3 +82,10 @@ apps-script-surface/graduated-*/
 debug.md
 **/debug.md
 *.debug.md
+
+# ── gated full-catalogue build (public-full/, deployed to full.a2uicatalog.ai
+# via wrangler-full.toml) — contains rendered visibility:private atom content
+# (article_journey, journey_step). MUST NOT reach the public GitHub repo —
+# that would defeat the point of gating it behind Cloudflare Access. Local
+# build artifact only, regenerated on demand via `ops.py run catalog-rebuild-full`.
+public-full/

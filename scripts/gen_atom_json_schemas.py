@@ -29,6 +29,7 @@ Run:
 import argparse
 import ast
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -211,7 +212,11 @@ def main() -> None:
     args = parser.parse_args()
 
     data = yaml.safe_load(SCHEMA_YAML.read_text())
-    blocks = [b for b in data["blocks"] if b.get("stage") != "preview"]
+    if os.environ.get("A2UI_CATALOG_FULL") == "1":
+        blocks = list(data["blocks"])
+    else:
+        blocks = [b for b in data["blocks"]
+                  if b.get("stage") != "preview" and b.get("visibility") != "private"]
 
     per_atom = [build_atom_schema(b) for b in blocks]
     combined = {

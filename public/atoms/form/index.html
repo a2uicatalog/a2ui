@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="border:1px solid #e0e0e0;border-radius:10px;padding:24px;margin:1.5rem 0;background:#fff;"><div style="display:flex;flex-direction:column;gap:14px;"><div style="display:flex;gap:10px;justify-content:flex-end;padding-top:6px;"><button type="button" style="padding:9px 24px;border-radius:6px;border:none;background:#1a73e8;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">Submit</button></div></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. Form heading shown above fields.</td><td>optional</td></tr><tr><td>submit_label</td><td>string (optional, default 'Submit'). Label for the primary submit button.</td><td>optional</td></tr><tr><td>cancel_label</td><td>string. If set, renders a secondary cancel button.</td><td>optional</td></tr><tr><td>fields</td><td>{'type': 'array', 'items': {'label': 'string. Visible field label.', 'name': 'string. Field identifier used in form submission.', 'type': 'string. One of: text, email, password, number, url, textarea, select, radio, checkbox, switch, slider, date. Default: text.', 'placeholder': 'string.', 'options': 'array of {value, label} (required for select, radio, checkbox types).', 'default_value': 'string | boolean | number.', 'rules': "array of strings. Validation rules e.g. ['required', 'email', 'minLength:2']."}}</td><td>optional</td></tr></tbody></table>

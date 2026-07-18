@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div id="cgw_41d9c7" style="position:relative;overflow:hidden;height:220px;background:var(--bg,#0c1117);border-radius:8px;"><div id="cg_41d9c7" style="position:absolute;pointer-events:none;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,#6366f1 0%,transparent 70%);opacity:0.18;mix-blend-mode:screen;transform:translate(-50%,-50%);top:-999px;left:-999px;transition:none;"></div></div><script>(function(){var wrap=document.getElementById("cgw_41d9c7");var el=document.getElementById("cg_41d9c7");var tx=-999,ty=-999,cx=-999,cy=-999;wrap.addEventListener("mousemove",function(e){var r=wrap.getBoundingClientRect();tx=e.clientX-r.left;ty=e.clientY-r.top;});wrap.addEventListener("mouseleave",function(){tx=-999;ty=-999;});(function loop(){cx+=(tx-cx)*0.1;cy+=(ty-cy)*0.1;el.style.left=Math.round(cx)+"px";el.style.top=Math.round(cy)+"px";requestAnimationFrame(loop);})();})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>colour</td><td>string. Orb colour. Default</td><td>optional</td></tr><tr><td>size</td><td>integer. Orb diameter in px. Default 380.</td><td>optional</td></tr><tr><td>opacity</td><td>number. Orb opacity 0–1. Default 0.18.</td><td>optional</td></tr><tr><td>speed</td><td>number. Lerp factor 0–1 — lower = more lag. Default 0.1.</td><td>optional</td></tr><tr><td>blend</td><td>string. CSS mix-blend-mode. Default screen.</td><td>optional</td></tr></tbody></table>

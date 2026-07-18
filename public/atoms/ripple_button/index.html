@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><style>@keyframes rpl_b2d960{from{transform:scale(0);opacity:1;}to{transform:scale(2.5);opacity:0;}}</style><div style="margin:1rem 0;text-align:center;"><<button onclick="var r=document.createElement("span");var rect=this.getBoundingClientRect();var size=Math.max(rect.width,rect.height);r.style.cssText="position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);width:"+size+"px;height:"+size+"px;left:"+(event.clientX-rect.left-size/2)+"px;top:"+(event.clientY-rect.top-size/2)+"px;animation:rpl_b2d960 0.55s ease-out;pointer-events:none;";this.appendChild(r);setTimeout(function(){r.remove();},600);" style="position:relative;overflow:hidden;display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:0.95rem;padding:12px 28px;border:none;border-radius:10px;cursor:pointer;text-decoration:none;">Ripple Button</button></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>button text (required)</td><td>required</td></tr><tr><td>url</td><td>optional link target</td><td>optional</td></tr><tr><td>icon</td><td>optional emoji or icon prefix</td><td>optional</td></tr><tr><td>accent</td><td>button background colour</td><td>required</td></tr><tr><td>size</td><td>sm, md (default), lg</td><td>required</td></tr><tr><td>full_width</td><td>stretch to container width (default false)</td><td>required</td></tr><tr><td>align</td><td>flex-start (default), center, right</td><td>required</td></tr></tbody></table>

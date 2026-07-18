@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #dbeafe;border-radius:8px;background:#eff6ff;font-size:0.82rem;color:#1d4ed8;">📡 ADS-B Feed · Live ADS-B data requires server-side fetch.</div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>name</td><td>string. Feed name other atoms subscribe to. Default adsb.</td><td>optional</td></tr><tr><td>lat_min</td><td>number. Bounding box south edge degrees. Default 43.1 (LFBO TMA).</td><td>optional</td></tr><tr><td>lat_max</td><td>number. Bounding box north edge degrees. Default 44.2.</td><td>optional</td></tr><tr><td>lon_min</td><td>number. Bounding box west edge degrees. Default 0.7.</td><td>optional</td></tr><tr><td>lon_max</td><td>number. Bounding box east edge degrees. Default 2.0.</td><td>optional</td></tr><tr><td>refresh</td><td>integer. Client refresh interval seconds. Default 15.</td><td>optional</td></tr><tr><td>filter_ground</td><td>boolean. Exclude on-ground traffic. Default true.</td><td>optional</td></tr><tr><td>cache</td><td>integer. Server-side cache TTL seconds. Default 15.</td><td>optional</td></tr></tbody></table>

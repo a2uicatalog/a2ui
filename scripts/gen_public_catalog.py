@@ -79,9 +79,15 @@ def _prop_schema(fname, fspec):
 def load_blocks():
     with open(SCHEMA) as f:
         blocks = yaml.safe_load(f)["blocks"]
-    # Staging: only stable atoms are published; preview stays repo-only.
+    # Staging: only stable, non-private atoms are published; preview stays
+    # repo-only and visibility: private stays gated regardless of stage.
+    # A2UI_CATALOG_FULL=1 bypasses both for the gated full-catalogue build.
     # Runbook validation still checks against ALL types (renderer reality).
-    stable = [b for b in blocks if b.get("stage", "stable") == "stable"]
+    if os.environ.get("A2UI_CATALOG_FULL") == "1":
+        stable = list(blocks)
+    else:
+        stable = [b for b in blocks if b.get("stage", "stable") == "stable"
+                  and b.get("visibility") != "private"]
     return stable, {b["type"] for b in blocks}
 
 

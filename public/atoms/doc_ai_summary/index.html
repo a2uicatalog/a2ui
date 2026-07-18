@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;padding:16px 20px;border:1px solid #1a73e833;border-radius:12px;background:#1a73e808;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:1.1rem;">✨</span><span style="font-weight:700;font-size:0.9rem;color:#1a73e8;">AI Summary</span><span style="font-size:0.72rem;color:#9ca3af;margin-left:auto;">gemini</span></div><div style="font-size:0.78rem;color:#9ca3af;margin-top:8px;">Live AI summary requires server-side auth. Doc: Doc id</div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>doc_id</td><td>string. Google Doc ID to summarise.</td><td>required</td></tr><tr><td>prompt</td><td>string. Instruction sent to Gemini before the doc text.</td><td>optional</td></tr><tr><td>title</td><td>string. Override card title. Defaults to the doc name.</td><td>optional</td></tr><tr><td>model</td><td>string. Gemini model override. Defaults to VERTEX_MODEL property.</td><td>optional</td></tr><tr><td>max_chars</td><td>integer. Max doc characters sent to Gemini. Default 12000.</td><td>optional</td></tr><tr><td>accent</td><td>string. Accent colour.</td><td>optional</td></tr><tr><td>show_meta</td><td>boolean. Show word count and doc link. Default true.</td><td>optional</td></tr></tbody></table>

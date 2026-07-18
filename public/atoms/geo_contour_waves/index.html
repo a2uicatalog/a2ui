@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="position:relative;"><canvas id="gcwd41d8" style="width:100%;height:280px;border-radius:12px;background:#0a1628;display:block;"></canvas></div><script>(function(){var c=document.getElementById("gcwd41d8");c.width=c.offsetWidth||600;c.height=280;var W=c.width,H=c.height,x=c.getContext("2d");var col="#6366f1",inten=1.00,t=0;(function loop(){requestAnimationFrame(loop);x.clearRect(0,0,W,H);var rows=12;for(var r=0;r<rows;r++){var y0=H*(r/rows);var amp=inten*20*(1-r/rows);x.beginPath();x.moveTo(0,y0);for(var px=0;px<=W;px+=4){var wave=Math.sin(px/60+t+r*0.4)*amp+Math.sin(px/30-t*1.3+r)*amp*0.5;x.lineTo(px,y0+wave);}x.strokeStyle=col;x.globalAlpha=0.08+r*(0.06/rows);x.lineWidth=1.5;x.stroke();x.globalAlpha=1;}t+=0.02;})();})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string</td><td>optional</td></tr><tr><td>color</td><td>string (optional, hex, default #a78bfa)</td><td>optional</td></tr><tr><td>intensity</td><td>number (optional, wave band count, default 4, max 8)</td><td>optional</td></tr><tr><td>height</td><td>number (optional, px, default 350)</td><td>optional</td></tr></tbody></table>

@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;"><div style="font-weight:700;font-size:0.875rem;color:#6366f1;margin-bottom:10px;">Inbox</div><div style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:0.875rem;font-weight:400;color:#111827;"></span><span style="font-size:0.72rem;color:#9ca3af;"></span></div><div style="font-size:0.82rem;font-weight:400;color:#374151;">(no subject)</div></div><div style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:0.875rem;font-weight:400;color:#111827;"></span><span style="font-size:0.72rem;color:#9ca3af;"></span></div><div style="font-size:0.82rem;font-weight:400;color:#374151;">(no subject)</div></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. Section label above carousel. Default "Inbox".</td><td>optional</td></tr><tr><td>count</td><td>integer. Number of threads, max 20. Default 10.</td><td>optional</td></tr><tr><td>accent</td><td>string. Accent colour for unread indicator and nav dot. Default</td><td>optional</td></tr><tr><td>items</td><td>array (static connector). Email objects for non-GAS surfaces.</td><td>required</td></tr><tr><td>auth_token</td><td>string (api connector). OAuth2 bearer token for REST API.</td><td>required</td></tr></tbody></table>

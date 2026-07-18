@@ -94,8 +94,11 @@ def _stable_atoms():
     catalogId files gen_public_catalog never writes (found 2026-07-10 when the
     first preview-only catalog, a2ui-competition-v1, produced a dangling ref)."""
     d = yaml.safe_load(open(SCHEMA))
+    if os.environ.get("A2UI_CATALOG_FULL") == "1":
+        return {b["type"] for b in d["blocks"] if isinstance(b, dict) and b.get("type")}
     return {b["type"] for b in d["blocks"]
-            if isinstance(b, dict) and b.get("type") and b.get("stage", "stable") == "stable"}
+            if isinstance(b, dict) and b.get("type") and b.get("stage", "stable") == "stable"
+            and b.get("visibility") != "private"}
 
 
 def _atom_processing():

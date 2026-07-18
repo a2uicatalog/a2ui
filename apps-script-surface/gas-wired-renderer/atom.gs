@@ -2451,6 +2451,34 @@ _RENDERERS['progress_circle'] = function(b) {
     (label ? '<div style="font-size:0.8rem;color:#94a3b8;margin-top:6px;text-align:center;">' + _esc(label) + '</div>' : '') + '</div>';
 };
 
+// Rasterizer-only counterpart to _RENDERERS['progress_circle'] above -- the
+// live version bakes its dash-reveal into a CSS class + @keyframes
+// (stroke-dasharray/dashoffset live in a <style> block, not as inline
+// attributes on the <circle>), which SvgRasterGas.gs's attribute-regex
+// reader can't see. This returns the same ring at its settled end state
+// (dashoffset = offset directly, no animation, no class) so the rasterizer
+// gets real inline attributes to read; the live animated card is untouched.
+// Also, unlike the live card, the percentage text is a real SVG <text> here
+// rather than a separately-positioned HTML overlay div -- the live overlay
+// sits outside the <svg> entirely, so the rasterizer (which only ever sees
+// the <svg>...</svg> fragment) would silently render the ring with no
+// number on it at all. Placed at the root rotation's own origin (50,50) so
+// it's unaffected by the ring's transform:rotate(-90deg) (a point rotated
+// about itself doesn't move, and glyph strokes are drawn upright
+// regardless of any rotation applied to their anchor point).
+function _svg_progress_circleGas(b) {
+  var value = Math.min(100, Math.max(0, parseInt(b.value || 0)));
+  var color = b.color || '#38bdf8';
+  var r = 36;
+  var circ = parseFloat((2 * Math.PI * r).toFixed(2));
+  var offset = parseFloat((circ * (1 - value / 100)).toFixed(2));
+  return '<svg width="120" height="120" viewBox="0 0 100 100" style="transform:rotate(-90deg);display:block;">'
+    + '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="#1e293b" stroke-width="9"/>'
+    + '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="9" stroke-linecap="round" stroke-dasharray="' + circ + '" stroke-dashoffset="' + offset + '"/>'
+    + '<text x="50" y="58" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#f1f5f9;">' + value + '%</text>'
+    + '</svg>';
+}
+
 // Stub atoms for comparison/ecommerce category
 ['action_required_card','feature_matrix','pricing_tier_card','pricing_tier_group','pros_cons_list','side_by_side_spec','product_spec_table','comparison_grid','versus_block','rating_comparison','capability_checklist','toggle_switch','expandable_text','image_hotspots','avatar_group','contributor_list','customer_logo_grid','social_proof_banner','media_mention_card','expert_endorsement','review_callout'].forEach(function(name) {
   _RENDERERS[name] = function(b) {
@@ -4055,6 +4083,213 @@ _RENDERERS['sheet_form'] = function(b) {
     + '<button type="submit" style="background:' + accent + ';color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:0.875rem;font-weight:600;cursor:pointer;font-family:inherit;">' + submit + '</button>'
     + '</form></div>'
     + script;
+};
+
+// ─── article_journey / journey_step ────────────────────────────────────────────
+// Gated-sequence field report: status-badged steps down a connecting rail,
+// an at-a-glance tally strip, an auto-derived stat footer. Colour is a full
+// CSS-custom-property palette (see _JOURNEY_PALETTE_LIGHT/_DARK) with
+// per-payload overrides via the `palette` field — journey_step reads the
+// SAME vars via var(--token, fallback), so it renders sane fallback colours
+// standalone and inherits the real palette only when nested inside
+// article_journey. Mirrors renderers/web_article.py's _render_article_journey
+// / _render_journey_step — keep both in sync if either changes.
+
+var _JOURNEY_PALETTE_LIGHT = {
+  paper: '#EDEAE1', paper_raised: '#F6F4ED', ink: '#1B1E1A', ink_soft: '#565A4E',
+  line: '#D6D0BF', accent: '#8C5B16', accent_soft: '#E4D3AC', blocked: '#96432A',
+  blocked_soft: '#EFDACE', cleared: '#47643F', cleared_soft: '#DBE4D2',
+  mono_bg: '#23261E', mono_fg: '#EDE8DA', mono_accent: '#D5A64E'
+};
+var _JOURNEY_PALETTE_DARK = {
+  paper: '#15160F', paper_raised: '#1D1F16', ink: '#EEEAE0', ink_soft: '#ACA997',
+  line: '#34362A', accent: '#DBAD57', accent_soft: '#3A2F17', blocked: '#DD8862',
+  blocked_soft: '#3B2419', cleared: '#93B382', cleared_soft: '#212F1E',
+  mono_bg: '#0C0D08', mono_fg: '#ECE7D8', mono_accent: '#E7BC70'
+};
+var _JOURNEY_MONO = "'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace";
+var _JOURNEY_SERIF = "'IBM Plex Serif',Georgia,'Iowan Old Style','Times New Roman',serif";
+var _JOURNEY_FONT_BASE = "https://a2uicatalog.ai/fonts/ibm-plex";
+var _JOURNEY_FONT_FACES = [
+  ["IBM Plex Mono", 400, "normal", "ibm-plex-mono-400.woff2"],
+  ["IBM Plex Mono", 500, "normal", "ibm-plex-mono-500.woff2"],
+  ["IBM Plex Mono", 600, "normal", "ibm-plex-mono-600.woff2"],
+  ["IBM Plex Mono", 700, "normal", "ibm-plex-mono-700.woff2"],
+  ["IBM Plex Serif", 400, "normal", "ibm-plex-serif-400.woff2"],
+  ["IBM Plex Serif", 400, "italic", "ibm-plex-serif-400-italic.woff2"],
+  ["IBM Plex Serif", 600, "normal", "ibm-plex-serif-600.woff2"]
+];
+
+function _journeyFontCss() {
+  var faces = '';
+  for (var i = 0; i < _JOURNEY_FONT_FACES.length; i++) {
+    var f = _JOURNEY_FONT_FACES[i];
+    faces += "@font-face{font-family:'" + f[0] + "';font-weight:" + f[1] + ";font-style:" + f[2]
+      + ";font-display:swap;src:url(" + _JOURNEY_FONT_BASE + "/" + f[3] + ") format('woff2');}";
+  }
+  return '<style>' + faces + '</style>';
+}
+
+function _journeyPalette(b) {
+  var base = {};
+  var src = (b.theme === 'dark') ? _JOURNEY_PALETTE_DARK : _JOURNEY_PALETTE_LIGHT;
+  for (var k in src) base[k] = src[k];
+  var overrides = b.palette || {};
+  for (var k2 in overrides) {
+    if (base.hasOwnProperty(k2) && overrides[k2]) base[k2] = overrides[k2];
+  }
+  return base;
+}
+
+function _journeyMdCode(s) {
+  var esc = _esc(s);
+  return esc.replace(/`([^`]+)`/g, function(_, inner) {
+    return '<code style="font-family:' + _JOURNEY_MONO + ';font-size:0.88em;'
+      + 'background:var(--accent-soft,#E4D3AC);color:var(--accent,#8C5B16);'
+      + 'padding:0.05em 0.35em;border-radius:3px;">' + inner + '</code>';
+  });
+}
+
+_RENDERERS['journey_step'] = function(b) {
+  var state = (b.status === 'cleared' || b.status === 'pending') ? b.status : 'blocked';
+  var colorVar, softVar;
+  if (state === 'cleared') {
+    colorVar = 'var(--cleared,' + _JOURNEY_PALETTE_LIGHT.cleared + ')';
+    softVar = 'var(--cleared-soft,' + _JOURNEY_PALETTE_LIGHT.cleared_soft + ')';
+  } else {
+    colorVar = 'var(--blocked,' + _JOURNEY_PALETTE_LIGHT.blocked + ')';
+    softVar = 'var(--blocked-soft,' + _JOURNEY_PALETTE_LIGHT.blocked_soft + ')';
+  }
+  if (b.color) colorVar = _esc(b.color);
+
+  var statusLabel = _esc(b.status_label || '');
+  var statusCode = _esc(b.status_code || '');
+  var title = _journeyMdCode(b.title || '');
+  var body = _journeyMdCode(b.body || '');
+  var quote = _journeyMdCode(b.quote || '');
+
+  var statusRow = '';
+  if (statusLabel || statusCode) {
+    statusRow = '<div style="display:flex;align-items:baseline;gap:0.6rem;margin-bottom:0.5rem;flex-wrap:wrap;">'
+      + (statusLabel ? '<span style="font-family:' + _JOURNEY_MONO + ';font-weight:700;font-size:0.82rem;'
+         + 'padding:0.12em 0.5em;border-radius:4px;background:' + softVar + ';color:' + colorVar + ';">' + statusLabel + '</span>' : '')
+      + (statusCode ? '<span style="font-family:' + _JOURNEY_MONO + ';font-size:0.8rem;color:var(--ink-soft,' + _JOURNEY_PALETTE_LIGHT.ink_soft + ');">' + statusCode + '</span>' : '')
+      + '</div>';
+  }
+
+  var quoteHtml = '';
+  if (quote) {
+    quoteHtml = '<blockquote style="margin:0;background:var(--mono-bg,' + _JOURNEY_PALETTE_LIGHT.mono_bg + ');'
+      + 'color:var(--mono-fg,' + _JOURNEY_PALETTE_LIGHT.mono_fg + ');font-family:' + _JOURNEY_MONO + ';'
+      + 'font-size:0.86rem;line-height:1.6;padding:0.9rem 1.05rem;border-radius:8px;max-width:58ch;">'
+      + '<span style="color:var(--mono-accent,' + _JOURNEY_PALETTE_LIGHT.mono_accent + ');font-weight:600;margin-right:0.5em;">&gt;</span>'
+      + quote + '</blockquote>';
+  }
+
+  return '<div style="padding-bottom:1.6rem;">'
+    + statusRow
+    + (title ? '<h3 style="font-family:' + _JOURNEY_MONO + ';font-weight:600;font-size:1.08rem;line-height:1.32;'
+       + 'margin:0 0 0.55rem;color:var(--ink,' + _JOURNEY_PALETTE_LIGHT.ink + ');">' + title + '</h3>' : '')
+    + (body ? '<p style="margin:0 0 0.9rem;max-width:60ch;line-height:1.6;color:var(--ink,' + _JOURNEY_PALETTE_LIGHT.ink + ');">' + body + '</p>' : '')
+    + quoteHtml
+    + '</div>';
+};
+
+_RENDERERS['article_journey'] = function(b) {
+  var pal = _journeyPalette(b);
+  var cssVars = '';
+  for (var k in pal) cssVars += '--' + k.replace(/_/g, '-') + ':' + pal[k] + ';';
+  var steps = b.steps || [];
+  var eyebrow = _esc(b.eyebrow || '');
+  var title = _esc(b.title || '');
+  var dek = _esc(b.dek || '');
+  var closing = b.closing_note ? _journeyMdCode(b.closing_note) : '';
+
+  var tally = '';
+  if (b.show_tally !== false && steps.length) {
+    var chips = [];
+    for (var i = 0; i < steps.length; i++) {
+      var st = steps[i].status === 'cleared' ? 'cleared' : 'blocked';
+      var bg = st === 'cleared' ? 'var(--cleared-soft)' : 'var(--blocked-soft)';
+      var fg = st === 'cleared' ? 'var(--cleared)' : 'var(--blocked)';
+      chips.push('<span style="font-family:' + _JOURNEY_MONO + ';font-weight:600;font-size:0.74rem;'
+        + 'padding:0.22em 0.55em;border-radius:5px;background:' + bg + ';color:' + fg + ';">'
+        + _esc(steps[i].status_label || '?') + '</span>');
+    }
+    tally = '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:0.9rem 1rem;'
+      + 'background:var(--paper-raised);border:1px solid var(--line);border-radius:10px;margin-bottom:1.8rem;">'
+      + '<span style="font-family:' + _JOURNEY_MONO + ';font-size:0.72rem;letter-spacing:0.07em;'
+      + 'text-transform:uppercase;color:var(--ink-soft);margin-right:0.35rem;">Sequence</span>'
+      + chips.join(' &rarr; ') + '</div>';
+  }
+
+  var rows = [];
+  for (var i2 = 0; i2 < steps.length; i2++) {
+    var step = steps[i2];
+    var state = step.status === 'cleared' ? 'cleared' : 'blocked';
+    var nodeBg = state === 'cleared' ? 'var(--cleared-soft)' : 'var(--blocked-soft)';
+    var nodeFg = state === 'cleared' ? 'var(--cleared)' : 'var(--blocked)';
+    var isLast = i2 === steps.length - 1;
+    var connector = isLast ? '' : '<div style="width:1.5px;flex:1;background:var(--line);margin:0.35rem 0;min-height:1.6rem;"></div>';
+    var fn = _RENDERERS[step.component || step.type || 'journey_step'] || _RENDERERS['journey_step'];
+    var cardHtml = fn(step);
+    var componentId = _esc(step.id || ('step-' + (i2 + 1)));
+    rows.push(
+      '<div data-component-id="' + componentId + '" style="display:grid;grid-template-columns:2.4rem 1fr;gap:1rem;'
+      + 'scroll-margin-top:1.5rem;transition:box-shadow 0.3s,border-radius 0.3s;">'
+      + '<div style="display:flex;flex-direction:column;align-items:center;">'
+      + '<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
+      + 'justify-content:center;font-family:' + _JOURNEY_MONO + ';font-weight:600;font-size:0.85rem;'
+      + 'flex-shrink:0;background:' + nodeBg + ';color:' + nodeFg + ';">' + _esc(step.badge || String(i2 + 1)) + '</div>'
+      + connector
+      + '</div>'
+      + '<div>' + cardHtml + '</div>'
+      + '</div>'
+    );
+  }
+
+  var statsHtml = '';
+  if (b.show_stats !== false) {
+    var stats = b.stats;
+    if (!stats || !stats.length) {
+      var blockedN = 0, clearedN = 0;
+      for (var i3 = 0; i3 < steps.length; i3++) {
+        if (steps[i3].status === 'cleared') clearedN++; else blockedN++;
+      }
+      stats = [{ value: String(blockedN), label: 'Blocking steps' }];
+      if (clearedN) stats.push({ value: String(clearedN), label: 'Cleared' });
+    }
+    var tiles = '';
+    for (var i4 = 0; i4 < stats.length; i4++) {
+      tiles += '<div style="background:var(--paper-raised);padding:1rem 0.9rem;">'
+        + '<span style="font-family:' + _JOURNEY_MONO + ';font-weight:700;font-size:1.5rem;color:var(--accent);'
+        + 'display:block;line-height:1;margin-bottom:0.3rem;">' + _esc(stats[i4].value || '') + '</span>'
+        + '<span style="font-family:' + _JOURNEY_MONO + ';font-size:0.68rem;letter-spacing:0.05em;text-transform:uppercase;'
+        + 'color:var(--ink-soft);">' + _esc(stats[i4].label || '') + '</span></div>';
+    }
+    statsHtml = '<div style="display:grid;grid-template-columns:repeat(' + Math.max(stats.length, 1) + ',1fr);gap:1px;'
+      + 'background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;'
+      + 'margin-top:0.5rem;">' + tiles + '</div>';
+  }
+
+  var fontCss = (b.use_plex_fonts !== false) ? _journeyFontCss() : '';
+
+  return fontCss
+    + '<div style="' + cssVars + 'font-family:' + _JOURNEY_SERIF + ';background:var(--paper);color:var(--ink);'
+    + 'padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;border:1px solid var(--line);">'
+    + (eyebrow ? '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
+       + 'text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:0.6em;'
+       + 'margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;background:var(--accent);'
+       + 'display:inline-block;"></span>' + eyebrow + '</div>' : '')
+    + (title ? '<h2 style="font-family:' + _JOURNEY_MONO + ';font-weight:600;font-size:clamp(1.4rem,3.6vw,1.9rem);'
+       + 'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">' + title + '</h2>' : '')
+    + (dek ? '<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
+       + 'margin:0 0 1.6rem;">' + dek + '</p>' : '')
+    + tally
+    + '<div style="display:flex;flex-direction:column;gap:0;">' + rows.join('') + '</div>'
+    + statsHtml
+    + (closing ? '<p style="font-style:italic;color:var(--ink-soft);max-width:58ch;margin:1.6rem 0 0;">' + closing + '</p>' : '')
+    + '</div>';
 };
 
 

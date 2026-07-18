@@ -133,6 +133,37 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;"><style>#m_c59d6d{display:none;}.m_c59d6d-bd{display:none;position:fixed;inset:0;z-index:9000;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);}#m_c59d6d:checked~.m_c59d6d-bd{display:flex!important;}</style><label for="m_c59d6d" style="display:inline-block;padding:9px 22px;border-radius:6px;background:#1a73e8;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">Open</label><input type="checkbox" id="m_c59d6d"><div class="m_c59d6d-bd"><div style="background:#1e293b;border-radius:12px;padding:28px 28px 20px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);"><div style="font-size:1.0rem;font-weight:700;color:#f1f5f9;margin-bottom:4px;">Modal</div><div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;"><label for="m_c59d6d" style="padding:9px 20px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:0.88rem;font-weight:500;cursor:pointer;">Cancel</label><label for="m_c59d6d" style="padding:9px 22px;border-radius:6px;border:none;background:#3b82f6;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">Confirm</label></div></div></div></div></div>
 </div>
 
+  
+<div class="section">
+  <div class="label">Templates (1 componentId in <code>children</code>)</div>
+  <div class="template-btns"><button type="button" class="template-btn" data-target="children-1">children-1</button></div>
+</div>
+<style>
+.template-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.template-btn{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft-bg);
+  border:none;border-radius:8px;padding:7px 14px;cursor:pointer;letter-spacing:.01em}
+.template-btn:hover{filter:brightness(1.05)}
+.template-btn.active{outline:2px solid var(--accent);outline-offset:1px}
+[data-component-id].tpl-highlight{box-shadow:0 0 0 3px var(--accent, #6366f1);border-radius:10px}
+</style>
+<script>
+(function(){
+  document.querySelectorAll('.template-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-target');
+      var el = document.querySelector('.preview-box [data-component-id="' + CSS.escape(id) + '"]');
+      document.querySelectorAll('.template-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.tpl-highlight').forEach(function(e){ e.classList.remove('tpl-highlight'); });
+      if (!el) return;
+      btn.classList.add('active');
+      el.classList.add('tpl-highlight');
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(function(){ el.classList.remove('tpl-highlight'); }, 2200);
+    });
+  });
+})();
+</script>
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. Modal heading.</td><td>required</td></tr><tr><td>size</td><td>string. One of: sm, md, lg. Default: md.</td><td>optional</td></tr><tr><td>children</td><td>{'type': 'array', 'description': 'Content atoms to render inside the modal body.'}</td><td>required</td></tr><tr><td>trigger_label</td><td>string. If set, renders a button that opens the modal.</td><td>optional</td></tr></tbody></table>

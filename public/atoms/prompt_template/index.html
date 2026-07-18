@@ -137,6 +137,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;"><div style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f9fafb;border-bottom:1px solid #e0e0e0;"><span style="font-size:0.72rem;color:#9ca3af;font-family:monospace;">prompt template</span><button onclick="navigator.clipboard.writeText(document.getElementById('pt_9fcdb4-src').innerText)" style="padding:4px 10px;border-radius:4px;border:1px solid #dadce0;background:#fff;font-size:0.75rem;color:#5f6368;cursor:pointer;flex-shrink:0;">Copy</button></div><pre id="pt_9fcdb4-src" style="margin:0;padding:14px 16px;font-size:0.84rem;font-family:monospace;line-height:1.6;color:#374151;background:#fff;white-space:pre-wrap;word-break:break-word;">Hello, <span style="background:rgba(124,58,237,0.1);color:#7c3aed;font-weight:600;border-radius:3px;padding:0 3px;">{{name}</span>}!</pre></div></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>template</td><td>string. The prompt text containing {slot} placeholders.</td><td>required</td></tr><tr><td>accent</td><td>string (optional, default</td><td>optional</td></tr><tr><td>copyable</td><td>boolean (optional, default true). Show copy button.</td><td>optional</td></tr><tr><td>label</td><td>string. Small label shown above the template block.</td><td>optional</td></tr></tbody></table>

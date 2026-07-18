@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="margin:1rem 0;"><button onclick="if(window.google&&google.script){google.script.run.Function name()}else{alert('GAS runtime required')}" style="padding:10px 24px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.875rem;cursor:pointer;">▶ Script Run Button</button></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. The button text.</td><td>required</td></tr><tr><td>function_name</td><td>string. The name of the server-side V8 JavaScript function to call.</td><td>required</td></tr><tr><td>argument</td><td>string. Optional string argument to pass to the function.</td><td>optional</td></tr></tbody></table>

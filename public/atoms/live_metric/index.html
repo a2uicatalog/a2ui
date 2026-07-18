@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="text-align:center;padding:28px 20px;"><div style="font-size:3rem;font-weight:900;color:#6366f1;line-height:1;"><span></span><span id="lme4c2e">0</span><span></span></div></div><script>(function(){var el=document.getElementById("lme4c2e");if(!el)return;var from=0.0,to=1.0,dur=1800,dec=0;var start=null;function ease(t){return t<0.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1;}requestAnimationFrame(function tick(ts){if(!start)start=ts;var prog=Math.min(1,(ts-start)/dur);el.textContent=(from+(to-from)*ease(prog)).toFixed(dec);if(prog<1)requestAnimationFrame(tick);});})();</script></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>value</td><td>number (alias: end)</td><td>required</td></tr><tr><td>start</td><td>number</td><td>optional</td></tr><tr><td>duration</td><td>number (optional, seconds)</td><td>optional</td></tr><tr><td>prefix</td><td>string</td><td>optional</td></tr><tr><td>suffix</td><td>string</td><td>optional</td></tr><tr><td>label</td><td>string</td><td>optional</td></tr><tr><td>decimals</td><td>integer</td><td>optional</td></tr></tbody></table>

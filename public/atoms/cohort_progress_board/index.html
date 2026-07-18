@@ -133,6 +133,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="preview-box"><div style="font-family:system-ui,sans-serif;overflow-x:auto;"><div style="font-weight:700;margin-bottom:10px;">Cohort Progress</div><table style="width:100%;border-collapse:collapse;font-size:0.85rem;"><thead><tr><th style="padding:8px 12px;text-align:left;font-size:0.72rem;font-weight:700;">Student</th></tr></thead><tbody><tr><td style="padding:8px 12px;font-size:0.82rem;">alice@example.com</td></tr><tr><td style="padding:8px 12px;font-size:0.82rem;">bob@example.com</td></tr></tbody></table></div></div>
 </div>
 
+  
+
   <div class="section">
     <div class="label">Fields</div>
     <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>course_id</td><td>string (required). Matches the progress_store course_id.</td><td>required</td></tr><tr><td>title</td><td>string. Board heading. Default "Cohort Progress".</td><td>optional</td></tr><tr><td>modules</td><td>array. Array of {id, label} for column headers. Drives per-module completion dots.</td><td>optional</td></tr><tr><td>items</td><td>array (optional, web/static). Array of {email, progress{}, updated_at} learner objects.</td><td>optional</td></tr></tbody></table>
