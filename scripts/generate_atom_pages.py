@@ -10,6 +10,7 @@ import base64
 import json
 import os
 import re
+import shutil
 import sys
 import zlib
 from pathlib import Path
@@ -284,6 +285,7 @@ def site_header(active=""):
     <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
     <nav class="site-nav">
       <a href="/"{cur('atoms')}>Atoms</a>
+      {'<a href="/templates"' + cur('templates') + '>Templates</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
       <a href="/blog"{cur('blog')}>Blog</a>
@@ -2099,6 +2101,82 @@ TRY_PAGE_CSS = """
 </style>"""
 
 
+def render_templates_page(atoms):
+    """List every ComponentId/ChildList-eligible atom — anything with a
+    schema.yaml `children:` declaration — as its own browsable card. Distinct
+    from the main atom index: this is filtered to the ~15 atoms whose
+    children are independently addressable by ComponentId (v1.0 ChildList
+    wire format), not the full catalogue. Same public/full visibility filter
+    as everything else in this script — inherits whatever `atoms` was passed
+    (already stage/visibility-filtered in main()), so this page only lists
+    private template atoms (article_journey, journey_step) in the gated
+    full-catalogue build."""
+    template_atoms = [a for a in atoms if a.get("children")]
+    cards = []
+    for atom in sorted(template_atoms, key=lambda a: a.get("type", "")):
+        atom_type = atom.get("type", "")
+        field = next(iter(atom.get("children") or {}), "")
+        compact = atom.get("compact_description", "")
+        preview_html = live_preview(atom)
+        cards.append(f"""
+    <a class="template-card" href="/atoms/{atom_type}">
+      <div class="template-card-preview">{preview_html or '<div class="template-card-noPreview">No live preview</div>'}</div>
+      <div class="template-card-meta">
+        <h3>{atom_type}</h3>
+        <p>{compact}</p>
+        <span class="template-card-field">children field: <code>{field}</code></span>
+      </div>
+    </a>""")
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Templates — A2UI Atomic Catalog</title>
+  <meta name="description" content="Every ComponentId/ChildList-eligible atom — {len(template_atoms)} templates whose children are independently addressable by ComponentId, per the A2UI v1.0 wire format.">
+  {SITE_HEAD_JS}
+  {PAGE_CSS}
+  <style>
+    .template-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px}}
+    .template-card{{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;text-decoration:none;color:inherit;background:var(--surface);transition:box-shadow .2s,transform .2s}}
+    .template-card:hover{{box-shadow:var(--shadow);transform:translateY(-2px)}}
+    .template-card-preview{{padding:14px;background:var(--surface-2);min-height:120px;max-height:220px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}}
+    .template-card-preview::after{{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,var(--surface-2));pointer-events:none}}
+    .template-card-noPreview{{color:var(--muted);font-size:13px;font-style:italic}}
+    .template-card-meta{{padding:14px 16px}}
+    .template-card-meta h3{{margin:0 0 6px;font-size:15px;font-family:ui-monospace,'SF Mono',monospace}}
+    .template-card-meta p{{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.5}}
+    .template-card-field{{font-size:11px;color:var(--muted);font-family:ui-monospace,'SF Mono',monospace}}
+    .template-card-field code{{background:var(--code-bg);padding:1px 5px;border-radius:4px}}
+  </style>
+</head>
+<body>
+  {site_header("templates")}
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> / templates
+  </nav>
+
+  <h1>Templates</h1>
+  <p class="desc">Every ComponentId/ChildList-eligible atom — {len(template_atoms)} whose children are
+  independently addressable by ComponentId, per the A2UI v1.0 ChildList wire format, instead of
+  travelling as inline objects in the legacy blocks dialect. Click through to any atom's own page for
+  the full field reference and, where declared, a per-child template selector.</p>
+
+  <div class="template-grid">{''.join(cards)}</div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
+    <span>MIT License</span>
+  </footer>
+  </div>
+  {SITE_FOOT_JS}
+</body>
+</html>"""
+
+
 def render_try_page(atom_count):
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -2683,6 +2761,17 @@ def main():
     frugal_dir.mkdir(parents=True, exist_ok=True)
     (frugal_dir / "index.html").write_text(render_frugal_ai_ops_page())
     print(f"✓ frugal-ai-ops page → {frugal_dir}/index.html")
+
+    # Templates browser: full-catalogue build ONLY, deliberately not part of
+    # the public site — Curtis's explicit call 2026-07-18, revisit later.
+    if _full:
+        templates_dir = ROOT / "public" / "templates"
+        templates_dir.mkdir(parents=True, exist_ok=True)
+        (templates_dir / "index.html").write_text(render_templates_page(unique))
+        _n_templates = len([a for a in unique if a.get("children")])
+        print(f"✓ templates browser → {templates_dir}/index.html ({_n_templates} ComponentId/ChildList atoms)")
+    else:
+        shutil.rmtree(ROOT / "public" / "templates", ignore_errors=True)
 
     # PDF.js needs GlobalWorkerOptions.workerSrc to point at a REAL,
     # separately-fetchable script — inlining the source alone isn't enough,
