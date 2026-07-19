@@ -369,19 +369,22 @@ function buildPrompt(a, draft){{
 "or number to fill a template slot.\\n" +
 "\\n" +
 "PHASE 0 - Frontmatter\\n" +
-"Emit: title, series, volume, date, summary, read_minutes\\n" +
-"All six are required by the parser or the build fails. Infer read_minutes\\n" +
-"from word count (~200 wpm) if not given. Ask me for anything you can't\\n" +
-"infer - series/volume especially, don't guess a number.\\n" +
+"Emit: title, series, date, summary, read_minutes (volume is resolved in\\n" +
+"Phase 0.5, not here). All are required by the parser or the build fails.\\n" +
+"Infer read_minutes from word count (~200 wpm) if not given. If this post\\n" +
+"is one part of a named multi-part arc, say so as plain text in the title\\n" +
+"itself (e.g. \\\"... (Part 2)\\\") - there is no separate part-number field.\\n" +
 "\\n" +
-"PHASE 0.5 - Filename\\n" +
+"PHASE 0.5 - Filename & volume\\n" +
 "State this on its own line, before the formatted output:\\n" +
 "  Proposed filename: NNN-<slug>.md\\n" +
 "<slug> is lowercase, hyphenated, short, derived from the title - you have\\n" +
-"full context by now, propose one. NNN is the file's position across ALL\\n" +
-"posts (not the same as volume, which is per-series) - you cannot see the\\n" +
-"current launch-src/ directory, so always ASK for NNN rather than guessing\\n" +
-"a number.\\n" +
+"full context by now, propose one. NNN is the post's position across ALL\\n" +
+"posts ever published (never per-series) - you cannot see the current\\n" +
+"launch-src/ directory, so always ASK for NNN rather than guessing a\\n" +
+"number. volume is the SAME integer as NNN, always (NNN=004 -> volume: 4)\\n" +
+"- once NNN is confirmed, set volume to match it exactly; do not compute\\n" +
+"it separately or guess a per-series count.\\n" +
 "\\n" +
 "PHASE 1 - Archetype (fixed for this run)\\n" +
 "Archetype: " + a.label + "\\n" +
