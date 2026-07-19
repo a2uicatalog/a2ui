@@ -322,6 +322,35 @@ def chat_event():
     return Response(json.dumps(card), mimetype='application/json')
 
 
+# -- /deck: JSON sibling of /chat for non-Chat callers (e.g. the Gemini
+# Enterprise agent, a2ui-private/a2ui-ge-agent). Reuses the exact SAME
+# _route_chat_command logic Chat's own handler runs -- single source of
+# truth for the workspace/weather fetch+shape rules (incl. the AS-OF date
+# parsing and demo replay), so a second caller never re-derives or drifts
+# from that logic. Returns encoded query strings (never renders pixels
+# itself) so callers build their own /render.png or /render.gif URL
+# against a2ui-ge-agent, same as this service's own /chat route does.
+@app.route('/deck', methods=['GET'])
+def deck():
+    text = request.args.get('text', '')
+    try:
+        parsed = _route_chat_command(text)
+    except Exception as e:
+        return Response(json.dumps({'ok': False, 'error': f'Error fetching data: {e}'}),
+                        status=502, mimetype='application/json')
+    if not parsed:
+        return Response(json.dumps({'ok': False, 'error': 'no matching command', 'help': _HELP_TEXT}),
+                        status=404, mimetype='application/json')
+    cards_out = [{'title': c.get('title', ''), 'b': _encode_block_qs(c['block'], c['width'])}
+                 for c in parsed['cards']]
+    return Response(json.dumps({
+        'ok': True,
+        'caption': parsed['caption'],
+        'cards': cards_out,
+        'deck_b': _encode_deck_qs(parsed['cards'], duration_ms=1500),
+    }), mimetype='application/json')
+
+
 @app.route('/status', methods=['GET'])
 def status():
     # NOT /healthz — Cloud Run's own infrastructure intercepts that exact
