@@ -527,9 +527,17 @@ def main():
     (OUTPUT_DIR / "index.html").write_text(
         build_page(playbook_html, archetypes, spec_atoms), encoding="utf-8"
     )
+    # Same archetype data embedded in the page's <script>, also as a plain
+    # asset — the Worker's server-side lift endpoint (src/worker-full.js)
+    # fetches this via env.ASSETS instead of duplicating the data, so both
+    # the client-side prompt builder and the server-side lift call construct
+    # prompts from one source.
+    (OUTPUT_DIR / "archetypes.json").write_text(
+        json.dumps(archetypes, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
-    print(f"gen_authoring: wrote public-full/authoring/index.html "
+    print(f"gen_authoring: wrote public-full/authoring/index.html + archetypes.json "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json)")
 
 

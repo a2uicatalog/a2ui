@@ -7,6 +7,9 @@ dist/
 .DS_Store
 .env
 .env.local
+.dev.vars
+.dev.vars.*
+.wrangler/
 *.log
 *.bak
 a2uithoughts.md
