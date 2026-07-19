@@ -20229,6 +20229,152 @@ def _render_article_journey(b: dict) -> str:
 _RENDERERS['article_journey'] = _render_article_journey
 
 
+# ─── concept_ladder / concept_rung ─────────────────────────────────────────────
+# Layered-depth concept explainer: hook line, a hero mental-model card, then
+# depth rungs down the same connected rail article_journey uses — each rung one
+# level deeper, terminating in a worked-example rung (kind:'example', mono
+# styling). Shares the journey's palette tokens/fonts/_mdcode so the two
+# article atoms read as one design system. Web is the reference
+# implementation; no atom.gs port yet (schema declares works_on: web only).
+
+def _render_concept_rung(b: dict) -> str:
+    kind = b.get('kind', 'depth')
+    kind = kind if kind in ('depth', 'example') else 'depth'
+    if kind == 'example':
+        chip_bg = f'var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]})'
+        chip_fg = f'var(--mono-accent,{_JOURNEY_PALETTE_LIGHT["mono_accent"]})'
+        default_label = 'WORKED EXAMPLE'
+    else:
+        chip_bg = f'var(--accent-soft,{_JOURNEY_PALETTE_LIGHT["accent_soft"]})'
+        chip_fg = f'var(--accent,{_JOURNEY_PALETTE_LIGHT["accent"]})'
+        default_label = f'DEPTH {b.get("badge", "")}'.strip()
+    label = _esc(b.get('label') or default_label)
+    title = _mdcode(b.get('title', ''))
+    paras = [p.strip() for p in (b.get('body') or '').split('\n\n') if p.strip()]
+    body_html = ''.join(
+        f'<p style="margin:0 0 0.9rem;max-width:60ch;line-height:1.6;'
+        f'color:var(--ink,{_JOURNEY_PALETTE_LIGHT["ink"]});">{_mdcode(p)}</p>'
+        for p in paras
+    )
+    code_html = ''
+    if b.get('code'):
+        code_html = (
+            f'<pre style="margin:0 0 0.9rem;background:var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]});'
+            f'color:var(--mono-fg,{_JOURNEY_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
+            'font-size:0.82rem;line-height:1.55;padding:0.95rem 1.1rem;border-radius:8px;'
+            f'overflow-x:auto;max-width:100%;">{_esc(b["code"])}</pre>'
+        )
+        if b.get('code_caption'):
+            code_html += (
+                f'<p style="font-style:italic;font-size:0.85rem;color:var(--ink-soft,{_JOURNEY_PALETTE_LIGHT["ink_soft"]});'
+                f'margin:-0.4rem 0 0.9rem;">{_mdcode(b["code_caption"])}</p>'
+            )
+    takeaway_html = ''
+    if b.get('takeaway'):
+        takeaway_html = (
+            f'<blockquote style="margin:0;background:var(--mono-bg,{_JOURNEY_PALETTE_LIGHT["mono_bg"]});'
+            f'color:var(--mono-fg,{_JOURNEY_PALETTE_LIGHT["mono_fg"]});font-family:{_JOURNEY_MONO};'
+            'font-size:0.86rem;line-height:1.6;padding:0.9rem 1.05rem;border-radius:8px;max-width:58ch;">'
+            f'<span style="color:var(--mono-accent,{_JOURNEY_PALETTE_LIGHT["mono_accent"]});font-weight:600;'
+            f'margin-right:0.5em;">&gt;</span>{_mdcode(b["takeaway"])}</blockquote>'
+        )
+    return (
+        '<div style="padding-bottom:1.6rem;">'
+        f'<div style="margin-bottom:0.5rem;"><span style="font-family:{_JOURNEY_MONO};font-weight:700;'
+        f'font-size:0.72rem;letter-spacing:0.07em;padding:0.18em 0.6em;border-radius:4px;'
+        f'background:{chip_bg};color:{chip_fg};">{label}</span></div>'
+        + (f'<h3 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:1.08rem;line-height:1.32;'
+           f'margin:0 0 0.55rem;color:var(--ink,{_JOURNEY_PALETTE_LIGHT["ink"]});">{title}</h3>' if title else '')
+        + body_html + code_html + takeaway_html
+        + '</div>'
+    )
+
+_RENDERERS['concept_rung'] = _render_concept_rung
+
+
+def _render_concept_ladder(b: dict) -> str:
+    pal = _journey_palette(b)
+    css_vars = ';'.join(f'--{k.replace("_", "-")}:{v}' for k, v in pal.items())
+    rungs = b.get('rungs') or []
+    eyebrow = _esc(b.get('eyebrow', ''))
+    title = _esc(b.get('title', ''))
+    dek = _esc(b.get('dek', ''))
+    hook = _mdcode(b.get('hook', ''))
+    model = _mdcode(b.get('model', ''))
+    model_note = _mdcode(b.get('model_note', '')) if b.get('model_note') else ''
+    closing = _mdcode(b.get('closing_note', '')) if b.get('closing_note') else ''
+
+    hook_html = ''
+    if hook:
+        hook_html = (
+            '<p style="font-size:1.15rem;line-height:1.55;max-width:56ch;margin:0 0 1.4rem;'
+            f'color:var(--ink);border-left:3px solid var(--accent);padding-left:1rem;">{hook}</p>'
+        )
+    model_html = ''
+    if model:
+        model_html = (
+            '<div style="background:var(--paper-raised);border:1px solid var(--line);border-radius:10px;'
+            'padding:1.1rem 1.3rem;margin-bottom:1.8rem;">'
+            f'<div style="font-family:{_JOURNEY_MONO};font-size:0.7rem;font-weight:700;letter-spacing:0.09em;'
+            'text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">The model</div>'
+            f'<p style="font-style:italic;font-size:1.12rem;line-height:1.5;margin:0;max-width:52ch;'
+            f'color:var(--ink);">{model}</p>'
+            + (f'<p style="font-size:0.92rem;color:var(--ink-soft);margin:0.6rem 0 0;max-width:56ch;">{model_note}</p>'
+               if model_note else '')
+            + '</div>'
+        )
+
+    rows = []
+    for i, rung in enumerate(rungs):
+        kind = rung.get('kind', 'depth')
+        if kind == 'example':
+            node_bg = 'var(--mono-bg)'
+            node_fg = 'var(--mono-accent)'
+        else:
+            node_bg = 'var(--accent-soft)'
+            node_fg = 'var(--accent)'
+        is_last = i == len(rungs) - 1
+        connector = '' if is_last else '<div style="width:1.5px;flex:1;background:var(--line);margin:0.35rem 0;min-height:1.6rem;"></div>'
+        fn = _RENDERERS.get(rung.get('component') or rung.get('type') or 'concept_rung', _render_concept_rung)
+        card_html = fn(rung)
+        component_id = _esc(rung.get('id') or f'rung-{i + 1}')
+        rows.append(
+            f'<div data-component-id="{component_id}" style="display:grid;grid-template-columns:2.4rem 1fr;gap:1rem;'
+            'scroll-margin-top:1.5rem;">'
+            '<div style="display:flex;flex-direction:column;align-items:center;">'
+            f'<div style="width:2.4rem;height:2.4rem;border-radius:50%;display:flex;align-items:center;'
+            f'justify-content:center;font-family:{_JOURNEY_MONO};font-weight:600;font-size:0.85rem;'
+            f'flex-shrink:0;background:{node_bg};color:{node_fg};">{_esc(rung.get("badge", str(i + 1)))}</div>'
+            + connector +
+            '</div>'
+            f'<div>{card_html}</div>'
+            '</div>'
+        )
+
+    font_css = _journey_font_css() if b.get('use_plex_fonts', True) else ''
+
+    return (
+        font_css
+        + f'<div style="{css_vars};font-family:{_JOURNEY_SERIF};background:var(--paper);color:var(--ink);'
+        'padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;border:1px solid var(--line);">'
+        + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
+           'text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:0.6em;'
+           f'margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;background:var(--accent);'
+           f'display:inline-block;"></span>{eyebrow}</div>' if eyebrow else '')
+        + (f'<h2 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:clamp(1.4rem,3.6vw,1.9rem);'
+           f'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">{title}</h2>' if title else '')
+        + (f'<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
+           f'margin:0 0 1.4rem;">{dek}</p>' if dek else '')
+        + hook_html
+        + model_html
+        + f'<div style="display:flex;flex-direction:column;gap:0;">{"".join(rows)}</div>'
+        + (f'<p style="font-style:italic;color:var(--ink-soft);max-width:58ch;margin:1.6rem 0 0;">{closing}</p>' if closing else '')
+        + '</div>'
+    )
+
+_RENDERERS['concept_ladder'] = _render_concept_ladder
+
+
 def _render_tooltip_glossary(b: dict) -> str:
     terms = b.get('terms', {})
     text = b.get('text', '')
