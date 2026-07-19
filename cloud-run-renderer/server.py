@@ -80,6 +80,15 @@ def _encode_block_qs(block, width=620):
     return base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
 
 
+def _encode_deck_qs(cards, duration_ms=1000):
+    """Sibling of _encode_block_qs for a2ui-ge-agent's /render.gif -- same
+    gzip+b64url convention, just a list of {block, width} instead of one."""
+    blocks = [{'block': c['block'], 'width': c['width']} for c in cards]
+    payload = json.dumps({'blocks': blocks, 'duration_ms': duration_ms}, separators=(',', ':')).encode()
+    compressed = gzip.compress(payload, compresslevel=9, mtime=0)
+    return base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
+
+
 def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: str = '') -> bytes:
     """Shared by /render and /chat — one browser-render code path, not two."""
     fn = web_article._RENDERERS.get(block.get('type'))
@@ -138,8 +147,9 @@ def render():
 # matching this service's existing per-caller-IAM pattern for /render.
 _SLA_RE = re.compile(r'^sla\s+(\d+(\.\d+)?)', re.I)
 _HELP_TEXT = ('Try:\n• `sla 82` — an SLA breach gauge\n• `map` — this render pipeline’s own path\n'
-              '• `workspace stats` — Google Workspace service status (add `demo` for a real historical replay)\n'
-              '• `weather` — 3-day Toulouse forecast')
+              '• `workspace stats` — Google Workspace service status (add `demo` for a real historical replay, or a date like `2026-05-31`)\n'
+              '• `weather` — 3-day Toulouse forecast\n'
+              '• add `gif` to either (e.g. `weather gif`) — the whole deck as one animated image')
 
 
 _MONTHS = {name: i for i, name in enumerate(
@@ -262,6 +272,7 @@ def chat_event():
 
     message = event.get('message', {}) or {}
     text = message.get('argumentText') or message.get('text') or ''
+    as_gif = bool(re.search(r'\bgif\b', text, re.I))
 
     try:
         parsed = _route_chat_command(text)
@@ -272,20 +283,39 @@ def chat_event():
         return Response(json.dumps({'text': _HELP_TEXT}), mimetype='application/json')
 
     try:
-        cards_v2 = []
-        for i, spec in enumerate(parsed['cards']):
-            img_url = f"{AGENT_BASE_URL}/render.png?b={_encode_block_qs(spec['block'], spec['width'])}"
-            cards_v2.append({
-                'cardId': f'a2ui-render-{i}',
-                'card': {
-                    'header': {'title': spec.get('title', 'a2ui renderer')},
-                    'sections': [{'widgets': [{'image': {
-                        'imageUrl': img_url,
-                        'onClick': {'openLink': {'url': img_url}},
-                    }}]}],
-                },
-            })
-        card = {'cardsV2': cards_v2, 'text': parsed['caption']}
+        if as_gif:
+            # The whole deck collapsed into one self-contained, shareable
+            # image (1s/frame) instead of separate cardsV2 entries -- works
+            # anywhere an imageUrl does, not just inside Chat.
+            gif_url = f"{AGENT_BASE_URL}/render.gif?b={_encode_deck_qs(parsed['cards'], duration_ms=1000)}"
+            card = {
+                'cardsV2': [{
+                    'cardId': 'a2ui-render-gif',
+                    'card': {
+                        'header': {'title': parsed['cards'][0].get('title', 'a2ui renderer')},
+                        'sections': [{'widgets': [{'image': {
+                            'imageUrl': gif_url,
+                            'onClick': {'openLink': {'url': gif_url}},
+                        }}]}],
+                    },
+                }],
+                'text': parsed['caption'],
+            }
+        else:
+            cards_v2 = []
+            for i, spec in enumerate(parsed['cards']):
+                img_url = f"{AGENT_BASE_URL}/render.png?b={_encode_block_qs(spec['block'], spec['width'])}"
+                cards_v2.append({
+                    'cardId': f'a2ui-render-{i}',
+                    'card': {
+                        'header': {'title': spec.get('title', 'a2ui renderer')},
+                        'sections': [{'widgets': [{'image': {
+                            'imageUrl': img_url,
+                            'onClick': {'openLink': {'url': img_url}},
+                        }}]}],
+                    },
+                })
+            card = {'cardsV2': cards_v2, 'text': parsed['caption']}
     except Exception as e:
         return Response(json.dumps({'text': f'Error: {e}'}), mimetype='application/json')
 
