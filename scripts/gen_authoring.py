@@ -34,6 +34,14 @@ PRIVATE_SPEC = Path.home() / "a2ui-private" / "spec"
 PLAYBOOK_MD = PRIVATE_SPEC / "article-writing-playbook-v0.1.md"
 RUNBOOK_MD = PRIVATE_SPEC / "article-formats-runbook-v0.1.md"
 ARCHETYPES_JSON = PRIVATE_SPEC / "prompt-builder-archetypes.json"
+# Optional: the "run it here (Vertex AI)" pane. Calls the blog-worker Worker's
+# /authoring/api/{lift,dispatch} routes (a2ui-private/blog-worker/src/authoring.js)
+# — that's operational plumbing (Vertex AI auth, GitHub PR dispatch), a
+# different boundary than the content-only files above, so its markup/JS
+# lives in a2ui-private too and is spliced in here, never authored in this
+# repo. Genuinely optional: page renders fine without it (no lift pane).
+LIFT_PANE_HTML = PRIVATE_SPEC / "authoring-lift-pane.html"
+LIFT_PANE_JS = PRIVATE_SPEC / "authoring-lift-pane.js"
 
 
 def _guard():
@@ -285,7 +293,7 @@ def _componentid_structure_html(archetype):
             + "<br>".join(lines) + "</div>")
 
 
-def build_page(playbook_html, archetypes, spec_atoms):
+def build_page(playbook_html, archetypes, spec_atoms, lift_pane_html="", lift_pane_js=""):
     archetypes_json = json.dumps(archetypes)
     slots_by_key = {key: _slots_html(a, spec_atoms) for key, a in archetypes.items()}
     slots_json = json.dumps(slots_by_key)
@@ -334,7 +342,7 @@ def build_page(playbook_html, archetypes, spec_atoms):
       <div id="componentidStrip"></div>
     </div>
   </div>
-</div>
+{lift_pane_html}</div>
 
 <script>
 document.querySelectorAll('.tab-btn').forEach(function(btn){{
@@ -504,6 +512,7 @@ function copyPromptToClipboard(){{
 document.getElementById('copyBtn').addEventListener('click', copyPromptToClipboard);
 document.getElementById('draftInput').addEventListener('input', render);
 
+{lift_pane_js}
 buildPicker();
 render();
 </script>
@@ -523,13 +532,29 @@ def main():
     schema_children = _load_schema_children()
     _verify_componentid_maps(archetypes, schema_children)
 
+    lift_pane_html = LIFT_PANE_HTML.read_text(encoding="utf-8") if LIFT_PANE_HTML.exists() else ""
+    lift_pane_js = LIFT_PANE_JS.read_text(encoding="utf-8") if LIFT_PANE_JS.exists() else ""
+    if not lift_pane_html:
+        print("gen_authoring: no authoring-lift-pane.html in a2ui-private/spec — "
+              "building without the Vertex AI lift pane", file=sys.stderr)
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUTPUT_DIR / "index.html").write_text(
-        build_page(playbook_html, archetypes, spec_atoms), encoding="utf-8"
+        build_page(playbook_html, archetypes, spec_atoms, lift_pane_html, lift_pane_js),
+        encoding="utf-8",
+    )
+    # Same archetype data embedded in the page's <script>, also as a plain
+    # asset — the blog-worker Worker's server-side lift endpoint
+    # (a2ui-private/blog-worker/src/authoring.js) fetches this over HTTPS
+    # instead of duplicating the data, so both the client-side prompt
+    # builder and the server-side lift call construct prompts from one
+    # source. Content-free (archetype structure only), safe to publish.
+    (OUTPUT_DIR / "archetypes.json").write_text(
+        json.dumps(archetypes, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
-    print(f"gen_authoring: wrote public-full/authoring/index.html "
+    print(f"gen_authoring: wrote public-full/authoring/index.html + archetypes.json "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json)")
 
 
