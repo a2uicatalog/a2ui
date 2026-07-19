@@ -150,6 +150,9 @@ _EXAMPLE_BLOCKS = {
         {"text": "Third item"},
     ]},
     "callout":     {"type": "callout", "callout_type": "info", "body": "This is an informational callout. Use `warning`, `tip`, or `note` for other styles."},
+    # article_journey/journey_step example data lives in a2ui-private
+    # (visibility:private atoms — see PRIVATE_EXAMPLE_BLOCKS below); a
+    # public-only checkout never generates their pages, so no fallback here.
     "steps":       {"type": "steps", "steps": [
         {"title": "Step one", "body": "The first thing to do."},
         {"title": "Step two", "body": "Then this."},
@@ -249,6 +252,13 @@ _EXAMPLE_BLOCKS = {
     "airspace_command_deck": {"type": "airspace_command_deck", "height": "fullscreen",
         "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control"},
 }
+
+# visibility:private atoms (article_journey, journey_step) keep their example
+# data in a2ui-private, spliced in only for catalog-rebuild-full; absent on a
+# public-only checkout, where those types aren't in schema.yaml anyway.
+_PRIVATE_EXAMPLE_BLOCKS = Path.home() / "a2ui-private" / "private-atoms" / "private-example-blocks.json"
+if _PRIVATE_EXAMPLE_BLOCKS.exists():
+    _EXAMPLE_BLOCKS.update(json.loads(_PRIVATE_EXAMPLE_BLOCKS.read_text(encoding="utf-8")))
 
 # ── v0.3 design system (approved 2026-07-10) ────────────────────────────────
 # Tokens = a2ui-private/tests/design_handoff_nav_theme/tokens.css v0.2 verbatim.
