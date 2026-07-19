@@ -125,7 +125,11 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
     exe = next((p for p in ('/usr/bin/google-chrome', '/usr/bin/chromium') if os.path.exists(p)), None)
     with sync_playwright() as pw:
         b = pw.chromium.launch(executable_path=exe, args=['--no-sandbox'])
-        pg = b.new_page(viewport={'width': width + 40, 'height': 360}, device_scale_factor=2)
+        # height=10, not 360: full_page=True clamps UP to at least the initial
+        # viewport height for short content (see cloud-run-renderer/server.py's
+        # _render_block_png for the confirmed repro) -- a short card was
+        # coming back padded with dead background instead of its true height.
+        pg = b.new_page(viewport={'width': width + 40, 'height': 10}, device_scale_factor=2)
         pg.set_content(html, wait_until='networkidle')
         png = pg.screenshot(full_page=True)
         b.close()

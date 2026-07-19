@@ -106,12 +106,15 @@ def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: 
     # scripts/printer.py's already-proven-correct per-call pattern exactly.
     with sync_playwright() as pw:
         browser = pw.chromium.launch(args=['--no-sandbox'])
-        page = browser.new_page(viewport={'width': width + 40, 'height': 360}, device_scale_factor=2)
+        # Viewport height=10, not 360: full_page=True correctly EXPANDS past
+        # the initial viewport for taller content (a 10-service status board
+        # was never clipped), but it also CLAMPS UP to at least the initial
+        # viewport height for shorter content -- confirmed directly (a tiny
+        # payload_reveal card came back as a 720px-tall PNG, mostly dead
+        # background, at height=360; height=10 shrinks that to its true
+        # ~300px content height with zero effect on taller cards).
+        page = browser.new_page(viewport={'width': width + 40, 'height': 10}, device_scale_factor=2)
         page.set_content(html, wait_until='networkidle')
-        # full_page=True: viewport height above is just an initial hint, not a
-        # crop -- taller cards (e.g. a 10-service status board) must not be
-        # clipped. Confirmed via local Playwright test this was silently
-        # truncating anything past 360px before this fix.
         png = page.screenshot(full_page=True)
         browser.close()
     return png
@@ -196,6 +199,53 @@ def _reveal_card(block: dict, source_title: str) -> dict:
     }
 
 
+def _alt_text_for_block(block: dict, title: str) -> str:
+    """Chat's Image widget altText -- a rendered atom is otherwise a flat,
+    opaque image to a screen reader. Pattern-matched per known block type
+    (this file only ever builds these 7); anything unrecognised falls back
+    to its title rather than silently shipping no alt text at all."""
+    t = block.get('type')
+    if t == 'service_status_board':
+        v = block.get('verdict') or {}
+        return f"{title}. {v.get('text', '')}. {v.get('detail', '')}".strip()
+    if t == 'incident_log':
+        return f"{title}. {len(block.get('incidents', []))} recent incidents shown."
+    if t == 'stat_pulse':
+        parts = [f"{s.get('value', '')} {s.get('label', '')}" for s in block.get('stats', [])]
+        return f"{title}. " + ', '.join(parts) + '.'
+    if t == 'weather_now':
+        return (f"{title}. {block.get('condition', '')}, {block.get('temp', '')}°, "
+                f"high {block.get('hi', '')}°, low {block.get('lo', '')}°.")
+    if t == 'weather_outlook':
+        parts = [f"{d.get('label', '')} {d.get('lo', '')}–{d.get('hi', '')}°, {d.get('precip', 0)}% precip"
+                 for d in block.get('days', [])]
+        return f"{title}. " + '; '.join(parts) + '.'
+    if t == 'code_block':
+        return f"{title}. JSON payload."
+    if t == 'gauge_sla':
+        return f"{block.get('label', '')}: {block.get('value', '')}{block.get('unit', '')}."
+    return title
+
+
+# -- EXPERIMENTAL (2026-07-19): native buttonList widgets for the workspace/
+# weather decks only -- untested against Chat's actual renderer, unlike the
+# image/altText pattern above. If Chat rejects or mishandles this, it's
+# fully isolated: _build_button_widget + the two callers below + the
+# CARD_CLICKED branch in chat_event() + 'links'/'refresh_cmd' in
+# _route_chat_command's workspace/weather returns -- delete all four and
+# nothing else is affected. openLink buttons are the safe half; the
+# 'Refresh' action button additionally depends on Chat's CARD_CLICKED event
+# shape, which is unconfirmed for an HTTP-endpoint Chat app.
+def _build_button_widget(links, refresh_cmd):
+    buttons = []
+    if refresh_cmd:
+        buttons.append({'text': 'Refresh', 'onClick': {'action': {
+            'function': 'refresh', 'parameters': [{'key': 'cmd', 'value': refresh_cmd}]}}})
+    for link in (links or []):
+        buttons.append({'text': link['text'], 'onClick': {'openLink': {'url': link['url']}}})
+    return {'buttonList': {'buttons': buttons}} if buttons else None
+
+
 def _route_chat_command(text: str):
     """Returns None (no match) or {'cards': [{block, width, title}, ...], 'caption': str}
     -- uniform shape whether it's one card (sla/map) or a multi-card deck
@@ -238,27 +288,41 @@ def _route_chat_command(text: str):
         if as_of is None and re.search(r'\b(demo|replay)\b', stripped, re.I):
             as_of = chat_data.largest_incident_as_of(incidents)
         board, log, pulse = chat_data.build_workspace_cards(incidents, as_of=as_of)
+        deck = [
+            {'block': board, 'width': 640, 'title': 'Service Status'},
+            {'block': log, 'width': 640, 'title': 'Incident Log'},
+            {'block': pulse, 'width': 640, 'title': '30-Day Pulse'},
+        ]
         return {
-            'cards': [
-                {'block': board, 'width': 640, 'title': 'Service Status'},
-                {'block': log, 'width': 640, 'title': 'Incident Log'},
-                {'block': pulse, 'width': 640, 'title': '30-Day Pulse'},
-                _reveal_card(board, 'Card 1'),
-            ],
+            'cards': deck + [_reveal_card(board, 'Card 1')],
+            # The GIF variant drops the reveal card -- its natural height is
+            # 2-3x the dashboard cards (a full JSON dump vs. a compact
+            # widget), so forcing it into the shared-canvas height either
+            # shrinks its text hard to read or reintroduces letterboxing for
+            # everything else. Still fully available via the plain (non-gif)
+            # multi-card reply, and standalone via /render.png -- see /deck.
+            'gif_cards': deck,
             'caption': ('Google Workspace status — live from the public incidents feed.' if as_of is None
                         else f"Google Workspace status as of {as_of.strftime('%d %b %Y')} — a point-in-time query, not live."),
+            'links': [{'text': 'View live status page',
+                       'url': 'https://www.google.com/appsstatus/dashboard/summary'}],
+            'refresh_cmd': stripped,
         }
 
     if re.search(r'\b(weather|forecast|toulouse)\b', stripped, re.I):
         data = chat_data.fetch_weather()
         now_card, outlook_card = chat_data.build_weather_cards(data)
+        deck = [
+            {'block': now_card, 'width': 640, 'title': 'Now'},
+            {'block': outlook_card, 'width': 640, 'title': 'Outlook'},
+        ]
         return {
-            'cards': [
-                {'block': now_card, 'width': 640, 'title': 'Now'},
-                {'block': outlook_card, 'width': 640, 'title': 'Outlook'},
-                _reveal_card(outlook_card, 'Card 2'),
-            ],
+            'cards': deck + [_reveal_card(outlook_card, 'Card 2')],
+            'gif_cards': deck,  # see the workspace branch's comment above
             'caption': 'Toulouse forecast — live from Open-Meteo.',
+            'links': [{'text': 'View live forecast',
+                       'url': 'https://www.google.com/search?q=weather+in+toulouse'}],
+            'refresh_cmd': stripped,
         }
 
     return None
@@ -267,11 +331,23 @@ def _route_chat_command(text: str):
 @app.route('/chat', methods=['POST'])
 def chat_event():
     event = request.get_json(force=True, silent=True) or {}
-    if event.get('type') != 'MESSAGE':
+    event_type = event.get('type')
+
+    if event_type == 'CARD_CLICKED':
+        # EXPERIMENTAL -- see _build_button_widget's comment. Chat's click
+        # callback carries only the button's declared parameters, not the
+        # original message, so 'cmd' (the verbatim original text, incl. any
+        # gif/demo/date flags) is round-tripped through the button itself --
+        # re-running _route_chat_command(cmd) reproduces the exact same view.
+        action = event.get('action', {}) or {}
+        params = {p.get('key'): p.get('value') for p in (action.get('parameters') or [])}
+        text = params.get('cmd', '')
+    elif event_type == 'MESSAGE':
+        message = event.get('message', {}) or {}
+        text = message.get('argumentText') or message.get('text') or ''
+    else:
         return Response(json.dumps({}), mimetype='application/json')
 
-    message = event.get('message', {}) or {}
-    text = message.get('argumentText') or message.get('text') or ''
     as_gif = bool(re.search(r'\bgif\b', text, re.I))
 
     try:
@@ -282,37 +358,54 @@ def chat_event():
     if not parsed:
         return Response(json.dumps({'text': _HELP_TEXT}), mimetype='application/json')
 
+    button_widget = _build_button_widget(parsed.get('links'), parsed.get('refresh_cmd'))
+
     try:
         if as_gif:
             # The whole deck collapsed into one self-contained, shareable
             # image (1.5s/frame) instead of separate cardsV2 entries -- works
-            # anywhere an imageUrl does, not just inside Chat.
-            gif_url = f"{AGENT_BASE_URL}/render.gif?b={_encode_deck_qs(parsed['cards'], duration_ms=1500)}"
+            # anywhere an imageUrl does, not just inside Chat. Uses
+            # 'gif_cards' when the command declares one (drops the
+            # payload-reveal card -- see _route_chat_command), else falls
+            # back to the full 'cards' list unchanged (sla/map single-card
+            # commands never define gif_cards, so behave exactly as before).
+            gif_cards = parsed.get('gif_cards', parsed['cards'])
+            gif_url = f"{AGENT_BASE_URL}/render.gif?b={_encode_deck_qs(gif_cards, duration_ms=1500)}"
+            first = gif_cards[0]
+            widgets = [{'image': {
+                'imageUrl': gif_url,
+                'altText': _alt_text_for_block(first['block'], first.get('title', '')),
+                'onClick': {'openLink': {'url': gif_url}},
+            }}]
+            if button_widget:
+                widgets.append(button_widget)
             card = {
                 'cardsV2': [{
                     'cardId': 'a2ui-render-gif',
                     'card': {
-                        'header': {'title': parsed['cards'][0].get('title', 'a2ui renderer')},
-                        'sections': [{'widgets': [{'image': {
-                            'imageUrl': gif_url,
-                            'onClick': {'openLink': {'url': gif_url}},
-                        }}]}],
+                        'header': {'title': first.get('title', 'a2ui renderer')},
+                        'sections': [{'widgets': widgets}],
                     },
                 }],
                 'text': parsed['caption'],
             }
         else:
             cards_v2 = []
+            n = len(parsed['cards'])
             for i, spec in enumerate(parsed['cards']):
                 img_url = f"{AGENT_BASE_URL}/render.png?b={_encode_block_qs(spec['block'], spec['width'])}"
+                widgets = [{'image': {
+                    'imageUrl': img_url,
+                    'altText': _alt_text_for_block(spec['block'], spec.get('title', '')),
+                    'onClick': {'openLink': {'url': img_url}},
+                }}]
+                if button_widget and i == n - 1:
+                    widgets.append(button_widget)
                 cards_v2.append({
                     'cardId': f'a2ui-render-{i}',
                     'card': {
                         'header': {'title': spec.get('title', 'a2ui renderer')},
-                        'sections': [{'widgets': [{'image': {
-                            'imageUrl': img_url,
-                            'onClick': {'openLink': {'url': img_url}},
-                        }}]}],
+                        'sections': [{'widgets': widgets}],
                     },
                 })
             card = {'cardsV2': cards_v2, 'text': parsed['caption']}
