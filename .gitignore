@@ -89,3 +89,9 @@ debug.md
 # that would defeat the point of gating it behind Cloudflare Access. Local
 # build artifact only, regenerated on demand via `ops.py run catalog-rebuild-full`.
 public-full/
+
+# atoms/schema.yaml temporarily gains the private-visibility blocks during
+# catalog-rebuild-full (scripts/merge_private_schema.py splices them in from
+# a2ui-private, then removes them again) — this is the safety net if a build
+# is interrupted mid-merge, so the merged state can never get committed.
+atoms/.schema.yaml.public-only.bak
