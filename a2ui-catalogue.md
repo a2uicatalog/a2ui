@@ -511,6 +511,7 @@
 | `stat_pulse` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `weather_now` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `weather_outlook` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `icon_liftoff` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 
