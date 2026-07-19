@@ -334,6 +334,16 @@ def build_page(playbook_html, archetypes, spec_atoms):
       <div id="componentidStrip"></div>
     </div>
   </div>
+
+  <div class="pane" style="margin-top:20px">
+    <div class="pane-bar"><span>Or run it here (Vertex AI) — review before sending to GitHub</span>
+      <button class="copy-btn" id="liftBtn" type="button">RUN</button></div>
+    <pre id="liftOutput" style="min-height:120px">Draft + archetype above, then RUN. Nothing is sent to GitHub until you explicitly click Send below — review the output first.</pre>
+    <div class="childlist-strip">
+      <button class="copy-btn" id="dispatchBtn" type="button" disabled>SEND TO GITHUB (opens a PR — does not publish)</button>
+      <span id="dispatchStatus" style="margin-left:10px;color:var(--text-faint)"></span>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -503,6 +513,59 @@ function copyPromptToClipboard(){{
 }}
 document.getElementById('copyBtn').addEventListener('click', copyPromptToClipboard);
 document.getElementById('draftInput').addEventListener('input', render);
+
+var lastLiftOutput = null;
+
+async function runLift(){{
+  var btn = document.getElementById('liftBtn');
+  var out = document.getElementById('liftOutput');
+  var dispatchBtn = document.getElementById('dispatchBtn');
+  var draft = document.getElementById('draftInput').value;
+  if (!draft.trim()){{ out.textContent = 'Paste a draft first.'; return; }}
+  btn.disabled = true; btn.textContent = 'RUNNING...';
+  dispatchBtn.disabled = true;
+  out.textContent = 'Calling Vertex AI...';
+  try {{
+    var resp = await fetch('/authoring/api/lift', {{
+      method: 'POST',
+      headers: {{'content-type': 'application/json'}},
+      body: JSON.stringify({{draft: draft, archetype: current}})
+    }});
+    var data = await resp.json();
+    if (!resp.ok) {{ out.textContent = 'ERROR: ' + (data.error || resp.status); return; }}
+    lastLiftOutput = data.output;
+    out.textContent = data.output;
+    dispatchBtn.disabled = false;
+  }} catch (e) {{
+    out.textContent = 'ERROR: ' + e.message;
+  }} finally {{
+    btn.disabled = false; btn.textContent = 'RUN';
+  }}
+}}
+
+async function runDispatch(){{
+  if (!lastLiftOutput) return;
+  var btn = document.getElementById('dispatchBtn');
+  var status = document.getElementById('dispatchStatus');
+  btn.disabled = true;
+  status.textContent = 'Sending...';
+  try {{
+    var resp = await fetch('/authoring/api/dispatch', {{
+      method: 'POST',
+      headers: {{'content-type': 'application/json'}},
+      body: JSON.stringify({{markdown: lastLiftOutput}})
+    }});
+    var data = await resp.json();
+    if (!resp.ok) {{ status.textContent = 'FAILED: ' + (data.error || resp.status); btn.disabled = false; return; }}
+    status.textContent = 'Sent — check GitHub for the new PR shortly.';
+  }} catch (e) {{
+    status.textContent = 'FAILED: ' + e.message;
+    btn.disabled = false;
+  }}
+}}
+
+document.getElementById('liftBtn').addEventListener('click', runLift);
+document.getElementById('dispatchBtn').addEventListener('click', runDispatch);
 
 buildPicker();
 render();
