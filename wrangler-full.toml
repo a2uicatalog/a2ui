@@ -7,8 +7,14 @@ compatibility_date = "2024-09-23"
 directory = "./public-full"
 binding = "ASSETS"
 
-# Secrets (never in this file): VERTEX_SA_KEY — the blog-authoring-lift
-# service account's JSON key, set via `wrangler secret put VERTEX_SA_KEY
-# -c wrangler-full.toml`. roles/aiplatform.user ONLY, on static-hangout-
-# 500821-d3 — see a2uithoughts.md, 2026-07-19, for why a dedicated SA was
-# used instead of Curtis's own broad-scope user OAuth token.
+# Secrets (never in this file):
+#   VERTEX_SA_KEY — the blog-authoring-lift service account's JSON key, set
+#     via `wrangler secret put VERTEX_SA_KEY -c wrangler-full.toml`.
+#     roles/aiplatform.user ONLY, on static-hangout-500821-d3 — see
+#     a2uithoughts.md, 2026-07-19, for why a dedicated SA was used instead
+#     of Curtis's own broad-scope user OAuth token.
+#   GITHUB_DISPATCH_TOKEN — a fine-grained PAT scoped to ONLY the
+#     a2uicatalog/a2ui-private repo, contents:write (create-pull-request
+#     needs it) — set via `wrangler secret put GITHUB_DISPATCH_TOKEN
+#     -c wrangler-full.toml`. Fires .github/workflows/publish-lift-draft.yml
+#     via repository_dispatch; that workflow opens a PR, never merges.

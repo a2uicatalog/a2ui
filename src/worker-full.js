@@ -31,6 +31,9 @@ export default {
     if (url.pathname === "/authoring/api/lift" && request.method === "POST") {
       return handleLift(request, env);
     }
+    if (url.pathname === "/authoring/api/dispatch" && request.method === "POST") {
+      return handleDispatch(request, env);
+    }
     return env.ASSETS.fetch(request);
   },
 };
@@ -80,6 +83,54 @@ async function handleLift(request, env) {
   }
 
   return json({ archetype: archetypeKey, output: modelOutput });
+}
+
+// Deliberately a SEPARATE action from handleLift, not automatic on every
+// format call — the human reviews the formatted output on the page first
+// (§4 of the playbook: nothing invented, labels read well, etc.) and only
+// explicitly asks for a PR to be opened. This is "review before publish"
+// applied at PR-creation time too, not only at merge time. The PR itself
+// still requires a human merge — this step never publishes anything, it
+// only queues a reviewable change.
+async function handleDispatch(request, env) {
+  try {
+    await verifyAccessJwt(request, env);
+  } catch (e) {
+    return json({ error: `Access verification failed: ${e.message}` }, 401);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON body" }, 400);
+  }
+  const { markdown } = body;
+  if (!markdown) {
+    return json({ error: "Missing 'markdown' in request body" }, 400);
+  }
+
+  const resp = await fetch(
+    "https://api.github.com/repos/a2uicatalog/a2ui-private/dispatches",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.GITHUB_DISPATCH_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "a2uicatalog-full-worker",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        event_type: "lift-draft",
+        client_payload: { markdown },
+      }),
+    }
+  );
+  if (!resp.ok) {
+    return json({ error: `GitHub dispatch failed: ${resp.status} ${await resp.text()}` }, 502);
+  }
+
+  return json({ dispatched: true });
 }
 
 function json(obj, status = 200) {
