@@ -28,6 +28,7 @@ except ImportError:
 ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = ROOT / "public-full" / "authoring"
 SPEC_JSON = ROOT / "public-full" / "spec.json"
+SCHEMA_YAML = ROOT / "atoms" / "schema.yaml"
 
 PRIVATE_SPEC = Path.home() / "a2ui-private" / "spec"
 PLAYBOOK_MD = PRIVATE_SPEC / "article-writing-playbook-v0.1.md"
@@ -64,6 +65,53 @@ def _load_spec_atoms():
     data = json.loads(SPEC_JSON.read_text(encoding="utf-8"))
     atoms = data.get("atoms", data if isinstance(data, list) else [])
     return {a["type"]: a.get("compact_description", "") for a in atoms if isinstance(a, dict) and a.get("type")}
+
+
+def _load_schema_children():
+    """type -> its declared `children:` dict (or None), from atoms/schema.yaml.
+    spec.json carries NO ComponentId structure at all (flattened out at
+    compact_description level) — this is the only ground truth for which
+    atoms are actually ComponentId-addressable parents. Read directly from
+    schema.yaml rather than spec.json because at the point this script runs
+    in catalog-rebuild-full, schema.yaml is mid-pipeline in its FULL merged
+    state (private blocks spliced in by merge_private_schema.py --merge,
+    not yet restored) — so private ComponentId parents like article_journey
+    are visible here even though they never reach the public schema."""
+    if not SCHEMA_YAML.exists():
+        return {}
+    import yaml
+    data = yaml.safe_load(SCHEMA_YAML.read_text(encoding="utf-8"))
+    return {b["type"]: b.get("children") for b in data["blocks"]
+            if isinstance(b, dict) and b.get("type")}
+
+
+def _verify_componentid_maps(archetypes, schema_children):
+    """An archetype's componentid_map is a claim about real schema structure
+    (which atom is the ComponentId parent, which field holds its children).
+    Verify it against the live schema at generation time rather than trusting
+    hand-written JSON — if the schema drifts (field renamed, children:
+    removed), this must fail loudly, not silently keep showing a stale
+    diagram. Mirrors this repo's "ground truth over docs" convention (see
+    generate_atom_pages.py's _EXAMPLE_BLOCKS comments on renderer drift)."""
+    errors = []
+    for arch_key, a in archetypes.items():
+        for parent_type, spec in (a.get("componentid_map") or {}).items():
+            children = schema_children.get(parent_type)
+            if children is None:
+                errors.append(f"{arch_key}: componentid_map claims '{parent_type}' has "
+                               f"children:, but it's absent from atoms/schema.yaml "
+                               f"(atom missing or no longer ComponentId-addressable)")
+                continue
+            field = spec.get("children_field")
+            if field not in children:
+                errors.append(f"{arch_key}: componentid_map claims '{parent_type}' has "
+                               f"children.{field}, but schema declares children.{list(children.keys())}")
+    if errors:
+        print("gen_authoring: componentid_map verification FAILED against live schema:",
+              file=sys.stderr)
+        for e in errors:
+            print(f"  - {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def site_header():
@@ -190,7 +238,11 @@ textarea#draftInput::placeholder{color:var(--text-faint)}
 .slot-chip{display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin:2px 4px 2px 0;font-size:11px}
 .slot-chip.wired{border-color:var(--accent-2);color:var(--accent-2);text-decoration:none}
 .slot-chip.wired:hover{background:var(--accent-soft-bg)}
+.slot-chip.parent{border-color:var(--accent);color:var(--accent);font-weight:700}
+.slot-chip.child{border-style:dashed}
 .slot-chip.unwired{color:var(--text-faint)}
+.componentid-strip{padding:10px 16px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11.5px;color:var(--text-muted)}
+.componentid-strip b{color:var(--accent);display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
 .hint{font-size:12.5px;color:var(--text-faint);margin:14px 0 24px;max-width:80ch}
 </style>
 """
@@ -199,21 +251,46 @@ textarea#draftInput::placeholder{color:var(--text-faint)}
 def _slots_html(archetype, spec_atoms):
     """Render each slot as a chip: a real atom type in spec.json gets a live
     link + its actual compact_description; anything else stays plain text —
-    mechanical, no guessed mapping."""
+    mechanical, no guessed mapping. Slots that are the parent or child side of
+    a verified componentid_map get a distinct style (solid accent = ComponentId
+    parent, dashed = its declared child) so the real nesting is visible, not
+    just a flat list of atom names."""
+    cmap = archetype.get("componentid_map") or {}
+    parents = set(cmap.keys())
+    children = {spec["child_type"] for spec in cmap.values()}
     chips = []
     for slot in archetype["slots"]:
+        extra = " parent" if slot in parents else " child" if slot in children else ""
         if slot in spec_atoms:
             desc = spec_atoms[slot].replace('"', "&quot;")
-            chips.append(f'<a class="slot-chip wired" href="/atoms/{slot}" title="{desc}">{slot} ↗</a>')
+            chips.append(f'<a class="slot-chip wired{extra}" href="/atoms/{slot}" title="{desc}">{slot} ↗</a>')
         else:
-            chips.append(f'<span class="slot-chip unwired">{slot}</span>')
+            chips.append(f'<span class="slot-chip unwired{extra}">{slot}</span>')
     return "".join(chips)
+
+
+def _componentid_structure_html(archetype):
+    """A plain-language line for each verified componentid_map entry, e.g.
+    'article_journey.steps[] -> journey_step (each independently addressable
+    by ComponentId)'. Only rendered when the archetype declares one — absence
+    is an honest fact (most archetypes don't have a ComponentId target yet),
+    not an error."""
+    cmap = archetype.get("componentid_map") or {}
+    if not cmap:
+        return ""
+    lines = [f"{parent}.{spec['children_field']}[] → {spec['child_type']} "
+             "(each independently addressable by ComponentId)"
+             for parent, spec in cmap.items()]
+    return ('<div class="componentid-strip"><b>ComponentId structure (verified against atoms/schema.yaml)</b>'
+            + "<br>".join(lines) + "</div>")
 
 
 def build_page(playbook_html, archetypes, spec_atoms):
     archetypes_json = json.dumps(archetypes)
     slots_by_key = {key: _slots_html(a, spec_atoms) for key, a in archetypes.items()}
     slots_json = json.dumps(slots_by_key)
+    componentid_by_key = {key: _componentid_structure_html(a) for key, a in archetypes.items()}
+    componentid_json = json.dumps(componentid_by_key)
     wired_count = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total_slots = sum(len(a["slots"]) for a in archetypes.values())
 
@@ -253,7 +330,8 @@ def build_page(playbook_html, archetypes, spec_atoms):
     <div class="pane">
       <div class="pane-bar"><span>Assembled prompt — copy into your LLM</span><button class="copy-btn" id="copyBtn" type="button">COPY</button></div>
       <pre id="promptOutput"></pre>
-      <div class="childlist-strip"><b>ChildList slots (wired = real atom, linked to its live doc)</b><span id="slotChips"></span></div>
+      <div class="childlist-strip"><b>ChildList slots (solid = ComponentId parent, dashed = its child, wired = real atom linked to its live doc)</b><span id="slotChips"></span></div>
+      <div id="componentidStrip"></div>
     </div>
   </div>
 </div>
@@ -274,6 +352,7 @@ document.querySelector('.theme-btn').addEventListener('click', function(){{
 
 var ARCHETYPES = {archetypes_json};
 var SLOT_CHIPS = {slots_json};
+var COMPONENTID_STRIPS = {componentid_json};
 var current = 'build_log';
 
 function wordCount(s){{ return (s.trim().match(/\\S+/g) || []).length; }}
@@ -356,6 +435,7 @@ function render(){{
     '<b style="color:var(--accent)">' + a.label + '</b> — ' + a.spine +
     (a.proven ? '' : ' <span style="color:var(--warn)">(unproven — no live fixture yet)</span>');
   document.getElementById('slotChips').innerHTML = SLOT_CHIPS[current];
+  document.getElementById('componentidStrip').innerHTML = COMPONENTID_STRIPS[current];
 }}
 
 function buildPicker(){{
@@ -437,6 +517,8 @@ def main():
     )
     archetypes = json.loads(ARCHETYPES_JSON.read_text(encoding="utf-8"))
     spec_atoms = _load_spec_atoms()
+    schema_children = _load_schema_children()
+    _verify_componentid_maps(archetypes, schema_children)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUTPUT_DIR / "index.html").write_text(
