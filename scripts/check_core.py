@@ -29,8 +29,20 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SCHEMA = os.path.join(ROOT, "atoms", "schema.yaml")
 PACKS = os.path.join(ROOT, "atoms", "atom-packs.yaml")
+PROJECT_YAML = os.path.join(ROOT, "project.yaml")
 
 ALWAYS = ("a2ui-atoms-v1",)   # the base catalog is always resolved
+
+
+def _known_debt_unregistered():
+    """Atoms explicitly declared (project.yaml known_debt.unregistered_atoms) as
+    intentionally schema-absent but still pack-listed — e.g. visibility:private
+    atoms whose schema block lives in a2ui-private, not here, but whose renderer
+    stays public (shared infra) so gen_renderer_manifest.py still needs them in
+    atom-packs.yaml. Same declared-exception pattern as
+    tests/test_project_manifest.py's undeclared_drift check — one list, not two."""
+    d = yaml.safe_load(open(PROJECT_YAML))
+    return set(d.get("known_debt", {}).get("unregistered_atoms") or [])
 
 
 def _schema_atoms():
@@ -52,8 +64,9 @@ def check_coverage(schema, part):
                 errors.append(f"atom in two buckets: {a} ({seen[a]} + {bucket})")
             seen[a] = bucket
     mapped = set(seen)
+    declared_exceptions = _known_debt_unregistered()
     unsorted = sorted(schema - mapped)
-    phantom = sorted(mapped - schema)
+    phantom = sorted(mapped - schema - declared_exceptions)
     if unsorted:
         errors.append(f"{len(unsorted)} atom(s) in schema.yaml with NO bucket "
                       f"(add to atoms/atom-packs.yaml): {', '.join(unsorted)}")

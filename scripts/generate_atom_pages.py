@@ -97,7 +97,7 @@ _EXAMPLE_BLOCKS = {
     "split_pane": {"type": "split_pane",
         "left": {"bg": "#EFDACE", "blocks": [{"type": "body", "text": "**Before** — six hoops, one story, no distinction between abandoned and load-bearing."}]},
         "right": {"bg": "#DBE4D2", "blocks": [{"type": "body", "text": "**After** — five hoops in the working path, one detour clearly marked separate."}]}},
-    "two_tone_card": {"type": "two_tone_card", "title": "article_journey", "subtitle": "ComponentId/ChildList atom",
+    "two_tone_card": {"type": "two_tone_card", "title": "Multi-Step Flow", "subtitle": "ComponentId/ChildList atom",
         "accent": "#47643F", "header_theme": "dark",
         "blocks": [{"type": "body", "text": "Each step is independently addressable by ComponentId — an agent can flip one step's status without resending the whole surface."}]},
     "columns": {"type": "columns", "gap": "24px",

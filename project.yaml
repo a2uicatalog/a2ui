@@ -86,7 +86,14 @@ staging:
   preview_count_note: derived from schema.yaml, not duplicated here
 
 known_debt:
-  unregistered_atoms: []   # cleared 2026-07-02 — all 30 wired atoms registered (stage: preview)
+  unregistered_atoms:   # cleared 2026-07-02, two intentional entries added 2026-07-19
+    - article_journey   # visibility:private — schema block moved to a2ui-private/
+    - journey_step       # (private-atoms/private-schema-blocks.yaml), NOT missing by
+                          # accident. Renderer stays in renderers/web_article.py
+                          # (shared infra); catalog-rebuild-full splices the schema
+                          # blocks back in via scripts/merge_private_schema.py for the
+                          # gated full.a2uicatalog.ai build only. See atom-change's
+                          # sibling process catalog-rebuild-full and a2uithoughts.md.
 
 # Declared processes — management as data. Run via: python3 scripts/ops.py run <name>
 # The runner executes from repo root, resolves {{inventory.paths}} from this

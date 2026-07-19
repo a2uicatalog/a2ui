@@ -69,8 +69,8 @@ nothing breaks, the atom just looks plainer.
   (7 static WOFF2 files: Mono 400/500/600/700, Serif 400/400-italic/600,
   Latin subset, unmodified Google Fonts release builds; see `LICENSE.txt`
   alongside them)
-- **Used by:** the `article_journey`/`journey_step` atoms when
-  `use_plex_fonts: true` (default) — an inline `@font-face` block referencing
+- **Used by:** ComponentId/ChildList atoms opting into `use_plex_fonts: true`
+  (default) — an inline `@font-face` block referencing
   these files by same-origin URL (`https://a2uicatalog.ai/fonts/ibm-plex/...`).
   This is the one vendored asset in this policy fetched over the network at
   render time rather than inlined; see the exceptions note above for the CSP
