@@ -11541,3 +11541,32 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: icon_liftoff
+  stage: preview
+  description: An icon rises from the bottom of the viewport to the top along a
+    chosen edge, via a scoped CSS keyframe animation (position:fixed, translateY
+    + fade) -- a lightweight traveling-icon effect. Distinct from
+    geo_iso_rocket_launch/gdm_rocket_panel (canvas + requestAnimationFrame scene
+    renders) -- this is a plain CSS transform, reusable for any icon, not a
+    choreographed rocket scene. Needs a JS/CSS-executing surface -- a static
+    chromium screenshot (the Chat render-deck pipeline) captures one frozen
+    frame, not the motion.
+  compact_description: an icon that rises from the bottom of the screen to the top
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    app: string (optional, e.g. 'chat', 'gmail', 'meet'). A workspace_logo app
+      key -- reuses the same 2026Q2 icon set. Ignored if icon_url is set. Default 'chat'.
+    icon_url: string (optional). A direct image URL; overrides `app`.
+    size: number (optional, default 64). Icon size in px.
+    lane: string (optional). 'left', 'center', or 'right' (default 'right').
+    duration_s: number (optional, default 4). Seconds for one bottom-to-top pass.
+    loop: boolean (optional, default true). Repeat indefinitely vs a single pass.
+    fade_edges: boolean (optional, default true). Fade in near the bottom, fade
+      out near the top, instead of appearing/disappearing abruptly.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

@@ -292,6 +292,7 @@ a2ui-effects-v1:
 - gradient_text
 - highlight_sweep
 - hint_reveal
+- icon_liftoff
 - kinetic_headline
 - liquid_button
 - loading_dots

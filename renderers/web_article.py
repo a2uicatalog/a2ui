@@ -17036,8 +17036,35 @@ _WS_COLORS = {
     'jamboard':'#FF7043','admin':'#4285F4','appsheet':'#4285F4','currents':'#4285F4',
 }
 
+# Real 2026Q2 brand icons -- ported from apps-script-surface/*/atoms_icons.gs's
+# _WORKSPACE_LOGOS_2026 for parity (that GAS renderer already had these; this
+# Python/web/mcp-apps renderer previously fell straight to the colored-initials
+# placeholder below for EVERY app, chat included). Apps not in this dict keep
+# the placeholder -- safer than guessing at the old gstatic fallback paths
+# without having ported that full dict too.
+_WL_BASE = 'https://workspacelogos.com/logos/google-workspace-logos/'
+_WORKSPACE_LOGOS_2026 = {
+    'gmail':    'Gmail/logo_gmail_2026q2_color_2x_web_96dp.png',
+    'drive':    'Drive/logo_drive_2026q2_color_2x_web_96dp.png',
+    'docs':     'Docs/logo_docs_2026q2_color_2x_web_96dp.png',
+    'sheets':   'Sheets/logo_sheets_2026q2_color_2x_web_96dp.png',
+    'slides':   'Slides/logo_slides_2026q2_color_2x_web_96dp.png',
+    'calendar': 'Calendar/logo_calendar_2026q2_color_2x_web_96dp.png',
+    'meet':     'Meet/logo_meet_2026q2_color_2x_web_96dp.png',
+    'forms':    'Forms/logo_forms_2026q2_color_2x_web_96dp.png',
+    'chat':     'Chat/logo_chat_2026q2_color_2x_web_96dp.png',
+    'keep':     'Keep/logo_keep_2026q2_color_2x_web_96dp.png',
+    'sites':    'Sites/logo_sites_2026q2_color_2x_web_96dp.png',
+    'voice':    'Voice/logo_voice_2026q2_color_2x_web_96dp.png',
+    'gemini':   'Gemini/logo_gemini_2026q2_color_1x_web_560dp.png',
+}
+
 def _ws_badge(app: str, size: int) -> str:
     app = app.lower()
+    path2026 = _WORKSPACE_LOGOS_2026.get(app)
+    if path2026:
+        return (f'<img src="{_WL_BASE}{path2026}" width="{size}" height="{size}" '
+                f'alt="{_esc(app)}" style="display:block;object-fit:contain;">')
     col = _WS_COLORS.get(app, '#4285F4')
     initials = app[:2].upper()
     return (f'<div style="width:{size}px;height:{size}px;border-radius:{size//5}px;background:{col};'
@@ -20517,3 +20544,44 @@ def _render_weather_outlook(b: dict) -> str:
         f'</div>'
     )
 _RENDERERS['weather_outlook'] = _render_weather_outlook
+
+
+def _render_icon_liftoff(b: dict) -> str:
+    """position:fixed + a scoped @keyframes translateY -- same technique as
+    reaction_shower's one-shot "fly up and fade" burst, generalized into a
+    continuous full-viewport traverse. Distinct from geo_iso_rocket_launch/
+    gdm_rocket_panel's canvas+requestAnimationFrame scene renders: this is a
+    plain CSS transform, so it needs zero JS to animate (only a JS-executing
+    surface to see it move at all -- a static chromium screenshot captures
+    one frozen frame, not the motion)."""
+    import hashlib
+    size = int(b.get('size', 64))
+    lane = b.get('lane', 'right')
+    duration = float(b.get('duration_s', 4))
+    loop = b.get('loop', True)
+    fade = b.get('fade_edges', True)
+    app = (b.get('app') or 'chat').lower()
+    icon_url = b.get('icon_url') or (
+        (_WL_BASE + _WORKSPACE_LOGOS_2026[app]) if app in _WORKSPACE_LOGOS_2026 else None)
+    icon_html = (
+        f'<img src="{_esc(icon_url)}" width="{size}" height="{size}" alt="{_esc(app)}" '
+        f'style="display:block;object-fit:contain;">'
+    ) if icon_url else _ws_badge(app, size)
+
+    uid = 'lft' + hashlib.md5((icon_url or app).encode()).hexdigest()[:6]
+    lane_css = {'left': 'left:24px;', 'center': f'left:50%;margin-left:-{size // 2}px;'
+                }.get(lane, 'right:24px;')
+
+    kf_body = ('0%{transform:translateY(0);opacity:0;}10%{opacity:1;}'
+               '90%{opacity:1;}100%{transform:translateY(-110vh);opacity:0;}'
+               if fade else
+               '0%{transform:translateY(0);}100%{transform:translateY(-110vh);}')
+    iter_count = 'infinite' if loop else '1'
+
+    return (
+        f'<style>@keyframes {uid}rise{{{kf_body}}}</style>'
+        f'<div style="position:fixed;bottom:-{size}px;{lane_css}z-index:9999;'
+        f'width:{size}px;height:{size}px;pointer-events:none;'
+        f'animation:{uid}rise {duration}s linear {iter_count};">{icon_html}</div>'
+    )
+_RENDERERS['icon_liftoff'] = _render_icon_liftoff

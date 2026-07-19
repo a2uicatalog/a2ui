@@ -681,3 +681,45 @@ _RENDERERS['live_edit'] = function(b) {
     + 'ta.addEventListener("keydown",function(e){if(e.key==="Enter"&&(e.ctrlKey||e.metaKey))run();});'
     + '})();<\/script>';
 };
+
+// icon_liftoff — position:fixed + a scoped @keyframes translateY, same
+// technique as reaction_shower's fall animation but a continuous
+// bottom-to-top rise instead of a click-triggered fall. Reuses
+// _WORKSPACE_LOGOS_2026/_WL_BASE (atoms_icons.gs) for real brand icons.
+_RENDERERS['icon_liftoff'] = function(b) {
+  var uid      = 'lft' + Math.random().toString(36).substr(2, 6);
+  var size     = parseInt(b.size || 64, 10);
+  var lane     = b.lane || 'right';
+  var duration = parseFloat(b.duration_s || 4);
+  var loop     = b.loop !== false;
+  var fade     = b.fade_edges !== false;
+  var app      = (b.app || 'chat').toLowerCase();
+  var path2026 = _WORKSPACE_LOGOS_2026[app];
+  var iconUrl  = b.icon_url || (path2026 ? (_WL_BASE + path2026) : '');
+
+  var iconHtml;
+  if (iconUrl) {
+    iconHtml = '<img src="' + _esc(iconUrl) + '" width="' + size + '" height="' + size
+      + '" alt="' + _esc(app) + '" style="display:block;object-fit:contain;">';
+  } else {
+    var fbBg = _WORKSPACE_COLORS[app] || '#4285F4';
+    var fbCh = _esc((app[0] || 'G').toUpperCase());
+    iconHtml = '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:' + Math.round(size / 5)
+      + 'px;background:' + fbBg + ';display:flex;align-items:center;justify-content:center;color:#fff;'
+      + 'font-size:' + Math.round(size / 3) + 'px;font-weight:700;">' + fbCh + '</div>';
+  }
+
+  var laneCss = lane === 'left' ? 'left:24px;'
+    : lane === 'center' ? ('left:50%;margin-left:-' + Math.round(size / 2) + 'px;')
+    : 'right:24px;';
+
+  var kfBody = fade
+    ? '0%{transform:translateY(0);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-110vh);opacity:0;}'
+    : '0%{transform:translateY(0);}100%{transform:translateY(-110vh);}';
+  var iterCount = loop ? 'infinite' : '1';
+
+  return '<style>@keyframes ' + uid + 'rise{' + kfBody + '}</style>'
+    + '<div style="position:fixed;bottom:-' + size + 'px;' + laneCss + 'z-index:9999;'
+    + 'width:' + size + 'px;height:' + size + 'px;pointer-events:none;'
+    + 'animation:' + uid + 'rise ' + duration + 's linear ' + iterCount + ';">' + iconHtml + '</div>';
+};
