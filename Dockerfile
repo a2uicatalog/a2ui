@@ -21,6 +21,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # surface in this repo uses, not a duplicated copy.
 COPY renderers/ /app/renderers/
 COPY cloud-run-renderer/server.py .
+COPY cloud-run-renderer/chat_data.py .
 
 ENV PORT=8080
 EXPOSE 8080
