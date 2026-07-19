@@ -2,5 +2,13 @@ name = "a2uicatalog-full"
 account_id = "874e86ca2e6319749c576074fcc72b97"
 compatibility_date = "2024-09-23"
 
+# Both must stay false: this Worker's content is gated by Cloudflare Access
+# on full.a2uicatalog.ai, but Access policies attach to the hostname — the
+# workers.dev subdomain and preview URLs serve the same assets with NO gate
+# in front (found live and open 2026-07-19, HTTP 200 vs the 302 on the real
+# hostname). Killing the alternate routes is the fix, not adding auth to them.
+workers_dev = false
+preview_urls = false
+
 [assets]
 directory = "./public-full"
