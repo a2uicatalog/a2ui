@@ -142,6 +142,14 @@ generators:
     source: public/spec.json (compact_description per atom) via a live Workers AI embedding call
     outputs: [public/catalogue/atoms-embeddings.json]  # 384-dim vector per atom, used by mcp-worker /api/compose for cosine-similarity routing
     publish: manual (needs Workers AI account access, not CI-callable — see script docstring; run when the published atom set changes meaningfully)
+  gen_authoring:
+    script: scripts/gen_authoring.py
+    source: a2ui-private/spec/article-writing-playbook-v0.1.md, article-formats-runbook-v0.1.md,
+      prompt-builder-archetypes.json (private repo — this script emits code only,
+      no content; no-ops on a public-only checkout) + public-full/spec.json (for
+      live slot->atom wiring)
+    outputs: [public-full/authoring/]   # NEVER public/ — refuses to run without A2UI_CATALOG_FULL=1
+    publish: none — gated full.a2uicatalog.ai only, never public/ or the CI deploy.yml path
   gen_schema_snapshot:
     script: scripts/gen_schema_snapshot.py
     source: atoms/schema.yaml

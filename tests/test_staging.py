@@ -57,6 +57,16 @@ def test_no_preview_atom_pages_published():
     assert not leaked, f"preview/private atom pages exist in public/: {leaked}"
 
 
+def test_authoring_section_never_public():
+    """The Authoring section (playbook + prompt builder) is gated-only —
+    scripts/gen_authoring.py refuses to write anywhere but public-full/.
+    This asserts the invariant holds regardless of how it was built."""
+    assert not (ROOT / "public" / "authoring").exists(), (
+        "public/authoring/ exists — gen_authoring.py must only ever write to "
+        "public-full/ (see its A2UI_CATALOG_FULL guard)"
+    )
+
+
 def test_builder_prompts_advertise_stable_only():
     for name in ("a2ui-builder-gem.md", "a2ui-builder-gem-offline.md"):
         text = (ROOT / "prompts" / name).read_text()

@@ -351,6 +351,7 @@ def site_header(active=""):
       <a href="/surfaces/mcp-apps"{cur('playground')}>MCP Playground</a>
       <a href="/renderer"{cur('renderer')}>Apps Script Renderer</a>
       <a href="{'/blog/drafts' if os.environ.get('A2UI_CATALOG_FULL') == '1' else '/blog'}"{cur('blog')}>Blog</a>
+      {'<a href="/authoring"' + cur('authoring') + '>Authoring</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>

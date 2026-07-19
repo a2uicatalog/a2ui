@@ -1,0 +1,452 @@
+#!/usr/bin/env python3
+"""
+Generate the gated Authoring section (full.a2uicatalog.ai only): the Article
+Writing Playbook + the Prompt Builder tool, wired to the live catalogue via
+spec.json.
+
+REAL BOUNDARY, same pattern as scripts/merge_private_schema.py and
+_PRIVATE_EXAMPLE_BLOCKS in generate_atom_pages.py: all source content
+(playbook prose, archetype/prompt-template data) lives in a2ui-private,
+never in this (public) repo. This script only emits code — it produces
+nothing without the private source present, and refuses to write anywhere
+under public/ (only public-full/).
+
+Run (from catalog-rebuild-full, AFTER `cp -r public public-full`):
+  A2UI_CATALOG_FULL=1 python3 scripts/gen_authoring.py
+"""
+import json
+import os
+import sys
+from pathlib import Path
+
+try:
+    import markdown
+except ImportError:
+    print("pip install markdown", file=sys.stderr)
+    sys.exit(1)
+
+ROOT = Path(__file__).parent.parent
+OUTPUT_DIR = ROOT / "public-full" / "authoring"
+SPEC_JSON = ROOT / "public-full" / "spec.json"
+
+PRIVATE_SPEC = Path.home() / "a2ui-private" / "spec"
+PLAYBOOK_MD = PRIVATE_SPEC / "article-writing-playbook-v0.1.md"
+RUNBOOK_MD = PRIVATE_SPEC / "article-formats-runbook-v0.1.md"
+ARCHETYPES_JSON = PRIVATE_SPEC / "prompt-builder-archetypes.json"
+
+
+def _guard():
+    """Refuse to run unless we are in a full-catalogue build. This script must
+    never write into public/ — only public-full/, which does not ship via the
+    public deploy.yml pipeline (see .github/workflows/deploy.yml)."""
+    if os.environ.get("A2UI_CATALOG_FULL") != "1":
+        print("gen_authoring: A2UI_CATALOG_FULL != 1, refusing to run "
+              "(this generator only ever writes to public-full/)", file=sys.stderr)
+        sys.exit(1)
+    if not PRIVATE_SPEC.exists():
+        print("gen_authoring: a2ui-private/spec not found — public-only checkout, "
+              "skipping (Authoring section is gated-only, has no public form)",
+              file=sys.stderr)
+        sys.exit(0)
+    for p in (PLAYBOOK_MD, ARCHETYPES_JSON):
+        if not p.exists():
+            print(f"gen_authoring: missing {p}, skipping", file=sys.stderr)
+            sys.exit(0)
+
+
+def _load_spec_atoms():
+    """type -> compact_description, from the FULL spec.json already copied
+    into public-full/ by the catalog-rebuild-full process. Used to wire each
+    archetype's slot list to REAL, live atom docs — a slot name that doesn't
+    exactly match a real atom type is left as plain text, never guessed."""
+    if not SPEC_JSON.exists():
+        return {}
+    data = json.loads(SPEC_JSON.read_text(encoding="utf-8"))
+    atoms = data.get("atoms", data if isinstance(data, list) else [])
+    return {a["type"]: a.get("compact_description", "") for a in atoms if isinstance(a, dict) and a.get("type")}
+
+
+def site_header():
+    # Mirrors scripts/generate_atom_pages.py's site_header() nav — kept in
+    # sync by hand (small, stable nav; not worth a shared-import coupling).
+    return """<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <nav class="site-nav">
+      <a href="/">Atoms</a>
+      <a href="/templates">Templates</a>
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog/drafts">Blog</a>
+      <a href="/authoring" aria-current="page">Authoring</a>
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>"""
+
+
+PAGE_CSS = """
+<style>
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
+  --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
+  --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--text-faint:oklch(62% 0.02 255);
+  --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
+  --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);--warn:oklch(58% 0.17 55);
+  --code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
+  --mono:ui-monospace,'SF Mono',Monaco,monospace;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
+  --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
+  --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--text-faint:oklch(58% 0.02 255);
+  --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
+  --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);--warn:oklch(78% 0.15 55);
+  --code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
+    --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
+    --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--text-faint:oklch(58% 0.02 255);
+    --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
+    --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);--warn:oklch(78% 0.15 55);
+    --code-bg:oklch(23% 0.02 255);
+    --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  }
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15.5px;line-height:1.6;margin:0}
+a{color:var(--accent-2)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre code{background:none;padding:0}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow:auto;font-size:13px}
+
+.site-header{position:sticky;top:0;z-index:60;background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.hdr-in{max-width:1360px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.wordmark{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--text);text-decoration:none;font-size:14px}
+.logo-mark{background:var(--accent);color:var(--accent-contrast);font-family:var(--mono);font-weight:800;font-size:11px;padding:2px 6px;border-radius:5px}
+.site-nav{display:flex;gap:20px;font-size:13.5px}
+.site-nav a{color:var(--text-muted);text-decoration:none;font-weight:600}
+.site-nav a[aria-current="page"]{color:var(--accent)}
+.site-nav a:hover{color:var(--text)}
+.theme-btn{font:inherit;font-size:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--text)}
+.gh-pill{font-size:12px;font-weight:700;color:var(--text-muted);text-decoration:none;border:1px solid var(--border);border-radius:99px;padding:5px 12px}
+
+.authoring-top{padding:20px 24px 0;max-width:1360px;margin:0 auto}
+.authoring-top h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px;margin:0 0 4px}
+.authoring-top .sub{color:var(--text-muted);font-size:13.5px;margin:0 0 18px}
+.gate-note{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);border:1px solid color-mix(in oklch, var(--warn) 40%, transparent);background:color-mix(in oklch, var(--warn) 8%, transparent);padding:3px 9px;border-radius:99px;margin-bottom:18px}
+
+.tabbar{display:flex;gap:4px;border-bottom:1px solid var(--border);max-width:1360px;margin:0 auto;padding:0 24px}
+.tab-btn{font:inherit;font-size:13.5px;font-weight:700;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);padding:10px 6px;margin-right:22px;cursor:pointer}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none;max-width:1360px;margin:0 auto;padding:24px}
+.tab-panel.active{display:block}
+
+/* playbook tab */
+.playbook-doc{max-width:820px}
+.playbook-doc h1{font-size:1.8rem;margin:0 0 6px}
+.playbook-doc h2{font-size:1.25rem;margin:34px 0 12px;padding-top:14px;border-top:1px solid var(--border)}
+.playbook-doc h3{font-size:1rem;color:var(--accent);margin:22px 0 8px}
+.playbook-doc p{margin:0 0 14px;color:var(--text)}
+.playbook-doc strong{color:var(--text)}
+.playbook-doc ul,.playbook-doc ol{margin:0 0 14px;padding-left:22px}
+.playbook-doc li{margin-bottom:4px}
+.playbook-doc blockquote{border-left:3px solid var(--accent);margin:0 0 14px;padding:2px 0 2px 14px;color:var(--text-muted)}
+
+/* prompt-builder tab (ported from the article_playbook_interactive artifact) */
+.picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+@media(max-width:980px){.picker{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.picker{grid-template-columns:1fr}}
+.arch-card{text-align:left;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer;font:inherit;color:var(--text);transition:border-color .12s,box-shadow .12s}
+.arch-card:hover{border-color:var(--border-strong)}
+.arch-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft-bg)}
+.arch-card .name{font-family:var(--mono);font-weight:800;font-size:13px;color:var(--accent);margin-bottom:5px}
+.arch-card .spine{font-size:12.5px;color:var(--text-muted);line-height:1.45}
+.arch-card .proof-tag{display:inline-block;margin-top:7px;font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;padding:1px 7px;border-radius:99px}
+.arch-card .proof-tag.proven{background:var(--accent-soft-bg);color:var(--accent)}
+.arch-card .proof-tag.draft{background:var(--surface-2);color:var(--text-faint);border:1px solid var(--border)}
+
+.workspace{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:980px){.workspace{grid-template-columns:1fr}}
+.pane{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.pane-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.pane-bar span{font-family:var(--mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.pane-bar .count{font-family:var(--mono);font-size:11px;color:var(--text-faint)}
+textarea#draftInput{width:100%;height:480px;border:none;resize:vertical;padding:16px;font-family:var(--mono);font-size:13px;line-height:1.6;background:transparent;color:var(--text);outline:none}
+textarea#draftInput::placeholder{color:var(--text-faint)}
+.copy-btn{background:var(--accent-soft-bg);border:1px solid transparent;border-radius:6px;color:var(--accent);font-size:11.5px;font-weight:700;padding:6px 14px;cursor:pointer;letter-spacing:.03em;font-family:var(--mono)}
+.copy-btn:hover{border-color:var(--accent)}
+.copy-btn.copied{color:var(--positive)}
+.copy-btn.copy-failed{color:var(--warn);background:transparent;border-color:var(--warn)}
+#promptOutput{margin:0;padding:16px;overflow:auto;height:480px;font-family:var(--mono);font-size:12px;line-height:1.6;white-space:pre-wrap;color:var(--text);border:none}
+.childlist-strip{padding:12px 16px;border-top:1px solid var(--border);background:var(--code-bg);font-family:var(--mono);font-size:11.5px;color:var(--text-muted);line-height:1.9}
+.childlist-strip b{color:var(--accent);display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.slot-chip{display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin:2px 4px 2px 0;font-size:11px}
+.slot-chip.wired{border-color:var(--accent-2);color:var(--accent-2);text-decoration:none}
+.slot-chip.wired:hover{background:var(--accent-soft-bg)}
+.slot-chip.unwired{color:var(--text-faint)}
+.hint{font-size:12.5px;color:var(--text-faint);margin:14px 0 24px;max-width:80ch}
+</style>
+"""
+
+
+def _slots_html(archetype, spec_atoms):
+    """Render each slot as a chip: a real atom type in spec.json gets a live
+    link + its actual compact_description; anything else stays plain text —
+    mechanical, no guessed mapping."""
+    chips = []
+    for slot in archetype["slots"]:
+        if slot in spec_atoms:
+            desc = spec_atoms[slot].replace('"', "&quot;")
+            chips.append(f'<a class="slot-chip wired" href="/atoms/{slot}" title="{desc}">{slot} ↗</a>')
+        else:
+            chips.append(f'<span class="slot-chip unwired">{slot}</span>')
+    return "".join(chips)
+
+
+def build_page(playbook_html, archetypes, spec_atoms):
+    archetypes_json = json.dumps(archetypes)
+    slots_by_key = {key: _slots_html(a, spec_atoms) for key, a in archetypes.items()}
+    slots_json = json.dumps(slots_by_key)
+    wired_count = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
+    total_slots = sum(len(a["slots"]) for a in archetypes.values())
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Authoring — A2UI Catalog (full)</title>
+{PAGE_CSS}
+</head>
+<body>
+{site_header()}
+<div class="authoring-top">
+  <div class="gate-note">🔒 full.a2uicatalog.ai only</div>
+  <h1>Authoring</h1>
+  <p class="sub">Article Writing Playbook + Prompt Builder — {wired_count}/{total_slots} template slots wired to live atom docs via spec.json.</p>
+</div>
+<div class="tabbar">
+  <button class="tab-btn active" data-tab="playbook">Playbook</button>
+  <button class="tab-btn" data-tab="builder">Prompt Builder</button>
+</div>
+
+<div class="tab-panel active" id="tab-playbook">
+  <div class="playbook-doc">{playbook_html}</div>
+</div>
+
+<div class="tab-panel" id="tab-builder">
+  <div class="picker" id="picker"></div>
+  <p class="hint" id="archDetail"></p>
+  <div class="workspace">
+    <div class="pane">
+      <div class="pane-bar"><span>Your draft</span><span class="count" id="draftCount">0 words</span></div>
+      <textarea id="draftInput" placeholder="Paste your rough draft here — freeform is fine, don't pre-structure it. The prompt on the right adapts to whichever layout you pick above."></textarea>
+    </div>
+    <div class="pane">
+      <div class="pane-bar"><span>Assembled prompt — copy into your LLM</span><button class="copy-btn" id="copyBtn" type="button">COPY</button></div>
+      <pre id="promptOutput"></pre>
+      <div class="childlist-strip"><b>ChildList slots (wired = real atom, linked to its live doc)</b><span id="slotChips"></span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn){{
+  btn.addEventListener('click', function(){{
+    document.querySelectorAll('.tab-btn').forEach(function(b){{b.classList.remove('active')}});
+    document.querySelectorAll('.tab-panel').forEach(function(p){{p.classList.remove('active')}});
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  }});
+}});
+document.querySelector('.theme-btn').addEventListener('click', function(){{
+  var r = document.documentElement, t = r.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  r.setAttribute('data-theme', t);
+}});
+
+var ARCHETYPES = {archetypes_json};
+var SLOT_CHIPS = {slots_json};
+var current = 'build_log';
+
+function wordCount(s){{ return (s.trim().match(/\\S+/g) || []).length; }}
+
+function buildPrompt(a, draft){{
+  var slotList = a.slots.map(function(s){{ return '  <!-- slot: ' + s + ' -->'; }}).join('\\n');
+  return (
+"You are formatting a rough draft into this blog's exact parser conventions\\n" +
+"AND annotating it for future graduation to a live A2UI ComponentId/ChildList\\n" +
+"template. Output ONLY the final markdown file (frontmatter + body). No\\n" +
+"commentary, no fences around the whole thing, no explanation outside the\\n" +
+"Phase 4 report. Invent nothing not present in the draft - sparseness in the\\n" +
+"draft stays sparse in the output; never fabricate a section, quote, caveat,\\n" +
+"or number to fill a template slot.\\n" +
+"\\n" +
+"PHASE 0 - Frontmatter\\n" +
+"Emit: title, series, volume, date, summary, read_minutes\\n" +
+"All six are required by the parser or the build fails. Infer read_minutes\\n" +
+"from word count (~200 wpm) if not given. Ask me for anything you can't\\n" +
+"infer - series/volume especially, don't guess a number.\\n" +
+"\\n" +
+"PHASE 0.5 - Filename\\n" +
+"State this on its own line, before the formatted output:\\n" +
+"  Proposed filename: NNN-<slug>.md\\n" +
+"<slug> is lowercase, hyphenated, short, derived from the title - you have\\n" +
+"full context by now, propose one. NNN is the file's position across ALL\\n" +
+"posts (not the same as volume, which is per-series) - you cannot see the\\n" +
+"current launch-src/ directory, so always ASK for NNN rather than guessing\\n" +
+"a number.\\n" +
+"\\n" +
+"PHASE 1 - Archetype (fixed for this run)\\n" +
+"Archetype: " + a.label + "\\n" +
+"Spine: " + a.spine + "\\n" +
+"Signals this archetype fits: " + a.signals + "\\n" +
+"If the draft clearly does NOT fit this spine, say so in Phase 4 instead of\\n" +
+"forcing it - don't silently reshape content into a spine it doesn't have.\\n" +
+"\\n" +
+"PHASE 2 - Structure into H2 sections matching the spine\\n" +
+a.phase2 + "\\n" +
+"Every heading gets {{label=\\"Short\\"}} if the natural heading is longer than\\n" +
+"~3 words or doesn't front-load its distinctive word.\\n" +
+"\\n" +
+"PHASE 2.5 - Template alignment (for future ComponentId/ChildList graduation)\\n" +
+"This archetype's target composition (article-formats-runbook-v0.1.md):\\n" +
+"  " + a.childlist + "\\n" +
+"Immediately before each section that corresponds to one of these slots,\\n" +
+"insert an HTML comment naming it, e.g.:\\n" +
+slotList + "\\n" +
+"Comments are invisible in the rendered post today - they're forward\\n" +
+"compatibility for the day this graduates from markdown to a live\\n" +
+"ComponentId/ChildList payload. Skip slots the draft doesn't support rather\\n" +
+"than inventing content to fill them - an absent slot is a true fact about\\n" +
+"this draft, not an error.\\n" +
+"\\n" +
+"PHASE 3 - Marks\\n" +
+"- The single most quotable line (if one exists) becomes `> [!QUOTE] <line>`.\\n" +
+"  Zero or one per major section; two is the ceiling for the whole post.\\n" +
+"- Fenced code blocks stay ordinary triple-backtick.\\n" +
+"- Real markdown tables where the draft has tabular data.\\n" +
+"\\n" +
+"PHASE 4 - Report\\n" +
+"After the output, list on separate lines:\\n" +
+"- Whether the draft actually fit the " + a.label + " spine, or where it strained\\n" +
+"- Any heading you added an explicit {{label=...}} to, and why\\n" +
+"- Which ComponentId slots got skipped (no content for them) vs used\\n" +
+"- Anything you could NOT confidently structure - flag it, don't paper over it\\n" +
+"\\n" +
+"---\\n" +
+"DRAFT TO FORMAT:\\n" +
+(draft && draft.trim() ? draft : "[paste your rough draft here]")
+  );
+}}
+
+function render(){{
+  var a = ARCHETYPES[current];
+  var draft = document.getElementById('draftInput').value;
+  document.getElementById('draftCount').textContent = wordCount(draft) + ' words';
+  document.getElementById('promptOutput').textContent = buildPrompt(a, draft);
+  document.getElementById('archDetail').innerHTML =
+    '<b style="color:var(--accent)">' + a.label + '</b> — ' + a.spine +
+    (a.proven ? '' : ' <span style="color:var(--warn)">(unproven — no live fixture yet)</span>');
+  document.getElementById('slotChips').innerHTML = SLOT_CHIPS[current];
+}}
+
+function buildPicker(){{
+  var host = document.getElementById('picker');
+  Object.keys(ARCHETYPES).forEach(function(key){{
+    var a = ARCHETYPES[key];
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'arch-card' + (key === current ? ' active' : '');
+    btn.dataset.key = key;
+    btn.innerHTML =
+      '<div class="name">' + a.label + '</div>' +
+      '<div class="spine">' + a.spine + '</div>' +
+      '<span class="proof-tag ' + (a.proven ? 'proven' : 'draft') + '">' + (a.proven ? 'proven' : 'unproven') + '</span>';
+    btn.addEventListener('click', function(){{
+      current = key;
+      document.querySelectorAll('.arch-card').forEach(function(c){{ c.classList.remove('active'); }});
+      btn.classList.add('active');
+      render();
+    }});
+    host.appendChild(btn);
+  }});
+}}
+
+function copyPromptToClipboard(){{
+  var srcEl = document.getElementById('promptOutput');
+  var text = srcEl.textContent;
+  var btn = document.getElementById('copyBtn');
+  function showOk(){{
+    btn.textContent = 'COPIED'; btn.classList.add('copied'); btn.classList.remove('copy-failed');
+    setTimeout(function(){{ btn.textContent = 'COPY'; btn.classList.remove('copied'); }}, 2000);
+  }}
+  function showManualFallback(){{
+    try{{
+      var range = document.createRange();
+      range.selectNodeContents(srcEl);
+      var sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(range);
+    }}catch(e){{}}
+    btn.textContent = 'SELECTED — PRESS ⌘/CTRL+C'; btn.classList.add('copy-failed'); btn.classList.remove('copied');
+    setTimeout(function(){{ btn.textContent = 'COPY'; btn.classList.remove('copy-failed'); }}, 4000);
+  }}
+  function tryExecCommand(){{
+    try{{
+      var range = document.createRange();
+      range.selectNodeContents(srcEl);
+      var sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(range);
+      var ok = document.execCommand('copy');
+      sel.removeAllRanges();
+      if (ok) {{ showOk(); return true; }}
+    }}catch(e){{}}
+    return false;
+  }}
+  if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext){{
+    navigator.clipboard.writeText(text).then(showOk, function(){{
+      if (!tryExecCommand()) showManualFallback();
+    }});
+  }} else {{
+    if (!tryExecCommand()) showManualFallback();
+  }}
+}}
+document.getElementById('copyBtn').addEventListener('click', copyPromptToClipboard);
+document.getElementById('draftInput').addEventListener('input', render);
+
+buildPicker();
+render();
+</script>
+</body>
+</html>
+"""
+
+
+def main():
+    _guard()
+    playbook_html = markdown.markdown(
+        PLAYBOOK_MD.read_text(encoding="utf-8"),
+        extensions=["fenced_code", "tables"],
+    )
+    archetypes = json.loads(ARCHETYPES_JSON.read_text(encoding="utf-8"))
+    spec_atoms = _load_spec_atoms()
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    (OUTPUT_DIR / "index.html").write_text(
+        build_page(playbook_html, archetypes, spec_atoms), encoding="utf-8"
+    )
+    wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
+    total = sum(len(a["slots"]) for a in archetypes.values())
+    print(f"gen_authoring: wrote public-full/authoring/index.html "
+          f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json)")
+
+
+if __name__ == "__main__":
+    main()
