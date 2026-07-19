@@ -17505,9 +17505,34 @@ def _render_blockquote(b: dict) -> str:
 _RENDERERS["blockquote"] = _render_blockquote
 
 
+def _highlight_json(raw: str) -> str:
+    """Minimal JSON syntax highlighter -- tokenizes on the escaped text (never
+    re-parses/re-serializes) so it can't alter the exact bytes being shown."""
+    pattern = re.compile(
+        r'(&quot;(?:[^&]|&(?!quot;))*?&quot;)(:)?|'  # quoted string, optionally followed by ':'
+        r'\b(true|false|null)\b|'
+        r'(-?\d+\.?\d*)'
+    )
+
+    def repl(m):
+        string, colon, kw, num = m.group(1), m.group(2), m.group(3), m.group(4)
+        if string is not None:
+            color = '#3EE0F0' if colon else '#E8836B'  # key vs string value
+            return f'<span style="color:{color}">{string}</span>{colon or ""}'
+        if kw is not None:
+            return f'<span style="color:#818CF8">{kw}</span>'
+        if num is not None:
+            return f'<span style="color:#F5C24B">{num}</span>'
+        return m.group(0)
+
+    return pattern.sub(repl, raw)
+
+
 def _render_code_block(b: dict) -> str:
     lang = _esc(b.get('language', ''))
     content = _esc(b.get('content', ''))
+    if lang.lower() == 'json':
+        content = _highlight_json(content)
     lang_bar = ('<div style="padding:6px 14px;background:#0d1117;border-radius:8px 8px 0 0;'
                 'font-size:0.72rem;color:#6b7280;font-family:ui-monospace,monospace;">'
                 + lang + '</div>') if lang else ''
@@ -20190,3 +20215,305 @@ def _render_tooltip_glossary(b: dict) -> str:
     return ('<div style="margin:1rem 0;line-height:1.7;font-size:0.9rem;color:#374151;">'
             + text + '</div>')
 _RENDERERS["tooltip_glossary"] = _render_tooltip_glossary
+
+
+# -- Chat render deck: dark-glass card family, dimension-aware (all sizing in
+# %/flex/grid against the wrapper's parametrized width, never a hardcoded px
+# content width) so the same markup reproduces correctly at any requested
+# render width -- e.g. render.png?b=...&width=420 vs the deck's native 640. --
+
+_STATUS_DOT = {
+    'operational':  ('#34D399', '●', 'Operational'),
+    'disruption':   ('#FBBF24', '▲', 'Disruption'),
+    'information':  ('#818CF8', '◐', 'Information'),
+    'critical':     ('#F87171', '✕', 'Outage'),
+}
+_VERDICT_ICON = {'ok': ('#34D399', '●'), 'warn': ('#FBBF24', '▲'), 'crit': ('#F87171', '✕')}
+_TONE_COLOR = {'good': '#34D399', 'bad': '#F87171', 'flat': '#5A6390'}
+_SEVERITY_COLOR = {'low': '#818CF8', 'medium': '#FBBF24', 'high': '#F87171', 'none': 'transparent'}
+
+_CARD_OPEN = (
+    "font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;"
+    'background:#0B0E1A;border:1px solid #1E2440;border-radius:12px;'
+    'padding:26px 28px 22px;color:#EEF2FF;font-variant-numeric:tabular-nums;'
+)
+
+
+def _card_head(eyebrow: str, stamp: str, rose: bool = False) -> str:
+    color = '#E8836B' if rose else '#00f2ff'
+    stamp_html = (f'<div style="font-size:12px;letter-spacing:.08em;color:#5A6390;'
+                  f'text-transform:uppercase;">{_esc(stamp)}</div>' if stamp else '')
+    return (f'<div style="display:flex;justify-content:space-between;align-items:baseline;'
+            f'margin-bottom:4px;gap:16px;">'
+            f'<div style="font-size:12px;font-weight:700;letter-spacing:.16em;'
+            f'text-transform:uppercase;color:{color};">{_esc(eyebrow)}</div>{stamp_html}</div>')
+
+
+def _card_foot(left: str, atom: str) -> str:
+    return (f'<div style="display:flex;justify-content:space-between;margin-top:20px;'
+            f'padding-top:14px;border-top:1px solid rgba(154,163,199,.14);font-size:11px;'
+            f'letter-spacing:.1em;text-transform:uppercase;color:#454D75;">'
+            f'<span>{_esc(left)}</span>'
+            f'<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;'
+            f'text-transform:none;letter-spacing:.04em;color:#5A6390;">a2ui · {_esc(atom)}</span></div>')
+
+
+def _render_service_status_board(b: dict) -> str:
+    verdict = b.get('verdict') or {}
+    level = verdict.get('level', 'ok')
+    vcolor, vicon = _VERDICT_ICON.get(level, _VERDICT_ICON['ok'])
+    services = b.get('services', [])
+
+    verdict_html = (
+        f'<div style="display:flex;align-items:center;gap:14px;margin:18px 0 6px;">'
+        f'<div style="width:44px;height:44px;border-radius:10px;flex:none;'
+        f'background:{vcolor}1f;border:1px solid {vcolor}66;display:flex;'
+        f'align-items:center;justify-content:center;font-size:20px;color:{vcolor};">{vicon}</div>'
+        f'<div><div style="font-size:24px;font-weight:800;letter-spacing:-.01em;color:{vcolor};">'
+        f'{_esc(verdict.get("text", ""))}</div>'
+        + (f'<div style="font-size:14px;color:#9AA3C7;margin-top:1px;">{_esc(verdict.get("detail", ""))}</div>'
+           if verdict.get('detail') else '')
+        + '</div></div>'
+    )
+
+    rows = ''
+    for i, svc in enumerate(services):
+        state = svc.get('state', 'operational')
+        color, icon, _label = _STATUS_DOT.get(state, _STATUS_DOT['operational'])
+        border = '' if i >= len(services) - 2 else 'border-bottom:1px solid rgba(154,163,199,.1);'
+        rows += (f'<div style="flex:1 1 45%;min-width:0;display:flex;align-items:center;gap:10px;'
+                 f'padding:9px 2px;{border}font-size:15px;">'
+                 f'<span style="color:{color};font-size:11px;flex:none;">{icon}</span>'
+                 f'<span style="flex:1;font-weight:600;color:{color if state != "operational" else "#EEF2FF"};">'
+                 f'{_esc(svc.get("name", ""))}</span>'
+                 f'<span style="font-size:12px;letter-spacing:.05em;text-transform:uppercase;'
+                 f'color:{color if state != "operational" else "#5A6390"};">{_label}</span></div>')
+
+    return (
+        f'<div style="{_CARD_OPEN}">'
+        f'{_card_head(b.get("title", "SERVICE STATUS"), b.get("stamp", ""))}'
+        f'{verdict_html}'
+        f'<div style="display:flex;flex-wrap:wrap;gap:0 28px;margin-top:16px;">{rows}</div>'
+        f'{_card_foot("", "service_status_board")}'
+        f'</div>'
+    )
+_RENDERERS['service_status_board'] = _render_service_status_board
+
+
+def _render_incident_log(b: dict) -> str:
+    week = b.get('week', [])
+    incidents = b.get('incidents', [])
+
+    week_html = ''
+    for d in week:
+        sev = d.get('severity', 'none')
+        color = _SEVERITY_COLOR.get(sev, 'transparent')
+        bg = f'{color}22' if sev != 'none' else '#121736'
+        border = f'{color}66' if sev != 'none' else 'rgba(154,163,199,.12)'
+        text = color if sev != 'none' else '#454D75'
+        week_html += (
+            f'<div style="text-align:center;flex:1;">'
+            f'<div style="height:34px;border-radius:7px;background:{bg};border:1px solid {border};'
+            f'display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;'
+            f'color:{text};">{d.get("count", 0) or "·"}</div>'
+            f'<div style="font-size:10.5px;letter-spacing:.08em;color:#5A6390;margin-top:5px;'
+            f'text-transform:uppercase;">{_esc(d.get("label", ""))}</div></div>'
+        )
+
+    rows = ''
+    for i, inc in enumerate(incidents[:4]):
+        sev_color = _SEVERITY_COLOR.get(inc.get('severity', 'low'), '#818CF8')
+        ongoing = inc.get('ongoing', False)
+        dur_bg = f'{sev_color}1f' if ongoing else '#121736'
+        dur_border = f'{sev_color}66' if ongoing else 'rgba(154,163,199,.16)'
+        dur_color = sev_color if ongoing else '#9AA3C7'
+        border = '' if i == len(incidents[:4]) - 1 else 'border-bottom:1px solid rgba(154,163,199,.1);'
+        rows += (
+            f'<div style="display:flex;align-items:center;gap:14px;padding:12px 0;{border}">'
+            f'<div style="width:4px;height:40px;border-radius:2px;flex:none;background:{sev_color};"></div>'
+            f'<div style="flex:1;min-width:0;">'
+            f'<div style="font-size:15px;font-weight:700;">{_esc(inc.get("service", ""))}</div>'
+            f'<div style="font-size:13.5px;color:#9AA3C7;margin-top:1px;">{_esc(inc.get("summary", ""))}</div>'
+            f'</div><div style="text-align:right;flex:none;">'
+            f'<span style="font-size:13px;font-weight:700;padding:3px 10px;border-radius:20px;'
+            f'background:{dur_bg};border:1px solid {dur_border};color:{dur_color};">'
+            f'{_esc(inc.get("duration", ""))}{" · ongoing" if ongoing else ""}</span>'
+            f'<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5A6390;'
+            f'margin-top:5px;">{_esc(inc.get("when", ""))}</div></div></div>'
+        )
+
+    return (
+        f'<div style="{_CARD_OPEN}">'
+        f'{_card_head(b.get("title", "INCIDENT LOG"), b.get("stamp", ""))}'
+        f'<div style="display:flex;gap:6px;margin:18px 0 20px;">{week_html}</div>'
+        f'{rows}'
+        f'{_card_foot("", "incident_log")}'
+        f'</div>'
+    )
+_RENDERERS['incident_log'] = _render_incident_log
+
+
+def _render_stat_pulse(b: dict) -> str:
+    stats = b.get('stats', [])
+    trend = b.get('trend') or {}
+    bars = trend.get('bars', [])
+    labels = trend.get('labels', [])
+    hot = trend.get('hot_index', -1)
+    max_bar = max(bars) if bars else 1
+
+    tiles = ''
+    for s in stats:
+        tone = _TONE_COLOR.get(s.get('tone', 'flat'), '#5A6390')
+        tiles += (
+            f'<div style="flex:1;background:#121736;border:1px solid rgba(154,163,199,.12);'
+            f'border-radius:10px;padding:14px 16px 12px;min-width:0;">'
+            f'<div style="font-size:30px;font-weight:800;letter-spacing:-.02em;">{_esc(s.get("value", ""))}</div>'
+            f'<div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#5A6390;'
+            f'margin-top:3px;">{_esc(s.get("label", ""))}</div>'
+            f'<div style="font-size:12px;font-weight:700;margin-top:6px;color:{tone};">{_esc(s.get("delta", ""))}</div>'
+            f'</div>'
+        )
+
+    bars_html = ''
+    lbls_html = ''
+    for i, v in enumerate(bars):
+        h = max(int(v / max_bar * 100), 4) if max_bar else 4
+        color = '#00f2ff' if i == hot else '#2A3358'
+        bars_html += (
+            f'<div style="flex:1;position:relative;height:{h}%;border-radius:4px 4px 0 0;'
+            f'background:{color};display:flex;align-items:flex-start;justify-content:center;">'
+            f'<span style="position:absolute;top:-20px;font-size:12px;font-weight:700;color:#9AA3C7;">'
+            f'{_esc(v)}</span></div>'
+        )
+        lbl = labels[i] if i < len(labels) else ''
+        lbls_html += (f'<div style="flex:1;text-align:center;font-size:10.5px;letter-spacing:.08em;'
+                      f'color:#5A6390;text-transform:uppercase;">{_esc(lbl)}</div>')
+
+    return (
+        f'<div style="{_CARD_OPEN}">'
+        f'{_card_head(b.get("title", "STAT PULSE"), b.get("stamp", ""))}'
+        f'<div style="display:flex;gap:12px;margin:18px 0 20px;">{tiles}</div>'
+        f'<div style="display:flex;align-items:flex-end;gap:10px;height:64px;padding:0 4px 20px;">{bars_html}</div>'
+        f'<div style="display:flex;gap:10px;padding:0 4px;margin-top:-14px;">{lbls_html}</div>'
+        f'{_card_foot("", "stat_pulse")}'
+        f'</div>'
+    )
+_RENDERERS['stat_pulse'] = _render_stat_pulse
+
+
+_WX_GLYPHS = {
+    'sun': lambda size: (
+        f'<div style="width:{size}px;height:{size}px;border-radius:50%;flex:none;'
+        f'background:radial-gradient(circle at 38% 34%,#FFE9A8,#F5C24B 62%,#E8A93B);'
+        f'box-shadow:0 0 {size//3}px rgba(245,194,75,.4);"></div>'
+    ),
+    'partly': lambda size: (
+        f'<div style="position:relative;width:{size}px;height:{int(size*0.6)}px;flex:none;">'
+        f'<div style="position:absolute;top:-{int(size*0.18)}px;right:-{int(size*0.08)}px;'
+        f'width:{int(size*0.4)}px;height:{int(size*0.4)}px;border-radius:50%;'
+        f'background:radial-gradient(circle at 38% 34%,#FFE9A8,#F5C24B 62%,#E8A93B);"></div>'
+        f'<div style="position:absolute;bottom:{int(size*0.14)}px;left:{int(size*0.16)}px;'
+        f'width:{int(size*0.42)}px;height:{int(size*0.42)}px;border-radius:50%;background:#A8B4D8;"></div>'
+        f'<div style="position:absolute;bottom:0;left:0;right:0;height:{int(size*0.34)}px;'
+        f'border-radius:{int(size*0.2)}px;background:#A8B4D8;"></div></div>'
+    ),
+    'cloud': lambda size: (
+        f'<div style="position:relative;width:{size}px;height:{int(size*0.6)}px;flex:none;">'
+        f'<div style="position:absolute;bottom:0;left:0;right:0;height:{int(size*0.34)}px;'
+        f'border-radius:{int(size*0.2)}px;background:#A8B4D8;"></div>'
+        f'<div style="position:absolute;bottom:{int(size*0.14)}px;left:{int(size*0.16)}px;'
+        f'width:{int(size*0.42)}px;height:{int(size*0.42)}px;border-radius:50%;background:#A8B4D8;"></div></div>'
+    ),
+    'rain': lambda size: _WX_GLYPHS['cloud'](size),
+    'storm': lambda size: (
+        f'<div style="position:relative;width:{size}px;height:{int(size*0.7)}px;flex:none;">'
+        f'<div style="position:absolute;bottom:{int(size*0.28)};left:0;right:0;height:{int(size*0.34)}px;'
+        f'border-radius:{int(size*0.2)}px;background:#6B7494;"></div>'
+        f'<div style="position:absolute;bottom:{int(size*0.4)}px;left:{int(size*0.16)}px;'
+        f'width:{int(size*0.42)}px;height:{int(size*0.42)}px;border-radius:50%;background:#6B7494;"></div>'
+        f'<div style="position:absolute;bottom:-{int(size*0.24)}px;left:{int(size*0.36)}px;'
+        f'width:{int(size*0.28)}px;height:{int(size*0.38)}px;background:#F5C24B;'
+        f'clip-path:polygon(52% 0,100% 0,62% 44%,88% 44%,22% 100%,44% 52%,8% 52%);"></div></div>'
+    ),
+}
+
+
+def _wx_glyph(code: str, size: int = 30) -> str:
+    return _WX_GLYPHS.get(code, _WX_GLYPHS['sun'])(size)
+
+
+def _render_weather_now(b: dict) -> str:
+    stats = b.get('stats', [])
+    tiles = ''
+    for s in stats:
+        tiles += (
+            f'<div style="flex:1;background:#121736;border:1px solid rgba(154,163,199,.12);'
+            f'border-radius:9px;padding:10px 12px;min-width:0;">'
+            f'<div style="font-size:17px;font-weight:700;">{_esc(s.get("value", ""))}</div>'
+            f'<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5A6390;'
+            f'margin-top:2px;">{_esc(s.get("label", ""))}</div></div>'
+        )
+    return (
+        f'<div style="{_CARD_OPEN}">'
+        f'{_card_head(b.get("city_line", "WEATHER"), b.get("stamp", ""), rose=True)}'
+        f'<div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;">'
+        f'<div><div style="font-size:88px;font-weight:800;letter-spacing:-.04em;line-height:1;">'
+        f'{_esc(b.get("temp", ""))}<sup style="font-size:40px;font-weight:600;color:#9AA3C7;">°</sup></div>'
+        f'<div style="font-size:19px;font-weight:600;color:#F5C24B;margin-top:4px;">{_esc(b.get("condition", ""))}</div>'
+        f'<div style="font-size:15px;color:#9AA3C7;margin-top:3px;">H <b style="color:#EEF2FF;">{_esc(b.get("hi", ""))}°</b>'
+        f' · L <b style="color:#EEF2FF;">{_esc(b.get("lo", ""))}°</b></div></div>'
+        f'{_wx_glyph(b.get("code", "sun"), 108)}'
+        f'</div>'
+        f'<div style="display:flex;gap:10px;margin-top:22px;">{tiles}</div>'
+        f'{_card_foot("", "weather_now")}'
+        f'</div>'
+    )
+_RENDERERS['weather_now'] = _render_weather_now
+
+
+def _render_weather_outlook(b: dict) -> str:
+    scale = b.get('scale') or {'min': 15, 'max': 35}
+    lo_bound, hi_bound = scale['min'], scale['max']
+    span = hi_bound - lo_bound or 1
+    days = b.get('days', [])
+
+    def pos(v):
+        return max(0, min(100, (v - lo_bound) / span * 100))
+
+    rows = ''
+    for i, d in enumerate(days):
+        lo, hi = d.get('lo', lo_bound), d.get('hi', hi_bound)
+        left, right = pos(lo), pos(hi)
+        wet = d.get('precip', 0) >= 50
+        p_bg = '#3EE0F022' if wet else '#121736'
+        p_border = '#3EE0F066' if wet else 'rgba(154,163,199,.16)'
+        p_color = '#3EE0F0' if wet else '#9AA3C7'
+        border = '' if i == len(days) - 1 else 'border-bottom:1px solid rgba(154,163,199,.1);'
+        rows += (
+            f'<div style="display:flex;align-items:center;gap:0;padding:13px 0;{border}">'
+            f'<div style="width:52px;flex:none;"><div style="font-size:14px;font-weight:800;'
+            f'letter-spacing:.04em;">{_esc(d.get("label", ""))}</div>'
+            f'<div style="font-size:11px;color:#5A6390;">{_esc(d.get("date", ""))}</div></div>'
+            f'<div style="width:44px;flex:none;display:flex;justify-content:center;">'
+            f'{_wx_glyph(d.get("code", "sun"), 28)}</div>'
+            f'<div style="flex:1;position:relative;height:30px;margin:0 14px 0 4px;">'
+            f'<div style="position:absolute;top:5px;left:{left:.1f}%;width:{max(right-left,4):.1f}%;'
+            f'height:20px;border-radius:5px;background:linear-gradient(90deg,#6FA8E8,#F5C24B);"></div>'
+            f'<span style="position:absolute;top:7px;left:{left:.1f}%;font-size:13px;font-weight:700;'
+            f'color:#6FA8E8;transform:translateX(-100%);padding-right:7px;">{_esc(lo)}°</span>'
+            f'<span style="position:absolute;top:7px;left:{right:.1f}%;font-size:13px;font-weight:700;'
+            f'color:#F5C24B;padding-left:7px;">{_esc(hi)}°</span></div>'
+            f'<div style="width:52px;flex:none;text-align:right;"><span style="display:inline-block;'
+            f'font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:16px;background:{p_bg};'
+            f'border:1px solid {p_border};color:{p_color};">{_esc(d.get("precip", 0))}%</span></div>'
+            f'</div>'
+        )
+
+    return (
+        f'<div style="{_CARD_OPEN}">'
+        f'{_card_head(b.get("title", "OUTLOOK"), b.get("city", ""), rose=True)}'
+        f'<div style="margin-top:8px;">{rows}</div>'
+        f'{_card_foot(f"shared scale {lo_bound}–{hi_bound}°C", "weather_outlook")}'
+        f'</div>'
+    )
+_RENDERERS['weather_outlook'] = _render_weather_outlook

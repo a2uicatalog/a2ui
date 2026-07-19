@@ -503,6 +503,7 @@ a2ui-ops-v1:
 - experimental_banner
 - feed_status
 - http_request_block
+- incident_log
 - inventory_table
 - jira_ticket
 - keyboard_shortcut
@@ -523,13 +524,17 @@ a2ui-ops-v1:
 - release_notes
 - risk_flag
 - roadmap_card
+- service_status_board
 - shortcut_legend
 - sla_timer_display
 - sprint_board
+- stat_pulse
 - status_dashboard
 - terminal_block
 - toast_notification
 - vote_button_group
+- weather_now
+- weather_outlook
 a2ui-presentation-v1:
 - gdm_rocket_panel
 - iso_fireworks_panel

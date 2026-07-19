@@ -37,20 +37,35 @@ def _config():
 
 
 def _cloud_run_config():
-    """Resolve the headless-render Cloud Run service's URL + token, if
-    configured. Returns (None, None) if not set up yet — callers fall back
-    to local chromium so this stays zero-config for anyone who hasn't
-    deployed the service."""
+    """Resolve the headless-render Cloud Run service's URL, if configured.
+    Returns None if not set up yet — callers fall back to local chromium so
+    this stays zero-config for anyone who hasn't deployed the service.
+
+    No token here anymore (2026-07-17): the service moved to Cloud Run's
+    own IAM auth (roles/run.invoker), matching how the Gemini Enterprise
+    agent tool authenticates — no shared secret to manage or leak. See
+    a2ui-private/briefs/gemini-enterprise-agent-tool.md for why."""
     import yaml
     ops = os.path.join(_ROOT, 'ops')
     try:
         dep = yaml.safe_load(open(os.path.join(ops, 'project-ops.yaml'))).get('deployments', {}).get('cloud-run-renderer')
         if not dep or not dep.get('url'):
-            return None, None
-        tok = yaml.safe_load(open(os.path.join(ops, 'secrets.local.yaml'))).get('api', {}).get('render_token')
-        return dep['url'], tok
+            return None
+        return dep['url']
     except FileNotFoundError:
-        return None, None
+        return None
+
+
+def _cloud_run_id_token(audience: str) -> str:
+    """Fetches a Google ID token scoped to the Cloud Run service, via
+    Application Default Credentials — this machine's own identity, not a
+    static secret. Requires `google-auth` (already a printer.py dependency
+    via other Google API calls) and `gcloud auth application-default login`
+    having been run once."""
+    import google.auth.transport.requests
+    import google.oauth2.id_token
+    request = google.auth.transport.requests.Request()
+    return google.oauth2.id_token.fetch_id_token(request, audience)
 
 
 def _chat_raster_types():
@@ -92,13 +107,14 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
                 return svg_raster.rasterize_svg_to_png(svg_string, target_width=width,
                                                         background=(11, 11, 18))
 
-    cloud_run_url, cloud_run_token = _cloud_run_config()
+    cloud_run_url = _cloud_run_config()
     if cloud_run_url:
         import urllib.request
         body = json.dumps({'block': block, 'width': width, 'title': title, 'subtitle': subtitle}).encode()
+        id_token = _cloud_run_id_token(cloud_run_url)
         req = urllib.request.Request(f'{cloud_run_url}/render', data=body,
                                      headers={'Content-Type': 'application/json',
-                                              'Authorization': f'Bearer {cloud_run_token}'})
+                                              'Authorization': f'Bearer {id_token}'})
         with urllib.request.urlopen(req, timeout=60) as r:
             return r.read()
 
@@ -111,7 +127,7 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
         b = pw.chromium.launch(executable_path=exe, args=['--no-sandbox'])
         pg = b.new_page(viewport={'width': width + 40, 'height': 360}, device_scale_factor=2)
         pg.set_content(html, wait_until='networkidle')
-        png = pg.screenshot()
+        png = pg.screenshot(full_page=True)
         b.close()
     return png
 

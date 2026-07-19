@@ -11432,3 +11432,112 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: service_status_board
+  stage: preview
+  description: Verdict-first service status board — a lead line naming the single
+    most important thing (all-clear, or the one active disruption), followed by
+    a two-column grid of every tracked service with its state encoded as shape
+    + label + color (never color alone). Designed for any status feed (Google
+    Workspace, an internal fleet, ServiceNow) reduced to name + state.
+  compact_description: verdict-first service status grid with triple-encoded state
+  surfaces:
+    works_on:
+    - google-chat-chromium-render
+  fields:
+    title: string (optional, e.g., 'GOOGLE WORKSPACE — SERVICE STATUS')
+    stamp: string (optional, e.g., '19 JUL 2026 · 17:45 CET'). Right-aligned timestamp.
+    verdict: 'dict: {level: one of ok|warn|crit, text: string headline, detail:
+      string (optional) supporting line}'
+    services: 'list of dicts: [{name: string, state: one of operational|disruption|information|critical},
+      ...]'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: incident_log
+  stage: preview
+  description: Recent-history companion to service_status_board — a 7-cell week
+    strip (count + severity tint per day) above a short list of incident rows
+    (service, one-line summary, severity stripe, duration, ongoing state).
+  compact_description: 7-day incident strip plus recent incident rows
+  surfaces:
+    works_on:
+    - google-chat-chromium-render
+  fields:
+    title: string (optional, e.g., 'LAST 7 DAYS — INCIDENT LOG')
+    stamp: string (optional, e.g., '13 – 19 Jul')
+    week: 'list of exactly 7 dicts, oldest to newest: [{label: string (e.g. "Mon"),
+      count: integer, severity: one of none|low|medium}, ...]'
+    incidents: 'list of up to 4 dicts, most recent first: [{service: string, summary:
+      string, severity: one of low|medium|high, duration: string (e.g. "3h 10m"),
+      when: string (e.g. "Sun 19"), ongoing: boolean}, ...]'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: stat_pulse
+  stage: preview
+  description: Three hero stat tiles (value, label, delta with tone) above a small
+    trend bar chart with rounded tops and one emphasized "current" bar. A closing
+    figure for any status or activity digest.
+  compact_description: three hero stat tiles plus a small emphasized trend bar chart
+  surfaces:
+    works_on:
+    - google-chat-chromium-render
+  fields:
+    title: string (optional, e.g., '30-DAY PULSE')
+    stamp: string (optional, e.g., '20 Jun – 19 Jul')
+    stats: 'list of exactly 3 dicts: [{value: string, label: string, delta: string,
+      tone: one of good|bad|flat}, ...]'
+    trend: 'dict: {bars: list of numbers (max 6), labels: list of strings matching
+      bars length, hot_index: integer index of the bar to emphasize}'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: weather_now
+  stage: preview
+  description: Current-conditions weather card — a hero temperature reading beside
+    a drawn CSS weather glyph (sun/cloud/storm, not an emoji or external icon font),
+    condition text, hi/lo, and 4 supporting stat tiles (precip, wind, UV, humidity).
+  compact_description: hero temperature with drawn weather glyph and 4 supporting stats
+  surfaces:
+    works_on:
+    - google-chat-chromium-render
+  fields:
+    city_line: string (e.g., 'TOULOUSE — LA VILLE ROSE'). Eyebrow line naming the
+      location.
+    stamp: string (optional, e.g., 'Sat 19 Jul · 17:45')
+    temp: integer. The hero reading.
+    condition: string. Display text in any language, e.g. 'Ensoleillé'.
+    code: string, one of sun|partly|cloud|rain|storm. Selects the drawn glyph.
+    hi: integer
+    lo: integer
+    stats: 'list of exactly 4 dicts: [{value: string, label: string}, ...]'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: weather_outlook
+  stage: preview
+  description: Multi-day forecast as horizontal range bars on one shared temperature
+    axis with gridlines — lo anchored at the bar's cool end, hi at its warm end,
+    a small drawn weather glyph per row, and a precipitation chip that highlights
+    when precip crosses a wet threshold. The shared axis is what makes a cold/wet
+    day visually collapse relative to its neighbours.
+  compact_description: multi-day range-bar forecast on one shared temperature axis
+  surfaces:
+    works_on:
+    - google-chat-chromium-render
+  fields:
+    title: string (optional, e.g., 'NEXT 3 DAYS — OUTLOOK')
+    city: string (optional, e.g., 'Toulouse')
+    scale: 'dict: {min: integer, max: integer}. Shared axis bounds in the display
+      unit; gridlines drawn at 5-degree steps.'
+    days: 'list of dicts, chronological: [{label: string (e.g. "SUN"), date: string
+      (e.g. "20 Jul"), code: one of sun|partly|cloud|rain|storm, hi: integer, lo:
+      integer, precip: integer 0-100}, ...]'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

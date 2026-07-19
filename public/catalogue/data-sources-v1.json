@@ -78,6 +78,71 @@
       "consumers": [
         "metar_feed"
       ]
+    },
+    "open_meteo": {
+      "description": "Free, no-auth daily/current forecast via open-meteo.com. Feeds weather_now -> weather_outlook (Toulouse Chat demo and any other city pointed at via lat/lon).",
+      "upstream": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Europe%2FParis&forecast_days=3",
+      "params": {
+        "lat": {
+          "type": "number",
+          "default": 43.6047
+        },
+        "lon": {
+          "type": "number",
+          "default": 1.4442
+        }
+      },
+      "cache_ttl_s": 1800,
+      "min_client_refresh_s": 1800,
+      "limits": {
+        "per_ip_per_min": 6,
+        "upstream_per_min": 10
+      },
+      "project_fields": {
+        "fields": [
+          "current",
+          "daily"
+        ]
+      },
+      "content_type": "application/json",
+      "access": {
+        "tier": "public",
+        "scope": "data:open_meteo:read"
+      },
+      "consumers": [
+        "weather_now",
+        "weather_outlook"
+      ]
+    },
+    "workspace_status": {
+      "description": "Google Workspace service incidents feed (public, no auth). Feeds service_status_board -> incident_log -> stat_pulse. Current status is DERIVED (operational unless a service holds an unresolved incident) — the feed itself is history, not a live traffic-light.",
+      "upstream": "https://www.google.com/appsstatus/dashboard/incidents.json",
+      "cache_ttl_s": 300,
+      "min_client_refresh_s": 300,
+      "limits": {
+        "per_ip_per_min": 6,
+        "upstream_per_min": 10
+      },
+      "project_fields": {
+        "fields": [
+          "service_name",
+          "status_impact",
+          "severity",
+          "begin",
+          "end",
+          "external_desc"
+        ]
+      },
+      "content_type": "application/json",
+      "access": {
+        "tier": "public",
+        "scope": "data:workspace_status:read"
+      },
+      "consumers": [
+        "service_status_board",
+        "incident_log",
+        "stat_pulse"
+      ]
     }
   }
 }
