@@ -285,9 +285,9 @@ def chat_event():
     try:
         if as_gif:
             # The whole deck collapsed into one self-contained, shareable
-            # image (1s/frame) instead of separate cardsV2 entries -- works
+            # image (1.5s/frame) instead of separate cardsV2 entries -- works
             # anywhere an imageUrl does, not just inside Chat.
-            gif_url = f"{AGENT_BASE_URL}/render.gif?b={_encode_deck_qs(parsed['cards'], duration_ms=1000)}"
+            gif_url = f"{AGENT_BASE_URL}/render.gif?b={_encode_deck_qs(parsed['cards'], duration_ms=1500)}"
             card = {
                 'cardsV2': [{
                     'cardId': 'a2ui-render-gif',
