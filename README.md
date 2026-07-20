@@ -1,15 +1,21 @@
 <div align="center">
 
-# A2UI Catalogue
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/brand/wordmark-dark.png">
+  <img src="examples/brand/wordmark-light.png" width="560" alt="A2UI Catalog">
+</picture>
 
-**A component vocabulary for agent-driven interfaces.**  
+**The vocabulary layer for A2UI — useful for humans · declarative for agents.**  
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
-[![Atoms](https://img.shields.io/badge/atoms-450%2B-00f2ff?style=flat-square&labelColor=04060f)](atoms/)
-[![GAS atoms](https://img.shields.io/badge/GAS_renderer-450%2B_atoms-7c3aed?style=flat-square&labelColor=04060f)](apps-script-surface/)
-[![Surfaces](https://img.shields.io/badge/surfaces-8-a78bfa?style=flat-square&labelColor=04060f)](spec/)
-[![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=04060f)](LICENSE)
-[![A2UI](https://img.shields.io/badge/spec-v1.0_candidate-f472b6?style=flat-square&labelColor=04060f)](renderers/a2ui_v1.py)
+<!-- readme-badges:start -->
+[![Atoms](https://img.shields.io/badge/atoms-473-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
+[![Surfaces](https://img.shields.io/badge/surfaces-8-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
+[![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
+[![ARD](https://img.shields.io/badge/ARD-ai--catalog.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ai-catalog.json)
+[![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=0a0e17)](LICENSE)
+[![A2UI](https://img.shields.io/badge/spec-v1.0_candidate-a78bfa?style=flat-square&labelColor=0a0e17)](renderers/a2ui_v1.py)
+<!-- readme-badges:end -->
 
 *Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; the official spec lives at [a2ui.org](https://a2ui.org).*
 
@@ -30,6 +36,18 @@ A2UI        68 tok  ████
 Fewer tokens to describe the same UI. The model names an atom; the renderer expands it into the full HTML server-side, and that expansion never re-enters the model's context window. (The efficiency framing here is still being validated — see `benchmarks/BENCHMARK.md` for the current methodology.)
 
 > **Work in progress.** The atom vocabulary itself is stable; what it's *for* is still being explored. The live catalog and this repo are the vocabulary and its renderers — applying that vocabulary to new use cases (rendering a CLI's own output, for instance, in a sibling project not yet published) is ongoing, not finished.
+
+---
+
+## Connect an agent
+
+The catalog is consumable three ways, no signup for any of them — BYO by design: renders happen in *your* environment, your data never touches us.
+
+| Channel | Endpoint | What an agent gets |
+|---|---|---|
+| **MCP server** | [`a2uicatalog.ai/mcp`](https://a2uicatalog.ai/mcp) | Tools to browse catalogs, validate/compose payloads, emit render URLs, and render live views on MCP Apps hosts |
+| **ARD manifest** | [`/.well-known/ai-catalog.json`](https://a2uicatalog.ai/.well-known/ai-catalog.json) | Agentic Resource Discovery — every atom as a crawlable, typed entry |
+| **Machine catalog** | [`a2uicatalog.ai/spec.json`](https://a2uicatalog.ai/spec.json) | The full schema in one fetch — types, fields, surface compatibility, degradation notes |
 
 A few atoms, live on the site — click through to a full spec + fields table for each:
 
