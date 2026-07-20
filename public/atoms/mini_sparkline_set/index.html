@@ -44,7 +44,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-mark{width:20px;height:20px;border-radius:6px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
@@ -100,13 +106,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
       <a href="/" aria-current="page">Atoms</a>
       
       <a href="/surfaces/mcp-apps">MCP Playground</a>
       <a href="/renderer">Apps Script Renderer</a>
       <a href="/blog">Blog</a>
+      
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -144,11 +151,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_140700151993024_0" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_140052387333440_0" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_140700151993024_0" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_140052387333440_0" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -156,8 +163,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140700151993024_0)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_140700151993024_0)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140052387333440_0)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_140052387333440_0)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#a855f7" stroke-width="2" />
             </svg>
           </div>
@@ -171,11 +178,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_140700151993024_1" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_140052387333440_1" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_140700151993024_1" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_140052387333440_1" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -183,8 +190,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140700151993024_1)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_140700151993024_1)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_140052387333440_1)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_140052387333440_1)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#10b981" stroke-width="2" />
             </svg>
           </div>

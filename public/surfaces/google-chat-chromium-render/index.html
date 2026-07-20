@@ -44,7 +44,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-mark{width:20px;height:20px;border-radius:6px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
@@ -109,7 +115,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
       <a href="/" aria-current="page">Atoms</a>
       <a href="/templates">Templates</a>

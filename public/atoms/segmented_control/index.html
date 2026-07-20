@@ -44,7 +44,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-mark{width:20px;height:20px;border-radius:6px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
@@ -100,13 +106,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
       <a href="/" aria-current="page">Atoms</a>
       
       <a href="/surfaces/mcp-apps">MCP Playground</a>
       <a href="/renderer">Apps Script Renderer</a>
       <a href="/blog">Blog</a>
+      
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -131,7 +138,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sgc28947 input{display:none;}.sgc28947 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc28947 label:last-of-type{border-right:none;}.sgc28947 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc28947" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;"><input type="radio" id="sgc28947_a" name="Segmented Control_28947" value="a"><label for="sgc28947_a">Option A</label><input type="radio" id="sgc28947_b" name="Segmented Control_28947" value="b"><label for="sgc28947_b">Option B</label><input type="radio" id="sgc28947_c" name="Segmented Control_28947" value="c"><label for="sgc28947_c">Option C</label></div></div></div>
+  <div class="preview-box"><style>.sgc37717 input{display:none;}.sgc37717 label{padding:7px 16px;font-size:0.85rem;font-weight:500;cursor:pointer;color:#5f6368;border-right:1px solid #dadce0;white-space:nowrap;transition:background .1s,color .1s;}.sgc37717 label:last-of-type{border-right:none;}.sgc37717 input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style><div style="margin:1rem 0;"><div class="sgc37717" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;"><input type="radio" id="sgc37717_a" name="Segmented Control_37717" value="a"><label for="sgc37717_a">Option A</label><input type="radio" id="sgc37717_b" name="Segmented Control_37717" value="b"><label for="sgc37717_b">Option B</label><input type="radio" id="sgc37717_c" name="Segmented Control_37717" value="c"><label for="sgc37717_c">Option C</label></div></div></div>
 </div>
 
   

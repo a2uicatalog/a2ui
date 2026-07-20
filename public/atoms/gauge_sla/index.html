@@ -44,7 +44,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
 .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-.logo-mark{width:20px;height:20px;border-radius:6px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
@@ -100,13 +106,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
       <a href="/" aria-current="page">Atoms</a>
       
       <a href="/surfaces/mcp-apps">MCP Playground</a>
       <a href="/renderer">Apps Script Renderer</a>
       <a href="/blog">Blog</a>
+      
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -139,12 +146,12 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
       
       <svg viewBox="0 0 300 180" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="gauge_sla_140700151994112_grad" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id="gauge_sla_140052387221376_grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#ef4444" />
             <stop offset="60%" stop-color="#f59e0b" />
             <stop offset="100%" stop-color="#10b981" />
           </linearGradient>
-          <filter id="gauge_sla_140700151994112_glow" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id="gauge_sla_140052387221376_glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -155,14 +162,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
         <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round" />
 
-        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_140700151994112_grad)" stroke-width="14" stroke-linecap="round"
-              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_140700151994112_glow)" />
+        <path d="M 50 140 A 100 100 0 0 1 250 140" fill="none" stroke="url(#gauge_sla_140052387221376_grad)" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="314.159" stroke-dashoffset="0.0" filter="url(#gauge_sla_140052387221376_glow)" />
 
         <line x1="50" y1="140" x2="60" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="150" y1="40" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
         <line x1="240" y1="140" x2="250" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
 
-        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_140700151994112_glow)" />
+        <line x1="150" y1="140" x2="235.0" y2="140.0" stroke="#10b981" stroke-width="3" stroke-linecap="round" filter="url(#gauge_sla_140052387221376_glow)" />
         <circle cx="150" cy="140" r="8" fill="#0f172a" stroke="#10b981" stroke-width="3" />
 
         <text x="150" y="115" text-anchor="middle" font-size="24" font-weight="900" fill="#f1f5f9" font-family="monospace">75.0</text>

@@ -307,7 +307,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
 .logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
 .logo-atom .el{fill:oklch(70% 0.14 202)}
-.wordmark .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
 .site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
 .site-nav a:hover{color:var(--text);background:var(--surface-2)}
@@ -1269,7 +1269,7 @@ def generate_index(atoms):
   <div class="wrap">
   <header class="hero">
     <div class="halo"></div>
-    <h1>A2UI Atomic Catalog</h1>
+    <h1><span class="grad">A2UI</span> Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
     <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
     <div class="hero-stats">
