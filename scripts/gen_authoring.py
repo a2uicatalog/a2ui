@@ -416,6 +416,10 @@ def build_landing_page(playbook_html):
       <div class="hub-card-title">Prompt Builder</div>
       <div class="hub-card-desc">Paste a rough draft, pick an archetype, and either copy the assembled prompt into any LLM or run it live here via Vertex AI.</div>
     </a>
+    <a class="hub-card" href="/authoring/posts/">
+      <div class="hub-card-title">LinkedIn Posts</div>
+      <div class="hub-card-desc">Draft posts, review them against your own tone via Gemini, link them to articles, and track posted engagement — all through the same registry the stats pipe reads.</div>
+    </a>
   </div>
   <div class="playbook-doc" style="margin-top:36px">{playbook_html}</div>
 </div>"""
