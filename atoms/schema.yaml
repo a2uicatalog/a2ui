@@ -11561,7 +11561,9 @@ blocks:
       key -- reuses the same 2026Q2 icon set. Ignored if icon_url is set. Default 'chat'.
     icon_url: string (optional). A direct image URL; overrides `app`.
     size: number (optional, default 64). Icon size in px.
-    lane: string (optional). 'left', 'center', or 'right' (default 'right').
+    lane: string or number (optional, default 'right'). 'left'/'center'/'right'
+      (aliases for 0/50/100), or any number 0-100 -- 0 hugs the left edge, 100
+      hugs the right edge, values between interpolate smoothly across the screen.
     duration_s: number (optional, default 4). Seconds for one bottom-to-top pass.
     loop: boolean (optional, default true). Repeat indefinitely vs a single pass.
     fade_edges: boolean (optional, default true). Fade in near the bottom, fade

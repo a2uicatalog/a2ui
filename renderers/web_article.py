@@ -20715,8 +20715,20 @@ def _render_icon_liftoff(b: dict) -> str:
     ) if icon_url else _ws_badge(app, size)
 
     uid = 'lft' + hashlib.md5((icon_url or app).encode()).hexdigest()[:6]
-    lane_css = {'left': 'left:24px;', 'center': f'left:50%;margin-left:-{size // 2}px;'
-                }.get(lane, 'right:24px;')
+    # lane: 'left'/'center'/'right' alias to 0/50/100, or any number 0-100
+    # (0 = hugging the left edge, 100 = hugging the right edge). Interpolated
+    # in viewport width (vw), not raw %, so the 24px edge inset stays exact
+    # at both ends -- calc() can't multiply two percentages together, but a
+    # vw unit times a literal Python-computed ratio is valid arithmetic.
+    named_lanes = {'left': 0, 'center': 50, 'right': 100}
+    if isinstance(lane, str) and lane in named_lanes:
+        pct = named_lanes[lane]
+    else:
+        try:
+            pct = max(0.0, min(100.0, float(lane)))
+        except (TypeError, ValueError):
+            pct = 100.0
+    lane_css = f'left:calc((100vw - {size + 48}px) * {pct / 100:.4f} + 24px);'
 
     kf_body = ('0%{transform:translateY(0);opacity:0;}10%{opacity:1;}'
                '90%{opacity:1;}100%{transform:translateY(-110vh);opacity:0;}'

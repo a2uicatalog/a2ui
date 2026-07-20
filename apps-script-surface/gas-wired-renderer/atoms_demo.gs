@@ -709,9 +709,15 @@ _RENDERERS['icon_liftoff'] = function(b) {
       + 'font-size:' + Math.round(size / 3) + 'px;font-weight:700;">' + fbCh + '</div>';
   }
 
-  var laneCss = lane === 'left' ? 'left:24px;'
-    : lane === 'center' ? ('left:50%;margin-left:-' + Math.round(size / 2) + 'px;')
-    : 'right:24px;';
+  // lane: 'left'/'center'/'right' alias to 0/50/100, or any number 0-100
+  // (0 hugs the left edge, 100 hugs the right edge). Interpolated in vw so
+  // the 24px edge inset stays exact at both ends -- matches web_article.py's
+  // _render_icon_liftoff exactly.
+  var namedLanes = { left: 0, center: 50, right: 100 };
+  var pct = namedLanes.hasOwnProperty(lane) ? namedLanes[lane] : parseFloat(lane);
+  if (isNaN(pct)) pct = 100;
+  pct = Math.max(0, Math.min(100, pct));
+  var laneCss = 'left:calc((100vw - ' + (size + 48) + 'px) * ' + (pct / 100).toFixed(4) + ' + 24px);';
 
   var kfBody = fade
     ? '0%{transform:translateY(0);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-110vh);opacity:0;}'
