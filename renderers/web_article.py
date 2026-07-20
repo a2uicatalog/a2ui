@@ -20137,6 +20137,7 @@ def _render_article_journey(b: dict) -> str:
     title = _esc(b.get('title', ''))
     dek = _esc(b.get('dek', ''))
     closing = _mdcode(b.get('closing_note', '')) if b.get('closing_note') else ''
+    opening = _mdcode(b.get('opening_note', '')) if b.get('opening_note') else ''
 
     tally = ''
     if b.get('show_tally', True) and steps:
@@ -20219,6 +20220,7 @@ def _render_article_journey(b: dict) -> str:
            f'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">{title}</h2>' if title else '')
         + (f'<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
            f'margin:0 0 1.6rem;">{dek}</p>' if dek else '')
+        + (f'<p style="line-height:1.65;max-width:60ch;margin:0 0 1.6rem;color:var(--ink);">{opening}</p>' if opening else '')
         + tally
         + f'<div style="display:flex;flex-direction:column;gap:0;">{"".join(rows)}</div>'
         + stats_html

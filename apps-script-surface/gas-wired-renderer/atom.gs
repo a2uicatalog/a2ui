@@ -4204,6 +4204,7 @@ _RENDERERS['article_journey'] = function(b) {
   var title = _esc(b.title || '');
   var dek = _esc(b.dek || '');
   var closing = b.closing_note ? _journeyMdCode(b.closing_note) : '';
+  var opening = b.opening_note ? _journeyMdCode(b.opening_note) : '';
 
   var tally = '';
   if (b.show_tally !== false && steps.length) {
@@ -4285,6 +4286,7 @@ _RENDERERS['article_journey'] = function(b) {
        + 'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">' + title + '</h2>' : '')
     + (dek ? '<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
        + 'margin:0 0 1.6rem;">' + dek + '</p>' : '')
+    + (opening ? '<p style="line-height:1.65;max-width:60ch;margin:0 0 1.6rem;color:var(--ink);">' + opening + '</p>' : '')
     + tally
     + '<div style="display:flex;flex-direction:column;gap:0;">' + rows.join('') + '</div>'
     + statsHtml
