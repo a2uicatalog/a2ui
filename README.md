@@ -49,6 +49,8 @@ The catalog is consumable three ways, no signup for any of them — BYO by desig
 | **ARD manifest** | [`/.well-known/ai-catalog.json`](https://a2uicatalog.ai/.well-known/ai-catalog.json) | Agentic Resource Discovery — every atom as a crawlable, typed entry |
 | **Machine catalog** | [`a2uicatalog.ai/spec.json`](https://a2uicatalog.ai/spec.json) | The full schema in one fetch — types, fields, surface compatibility, degradation notes |
 
+**5-minute quickstarts:** [Claude (Desktop / claude.ai)](docs/quickstart-claude.md) · [Gemini Enterprise (BYO-MCP)](docs/quickstart-gemini-enterprise.md)
+
 A few atoms, live on the site — click through to a full spec + fields table for each:
 
 <table>

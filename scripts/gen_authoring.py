@@ -246,7 +246,7 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
 .logo-atom .o2{stroke:var(--accent-2);fill:none;stroke-width:1.5}
 .logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
 .logo-atom .el{fill:var(--accent-2)}
-.wordmark .grad{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.grad{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:20px;font-size:13.5px}
 .site-nav a{color:var(--text-muted);text-decoration:none;font-weight:600}
 .site-nav a[aria-current="page"]{color:var(--accent)}
