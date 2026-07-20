@@ -746,7 +746,8 @@ document.getElementById('saveDraftBtn').addEventListener('click', function(){{
     .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
     .then(function(res){{
       if (res.ok && res.data.draftUrl) {{
-        status.innerHTML = 'Saved — draft will be live at <a href="' + res.data.draftUrl + '" target="_blank">' + res.data.draftUrl + '</a> once CI catches up (~1-2 min).';
+        status.innerHTML = 'Saved — building the gated preview (full rebuild + deploy takes <b>~5–8 min</b>; this page will tell you when it\\'s live)…';
+        pollDraftLive(res.data.draftUrl, status, 0);
       }} else if (res.ok) {{
         status.textContent = 'Saved — check GitHub for the new PR shortly.';
       }} else {{
@@ -759,6 +760,23 @@ document.getElementById('saveDraftBtn').addEventListener('click', function(){{
       btn.disabled = false; btn.textContent = 'SAVE DRAFT';
     }});
 }});
+
+// Browser is Access-authenticated, so fetching the draft URL distinguishes
+// 404 (deploy not landed) from 200 (live). The real CI cycle is ~5-8 min —
+// understating it ("~1-2 min") caused three duplicate re-saves of one
+// article on 2026-07-20.
+function pollDraftLive(url, statusEl, attempt){{
+  if (attempt > 60) {{ statusEl.innerHTML = 'Still not live after 15 min — check the deploy-full-catalog run on GitHub. URL: <a href="' + url + '" target="_blank">' + url + '</a>'; return; }}
+  fetch(url, {{method: 'GET', cache: 'no-store'}})
+    .then(function(r){{
+      if (r.ok) {{
+        statusEl.innerHTML = '✅ LIVE — <a href="' + url + '" target="_blank">' + url + '</a>';
+      }} else {{
+        setTimeout(function(){{ pollDraftLive(url, statusEl, attempt + 1); }}, 15000);
+      }}
+    }})
+    .catch(function(){{ setTimeout(function(){{ pollDraftLive(url, statusEl, attempt + 1); }}, 15000); }});
+}}
 
 buildPicker();
 renderArchRef();
