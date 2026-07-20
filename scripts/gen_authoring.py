@@ -175,7 +175,7 @@ def site_header():
     # Mirrors scripts/generate_atom_pages.py's site_header() nav — kept in
     # sync by hand (small, stable nav; not worth a shared-import coupling).
     return """<header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><span class="logo-mark">A2</span>A2UI Catalog</a>
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
       <a href="/">Atoms</a>
       <a href="/templates">Templates</a>
@@ -240,7 +240,13 @@ pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;p
 .site-header{position:sticky;top:0;z-index:60;background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
 .hdr-in{max-width:1360px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
 .wordmark{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--text);text-decoration:none;font-size:14px}
-.logo-mark{background:var(--accent);color:var(--accent-contrast);font-family:var(--mono);font-weight:800;font-size:11px;padding:2px 6px;border-radius:5px}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:var(--accent-2);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:var(--accent-2)}
+.wordmark .grad{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .site-nav{display:flex;gap:20px;font-size:13.5px}
 .site-nav a{color:var(--text-muted);text-decoration:none;font-weight:600}
 .site-nav a[aria-current="page"]{color:var(--accent)}
