@@ -149,10 +149,30 @@ def render():
 # this service, granted once; no signature/token verification needed here,
 # matching this service's existing per-caller-IAM pattern for /render.
 _SLA_RE = re.compile(r'^sla\s+(\d+(\.\d+)?)', re.I)
-_HELP_TEXT = ('Try:\n• `sla 82` — an SLA breach gauge\n• `map` — this render pipeline’s own path\n'
+_HELP_TEXT = ('Try:\n• `intro` — what Cards v2 can (and can’t) do\n• `sla 82` — an SLA breach gauge\n• `map` — this render pipeline’s own path\n'
               '• `workspace stats` — Google Workspace service status (add `demo` for a real historical replay, or a date like `2026-05-31`)\n'
               '• `weather` — 3-day Toulouse forecast\n'
               '• add `gif` to either (e.g. `weather gif`) — the whole deck as one animated image')
+
+# Plain-text explainer, triggered by `intro`/`about` -- meant as a spoken
+# intro a bot can post at the start of a recording, before the
+# workspace/weather demo commands run. Distinct from _HELP_TEXT (a command
+# reference): this is prose, framing WHY the gif variants exist at all.
+_INTRO_TEXT = (
+    '👋 *A quick tour before the demo*\n\n'
+    'Chat Cards v2 is Google’s native way to build rich, interactive messages — '
+    'structured widgets (text, images, decorated text, buttons) laid out in fixed '
+    'sections. It’s genuinely useful: this bot uses it for live use cases like '
+    '*Service Status* (`workspace stats`) and a *Toulouse weather* forecast '
+    '(`weather`) — real data in a clean, native card, extensible to whatever you '
+    'wire up next.\n\n'
+    'But the widget set is fixed — no custom layout, no real typography, no '
+    'charts beyond what Google ships.\n\n'
+    'Type `workspace stats gif` or `weather gif` next and you’ll see the exact '
+    'same data rendered through *A2UI + real HTML/CSS* in headless Chromium '
+    'instead — any layout, posted back into Chat as one image. Same data, no '
+    'ceiling.'
+)
 
 
 _MONTHS = {name: i for i, name in enumerate(
@@ -227,6 +247,92 @@ def _alt_text_for_block(block: dict, title: str) -> str:
     return title
 
 
+# -- TRUE native Cards v2 (no headless render at all) for workspace/weather --
+# The article's whole point is CardsV2's fixed widget ceiling vs. real
+# HTML/CSS -- so the "before" side of that comparison has to be an ACTUAL
+# native card (decoratedText/textParagraph, Chat's own materialIcon set),
+# never a render.png image dressed up in a card. Built from the exact same
+# chat_data.py block dicts the /render.gif path consumes, so both sides of
+# the demo are provably showing the same underlying data.
+
+_WORKSPACE_STATE_ICON = {
+    'operational': 'check_circle', 'information': 'info',
+    'disruption': 'warning', 'critical': 'error',
+}
+_WEATHER_CODE_ICON = {
+    'sun': 'wb_sunny', 'partly': 'partly_cloudy_day', 'cloud': 'cloud',
+    'rain': 'rainy', 'storm': 'thunderstorm',
+}
+
+
+def _icon(name: str) -> dict:
+    return {'materialIcon': {'name': name}}
+
+
+def _native_workspace_card(board: dict, log: dict, pulse: dict) -> list:
+    # Deliberately the FULL deck (status + incidents + pulse), not trimmed --
+    # the resulting 1200+px-tall native card next to the rendered version's
+    # ~380px IS the point (see the article's callout sentence on this exact
+    # contrast). Tried board-only for visual balance; reverted -- the height
+    # disparity argues the article's thesis better than a tidy comparison
+    # would.
+    verdict = board.get('verdict') or {}
+    overall_icon = {'ok': 'check_circle', 'warn': 'warning', 'crit': 'error'}.get(verdict.get('level'), 'info')
+    widgets_overall = [{'decoratedText': {
+        'startIcon': _icon(overall_icon), 'topLabel': 'Overall status',
+        'text': verdict.get('text', ''), 'bottomLabel': verdict.get('detail', ''), 'wrapText': True,
+    }}]
+    widgets_services = [{'decoratedText': {
+        'startIcon': _icon(_WORKSPACE_STATE_ICON.get(s['state'], 'info')),
+        'text': s['name'], 'bottomLabel': s['state'].capitalize(),
+    }} for s in board.get('services', [])]
+    widgets_incidents = [{'decoratedText': {
+        'startIcon': _icon('report'),
+        'topLabel': f"{i['service']} · {i['when']}" + (' · ongoing' if i.get('ongoing') else ''),
+        'text': i['summary'], 'bottomLabel': i['duration'], 'wrapText': True,
+    }} for i in log.get('incidents', [])[:4]]
+    widgets_pulse = [{'decoratedText': {
+        'topLabel': s['label'], 'text': s['value'], 'bottomLabel': s.get('delta', ''),
+    }} for s in pulse.get('stats', [])]
+    return [{
+        'cardId': 'a2ui-native-workspace',
+        'card': {
+            'header': {'title': board.get('title', 'Workspace status'), 'subtitle': board.get('stamp', '')},
+            'sections': [
+                {'header': 'Overall', 'widgets': widgets_overall},
+                {'header': 'Services', 'widgets': widgets_services, 'collapsible': True, 'uncollapsibleWidgetsCount': 3},
+                {'header': log.get('title', 'Recent incidents'), 'widgets': widgets_incidents or
+                    [{'textParagraph': {'text': 'No incidents in the last 7 days.'}}]},
+                {'header': pulse.get('title', '30-day pulse'), 'widgets': widgets_pulse},
+            ],
+        },
+    }]
+
+
+def _native_weather_card(now_card: dict, outlook_card: dict) -> list:
+    widgets_now = [{'decoratedText': {
+        'startIcon': _icon(_WEATHER_CODE_ICON.get(now_card.get('code'), 'cloud')),
+        'topLabel': 'Now', 'text': f"{now_card.get('temp', '')}°C — {now_card.get('condition', '')}",
+        'bottomLabel': f"H:{now_card.get('hi', '')}°  L:{now_card.get('lo', '')}°",
+    }}] + [{'decoratedText': {'topLabel': s['label'], 'text': s['value']}}
+           for s in now_card.get('stats', [])]
+    widgets_days = [{'decoratedText': {
+        'startIcon': _icon(_WEATHER_CODE_ICON.get(d.get('code'), 'cloud')),
+        'topLabel': f"{d['label']} · {d['date']}",
+        'text': f"H:{d['hi']}°  L:{d['lo']}°", 'bottomLabel': f"{d['precip']}% precip",
+    }} for d in outlook_card.get('days', [])]
+    return [{
+        'cardId': 'a2ui-native-weather',
+        'card': {
+            'header': {'title': now_card.get('city_line', 'Weather'), 'subtitle': now_card.get('stamp', '')},
+            'sections': [
+                {'header': 'Now', 'widgets': widgets_now},
+                {'header': outlook_card.get('title', 'Outlook'), 'widgets': widgets_days},
+            ],
+        },
+    }]
+
+
 # -- EXPERIMENTAL (2026-07-19): native buttonList widgets for the workspace/
 # weather decks only -- untested against Chat's actual renderer, unlike the
 # image/altText pattern above. If Chat rejects or mishandles this, it's
@@ -247,10 +353,15 @@ def _build_button_widget(links, refresh_cmd):
 
 
 def _route_chat_command(text: str):
-    """Returns None (no match) or {'cards': [{block, width, title}, ...], 'caption': str}
-    -- uniform shape whether it's one card (sla/map) or a multi-card deck
-    (workspace/weather), so chat_event() never branches on card count."""
+    """Returns None (no match), {'text_only': str} (a plain-text reply, no
+    rendering -- see `intro`), or {'cards': [{block, width, title}, ...],
+    'caption': str} -- uniform shape whether it's one card (sla/map) or a
+    multi-card deck (workspace/weather), so chat_event() never branches on
+    card count."""
     stripped = text.strip()
+
+    if re.match(r'^(intro|about)\b', stripped, re.I):
+        return {'text_only': _INTRO_TEXT}
 
     m = _SLA_RE.match(stripped)
     if m:
@@ -302,6 +413,11 @@ def _route_chat_command(text: str):
             # everything else. Still fully available via the plain (non-gif)
             # multi-card reply, and standalone via /render.png -- see /deck.
             'gif_cards': deck,
+            # The actual "before" side of the article's comparison -- real
+            # Chat widgets, zero headless rendering. Only chat_event()'s
+            # non-gif branch uses this; `gif` still goes through /render.gif
+            # against `gif_cards` above, same data either way.
+            'native_cards_v2': _native_workspace_card(board, log, pulse),
             'caption': ('Google Workspace status — live from the public incidents feed.' if as_of is None
                         else f"Google Workspace status as of {as_of.strftime('%d %b %Y')} — a point-in-time query, not live."),
             'links': [{'text': 'View live status page',
@@ -319,6 +435,7 @@ def _route_chat_command(text: str):
         return {
             'cards': deck + [_reveal_card(outlook_card, 'Card 2')],
             'gif_cards': deck,  # see the workspace branch's comment above
+            'native_cards_v2': _native_weather_card(now_card, outlook_card),
             'caption': 'Toulouse forecast — live from Open-Meteo.',
             'links': [{'text': 'View live forecast',
                        'url': 'https://www.google.com/search?q=weather+in+toulouse'}],
@@ -358,6 +475,9 @@ def chat_event():
     if not parsed:
         return Response(json.dumps({'text': _HELP_TEXT}), mimetype='application/json')
 
+    if 'text_only' in parsed:
+        return Response(json.dumps({'text': parsed['text_only']}), mimetype='application/json')
+
     button_widget = _build_button_widget(parsed.get('links'), parsed.get('refresh_cmd'))
 
     try:
@@ -389,6 +509,13 @@ def chat_event():
                 }],
                 'text': parsed['caption'],
             }
+        elif 'native_cards_v2' in parsed:
+            # Real Chat widgets, no headless render involved -- see
+            # _native_workspace_card/_native_weather_card.
+            native = parsed['native_cards_v2']
+            if button_widget:
+                native[-1]['card']['sections'].append({'widgets': [button_widget]})
+            card = {'cardsV2': native, 'text': parsed['caption']}
         else:
             cards_v2 = []
             n = len(parsed['cards'])
