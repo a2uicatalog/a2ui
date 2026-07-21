@@ -20425,6 +20425,16 @@ def _card_head(eyebrow: str, stamp: str, rose: bool = False) -> str:
 
 
 def _card_foot(left: str, atom: str) -> str:
+    """atom='' -> no footer at all (opt-in suppression, block sets
+    _hide_schema_footer -- see call sites). Needed for the Gemini Enterprise
+    embed path: a GIF cycling through service_status_board/incident_log/
+    stat_pulse flashed a different atom-type label every frame, which read
+    as distracting/broken once it was the only thing left competing for
+    attention. Default (atom truthy) is unchanged -- every other consumer
+    of this renderer (the live article images, Chat cards) keeps the
+    footer exactly as before."""
+    if not atom:
+        return ''
     return (f'<div style="display:flex;justify-content:space-between;margin-top:20px;'
             f'padding-top:14px;border-top:1px solid rgba(154,163,199,.14);font-size:11px;'
             f'letter-spacing:.1em;text-transform:uppercase;color:#454D75;">'
@@ -20469,7 +20479,7 @@ def _render_service_status_board(b: dict) -> str:
         f'{_card_head(b.get("title", "SERVICE STATUS"), b.get("stamp", ""))}'
         f'{verdict_html}'
         f'<div style="display:flex;flex-wrap:wrap;gap:0 28px;margin-top:16px;">{rows}</div>'
-        f'{_card_foot("", "service_status_board")}'
+        f'{_card_foot("", "" if b.get("_hide_schema_footer") else "service_status_board")}'
         f'</div>'
     )
 _RENDERERS['service_status_board'] = _render_service_status_board
@@ -20522,7 +20532,7 @@ def _render_incident_log(b: dict) -> str:
         f'{_card_head(b.get("title", "INCIDENT LOG"), b.get("stamp", ""))}'
         f'<div style="display:flex;gap:6px;margin:18px 0 20px;">{week_html}</div>'
         f'{rows}'
-        f'{_card_foot("", "incident_log")}'
+        f'{_card_foot("", "" if b.get("_hide_schema_footer") else "incident_log")}'
         f'</div>'
     )
 _RENDERERS['incident_log'] = _render_incident_log
@@ -20570,7 +20580,7 @@ def _render_stat_pulse(b: dict) -> str:
         f'<div style="display:flex;gap:12px;margin:18px 0 20px;">{tiles}</div>'
         f'<div style="display:flex;align-items:flex-end;gap:10px;height:64px;padding:0 4px 20px;">{bars_html}</div>'
         f'<div style="display:flex;gap:10px;padding:0 4px;margin-top:-14px;">{lbls_html}</div>'
-        f'{_card_foot("", "stat_pulse")}'
+        f'{_card_foot("", "" if b.get("_hide_schema_footer") else "stat_pulse")}'
         f'</div>'
     )
 _RENDERERS['stat_pulse'] = _render_stat_pulse
