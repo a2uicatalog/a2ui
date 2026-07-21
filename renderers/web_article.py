@@ -20430,7 +20430,7 @@ def _card_foot(left: str, atom: str) -> str:
             f'letter-spacing:.1em;text-transform:uppercase;color:#454D75;">'
             f'<span>{_esc(left)}</span>'
             f'<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;'
-            f'text-transform:none;letter-spacing:.04em;color:#5A6390;">a2ui · {_esc(atom)}</span></div>')
+            f'text-transform:none;letter-spacing:.04em;color:#5A6390;">a2uicatalog.ai · {_esc(atom)}</span></div>')
 
 
 def _render_service_status_board(b: dict) -> str:
