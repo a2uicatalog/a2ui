@@ -20425,22 +20425,22 @@ def _card_head(eyebrow: str, stamp: str, rose: bool = False) -> str:
 
 
 def _card_foot(left: str, atom: str) -> str:
-    """atom='' -> no footer at all (opt-in suppression, block sets
-    _hide_schema_footer -- see call sites). Needed for the Gemini Enterprise
-    embed path: a GIF cycling through service_status_board/incident_log/
-    stat_pulse flashed a different atom-type label every frame, which read
-    as distracting/broken once it was the only thing left competing for
-    attention. Default (atom truthy) is unchanged -- every other consumer
-    of this renderer (the live article images, Chat cards) keeps the
-    footer exactly as before."""
-    if not atom:
-        return ''
+    """atom='' -> keep the "a2uicatalog.ai" brand text, drop only the
+    "· {atom}" suffix (opt-in, block sets _hide_schema_footer -- see call
+    sites). Needed for the Gemini Enterprise embed path: a GIF cycling
+    through service_status_board/incident_log/stat_pulse flashed a
+    different atom-type label every frame, distracting once it was the
+    only thing left competing for attention -- but the brand text itself
+    should stay, every frame, unchanged. Default (atom truthy) is
+    unchanged -- every other consumer of this renderer (the live article
+    images, Chat cards) keeps the footer exactly as before."""
+    brand = 'a2uicatalog.ai' if not atom else f'a2uicatalog.ai · {_esc(atom)}'
     return (f'<div style="display:flex;justify-content:space-between;margin-top:20px;'
             f'padding-top:14px;border-top:1px solid rgba(154,163,199,.14);font-size:11px;'
             f'letter-spacing:.1em;text-transform:uppercase;color:#454D75;">'
             f'<span>{_esc(left)}</span>'
             f'<span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;'
-            f'text-transform:none;letter-spacing:.04em;color:#5A6390;">a2uicatalog.ai · {_esc(atom)}</span></div>')
+            f'text-transform:none;letter-spacing:.04em;color:#5A6390;">{brand}</span></div>')
 
 
 def _render_service_status_board(b: dict) -> str:
