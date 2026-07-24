@@ -2447,7 +2447,7 @@
   },
   {
    "type": "numbered_list",
-   "compact": "decorative numbered list — large background numbers or circular badges",
+   "compact": "decorative numbered list — large background numbers, circular badges, or bordered stage cards",
    "surfaces": [
     "web",
     "google-apps-script-web",
@@ -3532,7 +3532,7 @@
   },
   {
    "type": "flow_connector",
-   "compact": "animated beam connector between two nodes",
+   "compact": "animated beam connector between two or more nodes",
    "surfaces": [
     "google-apps-script-web",
     "mcp-apps"

@@ -539,14 +539,20 @@ def _render_table(b: dict) -> str:
 
 _TAB_CSS = """
 <style>
-.tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;}
+.tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--border, #e0e0e0);}
 .tm-tabs input[type=radio]{display:none;}
-.tm-tab-labels{display:flex;background:#f8f9fa;border-bottom:1px solid #e0e0e0;overflow-x:auto;}
-.tm-tab-label{padding:10px 20px;cursor:pointer;font-size:0.85rem;font-weight:600;color:#5f6368;
-  white-space:nowrap;border-right:1px solid #e0e0e0;transition:all 0.15s ease;user-select:none;
-  border-bottom:3px solid transparent;margin-bottom:-1px;}
-.tm-tab-label:hover{background:#fff;color:#1a73e8;}
-.tm-tab-panels{background:#fff;}
+/* Underline-style tab bar (2026-07-24, grounded in Material/Primer/Radix
+   conventions): a faint fill on the bar, NO per-tab vertical dividers, and
+   4px edge spacing. The active tab is signalled three ways — accent colour,
+   accent underline, AND a weight shift (500 -> 700) — so it reads without
+   relying on colour alone. Hover lifts only part-way (to full text colour),
+   never all the way to the selected accent styling. */
+.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;padding:0 4px;}
+.tm-tab-label{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-muted, #5f6368);
+  white-space:nowrap;transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease;user-select:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tm-tab-label:hover{color:var(--text, #1f2328);background:var(--surface, #fff);}
+.tm-tab-panels{background:var(--surface, #fff);}
 .tm-tab-panel{display:none;padding:0;}
 .tm-tab-panel pre{margin:0;border-radius:0;border:none;}
 </style>
@@ -565,7 +571,7 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
     # Dynamic CSS for this tab group's checked states
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
-        f'{{background:#fff;color:{accent};border-bottom-color:{accent};}}\n'
+        f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
         f'#{group}_t{i}:checked ~ .tm-tab-panels .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
@@ -1637,14 +1643,63 @@ def _render_icon_stat_row(b: dict) -> str:
     return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;margin:1.5rem 0;">{cells}</div>'
 
 
+# ── theme tokens ──────────────────────────────────────────────────────────────
+# Shared colour set for the "blueprint"/technical atoms (color_section,
+# page_header, sequence_diagram, flow_connector, numbered_list-cards). Three
+# modes:
+#   "dark"  — baked dark (Meet stage, MCP Apps, or an explicitly-dark embed)
+#   "site"  — follow the HOST PAGE's CSS custom properties (the blog site's
+#             light/dark toggle flips them live); the literal fallbacks keep
+#             it identical to today's light default on any surface that never
+#             defined those vars (Meet stage, standalone render, tests).
+#   else    — baked light (the historical default; unchanged)
+# Only "site" is new — "dark"/"light"/unset behave exactly as before, so no
+# existing payload or surface changes.
+def _theme_tokens(theme: str) -> dict:
+    if theme == "dark":
+        return {"text": "#e5e7eb", "dim": "#94a3b8", "surface": "#1e293b",
+                "surface2": "#0f172a", "border": "rgba(148,163,184,0.25)"}
+    if theme == "site":
+        return {"text": "var(--text,#111827)", "dim": "var(--text-muted,#6b7280)",
+                "surface": "var(--surface,#fff)", "surface2": "var(--surface-2,#f8fafc)",
+                "border": "var(--border,#e5e7eb)"}
+    return {"text": "#111827", "dim": "#6b7280", "surface": "#fff",
+            "surface2": "#f8fafc", "border": "#e5e7eb"}
+
+
 def _render_color_section(b: dict) -> str:
     accent  = b.get("accent", "#6366f1")
     style   = b.get("style", "tint")
-    bg      = (f"{accent}10" if style == "tint" else accent if style == "solid" else "#0f172a" if style == "dark" else "#f8fafc")
-    tc      = "#fff" if style in ("solid", "dark") else "#111827"
+    # "site" follows the host page theme (see _theme_tokens); dark/solid/tint/
+    # light unchanged.
+    if style == "site":
+        _t = _theme_tokens("site")
+        base_bg, tc = _t["surface2"], _t["text"]
+    else:
+        base_bg = (f"{accent}10" if style == "tint" else accent if style == "solid" else "#0f172a" if style == "dark" else "#f8fafc")
+        tc      = "#fff" if style in ("solid", "dark") else "#111827"
     padding = b.get("padding", "24px")
+    # Optional grid-paper texture (added 2026-07-24 for technical/blueprint-
+    # style sections) — two thin repeating line layers on top of the base
+    # colour, same "graph paper" idiom as a real blueprint sheet. Line
+    # colour is a faint tint of the accent so it reads as texture, not
+    # decoration competing with the content.
+    if b.get("grid"):
+        grid_line = f"{accent}14" if style in ("light", "tint") else f"{accent}20"
+        bg = (
+            f"linear-gradient({grid_line} 1px, transparent 1px) 0 0 / 32px 32px, "
+            f"linear-gradient(90deg, {grid_line} 1px, transparent 1px) 0 0 / 32px 32px, "
+            f"{base_bg}"
+        )
+    else:
+        bg = base_bg
     inner   = "".join(_RENDERERS.get(bl.get("type",""), _render_unknown)(bl) for bl in (b.get("blocks") or []))
-    return f'<div style="background:{bg};border-radius:14px;padding:{padding};margin:1.5rem 0;color:{tc};">{inner}</div>'
+    # overflow:hidden establishes a new block formatting context, so a
+    # child's top/bottom margin (or a bare <h3>'s user-agent margin) can't
+    # collapse straight through this wrapper and leak the page's own
+    # background into what should be a solid-colour section — bit us with
+    # padding:"0" + a callout's own margin at the end of a dark section.
+    return f'<div style="background:{bg};border-radius:14px;padding:{padding};margin:1.5rem 0;color:{tc};overflow:hidden;">{inner}</div>'
 
 
 def _render_tag_cloud(b: dict) -> str:
@@ -1804,6 +1859,42 @@ def _render_metric_row(b: dict) -> str:
 def _render_numbered_list(b: dict) -> str:
     accent = b.get("accent", "#6366f1")
     style  = b.get("style", "large")
+    theme  = b.get("theme")
+    dark   = theme == "dark"
+
+    if style == "cards":
+        _t = _theme_tokens(theme)
+        text_c = _t["text"]
+        dim_c = _t["dim"]
+        bg = _t["surface"]
+        border = _t["border"]
+        # Ghost number: accent-tinted so the "blueprint" feel reads on both a
+        # light and a dark ground (var(--border) would vanish on light).
+        num_c = f"{accent}44"
+        cards = ""
+        for i, item in enumerate(b.get("items", [])):
+            num = item.get("number", i + 1)
+            top_border = f"border-top:1px solid {border};" if i > 0 else ""
+            tags_html = "".join(
+                f'<span style="font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;'
+                f'letter-spacing:0.05em;padding:2px 8px;border:1px solid {accent}55;color:{accent};'
+                f'border-radius:3px;margin-right:6px;">{_esc(t)}</span>'
+                for t in (item.get("tags") or [])
+            )
+            cards += (
+                f'<div style="display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;{top_border}">'
+                + f'<div style="grid-row:span 2;font-size:30px;font-weight:800;color:{num_c};line-height:1;">{num}</div>'
+                + f'<div style="font-weight:700;font-size:15px;color:{text_c};display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+                + _esc(item.get("title", "")) + tags_html + '</div>'
+                + f'<div style="color:{dim_c};font-size:13.5px;line-height:1.55;">{_md_inline(item.get("text",""))}</div>'
+                + '</div>'
+            )
+        # A surface panel lifts the cards off a coloured section ground (dark
+        # blueprint or site-themed); on a plain light page there's no ground
+        # to lift off, so no panel.
+        wrapper_bg = f'background:{bg};border-radius:10px;padding:0 18px;' if theme in ("dark", "site") else ''
+        return f'<div style="{wrapper_bg}">{cards}</div>'
+
     rows   = ""
     for i, item in enumerate(b.get("items", [])):
         num = i + 1
@@ -1827,16 +1918,48 @@ def _render_numbered_list(b: dict) -> str:
 
 def _render_page_header(b: dict) -> str:
     accent = b.get("accent", "#6366f1")
-    dark   = b.get("theme") == "dark"
-    bg     = "#0f172a" if dark else b.get("background", f"linear-gradient(135deg,{accent}18 0%,#fff 60%)")
-    tc     = "#f8fafc" if dark else "#111827"
-    sc     = "#94a3b8" if dark else "#6b7280"
+    theme  = b.get("theme")
+    dark   = theme == "dark"
+    site   = theme == "site"  # follow host page theme (see _theme_tokens)
+    # A `background` override now applies in dark mode too — it used to be
+    # discarded unconditionally in favour of the #0f172a default, so a
+    # caller couldn't ask for both theme:dark AND a specific bg (e.g. a
+    # blueprint navy rather than the generic dark slate).
+    if site:
+        _t = _theme_tokens("site")
+        bg = b.get("background") or _t["surface2"]
+        tc, sc = _t["text"], _t["dim"]
+    else:
+        bg = b.get("background") or ("#0f172a" if dark else f"linear-gradient(135deg,{accent}18 0%,#fff 60%)")
+        tc = "#f8fafc" if dark else "#111827"
+        sc = "#94a3b8" if dark else "#6b7280"
+    meta = b.get("meta") or []
+    meta_html = ""
+    if meta:
+        border_c = _theme_tokens("site")["border"] if site else ("rgba(248,250,252,0.18)" if dark else "#e5e7eb")
+        cells = "".join(
+            f'<div style="padding:10px 20px 0 0;margin-right:20px;border-right:1px solid {border_c};">'
+            f'<b style="color:{tc};font-weight:700;">{_esc(m.get("label",""))}</b> {_esc(m.get("value",""))}</div>'
+            for m in meta
+        )
+        meta_html = (
+            f'<div style="display:flex;flex-wrap:wrap;border-top:1px solid {border_c};'
+            f'font-family:ui-monospace,monospace;font-size:12px;color:{sc};letter-spacing:0.02em;'
+            f'margin-top:14px;">{cells}</div>'
+        )
+    # Condensed/blueprint title treatment (added 2026-07-24), opt-in only —
+    # same "Arial Narrow" rationale as _render_subheading's condensed flag.
+    title_font = ("font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;"
+                  "text-transform:uppercase;letter-spacing:0.03em;") if b.get("condensed") else ""
+    tag_font = ("font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;letter-spacing:0.08em;"
+                if b.get("condensed") else "")
     return (
         f'<div style="padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:{bg};border-bottom:3px solid {accent};">'
         + (f'<span style="font-size:36px;margin-bottom:10px;display:block;">{b["icon"]}</span>' if b.get("icon") else "")
-        + f'<div style="font-size:28px;font-weight:800;color:{tc};line-height:1.2;margin-bottom:6px;">{_md_inline(b.get("title",""))}</div>'
+        + f'<div style="font-size:28px;font-weight:800;color:{tc};line-height:1.2;margin-bottom:6px;{title_font}">{_md_inline(b.get("title",""))}</div>'
         + (f'<div style="font-size:15px;color:{sc};line-height:1.5;margin-bottom:10px;">{_md_inline(b["subtitle"])}</div>' if b.get("subtitle") else "")
-        + (f'<span style="display:inline-block;background:{accent};color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">{b["tag"]}</span>' if b.get("tag") else "")
+        + (f'<span style="display:inline-block;background:{accent};color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;{tag_font}">{b["tag"]}</span>' if b.get("tag") else "")
+        + meta_html
         + '</div>'
     )
 
@@ -11571,17 +11694,11 @@ def _render_collapsible_panel(b: dict) -> str:
 
 _RENDERERS['collapsible_panel'] = _render_collapsible_panel
 
-
-def _render_color_section(b: dict) -> str:
-    bg = b.get('background', '#f9fafb')
-    text_col = b.get('text_color', '#111827')
-    padding = b.get('padding', '24px')
-    radius = b.get('border_radius', '10px')
-    content = b.get('content') or b.get('text', '')
-    return (f'<div style="background:{_esc(bg)};color:{_esc(text_col)};padding:{_esc(padding)};'
-            f'border-radius:{_esc(radius)};margin:1.5rem 0;">{_md_inline(content)}</div>')
-
-_RENDERERS['color_section'] = _render_color_section
+# NOTE: an inferior duplicate _render_color_section used to live here
+# (flat background/text_color/content fields, no `style`/`accent`/`blocks`
+# support at all) and shadowed the real implementation at line ~1640 via
+# re-registration below. Removed 2026-07-24 — same class of bug as the
+# numbered_list duplicate above.
 
 
 def _render_color_swatch_grid(b: dict) -> str:
@@ -12617,19 +12734,11 @@ def _render_notification_badge(b: dict) -> str:
 
 _RENDERERS['notification_badge'] = _render_notification_badge
 
-
-def _render_numbered_list(b: dict) -> str:
-    items = b.get('items', [])
-    start = b.get('start', 1)
-    parts = []
-    for item in items:
-        text = item if isinstance(item, str) else item.get('text', '')
-        label = item.get('label', '') if isinstance(item, dict) else ''
-        lead = f'<strong>{_md_inline(label)}: </strong>' if label else ''
-        parts.append(f'<li>{lead}{_md_inline(text)}</li>')
-    return f'<ol start="{start}">{"".join(parts)}</ol>'
-
-_RENDERERS['numbered_list'] = _render_numbered_list
+# NOTE: an inferior duplicate _render_numbered_list (plain <ol>, ignoring
+# accent/style/title entirely) used to live here and shadow the real
+# implementation at line ~1804 via re-registration below. Removed
+# 2026-07-24 — the earlier, feature-complete definition (large ghost-number
+# / badge / cards styles) is now the only one and wins by default.
 
 # ── NEW WEB RENDERERS — Batch 4 (pagination → quiz_block, ~36 atoms) ───────────
 
@@ -13176,7 +13285,18 @@ def _render_subheading(b: dict) -> str:
     text = b.get('text', '')
     level = b.get('level', 3)
     tag = f'h{min(max(int(level), 1), 6)}'
-    return f'<{tag} style="margin:1.5rem 0 0.5rem;">{_md_inline(text)}</{tag}>'
+    style = 'margin:1.5rem 0 0.5rem;'
+    if b.get('condensed'):
+        # Technical/blueprint heading treatment (added 2026-07-24) — a
+        # condensed, letter-spaced, uppercase display style, opt-in only so
+        # every OTHER article using this shared atom keeps its plain
+        # default look. "Arial Narrow" is a real, widely pre-installed
+        # system font (Windows/ChromeOS) — a genuine condensed face, not
+        # just letter-spacing pretending to be one — with a sans fallback
+        # for platforms that lack it.
+        style += ("font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;"
+                  "text-transform:uppercase;letter-spacing:0.05em;")
+    return f'<{tag} style="{style}">{_md_inline(text)}</{tag}>'
 
 _RENDERERS['subheading'] = _render_subheading
 
@@ -16501,9 +16621,10 @@ def _render_intro(b: dict) -> str:
     return "\n".join(parts)
 _RENDERERS["intro"] = _render_intro
 
-def _render_subheading(b: dict) -> str:
-    return f'<h3>{_md_inline(b.get("text", ""))}</h3>'
-_RENDERERS["subheading"] = _render_subheading
+# NOTE: a third, even more inferior duplicate _render_subheading used to
+# live here (always <h3>, ignores `level` AND `condensed` entirely) and
+# was winning over BOTH earlier definitions via re-registration below —
+# same class of bug as numbered_list/color_section. Removed 2026-07-24.
 
 def _render_quote(b: dict) -> str:
     html = f'<blockquote><p>{_md_inline(b.get("text", ""))}</p>'
@@ -16532,7 +16653,7 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
     # Dynamic CSS for this tab group's checked states
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
-        f'{{background:#fff;color:{accent};border-bottom-color:{accent};}}\n'
+        f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
         f'#{group}_t{i}:checked ~ .tm-tab-panels .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
@@ -16561,6 +16682,58 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
         f'</div>'
     )
 _RENDERERS["tabs"] = _render_tabs
+
+def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
+    """CSS-only tabbed panels holding real nested atom blocks per pane —
+    content_tabs' sibling of _render_tabs (single code string per pane) and
+    _render_columns (nested blocks, no tab switching). Reuses _TAB_CSS's
+    exact markup/CSS convention so both tab atoms share one visual system;
+    each pane is rendered via the same _RENDERERS.get(type, _render_unknown)
+    dispatch idiom _render_columns/_render_color_section use for children."""
+    _ct_counter[0] += 1
+    group = f"cttabs{_ct_counter[0]}"
+    tabs = b.get("tabs", [])
+    if not tabs:
+        return ""
+
+    accent = b.get("accent", "#1a73e8")
+    default_index = b.get("default_index", 0)
+    if not isinstance(default_index, int) or not (0 <= default_index < len(tabs)):
+        default_index = 0
+
+    checked_css = "".join(
+        f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
+        f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
+        f'#{group}_t{i}:checked ~ .tm-tab-panels .tm-tab-panel:nth-child({i})'
+        f'{{display:block;}}\n'
+        for i in range(1, len(tabs) + 1)
+    )
+    inputs = "".join(
+        f'<input type="radio" id="{group}_t{i}" name="{group}" '
+        f'{"checked" if (i - 1) == default_index else ""}>'
+        for i, _ in enumerate(tabs, 1)
+    )
+    labels = "".join(
+        f'<label class="tm-tab-label" for="{group}_t{i}">{_esc(tab.get("label", "Tab"))}</label>'
+        for i, tab in enumerate(tabs, 1)
+    )
+    panels = "".join(
+        '<div class="tm-tab-panel">'
+        + "".join(_RENDERERS.get(bl.get("type", ""), _render_unknown)(bl) for bl in (tab.get("blocks") or []))
+        + '</div>'
+        for tab in tabs
+    )
+
+    return (
+        f'{_TAB_CSS}'
+        f'<style>{checked_css}</style>'
+        f'<div class="tm-tabs">'
+        f'{inputs}'
+        f'<div class="tm-tab-labels">{labels}</div>'
+        f'<div class="tm-tab-panels">{panels}</div>'
+        f'</div>'
+    )
+_RENDERERS["content_tabs"] = _render_content_tabs
 
 def _render_key_value(b: dict) -> str:
     """Key-value pairs — for env vars, config options, API fields."""
@@ -17057,13 +17230,22 @@ _WORKSPACE_LOGOS_2026 = {
     'sites':    'Sites/logo_sites_2026q2_color_2x_web_96dp.png',
     'voice':    'Voice/logo_voice_2026q2_color_2x_web_96dp.png',
     'gemini':   'Gemini/logo_gemini_2026q2_color_1x_web_560dp.png',
+    # Official Google-hosted asset (gstatic.com), not the third-party
+    # workspacelogos.com mirror the rest of this dict uses — confirmed live
+    # 2026-07-23, pulled directly from cloud.google.com/gemini-enterprise.
+    # Absolute URL, handled by _ws_badge's startswith("http") branch.
+    'gemini_enterprise': 'https://www.gstatic.com/bricks/image/www_gstatic_com_images_branding_productlogos_gemini_2025_v1_192px_svg.svg',
 }
 
 def _ws_badge(app: str, size: int) -> str:
     app = app.lower()
     path2026 = _WORKSPACE_LOGOS_2026.get(app)
     if path2026:
-        return (f'<img src="{_WL_BASE}{path2026}" width="{size}" height="{size}" '
+        # Most entries are relative paths on the shared _WL_BASE mirror; a
+        # few (e.g. gemini_enterprise) are absolute URLs to Google's own
+        # gstatic-hosted asset instead — used as-is, not prefixed.
+        src = path2026 if path2026.startswith("http") else f"{_WL_BASE}{path2026}"
+        return (f'<img src="{src}" width="{size}" height="{size}" '
                 f'alt="{_esc(app)}" style="display:block;object-fit:contain;">')
     col = _WS_COLORS.get(app, '#4285F4')
     initials = app[:2].upper()
@@ -17644,20 +17826,78 @@ def _render_next_step_strip(b: dict) -> str:
 _RENDERERS["next_step_strip"] = _render_next_step_strip
 
 
+def _flow_connector_node(node, color: str, theme) -> str:
+    """A node is either a bare string (original pill behaviour) or a dict
+    {role, name, detail} for a richer boxed card — used by the multi-node
+    chain rendering path below."""
+    if isinstance(node, str) or not isinstance(node, dict):
+        val = _esc(str(node))
+        return (f'<span style="padding:6px 14px;border-radius:6px;background:{color}18;'
+                f'color:{color};font-weight:600;font-size:0.875rem;border:1px solid {color}44;">'
+                f'{val}</span>')
+    role = _esc(node.get("role", ""))
+    name = _esc(node.get("name", ""))
+    detail = _esc(node.get("detail", ""))
+    _t = _theme_tokens(theme)
+    return (
+        f'<div style="min-width:150px;background:{_t["surface"]};border:1px solid {color}55;border-radius:8px;'
+        f'padding:12px 14px;display:flex;flex-direction:column;gap:4px;">'
+        + (f'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:{color};">{role}</div>' if role else "")
+        + (f'<div style="font-size:14px;font-weight:700;color:{_t["text"]};">{name}</div>' if name else "")
+        + (f'<div style="font-size:12px;color:{_t["dim"]};">{detail}</div>' if detail else "")
+        + '</div>'
+    )
+
+
 def _render_flow_connector(b: dict) -> str:
-    frm = _esc(b.get('from', ''))
-    to = _esc(b.get('to', ''))
-    label = _esc(b.get('label', ''))
     color = _esc(b.get('color', '#6366f1'))
+    theme = b.get('theme')
+    # Multi-node chain: nodes=[...], connectors=[label, ...] (len(connectors) == len(nodes)-1).
+    # Falls back to the original single from/to/label pair when `nodes` isn't given,
+    # so every existing from/to/label payload in the catalogue renders unchanged.
+    nodes = b.get('nodes')
+    if nodes:
+        connectors = b.get('connectors', [])
+        dim_c = "#94a3b8" if theme == 'dark' else ("var(--text-muted,#9ca3af)" if theme == 'site' else "#9ca3af")
+        wrap_bg = ('background:#0f172a;padding:16px;border-radius:10px;' if theme == 'dark'
+                   else 'background:var(--surface-2,#f8fafc);padding:16px;border-radius:10px;' if theme == 'site'
+                   else '')
+        # v3 (2026-07-24): group each node with its OWN outgoing arrow into
+        # one non-splitting inline-flex unit, and flex-wrap the row of units
+        # (not overflow-x:auto). v1 (bare node/arrow as separate flat flex
+        # children + flex-wrap) let an arrow land on its own line, detached
+        # from both neighbours. v2 (nowrap + horizontal scroll) fixed that
+        # but silently clipped the last node(s) off-screen with no visual
+        # cue at normal desktop widths, reading as broken/truncated output.
+        # Grouping means a wrap can only happen BETWEEN complete units, so
+        # every arrow always stays attached to the node it departs from,
+        # and nothing is ever clipped — it just reflows to more rows.
+        units = []
+        for i, node in enumerate(nodes):
+            node_html = _flow_connector_node(node, color, theme)
+            if i < len(nodes) - 1:
+                mid_label = _esc(connectors[i]) if i < len(connectors) else ""
+                mid = ('→ ' + mid_label + ' →') if mid_label else '→'
+                arrow_html = f'<span style="color:{dim_c};font-size:0.78rem;white-space:nowrap;padding:0 2px;">{mid}</span>'
+                units.append(
+                    '<div style="display:inline-flex;align-items:center;gap:10px;">'
+                    + node_html + arrow_html + '</div>'
+                )
+            else:
+                units.append(node_html)
+        return ('<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:1rem 0;'
+                + wrap_bg + '">'
+                + ''.join(units) + '</div>')
+
+    frm = b.get('from', '')
+    to = b.get('to', '')
+    label = _esc(b.get('label', ''))
     mid = ('→ ' + label + ' →') if label else '→'
     return ('<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
-            '<span style="padding:6px 14px;border-radius:6px;background:' + color + '18;color:'
-            + color + ';font-weight:600;font-size:0.875rem;border:1px solid ' + color + '44;">'
-            + frm + '</span>'
-            '<span style="color:#9ca3af;font-size:0.82rem;">' + mid + '</span>'
-            '<span style="padding:6px 14px;border-radius:6px;background:' + color + '18;color:'
-            + color + ';font-weight:600;font-size:0.875rem;border:1px solid ' + color + '44;">'
-            + to + '</span></div>')
+            + _flow_connector_node(frm, color, theme)
+            + '<span style="color:#9ca3af;font-size:0.82rem;">' + mid + '</span>'
+            + _flow_connector_node(to, color, theme)
+            + '</div>')
 _RENDERERS["flow_connector"] = _render_flow_connector
 
 
@@ -17845,6 +18085,213 @@ def _render_chat_sequence(b: dict) -> str:
                   '</div></div>')
     return '<div style="margin:1.5rem 0;padding:16px;">' + items + '</div>'
 _RENDERERS["chat_sequence"] = _render_chat_sequence
+
+
+def _render_sequence_diagram(b: dict) -> str:
+    """Multi-actor message sequence diagram: actor column headers with dashed
+    per-actor lifelines for spatial orientation, plus per-message rows.
+
+    v3 (2026-07-24): the label is now FULL-WIDTH and readable, with the
+    swimlane arrow rendered as a separate connector row beneath it. v1/v2
+    indented each label to its sender's lifeline and clamped its width to the
+    remaining lane space — so a message between the 3rd and 4th of four
+    actors got ~35% of the column and wrapped every phrase into a wall of
+    tiny one-word-per-line text (the recurring "it's too condensed"
+    complaint). Decoupling the two — text reads left-to-right at a legible
+    size, the laned arrow below carries the from→to spatial cue — keeps the
+    sequence-diagram identity without ever cramping the prose."""
+    accent = b.get('accent', '#6366f1')
+    theme = b.get('theme')
+    _t = _theme_tokens(theme)
+    # Participant aliases (mermaid's `participant Client as A2A Client`): each
+    # actor is a plain string, OR an object {id, label} — messages/notes may
+    # reference the SHORT id while the box shows the friendly label. Normalise
+    # to parallel id/label lists + a lookup keyed by both, so `from`/`to`/`over`
+    # can use either form.
+    raw_actors = b.get('actors', [])
+    actor_ids, actor_labels = [], []
+    for a in raw_actors:
+        if isinstance(a, dict):
+            label = a.get('label') or a.get('name') or a.get('id') or ''
+            aid = a.get('id') or a.get('name') or label
+        else:
+            aid = label = str(a)
+        actor_ids.append(aid)
+        actor_labels.append(label)
+    messages = b.get('messages', [])
+    n = max(1, len(actor_ids))
+    bg = _t['surface2'] if theme == 'site' else ('#0f172a' if theme == 'dark' else '#fff')
+    border = _t['border']
+    text_c = _t['text']
+    dim_c = _t['dim']
+    lifeline_c = _t['border']
+    surface_c = _t['surface']
+
+    _index_by = {}
+    for i, (aid, lbl) in enumerate(zip(actor_ids, actor_labels)):
+        _index_by.setdefault(aid, i)
+        _index_by.setdefault(lbl, i)
+
+    def _idx(name):
+        return _index_by.get(name, 0)
+
+    def _label(name):
+        return actor_labels[_idx(name)] if name in _index_by else str(name)
+
+    centers = [(i + 0.5) / n * 100 for i in range(n)]
+    lane_w = 100.0 / n
+
+    # Participant boxes (bordered) instead of bare text — matches the mermaid/
+    # Google-A2A convention where actors render as boxes at the top of their
+    # lifeline. surface bg so they sit above the section's grid ground.
+    header = ''.join(
+        f'<div style="flex:1;display:flex;justify-content:center;padding:0 4px;">'
+        f'<div style="border:1.5px solid {accent}66;background:{surface_c};border-radius:7px;'
+        f'padding:6px 14px;font-weight:700;font-size:12.5px;color:{text_c};letter-spacing:0.01em;'
+        f'text-align:center;white-space:nowrap;">{_esc(lbl)}</div></div>'
+        for lbl in actor_labels
+    )
+    lifelines = ''.join(
+        f'<div style="position:absolute;left:{c:.3f}%;top:0;bottom:0;width:0;'
+        f'border-left:1px dashed {lifeline_c};"></div>'
+        for c in centers
+    )
+
+    note_bg = f'{accent}10' if theme in (None, 'light') else f'{accent}1c'
+    autonumber = bool(b.get('autonumber'))
+    counter = [0]  # mutable so nested frames share the running count
+
+    def _render_note(m):
+        over = m.get('over')
+        if over:
+            # Anchored note (mermaid's `Note over X` / `Note over X,Y`): a
+            # boxed note positioned over one lifeline or spanning a pair,
+            # instead of the full-width band. `over` is an actor id/label or
+            # a [a, b] pair.
+            tgt = over if isinstance(over, (list, tuple)) else [over]
+            cs = [centers[_idx(t)] for t in tgt]
+            lo, hi = min(cs), max(cs)
+            if lo == hi:
+                left = max(0.0, lo - lane_w * 0.5)
+                width = min(lane_w, 100.0 - left)
+                width = max(width, min(lane_w * 1.3, 100.0 - left))
+            else:
+                left = max(0.0, lo - lane_w * 0.28)
+                width = min((hi - lo) + lane_w * 0.56, 100.0 - left)
+            return (
+                f'<div style="position:relative;z-index:1;margin:14px 0;">'
+                f'<div style="margin-left:{left:.2f}%;width:{width:.2f}%;background:{surface_c};'
+                f'border:1px solid {accent}55;border-radius:6px;padding:8px 12px;'
+                f'font-size:12px;line-height:1.45;color:{dim_c};text-align:center;'
+                f'box-sizing:border-box;">{_md_inline(m.get("text",""))}</div></div>'
+            )
+        return (
+            f'<div style="position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:{note_bg};'
+            f'border-left:3px solid {accent};border-radius:0 6px 6px 0;'
+            f'font-size:13px;line-height:1.5;color:{dim_c};">{_md_inline(m.get("text",""))}</div>'
+        )
+
+    def _render_message(m):
+        i_from, i_to = _idx(m.get('from', '')), _idx(m.get('to', ''))
+        forward = i_to >= i_from
+        # Return/async messages render as a DASHED line (mermaid's `-->>`
+        # convention: solid = a call/request, dashed = a return or async
+        # stream). Declarative: the LLM marks a message kind:"return" (or the
+        # explicit dashed:true). The single strongest scan signal in a
+        # sequence diagram — without it every arrow reads the same.
+        dashed = m.get('kind') == 'return' or m.get('reply') is True or m.get('dashed') is True
+        line_style = 'dashed' if dashed else 'solid'
+        left = min(centers[i_from], centers[i_to])
+        width = max(abs(centers[i_to] - centers[i_from]), 5)
+        origin = centers[i_from]
+        if forward:
+            arrow_html = (f'<span style="position:absolute;right:-1px;top:-4px;width:0;height:0;'
+                          f'border-style:solid;border-width:4px 0 4px 8px;'
+                          f'border-color:transparent transparent transparent {accent};"></span>')
+        else:
+            arrow_html = (f'<span style="position:absolute;left:-1px;top:-4px;width:0;height:0;'
+                          f'border-style:solid;border-width:4px 8px 4px 0;'
+                          f'border-color:transparent {accent} transparent transparent;"></span>')
+        origin_dot = (f'<span style="position:absolute;left:{origin:.3f}%;top:-2.5px;'
+                      f'width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:{accent};"></span>')
+        num_html = ''
+        if autonumber:
+            counter[0] += 1
+            num_html = (f'<span style="display:inline-block;min-width:18px;height:18px;line-height:18px;'
+                        f'text-align:center;border-radius:50%;background:{accent};color:#fff;font-size:10.5px;'
+                        f'font-weight:700;margin-right:8px;vertical-align:1px;">{counter[0]}</span>')
+        dir_glyph = '&#8620;' if dashed else '&#8594;'  # ⇜ vs →
+        label = (
+            f'{num_html}'
+            f'<span style="font-weight:700;color:{text_c};">{_esc(_label(m.get("from","")))}</span>'
+            f'<span style="color:{accent};padding:0 5px;">{dir_glyph}</span>'
+            f'<span style="font-weight:700;color:{text_c};">{_esc(_label(m.get("to","")))}</span>'
+            f'<span style="color:{dim_c};">&nbsp;&nbsp;{_esc(m.get("text",""))}</span>'
+        )
+        return (
+            f'<div style="position:relative;z-index:1;padding:11px 0 2px;">'
+            f'<div style="font-size:13px;line-height:1.5;">{label}</div>'
+            f'<div style="position:relative;height:0;margin-top:11px;">'
+            f'<div style="position:absolute;left:{left:.3f}%;width:{width:.3f}%;border-top:1.5px {line_style} {accent};top:0;">{arrow_html}</div>'
+            f'{origin_dot}'
+            f'</div></div>'
+        )
+
+    def _render_items(items):
+        out = ''
+        for m in items:
+            if m.get('frame'):
+                out += _render_frame(m)
+            elif m.get('note'):
+                out += _render_note(m)
+            else:
+                out += _render_message(m)
+        return out
+
+    def _frame_branch(label_text, inner_items, kind_chip=None, first=True):
+        # A labelled band: for the first branch a "KIND — label" chip; for a
+        # subsequent alt/par branch, an "[else] label" divider above it.
+        chip = ''
+        if kind_chip is not None:
+            chip = (f'<span style="display:inline-block;font-family:ui-monospace,monospace;font-size:10px;'
+                    f'font-weight:700;text-transform:uppercase;letter-spacing:0.06em;background:{accent};'
+                    f'color:#fff;border-radius:4px;padding:2px 7px;margin-right:8px;">{_esc(kind_chip)}</span>')
+        divider = ''
+        if not first:
+            divider = (f'<div style="border-top:1px dashed {accent}66;margin:6px -14px 0;padding:6px 14px 0;'
+                       f'font-size:11.5px;color:{dim_c};"><b style="color:{text_c};">else</b> {_esc(label_text)}</div>')
+        head = ''
+        if first and (kind_chip is not None or label_text):
+            head = (f'<div style="margin-bottom:2px;">{chip}'
+                    f'<span style="font-size:12px;color:{dim_c};">{_esc(label_text)}</span></div>')
+        return head + divider + _render_items(inner_items)
+
+    def _render_frame(m):
+        kind = m.get('frame', 'group')
+        branches = ''
+        branches += _frame_branch(m.get('label', ''), m.get('messages', []),
+                                  kind_chip=kind, first=True)
+        for br in (m.get('else') or []):
+            branches += _frame_branch(br.get('label', ''), br.get('messages', []), first=False)
+        # A bordered box grouping the nested messages (mermaid's alt/opt/loop/
+        # par frame). Lifelines run behind it (they're absolute, full-height),
+        # so the frame reads as an overlay grouping — exactly like mermaid.
+        return (
+            f'<div style="position:relative;z-index:1;border:1px solid {accent}55;border-radius:8px;'
+            f'padding:10px 14px 4px;margin:16px 0;">{branches}</div>'
+        )
+
+    rows = _render_items(messages)
+
+    return (
+        f'<div style="background:{bg};border:1px solid {border};border-radius:10px;'
+        f'padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
+        f'<div style="position:relative;min-width:320px;">'
+        f'<div style="display:flex;">{header}</div>'
+        f'<div style="position:relative;padding-top:8px;">{lifelines}{rows}</div>'
+        f'</div></div>'
+    )
+_RENDERERS["sequence_diagram"] = _render_sequence_diagram
 # ── Batch 4b: Google Workspace & data atoms ───────────────────────────────────
 
 def _render_data_source(b: dict) -> str:
@@ -20719,8 +21166,10 @@ def _render_icon_liftoff(b: dict) -> str:
     loop = b.get('loop', True)
     fade = b.get('fade_edges', True)
     app = (b.get('app') or 'chat').lower()
+    _app_path = _WORKSPACE_LOGOS_2026.get(app)
     icon_url = b.get('icon_url') or (
-        (_WL_BASE + _WORKSPACE_LOGOS_2026[app]) if app in _WORKSPACE_LOGOS_2026 else None)
+        (_app_path if _app_path.startswith("http") else _WL_BASE + _app_path)
+        if _app_path else None)
     icon_html = (
         f'<img src="{_esc(icon_url)}" width="{size}" height="{size}" alt="{_esc(app)}" '
         f'style="display:block;object-fit:contain;">'

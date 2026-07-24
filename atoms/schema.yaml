@@ -5644,6 +5644,9 @@ blocks:
     accent: string (optional, hex, default "#6366f1")
     style: string (optional, "tint"|"solid"|"dark"|"light", default "tint")
     padding: string (optional, css, default "24px")
+    grid: boolean (optional, default false, added 2026-07-24). Layers a
+      faint 32px graph-paper grid (tinted by accent) on top of the base
+      colour — for technical/blueprint-style sections.
     blocks: array (required, atom blocks rendered inside)
   source:
     name: a2uicatalog
@@ -5826,10 +5829,13 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: numbered_list
-  description: Numbered list with either large decorative number backgrounds ("large"
-    style) or circular number badges ("badge" style). More visual than steps.
-  compact_description: decorative numbered list — large background numbers or circular
-    badges
+  description: Numbered list with large decorative number backgrounds ("large"
+    style), circular number badges ("badge" style), or bordered cards with a
+    ghost-number, title, tag pills and body text ("cards" style, added
+    2026-07-24 for stage-by-stage architecture breakdowns). More visual than
+    steps.
+  compact_description: decorative numbered list — large background numbers,
+    circular badges, or bordered stage cards
   surfaces:
     works_on:
     - web
@@ -5837,10 +5843,14 @@ blocks:
     - pdf
     - mcp-apps
   fields:
-    title: string (optional)
+    title: string (optional). Ignored by the "cards" style.
     accent: string (optional, hex, default "#6366f1")
-    style: string (optional, "large"|"badge", default "large")
-    items: array (required). Array of {label (optional), text (optional)}
+    theme: string (optional, "light"|"dark", default "light"). "cards" style only.
+    style: string (optional, "large"|"badge"|"cards", default "large")
+    items: array (required). For "large"/"badge" style, each item is
+      {label (optional), text (optional)}. For "cards" style, each item is
+      {number (optional, defaults to position), title, tags (optional, array
+      of string), text}.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -5864,7 +5874,12 @@ blocks:
     tag: string (optional, badge label shown in accent pill)
     accent: string (optional, hex, default "#6366f1")
     theme: string (optional, "light"|"dark", default "light")
-    background: string (optional, css background override)
+    background: string (optional, css background override — now honoured in
+      dark theme too, added 2026-07-24; previously silently discarded in
+      favour of the dark default)
+    meta: array (optional, added 2026-07-24). Array of {label, value} shown
+      as a small monospace stat row under the header — e.g. a title-block
+      summary line for a reference/spec page.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -8691,15 +8706,24 @@ blocks:
     direction: string (optional, up|down|left|right)
   source: *id007
 - type: flow_connector
-  description: Animated dashed beam connecting two labelled nodes — alias for animated_beam
-  compact_description: animated beam connector between two nodes
+  description: Animated dashed beam connecting two labelled nodes — alias for
+    animated_beam. Two shapes — a single from/to/label pair (original), or a
+    multi-node nodes/connectors chain (added 2026-07-24, e.g. an identity/
+    permission chain of more than 2 hops) where each node can be a bare
+    string (simple pill) or a {role, name, detail} object (richer boxed card).
+  compact_description: animated beam connector between two or more nodes
   surfaces:
     works_on: *id006
   fields:
-    from: string
-    to: string
-    label: string (optional)
+    from: string or {role, name, detail} object (ignored if nodes is set)
+    to: string or {role, name, detail} object (ignored if nodes is set)
+    label: string (optional, ignored if nodes is set)
+    nodes: array (optional). Array of string or {role, name, detail} — 2+ nodes
+      in a single chain, rendered left to right.
+    connectors: array of string (optional). Labels between each consecutive
+      pair in `nodes` — length should be len(nodes)-1.
     color: string (optional, hex)
+    theme: string (optional, "light"|"dark", default "light")
   source: *id007
 - type: live_metric
   description: Animated counter that counts up from start to a target value — alias
@@ -8827,6 +8851,51 @@ blocks:
   fields:
     steps: array of {title, text} — each step shown in its own tab panel
   source: *id007
+- type: sequence_diagram
+  description: Multi-actor message sequence diagram — participant boxes with
+    dashed lifelines, per-message arrow rows in order, note bands, and
+    labelled alt/opt/loop/par frames. Feature-parity with the mermaid
+    sequenceDiagram / Google-A2A convention (solid arrow = call, dashed =
+    return/async; optional autonumber) but fully declarative for an LLM (it
+    describes actors + messages structurally, never mermaid syntax) and
+    self-contained (pure HTML/CSS, no client-side JS — renders on every
+    surface, not just web). General-purpose protocol/architecture diagram;
+    not limited to 2-role chat threads the way chat_sequence is.
+  compact_description: multi-actor sequence diagram — arrows, notes, alt/opt/loop frames
+  stage: preview
+  surfaces:
+    works_on:
+    - web
+    - mcp-apps
+  fields:
+    accent: string (optional, hex, default "#6366f1")
+    theme: string (optional, "light"|"dark"|"site", default "light"). "site"
+      follows the host page's light/dark theme (its CSS custom properties)
+      instead of baking a fixed one — for embedding in a themed site.
+    autonumber: boolean (optional, default false) — prefix each message with
+      a sequential number badge (mermaid's autonumber).
+    actors: >-
+      required array of participants, left→right. Each is a plain string
+      (used as both id and label) OR an object {id, label} for a mermaid-style
+      alias (messages/notes may reference the short id while the box shows the
+      friendly label).
+    messages: >-
+      array; each item is one of —
+      MESSAGE {from, to, text, kind?} where from/to are actor ids or labels;
+      kind="return" (aliases reply=true / dashed=true) renders a DASHED arrow
+      (a return or async/stream) vs the default solid arrow (a call/request),
+      the mermaid -->> / ->> distinction;
+      NOTE {note=true, text, over?} where over (an actor, or [a,b] pair)
+      anchors the note box over that lifeline / across that span (mermaid's
+      Note over X / Note over X,Y); omit over for a full-width band;
+      FRAME {frame="alt"|"opt"|"loop"|"par"|"group", label, messages=[...],
+      else?=[{label, messages}]} a labelled bordered box grouping nested
+      messages (mermaid's alt/opt/loop/par control-flow frame; alt/par use the
+      optional else branches for alternatives; frames nest).
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: chat_sequence
   description: Animated conversation thread with user/assistant bubbles
   compact_description: animated chat conversation thread
@@ -11330,6 +11399,7 @@ blocks:
   compact_description: tabbed panels holding nested atom blocks
   surfaces:
     works_on:
+    - web
     - google-meet-stage
     - google-apps-script-web
     - mcp-apps

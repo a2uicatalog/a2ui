@@ -7234,6 +7234,9 @@
           "padding": {
             "type": "string"
           },
+          "grid": {
+            "type": "boolean"
+          },
           "blocks": {
             "type": [
               "string",
@@ -7627,11 +7630,19 @@
           "accent": {
             "type": "string"
           },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "string (optional, \"light",
+              "dark\", default \"light\"). \"cards\" style only."
+            ]
+          },
           "style": {
             "type": "string",
             "enum": [
               "string (optional, \"large",
-              "badge\", default \"large\")"
+              "badge",
+              "cards\", default \"large\")"
             ]
           },
           "items": {
@@ -7685,7 +7696,30 @@
             ]
           },
           "background": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "nowhonouredindarkthemetoo",
+              "added2026-07-24;previouslysilentlydiscardedinfavourofthedarkdefault)"
+            ]
+          },
+          "meta": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "value"
+              ]
+            }
           }
         },
         "required": [
@@ -11607,16 +11641,89 @@
             "const": "flow_connector"
           },
           "from": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "name",
+                "detail"
+              ]
+            }
           },
           "to": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "name",
+                "detail"
+              ]
+            }
           },
           "label": {
             "type": "string"
           },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "name",
+                "detail"
+              ]
+            }
+          },
+          "connectors": {
+            "type": "string"
+          },
           "color": {
             "type": "string"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "string (optional, \"light",
+              "dark\", default \"light\")"
+            ]
           }
         },
         "required": [

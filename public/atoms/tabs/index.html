@@ -140,14 +140,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="label">Live preview</div>
   <div class="preview-box">
 <style>
-.tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;}
+.tm-tabs{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--border, #e0e0e0);}
 .tm-tabs input[type=radio]{display:none;}
-.tm-tab-labels{display:flex;background:#f8f9fa;border-bottom:1px solid #e0e0e0;overflow-x:auto;}
-.tm-tab-label{padding:10px 20px;cursor:pointer;font-size:0.85rem;font-weight:600;color:#5f6368;
-  white-space:nowrap;border-right:1px solid #e0e0e0;transition:all 0.15s ease;user-select:none;
+.tm-tab-labels{display:flex;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;}
+.tm-tab-label{padding:10px 20px;cursor:pointer;font-size:0.85rem;font-weight:600;color:var(--text-muted, #5f6368);
+  white-space:nowrap;border-right:1px solid var(--border, #e0e0e0);transition:all 0.15s ease;user-select:none;
   border-bottom:3px solid transparent;margin-bottom:-1px;}
-.tm-tab-label:hover{background:#fff;color:#1a73e8;}
-.tm-tab-panels{background:#fff;}
+.tm-tab-label:hover{background:var(--surface, #fff);color:var(--accent, #1a73e8);}
+.tm-tab-panels{background:var(--surface, #fff);}
 .tm-tab-panel{display:none;padding:0;}
 .tm-tab-panel pre{margin:0;border-radius:0;border:none;}
 </style>

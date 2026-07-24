@@ -265,7 +265,7 @@
         },
         {
           "type": "numbered_list",
-          "description": "decorative numbered list — large background numbers or circular badges"
+          "description": "decorative numbered list — large background numbers, circular badges, or bordered stage cards"
         },
         {
           "type": "otp_input",
@@ -1132,7 +1132,7 @@
         },
         {
           "type": "flow_connector",
-          "description": "animated beam connector between two nodes"
+          "description": "animated beam connector between two or more nodes"
         },
         {
           "type": "focus_lens",

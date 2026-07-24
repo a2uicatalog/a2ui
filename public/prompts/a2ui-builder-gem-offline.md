@@ -164,10 +164,11 @@ does not exist.
 #### numbered_list
 ```json
 {
- "title": "string (optional)",
+ "title": "string (optional). Ignored by the \"cards\" style.",
  "accent": "string (optional, hex, default \"#6366f1\")",
- "style": "string (optional, \"large\"|\"badge\", default \"large\")",
- "items": "array (required). Array of {label (optional), text (optional)}"
+ "theme": "string (optional, \"light\"|\"dark\", default \"light\"). \"cards\" style only.",
+ "style": "string (optional, \"large\"|\"badge\"|\"cards\", default \"large\")",
+ "items": "array (required). For \"large\"/\"badge\" style, each item is {label (optional), text (optional)}. For \"cards\" style, each item is {number (optional, defaults to position), title, tags (optional, array of string), text}."
 }
 ```
 
@@ -616,7 +617,7 @@ does not exist.
 - `highlight_box` — highlight box — gradient/solid/outline style, icon, title, text
 - `two_tone_card` — split card — colored header with icon/title, white body renders atom blocks
 - `metric_row` — horizontal metric strip — value, label, prefix/suffix, trend up/down
-- `numbered_list` — decorative numbered list — large background numbers or circular badges
+- `numbered_list` — decorative numbered list — large background numbers, circular badges, or bordered stage cards
 - `page_header` — app-style page header — title, subtitle, icon, accent, tag badge
 - `back_button` — back navigation — url, nav_slug, or history.back(); ghost/outline/text style
 - `section_break` — section divider — optional centered label, solid/dashed/dots style
@@ -734,7 +735,7 @@ does not exist.
 - `depth_stack` — stacked cards with depth parallax
 - `scramble_reveal` — character-scramble text reveal on scroll
 - `scroll_trigger` — scroll-triggered animated reveal
-- `flow_connector` — animated beam connector between two nodes
+- `flow_connector` — animated beam connector between two or more nodes
 - `live_metric` — animated counting number (alias for animated_counter)
 - `deadline_ticker` — countdown timer to a target date (alias)
 - `pattern_background` — dot-grid pattern background (alias)

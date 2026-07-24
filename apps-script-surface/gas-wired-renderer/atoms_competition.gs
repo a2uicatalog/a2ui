@@ -21,14 +21,19 @@ _RENDERERS['content_tabs'] = function(b) {
   var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
   var open   = Math.min(Math.max(b.default_index || 0, 0), tabList.length - 1);
 
+  // Underline-style tabs (2026-07-24, grounded in Material/Primer/Radix):
+  // weight shift (500 inactive -> 700 active) + accent colour + accent
+  // underline, so the active tab reads without relying on colour alone; hover
+  // lifts only part-way (to full text colour), never to the active accent.
   var css = '<style>';
   css += '.' + uid + 'p{display:none;padding:16px 4px;}';
-  css += '.' + uid + 'l{padding:10px 18px;cursor:pointer;font-size:0.85rem;font-weight:600;' +
+  css += '.' + uid + 'l{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;' +
          'color:var(--muted,#5f6368);white-space:nowrap;border-bottom:2px solid transparent;' +
          'margin-bottom:-2px;transition:color 0.15s;display:inline-block;}';
+  css += '.' + uid + 'l:hover{color:var(--text,#1f2328);}';
   tabList.forEach(function(t, i) {
     css += '#' + uid + '_' + i + ':checked ~ .' + uid + 'ls .' + uid + 'l:nth-child(' + (i + 1) + ')' +
-           '{color:' + accent + ';border-bottom-color:' + accent + ';}';
+           '{color:' + accent + ';border-bottom-color:' + accent + ';font-weight:700;}';
     css += '#' + uid + '_' + i + ':checked ~ .' + uid + 'ps .' + uid + 'p:nth-child(' + (i + 1) + '){display:block;}';
   });
   css += '</style>';

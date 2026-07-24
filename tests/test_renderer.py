@@ -28,7 +28,14 @@ def test_heading(renderer):
 
 def test_subheading(renderer):
     html = r(renderer, {"type": "subheading", "text": "Sub"})
-    assert "<h3>" in html
+    # Was a bare-substring "<h3>" check, which only ever passed by accident:
+    # a shadowing duplicate _render_subheading (bare <h3>, no style/level/
+    # condensed support) was silently winning over the real implementation
+    # until that duplicate was removed 2026-07-24. The real one always
+    # carries a style attribute, so check the tag opens correctly instead
+    # of demanding zero attributes.
+    assert "<h3" in html
+    assert "Sub" in html
 
 
 def test_quote(renderer):

@@ -8983,6 +8983,10 @@
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
        "description": "string (optional, css, default \"24px\")"
       },
+      "grid": {
+       "description": "boolean (optional, default false, added 2026-07-24). Layers a faint 32px graph-paper grid (tinted by accent) on top of the base colour — for technical/blueprint-style sections.",
+       "type": "boolean"
+      },
       "blocks": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
        "description": "array (required, atom blocks rendered inside)"
@@ -9372,7 +9376,7 @@
   },
   "numbered_list": {
    "type": "object",
-   "description": "Numbered list with either large decorative number backgrounds (\"large\" style) or circular number badges (\"badge\" style). More visual than steps.",
+   "description": "Numbered list with large decorative number backgrounds (\"large\" style), circular number badges (\"badge\" style), or bordered cards with a ghost-number, title, tag pills and body text (\"cards\" style, added 2026-07-24 for stage-by-stage architecture breakdowns). More visual than steps.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -9385,19 +9389,23 @@
       },
       "title": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional)"
+       "description": "string (optional). Ignored by the \"cards\" style."
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
        "description": "string (optional, hex, default \"#6366f1\")"
       },
+      "theme": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, \"light\"|\"dark\", default \"light\"). \"cards\" style only."
+      },
       "style": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, \"large\"|\"badge\", default \"large\")"
+       "description": "string (optional, \"large\"|\"badge\"|\"cards\", default \"large\")"
       },
       "items": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
-       "description": "array (required). Array of {label (optional), text (optional)}"
+       "description": "array (required). For \"large\"/\"badge\" style, each item is {label (optional), text (optional)}. For \"cards\" style, each item is {number (optional, defaults to position), title, tags (optional, array of string), text}."
       }
      },
      "required": [
@@ -9453,7 +9461,11 @@
       },
       "background": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, css background override)"
+       "description": "string (optional, css background override — now honoured in dark theme too, added 2026-07-24; previously silently discarded in favour of the dark default)"
+      },
+      "meta": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (optional, added 2026-07-24). Array of {label, value} shown as a small monospace stat row under the header — e.g. a title-block summary line for a reference/spec page."
       }
      },
      "required": [
@@ -14648,7 +14660,7 @@
   },
   "flow_connector": {
    "type": "object",
-   "description": "Animated dashed beam connecting two labelled nodes — alias for animated_beam",
+   "description": "Animated dashed beam connecting two labelled nodes — alias for animated_beam. Two shapes — a single from/to/label pair (original), or a multi-node nodes/connectors chain (added 2026-07-24, e.g. an identity/ permission chain of more than 2 hops) where each node can be a bare string (simple pill) or a {role, name, detail} object (richer boxed card).",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -14661,19 +14673,31 @@
       },
       "from": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string"
+       "description": "string or {role, name, detail} object (ignored if nodes is set)"
       },
       "to": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string"
+       "description": "string or {role, name, detail} object (ignored if nodes is set)"
       },
       "label": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional)"
+       "description": "string (optional, ignored if nodes is set)"
+      },
+      "nodes": {
+       "description": "array (optional). Array of string or {role, name, detail} — 2+ nodes in a single chain, rendered left to right.",
+       "type": "array"
+      },
+      "connectors": {
+       "description": "array of string (optional). Labels between each consecutive pair in `nodes` — length should be len(nodes)-1.",
+       "type": "array"
       },
       "color": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
        "description": "string (optional, hex)"
+      },
+      "theme": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, \"light\"|\"dark\", default \"light\")"
       }
      },
      "required": [

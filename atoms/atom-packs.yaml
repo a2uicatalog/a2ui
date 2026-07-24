@@ -149,6 +149,7 @@ a2ui-charts-v1:
 - punch_card
 - sankey_flow
 - scatter_trend
+- sequence_diagram
 - skill_bars
 - sparkline
 - stacked_area

@@ -4368,10 +4368,10 @@
         "pdf",
         "mcp-apps"
       ],
-      "description": "Numbered list with either large decorative number backgrounds (\"large\" style) or circular number badges (\"badge\" style). More visual than steps.",
+      "description": "Numbered list with large decorative number backgrounds (\"large\" style), circular number badges (\"badge\" style), or bordered cards with a ghost-number, title, tag pills and body text (\"cards\" style, added 2026-07-24 for stage-by-stage architecture breakdowns). More visual than steps.",
       "representativeQueries": [
-        "show a decorative numbered list \u2014 large background numbers or circular badges",
-        "numbered list with either large decorative number backgrounds (\"large\" style) or circular number badges (\"badge\"",
+        "show a decorative numbered list \u2014 large background numbers, circular badges, or bordered stage cards",
+        "numbered list with large decorative number backgrounds (\"large\" style), circular number badges (\"badge\" style), or",
         "render a numbered list"
       ]
     },
@@ -6393,10 +6393,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "Animated dashed beam connecting two labelled nodes \u2014 alias for animated_beam",
+      "description": "Animated dashed beam connecting two labelled nodes \u2014 alias for animated_beam. Two shapes \u2014 a single from/to/label pair (original), or a multi-node nodes/connectors chain (added 2026-07-24, e.g. an identity/ permission chain of more than 2 hops) where each node can be a bare string (simple pill) or a {role, name, detail} object (richer boxed card).",
       "representativeQueries": [
-        "show a animated beam connector between two nodes",
-        "animated dashed beam connecting two labelled nodes \u2014 alias for animated_beam",
+        "show a animated beam connector between two or more nodes",
+        "animated dashed beam connecting two labelled nodes \u2014 alias for animated_beam. two shapes \u2014 a single from/to/label pair",
         "render a flow connector"
       ]
     },

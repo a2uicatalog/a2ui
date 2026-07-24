@@ -2065,7 +2065,66 @@ _RENDERERS['animated_beam'] = function(b) {
     + '<div style="flex-shrink:0;background:#fff;border:2px solid ' + _esc(color) + ';border-radius:8px;padding:8px 14px;font-size:0.85rem;font-weight:600;color:#1f2937;">' + _esc(to) + '</div>'
     + '</div>';
 };
-_RENDERERS['flow_connector'] = _RENDERERS['animated_beam'];
+// flow_connector now has its own implementation (2026-07-24) rather than
+// aliasing animated_beam — mirrors renderers/web_article.py's
+// _render_flow_connector exactly (simple pill nodes, or a richer
+// role/name/detail card when nodes is a multi-hop chain), so the two
+// surfaces render this atom identically instead of animated_beam's
+// fancier bordered-box + SVG-beam look diverging from the Python side.
+function _flowConnectorNode(node, color, theme) {
+  if (typeof node !== 'object' || node === null) {
+    var val = _esc(String(node));
+    return '<span style="padding:6px 14px;border-radius:6px;background:' + color + '18;color:' + color + ';font-weight:600;font-size:0.875rem;border:1px solid ' + color + '44;">' + val + '</span>';
+  }
+  var role = _esc(node.role || '');
+  var name = _esc(node.name || '');
+  var detail = _esc(node.detail || '');
+  var _t = _themeTokens(theme);
+  return '<div style="min-width:150px;background:' + _t.surface + ';border:1px solid ' + color + '55;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;">'
+    + (role ? '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:' + color + ';">' + role + '</div>' : '')
+    + (name ? '<div style="font-size:14px;font-weight:700;color:' + _t.text + ';">' + name + '</div>' : '')
+    + (detail ? '<div style="font-size:12px;color:' + _t.dim + ';">' + detail + '</div>' : '')
+    + '</div>';
+}
+
+_RENDERERS['flow_connector'] = function(b) {
+  var color = b.color || '#6366f1';
+  var theme = b.theme;
+
+  if (b.nodes && b.nodes.length) {
+    var nodes = b.nodes;
+    var connectors = b.connectors || [];
+    var dimC = theme === 'dark' ? '#94a3b8' : (theme === 'site' ? 'var(--text-muted,#9ca3af)' : '#9ca3af');
+    // v3 (2026-07-24, mirrors Python): group each node with its OWN
+    // outgoing arrow into one non-splitting inline-flex unit, flex-wrap
+    // the row of units. v2 (nowrap + scroll) silently clipped the last
+    // node(s) off-screen with no visual cue; grouping means a wrap only
+    // happens BETWEEN complete units, so nothing is ever clipped or left
+    // disconnected — it just reflows to more rows.
+    var units = nodes.map(function(node, i) {
+      var nodeHtml = _flowConnectorNode(node, color, theme);
+      if (i < nodes.length - 1) {
+        var midLabel = connectors[i] ? _esc(connectors[i]) : '';
+        var mid = midLabel ? ('→ ' + midLabel + ' →') : '→';
+        var arrowHtml = '<span style="color:' + dimC + ';font-size:0.78rem;white-space:nowrap;padding:0 2px;">' + mid + '</span>';
+        return '<div style="display:inline-flex;align-items:center;gap:10px;">' + nodeHtml + arrowHtml + '</div>';
+      }
+      return nodeHtml;
+    });
+    var wrapBg = theme === 'dark' ? 'background:#0f172a;padding:16px;border-radius:10px;'
+              : theme === 'site' ? 'background:var(--surface-2,#f8fafc);padding:16px;border-radius:10px;' : '';
+    return '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:1rem 0;' + wrapBg + '">'
+      + units.join('') + '</div>';
+  }
+
+  var label = b.label || '';
+  var mid = label ? ('→ ' + _esc(label) + ' →') : '→';
+  return '<div style="display:flex;align-items:center;gap:12px;margin:1rem 0;flex-wrap:wrap;">'
+    + _flowConnectorNode(b.from || '', color, theme)
+    + '<span style="color:#9ca3af;font-size:0.82rem;">' + mid + '</span>'
+    + _flowConnectorNode(b.to || '', color, theme)
+    + '</div>';
+};
 
 _RENDERERS['confetti_burst'] = function(b) {
   var label  = b.label || b.text || b.title || '🎉 Achievement Unlocked!';
@@ -2219,6 +2278,134 @@ _RENDERERS['chat_sequence'] = function(b) {
       + '</div>';
   });
   return html + '</div>';
+};
+
+_RENDERERS['sequence_diagram'] = function(b) {
+  // Mirrors renderers/web_article.py's _render_sequence_diagram (v4).
+  // Full-width readable labels + swimlane arrow beneath; participant boxes;
+  // solid=call / dashed=return (message kind:"return") per the mermaid /
+  // Google-A2A convention; theme:"site" follows the host page.
+  var accent = b.accent || '#6366f1';
+  var theme = b.theme;
+  var t = _themeTokens(theme);
+  // Participant aliases: actor is a string OR {id,label}; messages/notes may
+  // reference the short id, the box shows the label. Mirrors Python.
+  var rawActors = b.actors || [];
+  var actorLabels = [], indexBy = {};
+  rawActors.forEach(function(a, i) {
+    var aid, label;
+    if (a && typeof a === 'object') {
+      label = a.label || a.name || a.id || '';
+      aid = a.id || a.name || label;
+    } else { aid = label = String(a); }
+    actorLabels.push(label);
+    if (!(aid in indexBy)) indexBy[aid] = i;
+    if (!(label in indexBy)) indexBy[label] = i;
+  });
+  var messages = b.messages || [];
+  var n = Math.max(1, actorLabels.length);
+  var bg = theme === 'site' ? t.surface2 : (theme === 'dark' ? '#0f172a' : '#fff');
+  var border = t.border;
+  var textC = t.text;
+  var dimC = t.dim;
+  var lifelineC = t.border;
+  var surfaceC = t.surface;
+
+  function idx(name) { return (name in indexBy) ? indexBy[name] : 0; }
+  function label(name) { return (name in indexBy) ? actorLabels[indexBy[name]] : String(name); }
+
+  var centers = actorLabels.map(function(_, i) { return (i + 0.5) / n * 100; });
+  var laneW = 100 / n;
+
+  var header = actorLabels.map(function(lbl) {
+    return '<div style="flex:1;display:flex;justify-content:center;padding:0 4px;">'
+      + '<div style="border:1.5px solid ' + accent + '66;background:' + surfaceC + ';border-radius:7px;padding:6px 14px;font-weight:700;font-size:12.5px;color:' + textC + ';letter-spacing:0.01em;text-align:center;white-space:nowrap;">' + _esc(lbl) + '</div></div>';
+  }).join('');
+
+  var lifelines = centers.map(function(c) {
+    return '<div style="position:absolute;left:' + c.toFixed(3) + '%;top:0;bottom:0;width:0;border-left:1px dashed ' + lifelineC + ';"></div>';
+  }).join('');
+
+  var noteBg = (theme === 'dark' || theme === 'site') ? (accent + '1c') : (accent + '10');
+  var autonumber = !!b.autonumber;
+  var counter = 0;
+
+  function renderNote(m) {
+    if (m.over) {
+      // Anchored note (mermaid `Note over X` / `Note over X,Y`).
+      var tgt = (m.over instanceof Array) ? m.over : [m.over];
+      var cs = tgt.map(function(x) { return centers[idx(x)]; });
+      var lo = Math.min.apply(null, cs), hi = Math.max.apply(null, cs);
+      var left, width;
+      if (lo === hi) {
+        left = Math.max(0, lo - laneW * 0.5);
+        width = Math.max(Math.min(laneW, 100 - left), Math.min(laneW * 1.3, 100 - left));
+      } else {
+        left = Math.max(0, lo - laneW * 0.28);
+        width = Math.min((hi - lo) + laneW * 0.56, 100 - left);
+      }
+      return '<div style="position:relative;z-index:1;margin:14px 0;">'
+        + '<div style="margin-left:' + left.toFixed(2) + '%;width:' + width.toFixed(2) + '%;background:' + surfaceC + ';border:1px solid ' + accent + '55;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.45;color:' + dimC + ';text-align:center;box-sizing:border-box;">' + _markdownToHtml(m.text || '') + '</div></div>';
+    }
+    return '<div style="position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:' + noteBg + ';border-left:3px solid ' + accent + ';border-radius:0 6px 6px 0;font-size:13px;line-height:1.5;color:' + dimC + ';">' + _markdownToHtml(m.text || '') + '</div>';
+  }
+  function renderMessage(m) {
+    var iFrom = idx(m.from || '');
+    var iTo = idx(m.to || '');
+    var forward = iTo >= iFrom;
+    var dashed = m.kind === 'return' || m.reply === true || m.dashed === true;
+    var lineStyle = dashed ? 'dashed' : 'solid';
+    var dirGlyph = dashed ? '&#8620;' : '&#8594;';
+    var left = Math.min(centers[iFrom], centers[iTo]);
+    var width = Math.max(Math.abs(centers[iTo] - centers[iFrom]), 5);
+    var origin = centers[iFrom];
+    var arrowHtml = forward
+      ? '<span style="position:absolute;right:-1px;top:-4px;width:0;height:0;border-style:solid;border-width:4px 0 4px 8px;border-color:transparent transparent transparent ' + accent + ';"></span>'
+      : '<span style="position:absolute;left:-1px;top:-4px;width:0;height:0;border-style:solid;border-width:4px 8px 4px 0;border-color:transparent ' + accent + ' transparent transparent;"></span>';
+    var originDot = '<span style="position:absolute;left:' + origin.toFixed(3) + '%;top:-2.5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:' + accent + ';"></span>';
+    var numHtml = '';
+    if (autonumber) {
+      counter++;
+      numHtml = '<span style="display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:50%;background:' + accent + ';color:#fff;font-size:10.5px;font-weight:700;margin-right:8px;vertical-align:1px;">' + counter + '</span>';
+    }
+    var labelHtml = numHtml + '<span style="font-weight:700;color:' + textC + ';">' + _esc(label(m.from || '')) + '</span>'
+      + '<span style="color:' + accent + ';padding:0 5px;">' + dirGlyph + '</span>'
+      + '<span style="font-weight:700;color:' + textC + ';">' + _esc(label(m.to || '')) + '</span>'
+      + '<span style="color:' + dimC + ';">&nbsp;&nbsp;' + _esc(m.text || '') + '</span>';
+    return '<div style="position:relative;z-index:1;padding:11px 0 2px;">'
+      + '<div style="font-size:13px;line-height:1.5;">' + labelHtml + '</div>'
+      + '<div style="position:relative;height:0;margin-top:11px;">'
+      + '<div style="position:absolute;left:' + left.toFixed(3) + '%;width:' + width.toFixed(3) + '%;border-top:1.5px ' + lineStyle + ' ' + accent + ';top:0;">' + arrowHtml + '</div>'
+      + originDot
+      + '</div></div>';
+  }
+  function renderItems(items) {
+    return (items || []).map(function(m) {
+      if (m.frame) return renderFrame(m);
+      if (m.note) return renderNote(m);
+      return renderMessage(m);
+    }).join('');
+  }
+  function frameBranch(labelText, innerItems, kindChip, first) {
+    var chip = kindChip ? '<span style="display:inline-block;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;background:' + accent + ';color:#fff;border-radius:4px;padding:2px 7px;margin-right:8px;">' + _esc(kindChip) + '</span>' : '';
+    var divider = first ? '' : '<div style="border-top:1px dashed ' + accent + '66;margin:6px -14px 0;padding:6px 14px 0;font-size:11.5px;color:' + dimC + ';"><b style="color:' + textC + ';">else</b> ' + _esc(labelText) + '</div>';
+    var head = (first && (kindChip || labelText)) ? '<div style="margin-bottom:2px;">' + chip + '<span style="font-size:12px;color:' + dimC + ';">' + _esc(labelText) + '</span></div>' : '';
+    return head + divider + renderItems(innerItems);
+  }
+  function renderFrame(m) {
+    var kind = m.frame || 'group';
+    var branches = frameBranch(m.label || '', m.messages || [], kind, true);
+    (m['else'] || []).forEach(function(br) { branches += frameBranch(br.label || '', br.messages || [], null, false); });
+    return '<div style="position:relative;z-index:1;border:1px solid ' + accent + '55;border-radius:8px;padding:10px 14px 4px;margin:16px 0;">' + branches + '</div>';
+  }
+
+  var rows = renderItems(messages);
+
+  return '<div style="background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;padding:18px 22px 22px;margin:1.5rem 0;overflow-x:auto;">'
+    + '<div style="position:relative;min-width:320px;">'
+    + '<div style="display:flex;">' + header + '</div>'
+    + '<div style="position:relative;padding-top:8px;">' + lifelines + rows + '</div>'
+    + '</div></div>';
 };
 
 _RENDERERS['tooltip_glossary'] = function(b) {

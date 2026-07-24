@@ -92,6 +92,20 @@ function _esc(str) {
     .replace(/'/g, '&#39;');
 }
 
+// Shared theme colour set for the "blueprint"/technical atoms — mirrors
+// renderers/web_article.py's _theme_tokens exactly. "site" follows the host
+// page's CSS custom properties (light fallbacks keep it identical to the
+// light default on any surface that never defined those vars).
+function _themeTokens(theme) {
+  if (theme === 'dark') {
+    return {text:'#e5e7eb', dim:'#94a3b8', surface:'#1e293b', surface2:'#0f172a', border:'rgba(148,163,184,0.25)'};
+  }
+  if (theme === 'site') {
+    return {text:'var(--text,#111827)', dim:'var(--text-muted,#6b7280)', surface:'var(--surface,#fff)', surface2:'var(--surface-2,#f8fafc)', border:'var(--border,#e5e7eb)'};
+  }
+  return {text:'#111827', dim:'#6b7280', surface:'#fff', surface2:'#f8fafc', border:'#e5e7eb'};
+}
+
 // Only allows https, http, mailto, #anchor, and relative paths. Strips javascript:, data:, etc.
 function _safeUrl(url) {
   if (!url) return '#';
@@ -134,7 +148,12 @@ _RENDERERS['presence_bar'] = function(b) {
 
 _RENDERERS['subheading'] = function(b) {
   var level = b.level || 3;
-  return '<h' + level + ' class="asw-subheading">' + _esc(b.text) + '</h' + level + '>';
+  // Condensed/blueprint heading treatment — mirrors web_article.py's
+  // _render_subheading, opt-in only (2026-07-24).
+  var style = b.condensed
+    ? ' style="font-family:\'Arial Narrow\',\'Helvetica Neue Condensed\',sans-serif;text-transform:uppercase;letter-spacing:0.05em;"'
+    : '';
+  return '<h' + level + ' class="asw-subheading"' + style + '>' + _esc(b.text) + '</h' + level + '>';
 };
 
 _RENDERERS['blockquote'] = function(b) {
@@ -1403,9 +1422,11 @@ _RENDERERS['tabs'] = function(b) {
   var uid = Math.random().toString(36).substr(2,6);
   var css = '<style>';
   css += '.tm-tab-panel-' + uid + '{display:none;padding:16px;}';
-  css += '.tm-tab-lbl-' + uid + '{padding:10px 18px;cursor:pointer;font-size:0.85rem;font-weight:600;color:#5f6368;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.15s;}';
+  // Underline tabs w/ weight shift (500->700) + hover part-way (2026-07-24).
+  css += '.tm-tab-lbl-' + uid + '{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:#5f6368;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color 0.15s;}';
+  css += '.tm-tab-lbl-' + uid + ':hover{color:#1f2328;}';
   tabList.forEach(function(t, i){
-    css += '#tb' + uid + '_' + i + ':checked ~ .tm-tab-labels-' + uid + ' .tm-tab-lbl-' + uid + ':nth-child(' + (i+1) + '){color:#1a73e8;border-bottom-color:#1a73e8;}';
+    css += '#tb' + uid + '_' + i + ':checked ~ .tm-tab-labels-' + uid + ' .tm-tab-lbl-' + uid + ':nth-child(' + (i+1) + '){color:#1a73e8;border-bottom-color:#1a73e8;font-weight:700;}';
     css += '#tb' + uid + '_' + i + ':checked ~ .tm-tab-panels-' + uid + ' .tm-tab-panel-' + uid + ':nth-child(' + (i+1) + '){display:block;}';
   });
   css += '</style>';
@@ -3609,6 +3630,35 @@ _RENDERERS['numbered_list'] = function(b) {
   var items = b.items || [];
   var style = b.style || 'large';
   var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
+  var theme = b.theme;
+  var dark = theme === 'dark';
+
+  // "cards" style — bordered card per item, ghost-number, tag pills, body
+  // text. Mirrors renderers/web_article.py's _render_numbered_list
+  // (added 2026-07-24 for stage-by-stage architecture breakdowns).
+  if (style === 'cards') {
+    var _t = _themeTokens(theme);
+    var textC = _t.text;
+    var dimC = _t.dim;
+    var bg = _t.surface;
+    var border = _t.border;
+    var numC = accent + '44';  // accent-tinted ghost number, reads on both grounds
+    var cardsHtml = items.map(function(item, i) {
+      var num = item.number || (i + 1);
+      var topBorder = i > 0 ? ('border-top:1px solid ' + border + ';') : '';
+      var tagsHtml = (item.tags || []).map(function(t) {
+        return '<span style="font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.05em;padding:2px 8px;border:1px solid ' + accent + '55;color:' + accent + ';border-radius:3px;margin-right:6px;">' + _esc(t) + '</span>';
+      }).join('');
+      return '<div style="display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;' + topBorder + '">'
+        + '<div style="grid-row:span 2;font-size:30px;font-weight:800;color:' + numC + ';line-height:1;">' + num + '</div>'
+        + '<div style="font-weight:700;font-size:15px;color:' + textC + ';display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + _esc(item.title || '') + tagsHtml + '</div>'
+        + '<div style="color:' + dimC + ';font-size:13.5px;line-height:1.55;">' + _markdownToHtml(item.text || '') + '</div>'
+        + '</div>';
+    }).join('');
+    var wrapperBg = (theme === 'dark' || theme === 'site') ? ('background:' + bg + ';border-radius:10px;padding:0 18px;') : '';
+    return '<div style="' + wrapperBg + '">' + cardsHtml + '</div>';
+  }
+
   var rowsHtml = items.map(function(item, i) {
     var num = i + 1;
     var numEl = style === 'large'
@@ -3632,22 +3682,47 @@ _RENDERERS['numbered_list'] = function(b) {
 _RENDERERS['page_header'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
   var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
-  var dark   = b.theme === 'dark';
-  var bg     = dark ? '#0f172a' : (b.background || 'linear-gradient(135deg,' + accent + '18 0%,#fff 60%)');
-  var tc     = dark ? '#f8fafc' : '#111827';
-  var sc     = dark ? '#94a3b8' : '#6b7280';
+  var theme  = b.theme;
+  var dark   = theme === 'dark';
+  var site   = theme === 'site';  // follow host page theme (see _themeTokens)
+  // `background` now honoured in dark mode too (2026-07-24 fix, mirrors
+  // web_article.py — used to be discarded unconditionally for #0f172a).
+  var _t = _themeTokens(theme);
+  var bg, tc, sc;
+  if (site) {
+    bg = b.background || _t.surface2; tc = _t.text; sc = _t.dim;
+  } else {
+    bg = b.background || (dark ? '#0f172a' : 'linear-gradient(135deg,' + accent + '18 0%,#fff 60%)');
+    tc = dark ? '#f8fafc' : '#111827';
+    sc = dark ? '#94a3b8' : '#6b7280';
+  }
+  // Condensed/blueprint treatment, opt-in (2026-07-24) — same rationale as
+  // subheading's condensed flag.
+  var titleFont = b.condensed ? "font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;text-transform:uppercase;letter-spacing:0.03em;" : '';
+  var tagFont = b.condensed ? "font-family:'Arial Narrow','Helvetica Neue Condensed',sans-serif;letter-spacing:0.08em;" : '';
+  var meta = b.meta || [];
+  var metaHtml = '';
+  if (meta.length) {
+    var borderC = site ? _t.border : (dark ? 'rgba(248,250,252,0.18)' : '#e5e7eb');
+    var cells = meta.map(function(m) {
+      return '<div style="padding:10px 20px 0 0;margin-right:20px;border-right:1px solid ' + borderC + ';">'
+        + '<b style="color:' + tc + ';font-weight:700;">' + _esc(m.label || '') + '</b> ' + _esc(m.value || '') + '</div>';
+    }).join('');
+    metaHtml = '<div style="display:flex;flex-wrap:wrap;border-top:1px solid ' + borderC + ';font-family:ui-monospace,monospace;font-size:12px;color:' + sc + ';letter-spacing:0.02em;margin-top:14px;">' + cells + '</div>';
+  }
   return '<style>' +
     '.ph-' + uid + '{padding:32px 28px 24px;margin:0 0 1.5rem;border-radius:14px;background:' + bg + ';border-bottom:3px solid ' + accent + ';}' +
     '.ph-icon-' + uid + '{font-size:36px;margin-bottom:10px;display:block;}' +
-    '.ph-title-' + uid + '{font-size:28px;font-weight:800;color:' + tc + ';line-height:1.2;margin-bottom:6px;}' +
+    '.ph-title-' + uid + '{font-size:28px;font-weight:800;color:' + tc + ';line-height:1.2;margin-bottom:6px;' + titleFont + '}' +
     '.ph-sub-' + uid + '{font-size:15px;color:' + sc + ';line-height:1.5;margin-bottom:10px;}' +
-    '.ph-tag-' + uid + '{display:inline-block;background:' + accent + ';color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;}' +
+    '.ph-tag-' + uid + '{display:inline-block;background:' + accent + ';color:#fff;border-radius:99px;padding:2px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;' + tagFont + '}' +
     '</style>' +
     '<div class="ph-' + uid + '">' +
     (b.icon ? '<span class="ph-icon-' + uid + '">' + _esc(b.icon) + '</span>' : '') +
     '<div class="ph-title-' + uid + '">' + _markdownToHtml(b.title || '') + '</div>' +
     (b.subtitle ? '<div class="ph-sub-' + uid + '">' + _markdownToHtml(b.subtitle) + '</div>' : '') +
     (b.tag ? '<span class="ph-tag-' + uid + '">' + _esc(b.tag) + '</span>' : '') +
+    metaHtml +
     '</div>';
 };
 
@@ -3901,13 +3976,32 @@ _RENDERERS['color_section'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
   var accent = b.accent || 'var(--a2ui-accent,#6366f1)';
   var style  = b.style || 'tint';
-  var bg = style === 'tint'  ? accent + '10'
-         : style === 'solid' ? accent
-         : style === 'dark'  ? '#0f172a'
-         : '#f8fafc';
-  var tc = (style === 'solid' || style === 'dark') ? '#fff' : '#111827';
+  var baseBg, tc;
+  if (style === 'site') {  // follow host page theme (see _themeTokens)
+    var _t = _themeTokens('site');
+    baseBg = _t.surface2; tc = _t.text;
+  } else {
+    baseBg = style === 'tint'  ? accent + '10'
+           : style === 'solid' ? accent
+           : style === 'dark'  ? '#0f172a'
+           : '#f8fafc';
+    tc = (style === 'solid' || style === 'dark') ? '#fff' : '#111827';
+  }
+  // Optional grid-paper texture — mirrors renderers/web_article.py's
+  // _render_color_section (added 2026-07-24, same rationale: a flat solid
+  // dark fill reads as an unstyled box, not a designed technical section).
+  var bg = baseBg;
+  if (b.grid) {
+    var gridLine = accent + ((style === 'light' || style === 'tint') ? '14' : '20');
+    bg = 'linear-gradient(' + gridLine + ' 1px, transparent 1px) 0 0 / 32px 32px, '
+       + 'linear-gradient(90deg, ' + gridLine + ' 1px, transparent 1px) 0 0 / 32px 32px, '
+       + baseBg;
+  }
   var inner = renderAtoms(b.blocks || []);
-  return '<div style="background:' + bg + ';border-radius:14px;padding:' + (b.padding || '24px') + ';margin:1.5rem 0;color:' + tc + ';">' + inner + '</div>';
+  // overflow:hidden: same margin-collapse fix as the Python renderer — a
+  // child's own top/bottom margin (or a bare heading's UA margin) can't
+  // leak the page background through this section without it.
+  return '<div style="background:' + bg + ';border-radius:14px;padding:' + (b.padding || '24px') + ';margin:1.5rem 0;color:' + tc + ';overflow:hidden;">' + inner + '</div>';
 };
 
 _RENDERERS['tag_cloud'] = function(b) {
