@@ -13342,18 +13342,29 @@ def _render_table(b: dict) -> str:
     headers = b.get('headers') or b.get('columns', [])
     rows = b.get('rows', [])
     caption = b.get('caption', '')
+    # Optional col_widths (2026-07-24): CSS width strings, one per column
+    # (e.g. ["46%","18%","18%","18%"]). Without it, table-layout:auto lets a
+    # long first-column label (e.g. "Buttons + server round-trip") pull in
+    # extra free space that a row of single-glyph ✅/❌ cells doesn't need.
+    # table-layout:fixed only takes effect once explicit widths are given.
+    col_widths = b.get('col_widths') or []
+    table_style = 'width:100%;border-collapse:collapse;'
+    if col_widths:
+        table_style += 'table-layout:fixed;'
+    def _w(i):
+        return f'width:{col_widths[i]};' if i < len(col_widths) else ''
     ths = ''.join(f'<th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;'
-                  f'text-transform:uppercase;color:#6b7280;background:#f9fafb;">{_esc(str(h))}</th>'
-                  for h in headers)
+                  f'text-transform:uppercase;color:#6b7280;background:#f9fafb;{_w(i)}">{_esc(str(h))}</th>'
+                  for i, h in enumerate(headers))
     body = ''
     for i, row in enumerate(rows):
         cells = row if isinstance(row, (list, tuple)) else [row.get(str(h), '') for h in headers]
-        tds = ''.join(f'<td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;">'
-                      f'{_md_inline(str(c))}</td>' for c in cells)
+        tds = ''.join(f'<td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;{_w(j)}">'
+                      f'{_md_inline(str(c))}</td>' for j, c in enumerate(cells))
         body += f'<tr style="background:{"#fff" if i%2==0 else "#f9fafb"};">{tds}</tr>'
     cap = f'<caption style="padding:8px;font-size:0.8rem;color:#9ca3af;text-align:left;">{_esc(caption)}</caption>' if caption else ''
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
-            f'<table style="width:100%;border-collapse:collapse;">{cap}'
+            f'<table style="{table_style}">{cap}'
             f'<thead><tr>{ths}</tr></thead><tbody>{body}</tbody></table></div>')
 
 _RENDERERS['table'] = _render_table
@@ -16722,8 +16733,17 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
         f'<label class="tm-tab-label" for="{group}_t{i}">{_esc(tab.get("label", "Tab"))}</label>'
         for i, tab in enumerate(tabs, 1)
     )
+    def _panel_style(tab):
+        # Optional per-tab max_width (2026-07-24): caps + centres THIS
+        # panel's content — applies at the tab level so it's consistent
+        # regardless of whether the tab's own content wraps itself in a
+        # color_section or not (a plain heading/body/table tab gets the
+        # same treatment as a color_section-wrapped one).
+        mw = tab.get("max_width")
+        return f' style="max-width:{mw};margin-left:auto;margin-right:auto;"' if mw else ""
+
     panels = "".join(
-        '<div class="tm-tab-panel">'
+        f'<div class="tm-tab-panel"{_panel_style(tab)}>'
         + "".join(_RENDERERS.get(bl.get("type", ""), _render_unknown)(bl) for bl in (tab.get("blocks") or []))
         + '</div>'
         for tab in tabs

@@ -46,7 +46,11 @@ _RENDERERS['content_tabs'] = function(b) {
     return '<label class="' + uid + 'l" for="' + uid + '_' + i + '">' + _esc(t.label || 'Tab ' + (i + 1)) + '</label>';
   }).join('');
   var panels = tabList.map(function(t) {
-    return '<div class="' + uid + 'p">' + renderAtoms(t.blocks || []) + '</div>';
+    // Optional per-tab max_width (2026-07-24): caps + centres THIS panel's
+    // content, applied at the tab level so it's consistent whether or not
+    // the tab's own content wraps itself in a color_section.
+    var style = t.max_width ? ' style="max-width:' + t.max_width + ';margin-left:auto;margin-right:auto;"' : '';
+    return '<div class="' + uid + 'p"' + style + '>' + renderAtoms(t.blocks || []) + '</div>';
   }).join('');
 
   return '<div style="margin:1.2rem 0;">' + css + inputs +

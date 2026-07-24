@@ -234,11 +234,18 @@ _RENDERERS['highlighted_text'] = function(b) {
 };
 
 _RENDERERS['table'] = function(b) {
-  var html = '<table>';
+  // Optional col_widths (2026-07-24, mirrors Python) — inline width per
+  // column so a long first-column label doesn't pull extra free space from
+  // single-glyph ✅/❌ cells; table-layout:fixed only takes effect once
+  // explicit widths are given.
+  var colWidths = b.col_widths || [];
+  var tableStyle = colWidths.length ? ' style="table-layout:fixed;width:100%;"' : '';
+  function w(i) { return (i < colWidths.length) ? (' style="width:' + colWidths[i] + ';"') : ''; }
+  var html = '<table' + tableStyle + '>';
   if (b.headers && b.headers.length) {
     html += '<thead><tr>';
     for (var i = 0; i < b.headers.length; i++) {
-      html += '<th>' + _esc(b.headers[i]) + '</th>';
+      html += '<th' + w(i) + '>' + _esc(b.headers[i]) + '</th>';
     }
     html += '</tr></thead>';
   }
@@ -247,7 +254,7 @@ _RENDERERS['table'] = function(b) {
     for (var r = 0; r < b.rows.length; r++) {
       html += '<tr>';
       for (var c = 0; c < b.rows[r].length; c++) {
-        html += '<td>' + _markdownToHtml(b.rows[r][c]) + '</td>';
+        html += '<td' + w(c) + '>' + _markdownToHtml(b.rows[r][c]) + '</td>';
       }
       html += '</tr>';
     }
