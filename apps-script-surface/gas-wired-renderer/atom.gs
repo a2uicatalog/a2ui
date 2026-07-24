@@ -3998,10 +3998,10 @@ _RENDERERS['color_section'] = function(b) {
        + baseBg;
   }
   var inner = renderAtoms(b.blocks || []);
-  // overflow:hidden: same margin-collapse fix as the Python renderer — a
-  // child's own top/bottom margin (or a bare heading's UA margin) can't
-  // leak the page background through this section without it.
-  return '<div style="background:' + bg + ';border-radius:14px;padding:' + (b.padding || '24px') + ';margin:1.5rem 0;color:' + tc + ';overflow:hidden;">' + inner + '</div>';
+  // overflow:hidden: same margin-collapse fix as the Python renderer.
+  // Optional max_width (2026-07-24): cap + centre the section.
+  var maxCss = b.max_width ? ('max-width:' + b.max_width + ';margin-left:auto;margin-right:auto;') : '';
+  return '<div style="background:' + bg + ';border-radius:14px;padding:' + (b.padding || '24px') + ';margin:1.5rem 0;color:' + tc + ';overflow:hidden;' + maxCss + '">' + inner + '</div>';
 };
 
 _RENDERERS['tag_cloud'] = function(b) {

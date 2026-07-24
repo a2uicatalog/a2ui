@@ -7237,6 +7237,9 @@
           "grid": {
             "type": "boolean"
           },
+          "max_width": {
+            "type": "string"
+          },
           "blocks": {
             "type": [
               "string",

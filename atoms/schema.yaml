@@ -5647,6 +5647,9 @@ blocks:
     grid: boolean (optional, default false, added 2026-07-24). Layers a
       faint 32px graph-paper grid (tinted by accent) on top of the base
       colour — for technical/blueprint-style sections.
+    max_width: string (optional, css length/%, added 2026-07-24). Caps and
+      centres the section (e.g. "90%") so a wide section doesn't run the full
+      column width; omitted → full width.
     blocks: array (required, atom blocks rendered inside)
   source:
     name: a2uicatalog

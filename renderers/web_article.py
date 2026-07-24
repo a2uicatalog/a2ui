@@ -1699,7 +1699,12 @@ def _render_color_section(b: dict) -> str:
     # collapse straight through this wrapper and leak the page's own
     # background into what should be a solid-colour section — bit us with
     # padding:"0" + a callout's own margin at the end of a dark section.
-    return f'<div style="background:{bg};border-radius:14px;padding:{padding};margin:1.5rem 0;color:{tc};overflow:hidden;">{inner}</div>'
+    # Optional max_width (2026-07-24): cap + centre the section (e.g. "90%")
+    # so a wide blueprint doesn't run the full column width when that reads
+    # as too far right; omitted → full width as before.
+    mw = b.get("max_width")
+    max_css = f"max-width:{mw};margin-left:auto;margin-right:auto;" if mw else ""
+    return f'<div style="background:{bg};border-radius:14px;padding:{padding};margin:1.5rem 0;color:{tc};overflow:hidden;{max_css}">{inner}</div>'
 
 
 def _render_tag_cloud(b: dict) -> str:

@@ -371,6 +371,7 @@
 | `live_clock` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `decision_tree` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `step_reveal_sequence` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `sequence_diagram` | ✅ | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `chat_sequence` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `chat_thread` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `tooltip_glossary` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
@@ -502,7 +503,7 @@
 | `theme_toggle` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `gdm_rocket_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `iso_fireworks_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
-| `content_tabs` | — | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `content_tabs` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `standings_table` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `match_schedule` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `math_block` | ✅ | — | — | ❌ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
