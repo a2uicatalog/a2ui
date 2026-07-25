@@ -16983,6 +16983,44 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     )
 _RENDERERS["primitive_plate"] = _render_primitive_plate
 
+def _scrollspy_script(ids: list) -> str:
+    """Registers this gallery's sub-item ids for the shared scrollspy, and
+    (once per page, guarded) sets up the IntersectionObserver that tracks
+    which one is in view and toggles .sg-active-link on every matching
+    #anchor on the page — nav sub-link AND any other link (e.g. a TL;DR
+    table row) pointing at the same id."""
+    ids_json = _json.dumps(ids)
+    return (
+        "<script>"
+        "(function(){"
+        f"window.__a2uiSpyIds = (window.__a2uiSpyIds || []).concat({ids_json});"
+        "if (window.__a2uiSpyInit) return;"
+        "window.__a2uiSpyInit = true;"
+        "document.addEventListener('DOMContentLoaded', function(){"
+        "  var ids = window.__a2uiSpyIds || [];"
+        "  var targets = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);"
+        "  if (!targets.length) return;"
+        "  var current = null;"
+        "  function setActive(id){"
+        "    if (id === current) return;"
+        "    current = id;"
+        "    document.querySelectorAll('.sg-active-link').forEach(function(el){ el.classList.remove('sg-active-link'); });"
+        "    if (!id) return;"
+        "    document.querySelectorAll('a[href=\"#' + id + '\"]').forEach(function(el){ el.classList.add('sg-active-link'); });"
+        "  }"
+        "  var io = new IntersectionObserver(function(entries){"
+        "    var visible = entries.filter(function(e){ return e.isIntersecting; });"
+        "    if (!visible.length) return;"
+        "    visible.sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });"
+        "    setActive(visible[0].target.id);"
+        "  }, {rootMargin: '-15% 0px -70% 0px', threshold: 0});"
+        "  targets.forEach(function(t){ io.observe(t); });"
+        "});"
+        "})();"
+        "</script>"
+    )
+
+
 def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
     """Sticky nested-nav rail + a vertical sequence of grouped sections —
     the 'scroll instead of tabs' sibling of content_tabs, for long
@@ -17000,6 +17038,7 @@ def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
 
     nav_items = []
     section_htmls = []
+    spy_ids = []
     for si, section in enumerate(sections):
         label = section.get("label", f"Section {si + 1}")
         blocks = section.get("blocks", [])
@@ -17014,6 +17053,7 @@ def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
                     blk["id"] = sub_anchor
                     blocks[bi] = blk
                 sub_links.append(f'<a class="sg-sub" href="#{sub_anchor}">{_esc(sub_title)}</a>')
+                spy_ids.append(sub_anchor)
         nav_items.append(
             f'<div class="sg-navsection">'
             f'<a class="sg-navhead" href="#{sec_anchor}"><span class="sg-navnum">{si + 1:02d}</span>{_esc(label)}</a>'
@@ -17048,9 +17088,17 @@ def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
         '@media (max-width:860px){.sg-layout{grid-template-columns:1fr;}'
         '.sg-nav{position:static;flex-direction:row;flex-wrap:wrap;border-right:none;'
         'border-bottom:1px solid var(--border,#e0e0e0);padding:0 0 14px;max-height:none;}}'
+        # Scrollspy result: ANY anchor elsewhere on the page pointing at the
+        # in-view primitive (the TL;DR table's own #card/#text/... links,
+        # not just this nav) gets highlighted — a table row lights up via
+        # :has() rather than needing the table atom to know about the spy.
+        '.sg-sub.sg-active-link{color:var(--accent,#1a73e8);font-weight:700;}'
+        'a.sg-active-link{color:var(--accent,#1a73e8);font-weight:700;}'
+        'tr:has(a.sg-active-link){background:var(--surface-2,#f8f9fa);}'
         '</style>'
         f'<div class="sg-layout"><nav class="sg-nav">{"".join(nav_items)}</nav>'
         f'<main>{"".join(section_htmls)}</main></div>'
+        f'{_scrollspy_script(spy_ids)}'
     )
 _RENDERERS["scroll_gallery"] = _render_scroll_gallery
 
