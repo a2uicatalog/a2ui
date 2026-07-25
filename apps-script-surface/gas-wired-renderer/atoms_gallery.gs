@@ -312,8 +312,8 @@ _RENDERERS['scroll_gallery'] = function(b) {
 
   return '<style>' +
     '.sg-layout{display:flex;gap:36px;align-items:flex-start;margin:1.4rem auto;max-width:90%;}' +
-    '.sg-nav{flex:0 0 190px;position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;' +
-    'border-right:1px solid var(--border,#e0e0e0);padding-right:18px;max-height:calc(100vh - 48px);overflow-y:auto;}' +
+    '.sg-nav{flex:0 0 190px;position:sticky;top:70px;display:flex;flex-direction:column;gap:14px;' +
+    'border-right:1px solid var(--border,#e0e0e0);padding-right:18px;max-height:calc(100vh - 94px);overflow-y:auto;}' +
     '.sg-navsection{display:flex;flex-direction:column;gap:2px;}' +
     '.sg-navhead{display:flex;align-items:baseline;gap:8px;color:var(--text,#1f2328);' +
     'text-decoration:none;font-weight:600;font-size:.86rem;padding:4px 0;}' +
