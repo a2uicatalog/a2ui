@@ -11468,6 +11468,12 @@ blocks:
     kind: string (optional). Small tag under the title, e.g. "container".
     caption: string (optional). One-line prose under the title.
     width: integer (optional, default 460). Display width in px of the capture image.
+    chat_equivalent: object (optional). Whether Google Chat Cards v2 has an
+      equivalent for this primitive — renders as a small badge (real Chat
+      logo + a check/tilde/cross) next to the kind tag. Two sub-fields -
+      status ("yes", "partial", or "no") and an optional note shown as a
+      hover tooltip (the specific reason/caveat, e.g. "Cards v2 has no
+      slider widget").
     states:
     - label: string (optional). Toggle-chip label; only shown when states.length > 1.
       image: string. URL or data-URI of the real capture.

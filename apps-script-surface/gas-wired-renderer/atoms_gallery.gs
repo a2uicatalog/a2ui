@@ -23,6 +23,16 @@ var _PP_CSS = '<style>' +
   '.pp-kind{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.68rem;' +
   'letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2,var(--accent,#1a73e8));' +
   'border:1px solid var(--accent-2,var(--accent,#1a73e8));border-radius:3px;padding:2px 8px;}' +
+  '.pp-chat{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;' +
+  'border-radius:999px;padding:3px 10px 3px 8px;cursor:help;}' +
+  '.pp-chat img{display:block;flex:0 0 auto;}' +
+  '.pp-chat-yes{color:#1a7f37;background:#dafbe1;}' +
+  '.pp-chat-partial{color:#9a6700;background:#fff3c4;}' +
+  '.pp-chat-no{color:var(--text-muted,#5f6368);background:var(--surface,#f1f3f5);}' +
+  ':root[data-theme="dark"] .pp-chat-yes{color:#7ee2a8;background:#0d2818;}' +
+  ':root[data-theme="dark"] .pp-chat-partial{color:#e3b341;background:#2b2111;}' +
+  '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}' +
+  ':root:not([data-theme="light"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}' +
   '.pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}' +
   '.pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}' +
   '.pp-toggles input{display:none;}' +
@@ -203,9 +213,20 @@ _RENDERERS['primitive_plate'] = function(b) {
   var captionHtml = caption ? '<p class="pp-caption">' + _markdownToHtml(caption) + '</p>' : '';
   var kindHtml = kind ? '<span class="pp-kind">' + kind + '</span>' : '';
 
+  var chatHtml = '';
+  if (b.chat_equivalent) {
+    var status = b.chat_equivalent.status || 'no';
+    var icon = ({yes: '✓', partial: '~', no: '✗'})[status] || '?';
+    var note = _esc(b.chat_equivalent.note || '');
+    var titleAttr = note ? ' title="' + note + '"' : '';
+    var chatLogoSrc = _WL_BASE + _WORKSPACE_LOGOS_2026['chat'];
+    var chatLogo = '<img src="' + chatLogoSrc + '" width="14" height="14" alt="Chat" style="display:block;object-fit:contain;">';
+    chatHtml = '<span class="pp-chat pp-chat-' + status + '"' + titleAttr + '>' + chatLogo + ' Chat Cards v2 ' + icon + '</span>';
+  }
+
   return _PP_CSS + _PP_JS +
     '<div class="pp-wrap" id="' + _esc(b.id || uid) + '">' +
-    '<div class="pp-head"><h4>' + title + '</h4>' + kindHtml + '</div>' +
+    '<div class="pp-head"><h4>' + title + '</h4>' + kindHtml + chatHtml + '</div>' +
     captionHtml + togglesHtml + statesHtml +
     '</div>';
 };

@@ -16778,6 +16778,16 @@ _PLATE_CSS = """
 .pp-kind{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.68rem;
   letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2,var(--accent,#1a73e8));
   border:1px solid var(--accent-2,var(--accent,#1a73e8));border-radius:3px;padding:2px 8px;}
+.pp-chat{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;
+  border-radius:999px;padding:3px 10px 3px 8px;cursor:help;}
+.pp-chat img{display:block;flex:0 0 auto;}
+.pp-chat-yes{color:#1a7f37;background:#dafbe1;}
+.pp-chat-partial{color:#9a6700;background:#fff3c4;}
+.pp-chat-no{color:var(--text-muted,#5f6368);background:var(--surface,#f1f3f5);}
+:root[data-theme="dark"] .pp-chat-yes{color:#7ee2a8;background:#0d2818;}
+:root[data-theme="dark"] .pp-chat-partial{color:#e3b341;background:#2b2111;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-chat-yes{color:#7ee2a8;background:#0d2818;}
+:root:not([data-theme="light"]) .pp-chat-partial{color:#e3b341;background:#2b2111;}}
 .pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}
 .pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .pp-toggles input{display:none;}
@@ -16974,10 +16984,21 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     caption_html = f'<p class="pp-caption">{_md_inline(caption)}</p>' if caption else ""
     kind_html = f'<span class="pp-kind">{kind}</span>' if kind else ""
 
+    chat_eq = b.get("chat_equivalent")
+    chat_html = ""
+    if chat_eq:
+        status = chat_eq.get("status", "no")
+        icon = {"yes": "✓", "partial": "~", "no": "✗"}.get(status, "?")
+        cls = f"pp-chat-{status}"
+        note = _esc(chat_eq.get("note", ""))
+        title_attr = f' title="{note}"' if note else ""
+        chat_logo = _ws_badge("chat", 14)
+        chat_html = f'<span class="pp-chat {cls}"{title_attr}>{chat_logo} Chat Cards v2 {icon}</span>'
+
     return (
         f'{_PLATE_CSS}{_PLATE_JS}'
         f'<div class="pp-wrap" id="{_esc(b.get("id", uid))}">'
-        f'<div class="pp-head"><h4>{title}</h4>{kind_html}</div>'
+        f'<div class="pp-head"><h4>{title}</h4>{kind_html}{chat_html}</div>'
         f'{caption_html}{toggles_html}{states_html}'
         f'</div>'
     )
