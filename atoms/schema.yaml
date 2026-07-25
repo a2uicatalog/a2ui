@@ -11474,6 +11474,12 @@ blocks:
       status ("yes", "partial", or "no") and an optional note shown as a
       hover tooltip (the specific reason/caveat, e.g. "Cards v2 has no
       slider widget").
+    repo_url: string (optional — but INCLUDE the key even when blank).
+      Renders a small "GitHub ↗" pill at the right edge of the head row.
+      An empty string renders it as a greyed-out, unclickable placeholder
+      (tooltip "Repo not yet public") — for a demo whose source isn't
+      public yet but deserves the visual slot reserved for when it is.
+      Omitting the field entirely (vs an empty string) hides the pill.
     states:
     - label: string (optional). Toggle-chip label; only shown when states.length > 1.
       alt: string (optional). Image alt text override — default is

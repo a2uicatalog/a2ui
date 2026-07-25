@@ -61,6 +61,12 @@ var _PP_CSS = '<style>' +
   ':root[data-theme="dark"] .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}' +
   '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}' +
   ':root:not([data-theme="light"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}' +
+  '.pp-repo{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--text-muted,#5f6368);' +
+  'text-decoration:none;border:1px solid var(--border,#e0e0e0);border-radius:999px;padding:2px 10px;' +
+  'margin-left:auto;}' +
+  '.pp-repo:hover{color:var(--accent,#1a73e8);border-color:var(--accent,#1a73e8);}' +
+  '.pp-repo-placeholder{opacity:.55;cursor:not-allowed;}' +
+  '.pp-repo-placeholder:hover{color:var(--text-muted,#5f6368);border-color:var(--border,#e0e0e0);}' +
   '.pp-gap{flex:0 0 64px;position:relative;}' +
   '.pp-gap svg{position:absolute;top:0;left:0;}' +
   '.pp-labels{flex:1 1 auto;position:relative;min-width:240px;}' +
@@ -247,9 +253,20 @@ _RENDERERS['primitive_plate'] = function(b) {
     chatHtml = '<span class="pp-chat pp-chat-' + status + '"' + titleAttr + '>' + chatLogo + ' Chat Cards v2 ' + icon + '</span>';
   }
 
+  var repoHtml = '';
+  if (b.repo_url !== undefined) {
+    var repoUrl = b.repo_url || '';
+    var placeholder = !repoUrl;
+    var href = repoUrl || '#';
+    var placeholderCls = placeholder ? ' pp-repo-placeholder' : '';
+    var repoTitleAttr = placeholder ? ' title="Repo not yet public"' : '';
+    repoHtml = '<a class="pp-repo' + placeholderCls + '" href="' + _esc(href) +
+      '" target="_blank" rel="noopener noreferrer"' + repoTitleAttr + '>GitHub ↗</a>';
+  }
+
   return _PP_CSS + _PP_JS +
     '<div class="pp-wrap" id="' + _esc(b.id || uid) + '">' +
-    '<div class="pp-head"><h4>' + title + '</h4>' + kindHtml + chatHtml + '</div>' +
+    '<div class="pp-head"><h4>' + title + '</h4>' + kindHtml + chatHtml + repoHtml + '</div>' +
     captionHtml + togglesHtml + statesHtml +
     '</div>';
 };

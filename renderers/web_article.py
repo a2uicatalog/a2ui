@@ -16816,6 +16816,12 @@ _PLATE_CSS = """
 :root[data-theme="dark"] .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}
 :root:not([data-theme="light"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}
+.pp-repo{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--text-muted,#5f6368);
+  text-decoration:none;border:1px solid var(--border,#e0e0e0);border-radius:999px;padding:2px 10px;
+  margin-left:auto;}
+.pp-repo:hover{color:var(--accent,#1a73e8);border-color:var(--accent,#1a73e8);}
+.pp-repo-placeholder{opacity:.55;cursor:not-allowed;}
+.pp-repo-placeholder:hover{color:var(--text-muted,#5f6368);border-color:var(--border,#e0e0e0);}
 .pp-gap{flex:0 0 64px;position:relative;}
 .pp-gap svg{position:absolute;top:0;left:0;}
 .pp-labels{flex:1 1 auto;position:relative;min-width:240px;}
@@ -17025,10 +17031,19 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
         chat_logo = _ws_badge("chat", 14)
         chat_html = f'<span class="pp-chat {cls}"{title_attr}>{chat_logo} Chat Cards v2 {icon}</span>'
 
+    repo_html = ""
+    if "repo_url" in b:
+        repo_url = b.get("repo_url") or ""
+        placeholder = not repo_url
+        href = repo_url if repo_url else "#"
+        placeholder_cls = " pp-repo-placeholder" if placeholder else ""
+        title_attr = ' title="Repo not yet public"' if placeholder else ""
+        repo_html = f'<a class="pp-repo{placeholder_cls}" href="{_esc(href)}" target="_blank" rel="noopener noreferrer"{title_attr}>GitHub ↗</a>'
+
     return (
         f'{_PLATE_CSS}{_PLATE_JS}'
         f'<div class="pp-wrap" id="{_esc(b.get("id", uid))}">'
-        f'<div class="pp-head"><h4>{title}</h4>{kind_html}{chat_html}</div>'
+        f'<div class="pp-head"><h4>{title}</h4>{kind_html}{chat_html}{repo_html}</div>'
         f'{caption_html}{toggles_html}{states_html}'
         f'</div>'
     )
