@@ -58,8 +58,8 @@ var _PP_CSS = '<style>' +
   '.pp-label .pp-num{font-family:ui-monospace,monospace;color:var(--accent,#1a73e8);font-weight:700;' +
   'font-size:.72rem;margin-right:6px;}' +
   '.pp-label .pp-field{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--accent-2,var(--accent,#1a73e8));' +
-  'display:block;letter-spacing:.02em;margin-bottom:2px;}' +
-  '.pp-label .pp-note{font-size:.86rem;color:var(--text,#1f2328);display:block;line-height:1.35;}' +
+  'display:block;letter-spacing:.02em;margin-bottom:2px;overflow-wrap:anywhere;}' +
+  '.pp-label .pp-note{font-size:.86rem;color:var(--text,#1f2328);display:block;line-height:1.35;overflow-wrap:anywhere;}' +
   '.pp-label .pp-note.pp-chrome{color:var(--text-muted,#5f6368);font-style:italic;}' +
   '@media (max-width:860px){' +
   '.pp-plate{flex-direction:column;}' +
