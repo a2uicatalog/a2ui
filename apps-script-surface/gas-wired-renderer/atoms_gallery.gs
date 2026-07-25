@@ -50,6 +50,17 @@ var _PP_CSS = '<style>' +
   'background:var(--surface,#fff);border:1.4px solid var(--accent,#1a73e8);color:var(--accent,#1a73e8);' +
   'font-family:ui-monospace,monospace;font-size:.66rem;font-weight:700;display:flex;' +
   'align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.25);}' +
+  '.pp-pin-advance{width:30px;height:30px;background:var(--accent,#1a73e8);color:var(--surface,#fff);' +
+  'cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .15s;}' +
+  '.pp-pin-advance:hover{transform:translate(-50%,-50%) scale(1.12);}' +
+  '.pp-badge{font-family:ui-monospace,monospace;font-size:.6rem;font-weight:700;letter-spacing:.02em;' +
+  'border-radius:999px;padding:1px 7px;margin-left:6px;text-transform:uppercase;vertical-align:middle;}' +
+  '.pp-badge-round-trip{color:#9a3412;background:#ffedd5;}' +
+  '.pp-badge-client-only{color:#1a7f37;background:#dafbe1;}' +
+  ':root[data-theme="dark"] .pp-badge-round-trip{color:#fdba74;background:#431407;}' +
+  ':root[data-theme="dark"] .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}' +
+  '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}' +
+  ':root:not([data-theme="light"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}' +
   '.pp-gap{flex:0 0 64px;position:relative;}' +
   '.pp-gap svg{position:absolute;top:0;left:0;}' +
   '.pp-labels{flex:1 1 auto;position:relative;min-width:240px;}' +
@@ -169,23 +180,31 @@ _RENDERERS['primitive_plate'] = function(b) {
         '" stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>';
     }).join('');
     var markers = pins.map(function(p, i) {
-      return '<div class="pp-pin" style="top:' + (p.y || 0) + '%;left:' + (p.x || 0) + '%;">' +
-        _ppRoman(i + 1) + '</div>';
+      var advance = p.advance && (idx + 1 < states.length);
+      var advCls = advance ? ' pp-pin-advance' : '';
+      var advAttr = advance ?
+        (' role="button" tabindex="0" onclick="var r=document.getElementById(\'' + uid + '_t' + (idx + 1) + '\');' +
+         'if(r){r.checked=true;r.dispatchEvent(new Event(\'change\',{bubbles:true}));}"') : '';
+      return '<div class="pp-pin' + advCls + '" style="top:' + (p.y || 0) + '%;left:' + (p.x || 0) + '%;"' +
+        advAttr + '>' + _ppRoman(i + 1) + '</div>';
     }).join('');
     var labelDivs = pins.map(function(p, i) {
       var chromeCls = p.chrome ? ' pp-chrome' : '';
       var field = _esc(p.field || '');
       var note = _markdownToHtml(p.note || '');
-      return '<div class="pp-label"><span class="pp-field">' + field + '</span>' +
+      var badgeHtml = p.badge ? ('<span class="pp-badge pp-badge-' + _esc(p.badge) + '">' +
+        _esc(String(p.badge).replace(/-/g, ' ')) + '</span>') : '';
+      return '<div class="pp-label"><span class="pp-field">' + field + badgeHtml + '</span>' +
         '<span class="pp-note' + chromeCls + '"><span class="pp-num">' + _ppRoman(i + 1) + '.</span> ' +
         note + '</span></div>';
     }).join('');
     var display = (idx === 0) ? 'display:block;' : 'display:none;';
+    var altText = state.alt ? _esc(state.alt) : (title + ' primitive rendering in Gemini Enterprise');
     return '<div class="pp-state' + (idx === 0 ? ' active' : '') + '" data-state="' + uid + '_' + idx +
       '" style="' + display + '">' +
       '<div class="pp-plate">' +
       '<div class="pp-imgwrap" style="width:' + width + 'px;">' +
-      '<img src="' + img + '" alt="' + title + ' primitive rendering in Gemini Enterprise">' +
+      '<img src="' + img + '" alt="' + altText + '">' +
       '<svg viewBox="0 0 100 100" preserveAspectRatio="none">' + lines + '</svg>' +
       markers +
       '</div>' +
@@ -197,16 +216,20 @@ _RENDERERS['primitive_plate'] = function(b) {
 
   var togglesHtml = '';
   if (states.length > 1) {
-    var inputs = states.map(function(s, i) {
+    // input+label MUST be adjacent siblings, in that order -- the CSS
+    // ".pp-toggles input:checked + label" rule is an adjacent-sibling
+    // selector; grouping all inputs then all labels made it match
+    // "whichever label follows ANY checked input" (always the label
+    // right after the LAST input) instead of its own input (real bug,
+    // found 2026-07-25 alongside the Python fix -- keep in parity).
+    var pairs = states.map(function(s, i) {
       return '<input type="radio" name="' + uid + '_toggle" id="' + uid + '_t' + i + '"' +
         (i === 0 ? ' checked' : '') + ' ' +
         'onchange="document.querySelectorAll(\'[data-state^=\\\'' + uid + '_\\\']\').forEach(function(el){' +
-        'el.style.display = (el.dataset.state === \'' + uid + '_' + i + '\') ? \'block\' : \'none\';});">';
+        'el.style.display = (el.dataset.state === \'' + uid + '_' + i + '\') ? \'block\' : \'none\';});">' +
+        '<label for="' + uid + '_t' + i + '">' + _esc(s.label || ('State ' + (i + 1))) + '</label>';
     }).join('');
-    var toggleLabels = states.map(function(s, i) {
-      return '<label for="' + uid + '_t' + i + '">' + _esc(s.label || ('State ' + (i + 1))) + '</label>';
-    }).join('');
-    togglesHtml = '<div class="pp-toggles">' + inputs + toggleLabels + '</div>';
+    togglesHtml = '<div class="pp-toggles">' + pairs + '</div>';
   }
 
   var statesHtml = states.map(function(s, i) { return stateBody(s, i); }).join('');

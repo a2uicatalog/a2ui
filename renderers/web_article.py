@@ -16805,6 +16805,17 @@ _PLATE_CSS = """
   background:var(--surface,#fff);border:1.4px solid var(--accent,#1a73e8);color:var(--accent,#1a73e8);
   font-family:ui-monospace,monospace;font-size:.66rem;font-weight:700;display:flex;
   align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+.pp-pin-advance{width:30px;height:30px;background:var(--accent,#1a73e8);color:var(--surface,#fff);
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .15s;}
+.pp-pin-advance:hover{transform:translate(-50%,-50%) scale(1.12);}
+.pp-badge{font-family:ui-monospace,monospace;font-size:.6rem;font-weight:700;letter-spacing:.02em;
+  border-radius:999px;padding:1px 7px;margin-left:6px;text-transform:uppercase;vertical-align:middle;}
+.pp-badge-round-trip{color:#9a3412;background:#ffedd5;}
+.pp-badge-client-only{color:#1a7f37;background:#dafbe1;}
+:root[data-theme="dark"] .pp-badge-round-trip{color:#fdba74;background:#431407;}
+:root[data-theme="dark"] .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-badge-round-trip{color:#fdba74;background:#431407;}
+:root:not([data-theme="light"]) .pp-badge-client-only{color:#7ee2a8;background:#0d2818;}}
 .pp-gap{flex:0 0 64px;position:relative;}
 .pp-gap svg{position:absolute;top:0;left:0;}
 .pp-labels{flex:1 1 auto;position:relative;min-width:240px;}
@@ -16928,6 +16939,8 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     if not states:
         return ""
 
+    n_states = len(states)
+
     def _state_body(state, idx):
         pins = state.get("pins") or []
         img = state.get("image", "")
@@ -16936,17 +16949,30 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
             for p in pins
         )
-        markers = "".join(
-            f'<div class="pp-pin" style="top:{p.get("y", 0)}%;left:{p.get("x", 0)}%;">{_roman(i + 1)}</div>'
-            for i, p in enumerate(pins)
-        )
+        markers = []
+        for i, p in enumerate(pins):
+            advance = p.get("advance") and idx + 1 < n_states
+            adv_cls = " pp-pin-advance" if advance else ""
+            adv_attr = (
+                f' role="button" tabindex="0" '
+                f'onclick="var r=document.getElementById(\'{uid}_t{idx + 1}\');'
+                f'if(r){{r.checked=true;r.dispatchEvent(new Event(\'change\',{{bubbles:true}}));}}"'
+                if advance else ""
+            )
+            markers.append(
+                f'<div class="pp-pin{adv_cls}" style="top:{p.get("y", 0)}%;left:{p.get("x", 0)}%;"{adv_attr}>'
+                f'{_roman(i + 1)}</div>'
+            )
+        markers = "".join(markers)
         label_divs = []
         for i, p in enumerate(pins):
             chrome_cls = " pp-chrome" if p.get("chrome") else ""
             field = _esc(p.get("field", ""))
             note = _md_inline(p.get("note", ""))
+            badge = p.get("badge")
+            badge_html = f'<span class="pp-badge pp-badge-{_esc(badge)}">{_esc(badge.replace("-", " "))}</span>' if badge else ""
             label_divs.append(
-                f'<div class="pp-label"><span class="pp-field">{field}</span>'
+                f'<div class="pp-label"><span class="pp-field">{field}{badge_html}</span>'
                 f'<span class="pp-note{chrome_cls}"><span class="pp-num">{_roman(i + 1)}.</span> {note}</span></div>'
             )
         active = " active" if idx == 0 else ""
@@ -16955,7 +16981,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             f'<div class="pp-state{active}" data-state="{uid}_{idx}" style="{display}">'
             f'<div class="pp-plate">'
             f'<div class="pp-imgwrap" style="width:{width}px;">'
-            f'<img src="{img}" alt="{title} primitive rendering in Gemini Enterprise">'
+            f'<img src="{img}" alt="{_esc(state["alt"]) if state.get("alt") else f"{title} primitive rendering in Gemini Enterprise"}">'
             f'<svg viewBox="0 0 100 100" preserveAspectRatio="none">{lines}</svg>'
             f'{markers}'
             f'</div>'
@@ -16967,18 +16993,22 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
 
     toggles_html = ""
     if len(states) > 1:
-        inputs = "".join(
+        # input+label MUST be adjacent siblings, in that order — the CSS
+        # ".pp-toggles input:checked + label" rule is an adjacent-sibling
+        # selector; grouping all inputs then all labels (the previous
+        # structure) made it match "whichever label follows ANY checked
+        # input", i.e. always the label right after the LAST input,
+        # regardless of which one was actually checked (real bug, found
+        # 2026-07-25 while adding click-to-advance pins).
+        pairs = "".join(
             f'<input type="radio" name="{uid}_toggle" id="{uid}_t{i}"'
             f'{" checked" if i == 0 else ""} '
             f'onchange="document.querySelectorAll(\'[data-state^=\\\'{uid}_\\\']\').forEach(function(el){{'
             f'el.style.display = (el.dataset.state === \'{uid}_{i}\') ? \'block\' : \'none\';}});">'
-            for i, s in enumerate(states)
-        )
-        labels = "".join(
             f'<label for="{uid}_t{i}">{_esc(s.get("label", f"State {i+1}"))}</label>'
             for i, s in enumerate(states)
         )
-        toggles_html = f'<div class="pp-toggles">{inputs}{labels}</div>'
+        toggles_html = f'<div class="pp-toggles">{pairs}</div>'
 
     states_html = "".join(_state_body(s, i) for i, s in enumerate(states))
     caption_html = f'<p class="pp-caption">{_md_inline(caption)}</p>' if caption else ""

@@ -11476,6 +11476,10 @@ blocks:
       slider widget").
     states:
     - label: string (optional). Toggle-chip label; only shown when states.length > 1.
+      alt: string (optional). Image alt text override — default is
+        "<title> primitive rendering in Gemini Enterprise", not
+        appropriate for a non-primitive capture (e.g. an app screenshot
+        in a click-through tour).
       image: string. URL or data-URI of the real capture.
       pins:
       - x: number. 0-100, percent across the image.
@@ -11483,6 +11487,18 @@ blocks:
         field: string (optional). The technical/schema-fact line, monospace.
         note: string. The plain-language gloss, markdown-lite.
         chrome: boolean (optional). Marks a pin as host-chrome (not payload content) — renders muted/italic.
+        advance: boolean (optional). Makes this pin ALSO a "next step"
+          control — renders larger/filled/clickable, and clicking it
+          switches to states[this index + 1] (the same toggle-chip
+          mechanism, triggered programmatically). No-op on the last
+          state (nothing to advance to) — degrades to a plain info pin.
+          Turns a multi-state plate into a click-through tour — one pin
+          per screen is the thing a real user would actually click next.
+        badge: string (optional, e.g. "round-trip" or "client-only").
+          Small pill shown next to the field text — for a tour, marks
+          whether this step's action is a genuine server round-trip or
+          purely client-side (a real, easy-to-lose distinction in a
+          click-through demo).
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
