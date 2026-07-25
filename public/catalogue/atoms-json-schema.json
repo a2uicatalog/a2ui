@@ -476,6 +476,9 @@
                 "type": "string"
               }
             }
+          },
+          "col_widths": {
+            "type": "string"
           }
         },
         "required": [

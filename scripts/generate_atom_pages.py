@@ -127,6 +127,21 @@ _EXAMPLE_BLOCKS = {
                 {"label": "Round 1", "matches": [{"court": "Court 1", "team_a": ["P1", "P4"], "team_b": ["P2", "P3"]}]}]}]},
         {"label": "8 Players", "blocks": [
             {"type": "body", "text": "Two courts, seven rounds — a full partner rotation."}]}]},
+    "primitive_plate": {"type": "primitive_plate", "id": "example-plate", "title": "Card", "kind": "container",
+        "caption": "A styled shell around exactly one child.", "width": 420,
+        "states": [{"label": "Default", "image": "https://a2uicatalog.ai/gallery/ge-primitives/card.png",
+            "pins": [
+                {"x": 50, "y": 30, "field": "Card -> children: [1]", "note": "Rounded fill is client styling, not payload-declared."},
+                {"x": 14, "y": 90, "field": "", "note": "Thumbs/copy/more is host chrome.", "chrome": True}]}]},
+    "scroll_gallery": {"type": "scroll_gallery", "sections": [
+        {"label": "Containers", "blocks": [
+            {"type": "primitive_plate", "title": "Card", "kind": "container", "width": 380,
+             "states": [{"image": "https://a2uicatalog.ai/gallery/ge-primitives/card.png",
+                 "pins": [{"x": 50, "y": 30, "field": "children: [1]", "note": "Exactly one child."}]}]}]},
+        {"label": "Actions", "blocks": [
+            {"type": "primitive_plate", "title": "Button", "kind": "action", "width": 380,
+             "states": [{"image": "https://a2uicatalog.ai/gallery/ge-primitives/button.png",
+                 "pins": [{"x": 14, "y": 65, "field": "userAction", "note": "Real round-trip dispatch."}]}]}]}]},
     "standings_table": {"type": "standings_table", "primary_label": "PTS",
         "columns": ["Won", "Lost", "+/-"],
         "rows": [

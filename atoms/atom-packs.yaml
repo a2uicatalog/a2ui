@@ -545,3 +545,7 @@ a2ui-presentation-v1:
 a2ui-competition-v1:
 - match_schedule
 - standings_table
+
+a2ui-gallery-v1:
+- primitive_plate
+- scroll_gallery

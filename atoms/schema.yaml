@@ -11436,6 +11436,87 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: primitive_plate
+  stage: preview
+  description: 'A real UI capture, pin-annotated — each pin is a declarative
+    {x, y, field, note} coordinate (0-100, percent of the image), never a
+    hand-drawn illustration. Renders a small measured-layout script that
+    positions the glossing labels against the ACTUAL rendered pin positions
+    (avoids the label-collision bug of hand-guessed percentages) and draws
+    an elbow leader line from each pin to its label. Multiple `states`
+    render as CSS-only toggle chips (radio-input idiom, like content_tabs)
+    switching between a before/after or variant capture of the same subject;
+    a single state renders no toggle UI at all.'
+  compact_description: pin-annotated real UI capture with glossing labels
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on: null
+    incompatible_on:
+    - surface: google-chat
+      reason: needs inline <script> for pin/label layout — not supported
+    - surface: email
+      reason: needs inline <script> for pin/label layout — not supported
+    - surface: pdf
+      reason: static medium, no script execution — use a pre-rendered image instead
+  fields:
+    id: string (optional). Anchor id, e.g. for scroll_gallery's nav links.
+    title: string. The primitive/subject name.
+    kind: string (optional). Small tag under the title, e.g. "container".
+    caption: string (optional). One-line prose under the title.
+    width: integer (optional, default 460). Display width in px of the capture image.
+    states:
+    - label: string (optional). Toggle-chip label; only shown when states.length > 1.
+      image: string. URL or data-URI of the real capture.
+      pins:
+      - x: number. 0-100, percent across the image.
+        y: number. 0-100, percent down the image.
+        field: string (optional). The technical/schema-fact line, monospace.
+        note: string. The plain-language gloss, markdown-lite.
+        chrome: boolean (optional). Marks a pin as host-chrome (not payload content) — renders muted/italic.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: scroll_gallery
+  stage: preview
+  description: 'Sticky nested-nav rail + a vertical sequence of grouped
+    sections — the "scroll instead of tabs" sibling of content_tabs, for
+    long reference galleries (e.g. a primitive-by-primitive field guide)
+    where a reader browses continuously rather than switches panels. The
+    nav itself is plain anchor links (no JS required); sections commonly
+    hold primitive_plate blocks but accept any atom.'
+  compact_description: sticky-nav grouped-section scrolling gallery
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on: null
+    incompatible_on:
+    - surface: google-chat
+      reason: sticky nav + nested content not supported — use sequential sections
+    - surface: email
+      reason: sticky positioning not supported in email — use sequential sections
+    - surface: pdf
+      reason: static medium — flatten to sequential sections instead
+  children:
+    sections:
+      shape: wrapper_list
+      inner_path: blocks
+  fields:
+    sections:
+    - label: string. Section heading, also shown in the nav rail (numbered 01, 02, ...).
+      blocks: array of atom blocks. Sub-items with a `title` or `label` field
+        get their own nav sub-link and anchor id automatically.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: standings_table
   stage: preview
   description: 'Ranked competition/league standings table — rank, name, optional

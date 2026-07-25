@@ -16760,6 +16760,300 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
     )
 _RENDERERS["content_tabs"] = _render_content_tabs
 
+_ROMAN_NUMERALS = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x",
+                   "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx"]
+
+def _roman(n: int) -> str:
+    return _ROMAN_NUMERALS[n - 1] if 1 <= n <= len(_ROMAN_NUMERALS) else str(n)
+
+_PLATE_CSS = """
+<style>
+/* Follows the HOST page's own theme tokens (--text/--surface/--accent/...,
+   the indigo-277/cyan-202 pair) rather than a standalone palette — the
+   parchment/codex look this atom started from read as a beige island next
+   to the rest of the site (design feedback, 2026-07-25). */
+.pp-wrap{margin:1.4rem 0;}
+.pp-head{display:flex;align-items:baseline;gap:14px;margin-bottom:4px;flex-wrap:wrap;}
+.pp-head h4{font-size:1.4rem;font-weight:700;margin:0;color:var(--text,#1f2328);}
+.pp-kind{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.68rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2,var(--accent,#1a73e8));
+  border:1px solid var(--accent-2,var(--accent,#1a73e8));border-radius:3px;padding:2px 8px;}
+.pp-caption{color:var(--text-muted,#5f6368);max-width:64ch;margin:6px 0 18px;font-size:.94rem;}
+.pp-toggles{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.pp-toggles input{display:none;}
+.pp-toggles label{font-family:ui-monospace,monospace;font-size:.72rem;padding:6px 14px;
+  border:1px solid var(--border,#e0e0e0);border-radius:999px;cursor:pointer;color:var(--text-muted,#5f6368);
+  transition:all .15s;}
+.pp-toggles input:checked + label{color:var(--accent,#1a73e8);border-color:var(--accent,#1a73e8);font-weight:600;}
+.pp-state{display:none;}
+.pp-plate{display:flex;align-items:flex-start;gap:0;background:var(--surface-2,#f8f9fa);
+  border:1px solid var(--border,#e0e0e0);border-radius:10px;padding:24px;position:relative;}
+.pp-imgwrap{position:relative;flex:0 0 auto;}
+.pp-imgwrap img{display:block;width:100%;height:auto;border:1px solid var(--border,#e0e0e0);border-radius:8px;}
+.pp-imgwrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.pp-pin{position:absolute;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;
+  background:var(--surface,#fff);border:1.4px solid var(--accent,#1a73e8);color:var(--accent,#1a73e8);
+  font-family:ui-monospace,monospace;font-size:.66rem;font-weight:700;display:flex;
+  align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+.pp-gap{flex:0 0 64px;position:relative;}
+.pp-gap svg{position:absolute;top:0;left:0;}
+.pp-labels{flex:1 1 auto;position:relative;min-width:240px;}
+.pp-label{position:absolute;left:0;right:0;top:0;padding-left:2px;visibility:hidden;}
+.pp-label.pp-placed{visibility:visible;}
+.pp-label .pp-num{font-family:ui-monospace,monospace;color:var(--accent,#1a73e8);font-weight:700;
+  font-size:.72rem;margin-right:6px;}
+.pp-label .pp-field{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--accent-2,var(--accent,#1a73e8));
+  display:block;letter-spacing:.02em;margin-bottom:2px;}
+.pp-label .pp-note{font-size:.86rem;color:var(--text,#1f2328);display:block;line-height:1.35;}
+.pp-label .pp-note.pp-chrome{color:var(--text-muted,#5f6368);font-style:italic;}
+@media (max-width:860px){
+  .pp-plate{flex-direction:column;}
+  .pp-gap{display:none;}
+  .pp-labels{min-width:0;position:static;}
+  .pp-label{position:static !important;margin:14px 0;padding-left:14px;
+    border-left:2px solid var(--accent,#1a73e8);visibility:visible;}
+}
+</style>
+"""
+
+_PLATE_JS = """
+<script>
+(function(){
+  if (window.__a2uiPlateLayout) return;
+  window.__a2uiPlateLayout = function(root) {
+    if (window.matchMedia('(max-width:860px)').matches) return;
+    (root || document).querySelectorAll('.pp-plate').forEach(function(plate){
+      var imgwrap = plate.querySelector('.pp-imgwrap');
+      var pins = [].slice.call(plate.querySelectorAll('.pp-pin'));
+      var gap = plate.querySelector('.pp-gap');
+      var labelsBox = plate.querySelector('.pp-labels');
+      var labels = [].slice.call(labelsBox.querySelectorAll('.pp-label'));
+      if (!pins.length || !labels.length) return;
+      var plateRect = plate.getBoundingClientRect();
+      var imgRect = imgwrap.getBoundingClientRect();
+      var pinYs = pins.map(function(p){
+        var r = p.getBoundingClientRect();
+        return (r.top + r.height / 2) - plateRect.top;
+      });
+      labels.forEach(function(l){ l.style.top = '0px'; l.style.visibility = 'hidden'; });
+      var heights = labels.map(function(l){ return l.getBoundingClientRect().height; });
+      var GAP = 14, tops = [];
+      pinYs.forEach(function(y, i){
+        var top = y - heights[i] / 2;
+        if (i > 0) top = Math.max(top, tops[i - 1] + heights[i - 1] + GAP);
+        tops.push(top);
+      });
+      tops.forEach(function(top, i){
+        labels[i].style.top = top + 'px';
+        labels[i].style.visibility = 'visible';
+        labels[i].classList.add('pp-placed');
+      });
+      var totalH = Math.max(imgRect.height, tops[tops.length - 1] + heights[heights.length - 1]);
+      labelsBox.style.minHeight = totalH + 'px';
+      gap.style.minHeight = totalH + 'px';
+      var gapRect = gap.getBoundingClientRect();
+      var svgNS = 'http://www.w3.org/2000/svg';
+      var svg = gap.querySelector('svg');
+      if (svg) svg.remove();
+      svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('width', gapRect.width);
+      svg.setAttribute('height', totalH);
+      svg.setAttribute('viewBox', '0 0 ' + gapRect.width + ' ' + totalH);
+      pinYs.forEach(function(y, i){
+        var labelCenterY = tops[i] + heights[i] / 2;
+        var midX = gapRect.width * 0.5;
+        var path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', 'M0,' + y.toFixed(1) + ' L' + midX.toFixed(1) + ',' + y.toFixed(1) +
+          ' L' + (gapRect.width - 6).toFixed(1) + ',' + labelCenterY.toFixed(1) +
+          ' L' + gapRect.width + ',' + labelCenterY.toFixed(1));
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'var(--accent,#1a73e8)');
+        path.setAttribute('stroke-width', '1');
+        path.setAttribute('opacity', '0.75');
+        svg.appendChild(path);
+        var dot = document.createElementNS(svgNS, 'circle');
+        dot.setAttribute('cx', 0);
+        dot.setAttribute('cy', y.toFixed(1));
+        dot.setAttribute('r', 2.4);
+        dot.setAttribute('fill', 'var(--accent,#1a73e8)');
+        svg.appendChild(dot);
+      });
+      gap.appendChild(svg);
+    });
+  };
+  function runAll(){ requestAnimationFrame(function(){ window.__a2uiPlateLayout(document); }); }
+  // Wait for the WHOLE document to finish parsing before the first run —
+  // querying '.pp-imgwrap img' from whichever plate's own inline <script>
+  // happens to run first only sees plates parsed so far. An early decode()
+  // resolving mid-parse raced ahead and hit a later plate's '.pp-labels'
+  // before that div existed, throwing null on querySelectorAll (2026-07-25).
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runAll);
+  } else {
+    runAll();
+  }
+  window.addEventListener('load', runAll); // catches any images that were still loading
+  document.addEventListener('change', function(e){
+    if (e.target && e.target.matches('.pp-toggles input')) runAll();
+  });
+  var t;
+  window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(runAll, 150); });
+})();
+</script>
+"""
+
+def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
+    """A real UI capture, pin-annotated — each pin is a declarative
+    {x, y, field, note} coordinate (0-100, percent of the image), not a
+    hand-drawn illustration. Multiple `states` render as CSS-only toggle
+    chips (the same checked-radio idiom as content_tabs) over the SAME
+    pin/label layout engine; a single state renders no toggle UI at all."""
+    _pp_counter[0] += 1
+    uid = f"pp{_pp_counter[0]}"
+    title = _esc(b.get("title", ""))
+    kind = _esc(b.get("kind", ""))
+    caption = b.get("caption", "")
+    width = b.get("width", 460)
+    states = b.get("states") or []
+    if not states:
+        return ""
+
+    def _state_body(state, idx):
+        pins = state.get("pins") or []
+        img = state.get("image", "")
+        lines = "".join(
+            f'<line x1="{p.get("x", 0)}" y1="{p.get("y", 0)}" x2="100" y2="{p.get("y", 0)}" '
+            f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
+            for p in pins
+        )
+        markers = "".join(
+            f'<div class="pp-pin" style="top:{p.get("y", 0)}%;left:{p.get("x", 0)}%;">{_roman(i + 1)}</div>'
+            for i, p in enumerate(pins)
+        )
+        label_divs = []
+        for i, p in enumerate(pins):
+            chrome_cls = " pp-chrome" if p.get("chrome") else ""
+            field = _esc(p.get("field", ""))
+            note = _md_inline(p.get("note", ""))
+            label_divs.append(
+                f'<div class="pp-label"><span class="pp-field">{field}</span>'
+                f'<span class="pp-note{chrome_cls}"><span class="pp-num">{_roman(i + 1)}.</span> {note}</span></div>'
+            )
+        active = " active" if idx == 0 else ""
+        display = "display:block;" if idx == 0 else "display:none;"
+        return (
+            f'<div class="pp-state{active}" data-state="{uid}_{idx}" style="{display}">'
+            f'<div class="pp-plate">'
+            f'<div class="pp-imgwrap" style="width:{width}px;">'
+            f'<img src="{img}" alt="{title} primitive rendering in Gemini Enterprise">'
+            f'<svg viewBox="0 0 100 100" preserveAspectRatio="none">{lines}</svg>'
+            f'{markers}'
+            f'</div>'
+            f'<div class="pp-gap"></div>'
+            f'<div class="pp-labels">{"".join(label_divs)}</div>'
+            f'</div>'
+            f'</div>'
+        )
+
+    toggles_html = ""
+    if len(states) > 1:
+        inputs = "".join(
+            f'<input type="radio" name="{uid}_toggle" id="{uid}_t{i}"'
+            f'{" checked" if i == 0 else ""} '
+            f'onchange="document.querySelectorAll(\'[data-state^=\\\'{uid}_\\\']\').forEach(function(el){{'
+            f'el.style.display = (el.dataset.state === \'{uid}_{i}\') ? \'block\' : \'none\';}});">'
+            for i, s in enumerate(states)
+        )
+        labels = "".join(
+            f'<label for="{uid}_t{i}">{_esc(s.get("label", f"State {i+1}"))}</label>'
+            for i, s in enumerate(states)
+        )
+        toggles_html = f'<div class="pp-toggles">{inputs}{labels}</div>'
+
+    states_html = "".join(_state_body(s, i) for i, s in enumerate(states))
+    caption_html = f'<p class="pp-caption">{_md_inline(caption)}</p>' if caption else ""
+    kind_html = f'<span class="pp-kind">{kind}</span>' if kind else ""
+
+    return (
+        f'{_PLATE_CSS}{_PLATE_JS}'
+        f'<div class="pp-wrap" id="{_esc(b.get("id", uid))}">'
+        f'<div class="pp-head"><h4>{title}</h4>{kind_html}</div>'
+        f'{caption_html}{toggles_html}{states_html}'
+        f'</div>'
+    )
+_RENDERERS["primitive_plate"] = _render_primitive_plate
+
+def _render_scroll_gallery(b: dict, _sg_counter=[0]) -> str:
+    """Sticky nested-nav rail + a vertical sequence of grouped sections —
+    the 'scroll instead of tabs' sibling of content_tabs, for long
+    reference galleries (e.g. a primitive-by-primitive field guide) where
+    a reader wants to browse continuously rather than switch panels."""
+    _sg_counter[0] += 1
+    uid = f"sg{_sg_counter[0]}"
+    sections = b.get("sections") or []
+    if not sections:
+        return ""
+
+    def _anchor(text, idx, sub_idx=None):
+        base = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+        return f"{uid}_{idx}_{sub_idx}_{base}" if sub_idx is not None else f"{uid}_{idx}_{base}"
+
+    nav_items = []
+    section_htmls = []
+    for si, section in enumerate(sections):
+        label = section.get("label", f"Section {si + 1}")
+        blocks = section.get("blocks", [])
+        sec_anchor = _anchor(label, si)
+        sub_links = []
+        for bi, blk in enumerate(blocks):
+            sub_title = blk.get("title") or blk.get("label")
+            if sub_title:
+                sub_anchor = blk.get("id") or _anchor(sub_title, si, bi)
+                if not blk.get("id"):
+                    blk = dict(blk)
+                    blk["id"] = sub_anchor
+                    blocks[bi] = blk
+                sub_links.append(f'<a class="sg-sub" href="#{sub_anchor}">{_esc(sub_title)}</a>')
+        nav_items.append(
+            f'<div class="sg-navsection">'
+            f'<a class="sg-navhead" href="#{sec_anchor}"><span class="sg-navnum">{si + 1:02d}</span>{_esc(label)}</a>'
+            f'{"".join(sub_links)}'
+            f'</div>'
+        )
+        body = "".join(_RENDERERS.get(blk.get("type", ""), _render_unknown)(blk) for blk in blocks)
+        section_htmls.append(
+            f'<section class="sg-section" id="{sec_anchor}">'
+            f'<h3 class="sg-sechead"><span class="sg-navnum">{si + 1:02d}</span>{_esc(label)}</h3>'
+            f'{body}'
+            f'</section>'
+        )
+
+    return (
+        '<style>'
+        '.sg-layout{display:grid;grid-template-columns:190px 1fr;gap:36px;align-items:start;'
+        'margin:1.4rem auto;max-width:90%;}'
+        '.sg-nav{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;'
+        'border-right:1px solid var(--border,#e0e0e0);padding-right:18px;max-height:calc(100vh - 48px);overflow-y:auto;}'
+        '.sg-navsection{display:flex;flex-direction:column;gap:2px;}'
+        '.sg-navhead{display:flex;align-items:baseline;gap:8px;color:var(--text,#1f2328);'
+        'text-decoration:none;font-weight:600;font-size:.86rem;padding:4px 0;}'
+        '.sg-navnum{font-family:ui-monospace,monospace;font-size:.68rem;color:var(--accent-2,var(--accent,#1a73e8));}'
+        '.sg-sub{display:block;color:var(--text-muted,#5f6368);text-decoration:none;font-size:.78rem;'
+        'padding:3px 0 3px 22px;}'
+        '.sg-sub:hover{color:var(--accent,#1a73e8);}'
+        '.sg-sechead{display:flex;align-items:baseline;gap:10px;font-size:1.3rem;font-weight:700;'
+        'color:var(--text,#1f2328);border-bottom:1px solid var(--border,#e0e0e0);'
+        'padding-bottom:10px;margin:0 0 22px;}'
+        '.sg-section{margin-bottom:64px;scroll-margin-top:24px;}'
+        '@media (max-width:860px){.sg-layout{grid-template-columns:1fr;}'
+        '.sg-nav{position:static;flex-direction:row;flex-wrap:wrap;border-right:none;'
+        'border-bottom:1px solid var(--border,#e0e0e0);padding:0 0 14px;max-height:none;}}'
+        '</style>'
+        f'<div class="sg-layout"><nav class="sg-nav">{"".join(nav_items)}</nav>'
+        f'<main>{"".join(section_htmls)}</main></div>'
+    )
+_RENDERERS["scroll_gallery"] = _render_scroll_gallery
+
 def _render_key_value(b: dict) -> str:
     """Key-value pairs — for env vars, config options, API fields."""
     items = b.get("items", [])

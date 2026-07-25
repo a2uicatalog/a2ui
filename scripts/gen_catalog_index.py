@@ -79,6 +79,9 @@ CATALOG_META = {
     "a2ui-display-v1": ("General UI & content",
         "Use for general content/UI beyond the base primitives — richer cards, media, "
         "tags, comparison and steppers not in core."),
+    "a2ui-gallery-v1": ("Annotated field guides",
+        "Use for pin-annotated real-capture galleries — a component/primitive anatomy "
+        "reference the reader scrolls through, grouped into sections with a sticky nav."),
 }
 
 

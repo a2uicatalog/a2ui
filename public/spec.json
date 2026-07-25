@@ -599,7 +599,8 @@
    "fields": {
     "caption": "string (optional)",
     "headers": "list[string]",
-    "rows": "list[list[string]]"
+    "rows": "list[list[string]]",
+    "col_widths": "list[string] (optional, added 2026-07-24). One CSS width per column (e.g. [\"46%\",\"18%\",\"18%\",\"18%\"]), switches to table-layout:fixed. Without it, a long label in one column can pull free space away from short single-glyph cells in the others."
    },
    "source": {
     "name": "a2uicatalog",
