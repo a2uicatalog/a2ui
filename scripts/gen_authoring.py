@@ -177,10 +177,14 @@ def _load_current_drafts():
 
 
 def _load_carousel_drafts():
-    """slug/hook-headline/card-count for each posts/carousel-drafts/*.json,
-    for the Teaser Card Carousel page's own in-progress board. Same
-    best-effort shape as _load_current_drafts: a malformed draft is skipped
-    with a stderr warning, never crashes this build."""
+    """slug/hook/middles/cta/card-count for each posts/carousel-drafts/*.json,
+    for the Teaser Card Carousel page's own in-progress board AND its
+    ?slug=... edit-load path (the full hook/middles/cta content ships to
+    the browser, not just a summary, so re-opening a draft actually
+    repopulates every field rather than just the slug — see
+    build_carousel_page's loader IIFE). Same best-effort shape as
+    _load_current_drafts: a malformed draft is skipped with a stderr
+    warning, never crashes this build."""
     if not CAROUSEL_DRAFTS_DIR.exists():
         return []
     drafts = []
@@ -193,10 +197,14 @@ def _load_carousel_drafts():
             continue
         hook = data.get("hook") or {}
         middles = data.get("middles") or []
+        cta = data.get("cta") or {}
         drafts.append({
             "slug": path.stem,
             "headline": hook.get("headline", path.stem),
             "card_count": 2 + len(middles),  # hook + middles + cta
+            "hook": hook,
+            "middles": middles,
+            "cta": cta,
         })
     return drafts
 
@@ -899,6 +907,7 @@ def build_carousel_page(carousel_drafts):
   <div class="childlist-strip" style="display:flex;align-items:center;gap:10px;margin-top:16px;border-top:1px solid var(--border)">
     <button class="copy-btn" id="carSaveBtn" type="button">SAVE DRAFT</button>
     <button class="copy-btn" id="carExportBtn" type="button">EXPORT ALL AS PNG</button>
+    <button class="copy-btn" id="carExportGifBtn" type="button">EXPORT AS GIF</button>
     <span id="carStatus" style="color:var(--text-faint)"></span>
   </div>
 </div>"""
@@ -1067,7 +1076,48 @@ document.getElementById('carExportBtn').addEventListener('click', function(){{
     }});
 }});
 
+document.getElementById('carExportGifBtn').addEventListener('click', function(){{
+  var status = document.getElementById('carStatus');
+  var btn = document.getElementById('carExportGifBtn');
+  var cards = carAssembleCards();
+  if (!cards[0].headline.trim() || !cards[cards.length - 1].headline.trim()) {{
+    status.textContent = 'Hook and CTA cards both need a headline before exporting.';
+    return;
+  }}
+  if (cards.length > 12) {{
+    status.textContent = 'Too many cards for one GIF (' + cards.length + ', max 12) — use EXPORT ALL AS PNG instead.';
+    return;
+  }}
+  btn.disabled = true; btn.textContent = 'RENDERING...';
+  status.textContent = 'Rendering ' + cards.length + ' card(s) into one animated GIF — this can take a while...';
+  fetch('/authoring/api/carousel-export-gif', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{cards: cards}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      btn.disabled = false; btn.textContent = 'EXPORT AS GIF';
+      if (!res.ok) {{ status.textContent = 'FAILED: ' + (res.data.error || 'unknown error'); return; }}
+      var a = document.createElement('a');
+      a.href = 'data:image/gif;base64,' + res.data.gif_base64;
+      a.download = (document.getElementById('carSlug').value.trim() || 'carousel') + '.gif';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      status.textContent = 'Exported animated GIF — check your downloads. Note: this crops all cards to a shared frame, unlike the individual PNGs — for the actual LinkedIn carousel upload, use EXPORT ALL AS PNG.';
+    }})
+    .catch(function(e){{
+      btn.disabled = false; btn.textContent = 'EXPORT AS GIF';
+      status.textContent = 'FAILED: ' + e.message;
+    }});
+}});
+
 // Load an existing draft if ?slug=... is present (from the board above).
+// CAROUSEL_DRAFTS carries each draft's full hook/middles/cta content, not
+// just the board summary, so this actually repopulates every field —
+// Save then overwrites the same slug's file in place (save_carousel.py
+// always writes to posts/carousel-drafts/<slug>.json keyed by slug).
 (function(){{
   var params = new URLSearchParams(window.location.search);
   var slug = params.get('slug');
@@ -1075,16 +1125,27 @@ document.getElementById('carExportBtn').addEventListener('click', function(){{
   var draft = null;
   for (var i = 0; i < CAROUSEL_DRAFTS.length; i++) {{ if (CAROUSEL_DRAFTS[i].slug === slug) {{ draft = CAROUSEL_DRAFTS[i]; break; }} }}
   document.getElementById('carSlug').value = slug;
-  // CAROUSEL_DRAFTS only carries the board summary (slug/headline/count),
-  // not the full field set — full draft content isn't embedded page-wide
-  // for every draft to keep this page's HTML small. Loading full content
-  // for editing is a real gap, flagged rather than faked: for now this
-  // pre-fills the slug only, so Save creates a NEW draft rather than
-  // silently overwriting one whose fields you can't see yet.
-  if (draft) {{
-    document.getElementById('carStatus').textContent =
-      'Loaded slug "' + slug + '" (' + draft.card_count + ' cards) — full field content isn\\'t loaded yet, fill in the cards again before saving.';
+  if (!draft) {{
+    document.getElementById('carStatus').textContent = 'No saved draft found for slug "' + slug + '".';
+    return;
   }}
+
+  var hookEl = document.querySelector('.carousel-card-block[data-role="hook"]');
+  hookEl.querySelector('.car-eyebrow').value = draft.hook.eyebrow || '';
+  hookEl.querySelector('.car-headline').value = draft.hook.headline || '';
+  hookEl.querySelector('.car-body').value = draft.hook.body || '';
+  carRenderPreview(hookEl);
+
+  var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
+  ctaEl.querySelector('.car-eyebrow').value = draft.cta.eyebrow || '';
+  ctaEl.querySelector('.car-headline').value = draft.cta.headline || '';
+  ctaEl.querySelector('.car-body').value = draft.cta.body || '';
+  carRenderPreview(ctaEl);
+
+  draft.middles.forEach(function(m){{ carAddMiddle(m); }});
+
+  document.getElementById('carStatus').textContent =
+    'Loaded "' + slug + '" (' + draft.card_count + ' cards) — Save overwrites this same draft.';
 }})();
 """
     return _page_shell("Teaser Card Carousel", body, script)
