@@ -382,6 +382,27 @@ _deck_gif_cache = _BoundedCache(maxsize=100)  # (json-key, duration_ms) -> GIF b
 # choppier, never faster. 90 frames over a ~21s clip is ~4fps, which reads
 # fine for screen-recording content.
 MAX_MEDIA_FRAMES = 90
+# Per-card dwell time for promo_carousel_card, by role. A single flat
+# duration across the whole deck read badly: the CTA card is the one that
+# actually asks the viewer to do something AND the one sitting on screen
+# when a looping GIF wraps around, so it needs materially longer than a
+# middle card. The hook gets a little extra too -- it carries the headline
+# a scroller decides on. Any card can override this with its own
+# duration_ms; a non-promo atom falls back to the deck-level duration_ms.
+_PROMO_ROLE_DURATION_MS = {'hook': 3000, 'middle': 2200, 'cta': 4500}
+
+
+def _card_duration_ms(block, deck_default_ms: int) -> int:
+    """Explicit per-card duration_ms > role default > deck default."""
+    if not isinstance(block, dict):
+        return deck_default_ms
+    own = block.get('duration_ms')
+    if isinstance(own, (int, float)) and own > 0:
+        # Bounded so one card can't stall a deck for minutes.
+        return int(max(200, min(30_000, own)))
+    if block.get('type') == 'promo_carousel_card':
+        return _PROMO_ROLE_DURATION_MS.get(block.get('role', 'middle'), deck_default_ms)
+    return deck_default_ms
 # Device-pixel width ceiling for the deck GIF only. Cards render at
 # device_scale_factor=2 for crisp PNG export (a 1080px card is 2240 real
 # pixels); that is enormous for an animated GIF, where every frame pays it.
@@ -543,8 +564,11 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
             # The card dwells for the CLIP's own length, at the clip's own
             # speed -- it does not get squeezed into duration_ms. That was
             # the original bug: a 21s recording crammed into a 1.5s slot
-            # played ~14x too fast. duration_ms stays the dwell time for
-            # ordinary still cards only.
+            # played ~14x too fast. duration_ms (deck-level OR a per-card
+            # override) is therefore the dwell time for STILL cards only;
+            # an animated card's length is a property of its clip, and
+            # honouring an override here would just reintroduce the
+            # fast-forward.
             durations.extend([per_frame_ms] * len(composited))
         else:
             still = Image.open(io.BytesIO(png)).convert('RGB')
@@ -557,7 +581,7 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
                 r = MAX_GIF_WIDTH / still.width
                 still = still.resize((MAX_GIF_WIDTH, max(1, round(still.height * r))), Image.LANCZOS)
             images.append(still)
-            durations.append(duration_ms)
+            durations.append(_card_duration_ms(block, duration_ms))
 
     boxes = []
     for im in images:

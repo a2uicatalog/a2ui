@@ -890,6 +890,7 @@ def build_carousel_page(carousel_drafts):
       <label>Eyebrow <input class="car-eyebrow" type="text" placeholder="Series / label"></label>
       <label>Headline <input class="car-headline" type="text" placeholder="The hook line"></label>
       <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
+      <label>Seconds on screen <input class="car-duration" type="number" step="0.1" min="0.2" max="30" placeholder="3.0 (default)"></label>
     </div>
     <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
   </div>
@@ -904,6 +905,7 @@ def build_carousel_page(carousel_drafts):
       <label>Headline <input class="car-headline" type="text" placeholder="The closing line"></label>
       <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
       <label style="grid-column:1/-1">Call-to-action button (optional) <input class="car-cta-label" type="text" placeholder="e.g. Read Part 2 →"></label>
+      <label>Seconds on screen <input class="car-duration" type="number" step="0.1" min="0.2" max="30" placeholder="4.5 (default)"></label>
     </div>
     <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
   </div>
@@ -942,6 +944,10 @@ function carCardFromBlock(blockEl, role, position){{
   }};
   var ctaLabel = blockEl.querySelector('.car-cta-label');
   if (ctaLabel) card.cta_label = ctaLabel.value;
+  // Seconds in the UI, milliseconds on the wire. Blank means "use the
+  // role default", so only send the field when it's actually set.
+  var dur = blockEl.querySelector('.car-duration');
+  if (dur && dur.value.trim()) card.duration_ms = Math.round(parseFloat(dur.value) * 1000);
   return card;
 }}
 
@@ -970,7 +976,7 @@ function carRenderPreview(blockEl){{
 }}
 
 function carWireBlock(blockEl){{
-  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media,.car-cta-label').forEach(function(el){{
+  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media,.car-cta-label,.car-duration').forEach(function(el){{
     el.addEventListener('input', function(){{ carPreviewDebounced(blockEl); }});
   }});
   blockEl.querySelectorAll('.car-has-media,.car-no-media').forEach(function(el){{
@@ -1000,6 +1006,7 @@ function carAddMiddle(prefill){{
     '<label><input type="radio" name="media-' + middleCount + '" class="car-has-media" value="yes"> Yes</label>' +
     '<label><input type="radio" name="media-' + middleCount + '" class="car-no-media" value="no" checked> No — centre the text</label>' +
     '</span></label>' +
+    '<label>Seconds on screen <input class="car-duration" type="number" step="0.1" min="0.2" max="30" placeholder="2.2 (default)"></label>' +
     '<label class="car-media-wrap" style="grid-column:1/-1;display:none">Media URL (a site-relative /gallery/... path is fine; an animated GIF stays animated in the GIF export) <input class="car-media" type="text" placeholder="/gallery/ge-print-rendering/workspace-status-live.gif"></label>' +
     '</div>' +
     '<div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>';
@@ -1015,6 +1022,7 @@ function carAddMiddle(prefill){{
     el.querySelector('.car-headline').value = prefill.headline || '';
     el.querySelector('.car-body').value = prefill.body || '';
     el.querySelector('.car-media').value = prefill.media_url || '';
+    if (prefill.duration_ms) el.querySelector('.car-duration').value = prefill.duration_ms / 1000;
     // Older drafts predate has_media; infer from whether a url was saved,
     // which matches what those drafts actually rendered at the time.
     var wantsMedia = prefill.has_media === undefined
@@ -1089,11 +1097,12 @@ document.getElementById('carSaveBtn').addEventListener('click', function(){{
   var hookEl = document.querySelector('.carousel-card-block[data-role="hook"]');
   var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
   var middleEls = document.querySelectorAll('#carMiddles .carousel-card-block');
-  var hook = {{eyebrow: hookEl.querySelector('.car-eyebrow').value, headline: hookEl.querySelector('.car-headline').value, body: hookEl.querySelector('.car-body').value}};
-  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value, cta_label: ctaEl.querySelector('.car-cta-label').value}};
+  var secs = function(el){{ var d = el.querySelector('.car-duration'); return d && d.value.trim() ? Math.round(parseFloat(d.value) * 1000) : null; }};
+  var hook = {{eyebrow: hookEl.querySelector('.car-eyebrow').value, headline: hookEl.querySelector('.car-headline').value, body: hookEl.querySelector('.car-body').value, duration_ms: secs(hookEl)}};
+  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value, cta_label: ctaEl.querySelector('.car-cta-label').value, duration_ms: secs(ctaEl)}};
   var middles = [];
   middleEls.forEach(function(el){{
-    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, has_media: el.querySelector('.car-has-media').checked, media_url: el.querySelector('.car-media').value}});
+    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, has_media: el.querySelector('.car-has-media').checked, media_url: el.querySelector('.car-media').value, duration_ms: secs(el)}});
   }});
   status.textContent = 'Saving...';
   fetch('/authoring/api/carousel-save', {{
@@ -1204,6 +1213,7 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
   hookEl.querySelector('.car-eyebrow').value = draft.hook.eyebrow || '';
   hookEl.querySelector('.car-headline').value = draft.hook.headline || '';
   hookEl.querySelector('.car-body').value = draft.hook.body || '';
+  if (draft.hook.duration_ms) hookEl.querySelector('.car-duration').value = draft.hook.duration_ms / 1000;
   carRenderPreview(hookEl);
 
   var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
@@ -1211,6 +1221,7 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
   ctaEl.querySelector('.car-headline').value = draft.cta.headline || '';
   ctaEl.querySelector('.car-body').value = draft.cta.body || '';
   ctaEl.querySelector('.car-cta-label').value = draft.cta.cta_label || '';
+  if (draft.cta.duration_ms) ctaEl.querySelector('.car-duration').value = draft.cta.duration_ms / 1000;
   carRenderPreview(ctaEl);
 
   draft.middles.forEach(function(m){{ carAddMiddle(m); }});
