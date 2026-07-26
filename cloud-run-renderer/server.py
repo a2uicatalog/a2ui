@@ -410,7 +410,7 @@ def _card_duration_ms(block, deck_default_ms: int) -> int:
 MAX_GIF_WIDTH = 1000
 
 
-def _fetch_media_frames(url: str, max_frames: int = MAX_MEDIA_FRAMES):
+def _fetch_media_frames(url: str, max_frames: int = MAX_MEDIA_FRAMES, max_ms: int = 0):
     """(frames, per_frame_ms) for an animated media_url, or None.
 
     per_frame_ms preserves the source's REAL-TIME duration: if a 21s clip is
@@ -439,12 +439,27 @@ def _fetch_media_frames(url: str, max_frames: int = MAX_MEDIA_FRAMES):
         n = getattr(im, 'n_frames', 1)
         if n < 2:
             return None
+        # max_ms trims the clip from its START -- a 45s screen recording
+        # would otherwise dominate a whole deck, since an animated card
+        # dwells for its clip's real length. Trimming happens BEFORE
+        # sampling so the kept section gets the full frame budget rather
+        # than a thinned-out version of the whole clip.
+        if max_ms:
+            elapsed, keep = 0, n
+            for i, fr in enumerate(ImageSequence.Iterator(im)):
+                elapsed += fr.info.get('duration', 100) or 100
+                if elapsed >= max_ms:
+                    keep = i + 1
+                    break
+            n = max(2, min(n, keep))
         frames, source_ms = [], 0
         idxs = set(round(i * (n - 1) / (max_frames - 1)) for i in range(max_frames)) \
             if n > max_frames else set(range(n))
         for i, frame in enumerate(ImageSequence.Iterator(im)):
+            if i >= n:
+                break
             # Sum EVERY frame's duration, not just sampled ones, so the total
-            # is the clip's true length regardless of how much we sampled.
+            # is the kept section's true length regardless of sampling.
             source_ms += frame.info.get('duration', 100) or 100
             if i in idxs:
                 frames.append(frame.convert('RGB').copy())
@@ -544,9 +559,11 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
         if media_url and block.get('has_media', True):
             png, rect = _render_block_png(block, w, want_media_rect=True)
             if rect:
+                raw_max = block.get('media_max_ms')
                 media = _fetch_media_frames(
                     web_article._promo_media_src(media_url)
-                    if hasattr(web_article, '_promo_media_src') else media_url)
+                    if hasattr(web_article, '_promo_media_src') else media_url,
+                    max_ms=int(raw_max) if isinstance(raw_max, (int, float)) and raw_max > 0 else 0)
         else:
             png = _render_block_png_cached(block, w)
 

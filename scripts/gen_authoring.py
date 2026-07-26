@@ -905,6 +905,14 @@ def build_carousel_page(carousel_drafts):
       <label>Eyebrow <input class="car-eyebrow" type="text" placeholder="Series / label"></label>
       <label>Headline <input class="car-headline" type="text" placeholder="The hook line"></label>
       <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
+      <label style="grid-column:1/-1">Media on this card?
+        <span class="car-media-radio">
+          <label><input type="radio" name="media-hook" class="car-has-media" value="yes"> Yes</label>
+          <label><input type="radio" name="media-hook" class="car-no-media" value="no" checked> No — text only</label>
+        </span>
+      </label>
+      <label class="car-media-wrap" style="grid-column:1/-1;display:none">Media URL (a site-relative /gallery/... path is fine; an animated GIF stays animated in the GIF export) <input class="car-media" type="text" placeholder="/gallery/ge-primitives/d2-architect-live.gif"></label>
+      <label class="car-media-wrap" style="display:none">Trim clip to (seconds) <input class="car-media-secs" type="number" step="0.5" min="0.5" placeholder="whole clip"></label>
       <label>Seconds on screen <input class="car-duration" type="number" step="0.1" min="0.2" max="30" placeholder="3.0 (default)"></label>
     </div>
     <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
@@ -920,6 +928,14 @@ def build_carousel_page(carousel_drafts):
       <label>Headline <input class="car-headline" type="text" placeholder="The closing line"></label>
       <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
       <label style="grid-column:1/-1">Call-to-action button (optional) <input class="car-cta-label" type="text" placeholder="e.g. Read Part 2 →"></label>
+      <label style="grid-column:1/-1">Media on this card?
+        <span class="car-media-radio">
+          <label><input type="radio" name="media-cta" class="car-has-media" value="yes"> Yes</label>
+          <label><input type="radio" name="media-cta" class="car-no-media" value="no" checked> No — text only</label>
+        </span>
+      </label>
+      <label class="car-media-wrap" style="grid-column:1/-1;display:none">Media URL (a site-relative /gallery/... path is fine; an animated GIF stays animated in the GIF export) <input class="car-media" type="text" placeholder="/gallery/ge-primitives/d2-architect-live.gif"></label>
+      <label class="car-media-wrap" style="display:none">Trim clip to (seconds) <input class="car-media-secs" type="number" step="0.5" min="0.5" placeholder="whole clip"></label>
       <label>Seconds on screen <input class="car-duration" type="number" step="0.1" min="0.2" max="30" placeholder="4.5 (default)"></label>
     </div>
     <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
@@ -957,6 +973,8 @@ function carCardFromBlock(blockEl, role, position){{
     has_media: !!(yes && yes.checked),
     media_url: blockEl.querySelector('.car-media') ? blockEl.querySelector('.car-media').value : ''
   }};
+  var msecs = blockEl.querySelector('.car-media-secs');
+  if (msecs && msecs.value.trim()) card.media_max_ms = Math.round(parseFloat(msecs.value) * 1000);
   var ctaLabel = blockEl.querySelector('.car-cta-label');
   if (ctaLabel) card.cta_label = ctaLabel.value;
   // Seconds in the UI, milliseconds on the wire. Blank means "use the
@@ -991,14 +1009,13 @@ function carRenderPreview(blockEl){{
 }}
 
 function carWireBlock(blockEl){{
-  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media,.car-cta-label,.car-duration').forEach(function(el){{
+  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media,.car-media-secs,.car-cta-label,.car-duration').forEach(function(el){{
     el.addEventListener('input', function(){{ carPreviewDebounced(blockEl); }});
   }});
   blockEl.querySelectorAll('.car-has-media,.car-no-media').forEach(function(el){{
     el.addEventListener('change', function(){{
-      var wrap = blockEl.querySelector('.car-media-wrap');
       var on = blockEl.querySelector('.car-has-media').checked;
-      if (wrap) wrap.style.display = on ? '' : 'none';
+      blockEl.querySelectorAll('.car-media-wrap').forEach(function(w){{ w.style.display = on ? '' : 'none'; }});
       carPreviewDebounced(blockEl);
     }});
   }});
@@ -1023,6 +1040,7 @@ function carAddMiddle(prefill){{
     '</span></label>' +
     '<label>Seconds on screen <input class="car-duration" type="number" step="0.1" min="0.2" max="30" placeholder="2.2 (default)"></label>' +
     '<label class="car-media-wrap" style="grid-column:1/-1;display:none">Media URL (a site-relative /gallery/... path is fine; an animated GIF stays animated in the GIF export) <input class="car-media" type="text" placeholder="/gallery/ge-print-rendering/workspace-status-live.gif"></label>' +
+    '<label class="car-media-wrap" style="display:none">Trim clip to (seconds) <input class="car-media-secs" type="number" step="0.5" min="0.5" placeholder="whole clip"></label>' +
     '</div>' +
     '<div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>';
   el.querySelector('[data-remove]').addEventListener('click', function(){{
@@ -1038,6 +1056,7 @@ function carAddMiddle(prefill){{
     el.querySelector('.car-body').value = prefill.body || '';
     el.querySelector('.car-media').value = prefill.media_url || '';
     if (prefill.duration_ms) el.querySelector('.car-duration').value = prefill.duration_ms / 1000;
+    if (prefill.media_max_ms) el.querySelector('.car-media-secs').value = prefill.media_max_ms / 1000;
     // Older drafts predate has_media; infer from whether a url was saved,
     // which matches what those drafts actually rendered at the time.
     var wantsMedia = prefill.has_media === undefined
@@ -1118,12 +1137,15 @@ document.getElementById('carSaveBtn').addEventListener('click', function(){{
   var hookEl = document.querySelector('.carousel-card-block[data-role="hook"]');
   var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
   var middleEls = document.querySelectorAll('#carMiddles .carousel-card-block');
+  var mtrim = function(el){{ var m = el.querySelector('.car-media-secs'); return m && m.value.trim() ? Math.round(parseFloat(m.value) * 1000) : null; }};
   var secs = function(el){{ var d = el.querySelector('.car-duration'); return d && d.value.trim() ? Math.round(parseFloat(d.value) * 1000) : null; }};
-  var hook = {{eyebrow: hookEl.querySelector('.car-eyebrow').value, headline: hookEl.querySelector('.car-headline').value, body: hookEl.querySelector('.car-body').value, duration_ms: secs(hookEl)}};
-  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value, cta_label: ctaEl.querySelector('.car-cta-label').value, duration_ms: secs(ctaEl)}};
+  var hook = {{eyebrow: hookEl.querySelector('.car-eyebrow').value, headline: hookEl.querySelector('.car-headline').value, body: hookEl.querySelector('.car-body').value, duration_ms: secs(hookEl),
+    has_media: hookEl.querySelector('.car-has-media').checked, media_url: hookEl.querySelector('.car-media').value, media_max_ms: mtrim(hookEl)}};
+  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value, cta_label: ctaEl.querySelector('.car-cta-label').value, duration_ms: secs(ctaEl),
+    has_media: ctaEl.querySelector('.car-has-media').checked, media_url: ctaEl.querySelector('.car-media').value, media_max_ms: mtrim(ctaEl)}};
   var middles = [];
   middleEls.forEach(function(el){{
-    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, has_media: el.querySelector('.car-has-media').checked, media_url: el.querySelector('.car-media').value, duration_ms: secs(el)}});
+    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, has_media: el.querySelector('.car-has-media').checked, media_url: el.querySelector('.car-media').value, duration_ms: secs(el), media_max_ms: mtrim(el)}});
   }});
   status.textContent = 'Saving...';
   fetch('/authoring/api/carousel-save', {{
@@ -1239,6 +1261,12 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
   hookEl.querySelector('.car-headline').value = draft.hook.headline || '';
   hookEl.querySelector('.car-body').value = draft.hook.body || '';
   if (draft.hook.duration_ms) hookEl.querySelector('.car-duration').value = draft.hook.duration_ms / 1000;
+  if (draft.hook.media_max_ms) hookEl.querySelector('.car-media-secs').value = draft.hook.media_max_ms / 1000;
+  hookEl.querySelector('.car-media').value = draft.hook.media_url || '';
+  var hookMedia = !!draft.hook.has_media;
+  hookEl.querySelector('.car-has-media').checked = hookMedia;
+  hookEl.querySelector('.car-no-media').checked = !hookMedia;
+  hookEl.querySelectorAll('.car-media-wrap').forEach(function(w){{ w.style.display = hookMedia ? '' : 'none'; }});
   carRenderPreview(hookEl);
 
   var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
@@ -1247,6 +1275,12 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
   ctaEl.querySelector('.car-body').value = draft.cta.body || '';
   ctaEl.querySelector('.car-cta-label').value = draft.cta.cta_label || '';
   if (draft.cta.duration_ms) ctaEl.querySelector('.car-duration').value = draft.cta.duration_ms / 1000;
+  if (draft.cta.media_max_ms) ctaEl.querySelector('.car-media-secs').value = draft.cta.media_max_ms / 1000;
+  ctaEl.querySelector('.car-media').value = draft.cta.media_url || '';
+  var ctaMedia = !!draft.cta.has_media;
+  ctaEl.querySelector('.car-has-media').checked = ctaMedia;
+  ctaEl.querySelector('.car-no-media').checked = !ctaMedia;
+  ctaEl.querySelectorAll('.car-media-wrap').forEach(function(w){{ w.style.display = ctaMedia ? '' : 'none'; }});
   carRenderPreview(ctaEl);
 
   draft.middles.forEach(function(m){{ carAddMiddle(m); }});
