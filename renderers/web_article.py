@@ -21536,6 +21536,63 @@ def _render_weather_now(b: dict) -> str:
 _RENDERERS['weather_now'] = _render_weather_now
 
 
+_PROMO_SANS = "'Noto Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+_PROMO_MONO = "'Noto Sans Mono',ui-monospace,SFMono-Regular,Menlo,monospace"
+_PROMO_FONT_BASE = "https://a2uicatalog.ai/fonts/noto"
+_PROMO_FONT_FACES = (
+    ("Noto Sans", 400, "normal", "noto-sans-400.woff2"),
+    ("Noto Sans", 700, "normal", "noto-sans-700.woff2"),
+    ("Noto Sans Mono", 400, "normal", "noto-sans-mono-400.woff2"),
+    ("Noto Sans Mono", 700, "normal", "noto-sans-mono-700.woff2"),
+)
+
+def _promo_font_css() -> str:
+    faces = "".join(
+        f"@font-face{{font-family:'{fam}';font-weight:{wt};font-style:{sty};"
+        f"font-display:swap;src:url({_PROMO_FONT_BASE}/{fname}) format('woff2');}}"
+        for fam, wt, sty, fname in _PROMO_FONT_FACES
+    )
+    return f"<style>{faces}</style>"
+
+
+_PROMO_HEADLINE_SIZE = {'hook': '44px', 'middle': '32px', 'cta': '36px'}
+
+
+def _render_promo_carousel_card(b: dict) -> str:
+    role = b.get('role', 'middle')
+    role = role if role in ('hook', 'middle', 'cta') else 'middle'
+    headline_size = _PROMO_HEADLINE_SIZE[role]
+    media_url = b.get('media_url', '')
+
+    media_html = (
+        f'<img src="{_esc(media_url)}" style="width:100%;aspect-ratio:16/9;'
+        f'object-fit:cover;border-radius:10px;margin:16px 0;" />'
+        if media_url else
+        (f'<div style="width:100%;aspect-ratio:16/9;border:1.5px dashed rgba(154,163,199,.3);'
+         f'border-radius:10px;margin:16px 0;display:flex;align-items:center;justify-content:center;'
+         f'color:#5A6390;font-size:13px;">media placeholder</div>' if role == 'middle' else '')
+    )
+
+    font_css = _promo_font_css() if b.get('use_noto_fonts', True) else ''
+
+    return (
+        f'{font_css}'
+        f'<div style="{_CARD_OPEN}font-family:{_PROMO_SANS};aspect-ratio:4/5;'
+        f'display:flex;flex-direction:column;border-radius:18px;">'
+        f'{_card_head(b.get("eyebrow", ""), b.get("position", ""))}'
+        f'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;">'
+        f'<div style="font-size:{headline_size};font-weight:800;line-height:1.15;'
+        f'letter-spacing:-.01em;">{_esc(b.get("headline", ""))}</div>'
+        + (f'<div style="font-size:15px;color:#9AA3C7;margin-top:12px;line-height:1.5;">'
+           f'{_esc(b.get("body", ""))}</div>' if b.get('body') else '')
+        + media_html
+        + '</div>'
+        f'{_card_foot("", "" if b.get("_hide_schema_footer") else "promo_carousel_card")}'
+        f'</div>'
+    )
+_RENDERERS['promo_carousel_card'] = _render_promo_carousel_card
+
+
 def _render_weather_outlook(b: dict) -> str:
     scale = b.get('scale') or {'min': 15, 'max': 35}
     lo_bound, hi_bound = scale['min'], scale['max']

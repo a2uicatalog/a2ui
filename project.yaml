@@ -44,6 +44,7 @@ policy:
     - public/vendors/**
     - public/THIRD-PARTY-NOTICES.md
     - public/fonts/ibm-plex/**   # SIL OFL 1.1 — IBM Plex Mono/Serif, used by article_journey (use_plex_fonts, default true); see THIRD-PARTY-NOTICES.md
+    - public/fonts/noto/**   # SIL OFL 1.1 — Noto Sans/Noto Sans Mono, used by promo_carousel_card (use_noto_fonts, default true); see THIRD-PARTY-NOTICES.md
     - public/knowledge/**
     - public/avatar/**
     - public/gallery/**   # article/demo screenshots referenced from the blog-drafting Google Doc — real static assets, not hosted on Drive/GAS (both have anonymous-hotlink restrictions)
@@ -86,7 +87,17 @@ staging:
   preview_count_note: derived from schema.yaml, not duplicated here
 
 known_debt:
-  unregistered_atoms:   # cleared 2026-07-02, two intentional entries added 2026-07-19
+  unregistered_atoms:   # cleared 2026-07-02, two intentional entries added 2026-07-19.
+                        # NOTE (2026-07-26): this list is specifically atoms that DO
+                        # have a GAS renderer registration (apps-script-surface/
+                        # gas-wired-renderer/*.gs) but are missing from the public
+                        # atoms/schema.yaml because their schema is visibility:private
+                        # — see test_unregistered_atoms_match_declared_debt, which scans
+                        # the .gs files for _RENDERERS[...] registrations. An atom with
+                        # NO gas-wired-renderer entry at all (e.g. promo_carousel_card,
+                        # google-chat-chromium-render-only) does not belong here even
+                        # though it's also visibility:private — it was added and removed
+                        # from this list the same day after the test caught the mismatch.
     - article_journey   # visibility:private — schema block moved to a2ui-private/
     - journey_step       # (private-atoms/private-schema-blocks.yaml), NOT missing by
                           # accident. Renderer stays in renderers/web_article.py

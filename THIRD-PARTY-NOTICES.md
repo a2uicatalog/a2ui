@@ -6,24 +6,25 @@ documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a
 `source` field in `atoms/schema.yaml` identifying its origin.
 
-**Three declared exceptions: PDF.js, QR-Code-generator, and IBM Plex** (below)
-are vendored WHOLESALE, unmodified, not recompiled — a real binary-format
-parser, a Reed-Solomon-error-correction-coded matrix encoder, and a font's
-actual glyph outlines are all out of scope to reimplement (a subtly-wrong
-hand-rolled QR encoder would produce codes that *look* right but don't scan —
-not a visually-catchable bug, unlike this policy's other adaptations, which
-are simple CSS/HTML patterns). PDF.js ships only inside the MCP Apps bundle
-(`file_upload` atom's PDF branch), never fetched at runtime, so the
-CSP-clean/self-contained invariant (`mcpUiCsp()`, `resourceDomains: []`)
-holds even though this policy's general rule does not. QR-Code-generator
-ships inline with every atom render (Python for static surfaces, the same
-vendored algorithm ported to JS for GAS/MCP Apps) with no network calls
-either. **IBM Plex is the one exception that DOES introduce a runtime
-network fetch** (a `@font-face src: url(...)` against `a2uicatalog.ai`'s own
-`/fonts/` path, same-origin, opt-in per atom via `use_plex_fonts`) — on any
-surface whose CSP blocks that fetch (e.g. a strict MCP Apps `resourceDomains`
-policy), the font-family fallback stack degrades silently to system fonts;
-nothing breaks, the atom just looks plainer.
+**Four declared exceptions: PDF.js, QR-Code-generator, IBM Plex, and Noto
+Sans** (below) are vendored WHOLESALE, unmodified, not recompiled — a real
+binary-format parser, a Reed-Solomon-error-correction-coded matrix encoder,
+and a font's actual glyph outlines are all out of scope to reimplement (a
+subtly-wrong hand-rolled QR encoder would produce codes that *look* right but
+don't scan — not a visually-catchable bug, unlike this policy's other
+adaptations, which are simple CSS/HTML patterns). PDF.js ships only inside
+the MCP Apps bundle (`file_upload` atom's PDF branch), never fetched at
+runtime, so the CSP-clean/self-contained invariant (`mcpUiCsp()`,
+`resourceDomains: []`) holds even though this policy's general rule does not.
+QR-Code-generator ships inline with every atom render (Python for static
+surfaces, the same vendored algorithm ported to JS for GAS/MCP Apps) with no
+network calls either. **IBM Plex and Noto Sans are the two exceptions that DO
+introduce a runtime network fetch** (a `@font-face src: url(...)` against
+`a2uicatalog.ai`'s own `/fonts/` path, same-origin, opt-in per atom via
+`use_plex_fonts`/`use_noto_fonts`) — on any surface whose CSP blocks that
+fetch (e.g. a strict MCP Apps `resourceDomains` policy), the font-family
+fallback stack degrades silently to system fonts; nothing breaks, the atom
+just looks plainer.
 
 ---
 
@@ -72,9 +73,25 @@ nothing breaks, the atom just looks plainer.
 - **Used by:** ComponentId/ChildList atoms opting into `use_plex_fonts: true`
   (default) — an inline `@font-face` block referencing
   these files by same-origin URL (`https://a2uicatalog.ai/fonts/ibm-plex/...`).
-  This is the one vendored asset in this policy fetched over the network at
-  render time rather than inlined; see the exceptions note above for the CSP
-  fallback behaviour.
+  See the exceptions note above for the CSP fallback behaviour.
+
+---
+
+## Noto Sans / Noto Sans Mono (Google)
+
+- **Project:** Noto — the Noto Sans and Noto Sans Mono type families
+- **Website:** https://fonts.google.com/noto, https://github.com/notofonts
+- **License:** SIL Open Font License, Version 1.1
+- **Copyright:** Copyright 2022 The Noto Project Authors
+- **Vendored as:** `public/fonts/noto/noto-sans-{400,700}.woff2`,
+  `public/fonts/noto/noto-sans-mono-{400,700}.woff2` (4 static WOFF2 files,
+  Latin subset re-encoded via `pyftsubset` from the upstream Google Fonts
+  release builds — glyph outlines unmodified, only the character set
+  reduced; see `LICENSE.txt` alongside them, permitted under OFL §2)
+- **Used by:** the `promo_carousel_card` atom opting into
+  `use_noto_fonts: true` (default) — an inline `@font-face` block referencing
+  these files by same-origin URL (`https://a2uicatalog.ai/fonts/noto/...`).
+  See the exceptions note above for the CSP fallback behaviour.
 
 ---
 

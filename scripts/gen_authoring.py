@@ -58,6 +58,11 @@ LIFT_PANE_JS = PRIVATE_SPEC / "authoring-lift-pane.js"
 # create_draft.py already validates YAML at creation time, but this is a
 # second, independent safety net for anything hand-edited afterward).
 DRAFTS_DIR = Path.home() / "a2ui-private" / "blog-worker" / "launch-src" / "drafts"
+# Teaser Card Carousel (Authoring suite "template #1") draft storage — a
+# JSON file per slug, written by manage-carousel.yml's save_carousel.py
+# (mirrors DRAFTS_DIR's role for What's Cooking, just a different content
+# shape: {slug, hook, middles, cta} instead of markdown+frontmatter).
+CAROUSEL_DRAFTS_DIR = Path.home() / "a2ui-private" / "blog-worker" / "posts" / "carousel-drafts"
 
 
 def _guard():
@@ -169,6 +174,44 @@ def _load_current_drafts():
             "date": str(meta.get("date", "")),
         })
     return drafts
+
+
+def _load_carousel_drafts():
+    """slug/hook-headline/card-count for each posts/carousel-drafts/*.json,
+    for the Teaser Card Carousel page's own in-progress board. Same
+    best-effort shape as _load_current_drafts: a malformed draft is skipped
+    with a stderr warning, never crashes this build."""
+    if not CAROUSEL_DRAFTS_DIR.exists():
+        return []
+    drafts = []
+    for path in sorted(CAROUSEL_DRAFTS_DIR.glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"gen_authoring: {path.name} invalid ({e}), "
+                  f"skipping from carousel draft board", file=sys.stderr)
+            continue
+        hook = data.get("hook") or {}
+        middles = data.get("middles") or []
+        drafts.append({
+            "slug": path.stem,
+            "headline": hook.get("headline", path.stem),
+            "card_count": 2 + len(middles),  # hook + middles + cta
+        })
+    return drafts
+
+
+def _carousel_board_html(drafts):
+    if not drafts:
+        return '<p class="hint">Nothing drafted yet.</p>'
+    cards = "".join(
+        f'<a class="cooking-card" href="/authoring/templates/teaser-card-carousel/?slug={d["slug"]}">'
+        f'<div class="cooking-card-title">{d["headline"]}</div>'
+        f'<div class="cooking-card-meta">{d["card_count"]} cards</div>'
+        f'</a>'
+        for d in drafts
+    )
+    return f'<div class="cooking-board">{cards}</div>'
 
 
 def site_header():
@@ -330,6 +373,13 @@ textarea#draftInput::placeholder,textarea#cookingBody::placeholder{color:var(--t
 .componentid-strip{padding:10px 16px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11.5px;color:var(--text-muted)}
 .componentid-strip b{color:var(--accent);display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
 .hint{font-size:12.5px;color:var(--text-faint);margin:14px 0 24px;max-width:80ch}
+
+/* Teaser Card Carousel (template #1) */
+.carousel-card-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+.carousel-card-block .pane-bar button{margin-left:auto}
+.carousel-preview{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--border);background:var(--code-bg)}
+.car-preview-img{width:120px;aspect-ratio:4/5;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:var(--surface-2)}
+.car-preview-status{font-family:var(--mono);font-size:11px;color:var(--text-faint)}
 </style>
 """
 
@@ -425,6 +475,10 @@ def build_landing_page(playbook_html):
     <a class="hub-card" href="/authoring/posts/">
       <div class="hub-card-title">LinkedIn Posts</div>
       <div class="hub-card-desc">Draft posts, review them against your own tone via Gemini, link them to articles, and track posted engagement — all through the same registry the stats pipe reads.</div>
+    </a>
+    <a class="hub-card" href="/authoring/templates/teaser-card-carousel/">
+      <div class="hub-card-title">Teaser Card Carousel</div>
+      <div class="hub-card-desc">Template #1: hook card, N middle cards (each with an optional media slot), CTA card — real atoms rendered server-side, exported as individual PNGs for a LinkedIn carousel post.</div>
     </a>
   </div>
   <div class="playbook-doc" style="margin-top:36px">{playbook_html}</div>
@@ -794,6 +848,248 @@ renderArchRef();
     return _page_shell("What's Cooking", body, script)
 
 
+def build_carousel_page(carousel_drafts):
+    """Teaser Card Carousel — Authoring suite "template #1". Fixed hook
+    card first, fixed cta card last, N variable middle cards in between
+    (Curtis's call: card count driven by how much an article has to say,
+    not a fixed 5). 100% atom-based: every preview/export image is a real
+    promo_carousel_card block rendered through cloud-run-renderer's /render
+    (via blog-worker/src/carousel.js), never hand-authored HTML/CSS for the
+    cards themselves — this page only collects the fields."""
+    drafts_json = json.dumps(carousel_drafts)
+
+    body = f"""<div class="authoring-top">
+  <div class="gate-note">🔒 full.a2uicatalog.ai only</div>
+  <h1>Teaser Card Carousel</h1>
+  <p class="sub">Hook card, N middle cards (each with an optional media slot), CTA card — every card is a real promo_carousel_card atom, rendered server-side, exported as individual PNGs for a LinkedIn carousel post.</p>
+</div>
+<div class="section">
+  <h2 style="font-size:1.05rem;margin:0 0 12px">Drafted ({len(carousel_drafts)})</h2>
+  {_carousel_board_html(carousel_drafts)}
+</div>
+<div class="section" style="padding-top:0">
+  <h2 style="font-size:1.05rem;margin:24px 0 12px">Build a carousel</h2>
+  <div class="fm-fields" style="grid-template-columns:1fr;margin-bottom:16px">
+    <label>Slug (for saving/loading this draft) <input id="carSlug" type="text" placeholder="e.g. ge-print-rendering-workaround"></label>
+  </div>
+
+  <div class="carousel-card-block" data-role="hook">
+    <div class="pane-bar"><span>Hook card</span></div>
+    <div class="fm-fields">
+      <label>Eyebrow <input class="car-eyebrow" type="text" placeholder="Series / label"></label>
+      <label>Headline <input class="car-headline" type="text" placeholder="The hook line"></label>
+      <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
+    </div>
+    <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
+  </div>
+
+  <div id="carMiddles"></div>
+  <button class="copy-btn" id="carAddMiddle" type="button" style="margin:12px 0">+ ADD MIDDLE CARD</button>
+
+  <div class="carousel-card-block" data-role="cta">
+    <div class="pane-bar"><span>CTA card</span></div>
+    <div class="fm-fields">
+      <label>Eyebrow <input class="car-eyebrow" type="text" placeholder="e.g. What this surfaced"></label>
+      <label>Headline <input class="car-headline" type="text" placeholder="The closing line"></label>
+      <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
+    </div>
+    <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
+  </div>
+
+  <div class="childlist-strip" style="display:flex;align-items:center;gap:10px;margin-top:16px;border-top:1px solid var(--border)">
+    <button class="copy-btn" id="carSaveBtn" type="button">SAVE DRAFT</button>
+    <button class="copy-btn" id="carExportBtn" type="button">EXPORT ALL AS PNG</button>
+    <span id="carStatus" style="color:var(--text-faint)"></span>
+  </div>
+</div>"""
+
+    script = f"""
+var CAROUSEL_DRAFTS = {drafts_json};
+var middleCount = 0;
+
+function carPreviewDebounced(blockEl){{
+  clearTimeout(blockEl._previewTimer);
+  blockEl._previewTimer = setTimeout(function(){{ carRenderPreview(blockEl); }}, 800);
+}}
+
+function carCardFromBlock(blockEl, role, position){{
+  return {{
+    type: 'promo_carousel_card',
+    role: role,
+    eyebrow: blockEl.querySelector('.car-eyebrow').value,
+    position: position,
+    headline: blockEl.querySelector('.car-headline').value,
+    body: blockEl.querySelector('.car-body').value,
+    media_url: blockEl.querySelector('.car-media') ? blockEl.querySelector('.car-media').value : ''
+  }};
+}}
+
+function carRenderPreview(blockEl){{
+  var role = blockEl.dataset.role;
+  var card = carCardFromBlock(blockEl, role, '');
+  if (!card.headline.trim()) return;
+  var img = blockEl.querySelector('.car-preview-img');
+  var status = blockEl.querySelector('.car-preview-status');
+  status.textContent = 'Rendering...';
+  fetch('/authoring/api/carousel-preview', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{card: card}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      if (res.ok && res.data.png_base64) {{
+        img.src = 'data:image/png;base64,' + res.data.png_base64;
+        status.textContent = '';
+      }} else {{
+        status.textContent = 'FAILED: ' + (res.data.error || 'unknown error');
+      }}
+    }})
+    .catch(function(e){{ status.textContent = 'FAILED: ' + e.message; }});
+}}
+
+function carWireBlock(blockEl){{
+  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media').forEach(function(el){{
+    el.addEventListener('input', function(){{ carPreviewDebounced(blockEl); }});
+  }});
+}}
+
+function carAddMiddle(prefill){{
+  middleCount++;
+  var el = document.createElement('div');
+  el.className = 'carousel-card-block';
+  el.dataset.role = 'middle';
+  el.innerHTML =
+    '<div class="pane-bar"><span>Middle card ' + middleCount + '</span>' +
+    '<button class="copy-btn" type="button" data-remove="1">REMOVE</button></div>' +
+    '<div class="fm-fields">' +
+    '<label>Eyebrow <input class="car-eyebrow" type="text" placeholder="Section label"></label>' +
+    '<label>Headline <input class="car-headline" type="text" placeholder="The point of this card"></label>' +
+    '<label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>' +
+    '<label style="grid-column:1/-1">Media URL (optional — GIF/image; leave blank for a placeholder slot) <input class="car-media" type="text" placeholder="/gallery/.../example.gif"></label>' +
+    '</div>' +
+    '<div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>';
+  el.querySelector('[data-remove]').addEventListener('click', function(){{
+    el.remove();
+    carRenumberMiddles();
+  }});
+  document.getElementById('carMiddles').appendChild(el);
+  carWireBlock(el);
+  if (prefill) {{
+    el.querySelector('.car-eyebrow').value = prefill.eyebrow || '';
+    el.querySelector('.car-headline').value = prefill.headline || '';
+    el.querySelector('.car-body').value = prefill.body || '';
+    el.querySelector('.car-media').value = prefill.media_url || '';
+    carRenderPreview(el);
+  }}
+  return el;
+}}
+
+function carRenumberMiddles(){{
+  var blocks = document.querySelectorAll('#carMiddles .carousel-card-block');
+  blocks.forEach(function(el, i){{ el.querySelector('.pane-bar span').textContent = 'Middle card ' + (i + 1); }});
+}}
+
+function carAssembleCards(){{
+  var hookEl = document.querySelector('.carousel-card-block[data-role="hook"]');
+  var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
+  var middleEls = document.querySelectorAll('#carMiddles .carousel-card-block');
+  var total = 2 + middleEls.length;
+  var cards = [];
+  cards.push(carCardFromBlock(hookEl, 'hook', '1 / ' + total));
+  middleEls.forEach(function(el, i){{ cards.push(carCardFromBlock(el, 'middle', (i + 2) + ' / ' + total)); }});
+  cards.push(carCardFromBlock(ctaEl, 'cta', total + ' / ' + total));
+  return cards;
+}}
+
+document.getElementById('carAddMiddle').addEventListener('click', function(){{ carAddMiddle(null); }});
+carWireBlock(document.querySelector('.carousel-card-block[data-role="hook"]'));
+carWireBlock(document.querySelector('.carousel-card-block[data-role="cta"]'));
+
+document.getElementById('carSaveBtn').addEventListener('click', function(){{
+  var slug = document.getElementById('carSlug').value.trim();
+  var status = document.getElementById('carStatus');
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) {{ status.textContent = 'Slug must be lowercase-hyphenated.'; return; }}
+  var hookEl = document.querySelector('.carousel-card-block[data-role="hook"]');
+  var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
+  var middleEls = document.querySelectorAll('#carMiddles .carousel-card-block');
+  var hook = {{eyebrow: hookEl.querySelector('.car-eyebrow').value, headline: hookEl.querySelector('.car-headline').value, body: hookEl.querySelector('.car-body').value}};
+  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value}};
+  var middles = [];
+  middleEls.forEach(function(el){{
+    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, media_url: el.querySelector('.car-media').value}});
+  }});
+  status.textContent = 'Saving...';
+  fetch('/authoring/api/carousel-save', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{slug: slug, hook: hook, middles: middles, cta: cta}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      status.textContent = res.ok ? 'Saved — check GitHub for the new PR shortly.' : 'FAILED: ' + (res.data.error || 'unknown error');
+    }})
+    .catch(function(e){{ status.textContent = 'FAILED: ' + e.message; }});
+}});
+
+document.getElementById('carExportBtn').addEventListener('click', function(){{
+  var status = document.getElementById('carStatus');
+  var btn = document.getElementById('carExportBtn');
+  var cards = carAssembleCards();
+  if (!cards[0].headline.trim() || !cards[cards.length - 1].headline.trim()) {{
+    status.textContent = 'Hook and CTA cards both need a headline before exporting.';
+    return;
+  }}
+  btn.disabled = true; btn.textContent = 'RENDERING...';
+  status.textContent = 'Rendering ' + cards.length + ' card(s) at full export size — this can take a while...';
+  fetch('/authoring/api/carousel-export', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{cards: cards}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      btn.disabled = false; btn.textContent = 'EXPORT ALL AS PNG';
+      if (!res.ok) {{ status.textContent = 'FAILED: ' + (res.data.error || 'unknown error'); return; }}
+      res.data.images.forEach(function(img){{
+        var a = document.createElement('a');
+        a.href = 'data:image/png;base64,' + img.png_base64;
+        a.download = img.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }});
+      status.textContent = 'Exported ' + res.data.images.length + ' image(s) — check your downloads.';
+    }})
+    .catch(function(e){{
+      btn.disabled = false; btn.textContent = 'EXPORT ALL AS PNG';
+      status.textContent = 'FAILED: ' + e.message;
+    }});
+}});
+
+// Load an existing draft if ?slug=... is present (from the board above).
+(function(){{
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  if (!slug) return;
+  var draft = null;
+  for (var i = 0; i < CAROUSEL_DRAFTS.length; i++) {{ if (CAROUSEL_DRAFTS[i].slug === slug) {{ draft = CAROUSEL_DRAFTS[i]; break; }} }}
+  document.getElementById('carSlug').value = slug;
+  // CAROUSEL_DRAFTS only carries the board summary (slug/headline/count),
+  // not the full field set — full draft content isn't embedded page-wide
+  // for every draft to keep this page's HTML small. Loading full content
+  // for editing is a real gap, flagged rather than faked: for now this
+  // pre-fills the slug only, so Save creates a NEW draft rather than
+  // silently overwriting one whose fields you can't see yet.
+  if (draft) {{
+    document.getElementById('carStatus').textContent =
+      'Loaded slug "' + slug + '" (' + draft.card_count + ' cards) — full field content isn\\'t loaded yet, fill in the cards again before saving.';
+  }}
+}})();
+"""
+    return _page_shell("Teaser Card Carousel", body, script)
+
+
 def main():
     _guard()
     playbook_html = markdown.markdown(
@@ -805,6 +1101,7 @@ def main():
     schema_children = _load_schema_children()
     _verify_componentid_maps(archetypes, schema_children)
     current_drafts = _load_current_drafts()
+    carousel_drafts = _load_carousel_drafts()
 
     lift_pane_html = LIFT_PANE_HTML.read_text(encoding="utf-8") if LIFT_PANE_HTML.exists() else ""
     lift_pane_js = LIFT_PANE_JS.read_text(encoding="utf-8") if LIFT_PANE_JS.exists() else ""
@@ -829,11 +1126,20 @@ def main():
         encoding="utf-8",
     )
 
+    carousel_dir = OUTPUT_DIR / "templates" / "teaser-card-carousel"
+    carousel_dir.mkdir(parents=True, exist_ok=True)
+    (carousel_dir / "index.html").write_text(
+        build_carousel_page(carousel_drafts),
+        encoding="utf-8",
+    )
+
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
-    print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/ "
+    print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/, "
+          f"/authoring/templates/teaser-card-carousel/ "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json, "
-          f"{len(current_drafts)} draft(s) on the cooking board)")
+          f"{len(current_drafts)} draft(s) on the cooking board, "
+          f"{len(carousel_drafts)} carousel draft(s))")
 
 
 if __name__ == "__main__":
