@@ -2,3 +2,4 @@ flask==3.0.*
 gunicorn==22.*
 markdown==3.6
 playwright==1.44.*
+Pillow==10.4.0

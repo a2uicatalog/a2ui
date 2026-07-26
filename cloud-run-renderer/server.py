@@ -34,6 +34,7 @@ POST /render
     not meaningful for PNG bytes). printer.py's browser/httpx caller wants
     the default raw-bytes form; an ADK tool should request JSON explicitly.
 """
+import collections
 import os
 import re
 import sys
@@ -59,34 +60,58 @@ from playwright.sync_api import sync_playwright
 
 app = Flask(__name__)
 
-# -- /chat config: replies with a Card image URL pointing at a2ui-ge-agent's
-# /render.png bridge (same stateless, on-demand PNG-transport pattern already
-# proven for Gemini Enterprise card images -- a2ui-ge-agent/main.py's
-# render_png/_encode_block_qs). Chat's own card renderer fetches that URL
-# itself, so there's no chat.googleapis.com attachments:upload call to make
-# here at all -- that endpoint needs a real signed-in-user auth context
-# (confirmed 403 "permission denied" when called via any broker/service
-# identity that isn't an actual member of the target space), which nothing
-# server-side can reliably provide. Sidesteps the problem instead of solving
-# an auth puzzle that has no clean solution for an unattended service.
-AGENT_BASE_URL = os.environ.get('AGENT_BASE_URL', 'https://a2ui-ge-agent-500864195757.us-central1.run.app')
+# -- /chat config: replies with a Card image URL Chat's own card renderer
+# fetches itself, so there's no chat.googleapis.com attachments:upload call
+# to make here at all -- that endpoint needs a real signed-in-user auth
+# context (confirmed 403 "permission denied" when called via any
+# broker/service identity that isn't an actual member of the target space),
+# which nothing server-side can reliably provide. Sidesteps the problem
+# instead of solving an auth puzzle with no clean solution for an
+# unattended service.
+#
+# Historically this pointed at a SEPARATE service (a2ui-ge-agent) whose only
+# job was proxying: it received the plain, unauthenticated GET Chat's image
+# fetcher makes, turned it into an authenticated POST against THIS service's
+# own /render, and re-served the bytes publicly. That split existed only
+# because Cloud Run IAM is all-or-nothing per service -- you can't gate the
+# inbound /chat webhook while leaving one route public on the SAME
+# deployment. /render.png and /render.gif below are that same proxy job,
+# folded directly into this service (it already renders locally -- no
+# remote call needed). AGENT_BASE_URL defaults to this service's own
+# request host; set the env var only if you genuinely want a separate
+# image-serving host (e.g. running /chat IAM-gated on one Cloud Run service
+# and the image routes publicly on another, mirroring the old split). See
+# README.md's "Two ways to deploy this" section.
+AGENT_BASE_URL = os.environ.get('AGENT_BASE_URL', '')
+
+
+def _self_base_url() -> str:
+    return AGENT_BASE_URL or request.host_url.rstrip('/')
 
 
 def _encode_block_qs(block, width=620):
-    """Must match a2ui-ge-agent's _encode_block_qs/_decode_block_qs exactly
-    (same convention as a2uicatalog's own ?p= URLs)."""
+    """gzip + urlsafe-base64, '=' stripped -- same convention as a2uicatalog's
+    own ?p= URLs. Consumed by /render.png below via _decode_block_qs."""
     payload = json.dumps({'block': block, 'width': width}, separators=(',', ':')).encode()
     compressed = gzip.compress(payload, compresslevel=9, mtime=0)
     return base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
 
 
 def _encode_deck_qs(cards, duration_ms=1000):
-    """Sibling of _encode_block_qs for a2ui-ge-agent's /render.gif -- same
-    gzip+b64url convention, just a list of {block, width} instead of one."""
+    """Sibling of _encode_block_qs for /render.gif -- same gzip+b64url
+    convention, just a list of {block, width} instead of one."""
     blocks = [{'block': c['block'], 'width': c['width']} for c in cards]
     payload = json.dumps({'blocks': blocks, 'duration_ms': duration_ms}, separators=(',', ':')).encode()
     compressed = gzip.compress(payload, compresslevel=9, mtime=0)
     return base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
+
+
+def _decode_block_qs(s: str) -> dict:
+    """Inverse of _encode_block_qs/_encode_deck_qs -- doesn't care which
+    shape it decodes, the caller (render_png vs render_gif) does."""
+    padded = s + '=' * (-len(s) % 4)
+    compressed = base64.urlsafe_b64decode(padded)
+    return json.loads(gzip.decompress(compressed))
 
 
 def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: str = '') -> bytes:
@@ -120,11 +145,28 @@ def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: 
     return png
 
 
+# Bounds on the two attacker-controlled dimensions of a render request --
+# added after the roast panel (2026-07-26) flagged that neither existed:
+# an unbounded `width` lets one request force an arbitrarily huge Chromium
+# viewport, and an unbounded deck size lets one request trigger unlimited
+# real browser launches. Generous relative to real usage (default width is
+# 620; real decks are 2-3 cards) so nothing legitimate hits these, but they
+# give every render route a hard ceiling regardless of caller.
+MAX_RENDER_WIDTH = 2000
+MAX_DECK_BLOCKS = 12
+
+
+def _validated_width(width) -> int:
+    width = int(width)
+    if not (1 <= width <= MAX_RENDER_WIDTH):
+        raise ValueError(f'width must be between 1 and {MAX_RENDER_WIDTH}, got {width}')
+    return width
+
+
 @app.route('/render', methods=['POST'])
 def render():
     payload = request.get_json(force=True)
     block = payload.get('block')
-    width = int(payload.get('width', 620))
     title = payload.get('title', '')
     subtitle = payload.get('subtitle', '')
 
@@ -134,6 +176,11 @@ def render():
     if web_article._RENDERERS.get(block['type']) is None:
         return Response(json.dumps({'ok': False, 'error': f"unknown atom '{block['type']}'"}),
                         status=400, mimetype='application/json')
+    try:
+        width = _validated_width(payload.get('width', 620))
+    except ValueError as e:
+        return Response(json.dumps({'ok': False, 'error': str(e)}),
+                        status=400, mimetype='application/json')
 
     png = _render_block_png(block, width, title, subtitle)
 
@@ -141,6 +188,149 @@ def render():
         return Response(json.dumps({'ok': True, 'png_base64': base64.b64encode(png).decode('ascii')}),
                         mimetype='application/json')
     return Response(png, mimetype='image/png')
+
+
+class _BoundedCache:
+    """Size-capped LRU, plain dict semantics otherwise. Added after the
+    roast panel (2026-07-26) flagged that the original unbounded dicts here
+    were a real memory-leak vector specifically BECAUSE /render.png and
+    /render.gif make the cache key (any width/block combination) reachable
+    by anyone with the URL, not just this repo's own trusted callers.
+    maxsize is generous relative to real traffic shapes (a handful of demo
+    commands, each a few hundred KB rendered) -- this bounds the failure
+    mode, it doesn't tune for a specific traffic volume."""
+    def __init__(self, maxsize: int):
+        self._maxsize = maxsize
+        self._data = collections.OrderedDict()
+
+    def get(self, key):
+        if key not in self._data:
+            return None
+        self._data.move_to_end(key)
+        return self._data[key]
+
+    def set(self, key, value):
+        self._data[key] = value
+        self._data.move_to_end(key)
+        if len(self._data) > self._maxsize:
+            self._data.popitem(last=False)
+
+
+_render_cache = _BoundedCache(maxsize=200)  # (json-key, width) -> PNG bytes
+
+
+def _render_block_png_cached(block: dict, width: int) -> bytes:
+    cache_key = (json.dumps(block, sort_keys=True), width)
+    cached = _render_cache.get(cache_key)
+    if cached is None:
+        cached = _render_block_png(block, width)
+        _render_cache.set(cache_key, cached)
+    return cached
+
+
+@app.route('/render.png', methods=['GET'])
+def render_png():
+    """GET sibling of POST /render, for anywhere that can only fetch a plain
+    URL and can't send a POST body or an Authorization header -- Google
+    Chat's own `image` widget `imageUrl` fetch is exactly that case (see
+    AGENT_BASE_URL's comment above for the full story). ?b=<_encode_block_qs
+    output>; deploy-free by design -- a new atom or width is just a new
+    query string against this same route, never a new server-side handler."""
+    try:
+        spec = _decode_block_qs(request.args.get('b', ''))
+        width = _validated_width(spec.get('width', 620))
+        png = _render_block_png_cached(spec['block'], width)
+    except Exception as e:
+        return Response(f'render.png failed: {e}', status=502, mimetype='text/plain')
+    return Response(png, mimetype='image/png',
+                     headers={'Cache-Control': 'public, max-age=300'})
+
+
+_deck_gif_cache = _BoundedCache(maxsize=100)  # (json-key, duration_ms) -> GIF bytes
+
+
+def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int = 24) -> bytes:
+    """GET-servable sibling of the GIF-deck idea already proven in
+    a2uicatalog-printer/a2ui-ge-agent: render each {block, width} spec
+    through the SAME _render_block_png_cached path (a frame already shown
+    singly is never re-rendered), then stitch into one animated GIF -- a
+    multi-card deck collapsed into one self-contained, shareable image that
+    works anywhere an imageUrl does, not just inside Chat's cardsV2.
+
+    Crops every frame to a SHARED bounding box (the union across all
+    frames, not each frame's own) before resizing to the median frame
+    height, so cropping never introduces frame-to-frame jitter -- ported
+    from a2ui-ge-agent's _render_deck_gif_autocrop rather than the plainer
+    median-resize-only version this function shipped with initially (roast
+    panel, 2026-07-26): that version left the exact letterboxing artifact
+    autocrop already solves elsewhere in this codebase. Every card here is
+    rendered at the SAME design width by the caller (one type system, not
+    one width per card), so only height varies frame to frame; resizing to
+    the MEDIAN height (not the max) keeps the common case untouched and
+    only mildly stretches/squashes the outliers."""
+    if len(blocks) > MAX_DECK_BLOCKS:
+        raise ValueError(f'deck too large: {len(blocks)} blocks (max {MAX_DECK_BLOCKS})')
+    cache_key = (json.dumps(blocks, sort_keys=True), duration_ms)
+    cached = _deck_gif_cache.get(cache_key)
+    if cached is not None:
+        return cached
+    from PIL import Image, ImageChops
+    import io
+
+    pngs = [_render_block_png_cached(spec['block'], _validated_width(spec.get('width', 620)))
+            for spec in blocks]
+    images = [Image.open(io.BytesIO(p)).convert('RGB') for p in pngs]
+
+    boxes = []
+    for im in images:
+        bg = im.getpixel((2, 2))
+        bg_im = Image.new('RGB', im.size, bg)
+        bbox = ImageChops.difference(im, bg_im).getbbox()
+        if bbox:
+            boxes.append(bbox)
+    if boxes:
+        left = max(0, min(b[0] for b in boxes) - target_margin)
+        top = max(0, min(b[1] for b in boxes) - target_margin)
+        right = min(max(im.width for im in images), max(b[2] for b in boxes) + target_margin)
+        bottom = min(max(im.height for im in images), max(b[3] for b in boxes) + target_margin)
+        images = [im.crop((left, top, right, bottom)) for im in images]
+
+    heights = sorted(im.height for im in images)
+    target_h = heights[len(heights) // 2]
+    canvas_w = max(im.width for im in images)
+    frames = [im if (im.width, im.height) == (canvas_w, target_h)
+              else im.resize((canvas_w, target_h), Image.LANCZOS)
+              for im in images]
+
+    buf = io.BytesIO()
+    frames[0].save(buf, format='GIF', save_all=True, append_images=frames[1:],
+                    duration=duration_ms, loop=0, disposal=2, optimize=False)
+    gif = buf.getvalue()
+    _deck_gif_cache.set(cache_key, gif)
+    return gif
+
+
+@app.route('/render.gif', methods=['GET'])
+def render_gif():
+    """Deck-to-GIF sibling of /render.png: ?b=<_encode_deck_qs output>,
+    same codec -- _decode_block_qs doesn't care which shape it decodes."""
+    try:
+        spec = _decode_block_qs(request.args.get('b', ''))
+        gif = _render_deck_gif(spec['blocks'], spec.get('duration_ms', 1000))
+    except ImportError as e:
+        # Specifically distinguished from the generic except below: this
+        # means requirements.txt and the actual installed environment have
+        # drifted (e.g. Pillow missing) -- a maintainer needs to see THAT,
+        # not a bare atom/decode error. Real incident, 2026-07-26: this
+        # exact failure shipped once because local verification ran in an
+        # environment with Pillow already installed from an unrelated
+        # earlier step, masking that requirements.txt didn't list it.
+        return Response(f'render.gif failed: missing dependency ({e}) -- '
+                         f'check requirements.txt is installed', status=500, mimetype='text/plain')
+    except Exception as e:
+        return Response(f'render.gif failed: {e}', status=502, mimetype='text/plain')
+    return Response(gif, mimetype='image/gif',
+                     headers={'Cache-Control': 'public, max-age=300'})
 
 
 # -- /chat: a Google Chat HTTP-endpoint app. Cloud Run's own IAM
@@ -490,7 +680,7 @@ def chat_event():
             # back to the full 'cards' list unchanged (sla/map single-card
             # commands never define gif_cards, so behave exactly as before).
             gif_cards = parsed.get('gif_cards', parsed['cards'])
-            gif_url = f"{AGENT_BASE_URL}/render.gif?b={_encode_deck_qs(gif_cards, duration_ms=1500)}"
+            gif_url = f"{_self_base_url()}/render.gif?b={_encode_deck_qs(gif_cards, duration_ms=1500)}"
             first = gif_cards[0]
             widgets = [{'image': {
                 'imageUrl': gif_url,
@@ -520,7 +710,7 @@ def chat_event():
             cards_v2 = []
             n = len(parsed['cards'])
             for i, spec in enumerate(parsed['cards']):
-                img_url = f"{AGENT_BASE_URL}/render.png?b={_encode_block_qs(spec['block'], spec['width'])}"
+                img_url = f"{_self_base_url()}/render.png?b={_encode_block_qs(spec['block'], spec['width'])}"
                 widgets = [{'image': {
                     'imageUrl': img_url,
                     'altText': _alt_text_for_block(spec['block'], spec.get('title', '')),
