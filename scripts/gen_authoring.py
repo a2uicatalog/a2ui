@@ -964,6 +964,12 @@ function carCardFromBlock(blockEl, role, position){{
   var card = {{
     type: 'promo_carousel_card',
     role: role,
+    // Deck-level look, stamped onto every card: the atom carries variant/font
+    // per block (one card is one render), so the deck selects have to be read
+    // here or preview and export silently fall back to the atom defaults while
+    // the saved draft says otherwise.
+    variant: document.getElementById('carVariant').value,
+    font: document.getElementById('carFont').value,
     eyebrow: blockEl.querySelector('.car-eyebrow').value,
     position: position,
     headline: blockEl.querySelector('.car-headline').value,

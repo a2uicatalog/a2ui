@@ -21683,9 +21683,26 @@ def _render_promo_carousel_card(b: dict) -> str:
     if not has_media:
         media_html = ''
     else:
+        # A REAL image keeps its own aspect ratio -- it is never cropped to the
+        # slot. Forcing media_ar + object-fit:cover on it silently destroyed
+        # wide captures: a 2.2:1 Google Chat recording cropped to 4/3 showed a
+        # zoomed corner of the window and nothing else. The slot's aspect is
+        # only a guess about the content; the content itself is the truth, so
+        # the image sets the height and max_media caps it so a tall capture
+        # can't push the footer off the card.
+        # width:auto + max-width/max-height is what keeps the FRAME glued to the
+        # image. With width:100% a height-capped tall image letterboxes inside a
+        # full-width frame, and the browser-chrome bar juts out past the picture
+        # on both sides -- which reads as a broken render, not a framed one.
+        max_media = '58cqw' if fr else '52cqw'
+        # Shrink-wrap the frame to a real image; keep it full-width for the
+        # placeholder, which has no intrinsic size to wrap around (fit-content
+        # on a width:100% child collapses to min-content).
+        frame_width = 'width:fit-content;max-width:100%;' if media_url else ''
         inner = (
             f'<img {_PROMO_MEDIA_ATTR}="1" src="{_esc(_promo_media_src(media_url))}" '
-            f'style="display:block;width:100%;aspect-ratio:{media_ar};object-fit:cover;" />'
+            f'style="display:block;width:auto;height:auto;'
+            f'max-width:100%;max-height:{max_media};" />'
             if media_url else
             f'<div {_PROMO_MEDIA_ATTR}="1" style="width:100%;aspect-ratio:{media_ar};'
             f'display:flex;align-items:center;justify-content:center;'
@@ -21700,6 +21717,7 @@ def _render_promo_carousel_card(b: dict) -> str:
                            'background:rgba(148,163,196,.45);"></div>' for _ in range(3))
             media_html = (
                 f'<div style="margin-top:3.5cqw;border-radius:1.4cqw;overflow:hidden;'
+                f'{frame_width}'
                 f'border-top:0.5cqw solid {accent};box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.45);">'
                 f'<div style="display:flex;align-items:center;gap:0.9cqw;padding:1.2cqw 1.6cqw;'
                 f'background:#E8EDF5;">{dots}</div>{inner}</div>'
@@ -21708,7 +21726,8 @@ def _render_promo_carousel_card(b: dict) -> str:
             border_style = ('' if media_url else
                             'border:0.25cqw dashed rgba(154,163,199,.3);')
             media_html = (f'<div style="margin-top:3.5cqw;border-radius:1.6cqw;'
-                          f'overflow:hidden;{border_style}">{inner}</div>')
+                          f'overflow:hidden;{frame_width}'
+                          f'{border_style}">{inner}</div>')
 
     cta_label = b.get('cta_label', '')
     cta_bg = accent if fr else 'linear-gradient(120deg,#7C5CFF,#00E5FF)'
