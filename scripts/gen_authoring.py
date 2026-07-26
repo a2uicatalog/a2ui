@@ -910,6 +910,7 @@ def build_carousel_page(carousel_drafts):
     <button class="copy-btn" id="carExportGifBtn" type="button">EXPORT AS GIF</button>
     <span id="carStatus" style="color:var(--text-faint)"></span>
   </div>
+  <p class="hint" id="carCostEstimate" style="margin-top:6px"></p>
 </div>"""
 
     script = f"""
@@ -981,6 +982,7 @@ function carAddMiddle(prefill){{
   el.querySelector('[data-remove]').addEventListener('click', function(){{
     el.remove();
     carRenumberMiddles();
+    carUpdateCostEstimate();
   }});
   document.getElementById('carMiddles').appendChild(el);
   carWireBlock(el);
@@ -991,12 +993,45 @@ function carAddMiddle(prefill){{
     el.querySelector('.car-media').value = prefill.media_url || '';
     carRenderPreview(el);
   }}
+  carUpdateCostEstimate();
   return el;
 }}
 
 function carRenumberMiddles(){{
   var blocks = document.querySelectorAll('#carMiddles .carousel-card-block');
   blocks.forEach(function(el, i){{ el.querySelector('.pane-bar span').textContent = 'Middle card ' + (i + 1); }});
+}}
+
+// Real Cloud Run compute cost, not a guess — measured live 2026-07-26
+// (3 back-to-back single-card renders at full 1080px export width against
+// the actual deployed a2ui-atom-renderer, ~2.9-3.0s each) and combined
+// with Cloud Run's published per-second gen2 pricing (1 vCPU + 1GiB
+// allocated): $0.000024/vCPU-second + $0.0000025/GiB-second. GIF export
+// additionally pays a per-deck stitch overhead (frame diffing, resizing,
+// GIF encoding in cloud_run_renderer's _render_deck_gif) estimated at
+// ~2s flat on top of the per-frame renders. Both numbers are Cloud Run
+// COMPUTE only -- no Vertex AI/LLM call happens on export, and Cloud
+// Run's free tier (180,000 vCPU-seconds + 360,000 GiB-seconds/month) is
+// far beyond what any realistic personal-authoring usage would reach, so
+// this is honest transparency, not a meaningful spend warning.
+var CAR_SECONDS_PER_CARD = 3.0;
+var CAR_GIF_STITCH_OVERHEAD_SECONDS = 2.0;
+var CAR_COST_PER_SECOND = 0.000024 + 0.0000025;  // 1 vCPU + 1 GiB, gen2 rate
+
+function carFormatCost(dollars){{
+  return dollars < 0.0001 ? '<$0.0001' : '$' + dollars.toFixed(4);
+}}
+
+function carUpdateCostEstimate(){{
+  var n = 2 + document.querySelectorAll('#carMiddles .carousel-card-block').length;
+  var pngSeconds = n * CAR_SECONDS_PER_CARD;
+  var gifSeconds = pngSeconds + CAR_GIF_STITCH_OVERHEAD_SECONDS;
+  var pngCost = pngSeconds * CAR_COST_PER_SECOND;
+  var gifCost = gifSeconds * CAR_COST_PER_SECOND;
+  document.getElementById('carCostEstimate').textContent =
+    'Estimated Cloud Run compute cost for ' + n + ' card(s): ' +
+    carFormatCost(pngCost) + ' as PNGs, ' + carFormatCost(gifCost) + ' as GIF ' +
+    '(real Cloud Run compute pricing; well within the monthly free tier for normal use).';
 }}
 
 function carAssembleCards(){{
@@ -1014,6 +1049,7 @@ function carAssembleCards(){{
 document.getElementById('carAddMiddle').addEventListener('click', function(){{ carAddMiddle(null); }});
 carWireBlock(document.querySelector('.carousel-card-block[data-role="hook"]'));
 carWireBlock(document.querySelector('.carousel-card-block[data-role="cta"]'));
+carUpdateCostEstimate();
 
 document.getElementById('carSaveBtn').addEventListener('click', function(){{
   var slug = document.getElementById('carSlug').value.trim();
@@ -1050,7 +1086,8 @@ document.getElementById('carExportBtn').addEventListener('click', function(){{
     return;
   }}
   btn.disabled = true; btn.textContent = 'RENDERING...';
-  status.textContent = 'Rendering ' + cards.length + ' card(s) at full export size — this can take a while...';
+  status.textContent = 'Rendering ' + cards.length + ' card(s) at full export size (est. ' +
+    carFormatCost(cards.length * CAR_SECONDS_PER_CARD * CAR_COST_PER_SECOND) + ') — this can take a while...';
   fetch('/authoring/api/carousel-export', {{
     method: 'POST',
     headers: {{'content-type': 'application/json'}},
@@ -1089,7 +1126,9 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
     return;
   }}
   btn.disabled = true; btn.textContent = 'RENDERING...';
-  status.textContent = 'Rendering ' + cards.length + ' card(s) into one animated GIF — this can take a while...';
+  status.textContent = 'Rendering ' + cards.length + ' card(s) into one animated GIF (est. ' +
+    carFormatCost((cards.length * CAR_SECONDS_PER_CARD + CAR_GIF_STITCH_OVERHEAD_SECONDS) * CAR_COST_PER_SECOND) +
+    ') — this can take a while...';
   fetch('/authoring/api/carousel-export-gif', {{
     method: 'POST',
     headers: {{'content-type': 'application/json'}},
