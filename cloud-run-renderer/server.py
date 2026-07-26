@@ -599,7 +599,7 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
     # at 90 frames came out at 33.5MB with the original settings (full-frame,
     # per-frame local palettes), which is unusable for LinkedIn or a blog
     # embed. Three changes, all of which also HELP quality-per-byte here:
-    #  * one shared palette for the whole deck (a global colour table written
+    #  * one shared 192-colour palette for the whole deck (a global colour table written
     #    once, instead of a local one per frame),
     #  * dither=NONE -- these are flat-UI screen recordings, so dithering adds
     #    noise that both looks worse and defeats LZW compression, and
@@ -608,7 +608,7 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
     #    consecutive media frames differ ONLY inside the media slot, the card
     #    chrome around it is pixel-identical.
     pal_src = frames[0] if len(frames) == 1 else frames[len(frames) // 2]
-    palette = pal_src.quantize(colors=128, method=Image.MEDIANCUT)
+    palette = pal_src.quantize(colors=192, method=Image.MEDIANCUT)
     for i, f in enumerate(frames):
         # In-place again, and a real saving beyond avoiding the duplicate
         # list: the quantized P-mode frame is 1 byte/px against RGB's 3, so

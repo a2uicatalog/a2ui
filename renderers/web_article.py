@@ -21555,7 +21555,25 @@ def _promo_font_css() -> str:
     return f"<style>{faces}</style>"
 
 
-_PROMO_HEADLINE_SIZE = {'hook': '44px', 'middle': '32px', 'cta': '36px'}
+# Type scale in cqw (1cqw = 1% of the card's own width), NOT px. Two reasons,
+# both real problems the px version had:
+#  1. WYSIWYG. Fixed px meant a 360px preview and a 1080px export rendered the
+#     same absolute type, so the preview showed proportionally ~3x larger text
+#     than the thing it was previewing.
+#  2. Social-graphic scale. These sizes were inherited from _CARD_OPEN's
+#     web-card context (12-15px labels), where the card sits inside a page.
+#     Here the card IS the whole image, and LinkedIn renders a 1080px carousel
+#     card at ~350-400px on a phone -- a ~3x downscale. At the old sizes the
+#     eyebrow, position tag, footer and CTA text all landed at 4-5 effective
+#     pixels: invisible while thumb-scrolling. Everything below is sized so
+#     that after that downscale it still reads.
+_PROMO_HEADLINE_CQW = {'hook': 7.0, 'middle': 5.0, 'cta': 5.6}
+_PROMO_BODY_CQW = 2.8
+_PROMO_LABEL_CQW = 2.0      # eyebrow + position pill
+_PROMO_FOOT_CQW = 1.8
+_PROMO_CTA_CQW = 2.4
+_PROMO_PAD_CQW = 5.5        # was a fixed 26-28px (~2.6% at 1080) -- too tight
+                            # for a full-bleed graphic.
 # Same own-host convention as _PROMO_FONT_BASE above: a media_url written as a
 # site-relative path ("/gallery/...") is what an author naturally types (it's
 # how every blog-side <img> is written), but this atom is screenshotted by
@@ -21583,7 +21601,7 @@ def _promo_media_src(media_url: str) -> str:
 def _render_promo_carousel_card(b: dict) -> str:
     role = b.get('role', 'middle')
     role = role if role in ('hook', 'middle', 'cta') else 'middle'
-    headline_size = _PROMO_HEADLINE_SIZE[role]
+    headline_size = _PROMO_HEADLINE_CQW[role]
     media_url = b.get('media_url', '')
     # has_media is the author's explicit yes/no for this card, NOT inferred
     # from whether media_url happens to be filled: "no" must render no slot
@@ -21600,46 +21618,76 @@ def _render_promo_carousel_card(b: dict) -> str:
         media_html = (
             f'<img {_PROMO_MEDIA_ATTR}="1" src="{_esc(_promo_media_src(media_url))}" '
             f'style="width:100%;aspect-ratio:16/9;object-fit:cover;'
-            f'border-radius:10px;margin:16px 0;" />'
+            f'border-radius:1.6cqw;margin:3.5cqw 0 0;" />'
         )
     else:
         media_html = (
             f'<div {_PROMO_MEDIA_ATTR}="1" style="width:100%;aspect-ratio:16/9;'
-            f'border:1.5px dashed rgba(154,163,199,.3);border-radius:10px;margin:16px 0;'
-            f'display:flex;align-items:center;justify-content:center;'
-            f'color:#5A6390;font-size:13px;">media placeholder</div>'
+            f'border:0.25cqw dashed rgba(154,163,199,.3);border-radius:1.6cqw;'
+            f'margin:3.5cqw 0 0;display:flex;align-items:center;justify-content:center;'
+            f'color:#5A6390;font-size:{_PROMO_LABEL_CQW}cqw;">media placeholder</div>'
         )
 
     cta_label = b.get('cta_label', '')
     cta_html = (
         f'<div style="display:inline-flex;align-self:flex-start;align-items:center;'
-        f'margin-top:20px;padding:10px 18px;border-radius:999px;'
-        f'background:linear-gradient(120deg,#7C5CFF,#00f2ff);color:#0B0E1A;'
-        f'font-family:{_PROMO_MONO};font-size:13px;font-weight:700;'
-        f'letter-spacing:.03em;">{_esc(cta_label)}</div>'
+        f'margin-top:4cqw;padding:1.8cqw 3.4cqw;border-radius:999px;'
+        f'background:linear-gradient(120deg,#7C5CFF,#00E5FF);color:#0B0E1A;'
+        f'font-family:{_PROMO_SANS};font-size:{_PROMO_CTA_CQW}cqw;font-weight:700;'
+        f'letter-spacing:.01em;">{_esc(cta_label)}</div>'
         if (role == 'cta' and cta_label) else ''
+    )
+
+    # Dedicated head/foot rather than the shared _card_head/_card_foot. Those
+    # are correct for the web-card atoms they were built for (fixed ~11-12px
+    # type, a schema-name suffix that's useful in a docs context), but both
+    # are wrong here: this card is a public social graphic, so the type has to
+    # scale with the card, and the atom's own type name has no business on it.
+    eyebrow, position = b.get('eyebrow', ''), b.get('position', '')
+    head_html = (
+        f'<div style="display:flex;justify-content:space-between;align-items:center;gap:3cqw;">'
+        f'<div style="font-size:{_PROMO_LABEL_CQW}cqw;font-weight:700;letter-spacing:.12em;'
+        f'text-transform:uppercase;color:#00E5FF;">{_esc(eyebrow)}</div>'
+        # Position as a real pill, not bare grey text -- at this size a plain
+        # "2 / 5" reads as stray text rather than a deliberate index.
+        + (f'<div style="flex:none;font-family:{_PROMO_MONO};font-size:{_PROMO_LABEL_CQW * 0.9}cqw;'
+           f'font-weight:700;color:#9AA3C7;background:rgba(154,163,199,.1);'
+           f'border:0.15cqw solid rgba(154,163,199,.22);border-radius:999px;'
+           f'padding:0.7cqw 1.8cqw;">{_esc(position)}</div>' if position else '')
+        + '</div>'
+    )
+    foot_html = (
+        f'<div style="margin-top:auto;padding-top:2.5cqw;'
+        f'border-top:0.15cqw solid rgba(154,163,199,.14);text-align:right;'
+        f'font-family:{_PROMO_MONO};font-size:{_PROMO_FOOT_CQW}cqw;color:#5A6390;'
+        f'letter-spacing:.04em;">{_esc(b.get("footer_label") or "a2uicatalog.ai")}</div>'
     )
 
     font_css = _promo_font_css() if b.get('use_noto_fonts', True) else ''
 
     return (
         f'{font_css}'
-        f'<div style="{_CARD_OPEN}font-family:{_PROMO_SANS};aspect-ratio:4/5;'
-        f'display:flex;flex-direction:column;border-radius:18px;'
-        # Corner glow, ported from the hand-authored prototype this template
-        # was designed against -- layered OVER _CARD_OPEN's flat background
-        # (which this shorthand re-declares, so it must repeat that colour).
-        f'background:radial-gradient(140% 120% at 100% 0%,rgba(124,92,255,.16),transparent 55%),#0B0E1A;">'
-        f'{_card_head(b.get("eyebrow", ""), b.get("position", ""))}'
+        # container-type:inline-size is what makes every cqw above resolve
+        # against THIS card's width, so the whole design scales with `width`
+        # instead of drifting between preview and export.
+        f'<div style="container-type:inline-size;font-family:{_PROMO_SANS};'
+        f'aspect-ratio:4/5;display:flex;flex-direction:column;'
+        f'padding:{_PROMO_PAD_CQW}cqw;color:#EEF2FF;font-variant-numeric:tabular-nums;'
+        f'border:0.1cqw solid #1E2440;border-radius:2.2cqw;'
+        # Corner glow, ported from the hand-authored prototype. Softer and
+        # tighter than the first port (.16 over 55% banded visibly once the
+        # deck GIF quantised to a shared palette).
+        f'background:radial-gradient(120% 100% at 100% 0%,rgba(124,92,255,.11),transparent 45%),#0B0E1A;">'
+        f'{head_html}'
         f'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;">'
-        f'<div style="font-size:{headline_size};font-weight:800;line-height:1.15;'
-        f'letter-spacing:-.01em;">{_esc(b.get("headline", ""))}</div>'
-        + (f'<div style="font-size:15px;color:#9AA3C7;margin-top:12px;line-height:1.5;">'
-           f'{_esc(b.get("body", ""))}</div>' if b.get('body') else '')
+        f'<div style="font-size:{headline_size}cqw;font-weight:800;line-height:1.1;'
+        f'letter-spacing:-.02em;text-wrap:balance;">{_esc(b.get("headline", ""))}</div>'
+        + (f'<div style="font-size:{_PROMO_BODY_CQW}cqw;color:#9AA3C7;margin-top:2.4cqw;'
+           f'line-height:1.45;">{_esc(b.get("body", ""))}</div>' if b.get('body') else '')
         + media_html
         + cta_html
         + '</div>'
-        f'{_card_foot("", "" if b.get("_hide_schema_footer") else "promo_carousel_card")}'
+        f'{foot_html}'
         f'</div>'
     )
 _RENDERERS['promo_carousel_card'] = _render_promo_carousel_card
