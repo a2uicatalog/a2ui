@@ -435,7 +435,7 @@ def _fetch_media_frames(url: str, max_frames: int = MAX_MEDIA_FRAMES):
         return None
 
 
-def _composite_media_frames(base_png: bytes, rect, frames):
+def _composite_media_frames(base_png: bytes, rect, frames, max_width: int = MAX_GIF_WIDTH):
     """One card screenshot + N media frames -> N full-card images.
 
     The card's chrome (headline, eyebrow, footer, glow) is rendered ONCE by
@@ -444,10 +444,23 @@ def _composite_media_frames(base_png: bytes, rect, frames):
     in the exported deck GIF without paying a full ~3s Playwright render per
     source frame -- re-rendering per frame would take minutes per card and
     blow the request timeout, which is why the deck GIF flattened embedded
-    animation before this existed."""
+    animation before this existed.
+
+    The base is downscaled to the GIF's final width BEFORE any frame is
+    composited, and rect is scaled with it. This matters enormously: cards
+    render at device_scale_factor=2, so a width=1080 export card is 2240px
+    wide (~19MB per RGB frame). Compositing 50+ of those and only shrinking
+    afterwards peaked at 2087MiB and OOM-killed a 2GiB Cloud Run instance --
+    doing the identical work at output resolution is ~5x smaller per frame
+    for a pixel-identical result, since the frames were always going to be
+    scaled to MAX_GIF_WIDTH anyway."""
     from PIL import Image
     import io
     base = Image.open(io.BytesIO(base_png)).convert('RGB')
+    if base.width > max_width:
+        ratio = max_width / base.width
+        rect = tuple(max(1, round(v * ratio)) for v in rect)
+        base = base.resize((max_width, max(1, round(base.height * ratio))), Image.LANCZOS)
     x, y, w, h = rect
     if w <= 0 or h <= 0:
         return [base]
@@ -519,6 +532,13 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
         if media and rect:
             media_frames, per_frame_ms = media
             composited = _composite_media_frames(png, rect, media_frames)
+            # Drop the decoded source frames as soon as they've been pasted:
+            # a 90-frame 1100x551 clip is ~160MB of RGB that is dead weight
+            # for the rest of this function. Memory is the real constraint
+            # here -- an animated deck OOM-killed a 1GiB Cloud Run instance
+            # before the frame lists below were made in-place.
+            media_frames.clear()
+            del media
             images.extend(composited)
             # The card dwells for the CLIP's own length, at the clip's own
             # speed -- it does not get squeezed into duration_ms. That was
@@ -527,7 +547,16 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
             # ordinary still cards only.
             durations.extend([per_frame_ms] * len(composited))
         else:
-            images.append(Image.open(io.BytesIO(png)).convert('RGB'))
+            still = Image.open(io.BytesIO(png)).convert('RGB')
+            # Normalise to the same width _composite_media_frames already
+            # reduced animated cards to. The shared-bbox crop below assumes
+            # every frame is in ONE coordinate space, so a deck mixing a
+            # downscaled animated card with a full-size still one would crop
+            # both against the wrong box.
+            if still.width > MAX_GIF_WIDTH:
+                r = MAX_GIF_WIDTH / still.width
+                still = still.resize((MAX_GIF_WIDTH, max(1, round(still.height * r))), Image.LANCZOS)
+            images.append(still)
             durations.append(duration_ms)
 
     boxes = []
@@ -542,7 +571,13 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
         top = max(0, min(b[1] for b in boxes) - target_margin)
         right = min(max(im.width for im in images), max(b[2] for b in boxes) + target_margin)
         bottom = min(max(im.height for im in images), max(b[3] for b in boxes) + target_margin)
-        images = [im.crop((left, top, right, bottom)) for im in images]
+        # In-place, one frame at a time: building a second full list here
+        # doubled peak memory, and with ~90 composited 1160x1400 frames that
+        # alone is ~250MB per copy. Same for the resize and quantize passes
+        # below -- each used to allocate a whole new list while the previous
+        # one was still alive. Real OOM at 1GiB, not a theoretical concern.
+        for i, im in enumerate(images):
+            images[i] = im.crop((left, top, right, bottom))
 
     heights = sorted(im.height for im in images)
     target_h = heights[len(heights) // 2]
@@ -555,9 +590,10 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
     if canvas_w > MAX_GIF_WIDTH:
         ratio = MAX_GIF_WIDTH / canvas_w
         canvas_w, target_h = MAX_GIF_WIDTH, max(1, round(target_h * ratio))
-    frames = [im if (im.width, im.height) == (canvas_w, target_h)
-              else im.resize((canvas_w, target_h), Image.LANCZOS)
-              for im in images]
+    for i, im in enumerate(images):
+        if (im.width, im.height) != (canvas_w, target_h):
+            images[i] = im.resize((canvas_w, target_h), Image.LANCZOS)
+    frames = images
 
     # Encoding matters enormously once a deck carries animation: a ~21s clip
     # at 90 frames came out at 33.5MB with the original settings (full-frame,
@@ -573,7 +609,11 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
     #    chrome around it is pixel-identical.
     pal_src = frames[0] if len(frames) == 1 else frames[len(frames) // 2]
     palette = pal_src.quantize(colors=128, method=Image.MEDIANCUT)
-    frames = [f.quantize(palette=palette, dither=Image.NONE) for f in frames]
+    for i, f in enumerate(frames):
+        # In-place again, and a real saving beyond avoiding the duplicate
+        # list: the quantized P-mode frame is 1 byte/px against RGB's 3, so
+        # each replacement immediately frees 2/3 of that frame's memory.
+        frames[i] = f.quantize(palette=palette, dither=Image.NONE)
 
     buf = io.BytesIO()
     # Per-frame durations (a list), not one flat value: an animated card runs
