@@ -87,17 +87,22 @@ staging:
   preview_count_note: derived from schema.yaml, not duplicated here
 
 known_debt:
-  unregistered_atoms:   # cleared 2026-07-02, two intentional entries added 2026-07-19.
-                        # NOTE (2026-07-26): this list is specifically atoms that DO
-                        # have a GAS renderer registration (apps-script-surface/
-                        # gas-wired-renderer/*.gs) but are missing from the public
-                        # atoms/schema.yaml because their schema is visibility:private
-                        # — see test_unregistered_atoms_match_declared_debt, which scans
-                        # the .gs files for _RENDERERS[...] registrations. An atom with
-                        # NO gas-wired-renderer entry at all (e.g. promo_carousel_card,
-                        # google-chat-chromium-render-only) does not belong here even
-                        # though it's also visibility:private — it was added and removed
-                        # from this list the same day after the test caught the mismatch.
+  unregistered_atoms:   # cleared 2026-07-02, two intentional entries added 2026-07-19,
+                        # a third added 2026-07-26. This list has TWO independent
+                        # legitimate reasons an entry can belong here (check_core.py's
+                        # own docstring: "declared-exception pattern... one list, not
+                        # two") — (a) a GAS .gs renderer registration exists but the
+                        # atom is visibility:private (article_journey/journey_step —
+                        # test_unregistered_atoms_match_declared_debt audits THIS
+                        # subset specifically, by scanning the .gs files), or (b) no
+                        # GAS surface at all, just a public atom-packs.yaml entry that
+                        # check_core.py's coverage check needs to know is intentionally
+                        # schema-absent when restored to public-only (promo_carousel_card
+                        # — google-chat-chromium-render only, visibility:private, never
+                        # GAS-registered). Confirmed both reasons are real and both need
+                        # this same list 2026-07-26, when a naive first attempt to only
+                        # recognize reason (a) broke catalog-rebuild-full's check_core.py
+                        # step for an atom that was only ever reason (b).
     - article_journey   # visibility:private — schema block moved to a2ui-private/
     - journey_step       # (private-atoms/private-schema-blocks.yaml), NOT missing by
                           # accident. Renderer stays in renderers/web_article.py
@@ -105,6 +110,11 @@ known_debt:
                           # blocks back in via scripts/merge_private_schema.py for the
                           # gated full.a2uicatalog.ai build only. See atom-change's
                           # sibling process catalog-rebuild-full and a2uithoughts.md.
+    - promo_carousel_card # visibility:private, no GAS surface at all (works_on:
+                          # [google-chat-chromium-render] only) — declared here purely
+                          # for check_core.py's atom-packs.yaml coverage check, not
+                          # test_unregistered_atoms_match_declared_debt's GAS-drift
+                          # check (which correctly ignores it, see that test's docstring).
 
 # Declared processes — management as data. Run via: python3 scripts/ops.py run <name>
 # The runner executes from repo root, resolves {{inventory.paths}} from this

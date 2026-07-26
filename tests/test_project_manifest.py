@@ -62,6 +62,17 @@ def test_public_dir_fully_declared():
 
 
 def test_unregistered_atoms_match_declared_debt():
+    """known_debt.unregistered_atoms has two independent legitimate members
+    (check_core.py's own docstring: "declared-exception pattern... one
+    list, not two"): (a) atoms with a GAS .gs renderer registration but
+    missing from schema.yaml (this test's original purpose — catch stale
+    GAS-drift debt entries), and (b) atoms with NO GAS surface at all
+    (e.g. google-chat-chromium-render-only, visibility:private) that
+    check_core.py's atom-packs.yaml coverage check needs declared as
+    schema-absent for an unrelated reason. Only (a) is this test's
+    business — an entry that was never GAS-registered to begin with isn't
+    "stale GAS debt," it's simply outside this check's domain, so it's
+    excluded from the stale_debt computation rather than flagged."""
     renderer_atoms = set()
     for f in glob.glob(str(ROOT / "apps-script-surface/gas-wired-renderer/*.gs")):
         renderer_atoms |= set(re.findall(r"_RENDERERS\['([a-z_0-9]+)'\]",
@@ -72,10 +83,10 @@ def test_unregistered_atoms_match_declared_debt():
     declared = set(MANIFEST["known_debt"]["unregistered_atoms"])
 
     undeclared_drift = sorted(actual_missing - declared)
-    stale_debt = sorted(declared - actual_missing)
+    stale_debt = sorted((declared & renderer_atoms) - actual_missing)
     assert not undeclared_drift, (
         "renderer atoms missing from schema and NOT declared as debt "
         f"(add to project.yaml known_debt or register them): {undeclared_drift}")
     assert not stale_debt, (
-        "declared debt entries that are now registered — remove from "
-        f"project.yaml known_debt: {stale_debt}")
+        "declared debt entries that ARE GAS-registered and are now also "
+        f"in schema.yaml — remove from project.yaml known_debt: {stale_debt}")
