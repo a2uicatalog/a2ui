@@ -6,8 +6,8 @@ documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a
 `source` field in `atoms/schema.yaml` identifying its origin.
 
-**Four declared exceptions: PDF.js, QR-Code-generator, IBM Plex, and Noto
-Sans** (below) are vendored WHOLESALE, unmodified, not recompiled — a real
+**Six declared exceptions: PDF.js, QR-Code-generator, and the four self-hosted
+type families (IBM Plex, Noto Sans, Arimo, Lato)** (below) are vendored WHOLESALE, unmodified, not recompiled — a real
 binary-format parser, a Reed-Solomon-error-correction-coded matrix encoder,
 and a font's actual glyph outlines are all out of scope to reimplement (a
 subtly-wrong hand-rolled QR encoder would produce codes that *look* right but
@@ -18,7 +18,7 @@ runtime, so the CSP-clean/self-contained invariant (`mcpUiCsp()`,
 `resourceDomains: []`) holds even though this policy's general rule does not.
 QR-Code-generator ships inline with every atom render (Python for static
 surfaces, the same vendored algorithm ported to JS for GAS/MCP Apps) with no
-network calls either. **IBM Plex and Noto Sans are the two exceptions that DO
+network calls either. **The four type families are the exceptions that DO
 introduce a runtime network fetch** (a `@font-face src: url(...)` against
 `a2uicatalog.ai`'s own `/fonts/` path, same-origin, opt-in per atom via
 `use_plex_fonts`/`use_noto_fonts`) — on any surface whose CSP blocks that
@@ -92,6 +92,36 @@ just looks plainer.
   `use_noto_fonts: true` (default) — an inline `@font-face` block referencing
   these files by same-origin URL (`https://a2uicatalog.ai/fonts/noto/...`).
   See the exceptions note above for the CSP fallback behaviour.
+
+---
+
+## Arimo (Google / croscore)
+
+- **Project:** Arimo — a sans-serif metric-compatible with Arial
+- **Website:** https://fonts.google.com/specimen/Arimo
+- **License:** Apache License 2.0
+- **Copyright:** Copyright The Arimo Project Authors
+- **Vendored as:** `public/fonts/arimo/arimo-{400,700}.woff2` (2 static WOFF2
+  files, Latin subset re-encoded via `pyftsubset` from the upstream release
+  builds — glyph outlines unmodified, only the character set reduced; see
+  `LICENSE.txt` alongside them)
+- **Used by:** the `promo_carousel_card` atom's `font: "arimo"` option (the
+  default) — same same-origin `@font-face` mechanism as the other families.
+
+---
+
+## Lato (tyPoland / Łukasz Dziedzic)
+
+- **Project:** Lato — a humanist sans-serif, used here for its true Black (900)
+  weight
+- **Website:** https://www.latofonts.com/
+- **License:** SIL Open Font License, Version 1.1
+- **Copyright:** Copyright (c) 2010-2015 by tyPoland Lukasz Dziedzic with
+  Reserved Font Name "Lato"
+- **Vendored as:** `public/fonts/lato/lato-{400,900}.woff2` (2 static WOFF2
+  files, Latin subset re-encoded via `pyftsubset`, glyph outlines unmodified;
+  see `LICENSE.txt` alongside them, permitted under OFL §2)
+- **Used by:** the `promo_carousel_card` atom's `font: "lato"` option.
 
 ---
 

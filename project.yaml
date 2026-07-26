@@ -45,6 +45,8 @@ policy:
     - public/THIRD-PARTY-NOTICES.md
     - public/fonts/ibm-plex/**   # SIL OFL 1.1 — IBM Plex Mono/Serif, used by article_journey (use_plex_fonts, default true); see THIRD-PARTY-NOTICES.md
     - public/fonts/noto/**   # SIL OFL 1.1 — Noto Sans/Noto Sans Mono, used by promo_carousel_card (use_noto_fonts, default true); see THIRD-PARTY-NOTICES.md
+    - public/fonts/arimo/**   # Apache 2.0 — Arimo (Arial-metric), promo_carousel_card font:"arimo" (default); see THIRD-PARTY-NOTICES.md
+    - public/fonts/lato/**   # SIL OFL 1.1 — Lato incl. Black 900, promo_carousel_card font:"lato"; see THIRD-PARTY-NOTICES.md
     - public/knowledge/**
     - public/avatar/**
     - public/gallery/**   # article/demo screenshots referenced from the blog-drafting Google Doc — real static assets, not hosted on Drive/GAS (both have anonymous-hotlink restrictions)

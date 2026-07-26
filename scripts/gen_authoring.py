@@ -883,6 +883,21 @@ def build_carousel_page(carousel_drafts):
   <div class="fm-fields" style="grid-template-columns:1fr;margin-bottom:16px">
     <label>Slug (for saving/loading this draft) <input id="carSlug" type="text" placeholder="e.g. ge-print-rendering-workaround"></label>
   </div>
+  <div class="fm-fields" style="margin-bottom:16px">
+    <label>Card style
+      <select id="carVariant">
+        <option value="field_report">Field report — amber, blueprint grid, fills the frame</option>
+        <option value="glow">Glow — cyan, corner glow, centred</option>
+      </select>
+    </label>
+    <label>Headline font
+      <select id="carFont">
+        <option value="arimo">Arimo — Arial-metric (default)</option>
+        <option value="lato">Lato — chunkiest, true Black 900</option>
+        <option value="noto">Noto Sans — humanist</option>
+      </select>
+    </label>
+  </div>
 
   <div class="carousel-card-block" data-role="hook">
     <div class="pane-bar"><span>Hook card</span></div>
@@ -1090,6 +1105,12 @@ carWireBlock(document.querySelector('.carousel-card-block[data-role="hook"]'));
 carWireBlock(document.querySelector('.carousel-card-block[data-role="cta"]'));
 carUpdateCostEstimate();
 
+['carVariant','carFont'].forEach(function(id){{
+  document.getElementById(id).addEventListener('change', function(){{
+    document.querySelectorAll('.carousel-card-block').forEach(carRenderPreview);
+  }});
+}});
+
 document.getElementById('carSaveBtn').addEventListener('click', function(){{
   var slug = document.getElementById('carSlug').value.trim();
   var status = document.getElementById('carStatus');
@@ -1108,7 +1129,9 @@ document.getElementById('carSaveBtn').addEventListener('click', function(){{
   fetch('/authoring/api/carousel-save', {{
     method: 'POST',
     headers: {{'content-type': 'application/json'}},
-    body: JSON.stringify({{slug: slug, hook: hook, middles: middles, cta: cta}})
+    body: JSON.stringify({{slug: slug, hook: hook, middles: middles, cta: cta,
+      variant: document.getElementById('carVariant').value,
+      font: document.getElementById('carFont').value}})
   }})
     .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
     .then(function(res){{
@@ -1204,6 +1227,8 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
   var draft = null;
   for (var i = 0; i < CAROUSEL_DRAFTS.length; i++) {{ if (CAROUSEL_DRAFTS[i].slug === slug) {{ draft = CAROUSEL_DRAFTS[i]; break; }} }}
   document.getElementById('carSlug').value = slug;
+  if (draft && draft.variant) document.getElementById('carVariant').value = draft.variant;
+  if (draft && draft.font) document.getElementById('carFont').value = draft.font;
   if (!draft) {{
     document.getElementById('carStatus').textContent = 'No saved draft found for slug "' + slug + '".';
     return;

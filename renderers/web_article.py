@@ -21536,23 +21536,44 @@ def _render_weather_now(b: dict) -> str:
 _RENDERERS['weather_now'] = _render_weather_now
 
 
-_PROMO_SANS = "'Noto Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
 _PROMO_MONO = "'Noto Sans Mono',ui-monospace,SFMono-Regular,Menlo,monospace"
-_PROMO_FONT_BASE = "https://a2uicatalog.ai/fonts/noto"
-_PROMO_FONT_FACES = (
-    ("Noto Sans", 400, "normal", "noto-sans-400.woff2"),
-    ("Noto Sans", 700, "normal", "noto-sans-700.woff2"),
-    ("Noto Sans Mono", 400, "normal", "noto-sans-mono-400.woff2"),
-    ("Noto Sans Mono", 700, "normal", "noto-sans-mono-700.woff2"),
+_PROMO_FONT_BASE = "https://a2uicatalog.ai/fonts"
+# Selectable headline/body faces. All three are genuinely open-licensed and
+# self-hosted from a2uicatalog.ai (see THIRD-PARTY-NOTICES.md) -- no CDN, no
+# webfont service. The mono face (labels, position pill, footer) is Noto Sans
+# Mono in every case; only the sans changes.
+#   noto  -- humanist, the original default
+#   arimo -- metric-compatible with Arial (Apache 2.0), neutral grotesque
+#   lato  -- has a true Black (900), the chunkiest of the three for headlines
+_PROMO_FONTS = {
+    'noto':  {'family': 'Noto Sans',  'bold': 700,
+              'faces': (('Noto Sans', 400, 'noto/noto-sans-400.woff2'),
+                        ('Noto Sans', 700, 'noto/noto-sans-700.woff2'))},
+    'arimo': {'family': 'Arimo',      'bold': 700,
+              'faces': (('Arimo', 400, 'arimo/arimo-400.woff2'),
+                        ('Arimo', 700, 'arimo/arimo-700.woff2'))},
+    'lato':  {'family': 'Lato',       'bold': 900,
+              'faces': (('Lato', 400, 'lato/lato-400.woff2'),
+                        ('Lato', 900, 'lato/lato-900.woff2'))},
+}
+_PROMO_MONO_FACES = (
+    ('Noto Sans Mono', 400, 'noto/noto-sans-mono-400.woff2'),
+    ('Noto Sans Mono', 700, 'noto/noto-sans-mono-700.woff2'),
 )
 
-def _promo_font_css() -> str:
+
+def _promo_font(b: dict):
+    """(font-family stack, headline weight, @font-face <style> block)."""
+    spec = _PROMO_FONTS.get(b.get('font', 'arimo'), _PROMO_FONTS['arimo'])
+    stack = f"'{spec['family']}',system-ui,-apple-system,'Segoe UI',sans-serif"
+    if not b.get('use_noto_fonts', True):
+        return stack, spec['bold'], ''
     faces = "".join(
-        f"@font-face{{font-family:'{fam}';font-weight:{wt};font-style:{sty};"
-        f"font-display:swap;src:url({_PROMO_FONT_BASE}/{fname}) format('woff2');}}"
-        for fam, wt, sty, fname in _PROMO_FONT_FACES
+        f"@font-face{{font-family:'{fam}';font-weight:{wt};font-style:normal;"
+        f"font-display:swap;src:url({_PROMO_FONT_BASE}/{fn}) format('woff2');}}"
+        for fam, wt, fn in tuple(spec['faces']) + _PROMO_MONO_FACES
     )
-    return f"<style>{faces}</style>"
+    return stack, spec['bold'], f"<style>{faces}</style>"
 
 
 # Type scale in cqw (1cqw = 1% of the card's own width), NOT px. Two reasons,
@@ -21612,28 +21633,91 @@ def _render_promo_carousel_card(b: dict) -> str:
     # fall back to the old behaviour (middle cards always reserved a slot).
     has_media = b.get('has_media', role == 'middle')
 
+    # Two visual treatments over ONE data model -- same fields, same authoring
+    # UI, same export pipeline, so a carousel can switch look with one setting
+    # instead of maintaining a parallel atom type.
+    #   glow         -- the original: cyan accent, corner glow, content centred
+    #   field_report -- amber accent, blueprint grid, corner brackets, content
+    #                   TOP-aligned so it fills the frame, media in browser
+    #                   chrome. Adapted from Curtis's hand-made LinkedIn cards,
+    #                   which read as considerably more designed than the
+    #                   generated ones did.
+    variant = b.get('variant', 'glow')
+    variant = variant if variant in ('glow', 'field_report') else 'glow'
+    fr = variant == 'field_report'
+
+    accent = '#F0A93B' if fr else '#00E5FF'
+    muted = '#94A3C4' if fr else '#9AA3C7'
+    body_col = '#A9B6D4' if fr else '#9AA3C7'
+    align = 'flex-start' if fr else 'center'
+    sans, bold_wt, font_css = _promo_font(b)
+
+    if fr:
+        card_bg = (
+            # Faint blueprint grid + a soft top-left lift, in place of the
+            # glow variant's single corner gradient.
+            'background:'
+            'repeating-linear-gradient(0deg,rgba(148,163,196,.055) 0 0.1cqw,transparent 0.1cqw 6cqw),'
+            'repeating-linear-gradient(90deg,rgba(148,163,196,.055) 0 0.1cqw,transparent 0.1cqw 6cqw),'
+            'radial-gradient(120% 90% at 15% 0%,rgba(60,86,130,.35),transparent 60%),'
+            '#0C1A2E;'
+        )
+        border = '0.1cqw solid #1B2C47'
+    else:
+        card_bg = ('background:radial-gradient(120% 100% at 100% 0%,'
+                   'rgba(124,92,255,.11),transparent 45%),#0B0E1A;')
+        border = '0.1cqw solid #1E2440'
+
+    # Corner brackets -- the "instrument readout" framing device. Purely
+    # decorative, field_report only.
+    def _bracket(v, h):
+        pos = f'{"top" if v == "t" else "bottom"}:3cqw;{"left" if h == "l" else "right"}:3cqw;'
+        edges = (f'border-{"top" if v == "t" else "bottom"}:0.28cqw solid rgba(200,214,240,.5);'
+                 f'border-{"left" if h == "l" else "right"}:0.28cqw solid rgba(200,214,240,.5);')
+        return f'<div style="position:absolute;{pos}width:3.4cqw;height:3.4cqw;{edges}"></div>'
+    brackets = ''.join(_bracket(v, h) for v in 'tb' for h in 'lr') if fr else ''
+
+    # field_report shows real product screenshots, which are portrait-ish;
+    # forcing 16/9 cropped their bottoms off (confirmed on a live render).
+    media_ar = '4/3' if fr else '16/9'
     if not has_media:
         media_html = ''
-    elif media_url:
-        media_html = (
-            f'<img {_PROMO_MEDIA_ATTR}="1" src="{_esc(_promo_media_src(media_url))}" '
-            f'style="width:100%;aspect-ratio:16/9;object-fit:cover;'
-            f'border-radius:1.6cqw;margin:3.5cqw 0 0;" />'
-        )
     else:
-        media_html = (
-            f'<div {_PROMO_MEDIA_ATTR}="1" style="width:100%;aspect-ratio:16/9;'
-            f'border:0.25cqw dashed rgba(154,163,199,.3);border-radius:1.6cqw;'
-            f'margin:3.5cqw 0 0;display:flex;align-items:center;justify-content:center;'
-            f'color:#5A6390;font-size:{_PROMO_LABEL_CQW}cqw;">media placeholder</div>'
+        inner = (
+            f'<img {_PROMO_MEDIA_ATTR}="1" src="{_esc(_promo_media_src(media_url))}" '
+            f'style="display:block;width:100%;aspect-ratio:{media_ar};object-fit:cover;" />'
+            if media_url else
+            f'<div {_PROMO_MEDIA_ATTR}="1" style="width:100%;aspect-ratio:{media_ar};'
+            f'display:flex;align-items:center;justify-content:center;'
+            f'background:rgba(148,163,196,.06);color:{muted};'
+            f'font-size:{_PROMO_LABEL_CQW}cqw;">media placeholder</div>'
         )
+        if fr:
+            # Browser chrome: an accent top rule and a title bar with three
+            # dots, so a screenshot reads as a real product rather than a
+            # floating rectangle.
+            dots = ''.join('<div style="width:1.1cqw;height:1.1cqw;border-radius:50%;'
+                           'background:rgba(148,163,196,.45);"></div>' for _ in range(3))
+            media_html = (
+                f'<div style="margin-top:3.5cqw;border-radius:1.4cqw;overflow:hidden;'
+                f'border-top:0.5cqw solid {accent};box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.45);">'
+                f'<div style="display:flex;align-items:center;gap:0.9cqw;padding:1.2cqw 1.6cqw;'
+                f'background:#E8EDF5;">{dots}</div>{inner}</div>'
+            )
+        else:
+            border_style = ('' if media_url else
+                            'border:0.25cqw dashed rgba(154,163,199,.3);')
+            media_html = (f'<div style="margin-top:3.5cqw;border-radius:1.6cqw;'
+                          f'overflow:hidden;{border_style}">{inner}</div>')
 
     cta_label = b.get('cta_label', '')
+    cta_bg = accent if fr else 'linear-gradient(120deg,#7C5CFF,#00E5FF)'
+    cta_glow = f'box-shadow:0 0.8cqw 3cqw rgba(240,169,59,.35);' if fr else ''
     cta_html = (
         f'<div style="display:inline-flex;align-self:flex-start;align-items:center;'
         f'margin-top:4cqw;padding:1.8cqw 3.4cqw;border-radius:999px;'
-        f'background:linear-gradient(120deg,#7C5CFF,#00E5FF);color:#0B0E1A;'
-        f'font-family:{_PROMO_SANS};font-size:{_PROMO_CTA_CQW}cqw;font-weight:700;'
+        f'background:{cta_bg};color:#10192B;{cta_glow}'
+        f'font-family:{sans};font-size:{_PROMO_CTA_CQW}cqw;font-weight:{bold_wt};'
         f'letter-spacing:.01em;">{_esc(cta_label)}</div>'
         if (role == 'cta' and cta_label) else ''
     )
@@ -21644,45 +21728,49 @@ def _render_promo_carousel_card(b: dict) -> str:
     # are wrong here: this card is a public social graphic, so the type has to
     # scale with the card, and the atom's own type name has no business on it.
     eyebrow, position = b.get('eyebrow', ''), b.get('position', '')
+    pos_style = (
+        f'font-family:{_PROMO_MONO};font-size:{_PROMO_LABEL_CQW * 0.9}cqw;font-weight:700;'
+        + (f'color:{muted};letter-spacing:.1em;' if fr else
+           f'color:{muted};background:rgba(154,163,199,.1);'
+           f'border:0.15cqw solid rgba(154,163,199,.22);border-radius:999px;padding:0.7cqw 1.8cqw;')
+    )
     head_html = (
         f'<div style="display:flex;justify-content:space-between;align-items:center;gap:3cqw;">'
-        f'<div style="font-size:{_PROMO_LABEL_CQW}cqw;font-weight:700;letter-spacing:.12em;'
-        f'text-transform:uppercase;color:#00E5FF;">{_esc(eyebrow)}</div>'
-        # Position as a real pill, not bare grey text -- at this size a plain
-        # "2 / 5" reads as stray text rather than a deliberate index.
-        + (f'<div style="flex:none;font-family:{_PROMO_MONO};font-size:{_PROMO_LABEL_CQW * 0.9}cqw;'
-           f'font-weight:700;color:#9AA3C7;background:rgba(154,163,199,.1);'
-           f'border:0.15cqw solid rgba(154,163,199,.22);border-radius:999px;'
-           f'padding:0.7cqw 1.8cqw;">{_esc(position)}</div>' if position else '')
+        f'<div style="font-family:{_PROMO_MONO if fr else sans};'
+        f'font-size:{_PROMO_LABEL_CQW}cqw;font-weight:700;letter-spacing:.12em;'
+        f'text-transform:uppercase;color:{accent};">{_esc(eyebrow)}</div>'
+        + (f'<div style="flex:none;{pos_style}">{_esc(position)}</div>' if position else '')
         + '</div>'
     )
     foot_html = (
         f'<div style="margin-top:auto;padding-top:2.5cqw;'
         f'border-top:0.15cqw solid rgba(154,163,199,.14);text-align:right;'
-        f'font-family:{_PROMO_MONO};font-size:{_PROMO_FOOT_CQW}cqw;color:#5A6390;'
-        f'letter-spacing:.04em;">{_esc(b.get("footer_label") or "a2uicatalog.ai")}</div>'
+        f'font-family:{_PROMO_MONO};font-size:{_PROMO_FOOT_CQW}cqw;color:{muted};'
+        f'opacity:.75;letter-spacing:.04em;">'
+        f'{_esc(b.get("footer_label") or "a2uicatalog.ai")}</div>'
     )
-
-    font_css = _promo_font_css() if b.get('use_noto_fonts', True) else ''
 
     return (
         f'{font_css}'
         # container-type:inline-size is what makes every cqw above resolve
         # against THIS card's width, so the whole design scales with `width`
-        # instead of drifting between preview and export.
-        f'<div style="container-type:inline-size;font-family:{_PROMO_SANS};'
+        # instead of drifting between preview and export. position:relative
+        # anchors field_report's corner brackets.
+        f'<div style="container-type:inline-size;position:relative;font-family:{sans};'
         f'aspect-ratio:4/5;display:flex;flex-direction:column;'
         f'padding:{_PROMO_PAD_CQW}cqw;color:#EEF2FF;font-variant-numeric:tabular-nums;'
-        f'border:0.1cqw solid #1E2440;border-radius:2.2cqw;'
-        # Corner glow, ported from the hand-authored prototype. Softer and
-        # tighter than the first port (.16 over 55% banded visibly once the
-        # deck GIF quantised to a shared palette).
-        f'background:radial-gradient(120% 100% at 100% 0%,rgba(124,92,255,.11),transparent 45%),#0B0E1A;">'
+        f'border:{border};border-radius:2.2cqw;overflow:hidden;{card_bg}">'
+        f'{brackets}'
         f'{head_html}'
-        f'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;">'
-        f'<div style="font-size:{headline_size}cqw;font-weight:800;line-height:1.1;'
+        # field_report packs content to the TOP so it fills the frame; glow
+        # centres it. The centred version left ~35% dead space above and
+        # below, which is what made the generated cards read as floating
+        # next to the hand-made ones.
+        f'<div style="flex:1;display:flex;flex-direction:column;'
+        f'justify-content:{align};padding-top:{"4cqw" if fr else "0"};min-height:0;">'
+        f'<div style="font-size:{headline_size}cqw;font-weight:{bold_wt};line-height:1.1;'
         f'letter-spacing:-.02em;text-wrap:balance;">{_esc(b.get("headline", ""))}</div>'
-        + (f'<div style="font-size:{_PROMO_BODY_CQW}cqw;color:#9AA3C7;margin-top:2.4cqw;'
+        + (f'<div style="font-size:{_PROMO_BODY_CQW}cqw;color:{body_col};margin-top:2.4cqw;'
            f'line-height:1.45;">{_esc(b.get("body", ""))}</div>' if b.get('body') else '')
         + media_html
         + cta_html
