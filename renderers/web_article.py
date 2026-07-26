@@ -21556,6 +21556,28 @@ def _promo_font_css() -> str:
 
 
 _PROMO_HEADLINE_SIZE = {'hook': '44px', 'middle': '32px', 'cta': '36px'}
+# Same own-host convention as _PROMO_FONT_BASE above: a media_url written as a
+# site-relative path ("/gallery/...") is what an author naturally types (it's
+# how every blog-side <img> is written), but this atom is screenshotted by
+# cloud-run-renderer on ITS OWN origin, where that path 404s silently and the
+# <img> paints nothing. Resolving relative paths here means the authored value
+# stays portable and the render still works. Real incident 2026-07-26: the
+# first exported carousel GIF had a completely blank media slot for exactly
+# this reason, with no error anywhere.
+_PROMO_MEDIA_BASE = "https://a2uicatalog.ai"
+# Marker the render pipeline uses to locate this element's exact pixel rect
+# (Playwright bounding_box) when compositing an animated media_url frame-by-
+# frame into an otherwise-static card -- see cloud-run-renderer/server.py's
+# _composite_media_frames. Purely a render-side hook; inert in a browser.
+_PROMO_MEDIA_ATTR = "data-promo-media"
+
+
+def _promo_media_src(media_url: str) -> str:
+    if media_url.startswith(('http://', 'https://', 'data:')):
+        return media_url
+    if media_url.startswith('/'):
+        return _PROMO_MEDIA_BASE + media_url
+    return media_url
 
 
 def _render_promo_carousel_card(b: dict) -> str:
@@ -21563,14 +21585,39 @@ def _render_promo_carousel_card(b: dict) -> str:
     role = role if role in ('hook', 'middle', 'cta') else 'middle'
     headline_size = _PROMO_HEADLINE_SIZE[role]
     media_url = b.get('media_url', '')
+    # has_media is the author's explicit yes/no for this card, NOT inferred
+    # from whether media_url happens to be filled: "no" must render no slot
+    # at all (the headline/body then centre in the full card height), while
+    # "yes" with an empty url still shows the dashed placeholder, because
+    # that's a card mid-authoring rather than a card that wants no media.
+    # Legacy blocks written before this field existed carry no has_media, so
+    # fall back to the old behaviour (middle cards always reserved a slot).
+    has_media = b.get('has_media', role == 'middle')
 
-    media_html = (
-        f'<img src="{_esc(media_url)}" style="width:100%;aspect-ratio:16/9;'
-        f'object-fit:cover;border-radius:10px;margin:16px 0;" />'
-        if media_url else
-        (f'<div style="width:100%;aspect-ratio:16/9;border:1.5px dashed rgba(154,163,199,.3);'
-         f'border-radius:10px;margin:16px 0;display:flex;align-items:center;justify-content:center;'
-         f'color:#5A6390;font-size:13px;">media placeholder</div>' if role == 'middle' else '')
+    if not has_media:
+        media_html = ''
+    elif media_url:
+        media_html = (
+            f'<img {_PROMO_MEDIA_ATTR}="1" src="{_esc(_promo_media_src(media_url))}" '
+            f'style="width:100%;aspect-ratio:16/9;object-fit:cover;'
+            f'border-radius:10px;margin:16px 0;" />'
+        )
+    else:
+        media_html = (
+            f'<div {_PROMO_MEDIA_ATTR}="1" style="width:100%;aspect-ratio:16/9;'
+            f'border:1.5px dashed rgba(154,163,199,.3);border-radius:10px;margin:16px 0;'
+            f'display:flex;align-items:center;justify-content:center;'
+            f'color:#5A6390;font-size:13px;">media placeholder</div>'
+        )
+
+    cta_label = b.get('cta_label', '')
+    cta_html = (
+        f'<div style="display:inline-flex;align-self:flex-start;align-items:center;'
+        f'margin-top:20px;padding:10px 18px;border-radius:999px;'
+        f'background:linear-gradient(120deg,#7C5CFF,#00f2ff);color:#0B0E1A;'
+        f'font-family:{_PROMO_MONO};font-size:13px;font-weight:700;'
+        f'letter-spacing:.03em;">{_esc(cta_label)}</div>'
+        if (role == 'cta' and cta_label) else ''
     )
 
     font_css = _promo_font_css() if b.get('use_noto_fonts', True) else ''
@@ -21578,7 +21625,11 @@ def _render_promo_carousel_card(b: dict) -> str:
     return (
         f'{font_css}'
         f'<div style="{_CARD_OPEN}font-family:{_PROMO_SANS};aspect-ratio:4/5;'
-        f'display:flex;flex-direction:column;border-radius:18px;">'
+        f'display:flex;flex-direction:column;border-radius:18px;'
+        # Corner glow, ported from the hand-authored prototype this template
+        # was designed against -- layered OVER _CARD_OPEN's flat background
+        # (which this shorthand re-declares, so it must repeat that colour).
+        f'background:radial-gradient(140% 120% at 100% 0%,rgba(124,92,255,.16),transparent 55%),#0B0E1A;">'
         f'{_card_head(b.get("eyebrow", ""), b.get("position", ""))}'
         f'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;">'
         f'<div style="font-size:{headline_size};font-weight:800;line-height:1.15;'
@@ -21586,6 +21637,7 @@ def _render_promo_carousel_card(b: dict) -> str:
         + (f'<div style="font-size:15px;color:#9AA3C7;margin-top:12px;line-height:1.5;">'
            f'{_esc(b.get("body", ""))}</div>' if b.get('body') else '')
         + media_html
+        + cta_html
         + '</div>'
         f'{_card_foot("", "" if b.get("_hide_schema_footer") else "promo_carousel_card")}'
         f'</div>'

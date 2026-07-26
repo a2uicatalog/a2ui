@@ -70,6 +70,15 @@ give it — no bearer token, no signed-in identity, nothing. That's a hard
 constraint from Google's side, not a choice made here, and it's why the
 deploy command below uses `--allow-unauthenticated`.
 
+One-time setup — create the Secret Manager secret the render tokens are
+signed with (see "Signed render tokens" below for why this matters; a
+deliberate one-time manual step, not scripted):
+
+```bash
+gcloud secrets create render-signing-key \
+  --project=YOUR_PROJECT --data-file=<(openssl rand -hex 32)
+```
+
 ```bash
 gcloud run deploy YOUR_SERVICE_NAME \
   --source . \
@@ -77,7 +86,8 @@ gcloud run deploy YOUR_SERVICE_NAME \
   --region YOUR_REGION \
   --allow-unauthenticated \
   --max-instances 3 \
-  --concurrency 4
+  --concurrency 4 \
+  --set-secrets RENDER_SIGNING_KEY=render-signing-key:latest
 ```
 
 Note the URL `gcloud` prints at the end — you'll need it in Step 3.
@@ -86,15 +96,47 @@ Note the URL `gcloud` prints at the end — you'll need it in Step 3.
 service only ever reads public data — but every render launches a real
 headless Chromium process, and `--allow-unauthenticated` means anyone with
 the URL can trigger one. `--max-instances` is a hard ceiling on how many
-of those can run at once, independent of anything else. The code also
-rejects `width` above 2000px and decks above 12 blocks in-app
-(`MAX_RENDER_WIDTH`/`MAX_DECK_BLOCKS` in `server.py`) — that bounds the
-SIZE of a single request, not the RATE of them. For rate/volume
-protection, put this behind Cloud Armor / a WAF rule — Cloud Run IAM isn't
-an option for that here, since gating the service would also block Chat's
-own anonymous image fetch.
+of those can run at once, independent of anything else.
 
-Set a budget alert on the project so a runaway bill can't surprise you:
+The code itself carries three more layers on top of that, worth knowing
+about rather than just trusting:
+
+- **`width`/deck-size bounds** — `MAX_RENDER_WIDTH` (2000px) and
+  `MAX_DECK_BLOCKS` (12) reject an oversized single request outright.
+- **A payload-size cap** — `MAX_BLOCK_JSON_BYTES` (50KB) catches the gap
+  those two don't: an in-bounds width and block count with one field
+  (e.g. a chart's data array) padded enormous. `MAX_CONTENT_LENGTH` (2MB)
+  on the Flask app rejects an oversized request body before any JSON
+  parsing even runs.
+- **Signed render tokens** — `/render.png` and `/render.gif` must stay
+  reachable with no auth check (that's Chat's own constraint, not a choice
+  made here), but every token this service generates is HMAC-signed, and
+  a forged or guessed one gets an instant 403 before any rendering starts.
+  Only URLs this service itself produced are ever honored. **Set
+  `RENDER_SIGNING_KEY` explicitly before deploying** — Secret Manager /
+  `--set-secrets`, same posture as other credentials in this repo. Without
+  it, the service generates a random key per process, which will cause
+  spurious verification failures across a multi-instance deployment the
+  moment a request lands on a different instance than the one that signed
+  it.
+- **A render-rate limit** — `MAX_RENDERS_PER_MINUTE` (30) is a real,
+  computable cost ceiling: unlike `--max-instances` (which only bounds
+  *concurrent* cost), this bounds cost *over time*, regardless of how long
+  an attack runs. It's per-process, not a true cross-instance global limit
+  — with `--max-instances 3` the effective ceiling is up to 3x this value
+  if traffic spreads across instances. A real global limit needs a shared
+  store (Redis/Memorystore); this in-process version still cuts
+  worst-case cost substantially and is what ships by default.
+
+None of this makes the endpoint anything other than public — Chat's
+`image` widget fetch is anonymous by Google's own design, and there's no
+way around that for this specific integration. What it does do: an
+attacker without a validly-signed token gets a cheap, instant rejection
+instead of a real Chromium launch, and even sustained valid-shaped traffic
+is bounded to a knowable cost per minute rather than an open-ended one.
+
+Set a budget alert on the project anyway — defense in depth, not a
+substitute for the above:
 
 ```bash
 gcloud billing budgets create \

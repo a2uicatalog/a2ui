@@ -35,9 +35,13 @@ POST /render
     the default raw-bytes form; an ADK tool should request JSON explicitly.
 """
 import collections
+import hashlib
+import hmac
 import os
 import re
+import secrets
 import sys
+import time
 import json
 import base64
 import gzip
@@ -89,33 +93,130 @@ def _self_base_url() -> str:
     return AGENT_BASE_URL or request.host_url.rstrip('/')
 
 
+# -- Render token signing. Chat's anonymous image fetch means /render.png
+# and /render.gif MUST stay reachable with no auth check -- that's Google's
+# own constraint on the `image` widget, not a choice made here (see
+# AGENT_BASE_URL's comment above). But "reachable" doesn't have to mean
+# "does real Chromium work for any payload a stranger invents": signing
+# every token this service itself generates means a forged or guessed `b=`
+# value fails a cheap HMAC check and gets an instant 403, never reaching
+# the renderer at all. Only URLs THIS service produced (via /chat or
+# /deck) are ever honored.
+#
+# The key must be the SAME value across every instance of a multi-instance
+# Cloud Run deployment -- a token signed on one instance has to verify on
+# whichever instance happens to serve the follow-up GET. Set it explicitly
+# (Secret Manager / --set-secrets, same posture as GAS_API_TOKEN) before
+# deploying for real. The random fallback below is for local single-process
+# testing only and prints a loud warning so a forgotten key is obvious in
+# logs, not a silent multi-instance verification failure in production.
+RENDER_SIGNING_KEY = os.environ.get('RENDER_SIGNING_KEY', '')
+if not RENDER_SIGNING_KEY:
+    RENDER_SIGNING_KEY = secrets.token_hex(32)
+    print('WARNING: RENDER_SIGNING_KEY not set -- generated an ephemeral '
+          'per-process key. Fine for local testing; in a real multi-instance '
+          'Cloud Run deployment this WILL cause spurious "invalid render '
+          'token" failures whenever a request lands on a different instance '
+          'than the one that signed it. Set RENDER_SIGNING_KEY explicitly '
+          '(Secret Manager, --set-secrets) before deploying.', flush=True)
+
+
+def _sign(token: str) -> str:
+    return hmac.new(RENDER_SIGNING_KEY.encode(), token.encode(), hashlib.sha256).hexdigest()[:16]
+
+
 def _encode_block_qs(block, width=620):
-    """gzip + urlsafe-base64, '=' stripped -- same convention as a2uicatalog's
-    own ?p= URLs. Consumed by /render.png below via _decode_block_qs."""
+    """gzip + urlsafe-base64, '=' stripped, HMAC-signed -- same convention as
+    a2uicatalog's own ?p= URLs plus the signature. Consumed by /render.png
+    below via _decode_block_qs, which verifies the signature before
+    trusting anything in the payload."""
     payload = json.dumps({'block': block, 'width': width}, separators=(',', ':')).encode()
     compressed = gzip.compress(payload, compresslevel=9, mtime=0)
-    return base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
+    token = base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
+    return f'{token}.{_sign(token)}'
 
 
 def _encode_deck_qs(cards, duration_ms=1000):
-    """Sibling of _encode_block_qs for /render.gif -- same gzip+b64url
+    """Sibling of _encode_block_qs for /render.gif -- same gzip+b64url+HMAC
     convention, just a list of {block, width} instead of one."""
     blocks = [{'block': c['block'], 'width': c['width']} for c in cards]
     payload = json.dumps({'blocks': blocks, 'duration_ms': duration_ms}, separators=(',', ':')).encode()
     compressed = gzip.compress(payload, compresslevel=9, mtime=0)
-    return base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
+    token = base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
+    return f'{token}.{_sign(token)}'
+
+
+class _InvalidToken(ValueError):
+    """Distinct from a plain ValueError (bad width, oversized block, ...) so
+    route handlers can return 403 for a forged/guessed token specifically,
+    rather than lumping it in with ordinary 400-shaped request errors."""
 
 
 def _decode_block_qs(s: str) -> dict:
     """Inverse of _encode_block_qs/_encode_deck_qs -- doesn't care which
-    shape it decodes, the caller (render_png vs render_gif) does."""
-    padded = s + '=' * (-len(s) % 4)
+    shape it decodes, the caller (render_png vs render_gif) does. Verifies
+    the HMAC signature FIRST, before any base64/gzip/JSON parsing runs --
+    a forged token is rejected on a cheap string comparison, never reaching
+    the more expensive decode steps let alone the renderer."""
+    token, sep, sig = s.rpartition('.')
+    if not sep or not hmac.compare_digest(sig, _sign(token)):
+        raise _InvalidToken('invalid or forged render token')
+    padded = token + '=' * (-len(token) % 4)
     compressed = base64.urlsafe_b64decode(padded)
     return json.loads(gzip.decompress(compressed))
 
 
-def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: str = '') -> bytes:
-    """Shared by /render and /chat — one browser-render code path, not two."""
+# -- Payload-size and render-rate bounds. MAX_RENDER_WIDTH/MAX_DECK_BLOCKS
+# (further down) bound viewport size and block COUNT; neither bounds the
+# size of a single block's OWN fields -- an attacker could pass width=620,
+# one block, and still hand a sankey_flow a 50,000-entry nodes array. This
+# closes that gap. MAX_RENDERS_PER_MINUTE is a genuine, computable cost
+# ceiling -- unlike --max-instances/--concurrency (which only bound
+# CONCURRENT cost), this bounds cost over time regardless of how long an
+# attack runs. It's per-PROCESS, not a true cross-instance global limit --
+# with --max-instances 3 the effective ceiling is up to 3x this value if
+# traffic spreads across instances. A real global limit needs a shared
+# store (Redis/Memorystore); out of scope for what this bundle ships with,
+# and this in-process version still cuts worst-case cost substantially.
+MAX_BLOCK_JSON_BYTES = 50_000
+MAX_RENDERS_PER_MINUTE = 30
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # Flask returns 413 past this, before parsing JSON at all.
+
+_render_timestamps = collections.deque()
+
+
+def _validated_block(block) -> dict:
+    if not isinstance(block, dict) or 'type' not in block:
+        raise ValueError('missing block.type')
+    size = len(json.dumps(block))
+    if size > MAX_BLOCK_JSON_BYTES:
+        raise ValueError(f'block JSON too large: {size} bytes (max {MAX_BLOCK_JSON_BYTES})')
+    return block
+
+
+def _check_render_rate_limit():
+    now = time.time()
+    while _render_timestamps and now - _render_timestamps[0] > 60:
+        _render_timestamps.popleft()
+    if len(_render_timestamps) >= MAX_RENDERS_PER_MINUTE:
+        raise RuntimeError(f'render rate limit exceeded ({MAX_RENDERS_PER_MINUTE}/minute) -- try again shortly')
+    _render_timestamps.append(now)
+
+
+_MEDIA_RECT_SELECTOR = '[data-promo-media]'
+_DEVICE_SCALE = 2
+
+
+def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: str = '',
+                      want_media_rect: bool = False):
+    """Shared by /render and /chat — one browser-render code path, not two.
+
+    want_media_rect=True additionally returns the device-pixel rect of the
+    card's media slot (promo_carousel_card's [data-promo-media] element), so
+    an animated media_url can be composited into an otherwise-static card
+    frame-by-frame without re-running the browser per frame -- see
+    _composite_media_frames. Returns (png, rect_or_None) in that mode and a
+    bare png otherwise, keeping every existing caller unchanged."""
     fn = web_article._RENDERERS.get(block.get('type'))
     if fn is None:
         raise ValueError(f"unknown atom '{block.get('type')}'")
@@ -138,11 +239,21 @@ def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: 
         # payload_reveal card came back as a 720px-tall PNG, mostly dead
         # background, at height=360; height=10 shrinks that to its true
         # ~300px content height with zero effect on taller cards).
-        page = browser.new_page(viewport={'width': width + 40, 'height': 10}, device_scale_factor=2)
+        page = browser.new_page(viewport={'width': width + 40, 'height': 10},
+                                device_scale_factor=_DEVICE_SCALE)
         page.set_content(html, wait_until='networkidle')
+        rect = None
+        if want_media_rect:
+            el = page.query_selector(_MEDIA_RECT_SELECTOR)
+            box = el.bounding_box() if el else None
+            if box:
+                # bounding_box() is CSS pixels; the screenshot is taken at
+                # device_scale_factor, so scale to match the PNG's own space.
+                rect = (int(box['x'] * _DEVICE_SCALE), int(box['y'] * _DEVICE_SCALE),
+                        int(box['width'] * _DEVICE_SCALE), int(box['height'] * _DEVICE_SCALE))
         png = page.screenshot(full_page=True)
         browser.close()
-    return png
+    return (png, rect) if want_media_rect else png
 
 
 # Bounds on the two attacker-controlled dimensions of a render request --
@@ -170,17 +281,20 @@ def render():
     title = payload.get('title', '')
     subtitle = payload.get('subtitle', '')
 
-    if not isinstance(block, dict) or 'type' not in block:
-        return Response(json.dumps({'ok': False, 'error': 'missing block.type'}),
+    try:
+        block = _validated_block(block)
+    except ValueError as e:
+        return Response(json.dumps({'ok': False, 'error': str(e)}),
                         status=400, mimetype='application/json')
     if web_article._RENDERERS.get(block['type']) is None:
         return Response(json.dumps({'ok': False, 'error': f"unknown atom '{block['type']}'"}),
                         status=400, mimetype='application/json')
     try:
         width = _validated_width(payload.get('width', 620))
-    except ValueError as e:
+        _check_render_rate_limit()
+    except (ValueError, RuntimeError) as e:
         return Response(json.dumps({'ok': False, 'error': str(e)}),
-                        status=400, mimetype='application/json')
+                        status=429 if isinstance(e, RuntimeError) else 400, mimetype='application/json')
 
     png = _render_block_png(block, width, title, subtitle)
 
@@ -223,6 +337,12 @@ def _render_block_png_cached(block: dict, width: int) -> bytes:
     cache_key = (json.dumps(block, sort_keys=True), width)
     cached = _render_cache.get(cache_key)
     if cached is None:
+        # Rate limit + size validation ONLY on a genuine cache miss -- a
+        # repeat request for something already rendered costs nothing real
+        # and shouldn't eat into the same budget as an actual Chromium
+        # launch.
+        _validated_block(block)
+        _check_render_rate_limit()
         cached = _render_block_png(block, width)
         _render_cache.set(cache_key, cached)
     return cached
@@ -240,6 +360,12 @@ def render_png():
         spec = _decode_block_qs(request.args.get('b', ''))
         width = _validated_width(spec.get('width', 620))
         png = _render_block_png_cached(spec['block'], width)
+    except _InvalidToken as e:
+        return Response(f'render.png failed: {e}', status=403, mimetype='text/plain')
+    except RuntimeError as e:
+        return Response(f'render.png failed: {e}', status=429, mimetype='text/plain')
+    except ValueError as e:
+        return Response(f'render.png failed: {e}', status=400, mimetype='text/plain')
     except Exception as e:
         return Response(f'render.png failed: {e}', status=502, mimetype='text/plain')
     return Response(png, mimetype='image/png',
@@ -247,6 +373,97 @@ def render_png():
 
 
 _deck_gif_cache = _BoundedCache(maxsize=100)  # (json-key, duration_ms) -> GIF bytes
+
+# Cap on how many frames one animated media_url contributes to a deck. Real
+# source GIFs here are 8-10fps over 12-57s (117-450+ frames). Sampling down
+# to this many keeps the output GIF a sane size; crucially the SAMPLED frames
+# are stretched to preserve the source's real-time duration (see
+# _fetch_media_frames), so a sampled clip plays at true speed -- slightly
+# choppier, never faster. 90 frames over a ~21s clip is ~4fps, which reads
+# fine for screen-recording content.
+MAX_MEDIA_FRAMES = 90
+# Device-pixel width ceiling for the deck GIF only. Cards render at
+# device_scale_factor=2 for crisp PNG export (a 1080px card is 2240 real
+# pixels); that is enormous for an animated GIF, where every frame pays it.
+# The PNG export path is untouched by this -- it keeps full resolution.
+MAX_GIF_WIDTH = 1000
+
+
+def _fetch_media_frames(url: str, max_frames: int = MAX_MEDIA_FRAMES):
+    """(frames, per_frame_ms) for an animated media_url, or None.
+
+    per_frame_ms preserves the source's REAL-TIME duration: if a 21s clip is
+    sampled down to 90 frames, each sampled frame is held ~236ms so the clip
+    still takes 21s to play. Getting this wrong is what made the first
+    implementation play a 21s recording in 1.5s (~14x too fast) -- the fix is
+    not "more frames", it is honouring the source's own duration.
+
+    Returns None for anything that isn't usefully animated (a still image, a
+    fetch failure, an unreadable file) -- every caller treats None as "just
+    use the static screenshot", so a broken or non-animated media_url can
+    never break an export, it only means no extra motion."""
+    from PIL import Image, ImageSequence
+    import io
+    import urllib.request
+    try:
+        # An explicit UA is required, not cosmetic: Cloudflare (which fronts
+        # a2uicatalog.ai, the usual home for these media files) 403s
+        # urllib's default "Python-urllib/x.y" as a bot. Without this the
+        # fetch fails, we fall back to the still frame, and the export
+        # silently loses its animation -- confirmed live 2026-07-26.
+        req = urllib.request.Request(url, headers={'User-Agent': 'a2ui-atom-renderer'})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            raw = resp.read()
+        im = Image.open(io.BytesIO(raw))
+        n = getattr(im, 'n_frames', 1)
+        if n < 2:
+            return None
+        frames, source_ms = [], 0
+        idxs = set(round(i * (n - 1) / (max_frames - 1)) for i in range(max_frames)) \
+            if n > max_frames else set(range(n))
+        for i, frame in enumerate(ImageSequence.Iterator(im)):
+            # Sum EVERY frame's duration, not just sampled ones, so the total
+            # is the clip's true length regardless of how much we sampled.
+            source_ms += frame.info.get('duration', 100) or 100
+            if i in idxs:
+                frames.append(frame.convert('RGB').copy())
+        if not frames:
+            return None
+        return frames, max(20, round(source_ms / len(frames)))
+    except Exception as e:
+        print(f'media frames unavailable for {url}: {e}', flush=True)
+        return None
+
+
+def _composite_media_frames(base_png: bytes, rect, frames):
+    """One card screenshot + N media frames -> N full-card images.
+
+    The card's chrome (headline, eyebrow, footer, glow) is rendered ONCE by
+    the browser; each media frame is then pasted into rect on a copy of that
+    screenshot with PIL. That keeps an animated media_url actually animated
+    in the exported deck GIF without paying a full ~3s Playwright render per
+    source frame -- re-rendering per frame would take minutes per card and
+    blow the request timeout, which is why the deck GIF flattened embedded
+    animation before this existed."""
+    from PIL import Image
+    import io
+    base = Image.open(io.BytesIO(base_png)).convert('RGB')
+    x, y, w, h = rect
+    if w <= 0 or h <= 0:
+        return [base]
+    out = []
+    for fr in frames:
+        canvas = base.copy()
+        # 'cover' semantics, matching the media slot's own object-fit:cover:
+        # scale to fill the slot, centre-crop the overflow, never letterbox.
+        scale = max(w / fr.width, h / fr.height)
+        resized = fr.resize((max(1, round(fr.width * scale)), max(1, round(fr.height * scale))),
+                            Image.LANCZOS)
+        left = (resized.width - w) // 2
+        top = (resized.height - h) // 2
+        canvas.paste(resized.crop((left, top, left + w, top + h)), (x, y))
+        out.append(canvas)
+    return out
 
 
 def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int = 24) -> bytes:
@@ -277,9 +494,41 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
     from PIL import Image, ImageChops
     import io
 
-    pngs = [_render_block_png_cached(spec['block'], _validated_width(spec.get('width', 620)))
-            for spec in blocks]
-    images = [Image.open(io.BytesIO(p)).convert('RGB') for p in pngs]
+    # One card normally contributes ONE frame. A card whose media_url is
+    # itself animated instead contributes one frame per sampled source frame
+    # (same card chrome, moving media) -- so the embedded animation survives
+    # into the deck GIF instead of being flattened to a still. Entirely
+    # transparent to the caller: no flag, no separate endpoint, it just
+    # animates when the supplied file happens to animate.
+    images, durations = [], []
+    for spec in blocks:
+        block = spec['block']
+        w = _validated_width(spec.get('width', 620))
+        media_url = block.get('media_url') if isinstance(block, dict) else None
+        media = None
+        rect = None
+        if media_url and block.get('has_media', True):
+            png, rect = _render_block_png(block, w, want_media_rect=True)
+            if rect:
+                media = _fetch_media_frames(
+                    web_article._promo_media_src(media_url)
+                    if hasattr(web_article, '_promo_media_src') else media_url)
+        else:
+            png = _render_block_png_cached(block, w)
+
+        if media and rect:
+            media_frames, per_frame_ms = media
+            composited = _composite_media_frames(png, rect, media_frames)
+            images.extend(composited)
+            # The card dwells for the CLIP's own length, at the clip's own
+            # speed -- it does not get squeezed into duration_ms. That was
+            # the original bug: a 21s recording crammed into a 1.5s slot
+            # played ~14x too fast. duration_ms stays the dwell time for
+            # ordinary still cards only.
+            durations.extend([per_frame_ms] * len(composited))
+        else:
+            images.append(Image.open(io.BytesIO(png)).convert('RGB'))
+            durations.append(duration_ms)
 
     boxes = []
     for im in images:
@@ -298,13 +547,39 @@ def _render_deck_gif(blocks: list, duration_ms: int = 1000, target_margin: int =
     heights = sorted(im.height for im in images)
     target_h = heights[len(heights) // 2]
     canvas_w = max(im.width for im in images)
+    # A deck carrying an animated media_url can run to ~90 frames; at the
+    # 2x device-pixel width cards are rendered for PNG export that would be
+    # a huge GIF. Scale the whole deck down to MAX_GIF_WIDTH first so frame
+    # count buys motion instead of megabytes (still cards are unaffected in
+    # practice -- they were already well under it at typical widths).
+    if canvas_w > MAX_GIF_WIDTH:
+        ratio = MAX_GIF_WIDTH / canvas_w
+        canvas_w, target_h = MAX_GIF_WIDTH, max(1, round(target_h * ratio))
     frames = [im if (im.width, im.height) == (canvas_w, target_h)
               else im.resize((canvas_w, target_h), Image.LANCZOS)
               for im in images]
 
+    # Encoding matters enormously once a deck carries animation: a ~21s clip
+    # at 90 frames came out at 33.5MB with the original settings (full-frame,
+    # per-frame local palettes), which is unusable for LinkedIn or a blog
+    # embed. Three changes, all of which also HELP quality-per-byte here:
+    #  * one shared palette for the whole deck (a global colour table written
+    #    once, instead of a local one per frame),
+    #  * dither=NONE -- these are flat-UI screen recordings, so dithering adds
+    #    noise that both looks worse and defeats LZW compression, and
+    #  * disposal=1 + optimize=True, which lets PIL store only the changed
+    #    rectangle per frame. That is the big one for this atom specifically:
+    #    consecutive media frames differ ONLY inside the media slot, the card
+    #    chrome around it is pixel-identical.
+    pal_src = frames[0] if len(frames) == 1 else frames[len(frames) // 2]
+    palette = pal_src.quantize(colors=128, method=Image.MEDIANCUT)
+    frames = [f.quantize(palette=palette, dither=Image.NONE) for f in frames]
+
     buf = io.BytesIO()
+    # Per-frame durations (a list), not one flat value: an animated card runs
+    # at its clip's own real-time pace, still cards keep duration_ms.
     frames[0].save(buf, format='GIF', save_all=True, append_images=frames[1:],
-                    duration=duration_ms, loop=0, disposal=2, optimize=False)
+                    duration=durations, loop=0, disposal=1, optimize=True)
     gif = buf.getvalue()
     _deck_gif_cache.set(cache_key, gif)
     return gif
@@ -327,10 +602,60 @@ def render_gif():
         # earlier step, masking that requirements.txt didn't list it.
         return Response(f'render.gif failed: missing dependency ({e}) -- '
                          f'check requirements.txt is installed', status=500, mimetype='text/plain')
+    except _InvalidToken as e:
+        return Response(f'render.gif failed: {e}', status=403, mimetype='text/plain')
+    except RuntimeError as e:
+        return Response(f'render.gif failed: {e}', status=429, mimetype='text/plain')
+    except ValueError as e:
+        return Response(f'render.gif failed: {e}', status=400, mimetype='text/plain')
     except Exception as e:
         return Response(f'render.gif failed: {e}', status=502, mimetype='text/plain')
     return Response(gif, mimetype='image/gif',
                      headers={'Cache-Control': 'public, max-age=300'})
+
+
+@app.route('/render-deck', methods=['POST'])
+def render_deck():
+    """POST sibling of /render.gif -- deck in a JSON body, GIF bytes out.
+
+    /render.gif exists for Chat's anonymous image-widget fetch, which can
+    only do a plain GET, hence the signed ?b= token. An IAM-authenticated
+    caller (the Authoring suite's carousel export, via blog-worker) is
+    already authenticated by Cloud Run itself and cannot mint that HMAC
+    without being handed the signing key -- sharing a server secret with a
+    Worker just to re-authenticate an already-authenticated request would be
+    strictly worse than this route. Same body convention as POST /render,
+    and no URL-length ceiling on the deck, which a GET would also impose.
+
+    Body: {"blocks": [{"block": {...}, "width": 1080}, ...], "duration_ms": 1500}
+    Returns: image/gif bytes, or {"ok": true, "gif_base64": "..."} when the
+    Accept header asks for JSON (same rationale as /render's JSON mode)."""
+    payload = request.get_json(force=True)
+    blocks = payload.get('blocks')
+    if not isinstance(blocks, list) or not blocks:
+        return Response(json.dumps({'ok': False, 'error': "missing 'blocks' list"}),
+                        status=400, mimetype='application/json')
+    try:
+        for spec in blocks:
+            if not isinstance(spec, dict):
+                raise ValueError('each blocks[] entry must be an object')
+            spec['block'] = _validated_block(spec.get('block'))
+            spec['width'] = _validated_width(spec.get('width', 620))
+        gif = _render_deck_gif(blocks, payload.get('duration_ms', 1000))
+    except ImportError as e:
+        return Response(json.dumps({'ok': False, 'error': f'missing dependency ({e})'}),
+                        status=500, mimetype='application/json')
+    except RuntimeError as e:
+        return Response(json.dumps({'ok': False, 'error': str(e)}),
+                        status=429, mimetype='application/json')
+    except ValueError as e:
+        return Response(json.dumps({'ok': False, 'error': str(e)}),
+                        status=400, mimetype='application/json')
+
+    if 'application/json' in request.headers.get('Accept', ''):
+        return Response(json.dumps({'ok': True, 'gif_base64': base64.b64encode(gif).decode('ascii')}),
+                        mimetype='application/json')
+    return Response(gif, mimetype='image/gif')
 
 
 # -- /chat: a Google Chat HTTP-endpoint app. Cloud Run's own IAM

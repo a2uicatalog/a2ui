@@ -388,6 +388,9 @@ textarea#draftInput::placeholder,textarea#cookingBody::placeholder{color:var(--t
 .carousel-preview{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--border);background:var(--code-bg)}
 .car-preview-img{width:120px;aspect-ratio:4/5;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:var(--surface-2)}
 .car-preview-status{font-family:var(--mono);font-size:11px;color:var(--text-faint)}
+.car-media-radio{display:flex;gap:16px;margin-top:5px}
+.car-media-radio label{flex-direction:row;align-items:center;gap:6px;font-weight:400;text-transform:none;letter-spacing:normal;font-size:13px;color:var(--text)}
+.car-media-radio input{width:auto;margin:0}
 </style>
 """
 
@@ -900,6 +903,7 @@ def build_carousel_page(carousel_drafts):
       <label>Eyebrow <input class="car-eyebrow" type="text" placeholder="e.g. What this surfaced"></label>
       <label>Headline <input class="car-headline" type="text" placeholder="The closing line"></label>
       <label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>
+      <label style="grid-column:1/-1">Call-to-action button (optional) <input class="car-cta-label" type="text" placeholder="e.g. Read Part 2 →"></label>
     </div>
     <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
   </div>
@@ -923,15 +927,22 @@ function carPreviewDebounced(blockEl){{
 }}
 
 function carCardFromBlock(blockEl, role, position){{
-  return {{
+  var yes = blockEl.querySelector('.car-has-media');
+  var card = {{
     type: 'promo_carousel_card',
     role: role,
     eyebrow: blockEl.querySelector('.car-eyebrow').value,
     position: position,
     headline: blockEl.querySelector('.car-headline').value,
     body: blockEl.querySelector('.car-body').value,
+    // Explicit false (not just an empty media_url) is what tells the
+    // renderer to omit the slot entirely and centre the text.
+    has_media: !!(yes && yes.checked),
     media_url: blockEl.querySelector('.car-media') ? blockEl.querySelector('.car-media').value : ''
   }};
+  var ctaLabel = blockEl.querySelector('.car-cta-label');
+  if (ctaLabel) card.cta_label = ctaLabel.value;
+  return card;
 }}
 
 function carRenderPreview(blockEl){{
@@ -959,8 +970,16 @@ function carRenderPreview(blockEl){{
 }}
 
 function carWireBlock(blockEl){{
-  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media').forEach(function(el){{
+  blockEl.querySelectorAll('.car-eyebrow,.car-headline,.car-body,.car-media,.car-cta-label').forEach(function(el){{
     el.addEventListener('input', function(){{ carPreviewDebounced(blockEl); }});
+  }});
+  blockEl.querySelectorAll('.car-has-media,.car-no-media').forEach(function(el){{
+    el.addEventListener('change', function(){{
+      var wrap = blockEl.querySelector('.car-media-wrap');
+      var on = blockEl.querySelector('.car-has-media').checked;
+      if (wrap) wrap.style.display = on ? '' : 'none';
+      carPreviewDebounced(blockEl);
+    }});
   }});
 }}
 
@@ -976,7 +995,12 @@ function carAddMiddle(prefill){{
     '<label>Eyebrow <input class="car-eyebrow" type="text" placeholder="Section label"></label>' +
     '<label>Headline <input class="car-headline" type="text" placeholder="The point of this card"></label>' +
     '<label style="grid-column:1/-1">Body <textarea class="car-body" rows="2" placeholder="Supporting line (optional)"></textarea></label>' +
-    '<label style="grid-column:1/-1">Media URL (optional — GIF/image; leave blank for a placeholder slot) <input class="car-media" type="text" placeholder="/gallery/.../example.gif"></label>' +
+    '<label style="grid-column:1/-1">Media on this card?' +
+    '<span class="car-media-radio">' +
+    '<label><input type="radio" name="media-' + middleCount + '" class="car-has-media" value="yes"> Yes</label>' +
+    '<label><input type="radio" name="media-' + middleCount + '" class="car-no-media" value="no" checked> No — centre the text</label>' +
+    '</span></label>' +
+    '<label class="car-media-wrap" style="grid-column:1/-1;display:none">Media URL (a site-relative /gallery/... path is fine; an animated GIF stays animated in the GIF export) <input class="car-media" type="text" placeholder="/gallery/ge-print-rendering/workspace-status-live.gif"></label>' +
     '</div>' +
     '<div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>';
   el.querySelector('[data-remove]').addEventListener('click', function(){{
@@ -991,6 +1015,13 @@ function carAddMiddle(prefill){{
     el.querySelector('.car-headline').value = prefill.headline || '';
     el.querySelector('.car-body').value = prefill.body || '';
     el.querySelector('.car-media').value = prefill.media_url || '';
+    // Older drafts predate has_media; infer from whether a url was saved,
+    // which matches what those drafts actually rendered at the time.
+    var wantsMedia = prefill.has_media === undefined
+      ? !!prefill.media_url : !!prefill.has_media;
+    el.querySelector('.car-has-media').checked = wantsMedia;
+    el.querySelector('.car-no-media').checked = !wantsMedia;
+    el.querySelector('.car-media-wrap').style.display = wantsMedia ? '' : 'none';
     carRenderPreview(el);
   }}
   carUpdateCostEstimate();
@@ -1059,10 +1090,10 @@ document.getElementById('carSaveBtn').addEventListener('click', function(){{
   var ctaEl = document.querySelector('.carousel-card-block[data-role="cta"]');
   var middleEls = document.querySelectorAll('#carMiddles .carousel-card-block');
   var hook = {{eyebrow: hookEl.querySelector('.car-eyebrow').value, headline: hookEl.querySelector('.car-headline').value, body: hookEl.querySelector('.car-body').value}};
-  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value}};
+  var cta = {{eyebrow: ctaEl.querySelector('.car-eyebrow').value, headline: ctaEl.querySelector('.car-headline').value, body: ctaEl.querySelector('.car-body').value, cta_label: ctaEl.querySelector('.car-cta-label').value}};
   var middles = [];
   middleEls.forEach(function(el){{
-    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, media_url: el.querySelector('.car-media').value}});
+    middles.push({{eyebrow: el.querySelector('.car-eyebrow').value, headline: el.querySelector('.car-headline').value, body: el.querySelector('.car-body').value, has_media: el.querySelector('.car-has-media').checked, media_url: el.querySelector('.car-media').value}});
   }});
   status.textContent = 'Saving...';
   fetch('/authoring/api/carousel-save', {{
@@ -1179,6 +1210,7 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
   ctaEl.querySelector('.car-eyebrow').value = draft.cta.eyebrow || '';
   ctaEl.querySelector('.car-headline').value = draft.cta.headline || '';
   ctaEl.querySelector('.car-body').value = draft.cta.body || '';
+  ctaEl.querySelector('.car-cta-label').value = draft.cta.cta_label || '';
   carRenderPreview(ctaEl);
 
   draft.middles.forEach(function(m){{ carAddMiddle(m); }});
