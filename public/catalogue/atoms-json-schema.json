@@ -16316,6 +16316,58 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "hub"
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "slides": {
+                  "type": "string"
+                },
+                "blocks": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "color",
+                "slides",
+                "label",
+                "blocks"
+              ]
+            }
+          },
+          "background": {
+            "type": "string"
+          },
+          "nav_background": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "subjects"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "jump_nav"
           },
           "links": {

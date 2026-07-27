@@ -18,7 +18,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 473 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 474 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -8299,6 +8299,22 @@
         "show a checklist items with Material icons",
         "checklist where each item has a material symbol icon (not just a check mark). good for capability or requirements lists",
         "render a icon checklist"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:hub",
+      "displayName": "Hub",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/hub",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads.",
+      "representativeQueries": [
+        "show a deck navigation shell with subjects and slides",
+        "full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. the",
+        "render a hub"
       ]
     },
     {

@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 473,
+ "atomCount": 474,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -4547,6 +4547,14 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "hub",
+   "compact": "deck navigation shell with subjects and slides",
+   "surfaces": [
     "google-apps-script-web",
     "mcp-apps"
    ]

@@ -10,7 +10,7 @@
       "title": "A2UI base atoms",
       "alwaysResolved": true,
       "whenToUse": "The standard catalog — structure, text, data display, inputs, actions and the wired state connectors. ALWAYS resolved; every surface uses it.",
-      "atomCount": 93,
+      "atomCount": 94,
       "atoms": [
         {
           "type": "accordion_item",
@@ -180,6 +180,16 @@
         {
           "type": "highlight_box",
           "description": "highlight box — gradient/solid/outline style, icon, title, text"
+        },
+        {
+          "type": "hub",
+          "description": "deck navigation shell with subjects and slides",
+          "children": {
+            "subjects": {
+              "shape": "wrapper_list",
+              "inner_path": "slides.blocks"
+            }
+          }
         },
         {
           "type": "icon_list",

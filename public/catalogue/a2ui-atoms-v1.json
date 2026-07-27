@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (473 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (474 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -19421,6 +19421,44 @@
     "web",
     "google-meet-stage",
     "google-apps-script-side-panel",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "hub": {
+   "type": "object",
+   "description": "Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "hub"
+      },
+      "subjects": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom blocks]}]}"
+      },
+      "background": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, page hex, default \"#0f172a\")"
+      },
+      "nav_background": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, nav rail hex, defaults to background)"
+      }
+     },
+     "required": [
+      "component",
+      "subjects"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
     "google-apps-script-web",
     "mcp-apps"
    ]

@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 473,
+ "atomCount": 474,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -14474,6 +14474,27 @@
     "filled": "filled icon variant (default true)",
     "accent": "default icon colour",
     "items": "array of strings or {text, icon?, sublabel?, color?}"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "hub",
+   "description": "Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads.",
+   "compact_description": "deck navigation shell with subjects and slides",
+   "surfaces": {
+    "works_on": [
+     "google-apps-script-web",
+     "mcp-apps"
+    ]
+   },
+   "fields": {
+    "subjects": "array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom blocks]}]}",
+    "background": "string (optional, page hex, default \"#0f172a\")",
+    "nav_background": "string (optional, nav rail hex, defaults to background)"
    },
    "source": {
     "name": "a2uicatalog",

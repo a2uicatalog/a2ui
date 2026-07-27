@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Tabbed Code — A2UI Atomic Catalog</title>
-  <meta name="description" content="Renders multiple code snippets organized inside an interactive, multi-tab container component.">
+  <title>Hub — A2UI Atomic Catalog</title>
+  <meta name="description" content="Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -122,70 +122,52 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / tabbed_code
+    atoms / hub
   </nav>
 
-  <h1>Tabbed Code</h1>
-  <p class="desc">Renders multiple code snippets organized inside an interactive, multi-tab container component.</p>
+  <h1>Hub</h1>
+  <p class="desc">Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
-<div class="section">
-  <div class="label">Degraded on</div>
-  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-meet-stage</td><td>Tab switching logic feels slow or becomes unresponsive.</td></tr><tr><td>google-chat</td><td>Displays all code blocks sequentially or drops all but the first tab.</td></tr><tr><td>email</td><td>Interactivity is broken so all snippet variations render stacked vertically.</td></tr></tbody></table>
-</div>
 
   
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box"><div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;"><div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;gap:0;"><label for="tc-89134-0" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid #7c3aed;color:#7c3aed;">Tab 1</label><label for="tc-89134-1" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;border-bottom:2px solid transparent;color:#9ca3af;">Tab 2</label></div><div style="display:block"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div><div style="display:none"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code></code></pre></div></div></div>
-</div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>tabs</td><td>array. Collection of objects containing the language identifier, tab label, and code string.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>subjects</td><td>array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom blocks]}]}</td><td>required</td></tr><tr><td>background</td><td>string (optional, page hex, default "#0f172a")</td><td>optional</td></tr><tr><td>nav_background</td><td>string (optional, nav rail hex, defaults to background)</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "tabbed_code",
-  "tabs": [
-    {
-      "label": "Tab 1",
-      "content": "Content one."
-    },
-    {
-      "label": "Tab 2",
-      "content": "Content two."
-    }
-  ]
+  "type": "hub",
+  "subjects": []
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:tabbed_code",
-  "displayName": "Tabbed Code",
+  "identifier": "urn:air:a2uicatalog.ai:atom:hub",
+  "displayName": "Hub",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/tabbed_code",
+  "url": "https://a2uicatalog.ai/atoms/hub",
   "capabilities": [
-    "web",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "Renders multiple code snippets organized inside an interactive, multi-tab container component.",
+  "description": "Full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom blocks. The envelope for hub/deck payloads.",
   "representativeQueries": [
-    "show a organize multiple programming language snippets inside an interactive tab container",
-    "renders multiple code snippets organized inside an interactive, multi-tab container component.",
-    "render a tabbed code"
+    "show a deck navigation shell with subjects and slides",
+    "full-screen deck navigation container: subjects as a coloured nav rail, each holding slides of atom",
+    "render a hub"
   ]
 }</code></pre>
   </div>
