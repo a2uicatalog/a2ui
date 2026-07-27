@@ -63,6 +63,7 @@ DRAFTS_DIR = Path.home() / "a2ui-private" / "blog-worker" / "launch-src" / "draf
 # (mirrors DRAFTS_DIR's role for What's Cooking, just a different content
 # shape: {slug, hook, middles, cta} instead of markdown+frontmatter).
 CAROUSEL_DRAFTS_DIR = Path.home() / "a2ui-private" / "blog-worker" / "posts" / "carousel-drafts"
+SINGLE_POST_DRAFTS_DIR = Path.home() / "a2ui-private" / "blog-worker" / "posts" / "single-post-drafts"
 
 
 def _guard():
@@ -216,6 +217,48 @@ def _carousel_board_html(drafts):
         f'<a class="cooking-card" href="/authoring/templates/teaser-card-carousel/?slug={d["slug"]}">'
         f'<div class="cooking-card-title">{d["headline"]}</div>'
         f'<div class="cooking-card-meta">{d["card_count"]} cards</div>'
+        f'</a>'
+        for d in drafts
+    )
+    return f'<div class="cooking-board">{cards}</div>'
+
+
+def _load_single_post_drafts():
+    """Same contract as _load_carousel_drafts, for the Single Post template:
+    one card per draft instead of hook/middles/cta. Kept as its own store
+    (posts/single-post-drafts/) rather than a zero-middle carousel, because
+    the two shapes diverge in the form, in the atom role, and in what a
+    board row means -- collapsing them would make every consumer branch on
+    a card count."""
+    if not SINGLE_POST_DRAFTS_DIR.exists():
+        return []
+    drafts = []
+    for path in sorted(SINGLE_POST_DRAFTS_DIR.glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"gen_authoring: {path.name} invalid ({e}), "
+                  f"skipping from single-post draft board", file=sys.stderr)
+            continue
+        card = data.get("card") or {}
+        drafts.append({
+            "slug": path.stem,
+            "headline": card.get("headline", path.stem),
+            "eyebrow": card.get("eyebrow", ""),
+            "variant": data.get("variant", "field_report"),
+            "font": data.get("font", "arimo"),
+            "card": card,
+        })
+    return drafts
+
+
+def _single_post_board_html(drafts):
+    if not drafts:
+        return '<p class="hint">Nothing drafted yet.</p>'
+    cards = "".join(
+        f'<a class="cooking-card" href="/authoring/templates/single-post/?slug={d["slug"]}">'
+        f'<div class="cooking-card-title">{d["headline"]}</div>'
+        f'<div class="cooking-card-meta">{d["eyebrow"] or "single post"}</div>'
         f'</a>'
         for d in drafts
     )
@@ -490,6 +533,10 @@ def build_landing_page(playbook_html):
     <a class="hub-card" href="/authoring/templates/teaser-card-carousel/">
       <div class="hub-card-title">Teaser Card Carousel</div>
       <div class="hub-card-desc">Template #1: hook card, N middle cards (each with an optional media slot), CTA card — real atoms rendered server-side, exported as individual PNGs for a LinkedIn carousel post.</div>
+    </a>
+    <a class="hub-card" href="/authoring/templates/single-post/">
+      <div class="hub-card-title">Single Post</div>
+      <div class="hub-card-desc">Template #2: one standalone card in the Field Report treatment — hook-sized headline, optional media, its own call to action. For a post that is a picture, not a swipe.</div>
     </a>
   </div>
   <div class="playbook-doc" style="margin-top:36px">{playbook_html}</div>
@@ -1298,6 +1345,263 @@ document.getElementById('carExportGifBtn').addEventListener('click', function(){
     return _page_shell("Teaser Card Carousel", body, script)
 
 
+def build_single_post_page(single_post_drafts):
+    """Single Post -- Authoring suite "template #2". One standalone card in
+    the Field Report treatment: no deck, no position tag, so it carries a
+    hook-sized headline AND its own call-to-action button (the atom's
+    role='single'). Deliberately reuses the carousel's Worker routes --
+    /carousel-preview takes one card already, and /carousel-export takes a
+    list, which a one-element list satisfies -- so this template adds a
+    form and a draft store, not a parallel render path."""
+    drafts_json = json.dumps(single_post_drafts)
+
+    body = f"""<div class="authoring-top">
+  <div class="gate-note">&#128274; full.a2uicatalog.ai only</div>
+  <h1>Single Post</h1>
+  <p class="sub">One card, standing on its own — a real promo_carousel_card atom at role=single, rendered server-side and exported as a PNG (or a GIF, if its media animates).</p>
+</div>
+<div class="section">
+  <h2 style="font-size:1.05rem;margin:0 0 12px">Drafted ({len(single_post_drafts)})</h2>
+  {_single_post_board_html(single_post_drafts)}
+</div>
+<div class="section" style="padding-top:0">
+  <h2 style="font-size:1.05rem;margin:24px 0 12px">Build a post</h2>
+  <div class="fm-fields" style="grid-template-columns:1fr;margin-bottom:16px">
+    <label>Slug (for saving/loading this draft) <input id="spSlug" type="text" placeholder="e.g. chat-print-channel-launch"></label>
+  </div>
+  <div class="fm-fields" style="margin-bottom:16px">
+    <label>Card style
+      <select id="spVariant">
+        <option value="field_report">Field report — amber, blueprint grid, fills the frame</option>
+        <option value="glow">Glow — cyan, corner glow, centred</option>
+      </select>
+    </label>
+    <label>Headline font
+      <select id="spFont">
+        <option value="arimo">Arimo — Arial-metric (default)</option>
+        <option value="lato">Lato — chunkiest, true Black 900</option>
+        <option value="noto">Noto Sans — humanist</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="carousel-card-block" data-role="single">
+    <div class="pane-bar"><span>The card</span></div>
+    <div class="fm-fields">
+      <label>Eyebrow <input class="car-eyebrow" type="text" placeholder="e.g. FIELD REPORT &middot; GOOGLE CHAT"></label>
+      <label>Headline <input class="car-headline" type="text" placeholder="The one line this post is about"></label>
+      <label style="grid-column:1/-1">Body <textarea class="car-body" rows="3" placeholder="Supporting copy (optional)"></textarea></label>
+      <label style="grid-column:1/-1">Call-to-action button (optional) <input class="car-cta-label" type="text" placeholder="e.g. Read the write-up →"></label>
+      <label style="grid-column:1/-1">Media on this card?
+        <span class="car-media-radio">
+          <label><input type="radio" name="media-single" class="car-has-media" value="yes"> Yes</label>
+          <label><input type="radio" name="media-single" class="car-no-media" value="no" checked> No — text only</label>
+        </span>
+      </label>
+      <label class="car-media-wrap" style="grid-column:1/-1;display:none">Media URL (a site-relative /gallery/... path is fine; an animated GIF stays animated in the GIF export) <input class="car-media" type="text" placeholder="/gallery/google-chat-print-channel/chat-weather-live.gif"></label>
+      <label class="car-media-wrap" style="display:none">Trim clip to (seconds) <input class="car-media-secs" type="number" step="0.5" min="0.5" placeholder="whole clip"></label>
+    </div>
+    <div class="carousel-preview"><img class="car-preview-img" alt="Card preview"><div class="car-preview-status"></div></div>
+  </div>
+
+  <div class="childlist-strip" style="display:flex;align-items:center;gap:10px;margin-top:16px;border-top:1px solid var(--border)">
+    <button class="copy-btn" id="spSaveBtn" type="button">SAVE DRAFT</button>
+    <button class="copy-btn" id="spExportBtn" type="button">EXPORT AS PNG</button>
+    <button class="copy-btn" id="spExportGifBtn" type="button">EXPORT AS GIF</button>
+    <span id="spStatus" style="color:var(--text-faint)"></span>
+  </div>
+  <p class="hint" id="spCostEstimate" style="margin-top:6px"></p>
+</div>"""
+
+    script = f"""
+var SINGLE_POST_DRAFTS = {drafts_json};
+
+// Same real Cloud Run pricing the carousel page quotes -- one card, so the
+// estimate is a single render (plus the stitch pass for the GIF).
+var SP_SECONDS_PER_CARD = 3.0;
+var SP_GIF_STITCH_OVERHEAD_SECONDS = 2.0;
+var SP_COST_PER_SECOND = 0.000024 + 0.0000025;
+
+function spFormatCost(usd) {{
+  if (usd < 0.01) return '<$0.01';
+  return '$' + usd.toFixed(2);
+}}
+
+function spBlock() {{
+  var el = document.querySelector('.carousel-card-block[data-role="single"]');
+  var yes = el.querySelector('.car-has-media');
+  var card = {{
+    type: 'promo_carousel_card',
+    role: 'single',
+    variant: document.getElementById('spVariant').value,
+    font: document.getElementById('spFont').value,
+    eyebrow: el.querySelector('.car-eyebrow').value,
+    headline: el.querySelector('.car-headline').value,
+    body: el.querySelector('.car-body').value,
+    cta_label: el.querySelector('.car-cta-label').value,
+    has_media: !!(yes && yes.checked),
+    media_url: el.querySelector('.car-media').value
+  }};
+  var msecs = el.querySelector('.car-media-secs');
+  if (msecs && msecs.value.trim()) card.media_max_ms = Math.round(parseFloat(msecs.value) * 1000);
+  return card;
+}}
+
+function spRenderPreview() {{
+  var el = document.querySelector('.carousel-card-block[data-role="single"]');
+  var card = spBlock();
+  if (!card.headline.trim()) return;
+  var img = el.querySelector('.car-preview-img');
+  var status = el.querySelector('.car-preview-status');
+  status.textContent = 'Rendering...';
+  fetch('/authoring/api/carousel-preview', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{card: card}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      if (res.ok && res.data.png_base64) {{
+        img.src = 'data:image/png;base64,' + res.data.png_base64;
+        status.textContent = '';
+      }} else {{
+        status.textContent = 'FAILED: ' + (res.data.error || 'unknown error');
+      }}
+    }})
+    .catch(function(e){{ status.textContent = 'FAILED: ' + e.message; }});
+}}
+
+(function spWire(){{
+  var el = document.querySelector('.carousel-card-block[data-role="single"]');
+  var timer = null;
+  el.querySelectorAll('input, textarea').forEach(function(f){{
+    f.addEventListener('input', function(){{
+      clearTimeout(timer);
+      timer = setTimeout(spRenderPreview, 800);
+    }});
+  }});
+  el.querySelectorAll('.car-has-media, .car-no-media').forEach(function(r){{
+    r.addEventListener('change', function(){{
+      var on = el.querySelector('.car-has-media').checked;
+      el.querySelectorAll('.car-media-wrap').forEach(function(w){{ w.style.display = on ? '' : 'none'; }});
+      spRenderPreview();
+    }});
+  }});
+  ['spVariant','spFont'].forEach(function(id){{
+    document.getElementById(id).addEventListener('change', spRenderPreview);
+  }});
+  document.getElementById('spCostEstimate').textContent =
+    'Estimated Cloud Run compute cost per export: ' +
+    spFormatCost(SP_SECONDS_PER_CARD * SP_COST_PER_SECOND) + ' as a PNG, ' +
+    spFormatCost((SP_SECONDS_PER_CARD + SP_GIF_STITCH_OVERHEAD_SECONDS) * SP_COST_PER_SECOND) + ' as a GIF ' +
+    '(real Cloud Run compute pricing; well within the monthly free tier for normal use).';
+}})();
+
+document.getElementById('spSaveBtn').addEventListener('click', function(){{
+  var status = document.getElementById('spStatus');
+  var slug = document.getElementById('spSlug').value.trim();
+  if (!/^[a-z0-9-]+$/.test(slug)) {{
+    status.textContent = 'Slug must be lowercase letters, numbers and hyphens.';
+    return;
+  }}
+  var card = spBlock();
+  if (!card.headline.trim()) {{
+    status.textContent = 'The card needs a headline before saving.';
+    return;
+  }}
+  status.textContent = 'Saving...';
+  fetch('/authoring/api/carousel-save', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{
+      kind: 'single-post', slug: slug, card: card,
+      variant: document.getElementById('spVariant').value,
+      font: document.getElementById('spFont').value}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      status.textContent = res.ok ? 'Saved — check GitHub for the new PR shortly.' : 'FAILED: ' + (res.data.error || 'unknown error');
+    }})
+    .catch(function(e){{ status.textContent = 'FAILED: ' + e.message; }});
+}});
+
+function spExport(gif) {{
+  var status = document.getElementById('spStatus');
+  var btn = document.getElementById(gif ? 'spExportGifBtn' : 'spExportBtn');
+  var label = gif ? 'EXPORT AS GIF' : 'EXPORT AS PNG';
+  var card = spBlock();
+  if (!card.headline.trim()) {{
+    status.textContent = 'The card needs a headline before exporting.';
+    return;
+  }}
+  btn.disabled = true; btn.textContent = 'RENDERING...';
+  status.textContent = 'Rendering at full export size — this can take a moment...';
+  fetch(gif ? '/authoring/api/carousel-export-gif' : '/authoring/api/carousel-export', {{
+    method: 'POST',
+    headers: {{'content-type': 'application/json'}},
+    body: JSON.stringify({{cards: [card]}})
+  }})
+    .then(function(r){{ return r.json().then(function(d){{ return {{ok: r.ok, data: d}}; }}); }})
+    .then(function(res){{
+      btn.disabled = false; btn.textContent = label;
+      if (!res.ok) {{ status.textContent = 'FAILED: ' + (res.data.error || 'unknown error'); return; }}
+      var slug = document.getElementById('spSlug').value.trim() || 'single-post';
+      var a = document.createElement('a');
+      if (gif) {{
+        a.href = 'data:image/gif;base64,' + res.data.gif_base64;
+        a.download = slug + '.gif';
+      }} else {{
+        a.href = 'data:image/png;base64,' + res.data.images[0].png_base64;
+        a.download = slug + '.png';
+      }}
+      document.body.appendChild(a); a.click(); a.remove();
+      status.textContent = 'Exported — check your downloads.';
+    }})
+    .catch(function(e){{
+      btn.disabled = false; btn.textContent = label;
+      status.textContent = 'FAILED: ' + e.message;
+    }});
+}}
+
+document.getElementById('spExportBtn').addEventListener('click', function(){{ spExport(false); }});
+document.getElementById('spExportGifBtn').addEventListener('click', function(){{ spExport(true); }});
+
+// Load an existing draft if ?slug=... is present (from the board above).
+(function(){{
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  if (!slug) return;
+  document.getElementById('spSlug').value = slug;
+  var draft = null;
+  for (var i = 0; i < SINGLE_POST_DRAFTS.length; i++) {{
+    if (SINGLE_POST_DRAFTS[i].slug === slug) {{ draft = SINGLE_POST_DRAFTS[i]; break; }}
+  }}
+  if (!draft) {{
+    document.getElementById('spStatus').textContent = 'No saved draft found for slug "' + slug + '".';
+    return;
+  }}
+  if (draft.variant) document.getElementById('spVariant').value = draft.variant;
+  if (draft.font) document.getElementById('spFont').value = draft.font;
+  var el = document.querySelector('.carousel-card-block[data-role="single"]');
+  var c = draft.card || {{}};
+  el.querySelector('.car-eyebrow').value = c.eyebrow || '';
+  el.querySelector('.car-headline').value = c.headline || '';
+  el.querySelector('.car-body').value = c.body || '';
+  el.querySelector('.car-cta-label').value = c.cta_label || '';
+  el.querySelector('.car-media').value = c.media_url || '';
+  if (c.media_max_ms) el.querySelector('.car-media-secs').value = c.media_max_ms / 1000;
+  var on = !!c.has_media;
+  el.querySelector('.car-has-media').checked = on;
+  el.querySelector('.car-no-media').checked = !on;
+  el.querySelectorAll('.car-media-wrap').forEach(function(w){{ w.style.display = on ? '' : 'none'; }});
+  spRenderPreview();
+  document.getElementById('spStatus').textContent =
+    'Loaded "' + slug + '" — Save overwrites this same draft.';
+}})();
+"""
+    return _page_shell("Single Post", body, script)
+
+
 def main():
     _guard()
     playbook_html = markdown.markdown(
@@ -1310,6 +1614,7 @@ def main():
     _verify_componentid_maps(archetypes, schema_children)
     current_drafts = _load_current_drafts()
     carousel_drafts = _load_carousel_drafts()
+    single_post_drafts = _load_single_post_drafts()
 
     lift_pane_html = LIFT_PANE_HTML.read_text(encoding="utf-8") if LIFT_PANE_HTML.exists() else ""
     lift_pane_js = LIFT_PANE_JS.read_text(encoding="utf-8") if LIFT_PANE_JS.exists() else ""
@@ -1341,13 +1646,21 @@ def main():
         encoding="utf-8",
     )
 
+    single_post_dir = OUTPUT_DIR / "templates" / "single-post"
+    single_post_dir.mkdir(parents=True, exist_ok=True)
+    (single_post_dir / "index.html").write_text(
+        build_single_post_page(single_post_drafts),
+        encoding="utf-8",
+    )
+
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
     print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/, "
-          f"/authoring/templates/teaser-card-carousel/ "
+          f"/authoring/templates/teaser-card-carousel/, /authoring/templates/single-post/ "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json, "
           f"{len(current_drafts)} draft(s) on the cooking board, "
-          f"{len(carousel_drafts)} carousel draft(s))")
+          f"{len(carousel_drafts)} carousel draft(s), "
+          f"{len(single_post_drafts)} single-post draft(s))")
 
 
 if __name__ == "__main__":

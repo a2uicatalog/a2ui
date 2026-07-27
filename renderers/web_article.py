@@ -21588,7 +21588,9 @@ def _promo_font(b: dict):
 #     eyebrow, position tag, footer and CTA text all landed at 4-5 effective
 #     pixels: invisible while thumb-scrolling. Everything below is sized so
 #     that after that downscale it still reads.
-_PROMO_HEADLINE_CQW = {'hook': 7.0, 'middle': 5.0, 'cta': 5.6}
+# 'single' is the standalone one-card post: no deck around it, so it can
+# carry a hook-sized headline and a call to action on the same card.
+_PROMO_HEADLINE_CQW = {'hook': 7.0, 'middle': 5.0, 'cta': 5.6, 'single': 6.4}
 _PROMO_BODY_CQW = 2.8
 _PROMO_LABEL_CQW = 2.0      # eyebrow + position pill
 _PROMO_FOOT_CQW = 1.8
@@ -21621,7 +21623,7 @@ def _promo_media_src(media_url: str) -> str:
 
 def _render_promo_carousel_card(b: dict) -> str:
     role = b.get('role', 'middle')
-    role = role if role in ('hook', 'middle', 'cta') else 'middle'
+    role = role if role in ('hook', 'middle', 'cta', 'single') else 'middle'
     headline_size = _PROMO_HEADLINE_CQW[role]
     media_url = b.get('media_url', '')
     # has_media is the author's explicit yes/no for this card, NOT inferred
@@ -21631,7 +21633,7 @@ def _render_promo_carousel_card(b: dict) -> str:
     # that's a card mid-authoring rather than a card that wants no media.
     # Legacy blocks written before this field existed carry no has_media, so
     # fall back to the old behaviour (middle cards always reserved a slot).
-    has_media = b.get('has_media', role == 'middle')
+    has_media = b.get('has_media', role in ('middle', 'single'))
 
     # Two visual treatments over ONE data model -- same fields, same authoring
     # UI, same export pipeline, so a carousel can switch look with one setting
@@ -21738,7 +21740,7 @@ def _render_promo_carousel_card(b: dict) -> str:
         f'background:{cta_bg};color:#10192B;{cta_glow}'
         f'font-family:{sans};font-size:{_PROMO_CTA_CQW}cqw;font-weight:{bold_wt};'
         f'letter-spacing:.01em;">{_esc(cta_label)}</div>'
-        if (role == 'cta' and cta_label) else ''
+        if (role in ('cta', 'single') and cta_label) else ''
     )
 
     # Dedicated head/foot rather than the shared _card_head/_card_foot. Those

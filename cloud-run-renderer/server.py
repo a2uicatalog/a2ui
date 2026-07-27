@@ -389,7 +389,12 @@ MAX_MEDIA_FRAMES = 90
 # middle card. The hook gets a little extra too -- it carries the headline
 # a scroller decides on. Any card can override this with its own
 # duration_ms; a non-promo atom falls back to the deck-level duration_ms.
-_PROMO_ROLE_DURATION_MS = {'hook': 3000, 'middle': 2200, 'cta': 4500}
+_PROMO_ROLE_DURATION_MS = {'hook': 3000, 'middle': 2200, 'cta': 4500,
+                           # 'single' is a one-card post -- if it becomes a GIF
+                           # at all it's because its media animates, and the
+                           # media's own length is what should govern, so this
+                           # only matters as a floor.
+                           'single': 4000}
 
 
 def _card_duration_ms(block, deck_default_ms: int) -> int:
