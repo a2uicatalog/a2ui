@@ -11755,7 +11755,9 @@ blocks:
       (aliases for 0/50/100), or any number 0-100 -- 0 hugs the left edge, 100
       hugs the right edge, values between interpolate smoothly across the screen.
     duration_s: number (optional, default 4). Seconds for one bottom-to-top pass.
-    loop: boolean (optional, default true). Repeat indefinitely vs a single pass.
+    loop: boolean or number (optional, default true). true repeats indefinitely,
+      false is a single pass, and a number is exactly that many passes (2 reads
+      as a flourish; an endless rise competes with the page on every scroll).
     fade_edges: boolean (optional, default true). Fade in near the bottom, fade
       out near the top, instead of appearing/disappearing abruptly.
   source:

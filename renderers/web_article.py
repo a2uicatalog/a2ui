@@ -21892,7 +21892,17 @@ def _render_icon_liftoff(b: dict) -> str:
                '90%{opacity:1;}100%{transform:translateY(-110vh);opacity:0;}'
                if fade else
                '0%{transform:translateY(0);}100%{transform:translateY(-110vh);}')
-    iter_count = 'infinite' if loop else '1'
+    # loop accepts a COUNT as well as a boolean: true = forever, false = one
+    # pass, or an integer for exactly that many passes. An ambient logo that
+    # rises forever competes with the article for attention on every scroll --
+    # a couple of passes reads as a flourish, an endless one reads as a bug.
+    if isinstance(loop, bool):
+        iter_count = 'infinite' if loop else '1'
+    else:
+        try:
+            iter_count = str(max(1, int(loop)))
+        except (TypeError, ValueError):
+            iter_count = 'infinite'
 
     return (
         f'<style>@keyframes {uid}rise{{{kf_body}}}</style>'
