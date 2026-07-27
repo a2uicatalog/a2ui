@@ -873,6 +873,23 @@ body { padding: 24px; }
    also catches playbook's nav-button/nav-bar ids, which is harmless since
    none of them rely on min-height. */
 [id^="pbk"] { min-height: 0 !important; }
+/* Follow-up (2026-07-27, same day): the min-height fix above stops the
+   RUNAWAY-growth bug, but doesn't address a separate, real host behavior --
+   once fullscreen is genuinely granted, the host sizes the iframe to the
+   actual screen height regardless of how short our reported content is (we
+   don't control that from inside the iframe). A short slide (e.g. a single
+   sequence_diagram) confirmed live pinned to the TOP with a large empty
+   dark void below it, no indication it was intentional. Vertically center
+   each slide's content instead, so any leftover space distributes evenly.
+   Scoped to slide CONTENT divs only (id contains "s_", which only ever
+   occurs at the uid/slide-id boundary -- the random uid prefix is base36
+   [0-9a-z], never "_" -- so this can't accidentally match a nav button/bar
+   id). align-items is left at flex's default 'stretch' deliberately: only
+   the vertical axis centers, children (e.g. the full-width radar) keep
+   their own width instead of shrinking to content size. Content taller
+   than the frame is unaffected -- centering only has slack to distribute
+   when there IS slack. */
+[id^="pbk"][id*="s_"] { display: flex !important; flex-direction: column !important; justify-content: center !important; }
 </style>
 </head>
 <body class="asw-page">
