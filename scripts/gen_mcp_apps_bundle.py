@@ -196,6 +196,21 @@ HANDSHAKE = """
       (Array.isArray(payload) ? payload : []);
     var hasHub = blocks.some(function (b) { return b && (b.component || b.type) === 'hub'; });
     if (!hasHub) return;
+    // gdm_rocket_panel / iso_fireworks_panel are fixed, half-viewport overlay
+    // atoms (data-a2ui-overlay in atoms_canvas.gs) authored for the INLINE
+    // layout -- position:fixed pinned to one half of the card. Fullscreen
+    // hosts don't guarantee a bounded viewport the way an inline card does
+    // (Curtis observed live on claude.ai, 2026-07-27: fullscreen mode let the
+    // hub's min-height:100vh body balloon into a much taller, scrollable
+    // canvas instead of a fixed one-screenful frame), so an overlay built
+    // assuming "100% height = one screenful" reads as broken, not just
+    // differently sized. If a payload mixes a hub with one of these, don't
+    // drag it into fullscreen just because the hub is present.
+    var hasFixedOverlay = blocks.some(function (b) {
+      var t = b && (b.component || b.type);
+      return t === 'gdm_rocket_panel' || t === 'iso_fireworks_panel';
+    });
+    if (hasFixedOverlay) return;
     var mode = _hostContext.displayMode || 'inline';
     if (mode === 'fullscreen') return;                                    // already there
     var modes = _hostContext.availableDisplayModes;
@@ -507,6 +522,19 @@ body {{ padding: 24px; }}
    squeeze content left; left-half overlays push it right. */
 #a2ui-root.a2ui-with-overlay {{ max-width: 50%; box-sizing: border-box; }}
 #a2ui-root.a2ui-with-overlay.a2ui-overlay-left {{ margin-left: 50%; }}
+/* hub (atoms_brevet.gs) sets min-height:100vh on its wrapper + content divs --
+   correct for the real GAS webapp (a genuine, non-resizing browser window)
+   but wrong here: this bundle runs inside a SELF-SIZING iframe (reportSize()
+   below drives the host to resize the iframe to match reported content
+   height). 100vh is circular in that setup -- the host grows the iframe to
+   match the reported height, vh grows to match the new (taller) iframe, the
+   100vh min-height grows again on the next layout pass. Curtis observed this
+   live in claude.ai's fullscreen mode, 2026-07-27, as a much-taller-than-
+   content "infinite canvas" rather than a bounded one-screenful frame.
+   Neutralized HERE ONLY (id pattern matches hub's own uid+'body'/uid+
+   'content' divs); the shared atoms_brevet.gs source is untouched since the
+   real GAS deployment is exactly the case where 100vh is correct. */
+[id^="hub"][id$="body"], [id^="hub"][id$="content"] {{ min-height: 0 !important; }}
 </style>
 </head>
 <body class="asw-page">
