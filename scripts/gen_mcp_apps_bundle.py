@@ -157,6 +157,21 @@ HANDSHAKE = """
 // ---- MCP Apps View protocol handshake (spec 2026-01-26, apps.mdx) ----
 (function() {
   var initId = 'init-' + Math.random().toString(36).slice(2);
+  // 2026-07-27 fix: claude.ai keeps the iframe reserved-but-hidden until it
+  // receives ui/notifications/initialized. Gating that send on matching
+  // THIS view's own init request id (the old `msg.id === initId` check
+  // below) deadlocks if the host's result-bearing reply doesn't carry that
+  // id back, or arrives in a shape we don't expect: the host waits for
+  // `initialized`, we wait for a response we never recognise, nothing ever
+  // mounts. Confirmed against a working reference implementation: send
+  // `initialized` UNCONDITIONALLY once, via (a) a short timeout fallback
+  // and (b) on ANY result-bearing reply, not only one matching initId.
+  var _didInit = false;
+  function sendInitialized() {
+    if (_didInit) return;
+    _didInit = true;
+    post({ jsonrpc: '2.0', method: 'ui/notifications/initialized' });
+  }
 
   function post(msg) { window.parent.postMessage(msg, '*'); }
 
@@ -210,8 +225,8 @@ HANDSHAKE = """
     var msg = ev.data;
     if (!msg || msg.jsonrpc !== '2.0') return;
 
-    if (msg.id === initId && msg.result) {
-      post({ jsonrpc: '2.0', method: 'ui/notifications/initialized' });
+    if (msg.result && !msg.method) {
+      sendInitialized();
       return;
     }
 
@@ -278,8 +293,16 @@ HANDSHAKE = """
     jsonrpc: '2.0',
     id: initId,
     method: 'ui/initialize',
-    params: { appCapabilities: { availableDisplayModes: ['inline', 'fullscreen'] } }
+    params: {
+      capabilities: {},
+      protocolVersion: '2026-01-26',
+      clientInfo: { name: 'a2ui-catalog-view', version: '1' },
+      appCapabilities: { availableDisplayModes: ['inline', 'fullscreen'] }
+    }
   });
+  // Fallback: guarantees a visibility-gating host reveals the iframe even if
+  // it never sends a recognisable result-bearing reply to ui/initialize.
+  setTimeout(sendInitialized, 500);
 })();
 """.strip()
 
