@@ -24553,6 +24553,49 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
 
   function post(msg) { window.parent.postMessage(msg, '*'); }
 
+  // Host-aware display mode (2026-07-27): hub (subject-tab + multi-slide deck
+  // navigation) is EXPLICITLY called out as a poor fit for an inline card in
+  // Claude's own MCP Apps design guidelines -- "Deep navigation (no drill-ins,
+  // breadcrumbs, or multiple views)" is a listed pattern to AVOID inline;
+  // fullscreen is the documented home for exactly this ("tabs or pagination
+  // to disclose details"). Rather than let a hub render cramped/clipped
+  // inline (inline cards auto-fit height with NO nested scrolling -- the
+  // host clips anything taller), request fullscreen proactively the moment
+  // one is painted while still inline.
+  var _hostContext = {};
+  var _fsReqSeq = 0;
+  function _maybeRequestFullscreen(payload) {
+    // Classic blocks dialect OR the v1.0 envelope's createSurface.components
+    // (paint() decodes the latter internally via _rehydrateV1Surface; this
+    // check runs on the raw pre-decode payload, so it inspects both shapes
+    // directly rather than duplicating that decode step just to look).
+    var blocks = (payload && payload.blocks) ||
+      (payload && payload.createSurface && payload.createSurface.components) ||
+      (Array.isArray(payload) ? payload : []);
+    var hasHub = blocks.some(function (b) { return b && (b.component || b.type) === 'hub'; });
+    if (!hasHub) return;
+    var mode = _hostContext.displayMode || 'inline';
+    if (mode === 'fullscreen') return;                                    // already there
+    var modes = _hostContext.availableDisplayModes;
+    if (modes && modes.indexOf('fullscreen') === -1) return;              // host doesn't offer it
+    post({ jsonrpc: '2.0', id: 'fsreq-' + (++_fsReqSeq), method: 'ui/request-display-mode', params: { mode: 'fullscreen' } });
+  }
+
+  // The SAME shared renderer source backs both GAS surfaces (where GAS wraps
+  // pages in its own iframe, so target="_top" correctly escapes to the real
+  // browser tab) and this MCP Apps bundle (where "top" is the HOST's own
+  // page -- claude.ai -- and browsers correctly refuse to let a sandboxed
+  // third-party iframe navigate it: confirmed live, 2026-07-27, "Unsafe
+  // attempt to initiate navigation... sandboxed... allow-top-navigation...
+  // not set"). Rather than touch 30+ call sites across atom.gs/atoms_*.gs
+  // (shared with GAS, where _top is CORRECT), rewrite in ONE place, only
+  // here: any link the paint pass produces targeting "_top" opens in a new
+  // tab instead, which sandboxed iframes are allowed to do.
+  function _detopLinks(root) {
+    var links = root.querySelectorAll('a[target="_top"]');
+    for (var i = 0; i < links.length; i++) links[i].setAttribute('target', '_blank');
+  }
+
   function paint(payload) {
     // A2UI v1.0 envelope -> legacy dialect via the SAME decoder GAS uses
     // (atoms_v1_decode.gs, concatenated into this bundle). Template variant,
@@ -24571,6 +24614,7 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
       }
       root.innerHTML = _a2uiRenderWiredLayout(payload);
       _reExecuteScripts(root);
+      _detopLinks(root);
       if (typeof window._a2uiBootWiredSurface === 'function') {
         window._a2uiBootWiredSurface(payload);
       }
@@ -24584,6 +24628,7 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     root.classList.toggle('a2ui-with-overlay', !!root.querySelector('[data-a2ui-overlay]'));
     root.classList.toggle('a2ui-overlay-left', !!root.querySelector('[data-a2ui-overlay="left-half"]'));
     _reExecuteScripts(root);
+    _detopLinks(root);
   }
 
   // innerHTML-injected <script> tags never execute (browsers block it);
@@ -24604,7 +24649,24 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     if (!msg || msg.jsonrpc !== '2.0') return;
 
     if (msg.result && !msg.method) {
+      // Distinguish the init ack (carries hostContext, id === initId) from a
+      // reply to our OWN ui/request-display-mode call (id starts 'fsreq-',
+      // carries the resulting mode per spec) -- both are result-bearing
+      // replies with no .method, but only one is the initial handshake.
+      if (msg.id === initId && msg.result.hostContext) _hostContext = msg.result.hostContext;
+      else if (typeof msg.id === 'string' && msg.id.indexOf('fsreq-') === 0 && msg.result.mode) {
+        _hostContext.displayMode = msg.result.mode;
+      }
       sendInitialized();
+      return;
+    }
+
+    // Host MAY notify display-mode/theme/etc changes at any time -- keep our
+    // tracked context current so a later hub paint doesn't re-request a mode
+    // change the user already made (e.g. manually closing fullscreen).
+    if (msg.method === 'ui/notifications/host-context-changed') {
+      var patch = msg.params || {};
+      for (var k in patch) { if (patch.hasOwnProperty(k)) _hostContext[k] = patch[k]; }
       return;
     }
 
@@ -24612,6 +24674,7 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
       var result = msg.params || {};
       paint(result.structuredContent || {});
       reportSize();
+      _maybeRequestFullscreen(result.structuredContent || {});
     }
   });
 
