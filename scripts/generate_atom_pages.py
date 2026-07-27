@@ -2890,6 +2890,33 @@ def main():
         sdir.mkdir(parents=True, exist_ok=True)
         (sdir / "index.html").write_text(generate_surface_page(surface, surface_atoms))
 
+    # Prune surfaces this build does NOT publish. Writing only what qualifies
+    # is not enough: a surface whose atoms are all stage:preview or
+    # visibility:private is absent from surface_map in the public build, so
+    # its page is never overwritten -- and the FULL build's copy survives in
+    # public/ indefinitely. That is how google-chat-chromium-render (five
+    # preview atoms) and compose-test ended up published, listing atoms the
+    # staging contract says are repo-only. catalog-rebuild-full's
+    # `rm -rf public/atoms` covers the atom pages; nothing covered these.
+    #
+    # Deliberately narrow: only a directory that is EXACTLY a surface page
+    # (index.html and nothing else) is removed. mcp-apps carries play/ and
+    # renderer-bundle.html written by gen_mcp_apps_bundle.py, which is not a
+    # catalog-rebuild step -- a blanket wipe would delete artifacts the
+    # restoring rebuild cannot recreate.
+    for sdir in sorted(p for p in surfaces_dir.iterdir() if p.is_dir()):
+        if sdir.name in surface_map:
+            continue
+        contents = {p.name for p in sdir.iterdir()}
+        if contents == {"index.html"}:
+            (sdir / "index.html").unlink()
+            sdir.rmdir()
+            print(f"  pruned surface page (no publishable atoms): {sdir.name}")
+        else:
+            print(f"  WARNING: {sdir.name} has no publishable atoms but holds "
+                  f"{sorted(contents)} — left in place, remove by hand",
+                  file=sys.stderr)
+
     # Full-screen playground — the catalog playground for MCP Apps
     if "mcp-apps" in surface_map:
         play_dir = surfaces_dir / "mcp-apps" / "play"

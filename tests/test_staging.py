@@ -57,6 +57,39 @@ def test_no_preview_atom_pages_published():
     assert not leaked, f"preview/private atom pages exist in public/: {leaked}"
 
 
+def test_no_preview_atom_linked_from_any_published_page():
+    """The general form of the invariant the named checks above only sample.
+
+    Those check one artifact each (spec.json, the compact index, the ARD
+    catalog, public/atoms/<type>/). A preview/private atom leaked into any
+    OTHER generated file under public/ passed all of them -- which is how
+    public/surfaces/google-chat-chromium-render/ shipped a page listing five
+    stage:preview atoms, and later a visibility:private one, with every
+    staging test green. Asserting over the whole published tree is the check
+    that doesn't need a new case per artifact.
+
+    The test is a LINK check, not a mention check, and the distinction is
+    the whole design. Published files legitimately NAME preview atoms all
+    over: the renderer bundle carries rendering code for every atom in the
+    catalogue, data-sources-v1.json maps atoms to their network sources, and
+    knowledge/runbook payloads are built out of them. None of that publishes
+    an atom. Offering a reader a link to /atoms/<type> does -- it presents
+    the atom as a browsable catalogue entry, which is exactly the thing
+    stage/visibility governs."""
+    hits = {}
+    for path in (ROOT / "public").rglob("*.html"):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for t in NOT_PUBLIC:
+            if f'href="/atoms/{t}"' in text:
+                hits.setdefault(str(path.relative_to(ROOT)), []).append(t)
+    assert not hits, (
+        "preview/private atom(s) named in published files:\n  "
+        + "\n  ".join(f"{k}: {sorted(set(v))}" for k, v in sorted(hits.items()))
+    )
+
+
 def test_authoring_section_never_public():
     """The Authoring section (playbook + prompt builder) is gated-only —
     scripts/gen_authoring.py refuses to write anywhere but public-full/.

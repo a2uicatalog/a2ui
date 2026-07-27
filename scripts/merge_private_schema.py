@@ -36,10 +36,17 @@ PRIVATE_BLOCKS = Path.home() / "a2ui-private" / "private-atoms" / "private-schem
 
 def merge():
     if BACKUP.exists():
-        print("merge: backup already exists — a previous run didn't restore. "
-              "Refusing to merge again (would double-append). Run --restore first.",
-              file=sys.stderr)
-        sys.exit(1)
+        # A previous run died between --merge and --restore (a bad private
+        # block fails the very next step, which is exactly when this
+        # happens). Refusing outright used to be the behaviour, but it left
+        # schema.yaml sitting in the MERGED state until someone noticed and
+        # restored by hand -- the leaked state persisting is the whole thing
+        # this script exists to prevent, so a hard stop is the wrong
+        # failure mode. The backup IS the known-good public-only file, so
+        # restoring from it first is deterministic and can't double-append.
+        print("merge: backup found — a previous run didn't restore. Restoring "
+              "the public-only file first, then merging.", file=sys.stderr)
+        restore()
     if not PRIVATE_BLOCKS.exists():
         print(f"merge: {PRIVATE_BLOCKS} not found — nothing to merge, leaving schema.yaml as-is.",
               file=sys.stderr)
