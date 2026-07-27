@@ -866,6 +866,13 @@ body { padding: 24px; }
    'content' divs); the shared atoms_brevet.gs source is untouched since the
    real GAS deployment is exactly the case where 100vh is correct. */
 [id^="hub"][id$="body"], [id^="hub"][id$="content"] { min-height: 0 !important; }
+/* Same fix, same reasoning, for playbook (atoms_airspace.gs) -- its slide
+   divs (uid 'pbk' + 6 random chars + 's_' + the caller's own slide id) carry
+   the identical min-height:100vh. Slide ids are caller-chosen text, not a
+   fixed suffix like hub's, so this matches on the 'pbk' prefix alone; it
+   also catches playbook's nav-button/nav-bar ids, which is harmless since
+   none of them rely on min-height. */
+[id^="pbk"] { min-height: 0 !important; }
 </style>
 </head>
 <body class="asw-page">
@@ -24575,6 +24582,11 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
   // inline (inline cards auto-fit height with NO nested scrolling -- the
   // host clips anything taller), request fullscreen proactively the moment
   // one is painted while still inline.
+  // playbook (atoms_airspace.gs) joined this list 2026-07-27: it declares
+  // itself "always full-page" in its own source (breaks out of the normal
+  // asw-page container, forces html/body margin:0, width:100vw) -- the exact
+  // same deep-navigation shape as hub, just with nav pill buttons instead of
+  // subject tabs. Same reasoning applies identically.
   var _hostContext = {};
   var _fsReqSeq = 0;
   function _maybeRequestFullscreen(payload) {
@@ -24585,8 +24597,11 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     var blocks = (payload && payload.blocks) ||
       (payload && payload.createSurface && payload.createSurface.components) ||
       (Array.isArray(payload) ? payload : []);
-    var hasHub = blocks.some(function (b) { return b && (b.component || b.type) === 'hub'; });
-    if (!hasHub) return;
+    var hasDeepNav = blocks.some(function (b) {
+      var t = b && (b.component || b.type);
+      return t === 'hub' || t === 'playbook';
+    });
+    if (!hasDeepNav) return;
     // gdm_rocket_panel / iso_fireworks_panel are fixed, half-viewport overlay
     // atoms (data-a2ui-overlay in atoms_canvas.gs) authored for the INLINE
     // layout -- position:fixed pinned to one half of the card. Fullscreen
