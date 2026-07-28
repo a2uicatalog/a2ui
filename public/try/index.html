@@ -113,6 +113,17 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 #try-submit{font:inherit;font-size:14px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:9px;padding:11px 22px;cursor:pointer;letter-spacing:.02em;transition:filter .15s,box-shadow .15s}
 #try-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
 #try-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
+#try-model{font:inherit;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:4px 8px;cursor:pointer}
+#try-model:hover{border-color:var(--border-strong)}
+.try-model-row{display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap}
+.try-model-row label{font-size:12px;color:var(--muted)}
+.try-model-pick{display:flex;align-items:center;gap:7px}
+.try-raw-pick{display:flex;align-items:center;gap:6px}
+.try-raw-pick input{cursor:pointer}
+.try-neurons{font-size:11.5px;color:var(--muted);margin-top:4px}
+.try-reasoning{margin-top:10px}
+.try-reasoning summary{font-size:12px;color:var(--muted);cursor:pointer}
+.try-reasoning pre{margin-top:8px}
 .try-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;letter-spacing:.02em;margin-bottom:14px}
 .try-render-btn:hover{filter:brightness(1.05)}
 .try-hint{font-size:12px;color:var(--muted)}
@@ -157,6 +168,28 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <div class="try-row">
       <button id="try-submit" type="submit">Route it →</button>
       <span class="try-hint">Free tier — 20 requests/day per IP</span>
+    </div>
+    <div class="try-model-row">
+      <div class="try-model-pick">
+        <label for="try-model">Model</label>
+        <select id="try-model">
+          <option value="">Default (tuned)</option>
+          <option value="@cf/meta/llama-3.2-1b-instruct">Llama 3.2 1B — fastest, cheapest</option>
+          <option value="@cf/meta/llama-3.1-8b-instruct-fp8">Llama 3.1 8B — balanced</option>
+          <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">Llama 3.3 70B — larger, higher quality</option>
+          <option value="@cf/meta/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B (MoE)</option>
+          <option value="@cf/qwen/qwen3-30b-a3b-fp8">Qwen3 30B</option>
+          <option value="@cf/mistralai/mistral-small-3.1-24b-instruct">Mistral Small 3.1 24B</option>
+          <option value="@cf/google/gemma-4-26b-a4b-it">Gemma 4 26B</option>
+          <option value="@cf/zai-org/glm-4.7-flash">GLM 4.7 Flash</option>
+          <option value="@cf/openai/gpt-oss-20b">GPT-OSS 20B</option>
+          <option value="@cf/moonshotai/kimi-k2.6">Kimi K2.6 — reasoning, slow &amp; pricier (~500-1000 neurons/call)</option>
+        </select>
+      </div>
+      <div class="try-raw-pick">
+        <input type="checkbox" id="try-raw">
+        <label for="try-raw">General prompt (skip catalog — raw model test)</label>
+      </div>
     </div>
   </form>
   <div class="try-examples" id="try-examples">
@@ -225,6 +258,25 @@ document.addEventListener('click',function(e){
     });
   }
 
+  var modelSelect = document.getElementById('try-model');
+  var rawCheck = document.getElementById('try-raw');
+
+  // Shared across both response shapes (normal compose vs mode:"raw") — model
+  // actually used, any silent-substitution note, and this tool's own running
+  // neuron spend for the day (KV-tracked; see compose.js's trackNeuronSpend —
+  // scoped to this endpoint only, not the account's other AI consumers).
+  function modelInfoHtml(data){
+    var bits = [];
+    if (data.model) bits.push('model: ' + esc(data.model));
+    if (typeof data.neuronsToday === 'number') {
+      var pct = data.neuronsBudget ? ' (' + (100 * data.neuronsToday / data.neuronsBudget).toFixed(1) + '% of ' + data.neuronsBudget + ')' : '';
+      bits.push('neurons today: ' + data.neuronsToday.toFixed(1) + pct);
+    }
+    var line = bits.length ? '<p class="try-neurons">' + bits.join(' &middot; ') + '</p>' : '';
+    var note = data.modelNote ? '<p class="try-neurons">' + esc(data.modelNote) + '</p>' : '';
+    return line + note;
+  }
+
   function render(data, status){
     if (status === 429) {
       result.innerHTML = '<p class="try-status err">Daily free-tier limit reached (20/IP) — try again tomorrow.</p>';
@@ -235,9 +287,24 @@ document.addEventListener('click',function(e){
       return;
     }
     var parts = [];
+    if (data.mode === 'raw') {
+      // General-purpose model test, no catalog/schema involved — just show
+      // the plain answer (and the reasoning trace, collapsed, if the model
+      // emitted one — reasoning models like Kimi K2.6 always do).
+      lastBlocks = null;
+      parts.push(modelInfoHtml(data));
+      parts.push('<pre><code>' + esc(data.text || '(empty response)') + '</code></pre>');
+      if (data.reasoning) {
+        parts.push('<details class="try-reasoning"><summary>Reasoning trace (' + data.reasoning.length + ' chars)</summary>' +
+          '<pre><code>' + esc(data.reasoning) + '</code></pre></details>');
+      }
+      result.innerHTML = parts.join('\n');
+      return;
+    }
     var scoreSuffix = (typeof data.topScore === 'number') ? (' &middot; top score: ' + data.topScore.toFixed(3)) : '';
     parts.push('<p class="try-status">routing: ' + esc(data.routing || '?') + scoreSuffix +
       (data.degraded ? ' &middot; degraded (single-atom retry)' : '') + '</p>');
+    parts.push(modelInfoHtml(data));
     if (!data.matched || data.matched.length === 0) {
       lastBlocks = null;
       parts.push('<p class="try-empty">' + esc(data.note || 'no confident match found in the catalog for this request') + '</p>');
@@ -260,10 +327,13 @@ document.addEventListener('click',function(e){
     submit.disabled = true;
     submit.textContent = 'Routing…';
     result.innerHTML = '<p class="try-empty">Routing…</p>';
+    var body = { prompt: prompt };
+    if (modelSelect && modelSelect.value) body.model = modelSelect.value;
+    if (rawCheck && rawCheck.checked) body.mode = 'raw';
     fetch('https://a2uicatalog.ai/api/compose', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt })
+      body: JSON.stringify(body)
     }).then(function(res){
       var status = res.status;
       return res.json().catch(function(){ return null; }).then(function(data){ render(data, status); });
