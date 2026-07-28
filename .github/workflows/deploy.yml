@@ -32,6 +32,9 @@ jobs:
       - name: Dereference discovery document URLs against build output
         run: python3 scripts/check_catalog_links.py
 
+      - name: Build sitemap.xml from real build output
+        run: python3 scripts/gen_sitemap.py
+
       - name: Enforce project.yaml (visibility policy + declared debt)
         run: python3 -m pytest tests/test_project_manifest.py -q
 

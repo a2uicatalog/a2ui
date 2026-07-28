@@ -1276,6 +1276,24 @@ def generate_index(atoms):
   <title>A2UI Atomic Catalog</title>
   <meta name="description" content="{len(atoms)} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.">
   <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json">
+  <script type="application/ld+json">
+  {{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "A2UI Atomic Catalog",
+    "alternateName": "a2uicatalog",
+    "url": "https://a2uicatalog.ai",
+    "description": "{len(atoms)} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "sameAs": ["https://github.com/a2uicatalog/a2ui"],
+    "offers": {{
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }}
+  }}
+  </script>
   {SITE_HEAD_JS}
   {INDEX_CSS}
 </head>
