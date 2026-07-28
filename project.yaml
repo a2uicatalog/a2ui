@@ -155,6 +155,11 @@ generators:
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
     outputs: [README.md]              # only the block between compat-matrix markers
     publish: repo-committed (GitHub renders it)
+  gen_readme_badges:
+    script: scripts/gen_readme_badges.py
+    source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
+    outputs: [README.md]              # only the block between readme-badges markers
+    publish: repo-committed (GitHub renders it)
   gen_atom_json_schemas:
     script: scripts/gen_atom_json_schemas.py
     source: atoms/schema.yaml
