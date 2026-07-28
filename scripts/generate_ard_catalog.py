@@ -139,6 +139,7 @@ def main():
         "host": {
             "displayName": "A2UI Atomic Catalog",
             "identifier": f"did:web:{domain}",
+            "documentationUrl": f"{base}/llms.txt",
         },
         "entries": entries,
     }

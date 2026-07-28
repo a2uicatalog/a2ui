@@ -2,7 +2,8 @@
   "specVersion": "1.0",
   "host": {
     "displayName": "A2UI Atomic Catalog",
-    "identifier": "did:web:a2uicatalog.ai"
+    "identifier": "did:web:a2uicatalog.ai",
+    "documentationUrl": "https://a2uicatalog.ai/llms.txt"
   },
   "entries": [
     {
