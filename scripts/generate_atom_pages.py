@@ -1365,10 +1365,14 @@ def generate_index(atoms):
         <p>Apps Script web app, 4 commands — you own the URL.</p>
       </a>
     </div>
+    <!-- Paired with the .announce pill above the headline, deliberately NOT a
+         second announcement of the same thing: the pill carries the news and
+         links to the write-up, this one is the do-it path into the surface
+         itself. Keep the destinations distinct if either is reworded. -->
     <a class="launch-banner" href="/surfaces/mcp-apps">
-      <span class="launch-badge">Just launched</span>
-      <span class="launch-text">MCP Apps is a first-class surface — catalog atoms and curated content, live inside a sandboxed MCP host</span>
-      <span class="launch-arrow">See it launch →</span>
+      <span class="launch-badge">Try it</span>
+      <span class="launch-text">Open the MCP Apps playground — {len([a for a in atoms if 'mcp-apps' in (a.get('surfaces') or {{}}).get('works_on', [])])} atoms rendering live inside a sandboxed MCP host</span>
+      <span class="launch-arrow">Open the playground →</span>
     </a>
     <div class="hero-demo">
       <div class="hero-demo-col">
