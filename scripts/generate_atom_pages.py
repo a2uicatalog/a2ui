@@ -2106,6 +2106,13 @@ def generate_surface_page(surface, atoms):
     hero    = (MCP_APPS_HERO_HTML.replace("__BUNDLE_HASH__", _bundle_hash())
                .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
                if surface == "mcp-apps" else "")
+    # The same iso_fireworks_panel that runs inside the sandboxed MCP Apps
+    # view, now rendered by the PAGE itself — a fixed right-half overlay over
+    # the viewport rather than the iframe. Dogfooding: the page about atoms
+    # rendering everywhere is itself drawn by one. pointer-events:none, so it
+    # never intercepts a click on the playground beneath it.
+    if surface == "mcp-apps" and _web_renderer is not None:
+        hero = _web_renderer.render([{"type": "iso_fireworks_panel"}]) + hero
     atoms_lead = (
         f"{len(atoms)} catalog atoms also render on this surface"
         if hero else f"{len(atoms)} atoms available on this surface"
