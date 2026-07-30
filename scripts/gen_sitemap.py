@@ -49,10 +49,27 @@ def main():
         lines.append(f"  <url><loc>{url}</loc></url>")
     lines.append("</urlset>")
 
+    pages_path = os.path.join(PUBLIC, "sitemap-pages.xml")
+    with open(pages_path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    print(f"wrote {pages_path} ({len(urls)} urls)")
+
+    # /sitemap.xml is a sitemap INDEX, not a flat list. The blog lives in a
+    # SEPARATE Cloudflare Worker (a2ui-private/blog-worker owns
+    # a2uicatalog.ai/blog*), so this repo cannot enumerate its URLs at build
+    # time — for a while that meant the sitemap advertised 474 atom pages and
+    # ZERO articles, pointing crawl budget at the thinnest content on the
+    # domain. The blog generates its own /blog/sitemap.xml from its posts;
+    # this index is what ties the two together under one submitted URL.
+    idx = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+           f"  <sitemap><loc>{BASE_URL}/sitemap-pages.xml</loc></sitemap>",
+           f"  <sitemap><loc>{BASE_URL}/blog/sitemap.xml</loc></sitemap>",
+           "</sitemapindex>"]
     out_path = os.path.join(PUBLIC, "sitemap.xml")
     with open(out_path, "w") as f:
-        f.write("\n".join(lines) + "\n")
-    print(f"wrote {out_path} ({len(urls)} urls)")
+        f.write("\n".join(idx) + "\n")
+    print(f"wrote {out_path} (index -> sitemap-pages.xml + blog/sitemap.xml)")
 
 
 if __name__ == "__main__":

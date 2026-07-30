@@ -3,4 +3,5 @@ Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
 
+Sitemap: https://a2uicatalog.ai/sitemap.xml
 Agentmap: /.well-known/ai-catalog.json
