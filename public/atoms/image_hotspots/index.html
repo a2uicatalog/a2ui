@@ -62,7 +62,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--accent-2);text-decoration:none}
-@media(max-width:700px){.site-nav{display:none}}
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
@@ -138,7 +151,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;"><div style="position:absolute;left:25%;top:30%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('8604af1f_s0');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">1</button><div id="8604af1f_s0" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature A</strong><br></div></div><div style="position:absolute;left:60%;top:70%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('8604af1f_s1');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">2</button><div id="8604af1f_s1" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature B</strong><br></div></div></div></div>
+  <div class="preview-box"><div style="position:relative;display:inline-block;width:100%;margin:1.5rem 0;"><div style="position:absolute;left:25%;top:30%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('c208b8f4_s0');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">1</button><div id="c208b8f4_s0" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature A</strong><br></div></div><div style="position:absolute;left:60%;top:70%;transform:translate(-50%,-50%);z-index:2;"><button onclick="var el=document.getElementById('c208b8f4_s1');el.style.display=el.style.display==='block'?'none':'block'" style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;border:2px solid #fff;cursor:pointer;font-size:0.75rem;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,0.3);">2</button><div id="c208b8f4_s1" style="display:none;position:absolute;bottom:calc(100%+8px);left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;min-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.12);font-size:0.82rem;"><strong>Feature B</strong><br></div></div></div></div>
 </div>
 
   

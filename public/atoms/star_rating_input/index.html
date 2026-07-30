@@ -62,7 +62,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--accent-2);text-decoration:none}
-@media(max-width:700px){.site-nav{display:none}}
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
@@ -138,7 +151,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sr40419 input:checked ~ label,.sr40419 label:hover,.sr40419 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr40419" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr40419_5" name="sr40419" value="5" style="display:none;"><input type="radio" id="sr40419_4" name="sr40419" value="4" style="display:none;"><input type="radio" id="sr40419_3" name="sr40419" value="3" style="display:none;"><input type="radio" id="sr40419_2" name="sr40419" value="2" style="display:none;"><input type="radio" id="sr40419_1" name="sr40419" value="1" style="display:none;"><label for="sr40419_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr40419_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr40419_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr40419_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr40419_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
+  <div class="preview-box"><style>.sr67910 input:checked ~ label,.sr67910 label:hover,.sr67910 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr67910" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr67910_5" name="sr67910" value="5" style="display:none;"><input type="radio" id="sr67910_4" name="sr67910" value="4" style="display:none;"><input type="radio" id="sr67910_3" name="sr67910" value="3" style="display:none;"><input type="radio" id="sr67910_2" name="sr67910" value="2" style="display:none;"><input type="radio" id="sr67910_1" name="sr67910" value="1" style="display:none;"><label for="sr67910_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
 </div>
 
   

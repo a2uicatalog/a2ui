@@ -62,7 +62,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--accent-2);text-decoration:none}
-@media(max-width:700px){.site-nav{display:none}}
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
    in the light default, re-blend the orb — it is the only direct body child
@@ -138,7 +151,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>#fa6a9c55 input{display:none;}#fa6a9c55 input:checked+label{background:#6366f1;color:#fff;border-color:#6366f1;}</style><div id="fa6a9c55" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="fa6a9c55_0" name="fa6a9c55" value="Web"><label for="fa6a9c55_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="fa6a9c55_1" name="fa6a9c55" value="Meet"><label for="fa6a9c55_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="fa6a9c55_2" name="fa6a9c55" value="Chat"><label for="fa6a9c55_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
+  <div class="preview-box"><style>#f0f353d1 input{display:none;}#f0f353d1 input:checked+label{background:#6366f1;color:#fff;border-color:#6366f1;}</style><div id="f0f353d1" style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;"><input type="radio" id="f0f353d1_0" name="f0f353d1" value="Web"><label for="f0f353d1_0" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Web</label><input type="radio" id="f0f353d1_1" name="f0f353d1" value="Meet"><label for="f0f353d1_1" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Meet</label><input type="radio" id="f0f353d1_2" name="f0f353d1" value="Chat"><label for="f0f353d1_2" style="padding:5px 14px;border:1.5px solid #e5e7eb;border-radius:100px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;">Chat</label></div></div>
 </div>
 
   
