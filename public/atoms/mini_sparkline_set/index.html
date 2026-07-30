@@ -62,6 +62,25 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
 /* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
    visitors with only the wordmark, theme toggle and GitHub pill — every
    destination unreachable, with no hamburger substituting for it (confirmed
@@ -164,11 +183,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_139657822563776_0" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_139957565349888_0" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#a855f7" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_139657822563776_0" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_139957565349888_0" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -176,8 +195,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139657822563776_0)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_139657822563776_0)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139957565349888_0)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#a855f7" stroke-width="2" filter="url(#spark_glow_spark_139957565349888_0)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#a855f7" stroke-width="2" />
             </svg>
           </div>
@@ -191,11 +210,11 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
           <div style="width:100%;height:40px;">
             <svg viewBox="0 0 150 40" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
               <defs>
-                <linearGradient id="spark_grad_spark_139657822563776_1" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="spark_grad_spark_139957565349888_1" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#10b981" stop-opacity="0.25" />
                   <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
                 </linearGradient>
-                <filter id="spark_glow_spark_139657822563776_1" x="-10%" y="-10%" width="120%" height="120%">
+                <filter id="spark_glow_spark_139957565349888_1" x="-10%" y="-10%" width="120%" height="120%">
                   <feGaussianBlur stdDeviation="1.5" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -203,8 +222,8 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
                   </feMerge>
                 </filter>
               </defs>
-              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139657822563776_1)" />
-              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_139657822563776_1)" stroke-linecap="round" stroke-linejoin="round" />
+              <polygon points="5,35 5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0 145,35" fill="url(#spark_grad_spark_139957565349888_1)" />
+              <polyline points="5.0,35.0 51.7,25.0 98.3,15.0 145.0,5.0" fill="none" stroke="#10b981" stroke-width="2" filter="url(#spark_glow_spark_139957565349888_1)" stroke-linecap="round" stroke-linejoin="round" />
               <circle cx="145.0" cy="5.0" r="3" fill="#0f172a" stroke="#10b981" stroke-width="2" />
             </svg>
           </div>

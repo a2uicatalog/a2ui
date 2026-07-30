@@ -62,6 +62,25 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
 /* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
    visitors with only the wordmark, theme toggle and GitHub pill — every
    destination unreachable, with no hamburger substituting for it (confirmed
@@ -151,7 +170,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box"><style>.sr67910 input:checked ~ label,.sr67910 label:hover,.sr67910 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr67910" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr67910_5" name="sr67910" value="5" style="display:none;"><input type="radio" id="sr67910_4" name="sr67910" value="4" style="display:none;"><input type="radio" id="sr67910_3" name="sr67910" value="3" style="display:none;"><input type="radio" id="sr67910_2" name="sr67910" value="2" style="display:none;"><input type="radio" id="sr67910_1" name="sr67910" value="1" style="display:none;"><label for="sr67910_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr67910_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
+  <div class="preview-box"><style>.sr6240 input:checked ~ label,.sr6240 label:hover,.sr6240 label:hover ~ label {color:#facc15;}</style><div style="margin:1rem 0;"><div class="sr6240" style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px;"><input type="radio" id="sr6240_5" name="sr6240" value="5" style="display:none;"><input type="radio" id="sr6240_4" name="sr6240" value="4" style="display:none;"><input type="radio" id="sr6240_3" name="sr6240" value="3" style="display:none;"><input type="radio" id="sr6240_2" name="sr6240" value="2" style="display:none;"><input type="radio" id="sr6240_1" name="sr6240" value="1" style="display:none;"><label for="sr6240_5" title="5 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr6240_4" title="4 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr6240_3" title="3 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr6240_2" title="2 stars" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label><label for="sr6240_1" title="1 star" style="font-size:1.7rem;cursor:pointer;color:#d1d5db;transition:color .1s;">★</label></div></div></div>
 </div>
 
   

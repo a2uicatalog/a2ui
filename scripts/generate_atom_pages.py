@@ -334,6 +334,25 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
 footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
 /* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
    visitors with only the wordmark, theme toggle and GitHub pill — every
    destination unreachable, with no hamburger substituting for it (confirmed
@@ -1315,6 +1334,12 @@ def generate_index(atoms):
   <div class="wrap">
   <header class="hero">
     <div class="halo"></div>
+    <a class="announce" href="/blog/004-mcp-apps-inside-claude-ai/">
+      <span class="announce-tag">NEW</span>
+      <span class="announce-text">Render this catalog directly inside Claude.ai — add
+        <code>a2uicatalog.ai/mcp</code> as a connector</span>
+      <span class="announce-go" aria-hidden="true">&rarr;</span>
+    </a>
     <h1><span class="grad">A2UI</span> Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
     <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
