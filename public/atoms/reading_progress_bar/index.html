@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Reading Progress Bar — A2UI Atomic Catalog</title>
   <meta name="description" content="Renders a horizontal visual bar tracking the reader's scroll completion depth within the article.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Reading Progress Bar", "item": "https://a2uicatalog.ai/atoms/reading_progress_bar/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -174,7 +185,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of reading_progress_bar"><div id="05fac82c" style="position:fixed;top:0;left:0;width:0%;height:4px;background:#6366f1;z-index:9999;transition:width 0.1s;"></div><script>(function(){var b=document.getElementById("05fac82c");window.addEventListener("scroll",function(){var d=document.documentElement;var pct=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100).toFixed(1);b.style.width=pct+"%";});})();</script></div>
+  <div class="preview-box" role="group" aria-label="Live preview of reading_progress_bar"><div id="3d033109" style="position:fixed;top:0;left:0;width:0%;height:4px;background:#6366f1;z-index:9999;transition:width 0.1s;"></div><script>(function(){var b=document.getElementById("3d033109");window.addEventListener("scroll",function(){var d=document.documentElement;var pct=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100).toFixed(1);b.style.width=pct+"%";});})();</script></div>
 </div>
 
   

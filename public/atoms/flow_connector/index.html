@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Flow Connector — A2UI Atomic Catalog</title>
   <meta name="description" content="Animated dashed beam connecting two labelled nodes — alias for animated_beam. Two shapes — a single from/to/label pair (original), or a multi-node nodes/connectors chain (added 2026-07-24, e.g. an identity/ permission chain of more than 2 hops) where each node can be a bare string (simple pill) or a {role, name, detail} object (richer boxed card).">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Flow Connector", "item": "https://a2uicatalog.ai/atoms/flow_connector/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();

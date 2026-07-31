@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Airspace Command Deck — A2UI Atomic Catalog</title>
   <meta name="description" content="Full-viewport Toulouse TMA airspace radar display — canvas radar with animated simulated flights, rotating sweep, VOR beacons, and approach paths. HTML/CSS overlay for crisp chyron title, weather panel, flight list HUD, and scrolling ticker. Driven by the toulouse_airspace.yaml playbook via the ?slide= URL parameter. For the Toulouse demo, prefer routing through Code.js _renderAirspaceSlide() which handles live METAR interpolation.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Airspace Command Deck", "item": "https://a2uicatalog.ai/atoms/airspace_command_deck/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();

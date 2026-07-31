@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Drive Folder Contents — A2UI Atomic Catalog</title>
   <meta name="description" content="Responsive grid of files and subfolders inside a Drive folder. Subfolders appear first, each item shows a coloured file-type badge and name, clicking opens in Drive. On GAS uses DriveApp with folder_id; on other surfaces renders from items[] array or Drive REST API with folder_id + auth_token.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Drive Folder Contents", "item": "https://a2uicatalog.ai/atoms/drive_folder_contents/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();

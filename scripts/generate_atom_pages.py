@@ -954,6 +954,17 @@ def render_page(atom):
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{desc or compact}">
+  <script type="application/ld+json">
+  {{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {{ "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" }},
+      {{ "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" }},
+      {{ "@type": "ListItem", "position": 3, "name": {json.dumps(display_name)}, "item": "https://a2uicatalog.ai/atoms/{atom_type}/" }}
+    ]
+  }}
+  </script>
   {SITE_HEAD_JS}
   {PAGE_CSS}
 </head>
@@ -1422,6 +1433,16 @@ def generate_index(atoms):
         "description": "The full set of typed UI atoms an agent composes into rendered interfaces.",
         "numberOfItems": {len(atoms)},
         "itemListOrder": "https://schema.org/ItemListUnordered"
+      }},
+      {{
+        "@type": "Service",
+        "@id": "https://a2uicatalog.ai/#mcp-service",
+        "name": "A2UI Atomic Catalog MCP Server",
+        "serviceType": "Model Context Protocol server",
+        "provider": {{ "@id": "https://a2uicatalog.ai/#org" }},
+        "url": "https://a2uicatalog.ai/mcp",
+        "description": "Free MCP server exposing the A2UI atom vocabulary and rendering tools to AI agents — no signup, no API key required.",
+        "offers": {{ "@type": "Offer", "price": "0", "priceCurrency": "USD" }}
       }}
     ]
   }}

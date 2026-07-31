@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Typewriter — A2UI Atomic Catalog</title>
   <meta name="description" content="Text that reveals itself character-by-character using a CSS steps() width animation on an overflow-hidden monospace container, with an optional blinking cursor. No JavaScript required.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Typewriter", "item": "https://a2uicatalog.ai/atoms/typewriter/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -174,7 +185,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of typewriter"><span id="6337d4bb" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("6337d4bb");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
+  <div class="preview-box" role="group" aria-label="Live preview of typewriter"><span id="3b195a13" style="font-family:monospace;"></span><span style="animation:a2ui-blink 1s step-end infinite;">|</span><style>@keyframes a2ui-blink{50%{opacity:0;}}</style><script>(function(){var el=document.getElementById("3b195a13");var texts=["A concise description of the content."];var ti=0,ci=0,del=false;setInterval(function(){var txt=texts[ti];if(!del){el.textContent=txt.slice(0,++ci);if(ci>=txt.length){del=true;ci=txt.length+10;}}else{ci--;if(ci<=0){del=false;ci=0;ti=(ti+1)%texts.length;}el.textContent=txt.slice(0,ci);}},80);})();</script></div>
 </div>
 
   

@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Media Stream Card — A2UI Atomic Catalog</title>
   <meta name="description" content="Auto-detecting media embed that accepts a raw URL and builds the correct iframe for YouTube, Loom, Google Slides, or Vimeo. Displays a labelled card shell with a skeleton shimmer while loading. Designed for stage-first delivery where the URL is the only payload.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Media Stream Card", "item": "https://a2uicatalog.ai/atoms/media_stream_card/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
