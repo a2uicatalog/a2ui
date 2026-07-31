@@ -1,36 +1,58 @@
-# Explicit per-agent stanzas below are IDENTICAL to the wildcard rule — this
-# site has no reason to treat one AI crawler differently from another, so
-# there is no real tiering to express. They exist because some agent-readiness
-# scanners score "AI-crawler tier differentiation" on whether named bots get
-# their own stanza at all, not on whether the rules actually differ; naming
-# them explicitly says "yes, we thought about you specifically" without
-# fabricating a distinction that doesn't exist.
+# Policy: open for real agent use (search indexing, live query-time RAG/
+# grounding), closed to bulk training-corpus harvesting. These are NOT in
+# tension — a live agent answering a user's question uses ai-input, never
+# ai-train, so this costs nothing on the actual discoverability/usability
+# goal this file otherwise serves. Content-Signal is Cloudflare's emerging
+# (2026, contentsignals.org) robots.txt extension for declaring PURPOSE, not
+# just permission — it's a preference signal, not an enforcement mechanism
+# (well-behaved crawlers honor it; nothing here stops a bad actor), same as
+# every other robots.txt line. Named per-bot stanzas (identical rules to the
+# wildcard) exist so some agent-readiness scanners can see "yes, we thought
+# about you specifically," not because the rules genuinely differ per bot.
 User-agent: GPTBot
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
 
 User-agent: ClaudeBot
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
 
 User-agent: Google-Extended
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
 
 User-agent: ChatGPT-User
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
 
 User-agent: PerplexityBot
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
 
+# Bulk training-data crawlers (Common Crawl's bot, feeds many foundation-model
+# corpora; ByteDance's crawler) — the actual tier differentiation. Disallowed
+# outright, not just ai-train=no, since these bots have no query-time/search
+# purpose on this site to preserve.
+User-agent: CCBot
+Content-Signal: search=no, ai-input=no, ai-train=no
+Disallow: /
+
+User-agent: ByteSpider
+Content-Signal: search=no, ai-input=no, ai-train=no
+Disallow: /
+
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
