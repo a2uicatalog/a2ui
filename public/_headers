@@ -60,6 +60,10 @@
   Content-Type: text/markdown; charset=utf-8
   Access-Control-Allow-Origin: *
 
+/versioning.md
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+
 # RFC 8288 Link headers — site-wide discovery pointers to resources that are
 # genuinely the same on every page (sitemap, the RFC 9727 API catalog, the
 # OpenAPI spec). Per-page pointers (e.g. an atom page's own markdown twin)

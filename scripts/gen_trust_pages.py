@@ -121,6 +121,8 @@ server so it cannot go stale:</p>
 <li><a href="/agents.md">agents.md</a> — agent-facing guide, served as <code>text/markdown</code></li>
 <li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
 <li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
+<li><a href="/auth.md">Authentication guide</a> — why you probably need no credential, and the optional OAuth path if your platform requires one</li>
+<li><a href="/versioning.md">Versioning &amp; deprecation policy</a> — what changes without notice, and the CI gate that fails a deploy if a response shape changes undeclared</li>
 <li><a href="/.well-known/mcp.json">MCP discovery manifest</a></li>
 </ul>
 

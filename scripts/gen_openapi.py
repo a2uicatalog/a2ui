@@ -61,7 +61,18 @@ def build_openapi(n_atoms, n_surfaces):
                 "paths documented here are the supporting surfaces: the "
                 "machine-readable catalog, the declared data proxy, and the natural "
                 "language composer.\n\n"
-                "No API key, no signup, no OAuth required for normal use."
+                "No API key, no signup, no OAuth required for normal use.\n\n"
+                "## Versioning\n\n"
+                "The wire-format version is carried in an `X-API-Version` response "
+                "header (currently `1`), not a URL path prefix — the MCP endpoint URL "
+                "lives in users' client config files and moving it would break every "
+                "existing integration. Additive changes (new atoms, tools, optional "
+                "fields) ship without notice; breaking changes are announced on the "
+                "affected responses via `Deprecation` (RFC 9745) and `Sunset` "
+                "(RFC 8594) headers with a minimum 90 days between them. Backward "
+                "compatibility is enforced in CI by a parity gate that fails the "
+                "deploy if any response shape changes without being declared. Full "
+                "policy: https://a2uicatalog.ai/versioning.md"
             ),
             "license": {"name": "MIT", "identifier": "MIT"},
             "contact": {"name": "A2UI Atomic Catalog",
@@ -377,6 +388,8 @@ LLMS_TXT = """# A2UI Atomic Catalog
 - [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
+- [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
+- [Versioning & deprecation policy]({base}/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
 - [Agent discovery document]({base}/.well-known/ai-catalog.json): Per-atom capability/description index (also referenced from robots.txt's `Agentmap:` directive).
@@ -422,6 +435,12 @@ def build_api_catalog():
                 item(f"{BASE}/.well-known/ai-catalog.json", "application/json", "ARD discovery catalog"),
                 item(f"{BASE}/.well-known/mcp.json", "application/json", "MCP discovery pointer"),
                 item(f"{BASE}/.well-known/agent-card.json", "application/json", "A2A agent card"),
+                item(f"{BASE}/.well-known/oauth-protected-resource", "application/json", "OAuth protected-resource metadata (RFC 9728)"),
+                item(f"{BASE}/.well-known/oauth-authorization-server", "application/json", "OAuth authorization-server metadata (RFC 8414)"),
+            ],
+            "describes": [
+                item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
+                item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
             ],
         }],
     }
