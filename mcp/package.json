@@ -1,6 +1,6 @@
 {
   "name": "@a2uicatalog/mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local MCP server for the A2UI Atomic Catalog: browse the 474-atom vocabulary, validate a payload (hallucinated atom = parse error, not a broken screen), get a shareable preview URL, and deploy a training.md to your own Google Apps Script. Pure-local for browsing/validation — no network, no secret, no account.",
   "type": "module",
   "bin": { "a2uicatalog-mcp": "server.mjs" },

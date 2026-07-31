@@ -16,7 +16,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { readFileSync } from "fs";
+import { readFileSync, realpathSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { gzipSync } from "zlib";
@@ -121,7 +121,7 @@ function redact(text) {
 }
 function tooBig(s) { return typeof s === "string" && s.length > MAX_INPUT; }
 
-const server = new McpServer({ name: "a2uicatalog-mcp", version: "0.1.0" });
+const server = new McpServer({ name: "a2uicatalog-mcp", version: "0.1.1" });
 
 // ── OFFICIAL SERVING PATTERN: A2UI as MCP Resource (application/a2ui+json) ──
 for (const name of Object.keys(UIS)) {
@@ -228,8 +228,25 @@ export async function buildApp(training_md) {
 // Export internals for the test harness (when imported, not run over stdio).
 export { validate, encodeUrl, loadUI, ATOMS };
 
-if (process.argv[1] && process.argv[1].endsWith("server.mjs")) {
+// Detect "am I the entry point" by REALPATH, not by filename. npm's `bin` field
+// (package.json) makes the installed executable a SYMLINK named after the bin
+// key ("a2uicatalog-mcp"), not "server.mjs" — a filename-suffix check like the
+// old `process.argv[1].endsWith("server.mjs")` therefore never matches when
+// launched via `npx @a2uicatalog/mcp` or a global install (npm creates
+// bin/a2uicatalog-mcp -> ../lib/node_modules/@a2uicatalog/mcp/server.mjs).
+// Confirmed live and silent — v0.1.0 loaded, built its catalog indices, and
+// exited with ZERO output on every real install path (npx, global install)
+// while `node server.mjs` directly kept working, which is why local dev
+// testing never caught it. realpathSync resolves the symlink on both sides,
+// so the comparison is correct regardless of what name it was invoked under.
+let isEntryPoint = false;
+try {
+  isEntryPoint = !!(process.argv[1] &&
+    realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url)));
+} catch (e) { /* argv[1] missing or unreadable -> not the entry point */ }
+
+if (isEntryPoint) {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("a2uicatalog-mcp test harness on stdio");
+  console.error("a2uicatalog-mcp on stdio");
 }
