@@ -51,6 +51,13 @@ The catalog is consumable three ways, no signup for any of them — BYO by desig
 
 **5-minute quickstarts:** [Claude (Desktop / claude.ai)](docs/quickstart-claude.md) · [Gemini Enterprise (BYO-MCP)](docs/quickstart-gemini-enterprise.md)
 
+**As an agent skill** — this repo ships a [`SKILL.md`](SKILL.md), so any agent using the
+[skills](https://skills.sh) ecosystem can pick up the catalog's when-to-use guidance directly:
+
+```bash
+npx skills add a2uicatalog/a2ui@a2ui-atomic-catalog
+```
+
 A few atoms, live on the site — click through to a full spec + fields table for each:
 
 <table>
