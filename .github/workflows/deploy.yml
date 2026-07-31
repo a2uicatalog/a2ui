@@ -32,6 +32,9 @@ jobs:
       - name: Dereference discovery document URLs against build output
         run: python3 scripts/check_catalog_links.py
 
+      - name: Build OpenAPI spec + llms.txt (counts from spec.json)
+        run: python3 scripts/gen_openapi.py
+
       - name: Build sitemap.xml from real build output
         run: python3 scripts/gen_sitemap.py
 

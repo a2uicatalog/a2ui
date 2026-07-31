@@ -35,6 +35,7 @@ policy:
     - public/llms.txt
     - public/sitemap.xml
     - public/sitemap-pages.xml
+    - public/openapi.json
     - public/_headers
     - public/_redirects
     - public/.well-known/**
@@ -256,6 +257,16 @@ generators:
     publish: ci (deploy.yml on push -> Cloudflare) — must run AFTER
       generate_atom_pages/gen_public_catalog/gen_mcp_apps_bundle so it
       sees the real build output, not a stale/partial tree
+  gen_openapi:
+    script: scripts/gen_openapi.py
+    source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
+    outputs: [public/openapi.json, public/llms.txt]
+    publish: ci (deploy.yml on push -> Cloudflare). Both documents state the
+      catalogue's SIZE, so both were wrong the moment an atom was added while
+      they were hand-written — the counts are read from the published
+      spec.json here, same pattern as gen_compat_matrix/gen_readme_badges.
+      Publishing openapi.json at all answers an agent-readiness audit finding
+      (0/7 "OpenAPI spec published", 0/6 "developer portal", 2026-07-31).
   gen_renderer_manifest:
     script: scripts/gen_renderer_manifest.py
     source: apps-script-surface/gas-wired-renderer/*.gs + atoms/atom-packs.yaml
