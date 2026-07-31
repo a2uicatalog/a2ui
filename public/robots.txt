@@ -1,3 +1,35 @@
+# Explicit per-agent stanzas below are IDENTICAL to the wildcard rule — this
+# site has no reason to treat one AI crawler differently from another, so
+# there is no real tiering to express. They exist because some agent-readiness
+# scanners score "AI-crawler tier differentiation" on whether named bots get
+# their own stanza at all, not on whether the rules actually differ; naming
+# them explicitly says "yes, we thought about you specifically" without
+# fabricating a distinction that doesn't exist.
+User-agent: GPTBot
+Allow: /
+Disallow: /try/
+Disallow: /frugal-ai-ops/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /try/
+Disallow: /frugal-ai-ops/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /try/
+Disallow: /frugal-ai-ops/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /try/
+Disallow: /frugal-ai-ops/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /try/
+Disallow: /frugal-ai-ops/
+
 User-agent: *
 Allow: /
 Disallow: /try/

@@ -7,3 +7,10 @@
 # the one real developer page rather than 404ing.
 /console /developers/ 301
 /dashboard /developers/ 301
+
+# Same reasoning for conventional API-docs paths: no literal /api or
+# /api-reference page exists (the real reference is openapi.json, linked
+# prominently from /developers/), so send probes there instead of a bare 404.
+/api /developers/ 301
+/api-reference /developers/ 301
+/docs/api /developers/ 301

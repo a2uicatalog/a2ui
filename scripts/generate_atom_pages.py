@@ -1127,6 +1127,14 @@ document.querySelectorAll('.filter').forEach(btn => {
 });
 
 search.addEventListener('input', update);
+
+// Pre-fill from ?q= so the homepage's SearchAction (see JSON-LD) is real,
+// not just a structured-data claim: a search-engine "site search box" link
+// (?q=<term>) actually filters the grid on load, same as typing it in.
+(function () {
+  const q = new URLSearchParams(location.search).get('q');
+  if (q) { search.value = q; update(); }
+})();
 </script>
 """
 
@@ -1380,6 +1388,8 @@ def generate_index(atoms):
           "https://github.com/a2uicatalog/a2ui",
           "https://www.linkedin.com/in/curtiskrygier"
         ],
+        "contactPoint": {{ "@type": "ContactPoint", "contactType": "technical support",
+          "url": "https://a2uicatalog.ai/contact/" }},
         "founder": {{ "@id": "https://a2uicatalog.ai/#person" }}
       }},
       {{
@@ -1398,7 +1408,20 @@ def generate_index(atoms):
         "url": "https://a2uicatalog.ai",
         "name": "A2UI Atomic Catalog",
         "publisher": {{ "@id": "https://a2uicatalog.ai/#org" }},
-        "inLanguage": "en"
+        "inLanguage": "en",
+        "potentialAction": {{
+          "@type": "SearchAction",
+          "target": {{ "@type": "EntryPoint", "urlTemplate": "https://a2uicatalog.ai/?q={{search_term_string}}" }},
+          "query-input": "required name=search_term_string"
+        }}
+      }},
+      {{
+        "@type": "ItemList",
+        "@id": "https://a2uicatalog.ai/#atom-catalog",
+        "name": "A2UI atom vocabulary",
+        "description": "The full set of typed UI atoms an agent composes into rendered interfaces.",
+        "numberOfItems": {len(atoms)},
+        "itemListOrder": "https://schema.org/ItemListUnordered"
       }}
     ]
   }}
