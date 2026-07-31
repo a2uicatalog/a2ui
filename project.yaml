@@ -38,6 +38,8 @@ policy:
     - public/openapi.json
     - public/brand/**
     - public/agents.md
+    - public/index.md
+    - public/developers/**
     - public/about/**
     - public/contact/**
     - public/privacy/**
@@ -275,7 +277,7 @@ generators:
   gen_trust_pages:
     script: scripts/gen_trust_pages.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/about/, public/contact/, public/privacy/, public/agents.md]
+    outputs: [public/developers/, public/about/, public/contact/, public/privacy/, public/agents.md, public/index.md]
     publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
       audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
       0/2, and the markdown-fallback checks — /agents.md is served as real

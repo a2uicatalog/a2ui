@@ -847,10 +847,27 @@ def live_preview(atom):
             return ""
     except Exception:
         return ""
+    # Hero-style atoms (article_hero, dark_hero, ...) legitimately render a
+    # real <h1> when they ARE the page — but here they are one of hundreds of
+    # cards embedded in a "Live preview" box, never the page's own heading.
+    # Left alone this produced 3 <h1> elements on the homepage (confirmed via
+    # an agent-readiness audit's accessibility check, 2026-07-31): the real
+    # title plus one per hero-type atom previewed on the grid. Demoted to a
+    # <div> ONLY in this preview-embedding context; the atom's own standalone
+    # page (e.g. /atoms/article_hero/) is a different call and keeps its h1.
+    html = re.sub(r"<h1(\s|>)", r"<div\1", html)
+    html = re.sub(r"</h1>", "</div>", html)
+    display = atom.get("displayName") or atom_type
+    # Unlike card_stage(), this box IS mouse-interactive (no pointer-events:
+    # none) — genuinely clickable/typeable, so it must stay reachable by
+    # assistive tech, not aria-hidden. Any form controls it contains (e.g. a
+    # checkbox_group atom's checkboxes) have no real submit behavior behind
+    # them though, so per-control labels would be fabricated; giving the
+    # whole demo region one accurate group name is the honest fix.
     return f"""
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box">{html}</div>
+  <div class="preview-box" role="group" aria-label="Live preview of {_esc_attr(str(display))}">{html}</div>
 </div>"""
 
 
@@ -1157,8 +1174,19 @@ def card_stage(atom):
     # parser close the card early (meta spills out unstyled). Previews are
     # pointer-events:none decoration — neutralize links to spans.
     html = re.sub(r"<a\b", "<span", html).replace("</a>", "</span>")
+    # Hero-style atoms (article_hero, dark_hero, ...) render a real <h1> when
+    # they ARE the page. Here they're 1 of 474 grid cards — demoted so the
+    # page keeps exactly one <h1> (same fix, same reason, as live_preview()).
+    html = re.sub(r"<h1(\s|>)", r"<div\1", html)
+    html = re.sub(r"</h1>", "</div>", html)
     _preview_stats["rendered"] += 1
-    return f'<div class="stage"><div class="stage-inner">{html}</div></div>'
+    # stage-inner is pointer-events:none decoration (see above) — the card's
+    # accessible name/description already come from the <h3>/<p> text outside
+    # it, so any form controls inside the thumbnail (checkboxes, radios, ...)
+    # must not surface to assistive tech as if they were real, actionable
+    # controls. Confirmed via audit, 2026-07-31: this is the source of most of
+    # a scan's "unlabeled form controls" finding on the homepage.
+    return f'<div class="stage"><div class="stage-inner" aria-hidden="true">{html}</div></div>'
 
 
 def _showcase_html(slides):
@@ -1380,7 +1408,7 @@ def generate_index(atoms):
 </head>
 <body>
   {site_header("atoms")}
-  <div class="wrap">
+  <main class="wrap">
   <header class="hero">
     <div class="halo"></div>
     <a class="announce" href="/blog/004-mcp-apps-inside-claude-ai/">
@@ -1436,7 +1464,7 @@ def generate_index(atoms):
     </div>
     {_showcase_html(showcase_slides)}
     <div class="controls">
-      <input id="search" type="search" placeholder="Search atoms…" autocomplete="off">
+      <input id="search" type="search" placeholder="Search atoms…" autocomplete="off" aria-label="Search atoms">
       <div class="filters">{filter_pills}</div>
       <span class="count" id="count">{len(atoms)} atoms</span>
     </div>
@@ -1448,7 +1476,7 @@ def generate_index(atoms):
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
-  </div>
+  </main>
   {INDEX_JS}
   {SITE_FOOT_JS}
 {_cursor_glow_html()}

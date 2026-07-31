@@ -97,6 +97,7 @@ def _paths():
                                            "enum": ["application/json", "text/html", "text/plain"]}}],
                 "responses": {
                     "200": {"description": "Server descriptor",
+                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
                             "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ServerDescriptor"}}}},
                     "405": {"description": "Accept: text/event-stream — no server-initiated stream"},
                 },
@@ -118,7 +119,9 @@ def _paths():
                                                    "title": "Demo", "blocks": [{"type": "stat_card",
                                                    "value": "1,234", "label": "Daily users", "delta": "+12%"}]}}}}},
                     }}}},
-                "responses": {"200": {"description": "JSON-RPC response", "content": {
+                "responses": {"200": {"description": "JSON-RPC response",
+                    "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                    "content": {
                     "application/json": {"schema": {"$ref": "#/components/schemas/JsonRpcResponse"}}}}},
             },
         },
@@ -163,7 +166,9 @@ def _paths():
                     "prompt": {"type": "string", "description": "Plain-English description of the UI wanted"}}},
                 "example": {"prompt": "a dashboard with daily users and a bar chart of traffic sources"}}}},
             "responses": {
-                "200": {"description": "Atom blocks", "content": {"application/json": {"schema": {
+                "200": {"description": "Atom blocks",
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "content": {"application/json": {"schema": {
                     "type": "object", "properties": {"blocks": {"type": "array", "items": {
                         "$ref": "#/components/schemas/AtomBlock"}}}}}}},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
@@ -178,8 +183,9 @@ def _paths():
                             "schema": {"type": "string"}, "description": "Declared source id"}],
             "responses": {
                 "200": {"description": "Source payload",
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
                         "content": {"application/json": {"schema": {"type": "object"}}}},
-                "404": {"description": "Source is not declared"},
+                "404": {"$ref": "#/components/responses/NotFound"},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
         "/s/{id}": {"get": {
             "tags": ["mcp"], "operationId": "getPublishedSurface",
@@ -191,20 +197,52 @@ def _paths():
                             "schema": {"type": "string"}}],
             "responses": {
                 "302": {"description": "Redirect to the rendered surface"},
-                "200": {"description": "Stored payload (when requested as .json)", "content": {
+                "200": {"description": "Stored payload (when requested as .json)",
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "content": {
                     "application/json": {"schema": {"$ref": "#/components/schemas/A2uiPayload"}}}},
-                "404": {"description": "Unknown or expired link"}}}},
+                "404": {"$ref": "#/components/responses/NotFound"}}}},
     }
 
 
 def _components():
     return {
-        "responses": {"RateLimited": {
-            "description": ("Rate limit reached. See the descriptor at GET /mcp "
-                            "(Accept: application/json) for current limits."),
-            "content": {"application/json": {"schema": {"type": "object", "properties": {
-                "error": {"type": "string"}, "note": {"type": "string"}}}}}}},
+        "headers": {
+            "ApiVersion": {
+                "description": ("Wire-format version of this response, currently \"1\". The "
+                                "additive alternative to a /v1/ path prefix: bump only on a "
+                                "documented, intentional change to a response shape."),
+                "schema": {"type": "string", "example": "1"}}},
+        "responses": {
+            "RateLimited": {
+                "description": ("Rate limit reached. See the descriptor at GET /mcp "
+                                "(Accept: application/json) for current limits."),
+                "headers": {
+                    "X-RateLimit-Limit": {"description": "Requests allowed in the current window.",
+                                          "schema": {"type": "integer"}},
+                    "X-RateLimit-Remaining": {"description": "Requests remaining in the current window.",
+                                              "schema": {"type": "integer"}},
+                    "Retry-After": {"description": "Seconds until the window resets (present on some sources).",
+                                    "schema": {"type": "integer"}},
+                    "X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+            "NotFound": {
+                "description": "No resource at this path.",
+                "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+        },
         "schemas": {
+            "ErrorResponse": {
+                "type": "object",
+                "description": ("Shape of every non-2xx JSON response on the REST surface (the "
+                                "/mcp JSON-RPC endpoint uses JsonRpcResponse.error instead — see "
+                                "that schema — and a tools/call failure uses result.isError plus "
+                                "result._meta.errorCode, a stable machine-readable string such as "
+                                "UNKNOWN_TOOL or INVALID_PAYLOAD_SHAPE)."),
+                "properties": {
+                    "ok": {"type": "boolean", "const": False},
+                    "error": {"type": "string", "description": "Human-readable error message."},
+                    "note": {"type": "string", "description": "Optional extra guidance (e.g. how to raise a limit)."}}},
             "ServerDescriptor": {
                 "type": "object",
                 "description": "Machine-readable description of the MCP server.",
@@ -231,9 +269,14 @@ def _components():
                 "type": "object", "required": ["jsonrpc"], "properties": {
                     "jsonrpc": {"type": "string", "const": "2.0"},
                     "id": {"oneOf": [{"type": "integer"}, {"type": "string"}, {"type": "null"}]},
-                    "result": {"type": "object"},
-                    "error": {"type": "object", "properties": {
-                        "code": {"type": "integer"}, "message": {"type": "string"}}}}},
+                    "result": {"type": "object", "description": (
+                        "For tools/call, a failed tool run sets result.isError: true — see "
+                        "result._meta.errorCode below — rather than the top-level error field, "
+                        "which is reserved for JSON-RPC protocol errors (bad method, parse error).")},
+                    "error": {"type": "object", "description": "Protocol-level error (JSON-RPC 2.0 §5.1).",
+                              "properties": {
+                        "code": {"type": "integer", "examples": [-32700, -32600, -32601, -32603]},
+                        "message": {"type": "string"}}}}},
             "AtomBlock": {
                 "type": "object",
                 "description": ("One typed UI component. `type` selects the atom; the remaining "

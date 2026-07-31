@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Developers — A2UI Atomic Catalog</title>
+<meta name="description" content="Integrate with the A2UI Atomic Catalog: 474 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.">
+<link rel="canonical" href="https://a2uicatalog.ai/developers/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Developers — A2UI Atomic Catalog">
+<meta property="og:description" content="Integrate with the A2UI Atomic Catalog: 474 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.">
+<meta property="og:url" content="https://a2uicatalog.ai/developers/">
+<meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "url": "https://a2uicatalog.ai/developers/",
+  "name": "Developers \u2014 A2UI Atomic Catalog",
+  "publisher": {
+    "@id": "https://a2uicatalog.ai/#org"
+  }
+}
+</script>
+<style>
+:root{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
+ box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}
+h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:2rem 0 .5rem}
+.k{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+ font-weight:600;margin:0 0 26px}
+a{color:#00205B} code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}
+nav.top{max-width:720px;margin:0 auto 14px;font-size:.85rem}
+nav.top a{text-decoration:none;margin-right:14px}
+footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
+@media(prefers-color-scheme:dark){
+ body{background:#0e1116;color:#e6e9ef} .wrap{background:#161a22;box-shadow:none}
+ a{color:#8ab4ff} code{background:#1e2430}}
+</style>
+</head>
+<body>
+<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<div class="wrap">
+<h1>Developers</h1>
+<p class="k">A2UI Atomic Catalog</p>
+
+<p>Everything here is free, unauthenticated, and machine-readable — this page is a human
+index into the same documents an agent reads.</p>
+
+<h2>1. Connect the MCP server</h2>
+<p>The primary integration surface. No API key, no signup.</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>POST https://a2uicatalog.ai/mcp
+Content-Type: application/json
+
+{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}</code></pre>
+<p><code>GET</code> the same URL with <code>Accept: application/json</code> for a live server
+descriptor — every tool, transport, and the current rate limits, generated from the running
+server so it cannot go stale:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>curl -H "Accept: application/json" https://a2uicatalog.ai/mcp</code></pre>
+
+<h2>2. Or use the REST surfaces directly</h2>
+<table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /spec.json</code></td><td>Full atom vocabulary — 474 atoms, every field contract</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/index.json</code></td><td>Compact catalog selection menu</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/atoms-json-schema.json</code></td><td>Strict per-atom JSON Schema for constrained decoding</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>POST /api/compose</code></td><td>Natural language → atom blocks</td></tr>
+</table>
+
+<h2>3. Reference</h2>
+<ul>
+<li><a href="/openapi.json">OpenAPI 3.1 specification</a> — every endpoint, request/response schemas, examples</li>
+<li><a href="/agents.md">agents.md</a> — agent-facing guide, served as <code>text/markdown</code></li>
+<li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
+<li><a href="/.well-known/mcp.json">MCP discovery manifest</a></li>
+</ul>
+
+<h2>4. Own your renderer</h2>
+<p>The shared demo renderer is rate limited by design. Deploy your own Apps Script renderer in
+four commands — no cost beyond a Google account — and every subsequent call targets it instead:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-schema-renderer
+clasp login && clasp create --type webapp && clasp push && clasp deploy</code></pre>
+
+<h2>5. Auth</h2>
+<p>None required for normal use. See <a href="/.well-known/agent-auth.md">auth &amp; rate
+limits</a> for the optional OAuth/Basic-Auth paths used by platforms that require attributed
+access (e.g. Gemini Enterprise's BYO-MCP model).</p>
+
+<h2>Source</h2>
+<p>MIT licensed. Full source, issues and pull requests: <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a>.</p>
+</div>
+<footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
+A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</footer>
+</body>
+</html>

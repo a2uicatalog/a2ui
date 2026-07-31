@@ -1,3 +1,9 @@
 # Short shareable alias for the full-screen catalog playground (MCP Apps view).
 # Fragment (#p=...) survives redirects — browsers reattach it client-side.
 /play /surfaces/mcp-apps/play/ 302
+
+# Conventional developer-portal aliases some crawlers/scanners probe literally.
+# There is no console or dashboard (no accounts, no API keys) — both point at
+# the one real developer page rather than 404ing.
+/console /developers/ 301
+/dashboard /developers/ 301

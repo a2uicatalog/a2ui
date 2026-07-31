@@ -1,0 +1,14 @@
+{
+  "name": "a2ui-catalog",
+  "description": "MCP server for the A2UI Atomic Catalog: typed UI atoms an agent composes into real rendered interfaces across web, Google Meet, Apps Script, Google Chat and MCP Apps hosts.",
+  "protocol": "mcp",
+  "transport": "streamable-http",
+  "endpoint": "https://a2uicatalog.ai/mcp",
+  "authentication": { "type": "none", "required": false },
+  "documentation": {
+    "openapi": "https://a2uicatalog.ai/openapi.json",
+    "llms": "https://a2uicatalog.ai/llms.txt",
+    "agents": "https://a2uicatalog.ai/agents.md"
+  },
+  "note": "This is a static discovery pointer. GET https://a2uicatalog.ai/mcp with Accept: application/json returns the live, authoritative descriptor (current tool list and rate limits) generated from the running server."
+}

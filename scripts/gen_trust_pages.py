@@ -63,7 +63,7 @@ footer{{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}}
 </style>
 </head>
 <body>
-<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
 <div class="wrap">
 <h1>{title}</h1>
 <p class="k">A2UI Atomic Catalog</p>
@@ -83,6 +83,61 @@ def _n():
 
 def pages(n):
     return {
+        "developers": dict(
+            title="Developers",
+            desc=(f"Integrate with the A2UI Atomic Catalog: {n} typed atoms over MCP or REST. "
+                  "No API key, no signup. OpenAPI spec, live server descriptor, rate limits."),
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "WebPage",
+                "url": f"{BASE}/developers/", "name": "Developers — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Everything here is free, unauthenticated, and machine-readable — this page is a human
+index into the same documents an agent reads.</p>
+
+<h2>1. Connect the MCP server</h2>
+<p>The primary integration surface. No API key, no signup.</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>POST https://a2uicatalog.ai/mcp
+Content-Type: application/json
+
+{{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}}</code></pre>
+<p><code>GET</code> the same URL with <code>Accept: application/json</code> for a live server
+descriptor — every tool, transport, and the current rate limits, generated from the running
+server so it cannot go stale:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>curl -H "Accept: application/json" https://a2uicatalog.ai/mcp</code></pre>
+
+<h2>2. Or use the REST surfaces directly</h2>
+<table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /spec.json</code></td><td>Full atom vocabulary — {n} atoms, every field contract</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/index.json</code></td><td>Compact catalog selection menu</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/atoms-json-schema.json</code></td><td>Strict per-atom JSON Schema for constrained decoding</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>POST /api/compose</code></td><td>Natural language → atom blocks</td></tr>
+</table>
+
+<h2>3. Reference</h2>
+<ul>
+<li><a href="/openapi.json">OpenAPI 3.1 specification</a> — every endpoint, request/response schemas, examples</li>
+<li><a href="/agents.md">agents.md</a> — agent-facing guide, served as <code>text/markdown</code></li>
+<li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
+<li><a href="/.well-known/mcp.json">MCP discovery manifest</a></li>
+</ul>
+
+<h2>4. Own your renderer</h2>
+<p>The shared demo renderer is rate limited by design. Deploy your own Apps Script renderer in
+four commands — no cost beyond a Google account — and every subsequent call targets it instead:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>git clone {REPO}
+cd a2ui/apps-script-surface/gas-schema-renderer
+clasp login && clasp create --type webapp && clasp push && clasp deploy</code></pre>
+
+<h2>5. Auth</h2>
+<p>None required for normal use. See <a href="/.well-known/agent-auth.md">auth &amp; rate
+limits</a> for the optional OAuth/Basic-Auth paths used by platforms that require attributed
+access (e.g. Gemini Enterprise's BYO-MCP model).</p>
+
+<h2>Source</h2>
+<p>MIT licensed. Full source, issues and pull requests: <a href="{REPO}">{REPO.replace('https://','')}</a>.</p>"""),
         "about": dict(
             title="About",
             desc=("What the A2UI Atomic Catalog is, who maintains it, and why a typed UI "
@@ -258,6 +313,36 @@ def main():
     with open(os.path.join(PUBLIC, "agents.md"), "w", encoding="utf-8") as f:
         f.write(AGENTS_MD.format(n=n))
     print("wrote public/agents.md")
+
+    # A markdown twin of the homepage — a cold-arriving agent that only knows
+    # to try the .md suffix gets a real, canonical summary instead of a 404.
+    # Deliberately NOT the same content as agents.md: this is a description
+    # of the SITE (what it is, top links); agents.md is a HOW-TO for the MCP
+    # server. Different questions, kept separate rather than aliased.
+    index_md = f"""# A2UI Atomic Catalog
+
+{n} typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
+Apps Script, Google Chat and MCP Apps — instead of generating HTML.
+
+## Start here
+
+- [Browse the catalog]({BASE}/) — search and preview every atom live
+- [Developers]({BASE}/developers/) — MCP + REST integration guide
+- [OpenAPI specification]({BASE}/openapi.json)
+- [agents.md]({BASE}/agents.md) — agent-facing how-to
+- [MCP Apps playground]({BASE}/surfaces/mcp-apps)
+
+## What this is
+
+An independent, unofficial, open-source project (MIT licensed). Not affiliated with, endorsed
+by, or sponsored by Google or Anthropic. A2UI is Google's protocol; MCP is Anthropic's.
+
+Source: {REPO}
+Maintained by Curtis Krygier — {LINKEDIN}
+"""
+    with open(os.path.join(PUBLIC, "index.md"), "w", encoding="utf-8") as f:
+        f.write(index_md)
+    print("wrote public/index.md")
 
 
 if __name__ == "__main__":
