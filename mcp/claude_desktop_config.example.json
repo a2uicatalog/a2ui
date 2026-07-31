@@ -2,7 +2,7 @@
   "mcpServers": {
     "a2ui": {
       "command": "npx",
-      "args": ["-y", "@a2ui/mcp"],
+      "args": ["-y", "@a2uicatalog/mcp"],
       "env": {
         "BUILD_API_URL": "https://script.google.com/macros/s/<your-api-deployment>/exec",
         "BUILD_API_TOKEN": "<your A2UI_API_TOKEN>"

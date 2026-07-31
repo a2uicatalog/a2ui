@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * a2ui-mcp — local MCP server for the A2UI Atomic Catalog.
+ * a2uicatalog-mcp — local MCP server for the A2UI Atomic Catalog.
  *
  * Implements the official A2UI-over-MCP pattern (a2ui.org/guides/a2ui_over_mcp):
  * an agent browses the atom vocabulary, authors a wired surface, validates it
@@ -25,7 +25,7 @@ import { gzipSync } from "zlib";
 // rather than read via "../public/..." out of the wider a2ui-catalogue repo
 // tree — that relative path only resolves in a git checkout of the whole
 // monorepo, and breaks the moment this package is installed standalone
-// (`npm install @a2ui/mcp` ships only mcp/'s own files). See sync-data.mjs's
+// (`npm install @a2uicatalog/mcp` ships only mcp/'s own files). See sync-data.mjs's
 // header for why bundling a snapshot, not a live fetch, is the fix.
 const DATA = join(dirname(fileURLToPath(import.meta.url)), "data");
 const A2UI_MIME = "application/a2ui+json";
@@ -121,7 +121,7 @@ function redact(text) {
 }
 function tooBig(s) { return typeof s === "string" && s.length > MAX_INPUT; }
 
-const server = new McpServer({ name: "a2ui-mcp", version: "0.1.0" });
+const server = new McpServer({ name: "a2uicatalog-mcp", version: "0.1.0" });
 
 // ── OFFICIAL SERVING PATTERN: A2UI as MCP Resource (application/a2ui+json) ──
 for (const name of Object.keys(UIS)) {
@@ -231,5 +231,5 @@ export { validate, encodeUrl, loadUI, ATOMS };
 if (process.argv[1] && process.argv[1].endsWith("server.mjs")) {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("a2ui-mcp test harness on stdio");
+  console.error("a2uicatalog-mcp test harness on stdio");
 }

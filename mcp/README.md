@@ -1,4 +1,4 @@
-# a2ui-mcp — build live Google Apps Script web apps from your agent
+# a2uicatalog-mcp — build live Google Apps Script web apps from your agent
 
 **A2UI over MCP. Author, validate, deploy — no code.**
 
@@ -35,7 +35,7 @@ own Build API.
 ## Install
 
 ```bash
-npm install -g @a2ui/mcp
+npm install -g @a2uicatalog/mcp
 ```
 
 `list_atoms` / `get_atom_schema` / `validate_payload` / `encode_url` / `get_ui`
@@ -49,7 +49,7 @@ Add to Claude Desktop (`claude_desktop_config.json`):
   "mcpServers": {
     "a2ui": {
       "command": "npx",
-      "args": ["-y", "@a2ui/mcp"],
+      "args": ["-y", "@a2uicatalog/mcp"],
       "env": {
         "BUILD_API_URL": "https://script.google.com/macros/s/<your-api-deployment>/exec",
         "BUILD_API_TOKEN": "<your token>"

@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * sync-data.mjs — refresh mcp/data/, the bundled catalog snapshot @a2ui/mcp
+ * sync-data.mjs — refresh mcp/data/, the bundled catalog snapshot @a2uicatalog/mcp
  * ships with.
  *
  * server.mjs used to read these files via a relative "../" path straight out
  * of the a2ui-catalogue repo tree (public/atoms/index.json, public/spec.json,
  * public/catalogue/a2ui-state-v1.json, payloads/*.json). That works from a
  * git checkout but breaks the moment this package is actually published and
- * installed standalone (`npm install @a2ui/mcp`): only mcp/'s own files ship
- * in the tarball, so "../public/..." would resolve to node_modules/@a2ui/'s
+ * installed standalone (`npm install @a2uicatalog/mcp`): only mcp/'s own files ship
+ * in the tarball, so "../public/..." would resolve to node_modules/@a2uicatalog/'s
  * parent, not this repo — a crash on first run for every real installer,
  * caught here (2026-07-31) before ever publishing. Fetching the same data
  * live from a2uicatalog.ai at runtime was the other option; deliberately
