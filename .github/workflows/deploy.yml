@@ -3,7 +3,23 @@ name: Build & Deploy
 on:
   push:
     branches: [main]
-
+  workflow_dispatch: {}          # manual "Run workflow" button — no path filter
+                                   # to add a re-trigger commit around, unlike
+                                   # the private repo's per-worker deploys
+# Same guard added to a2ui-private's deploy-mcp-worker.yml (2026-07-14 incident)
+# and deploy-blog-worker.yml: two pushes close together queue two runs with no
+# ordering guarantee, and whichever finishes LAST wins regardless of which
+# commit was newer. A newer push cancels whatever's still running instead.
+#
+# If this workflow fails with a generic step error and no clear cause, check
+# https://www.cloudflarestatus.com/ before re-diagnosing repo-side (2026-07-31:
+# Cloudflare's control-plane API was down/unresponsive for ~40min while their
+# CDN/edge stayed fully healthy — the live site kept serving traffic the whole
+# time, so nothing was visible from curling the site itself; only wrangler
+# whoami / a raw call to api.cloudflare.com revealed it).
+concurrency:
+  group: deploy-catalogue-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   deploy:
     runs-on: ubuntu-latest
