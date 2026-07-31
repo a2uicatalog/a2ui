@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Contact — A2UI Atomic Catalog</title>
+<meta name="description" content="How to reach the maintainer of the A2UI Atomic Catalog, report an issue, or contribute.">
+<link rel="canonical" href="https://a2uicatalog.ai/contact/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contact — A2UI Atomic Catalog">
+<meta property="og:description" content="How to reach the maintainer of the A2UI Atomic Catalog, report an issue, or contribute.">
+<meta property="og:url" content="https://a2uicatalog.ai/contact/">
+<meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "url": "https://a2uicatalog.ai/contact/",
+  "name": "Contact",
+  "publisher": {
+    "@id": "https://a2uicatalog.ai/#org"
+  }
+}
+</script>
+<style>
+:root{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
+ box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}
+h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:2rem 0 .5rem}
+.k{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+ font-weight:600;margin:0 0 26px}
+a{color:#00205B} code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}
+nav.top{max-width:720px;margin:0 auto 14px;font-size:.85rem}
+nav.top a{text-decoration:none;margin-right:14px}
+footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
+@media(prefers-color-scheme:dark){
+ body{background:#0e1116;color:#e6e9ef} .wrap{background:#161a22;box-shadow:none}
+ a{color:#8ab4ff} code{background:#1e2430}}
+</style>
+</head>
+<body>
+<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<div class="wrap">
+<h1>Contact</h1>
+<p class="k">A2UI Atomic Catalog</p>
+
+<h2>Issues and contributions</h2>
+<p>The fastest route for anything technical is the repository:
+<a href="https://github.com/a2uicatalog/a2ui/issues">github.com/a2uicatalog/a2ui/issues</a>.
+Bug reports, atom proposals and pull requests are all welcome there.</p>
+
+<h2>Maintainer</h2>
+<p>The catalogue is built and maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>.
+LinkedIn is the most reliable way to get a direct reply.</p>
+
+<h2>Integration questions</h2>
+<p>If you are wiring an agent to the MCP server, the answers are usually already written down:
+the <a href="/openapi.json">OpenAPI spec</a> describes every endpoint, and
+<code>GET /mcp</code> with <code>Accept: application/json</code> returns a live server
+descriptor listing every tool and its current rate limits. No API key or signup is required.</p>
+
+<h2>Security</h2>
+<p>If you believe you have found a security issue, please report it privately through the
+GitHub repository's security advisory form rather than a public issue.</p>
+</div>
+<footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
+A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</footer>
+</body>
+</html>

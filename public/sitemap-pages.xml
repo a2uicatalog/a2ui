@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://a2uicatalog.ai/</loc></url>
+  <url><loc>https://a2uicatalog.ai/about/</loc></url>
   <url><loc>https://a2uicatalog.ai/atoms/abbr_tooltip/</loc></url>
   <url><loc>https://a2uicatalog.ai/atoms/accordion_item/</loc></url>
   <url><loc>https://a2uicatalog.ai/atoms/achievement_badge/</loc></url>
@@ -475,8 +476,10 @@
   <url><loc>https://a2uicatalog.ai/atoms/xp_bar/</loc></url>
   <url><loc>https://a2uicatalog.ai/atoms/youtube/</loc></url>
   <url><loc>https://a2uicatalog.ai/atoms/zoomable_image/</loc></url>
+  <url><loc>https://a2uicatalog.ai/contact/</loc></url>
   <url><loc>https://a2uicatalog.ai/gallery/article2-atoms/</loc></url>
   <url><loc>https://a2uicatalog.ai/gallery/article3-itsm/</loc></url>
+  <url><loc>https://a2uicatalog.ai/privacy/</loc></url>
   <url><loc>https://a2uicatalog.ai/renderer/</loc></url>
   <url><loc>https://a2uicatalog.ai/surfaces/email/</loc></url>
   <url><loc>https://a2uicatalog.ai/surfaces/google-apps-script-side-panel/</loc></url>

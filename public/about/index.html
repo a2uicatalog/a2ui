@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>About — A2UI Atomic Catalog</title>
+<meta name="description" content="What the A2UI Atomic Catalog is, who maintains it, and why a typed UI vocabulary beats asking a model to write HTML.">
+<link rel="canonical" href="https://a2uicatalog.ai/about/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="About — A2UI Atomic Catalog">
+<meta property="og:description" content="What the A2UI Atomic Catalog is, who maintains it, and why a typed UI vocabulary beats asking a model to write HTML.">
+<meta property="og:url" content="https://a2uicatalog.ai/about/">
+<meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "url": "https://a2uicatalog.ai/about/",
+  "name": "About the A2UI Atomic Catalog",
+  "publisher": {
+    "@id": "https://a2uicatalog.ai/#org"
+  }
+}
+</script>
+<style>
+:root{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
+ box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}
+h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:2rem 0 .5rem}
+.k{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+ font-weight:600;margin:0 0 26px}
+a{color:#00205B} code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}
+nav.top{max-width:720px;margin:0 auto 14px;font-size:.85rem}
+nav.top a{text-decoration:none;margin-right:14px}
+footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
+@media(prefers-color-scheme:dark){
+ body{background:#0e1116;color:#e6e9ef} .wrap{background:#161a22;box-shadow:none}
+ a{color:#8ab4ff} code{background:#1e2430}}
+</style>
+</head>
+<body>
+<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<div class="wrap">
+<h1>About</h1>
+<p class="k">A2UI Atomic Catalog</p>
+
+<p>The A2UI Atomic Catalog is an open-source, typed UI vocabulary — <strong>474 atoms</strong> —
+that AI agents use to produce real rendered interfaces instead of generating HTML. An agent
+names a component (<code>stat_card</code>, <code>gauge_sla</code>, <code>stepper</code>) and
+passes data; a renderer that already knows that component draws it.</p>
+
+<h2>Why a vocabulary instead of generated markup</h2>
+<p>A model writing HTML has to be correct every time, and its failure mode is markup that is
+subtly wrong in ways nobody notices. A model naming a component from a fixed set can only fail
+by naming something that does not exist — which fails immediately, at the schema boundary.
+Constraining the output makes the system more reliable, not less capable.</p>
+
+<h2>One payload, many surfaces</h2>
+<p>The same payload renders on the web, Google Meet stages, Apps Script web apps, Google Chat
+cards, and MCP Apps hosts such as claude.ai. Per-surface support is declared per atom, so an
+atom that cannot work somewhere says so rather than degrading silently.</p>
+
+<h2>Independence</h2>
+<p>This is an independent, unofficial project. It is not affiliated with, endorsed by, or
+sponsored by Google or Anthropic. A2UI is Google's protocol (official spec at
+<a href="https://a2ui.org">a2ui.org</a>); MCP is Anthropic's. The catalogue is MIT licensed and
+the full source is on <a href="https://github.com/a2uicatalog/a2ui">GitHub</a>.</p>
+
+<h2>Who maintains it</h2>
+<p>Built and maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. Design notes and build
+write-ups are published on the <a href="/blog/">blog</a>.</p>
+
+<h2>Start here</h2>
+<ul>
+<li><a href="/">Browse the catalogue</a> — search and preview every atom live</li>
+<li><a href="/openapi.json">OpenAPI specification</a> — the full API surface</li>
+<li><a href="/llms.txt">llms.txt</a> — the agent-facing overview</li>
+<li><a href="/surfaces/mcp-apps">MCP Apps playground</a> — render atoms in a sandboxed MCP host</li>
+</ul>
+</div>
+<footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
+A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</footer>
+</body>
+</html>

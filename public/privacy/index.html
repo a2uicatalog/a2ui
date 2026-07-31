@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Privacy — A2UI Atomic Catalog</title>
+<meta name="description" content="What the A2UI Atomic Catalog stores, what it does not, and what the MCP server logs.">
+<link rel="canonical" href="https://a2uicatalog.ai/privacy/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Privacy — A2UI Atomic Catalog">
+<meta property="og:description" content="What the A2UI Atomic Catalog stores, what it does not, and what the MCP server logs.">
+<meta property="og:url" content="https://a2uicatalog.ai/privacy/">
+<meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "url": "https://a2uicatalog.ai/privacy/",
+  "name": "Privacy",
+  "publisher": {
+    "@id": "https://a2uicatalog.ai/#org"
+  }
+}
+</script>
+<style>
+:root{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
+ box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}
+h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:2rem 0 .5rem}
+.k{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+ font-weight:600;margin:0 0 26px}
+a{color:#00205B} code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}
+nav.top{max-width:720px;margin:0 auto 14px;font-size:.85rem}
+nav.top a{text-decoration:none;margin-right:14px}
+footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
+@media(prefers-color-scheme:dark){
+ body{background:#0e1116;color:#e6e9ef} .wrap{background:#161a22;box-shadow:none}
+ a{color:#8ab4ff} code{background:#1e2430}}
+</style>
+</head>
+<body>
+<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<div class="wrap">
+<h1>Privacy</h1>
+<p class="k">A2UI Atomic Catalog</p>
+
+<h2>The short version</h2>
+<p>There are no accounts, no sign-up, no advertising and no third-party analytics or tracking
+scripts on this site. Browsing the catalogue requires giving nothing.</p>
+
+<h2>The MCP server</h2>
+<p>The MCP endpoint at <code>a2uicatalog.ai/mcp</code> is unauthenticated and stores nothing
+about who calls it. Rate limits are enforced against a <strong>SHA-256 hash of the client IP</strong>
+with a counter — never the IP itself, and never any payload content. Those counters expire
+automatically (7 days for preview limits, 24 hours for render limits).</p>
+
+<h2>Rendering</h2>
+<p>Surface content passed to <code>preview_url</code> or <code>render_surface</code> is rendered
+and returned; it is not retained for analytics. Payloads sent to <code>publish_url</code> are
+stored deliberately, because that tool exists to mint a shareable link — those entries carry a
+TTL and can be removed at any time with <code>unpublish_url</code>.</p>
+
+<h2>Logs</h2>
+<p>The edge keeps standard operational request logs (path, status, timing) as any web host does.
+Application logs record the tool name and duration of a call, not its content.</p>
+
+<h2>Third parties</h2>
+<p>The site is served by Cloudflare, whose own processing is covered by their privacy terms.
+Atoms that fetch live data do so only through declared sources listed in the catalogue's
+data-source registry — network access is not open-ended.</p>
+
+<h2>Contact</h2>
+<p>Questions about any of this: see the <a href="/contact/">contact page</a>.</p>
+</div>
+<footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
+A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</footer>
+</body>
+</html>

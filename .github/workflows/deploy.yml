@@ -35,6 +35,9 @@ jobs:
       - name: Build OpenAPI spec + llms.txt (counts from spec.json)
         run: python3 scripts/gen_openapi.py
 
+      - name: Build trust pages + agents.md
+        run: python3 scripts/gen_trust_pages.py
+
       - name: Build sitemap.xml from real build output
         run: python3 scripts/gen_sitemap.py
 

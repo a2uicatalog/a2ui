@@ -36,6 +36,11 @@ policy:
     - public/sitemap.xml
     - public/sitemap-pages.xml
     - public/openapi.json
+    - public/brand/**
+    - public/agents.md
+    - public/about/**
+    - public/contact/**
+    - public/privacy/**
     - public/_headers
     - public/_redirects
     - public/.well-known/**
@@ -267,6 +272,15 @@ generators:
       spec.json here, same pattern as gen_compat_matrix/gen_readme_badges.
       Publishing openapi.json at all answers an agent-readiness audit finding
       (0/7 "OpenAPI spec published", 0/6 "developer portal", 2026-07-31).
+  gen_trust_pages:
+    script: scripts/gen_trust_pages.py
+    source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
+    outputs: [public/about/, public/contact/, public/privacy/, public/agents.md]
+    publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
+      audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
+      0/2, and the markdown-fallback checks — /agents.md is served as real
+      text/markdown via public/_headers. Atom counts are read from spec.json,
+      never written as literals.
   gen_renderer_manifest:
     script: scripts/gen_renderer_manifest.py
     source: apps-script-surface/gas-wired-renderer/*.gs + atoms/atom-packs.yaml
