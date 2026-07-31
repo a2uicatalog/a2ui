@@ -1,0 +1,11 @@
+{
+  "issuer": "https://a2uicatalog.ai",
+  "authorization_endpoint": "https://a2uicatalog.ai/mcp-oauth/authorize",
+  "token_endpoint": "https://a2uicatalog.ai/mcp-oauth/token",
+  "response_types_supported": ["code"],
+  "grant_types_supported": ["authorization_code", "refresh_token"],
+  "code_challenge_methods_supported": ["S256"],
+  "token_endpoint_auth_methods_supported": ["client_secret_post", "client_secret_basic"],
+  "service_documentation": "https://a2uicatalog.ai/auth.md",
+  "note": "RFC 8414 metadata for the OAuth 2.0 authorization server behind the AUTHENTICATED MCP endpoint (https://a2uicatalog.ai/mcp-auth). The PUBLIC endpoint at https://a2uicatalog.ai/mcp requires no authentication at all and does not involve this server — see /auth.md before assuming you need a credential. There is deliberately no registration_endpoint: this server does not support RFC 7591 dynamic client registration. Clients are provisioned manually, one client_id per organization; contact the maintainer (https://a2uicatalog.ai/contact/) to request one. scopes_supported is omitted rather than guessed: the server passes a client's requested scope through and echoes it back, so no fixed enum would be accurate. PKCE is supported and, when a code_challenge is sent, only S256 is accepted (plain is refused outright)."
+}

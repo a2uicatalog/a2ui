@@ -45,6 +45,21 @@
   Content-Type: application/linkset+json;profile="https://www.rfc-editor.org/info/rfc9727"
   Access-Control-Allow-Origin: *
 
+# RFC 8414 / RFC 9728 OAuth discovery. CORS matters here specifically: a
+# browser-based agent doing the authorization-code flow fetches these
+# cross-origin before it has any credential.
+/.well-known/oauth-authorization-server
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/.well-known/oauth-protected-resource
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/auth.md
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+
 # RFC 8288 Link headers — site-wide discovery pointers to resources that are
 # genuinely the same on every page (sitemap, the RFC 9727 API catalog, the
 # OpenAPI spec). Per-page pointers (e.g. an atom page's own markdown twin)

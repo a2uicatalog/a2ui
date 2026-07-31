@@ -39,6 +39,7 @@ policy:
     - public/brand/**
     - public/agents.md
     - public/index.md
+    - public/auth.md
     - public/developers/**
     - public/about/**
     - public/contact/**
