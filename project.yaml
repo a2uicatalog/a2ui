@@ -267,7 +267,7 @@ generators:
   gen_openapi:
     script: scripts/gen_openapi.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/openapi.json, public/llms.txt]
+    outputs: [public/openapi.json, public/llms.txt, public/.well-known/api-catalog]
     publish: ci (deploy.yml on push -> Cloudflare). Both documents state the
       catalogue's SIZE, so both were wrong the moment an atom was added while
       they were hand-written — the counts are read from the published

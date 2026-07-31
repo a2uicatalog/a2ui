@@ -934,6 +934,34 @@ def _esc_attr(s):
     return str(s).replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;')
 
 
+def render_page_md(atom):
+    """Markdown twin of an atom's HTML page — same real content (description,
+    surfaces, fields, example payload), no markup. An agent-readiness audit
+    (2026-07-31) found the homepage's .md fallback but no per-content-page
+    twins; this closes that gap the same way index.md already does for the
+    homepage — a real rendering of the same source data, not a stub."""
+    atom_type = atom.get("type", "")
+    desc = atom.get("description") or atom.get("compact_description", "")
+    display_name = atom_type.replace("_", " ").title()
+    surfaces = atom.get("surfaces", {}).get("works_on") or []
+    fields = atom.get("fields") or {}
+
+    lines = [f"# {display_name}", "", desc, ""]
+    if surfaces:
+        lines += ["## Surfaces", "", ", ".join(surfaces), ""]
+    lines += ["## Fields", ""]
+    if fields:
+        lines += ["| Field | Type |", "|---|---|"]
+        for name, ftype in fields.items():
+            lines.append(f"| {name} | {ftype} |")
+    else:
+        lines.append("No configurable fields.")
+    lines += ["", "## Example payload", "", "```json", example_payload(atom), "```", "",
+              f"Live page: https://a2uicatalog.ai/atoms/{atom_type}/",
+              f"Full field contract: https://a2uicatalog.ai/spec.json"]
+    return "\n".join(lines) + "\n"
+
+
 def render_page(atom):
     atom_type    = atom.get("type", "")
     desc         = atom.get("description", "")
@@ -954,6 +982,7 @@ def render_page(atom):
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{desc or compact}">
+  <link rel="alternate" type="text/markdown" href="/atoms/{atom_type}.md">
   <script type="application/ld+json">
   {{
     "@context": "https://schema.org",
@@ -1424,6 +1453,17 @@ def generate_index(atoms):
           "@type": "SearchAction",
           "target": {{ "@type": "EntryPoint", "urlTemplate": "https://a2uicatalog.ai/?q={{search_term_string}}" }},
           "query-input": "required name=search_term_string"
+        }}
+      }},
+      {{
+        "@type": "WebPage",
+        "@id": "https://a2uicatalog.ai/#webpage",
+        "url": "https://a2uicatalog.ai/",
+        "name": "A2UI Atomic Catalog",
+        "isPartOf": {{ "@id": "https://a2uicatalog.ai/#website" }},
+        "speakable": {{
+          "@type": "SpeakableSpecification",
+          "cssSelector": [".tagline", ".sub"]
         }}
       }},
       {{
@@ -3019,6 +3059,10 @@ def main():
         page_dir = OUTPUT_DIR / atom_type
         page_dir.mkdir(parents=True, exist_ok=True)
         (page_dir / "index.html").write_text(render_page(atom))
+        # Flat sibling, not nested (/atoms/<type>.md, not /atoms/<type>/index.md)
+        # — matches the .md-twin convention every other page on this site uses
+        # (a page at /foo/ has its markdown twin at /foo.md).
+        (OUTPUT_DIR / f"{atom_type}.md").write_text(render_page_md(atom))
         count += 1
 
     index_path = ROOT / "public" / "index.html"

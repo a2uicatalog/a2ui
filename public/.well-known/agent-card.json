@@ -1,0 +1,33 @@
+{
+  "name": "A2UI Atomic Catalog",
+  "description": "MCP server for the A2UI Atomic Catalog: an agent composes real rendered interfaces from a fixed vocabulary of typed UI atoms — charts, gauges, steppers, dashboards — across web, Google Meet, Apps Script, Google Chat and MCP Apps hosts, instead of generating raw HTML.",
+  "version": "1.0.0",
+  "url": "https://a2uicatalog.ai",
+  "provider": {
+    "organization": "A2UI Atomic Catalog",
+    "url": "https://a2uicatalog.ai"
+  },
+  "documentationUrl": "https://a2uicatalog.ai/llms.txt",
+  "capabilities": { "streaming": false, "pushNotifications": false, "extendedAgentCard": false },
+  "defaultInputModes": ["application/json"],
+  "defaultOutputModes": ["application/json", "text/plain"],
+  "supportedInterfaces": [
+    { "url": "https://a2uicatalog.ai/mcp", "protocolBinding": "HTTP+JSON", "protocolVersion": "2024-11-05" }
+  ],
+  "skills": [
+    { "id": "list_catalogs", "name": "List catalogs", "description": "List every A2UI catalog with a when-to-use, so an agent can pick the extension catalogs a surface needs.", "tags": ["discovery"] },
+    { "id": "get_catalog", "name": "Get catalog", "description": "Return one catalog's atoms (type + one-line description).", "tags": ["discovery"] },
+    { "id": "required_catalogs", "name": "Required catalogs", "description": "Given an A2UI payload, return the catalog URIs it needs.", "tags": ["discovery"] },
+    { "id": "make_surface_url", "name": "Render to URL", "description": "Render an A2UI payload in the caller's own renderer and return a live URL.", "tags": ["render"] },
+    { "id": "preview_url", "name": "Preview render", "description": "Quick demo render on the public renderer — onboarding only, rate-limited.", "tags": ["render"] },
+    { "id": "render_surface", "name": "Render inline", "description": "Render an A2UI payload as a live interactive view inside an MCP Apps-capable host.", "tags": ["render"] },
+    { "id": "build_multi_page_surface", "name": "Build multi-page surface", "description": "Build a multi-section app from raw title+content sections, auto-split across independently-encoded pages.", "tags": ["compose"] },
+    { "id": "distill_document", "name": "Distill document", "description": "Compile a training.md/roadmap markdown document into a live interactive app via a deterministic parser, no model involved.", "tags": ["compose"] },
+    { "id": "emit_deployment", "name": "Graduate to standing app", "description": "Emit a deterministic recipe to deploy a tested surface as a standing app in the caller's own Google Apps Script account.", "tags": ["deploy"] },
+    { "id": "emit_training_runbook", "name": "Emit training runbook", "description": "Build a multi-lesson training surface as one page with real tab navigation between lessons.", "tags": ["compose"] },
+    { "id": "emit_runbook_surface", "name": "Emit runbook surface", "description": "Stamp content through a declared, pre-authored composition (e.g. a study/curriculum hub) — zero layout decisions required.", "tags": ["compose"] },
+    { "id": "publish_url", "name": "Publish short link", "description": "Store a payload server-side (opt-in, one-week retention) and return a short shareable link.", "tags": ["publish"] },
+    { "id": "unpublish_url", "name": "Unpublish link", "description": "Delete a published short link before its retention expires.", "tags": ["publish"] }
+  ],
+  "note": "This is a static discovery pointer, kept in sync by hand — not build-time generated from the live server. GET https://a2uicatalog.ai/mcp with a JSON-RPC tools/list call returns the live, authoritative tool list (including identify_model and render_ping, omitted above as internal/diagnostic). This describes an MCP server, not an A2A-protocol agent: supportedInterfaces.protocolBinding names the wire format (JSON-RPC over HTTP) honestly, not a claim of A2A JSON-RPC method conformance."
+}

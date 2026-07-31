@@ -301,6 +301,33 @@ Maintained by Curtis Krygier — https://www.linkedin.com/in/curtiskrygier
 """
 
 
+DEVELOPERS_LLMS_TXT = """# A2UI Atomic Catalog — Developers
+
+> Scoped context for integration questions only. For the full site overview, see
+> https://a2uicatalog.ai/llms.txt instead.
+
+## Connect
+
+- MCP server: https://a2uicatalog.ai/mcp — no API key, no signup. `POST` speaks JSON-RPC 2.0
+  (Streamable HTTP). `GET` with `Accept: application/json` returns a live server descriptor
+  (every tool, current rate limits).
+- REST: `GET /spec.json` (full atom vocabulary), `GET /catalogue/atoms-json-schema.json`
+  (strict per-atom JSON Schema for constrained decoding), `POST /api/compose` (natural
+  language to atom blocks).
+
+## Reference
+
+- OpenAPI 3.1 specification: https://a2uicatalog.ai/openapi.json
+- Auth & rate limits (the real per-tool numbers): https://a2uicatalog.ai/.well-known/agent-auth.md
+- Self-host your own renderer (4 commands, no cost beyond a Google account):
+  https://a2uicatalog.ai/developers/
+
+## Terms
+
+Free, MIT licensed, no signup. Source: https://github.com/a2uicatalog/a2ui
+"""
+
+
 def main():
     n = _n()
     for slug, p in pages(n).items():
@@ -343,6 +370,17 @@ Maintained by Curtis Krygier — {LINKEDIN}
     with open(os.path.join(PUBLIC, "index.md"), "w", encoding="utf-8") as f:
         f.write(index_md)
     print("wrote public/index.md")
+
+    # Modular llms.txt (2026-07-31): a section-scoped context file so an
+    # agent working an integration question fetches ~700 bytes instead of
+    # the whole-site llms.txt. Real subset of agents.md/developers content,
+    # not a duplicate — see DEVELOPERS_LLMS_TXT's header note pointing back
+    # to the full-site doc.
+    dev_dir = os.path.join(PUBLIC, "developers")
+    os.makedirs(dev_dir, exist_ok=True)
+    with open(os.path.join(dev_dir, "llms.txt"), "w", encoding="utf-8") as f:
+        f.write(DEVELOPERS_LLMS_TXT)
+    print("wrote public/developers/llms.txt")
 
 
 if __name__ == "__main__":

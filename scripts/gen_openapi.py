@@ -397,6 +397,36 @@ Do not use it for plain prose answers, for data retrieval (it renders data, it d
 """
 
 
+def build_api_catalog():
+    """RFC 9727 api-catalog: a single Linkset document (application/linkset+json)
+    enumerating every public API surface, so an agent finds them all from one
+    well-known URL instead of guessing paths. Real RFC, verified against
+    datatracker.ietf.org/doc/html/rfc9727 before implementing (2026-07-31)."""
+    def item(href, rel_type, title):
+        return {"href": href, "type": rel_type, "title": title}
+    return {
+        "linkset": [{
+            "anchor": f"{BASE}/",
+            "describedby": [item(f"{BASE}/openapi.json", "application/json", "OpenAPI 3.1 specification")],
+            "service-desc": [
+                item(f"{BASE}/openapi.json", "application/json", "OpenAPI 3.1 specification"),
+                item(f"{BASE}/spec.json", "application/json", "Full atom vocabulary (machine-readable catalog)"),
+            ],
+            "item": [
+                item(f"{BASE}/mcp", "application/json", "MCP server (JSON-RPC 2.0, Streamable HTTP)"),
+                item(f"{BASE}/ask", "application/json", "NLWeb natural-language catalog search"),
+                item(f"{BASE}/api/compose", "application/json", "Natural language to atom blocks"),
+                item(f"{BASE}/api/data/{{source}}", "application/json", "Declared data-source proxy"),
+                item(f"{BASE}/catalogue/index.json", "application/json", "Catalog selection index"),
+                item(f"{BASE}/catalogue/atoms-json-schema.json", "application/schema+json", "Strict per-atom JSON Schema"),
+                item(f"{BASE}/.well-known/ai-catalog.json", "application/json", "ARD discovery catalog"),
+                item(f"{BASE}/.well-known/mcp.json", "application/json", "MCP discovery pointer"),
+                item(f"{BASE}/.well-known/agent-card.json", "application/json", "A2A agent card"),
+            ],
+        }],
+    }
+
+
 def main():
     n_atoms, n_surfaces, n_mcp = _counts()
 
@@ -410,6 +440,14 @@ def main():
     with open(out2, "w", encoding="utf-8") as f:
         f.write(LLMS_TXT.format(n_atoms=n_atoms, base=BASE))
     print(f"wrote {out2}")
+
+    wk = os.path.join(PUBLIC, ".well-known")
+    os.makedirs(wk, exist_ok=True)
+    out3 = os.path.join(wk, "api-catalog")
+    with open(out3, "w", encoding="utf-8") as f:
+        json.dump(build_api_catalog(), f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    print(f"wrote {out3}")
 
 
 if __name__ == "__main__":

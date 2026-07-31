@@ -20,10 +20,41 @@
   Content-Type: text/plain; charset=utf-8
   Access-Control-Allow-Origin: *
 
+/developers/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+
 /index.md
   Content-Type: text/markdown; charset=utf-8
   Access-Control-Allow-Origin: *
 
+/atoms/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
 /.well-known/mcp.json
   Content-Type: application/json; charset=utf-8
   Access-Control-Allow-Origin: *
+
+/.well-known/agent-card.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/.well-known/api-catalog
+  Content-Type: application/linkset+json;profile="https://www.rfc-editor.org/info/rfc9727"
+  Access-Control-Allow-Origin: *
+
+# RFC 8288 Link headers — site-wide discovery pointers to resources that are
+# genuinely the same on every page (sitemap, the RFC 9727 API catalog, the
+# OpenAPI spec). Per-page pointers (e.g. an atom page's own markdown twin)
+# are NOT here: Cloudflare Pages' _headers format can't template a per-path
+# value into a header, and hand-writing one block per atom page (474 of
+# them) would be an unmaintainable duplicate of the URL structure already
+# expressed correctly in the sitemap and each page's own <head>. Those use a
+# real <link rel="alternate"> tag instead — see generate_atom_pages.py.
+/*
+  Link: <https://a2uicatalog.ai/sitemap.xml>; rel="sitemap", <https://a2uicatalog.ai/.well-known/api-catalog>; rel="service-desc"; type="application/linkset+json", <https://a2uicatalog.ai/openapi.json>; rel="service-desc"; type="application/json"
+
+/
+  Link: <https://a2uicatalog.ai/index.md>; rel="alternate"; type="text/markdown"

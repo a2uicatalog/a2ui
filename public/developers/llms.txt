@@ -1,0 +1,24 @@
+# A2UI Atomic Catalog — Developers
+
+> Scoped context for integration questions only. For the full site overview, see
+> https://a2uicatalog.ai/llms.txt instead.
+
+## Connect
+
+- MCP server: https://a2uicatalog.ai/mcp — no API key, no signup. `POST` speaks JSON-RPC 2.0
+  (Streamable HTTP). `GET` with `Accept: application/json` returns a live server descriptor
+  (every tool, current rate limits).
+- REST: `GET /spec.json` (full atom vocabulary), `GET /catalogue/atoms-json-schema.json`
+  (strict per-atom JSON Schema for constrained decoding), `POST /api/compose` (natural
+  language to atom blocks).
+
+## Reference
+
+- OpenAPI 3.1 specification: https://a2uicatalog.ai/openapi.json
+- Auth & rate limits (the real per-tool numbers): https://a2uicatalog.ai/.well-known/agent-auth.md
+- Self-host your own renderer (4 commands, no cost beyond a Google account):
+  https://a2uicatalog.ai/developers/
+
+## Terms
+
+Free, MIT licensed, no signup. Source: https://github.com/a2uicatalog/a2ui
