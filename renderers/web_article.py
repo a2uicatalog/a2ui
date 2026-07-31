@@ -3579,7 +3579,49 @@ def _render_chartjs_line(b: dict) -> str:
     """
 
 def _render_data_table_sortable(b: dict) -> str:
-    return '<table style="width:100%;margin:1rem 0;border-collapse:collapse;"><thead><tr style="background:#f3f4f6;"><th style="padding:8px;text-align:left;border:1px solid #e5e7eb;">Header 1</th><th style="padding:8px;text-align:left;border:1px solid #e5e7eb;">Header 2</th></tr></thead><tbody><tr><td style="padding:8px;border:1px solid #e5e7eb;">Data 1</td><td style="padding:8px;border:1px solid #e5e7eb;">Data 2</td></tr></tbody></table>'
+    """Was a hardcoded "Header 1 / Data 1" placeholder that ignored its block
+    entirely — so an agent composing this atom with real data silently got
+    fake output, on the live site included (found 2026-07-31 by building a
+    dashboard out of catalogue atoms; the table rendered someone else's
+    example data).
+
+    Accepts BOTH shapes on purpose, because three sources disagreed:
+      * spec.json documents  headers: [str]        + rows: [[cell, ...]]
+      * the GAS renderer     columns: [str|{key,label}] + rows: [{key: val}]
+      * this function        implemented neither
+    Rather than pick a winner and break whichever callers exist, both are
+    read. Header inference from dict keys mirrors the GAS behaviour."""
+    cols = b.get("columns") or b.get("headers") or []
+    rows = b.get("rows") or []
+    cols = [c if isinstance(c, dict) else {"key": c, "label": c} for c in cols]
+    if not cols and rows and isinstance(rows[0], dict):
+        cols = [{"key": k, "label": k} for k in rows[0].keys()]
+    if not cols and rows and isinstance(rows[0], (list, tuple)):
+        cols = [{"key": i, "label": f"Column {i + 1}"} for i in range(len(rows[0]))]
+    if not cols:
+        return '<div style="color:#6b7280;font-style:italic;margin:1rem 0;">No columns defined</div>'
+
+    pad = "6px 10px" if b.get("compact") else "8px 12px"
+    th = "".join(f'<th style="padding:{pad};text-align:left;border:1px solid #e5e7eb;'
+                 f'font-weight:600;">{_esc(c.get("label", c.get("key")))}</th>' for c in cols)
+    body = ""
+    for i, r in enumerate(rows):
+        bg = "background:#fafafa;" if (b.get("striped") and i % 2) else ""
+        if isinstance(r, dict):
+            cells = [r.get(c.get("key"), "") for c in cols]
+        elif isinstance(r, (list, tuple)):
+            cells = list(r) + [""] * (len(cols) - len(r))
+        else:
+            cells = [r] + [""] * (len(cols) - 1)
+        body += f'<tr style="{bg}">' + "".join(
+            f'<td style="padding:{pad};border:1px solid #e5e7eb;">{_esc(v)}</td>'
+            for v in cells[:len(cols)]) + "</tr>"
+
+    title = (f'<div style="font-weight:600;margin:1rem 0 .4rem;">{_esc(b["title"])}</div>'
+             if b.get("title") else "")
+    return (f'{title}<div style="overflow-x:auto;"><table style="width:100%;margin:0 0 1rem;'
+            f'border-collapse:collapse;font-size:.9rem;"><thead><tr style="background:#f3f4f6;">'
+            f'{th}</tr></thead><tbody>{body}</tbody></table></div>')
 
 def _render_metric_comparison_card(b: dict) -> str:
     label    = b.get("label", "Metric")
