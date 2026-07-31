@@ -330,6 +330,42 @@ Free, MIT licensed, no signup. Source: https://github.com/a2uicatalog/a2ui
 """
 
 
+SURFACES_LLMS_TXT = """# A2UI Atomic Catalog — Surfaces
+
+> Scoped context: which rendering surfaces exist and how they differ. For the full
+> site overview see https://a2uicatalog.ai/llms.txt; for integration mechanics see
+> https://a2uicatalog.ai/developers/llms.txt.
+
+## The surfaces
+
+One payload, several renderers. Per-surface support is declared PER ATOM in
+`spec.json` (`surfaces.works_on`) — an atom that cannot render somewhere says so
+rather than degrading silently. Always check that field before composing for a
+specific surface.
+
+- `web` — the reference renderer; the widest support.
+- `mcp-apps` — renders inline inside MCP Apps hosts (e.g. claude.ai) via `render_surface`.
+- `google-meet-stage` — Meet add-on stage.
+- `google-apps-script-web` — self-hosted Apps Script web app; deploy your own for
+  unmetered rendering.
+- `google-apps-script-side-panel` — Apps Script side panel.
+- `google-chat` — Chat cards; visuals arrive as server-rendered images (Chat's own
+  widget set cannot express custom charts or layout).
+- `email` / `pdf` — static print channels; no scripting, no interactivity.
+
+## Choosing one
+
+Ask what the host can actually display. MCP Apps hosts render inline. Everything
+else takes a link (`preview_url`, or `make_surface_url` against your own renderer).
+Static channels (`email`, `pdf`) need the image/print path, not interactive atoms.
+
+## Reference
+
+- Per-atom surface support: https://a2uicatalog.ai/spec.json
+- Live playground: https://a2uicatalog.ai/surfaces/mcp-apps
+"""
+
+
 def main():
     n = _n()
     for slug, p in pages(n).items():
@@ -383,6 +419,15 @@ Maintained by Curtis Krygier — {LINKEDIN}
     with open(os.path.join(dev_dir, "llms.txt"), "w", encoding="utf-8") as f:
         f.write(DEVELOPERS_LLMS_TXT)
     print("wrote public/developers/llms.txt")
+
+    # Second scoped section: "which surface do I target?" is a genuinely
+    # different question from "how do I integrate?", and the answer is long
+    # enough that folding it into the developers file would bury both.
+    surf_dir = os.path.join(PUBLIC, "surfaces")
+    os.makedirs(surf_dir, exist_ok=True)
+    with open(os.path.join(surf_dir, "llms.txt"), "w", encoding="utf-8") as f:
+        f.write(SURFACES_LLMS_TXT)
+    print("wrote public/surfaces/llms.txt")
 
 
 if __name__ == "__main__":

@@ -446,6 +446,56 @@ def build_api_catalog():
     }
 
 
+def build_agent_view(n_atoms, n_surfaces):
+    """The ?mode=agent payload: a structured summary of what this site offers an
+    agent, instead of the marketing homepage. Generated (not hand-written) so the
+    atom count comes from spec.json like every other count on the site — the
+    homepage Worker just serves this file, keeping the Worker itself trivial and
+    stateless."""
+    return {
+        "name": "A2UI Atomic Catalog",
+        "description": (
+            f"{n_atoms} typed UI atoms an AI agent composes into real rendered "
+            f"interfaces across {n_surfaces} surfaces, instead of generating HTML."
+        ),
+        "authentication": {
+            "required": False,
+            "detail": "No API key, no signup. See /auth.md for the optional enterprise OAuth path.",
+        },
+        "primary_interface": {
+            "protocol": "mcp",
+            "transport": "streamable-http",
+            "endpoint": f"{BASE}/mcp",
+            "descriptor": f"GET {BASE}/mcp with Accept: application/json",
+        },
+        "endpoints": {
+            "spec": f"{BASE}/spec.json",
+            "json_schema": f"{BASE}/catalogue/atoms-json-schema.json",
+            "catalog_index": f"{BASE}/catalogue/index.json",
+            "nlweb_ask": f"{BASE}/ask",
+            "compose": f"{BASE}/api/compose",
+        },
+        "documentation": {
+            "openapi": f"{BASE}/openapi.json",
+            "llms": f"{BASE}/llms.txt",
+            "agents": f"{BASE}/agents.md",
+            "auth": f"{BASE}/auth.md",
+            "versioning": f"{BASE}/versioning.md",
+            "api_catalog": f"{BASE}/.well-known/api-catalog",
+            "agent_card": f"{BASE}/.well-known/agent-card.json",
+        },
+        "capabilities": [
+            "Browse a typed UI vocabulary and read real field contracts",
+            "Compose a payload and render it inline (MCP Apps hosts) or as a shareable link",
+            "Natural-language search over the catalog (/ask)",
+            "Self-host the renderer for unlimited, unmetered rendering",
+        ],
+        "versioning": {"header": "X-API-Version", "current": "1", "policy": f"{BASE}/versioning.md"},
+        "license": "MIT",
+        "source": "https://github.com/a2uicatalog/a2ui",
+    }
+
+
 def main():
     n_atoms, n_surfaces, n_mcp = _counts()
 
@@ -467,6 +517,12 @@ def main():
         json.dump(build_api_catalog(), f, indent=2, ensure_ascii=False)
         f.write("\n")
     print(f"wrote {out3}")
+
+    out4 = os.path.join(PUBLIC, "agent-view.json")
+    with open(out4, "w", encoding="utf-8") as f:
+        json.dump(build_agent_view(n_atoms, n_surfaces), f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    print(f"wrote {out4}")
 
 
 if __name__ == "__main__":

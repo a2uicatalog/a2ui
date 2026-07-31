@@ -52,6 +52,7 @@ policy:
     - public/surfaces/**
     - public/renderer/**
     - public/spec.json
+    - public/agent-view.json
     - public/runbooks/**
     - public/catalogue/**
     - public/vendors/**
@@ -269,7 +270,7 @@ generators:
   gen_openapi:
     script: scripts/gen_openapi.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/openapi.json, public/llms.txt, public/.well-known/api-catalog]
+    outputs: [public/openapi.json, public/llms.txt, public/.well-known/api-catalog, public/agent-view.json]
     publish: ci (deploy.yml on push -> Cloudflare). Both documents state the
       catalogue's SIZE, so both were wrong the moment an atom was added while
       they were hand-written — the counts are read from the published
@@ -279,7 +280,7 @@ generators:
   gen_trust_pages:
     script: scripts/gen_trust_pages.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/developers/, public/about/, public/contact/, public/privacy/, public/agents.md, public/index.md]
+    outputs: [public/developers/, public/about/, public/contact/, public/privacy/, public/agents.md, public/index.md, public/surfaces/llms.txt]
     publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
       audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
       0/2, and the markdown-fallback checks — /agents.md is served as real

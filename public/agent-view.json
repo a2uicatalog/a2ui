@@ -1,0 +1,43 @@
+{
+  "name": "A2UI Atomic Catalog",
+  "description": "474 typed UI atoms an AI agent composes into real rendered interfaces across 8 surfaces, instead of generating HTML.",
+  "authentication": {
+    "required": false,
+    "detail": "No API key, no signup. See /auth.md for the optional enterprise OAuth path."
+  },
+  "primary_interface": {
+    "protocol": "mcp",
+    "transport": "streamable-http",
+    "endpoint": "https://a2uicatalog.ai/mcp",
+    "descriptor": "GET https://a2uicatalog.ai/mcp with Accept: application/json"
+  },
+  "endpoints": {
+    "spec": "https://a2uicatalog.ai/spec.json",
+    "json_schema": "https://a2uicatalog.ai/catalogue/atoms-json-schema.json",
+    "catalog_index": "https://a2uicatalog.ai/catalogue/index.json",
+    "nlweb_ask": "https://a2uicatalog.ai/ask",
+    "compose": "https://a2uicatalog.ai/api/compose"
+  },
+  "documentation": {
+    "openapi": "https://a2uicatalog.ai/openapi.json",
+    "llms": "https://a2uicatalog.ai/llms.txt",
+    "agents": "https://a2uicatalog.ai/agents.md",
+    "auth": "https://a2uicatalog.ai/auth.md",
+    "versioning": "https://a2uicatalog.ai/versioning.md",
+    "api_catalog": "https://a2uicatalog.ai/.well-known/api-catalog",
+    "agent_card": "https://a2uicatalog.ai/.well-known/agent-card.json"
+  },
+  "capabilities": [
+    "Browse a typed UI vocabulary and read real field contracts",
+    "Compose a payload and render it inline (MCP Apps hosts) or as a shareable link",
+    "Natural-language search over the catalog (/ask)",
+    "Self-host the renderer for unlimited, unmetered rendering"
+  ],
+  "versioning": {
+    "header": "X-API-Version",
+    "current": "1",
+    "policy": "https://a2uicatalog.ai/versioning.md"
+  },
+  "license": "MIT",
+  "source": "https://github.com/a2uicatalog/a2ui"
+}
