@@ -187,6 +187,42 @@ def _paths():
                         "content": {"application/json": {"schema": {"type": "object"}}}},
                 "404": {"$ref": "#/components/responses/NotFound"},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
+        "/ask": {
+            "get": {
+                "tags": ["catalog"], "operationId": "askCatalogGet",
+                "summary": "NLWeb natural-language catalog search (GET)",
+                "description": ("NLWeb protocol (nlweb.ai) endpoint over the atom catalog. Ask a "
+                                "plain-English question — \"what atom do I use for a countdown "
+                                "timer?\" — and get back ranked, typed catalog matches instead of "
+                                "having to scrape HTML. Reuses the same embedding search /api/compose "
+                                "uses to pick relevant atoms."),
+                "parameters": [
+                    {"name": "query", "in": "query", "required": True, "schema": {"type": "string"}},
+                    {"name": "mode", "in": "query", "required": False, "schema": {"type": "string"},
+                     "description": "Comma-separated: list (default), summarize, generate."},
+                    {"name": "site", "in": "query", "required": False, "schema": {"type": "string"}},
+                    {"name": "query_id", "in": "query", "required": False, "schema": {"type": "string"}},
+                    {"name": "Accept", "in": "header", "required": False, "schema": {"type": "string"},
+                     "description": "text/event-stream requests an SSE stream (start/result/complete events)."}],
+                "responses": {
+                    "200": {"description": "Search results",
+                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NLWebAskResponse"}}}},
+                    "400": {"$ref": "#/components/responses/NotFound"},
+                    "429": {"$ref": "#/components/responses/RateLimited"}}},
+            "post": {
+                "tags": ["catalog"], "operationId": "askCatalogPost",
+                "summary": "NLWeb natural-language catalog search (POST)",
+                "description": "Same as GET /ask; accepts the flat REST body or the fuller NLWeb protocol's nested query/prefer/meta shape.",
+                "requestBody": {"required": True, "content": {"application/json": {
+                    "schema": {"$ref": "#/components/schemas/NLWebAskRequest"},
+                    "example": {"query": "what atom do I use for a countdown timer?", "mode": "list,summarize"}}}},
+                "responses": {
+                    "200": {"description": "Search results",
+                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NLWebAskResponse"}}}},
+                    "400": {"$ref": "#/components/responses/NotFound"},
+                    "429": {"$ref": "#/components/responses/RateLimited"}}}},
         "/s/{id}": {"get": {
             "tags": ["mcp"], "operationId": "getPublishedSurface",
             "summary": "Published short link",
@@ -297,6 +333,36 @@ def _components():
                     "catalogId": {"type": "string"}, "displayName": {"type": "string"},
                     "atomCount": {"type": "integer"},
                     "atoms": {"type": "array", "items": {"type": "object"}}}},
+            "NLWebAskRequest": {
+                "type": "object",
+                "description": "Accepts either the flat REST fields below, OR query as a nested {\"text\": \"...\"} object per the fuller NLWeb protocol spec.",
+                "required": ["query"],
+                "properties": {
+                    "query": {"oneOf": [{"type": "string"}, {"type": "object", "properties": {
+                        "text": {"type": "string"}}}]},
+                    "site": {"type": "string"}, "mode": {"type": "string",
+                        "description": "Comma-separated: list, summarize, generate."},
+                    "streaming": {"type": "boolean"}, "query_id": {"type": "string"}}},
+            "NLWebAskResult": {
+                "type": "object",
+                "description": "One catalog match, schema.org-flavored per the NLWeb spec.",
+                "properties": {
+                    "@type": {"type": "string", "examples": ["Thing", "SearchSummary"]},
+                    "url": {"type": "string", "format": "uri"},
+                    "name": {"type": "string"}, "site": {"type": "string"},
+                    "score": {"type": "number"}, "description": {"type": "string"},
+                    "schema_object": {"type": "object", "description": "The full spec.json atom entry."}}},
+            "NLWebAskResponse": {
+                "type": "object",
+                "properties": {
+                    "query_id": {"type": "string"},
+                    "results": {"type": "array", "items": {"$ref": "#/components/schemas/NLWebAskResult"}},
+                    "generated": {"type": "array", "items": {"$ref": "#/components/schemas/AtomBlock"},
+                                 "description": "Present only for mode=generate: composed atom blocks answering the query."},
+                    "routing": {"type": "string", "examples": ["embed", "chat"]},
+                    "_meta": {"type": "object", "properties": {
+                        "response_type": {"type": "string", "const": "answer"},
+                        "version": {"type": "string"}}}}},
         },
     }
 
@@ -308,7 +374,8 @@ LLMS_TXT = """# A2UI Atomic Catalog
 ## Integrate
 
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
-- [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose and data-proxy routes.
+- [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
+- [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.

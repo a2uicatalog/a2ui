@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.0",
+  "type": "a2ui_wired_surface",
+  "title": "Expense Requests",
+  "theme": "light",
+
+  "app": {
+    "id": "expenses-simple",
+    "name": "Expense Request",
+    "scope": "single_user",
+    "lifecycle": "persistent",
+    "auth": { "mode": "publisher" },
+    "storage": { "type": "my_drive", "sheet": "A2UI_Expenses" },
+    "data": { "isolation": "none" },
+    "access": "workspace_only"
+  },
+
+  "state_primitives": [
+    { "id": "amount_mem",   "primitive": "ValueStore", "props": { "initialValue": "" } },
+    { "id": "category_mem", "primitive": "ValueStore", "props": { "initialValue": "" } },
+    { "id": "desc_mem",     "primitive": "ValueStore", "props": { "initialValue": "" } },
+    { "id": "search_mem",   "primitive": "ValueStore", "props": { "initialValue": "" } },
+    {
+      "id": "expense_filter",
+      "primitive": "ArrayFilter",
+      "props": { "filterKey": "description", "source": [] },
+      "wire": { "query": "#search_mem.value" }
+    },
+    {
+      "id": "amount_check",
+      "primitive": "StringValidator",
+      "props": {
+        "source": "#amount_mem.value",
+        "pattern": "^\\d+(\\.\\d{0,2})?$",
+        "errorMessage": "Enter a valid amount, e.g. 25.50"
+      }
+    }
+  ],
+
+  "actions": [
+    {
+      "id": "load_expenses",
+      "type": "gas:sheet_query",
+      "trigger": "onLoad",
+      "props": { "sheet": "A2UI_Expenses" },
+      "wire": { "result": "#expense_filter.source" }
+    },
+    {
+      "id": "submit_expense",
+      "type": "gas:sheet_append",
+      "props": {
+        "sheet": "A2UI_Expenses",
+        "collect": {
+          "Date":        "{{now}}",
+          "Category":    "#category_mem.value",
+          "Description": "#desc_mem.value",
+          "Amount":      "#amount_mem.value"
+        }
+      },
+      "onSuccess": ["load_expenses"]
+    }
+  ],
+
+  "layout": [
+    {
+      "atom": "heading",
+      "props": { "text": "Expense Requests", "level": 2 }
+    },
+    {
+      "atom": "text_input",
+      "id": "search-field",
+      "props": { "label": "Search expenses", "placeholder": "e.g. Travel" },
+      "wire": { "onChange": "#search_mem.setValue" }
+    },
+    {
+      "atom": "data_table",
+      "id": "expense-table",
+      "props": {
+        "columns": ["date", "category", "description", "amount"],
+        "emptyMessage": "No expenses yet. Submit one below."
+      },
+      "wire": { "rows": "#expense_filter.output" }
+    },
+    {
+      "atom": "heading",
+      "props": { "text": "New Expense", "level": 3 }
+    },
+    {
+      "atom": "text_input",
+      "id": "category-field",
+      "props": { "label": "Category", "placeholder": "e.g. Travel, Software" },
+      "wire": { "onChange": "#category_mem.setValue" }
+    },
+    {
+      "atom": "text_input",
+      "id": "desc-field",
+      "props": { "label": "Description", "placeholder": "e.g. Train to London" },
+      "wire": { "onChange": "#desc_mem.setValue" }
+    },
+    {
+      "atom": "text_input",
+      "id": "amount-field",
+      "props": { "label": "Amount (£)", "placeholder": "e.g. 25.50" },
+      "wire": { "onChange": "#amount_mem.setValue" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "amount-error",
+      "props": { "type": "warning", "text": "Enter a valid amount, e.g. 25.50" },
+      "wire": { "visible": "#amount_check.isInvalid" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "submit-pending",
+      "props": { "type": "info", "text": "Submitting…" },
+      "wire": { "visible": "#submit_expense.isPending" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "submit-success",
+      "props": { "type": "success", "text": "Expense submitted. Table updated." },
+      "wire": { "visible": "#submit_expense.isSuccess" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "submit-error",
+      "props": { "type": "error", "text": "Submit failed." },
+      "wire": { "visible": "#submit_expense.isError", "text": "#submit_expense.error" }
+    },
+    {
+      "atom": "ripple_button",
+      "id": "submit-btn",
+      "props": { "label": "Submit Expense", "accent": "#6366f1" },
+      "wire": {
+        "onClick":  "#submit_expense.run",
+        "disabled": "#amount_check.isNotValid"
+      }
+    }
+  ]
+}

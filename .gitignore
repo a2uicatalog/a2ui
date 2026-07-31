@@ -50,10 +50,10 @@ apps-script-surface/gas-trade-bot/
 /apps-script-surface/gas-trade-bot
 mcp/node_modules/
 mcp/.env
-
-# MCP server — deliberately NOT published (closed-source-for-launch decision 2026-07-04/05).
-# Stripped from unpushed history via filter-repo 2026-07-05; lives on disk only.
-mcp/
+# @a2ui/mcp (mcp/) was closed-source-for-launch (2026-07-04/05, scrubbed from
+# history via filter-repo 2026-07-05) — that was launch-timing caution, not a
+# lasting decision; confirmed with Curtis 2026-07-31 it's fine to open and
+# publish to npm now that the hosted catalog/MCP server has shipped.
 
 # ── key-shaped files: never track, regardless of location ────────────────────
 # Google service-account keys, PEM/P12 material, OAuth client secrets.

@@ -349,6 +349,128 @@
         }
       }
     },
+    "/ask": {
+      "get": {
+        "tags": [
+          "catalog"
+        ],
+        "operationId": "askCatalogGet",
+        "summary": "NLWeb natural-language catalog search (GET)",
+        "description": "NLWeb protocol (nlweb.ai) endpoint over the atom catalog. Ask a plain-English question — \"what atom do I use for a countdown timer?\" — and get back ranked, typed catalog matches instead of having to scrape HTML. Reuses the same embedding search /api/compose uses to pick relevant atoms.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated: list (default), summarize, generate."
+          },
+          {
+            "name": "site",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "text/event-stream requests an SSE stream (start/result/complete events)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/ApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NLWebAskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "catalog"
+        ],
+        "operationId": "askCatalogPost",
+        "summary": "NLWeb natural-language catalog search (POST)",
+        "description": "Same as GET /ask; accepts the flat REST body or the fuller NLWeb protocol's nested query/prefer/meta shape.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NLWebAskRequest"
+              },
+              "example": {
+                "query": "what atom do I use for a countdown timer?",
+                "mode": "list,summarize"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/ApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NLWebAskResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
     "/s/{id}": {
       "get": {
         "tags": [
@@ -677,6 +799,116 @@
             "type": "array",
             "items": {
               "type": "object"
+            }
+          }
+        }
+      },
+      "NLWebAskRequest": {
+        "type": "object",
+        "description": "Accepts either the flat REST fields below, OR query as a nested {\"text\": \"...\"} object per the fuller NLWeb protocol spec.",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          },
+          "site": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "description": "Comma-separated: list, summarize, generate."
+          },
+          "streaming": {
+            "type": "boolean"
+          },
+          "query_id": {
+            "type": "string"
+          }
+        }
+      },
+      "NLWebAskResult": {
+        "type": "object",
+        "description": "One catalog match, schema.org-flavored per the NLWeb spec.",
+        "properties": {
+          "@type": {
+            "type": "string",
+            "examples": [
+              "Thing",
+              "SearchSummary"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string"
+          },
+          "site": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "schema_object": {
+            "type": "object",
+            "description": "The full spec.json atom entry."
+          }
+        }
+      },
+      "NLWebAskResponse": {
+        "type": "object",
+        "properties": {
+          "query_id": {
+            "type": "string"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NLWebAskResult"
+            }
+          },
+          "generated": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtomBlock"
+            },
+            "description": "Present only for mode=generate: composed atom blocks answering the query."
+          },
+          "routing": {
+            "type": "string",
+            "examples": [
+              "embed",
+              "chat"
+            ]
+          },
+          "_meta": {
+            "type": "object",
+            "properties": {
+              "response_type": {
+                "type": "string",
+                "const": "answer"
+              },
+              "version": {
+                "type": "string"
+              }
             }
           }
         }
