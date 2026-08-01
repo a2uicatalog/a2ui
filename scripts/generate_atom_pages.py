@@ -1495,9 +1495,9 @@ def generate_index(atoms):
   <main class="wrap">
   <header class="hero">
     <div class="halo"></div>
-    <a class="announce" href="/blog/004-mcp-apps-inside-claude-ai/">
+    <a class="announce" href="/blog/006-mcp-apps-inside-chatgpt/">
       <span class="announce-tag">NEW</span>
-      <span class="announce-text">Render this catalog directly inside Claude.ai — add
+      <span class="announce-text">Now rendering inside ChatGPT as well as Claude — add
         <code>a2uicatalog.ai/mcp</code> as a connector</span>
       <span class="announce-go" aria-hidden="true">&rarr;</span>
     </a>
