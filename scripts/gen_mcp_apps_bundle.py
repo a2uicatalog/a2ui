@@ -214,8 +214,12 @@ HANDSHAKE = """
   function _syncDisplayModeClass() {
     var el = document.documentElement;
     if (!el || !el.classList) return;
-    el.classList.toggle('a2ui-inline',
-      (_hostContext.displayMode || 'inline') === 'inline');
+    // Only clamp on an EXPLICIT inline report. Defaulting unknown -> inline
+    // (the 2026-08-01 first cut) changes behaviour on every host that simply
+    // never sends displayMode, which is how this clamped Claude's deck to a
+    // sliver when nothing was wrong there. Absence of information must not
+    // change rendering: unknown keeps the pre-existing full-height path.
+    el.classList.toggle('a2ui-inline', _hostContext.displayMode === 'inline');
   }
   function _maybeRequestFullscreen(payload) {
     // Classic blocks dialect OR the v1.0 envelope's createSurface.components

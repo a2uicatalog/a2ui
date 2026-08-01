@@ -73,8 +73,15 @@ _RENDERERS['airspace_command_deck'] = function(b) {
     // html.a2ui-inline is set by the bundle handshake from
     // _hostContext.displayMode. No JS change needed here — the canvas
     // re-syncs from offsetWidth/offsetHeight and recentres CX/CY on resize.
+    // FIXED PIXELS, never vh. An MCP Apps card auto-fits its iframe height to
+    // content, so inside it `vh` resolves against a height that is itself
+    // derived from content height -- a degenerate feedback loop that collapses
+    // the element toward zero. (First seen as the hub-min-height-100vh loop
+    // behind the view/2 bump; reintroduced here on 2026-08-01 by "fixing"
+    // 100vh with min(70vh,560px), which renders as a barely-visible sliver in
+    // Claude. Viewport units cannot appear anywhere in the inline path.)
     'html.a2ui-inline{overflow:auto!important;}' +
-    'html.a2ui-inline .asw-acd-fs{height:min(70vh,560px)!important;}' +
+    'html.a2ui-inline .asw-acd-fs{height:560px!important;}' +
     '</style>' : '';
 
   // ── Simulated flights ─────────────────────────────────────────────────────
