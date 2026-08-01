@@ -35,33 +35,42 @@ you already know which half is solid.
 ```bash
 pip install -r cloud-run-renderer/requirements.txt
 playwright install chromium
-python3 cloud-run-renderer/server.py
+RENDER_SIGNING_KEY=dev-key CHAT_AUDIENCE=http://localhost:8080/chat \
+  python3 cloud-run-renderer/server.py
 ```
+
+The two env vars are the same ones the deployed service uses. The auth
+checks are always on — there is no local bypass flag, deliberately, so
+that what you exercise here is what runs in production.
 
 In another shell:
 
 ```bash
 curl -X POST localhost:8080/render -H "Content-Type: application/json" \
+  -H "X-Render-Token: dev-key" \
   -d '{"block": {"type": "gauge_sla", "value": 82, "max_value": 100, "label": "P1 Incident SLA"}}' \
   -o out.png
 ```
 
-Open `out.png` — you should see a real rendered gauge. There's no auth
-check at all when running locally like this (auth is Cloud Run's own IAM
-layer at the platform level once deployed, not an in-app token).
+Open `out.png` — you should see a real rendered gauge. Drop the
+`X-Render-Token` header and you get a 403 instead; that's the guard
+working.
 
-Now exercise the full `/chat` flow, without a real Chat app yet:
+`/chat` is the one route you can't exercise with a header, because it
+authenticates the bearer token Google Chat itself signs — nothing local
+can produce one. Verify the same code path through `/deck`, which runs
+the identical command routing:
 
 ```bash
-curl -X POST localhost:8080/chat -H "Content-Type: application/json" \
-  -d '{"type": "MESSAGE", "message": {"text": "sla 82 gif"}}'
+curl -H "X-Render-Token: dev-key" 'localhost:8080/deck?text=sla+82+gif'
 ```
 
-This returns a real `cardsV2` JSON payload. Copy the `imageUrl` out of it
-and open that URL directly — it points back at this same local server, and
-fetching it gives you the actual rendered GIF. If both of these worked,
-the render engine is solid and everything left is deployment + Chat
-configuration.
+This returns the encoded, signed query strings `/chat` would have put in
+its card — a `deck_b` for the whole deck and a `cards[].b` per card. Open
+`localhost:8080/render.gif?b=<deck_b>` in a browser: no header needed,
+because the signature in the token is the auth. That's the actual rendered
+GIF. If both of these worked, the render engine is solid and everything
+left is deployment + Chat configuration.
 
 ## Step 2 — Deploy to Cloud Run
 
@@ -70,9 +79,10 @@ give it — no bearer token, no signed-in identity, nothing. That's a hard
 constraint from Google's side, not a choice made here, and it's why the
 deploy command below uses `--allow-unauthenticated`.
 
-One-time setup — create the Secret Manager secret the render tokens are
-signed with (see "Signed render tokens" below for why this matters; a
-deliberate one-time manual step, not scripted):
+One-time setup — create the Secret Manager secret. It does double duty:
+it signs the image tokens *and* it is the shared key every non-Chat caller
+sends as `X-Render-Token`. Both are explained under "Security
+considerations"; this is a deliberate one-time manual step, not scripted.
 
 ```bash
 gcloud secrets create render-signing-key \
@@ -92,11 +102,33 @@ gcloud run deploy YOUR_SERVICE_NAME \
 
 Note the URL `gcloud` prints at the end — you'll need it in Step 3.
 
-**Don't drop `--max-instances`.** There's no *secret* to leak here — this
-service only ever reads public data — but every render launches a real
-headless Chromium process, and `--allow-unauthenticated` means anyone with
-the URL can trigger one. `--max-instances` is a hard ceiling on how many
-of those can run at once, independent of anything else.
+**`--allow-unauthenticated` does not mean unauthenticated.** Every route
+that costs real money authenticates itself in-app, because Cloud Run's
+public/private switch is per *service*, not per *route*: the moment you
+make `/render.png` reachable for Chat, you make everything else on the
+deployment reachable too. So:
+
+| Route | What gets you in |
+|---|---|
+| `POST /render`, `POST /render-deck`, `GET /deck` | `X-Render-Token: $RENDER_SIGNING_KEY` header |
+| `GET /render.png`, `GET /render.gif` | a valid HMAC signature on the `?b=` token — i.e. a URL this service itself minted |
+| `POST /chat` | a bearer token Google Chat signed, verified against `CHAT_AUDIENCE` |
+| `GET /status` | nothing (liveness only, returns `{"ok":true}`) |
+
+After Step 3 tells you what to put in **Authentication Audience**, come
+back and set it here — until you do, `/chat` refuses every request:
+
+```bash
+gcloud run services update YOUR_SERVICE_NAME \
+  --project YOUR_PROJECT --region YOUR_REGION \
+  --update-env-vars CHAT_AUDIENCE=https://YOUR_SERVICE_URL/chat
+```
+
+**Don't drop `--max-instances`.** Every render launches a real headless
+Chromium process. The route guards above mean an anonymous caller can't
+trigger one, but `--max-instances` is the layer that doesn't depend on any
+of that being correct: a hard ceiling on how many can run at once, whatever
+else goes wrong.
 
 The code itself carries three more layers on top of that, worth knowing
 about rather than just trusting:
@@ -128,12 +160,14 @@ about rather than just trusting:
   store (Redis/Memorystore); this in-process version still cuts
   worst-case cost substantially and is what ships by default.
 
-None of this makes the endpoint anything other than public — Chat's
+None of this makes the *hostname* anything other than public — Chat's
 `image` widget fetch is anonymous by Google's own design, and there's no
-way around that for this specific integration. What it does do: an
-attacker without a validly-signed token gets a cheap, instant rejection
-instead of a real Chromium launch, and even sustained valid-shaped traffic
-is bounded to a knowable cost per minute rather than an open-ended one.
+way around that for this specific integration. What it does do: a caller
+without either a valid token or a validly-signed URL gets a cheap, instant
+403 instead of a real Chromium launch, and even sustained valid-shaped
+traffic is bounded to a knowable cost per minute rather than an open-ended
+one. Read "Security considerations" under Reference before you decide this
+is enough for your situation.
 
 Set a budget alert on the project anyway — defense in depth, not a
 substitute for the above:
@@ -193,13 +227,29 @@ Now the steps:
    spaces and group conversations", depending on where you want it usable.
 5. Under **Connection settings** (see Gotcha #2), choose **HTTP endpoint
    URL** and paste `<your-service-url-from-step-2>/chat`.
-6. Leave **Authentication Audience** at its default — it only matters if
-   you're running the IAM-gated alternative below, and even then, granting
+6. Set **Authentication Audience** to **App URL**. On a public deployment
+   this is the *only* thing standing between the `/chat` route and anyone
+   who finds the URL, so it is not optional here — the route refuses every
+   request until `CHAT_AUDIENCE` is set to match (go back and run the
+   `gcloud run services update` from Step 2 now).
+
+   Chat signs every webhook POST with a bearer token issued by
+   `chat@system.gserviceaccount.com`, and `_require_chat_caller()` in
+   `server.py` verifies it. Two audience modes exist, and the code picks
+   the right verification path from the value you give it:
+
+   | Authentication Audience | Set `CHAT_AUDIENCE` to | Token type |
+   |---|---|---|
+   | App URL | `https://YOUR_SERVICE_URL/chat` | OIDC ID token |
+   | Project Number | your numeric project number | JWT signed with Chat's x509 certs |
+
+   *(On the IAM-gated alternative below you can skip this: granting
    `chat@system.gserviceaccount.com` the `roles/run.invoker` role is
-   Google's own documented complete answer for a Cloud Run target: "Cloud
+   Google's own documented complete answer for a Cloud Run target — "Cloud
    Run automatically handles token verification when you add the Google
-   Chat service account as an authorized invoker" (see
-   [Verify requests from Google Chat](https://developers.google.com/workspace/chat/verify-requests-from-chat)).
+   Chat service account as an authorized invoker". Setting `CHAT_AUDIENCE`
+   anyway costs nothing and means the same code is safe in both modes. See
+   [Verify requests from Google Chat](https://developers.google.com/workspace/chat/verify-requests-from-chat).)*
 7. Under **Visibility**, restrict to specific people/groups, or your whole
    Workspace domain.
 8. Save.
@@ -229,19 +279,24 @@ deployed service's access setting before anything else.
 ### Routes
 
 - **`POST /render`** — the core primitive: one atom block in, one PNG out.
+  Requires `X-Render-Token`.
+- **`POST /render-deck`** — deck of blocks in, one animated GIF out. Same
+  body convention, no URL-length ceiling. Requires `X-Render-Token`.
 - **`GET /render.png`, `GET /render.gif`** — the same rendering, but as a
   plain GET a browser or Chat's own image widget can fetch directly (no
   body, no auth header). This is what makes Chat integration possible at
-  all: Chat's `image` widget only ever does an anonymous GET on a URL.
+  all: Chat's `image` widget only ever does an anonymous GET on a URL. The
+  `?b=` token carries an HMAC, so only URLs this service minted are honored.
 - **`POST /chat`** — the Google Chat HTTP-endpoint handler used in Step 4.
   See `_HELP_TEXT`/`_INTRO_TEXT` in `server.py` for the exact command set.
+  Requires a Chat-signed bearer token (Step 3, item 6).
 - **`GET /deck`** — JSON sibling of `/chat` for a non-Chat caller (e.g. a
   Gemini Enterprise agent): runs the identical fetch-and-shape logic and
   hands back `/render.png`/`/render.gif`-ready encoded query strings,
-  without rendering any pixels itself.
-- **`GET /status`** — liveness check (not `/healthz` — Cloud Run's own
-  infrastructure intercepts that exact path before it reaches the
-  container).
+  without rendering any pixels itself. Requires `X-Render-Token`.
+- **`GET /status`** — liveness check, the one open route (not `/healthz` —
+  Cloud Run's own infrastructure intercepts that exact path before it
+  reaches the container).
 
 Everything above lives in this one file/service. There used to be a
 second, separate Cloud Run service in the loop purely to re-serve
@@ -257,12 +312,87 @@ deployment that previously relied on the old hardcoded default, set
 `AGENT_BASE_URL` explicitly to preserve the old behavior; a fresh
 deployment needs nothing set.
 
+### Security considerations
+
+What this service actually is, stated plainly: **a headless Chromium you
+are putting on the public internet.** Everything below follows from that.
+None of it is exotic — but each item is something you should decide about
+rather than inherit.
+
+**The threat model is cost and abuse, not data.** There is no user data
+here and no privileged credential the renderer can be tricked into
+spending — it renders public data into images. What an attacker gets from
+an open deployment is *your compute*: a free Chromium farm, billed to
+you, and an image host on a domain you own. Both are worth having, which
+is why the routes authenticate.
+
+**One secret does two jobs, on purpose.** `RENDER_SIGNING_KEY` is both
+the HMAC key for `?b=` image tokens and the shared `X-Render-Token`
+value. That is one thing to store, rotate and get right rather than two.
+The cost of the choice: leaking it does double damage, so —
+
+**Never put the key in a URL.** `X-Render-Token` is a header and the code
+deliberately has no `?t=` query fallback. Cloud Run request logs record
+full query strings, so a key passed that way lands in log storage, in
+every log sink you have, and in the shell history of whoever tested it —
+and because it is also the signing key, that leak lets an attacker mint
+valid image URLs too. Every caller of these routes is a program that can
+set a header.
+
+**Rotating the key invalidates outstanding image URLs.** Existing
+`/render.png` links (including ones already sitting in Chat messages)
+stop verifying the moment you change the secret. That is the correct
+behavior — it is what makes rotation meaningful — but it means rotation
+is a visible event, not a silent one. Chat cards re-render on the next
+command; anything you pasted somewhere permanent will 403.
+
+**`CHAT_AUDIENCE` fails closed.** Unset, `/chat` refuses every request
+rather than accepting them all. This is deliberate: a security check that
+silently disables itself when its config is missing is how a gated
+service ends up open. You will notice a missing `CHAT_AUDIENCE`
+immediately, on the first message, with an error that says what to set.
+
+**Cost bounds are not a security control, and one of them is weaker than
+it looks.** `MAX_RENDERS_PER_MINUTE` is enforced per *process*. Cloud Run
+answers load by adding instances, so the real ceiling is that value times
+your instance count — which is exactly why `--max-instances` is not
+optional. A true global limit needs a shared store (Redis/Memorystore).
+Set a billing budget too; note that a budget alert only *notifies*.
+
+**What is not protected.** `/status` is open by design (it is a liveness
+probe returning a constant). The service does no per-caller rate
+limiting, no audit log of who rendered what, and no revocation of
+individual callers — a shared secret is shared, so anyone holding it is
+indistinguishable from anyone else holding it. If you need per-caller
+identity, revocation and audit, use the IAM-gated deploy below, where
+each caller presents its own Google identity and every call is logged
+against it.
+
+**Local development.** The guards are always on, so set the key
+explicitly rather than looking for a bypass flag:
+
+```bash
+RENDER_SIGNING_KEY=dev-key python server.py
+curl -H "X-Render-Token: dev-key" -X POST localhost:8080/render ...
+```
+
+Run without the env var and the service generates a random per-process
+key and warns loudly — fine for exercising `/status`, useless for
+anything else, and actively broken across a multi-instance deployment.
+
 ### Alternative: IAM-gated deploy
 
-Only worth it if you specifically need the `/chat` webhook endpoint itself
-gated rather than public — this is how the original two-service split
-this code was ported from worked, and it's more moving parts than Step 2
-for most people.
+Worth it when you want **per-caller identity** rather than one shared
+secret: each caller presents its own Google identity, gets its own
+revocable `roles/run.invoker` grant, and every call is logged against a
+real principal. A shared token can do none of that. It is more moving
+parts than Step 2, and it is how the original two-service split this code
+was ported from worked.
+
+The in-app checks stay on in this mode — the code does not branch on
+deployment mode, so `RENDER_SIGNING_KEY` is still required and callers
+still send `X-Render-Token`. That is deliberate: switching a deployment
+between the two modes is a flag change, never a code change.
 
 Deploy IAM-gated, and grant Chat's own calling identity invoker access so
 its webhook POST still reaches `/chat`:
@@ -270,7 +400,8 @@ its webhook POST still reaches `/chat`:
 ```bash
 gcloud run deploy YOUR_SERVICE_NAME \
   --source . --project YOUR_PROJECT --region YOUR_REGION \
-  --no-allow-unauthenticated
+  --no-allow-unauthenticated \
+  --set-secrets RENDER_SIGNING_KEY=render-signing-key:latest
 
 gcloud run services add-iam-policy-binding YOUR_SERVICE_NAME \
   --project YOUR_PROJECT --region YOUR_REGION \
@@ -291,6 +422,17 @@ gcloud run services update YOUR_GATED_SERVICE_NAME \
 
 Only the second, public instance's `/render.png`/`/render.gif` routes ever
 get hit for images.
+
+Both instances must share the **same** `RENDER_SIGNING_KEY` — the gated
+one mints the `?b=` tokens, the public one verifies them, and a mismatch
+shows up as "invalid or forged render token" on every image.
+
+Since 2026-08-01 you no longer *need* the second instance to keep the
+costly routes safe — a single `--allow-unauthenticated` deployment is
+already guarded route-by-route (Step 2). The split now buys you exactly
+one thing: keeping `POST /render` unreachable from the internet at the
+network layer, so the only surface a stranger can even connect to is the
+signature-checked image GET. Worth it if you want that; not required.
 
 ### For the 5 SVG-only atoms
 

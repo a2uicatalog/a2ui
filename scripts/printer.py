@@ -41,10 +41,13 @@ def _cloud_run_config():
     Returns None if not set up yet — callers fall back to local chromium so
     this stays zero-config for anyone who hasn't deployed the service.
 
-    No token here anymore (2026-07-17): the service moved to Cloud Run's
-    own IAM auth (roles/run.invoker), matching how the Gemini Enterprise
-    agent tool authenticates — no shared secret to manage or leak. See
-    a2ui-private/briefs/gemini-enterprise-agent-tool.md for why."""
+    Auth is TWO things as of 2026-08-01. The IAM identity (roles/run.invoker,
+    adopted 2026-07-17 — see a2ui-private/briefs/gemini-enterprise-agent-tool.md)
+    is still how the caller proves who it is. On top of that the renderer now
+    requires an X-Render-Token header on /render, because it has to be
+    deployable --allow-unauthenticated for Google Chat's image widget and Cloud
+    Run's public/private switch is per SERVICE, not per route — so it can no
+    longer assume IAM is in front of it. See _render_token() below."""
     import yaml
     ops = os.path.join(_ROOT, 'ops')
     try:
@@ -66,6 +69,25 @@ def _cloud_run_id_token(audience: str) -> str:
     import google.oauth2.id_token
     request = google.auth.transport.requests.Request()
     return google.oauth2.id_token.fetch_id_token(request, audience)
+
+
+def _render_token() -> str:
+    """The shared X-Render-Token the Cloud Run renderer now requires on
+    /render, alongside the IAM identity above. Same value as that service's
+    RENDER_SIGNING_KEY (Secret Manager: render-signing-key).
+
+    Env var only, never read from a file in this repo — a secret in a tracked
+    path is exactly what the manifest audit exists to prevent. If it isn't
+    set, say so rather than sending an empty header and letting the caller
+    puzzle over a bare 403."""
+    tok = os.environ.get('RENDER_SIGNING_KEY', '')
+    if not tok:
+        raise RuntimeError(
+            'RENDER_SIGNING_KEY is not set — the Cloud Run renderer requires it '
+            'as an X-Render-Token header. Export it (same value as the service\'s '
+            'render-signing-key secret), or unset the cloud-run-renderer url in '
+            'ops/project-ops.yaml to fall back to local chromium.')
+    return tok
 
 
 def _chat_raster_types():
@@ -114,7 +136,8 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
         id_token = _cloud_run_id_token(cloud_run_url)
         req = urllib.request.Request(f'{cloud_run_url}/render', data=body,
                                      headers={'Content-Type': 'application/json',
-                                              'Authorization': f'Bearer {id_token}'})
+                                              'Authorization': f'Bearer {id_token}',
+                                              'X-Render-Token': _render_token()})
         with urllib.request.urlopen(req, timeout=60) as r:
             return r.read()
 

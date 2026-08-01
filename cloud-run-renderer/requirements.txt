@@ -1,4 +1,9 @@
 flask==3.0.*
+# Verifies the bearer token Google Chat signs every /chat webhook POST with
+# (see _require_chat_caller in server.py). Only needed if you use the Chat
+# integration, but it is a hard requirement rather than optional: the route
+# refuses to serve rather than skip verification when it cannot import this.
+google-auth==2.*
 gunicorn==22.*
 markdown==3.6
 playwright==1.44.*

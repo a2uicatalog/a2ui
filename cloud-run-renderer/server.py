@@ -14,13 +14,29 @@ broker already does that job, and is already proven fully generic over any
 PNG bytes (see a2uithoughts.md). This service's whole job is: atom block in,
 PNG bytes out. Whoever calls it (printer.py today) still does the posting.
 
-Auth: Cloud Run's own IAM layer gates every request (--no-allow-unauthenticated)
--- there is no in-app secret to check or leak. Callers authenticate as
-themselves: printer.py sends its own Google ID token (fetched via ADC), a
-Gemini Enterprise agent tool presents its Agent Identity token. Both are
-just granted roles/run.invoker; nothing here verifies bearer tokens anymore
-(that was the pre-2026-07-17 design -- see a2ui-private/briefs/
-gemini-enterprise-agent-tool.md for why it moved to per-caller IAM).
+Auth: TWO layers, because the two deployment modes need different things.
+See README.md "Two ways to deploy this" and "Security considerations".
+
+  1. Cloud Run IAM (--no-allow-unauthenticated). Preferred when nothing
+     needs anonymous access: callers authenticate as themselves (printer.py
+     sends its own Google ID token via ADC; a Gemini Enterprise agent tool
+     presents its Agent Identity token), each granted roles/run.invoker.
+     Per-caller, revocable, and every call is logged against a real
+     identity -- see a2ui-private/briefs/gemini-enterprise-agent-tool.md.
+
+  2. RENDER_SIGNING_KEY, checked in-app by _require_token() below. Needed
+     the moment the service is deployed --allow-unauthenticated, which
+     Google Chat's `image` widget FORCES if you want it to display a
+     rendered card (its fetcher is anonymous and cannot be given an
+     identity). Without an in-app check, "public" would mean an open
+     headless-Chromium renderer anyone can point at any payload. Every
+     route that costs real work therefore requires the shared token; only
+     the HMAC-signed image GETs and /status are reachable without it.
+
+Layer 2 is harmless when layer 1 is active, so the code does not branch on
+deployment mode -- it always checks. That does mean every existing caller
+must send the token even in IAM mode; that is deliberate, so switching a
+deployment to public is a flag change and not a code change.
 
 POST /render
   Body: {"block": {...atom...}, "width": 620, "title": "", "subtitle": ""}
@@ -144,6 +160,127 @@ def _encode_deck_qs(cards, duration_ms=1000):
     compressed = gzip.compress(payload, compresslevel=9, mtime=0)
     token = base64.urlsafe_b64encode(compressed).decode('ascii').rstrip('=')
     return f'{token}.{_sign(token)}'
+
+
+def _forbidden(msg: str):
+    return Response(json.dumps({'ok': False, 'error': msg}),
+                    status=403, mimetype='application/json')
+
+
+def _require_token():
+    """Guard for the routes that COST something — the ones that launch a
+    headless Chromium (/render, /render-deck) or make upstream data calls
+    (/deck).
+
+    Why this exists. /render.png and /render.gif have always been HMAC-signed,
+    so they are safe to expose publicly — which matters, because Google Chat's
+    image widget fetches them anonymously and cannot send a header. But Cloud
+    Run's public/private switch is PER SERVICE, not per route: making those two
+    reachable also exposes every other route on the same deployment. Until now
+    the POST routes had no authentication of their own and relied entirely on
+    IAM, so a deployment that went --allow-unauthenticated (the obvious path
+    for anyone who wants the Chat integration to work) silently published an
+    open, unauthenticated headless-browser renderer. MAX_RENDERS_PER_MINUTE is
+    a per-INSTANCE limiter, and Cloud Run answers load by adding instances, so
+    it does not bound that.
+
+    This closes it: the costly routes now authenticate themselves rather than
+    depending on network position, which also means an IAM misconfiguration is
+    no longer a single point of failure.
+
+    Reuses RENDER_SIGNING_KEY rather than introducing a second secret — it is
+    already required for the signed image URLs to verify across instances, so
+    a correctly-deployed service already has exactly one secret to manage.
+
+    HEADER ONLY, deliberately: no `?t=` query fallback. Cloud Run request logs
+    record the full query string, so a key passed that way ends up in log
+    storage, in any log sink, and in the browser/proxy history of whoever
+    tested it — and because this is the same key the image HMACs are signed
+    with, leaking it there would also let an attacker mint valid /render.png
+    tokens. Every caller of these three routes is a program that can set a
+    header. /chat is the one exception and uses a different mechanism entirely
+    (see _require_chat_caller).
+
+    Callers: send `X-Render-Token: $RENDER_SIGNING_KEY`. IAM-authenticated
+    callers must send it too — the app cannot see that IAM allowed a request,
+    so it cannot safely infer trust from its absence."""
+    supplied = request.headers.get('X-Render-Token', '')
+    if supplied and hmac.compare_digest(supplied, RENDER_SIGNING_KEY):
+        return None
+    return _forbidden('missing or invalid X-Render-Token')
+
+
+# -- /chat's caller check. Chat cannot be told to send a custom header, so
+# _require_token's mechanism is unavailable here. Google's own answer is that
+# Chat signs every webhook POST with a bearer token issued by
+# chat@system.gserviceaccount.com, which the endpoint verifies — no shared
+# secret to distribute, rotate, or leak, and it proves the request came from
+# Chat rather than merely from someone who knows a string. That is strictly
+# better than a token in the URL, so it is the supported path here.
+#
+# Two audience modes exist (developers.google.com/workspace/chat/
+# verify-requests-from-chat). Which one applies depends on what you set as the
+# "Authentication Audience" in the Chat API configuration:
+#   App URL         -> the token is an OIDC ID token; audience is this
+#                      service's own /chat URL. Set CHAT_AUDIENCE to that URL.
+#   Project Number  -> the token is a JWT signed with the Chat service
+#                      account's x509 certs; audience is the project number.
+#                      Set CHAT_AUDIENCE to the number.
+# The digits-only check below picks the right verification call from the value
+# itself, so there is no second env var to keep consistent with the console.
+CHAT_AUDIENCE = os.environ.get('CHAT_AUDIENCE', '')
+CHAT_ISSUER = 'chat@system.gserviceaccount.com'
+CHAT_CERTS_URL = ('https://www.googleapis.com/service_accounts/v1/metadata/x509/'
+                  + CHAT_ISSUER)
+
+
+def _require_chat_caller():
+    """Verify the POST really came from Google Chat.
+
+    FAILS CLOSED. If CHAT_AUDIENCE is unset the route refuses every request
+    rather than serving them all: an unset security variable must never mean
+    "skip the check". The error text says exactly what to set, so a
+    misconfigured deployment is obvious on the first message instead of being
+    silently open (this exact "guard only if configured" shape left a gated
+    Cloudflare Worker open once — see a2ui-private notes, 2026-07-19)."""
+    if not CHAT_AUDIENCE:
+        return _forbidden('CHAT_AUDIENCE is not set — refusing to serve /chat. '
+                          'Set it to this service\'s /chat URL, or to the Chat '
+                          'app\'s project number, matching the Authentication '
+                          'Audience in the Chat API configuration.')
+
+    header = request.headers.get('Authorization', '')
+    if not header.startswith('Bearer '):
+        return _forbidden('missing bearer token')
+    bearer = header[len('Bearer '):].strip()
+
+    try:
+        from google.auth.transport import requests as ga_requests
+        from google.oauth2 import id_token
+    except ImportError:
+        # Deliberately an error, not a bypass. requirements.txt pins
+        # google-auth; a container built without it is broken, not "allowed
+        # through unverified".
+        return _forbidden('google-auth is not installed — cannot verify the '
+                          'Chat bearer token; refusing the request')
+
+    try:
+        req = ga_requests.Request()
+        if CHAT_AUDIENCE.isdigit():
+            claims = id_token.verify_token(bearer, req, CHAT_AUDIENCE, CHAT_CERTS_URL)
+            ok = claims.get('iss') == CHAT_ISSUER
+        else:
+            claims = id_token.verify_oauth2_token(bearer, req, CHAT_AUDIENCE)
+            ok = claims.get('email') == CHAT_ISSUER
+    except Exception as e:
+        # The reason is logged, not returned: telling an unauthenticated caller
+        # WHY its token failed is free reconnaissance.
+        print(f'chat token verification failed: {type(e).__name__}: {e}', flush=True)
+        return _forbidden('invalid Chat bearer token')
+
+    if not ok:
+        return _forbidden('bearer token was not issued by Google Chat')
+    return None
 
 
 class _InvalidToken(ValueError):
@@ -276,6 +413,9 @@ def _validated_width(width) -> int:
 
 @app.route('/render', methods=['POST'])
 def render():
+    denied = _require_token()
+    if denied:
+        return denied
     payload = request.get_json(force=True)
     block = payload.get('block')
     title = payload.get('title', '')
@@ -705,17 +845,16 @@ def render_deck():
     """POST sibling of /render.gif -- deck in a JSON body, GIF bytes out.
 
     /render.gif exists for Chat's anonymous image-widget fetch, which can
-    only do a plain GET, hence the signed ?b= token. An IAM-authenticated
-    caller (the Authoring suite's carousel export, via blog-worker) is
-    already authenticated by Cloud Run itself and cannot mint that HMAC
-    without being handed the signing key -- sharing a server secret with a
-    Worker just to re-authenticate an already-authenticated request would be
-    strictly worse than this route. Same body convention as POST /render,
-    and no URL-length ceiling on the deck, which a GET would also impose.
+    only do a plain GET, hence the signed ?b= token. This route takes the
+    deck as a plain JSON body instead: same convention as POST /render, and
+    no URL-length ceiling on the deck, which a GET would also impose.
 
     Body: {"blocks": [{"block": {...}, "width": 1080}, ...], "duration_ms": 1500}
     Returns: image/gif bytes, or {"ok": true, "gif_base64": "..."} when the
     Accept header asks for JSON (same rationale as /render's JSON mode)."""
+    denied = _require_token()
+    if denied:
+        return denied
     payload = request.get_json(force=True)
     blocks = payload.get('blocks')
     if not isinstance(blocks, list) or not blocks:
@@ -1048,6 +1187,9 @@ def _route_chat_command(text: str):
 
 @app.route('/chat', methods=['POST'])
 def chat_event():
+    denied = _require_chat_caller()
+    if denied:
+        return denied
     event = request.get_json(force=True, silent=True) or {}
     event_type = event.get('type')
 
@@ -1153,6 +1295,9 @@ def chat_event():
 # against a2ui-ge-agent, same as this service's own /chat route does.
 @app.route('/deck', methods=['GET'])
 def deck():
+    denied = _require_token()
+    if denied:
+        return denied
     text = request.args.get('text', '')
     try:
         parsed = _route_chat_command(text)
