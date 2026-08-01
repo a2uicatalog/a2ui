@@ -4,13 +4,11 @@ flask==3.0.*
 # integration, but it is a hard requirement rather than optional: the route
 # refuses to serve rather than skip verification when it cannot import this.
 #
-# The [requests] EXTRA is load-bearing, not decoration. Plain `google-auth`
-# depends on cachetools/pyasn1-modules/rsa only -- NOT on requests -- while
-# google.auth.transport.requests, which _require_chat_caller imports, needs
-# it. Installing the bare package produced a container where every Chat
-# message got a 403 ("google-auth is not installed"), while local tests
-# passed because the dev virtualenv happened to have requests already.
-# Cost: one live outage of the Chat app, 2026-08-01.
+# The [requests] extra is required, not cosmetic: plain `google-auth`
+# depends on cachetools/pyasn1-modules/rsa only, while
+# google.auth.transport.requests -- which _require_chat_caller imports --
+# needs the requests package. Without the extra, /chat rejects every
+# message with "google-auth is not installed".
 google-auth[requests]==2.*
 gunicorn==22.*
 markdown==3.6

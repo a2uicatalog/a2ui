@@ -245,26 +245,21 @@ Now the steps:
    | App URL | `https://YOUR_SERVICE_URL/chat` | OIDC ID token |
    | Project Number | the **Chat app's** project number — the "Project number (App ID)" shown at the top of the config page, which is not necessarily the project this service runs in | JWT signed with Chat's x509 certs |
 
-   **You may not have that setting.** Some Chat app configurations show
-   no Authentication Audience control at all — confirmed on a live, plain
-   HTTP-endpoint app (not a Workspace add-on) in August 2026, where the
-   page offers Connection settings, Triggers and Visibility and nothing
-   else. Google's docs describe both audience modes but never say which
-   applies when the control is absent, so the audience is knowable only
-   from a real message. That is why `CHAT_AUDIENCE` takes a
-   comma-separated list: set **both** values and the deployment is correct
-   either way.
+   **Your config page may not offer this setting.** Some Chat app
+   configurations show only Connection settings, Triggers and Visibility,
+   and Google's docs do not state which audience mode applies when the
+   control is absent. `CHAT_AUDIENCE` therefore accepts a comma-separated
+   list — set both values and the deployment is correct either way:
 
    ```
    CHAT_AUDIENCE=YOUR_CHAT_APP_PROJECT_NUMBER,https://YOUR_SERVICE_URL/chat
    ```
 
-   This is not a weakening. Both values name *your* app, so a token Chat
-   signed for anyone else matches neither. On the first real message the
-   service logs `chat auth: verified against audience '...'`, naming the
-   one that actually applied — narrow the list to it afterwards if you
-   want, though leaving both means changing the console setting later
-   won't 403 every message.
+   Listing both weakens nothing: each names *your* app, so a token signed
+   for a different Chat app matches neither. The service logs which
+   audience verified (`chat auth: verified against audience '...'`), so
+   you can narrow the list once you have seen it — though leaving both
+   means a later console change won't take the app down.
 
    *(On the IAM-gated alternative below you can skip this: granting
    `chat@system.gserviceaccount.com` the `roles/run.invoker` role is
@@ -337,71 +332,63 @@ deployment needs nothing set.
 
 ### Security considerations
 
-What this service actually is, stated plainly: **a headless Chromium you
-are putting on the public internet.** Everything below follows from that.
-None of it is exotic — but each item is something you should decide about
-rather than inherit.
+This service is a headless Chromium reachable from the public internet.
+The threat model is **cost and abuse, not data** — it renders public data
+into images and holds no user data or spendable credential. What an open
+deployment hands an attacker is your compute (a Chromium farm billed to
+you) and an image host on your domain.
 
-**The threat model is cost and abuse, not data.** There is no user data
-here and no privileged credential the renderer can be tricked into
-spending — it renders public data into images. What an attacker gets from
-an open deployment is *your compute*: a free Chromium farm, billed to
-you, and an image host on a domain you own. Both are worth having, which
-is why the routes authenticate.
+Each safeguard below exists for one specific failure. None is optional.
 
-**One secret does two jobs, on purpose.** `RENDER_SIGNING_KEY` is both
-the HMAC key for `?b=` image tokens and the shared `X-Render-Token`
-value. That is one thing to store, rotate and get right rather than two.
-The cost of the choice: leaking it does double damage, so —
+| Safeguard | Prevents |
+|---|---|
+| `X-Render-Token` on `/render`, `/render-deck`, `/deck` | A stranger with the URL launching Chromium on your bill. Cloud Run's public/private switch is per *service*, so exposing the image routes for Chat would otherwise expose these too. |
+| Header only — no `?t=` query fallback | The key reaching log storage. Cloud Run records full query strings, and this key also signs image URLs, so that leak would let an attacker mint valid ones. |
+| HMAC signature on `?b=` image tokens | Forged or guessed image URLs. `/render.png` and `/render.gif` must answer anonymously for Chat's widget; the signature means only URLs this service minted ever render. |
+| Bearer-token check on `/chat` | Anyone who finds the endpoint driving your Chat app. |
+| `CHAT_AUDIENCE` match | A token Google Chat signed for a *different* Chat app being replayed against yours. Same role as the audience in Workload Identity Federation. |
+| Fail-closed on unset `CHAT_AUDIENCE` | A missing config value silently disabling the check — the shape that leaves a "gated" service open. |
+| `MAX_RENDER_WIDTH`, `MAX_DECK_BLOCKS`, `MAX_BLOCK_JSON_BYTES`, `MAX_CONTENT_LENGTH` | One oversized request consuming a whole instance. |
+| `MAX_RENDERS_PER_MINUTE` | Sustained abuse running up unbounded cost over time. |
+| `--max-instances` | Everything above being wrong. It is the bound that does not depend on any check behaving correctly. |
 
-**Never put the key in a URL.** `X-Render-Token` is a header and the code
-deliberately has no `?t=` query fallback. Cloud Run request logs record
-full query strings, so a key passed that way lands in log storage, in
-every log sink you have, and in the shell history of whoever tested it —
-and because it is also the signing key, that leak lets an attacker mint
-valid image URLs too. Every caller of these routes is a program that can
-set a header.
+Three consequences worth knowing before you deploy:
 
-**Rotating the key invalidates outstanding image URLs.** Existing
-`/render.png` links (including ones already sitting in Chat messages)
-stop verifying the moment you change the secret. That is the correct
-behavior — it is what makes rotation meaningful — but it means rotation
-is a visible event, not a silent one. Chat cards re-render on the next
-command; anything you pasted somewhere permanent will 403.
+**One secret does two jobs.** `RENDER_SIGNING_KEY` is both the HMAC key
+for image tokens and the shared `X-Render-Token` value — one thing to
+store and rotate rather than two, at the cost that leaking it does double
+damage.
 
-**`CHAT_AUDIENCE` fails closed.** Unset, `/chat` refuses every request
-rather than accepting them all. This is deliberate: a security check that
-silently disables itself when its config is missing is how a gated
-service ends up open. You will notice a missing `CHAT_AUDIENCE`
-immediately, on the first message, with an error that says what to set.
+**Rotating it invalidates outstanding image URLs.** Existing
+`/render.png` links, including ones already sitting in Chat messages,
+stop verifying immediately. That is what makes rotation meaningful, but
+it makes rotation a visible event: cards re-render on the next command,
+anything pasted somewhere permanent will 403.
 
-**Cost bounds are not a security control, and one of them is weaker than
-it looks.** `MAX_RENDERS_PER_MINUTE` is enforced per *process*. Cloud Run
+**`MAX_RENDERS_PER_MINUTE` is per-process, not global.** Cloud Run
 answers load by adding instances, so the real ceiling is that value times
-your instance count — which is exactly why `--max-instances` is not
-optional. A true global limit needs a shared store (Redis/Memorystore).
-Set a billing budget too; note that a budget alert only *notifies*.
+your instance count. A true global limit needs a shared store
+(Redis/Memorystore). Set a billing budget as well — and note a budget
+alert only notifies, it does not stop spend.
 
-**What is not protected.** `/status` is open by design (it is a liveness
-probe returning a constant). The service does no per-caller rate
-limiting, no audit log of who rendered what, and no revocation of
-individual callers — a shared secret is shared, so anyone holding it is
-indistinguishable from anyone else holding it. If you need per-caller
-identity, revocation and audit, use the IAM-gated deploy below, where
-each caller presents its own Google identity and every call is logged
-against it.
+**What is deliberately not protected.** `/status` is open — it is a
+liveness probe returning a constant. There is no per-caller rate
+limiting, no audit of who rendered what, and no way to revoke one caller:
+a shared secret is shared, so every holder is indistinguishable. If you
+need per-caller identity, revocation and audit, use the IAM-gated deploy
+below, where each caller presents its own Google identity.
 
-**Local development.** The guards are always on, so set the key
-explicitly rather than looking for a bypass flag:
+**Local development.** The checks are always on and there is no bypass
+flag, so what you exercise locally is what runs in production:
 
 ```bash
 RENDER_SIGNING_KEY=dev-key python server.py
 curl -H "X-Render-Token: dev-key" -X POST localhost:8080/render ...
 ```
 
-Run without the env var and the service generates a random per-process
-key and warns loudly — fine for exercising `/status`, useless for
-anything else, and actively broken across a multi-instance deployment.
+Without the env var the service generates a random per-process key and
+warns loudly — usable for `/status`, nothing else, and broken across a
+multi-instance deployment.
 
 ### Alternative: IAM-gated deploy
 
@@ -450,12 +437,12 @@ Both instances must share the **same** `RENDER_SIGNING_KEY` — the gated
 one mints the `?b=` tokens, the public one verifies them, and a mismatch
 shows up as "invalid or forged render token" on every image.
 
-Since 2026-08-01 you no longer *need* the second instance to keep the
-costly routes safe — a single `--allow-unauthenticated` deployment is
-already guarded route-by-route (Step 2). The split now buys you exactly
-one thing: keeping `POST /render` unreachable from the internet at the
-network layer, so the only surface a stranger can even connect to is the
-signature-checked image GET. Worth it if you want that; not required.
+The second instance is no longer needed to keep the costly routes safe —
+a single `--allow-unauthenticated` deployment is already guarded
+route-by-route (Step 2). The split buys exactly one extra thing: it keeps
+`POST /render` unreachable at the network layer, so the only surface a
+stranger can connect to at all is the signature-checked image GET. Worth
+it if you want that; not required.
 
 ### For the 5 SVG-only atoms
 
