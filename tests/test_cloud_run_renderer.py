@@ -392,3 +392,31 @@ def test_has_real_signature():
     assert not crr_server._has_real_signature(_unsigned_chat_token("1"))
     assert crr_server._has_real_signature("a.b." + "x" * 342)
     assert not crr_server._has_real_signature("not-a-jwt")
+
+
+def test_requirements_pins_the_google_auth_requests_extra():
+    """Plain `google-auth` does NOT depend on requests, but
+    google.auth.transport.requests -- which _require_chat_caller imports --
+    does. Shipping the bare package built a container where every Chat
+    message 403'd, while this suite passed because the dev virtualenv had
+    requests from something else. A unit test cannot catch a missing
+    container dependency, so assert the DECLARATION instead."""
+    req = (Path(__file__).parent.parent / "cloud-run-renderer" / "requirements.txt").read_text()
+    lines = [l.strip() for l in req.splitlines()
+             if l.strip().startswith("google-auth")]
+    assert lines, "google-auth is not declared at all"
+    assert any("[requests]" in l for l in lines), (
+        f"google-auth must be declared with the [requests] extra, got {lines}")
+
+
+def test_every_chat_auth_rejection_logs(anon_client, monkeypatch, capsys):
+    """No silent 403s on this route. A rejection with no log line is
+    indistinguishable from Cloud Run's own edge rejection, which is exactly
+    what turned a one-line dependency bug into a long outage (2026-08-01)."""
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", [])
+    assert anon_client.post("/chat", json={"type": "MESSAGE"}).status_code == 403
+    assert "CHAT_AUDIENCE" in capsys.readouterr().out
+
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["123456789012"])
+    assert anon_client.post("/chat", json={"type": "MESSAGE"}).status_code == 403
+    assert "no bearer token" in capsys.readouterr().out

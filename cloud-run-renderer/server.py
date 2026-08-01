@@ -331,6 +331,9 @@ def _require_chat_caller():
     silently open (this exact "guard only if configured" shape left a gated
     Cloudflare Worker open once — see a2ui-private notes, 2026-07-19)."""
     if not CHAT_AUDIENCES:
+        print('chat auth: CHAT_AUDIENCE is not set — refusing every request. '
+              'Set it to this service\'s /chat URL and/or the Chat app\'s '
+              'project number (comma-separated).', flush=True)
         return _forbidden('CHAT_AUDIENCE is not set — refusing to serve /chat. '
                           'Set it to this service\'s /chat URL and/or the Chat '
                           'app\'s project number (comma-separated), matching '
@@ -394,10 +397,22 @@ def _require_chat_caller():
     try:
         from google.auth.transport import requests as ga_requests
         from google.oauth2 import id_token
-    except ImportError:
-        # Deliberately an error, not a bypass. requirements.txt pins
-        # google-auth; a container built without it is broken, not "allowed
-        # through unverified".
+    except ImportError as e:
+        # Deliberately an error, not a bypass: a container that cannot verify
+        # is broken, not "allowed through unverified".
+        #
+        # LOG THE ACTUAL EXCEPTION. The first version returned this 403
+        # silently, and the resulting outage took far longer to diagnose than
+        # it should have: every Chat message 403'd with no application log
+        # line at all, which looks exactly like Cloud Run's IAM layer
+        # rejecting at the edge. Hours went into IAM policies, token
+        # audiences and signature stripping before someone read the response
+        # BODY, which had said it plainly the whole time. The real cause was
+        # `google-auth` installed without its [requests] extra — which this
+        # message names, and the silent version did not.
+        print(f'chat auth: cannot verify — import failed: {e}. Check that '
+              'requirements.txt installs google-auth WITH the [requests] '
+              'extra; the bare package does not pull in requests.', flush=True)
         return _forbidden('google-auth is not installed — cannot verify the '
                           'Chat bearer token; refusing the request')
 
