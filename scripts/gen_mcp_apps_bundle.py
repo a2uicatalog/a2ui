@@ -124,7 +124,17 @@ _RENDERERS['adsb_feed'] = function (b) {
     'function dispatch(flights){window.A2UI_DATA["' + _esc(name) + '"]=flights;' +
       'var cb=window.A2UI_CALLBACKS["' + _esc(name) + '"];if(typeof cb==="function")cb(flights);}' +
     'function pull(){fetch("' + url + '").then(function(r){if(!r.ok)throw 0;return r.json();})' +
-      '.then(function(raw){dispatch(_normaliseAdsbLol(raw,' + (filterGnd ? 'true' : 'false') + '));})' +
+      // Only dispatch a NON-EMPTY set. A 200 carrying {"ac":[]} is a
+      // successful answer meaning "no traffic right now", not new data --
+      // dispatching it overwrites airspace_command_deck's simulated flights
+      // with nothing and the scope goes blank. The stated design here is
+      // "feeds stay quiet -> consumers remain in their simulated/fallback
+      // mode", but only fetch FAILURES were ever quiet; an empty success was
+      // not. Observed 2026-08-01: adsb.lol returned ac:[] for the LFBO box
+      // (verified upstream, direct, 101 bytes) and the ChatGPT radar showed
+      // no aircraft at all rather than the simulated traffic it advertises.
+      '.then(function(raw){var _f=_normaliseAdsbLol(raw,' + (filterGnd ? 'true' : 'false') + ');' +
+      'if(_f&&_f.length)dispatch(_f);})' +
       '.catch(function(){});}' +
     'setTimeout(pull,120);' +
     'setInterval(pull,' + Math.round(refresh * 1000) + ');' +
@@ -191,6 +201,22 @@ HANDSHAKE = """
   // subject tabs. Same reasoning applies identically.
   var _hostContext = {};
   var _fsReqSeq = 0;
+
+  // 2026-08-01: playbook/hub slide containers default to min-height:100vh.
+  // That is right on GAS/web and in a GRANTED fullscreen, and wrong in an
+  // inline card, where 100vh resolves against the HOST page viewport: short
+  // slide content ends up buried below a viewport of empty space. Found in
+  // ChatGPT -- clicking a nav pill genuinely worked, but you had to scroll
+  // past a blank screen to see the slide, which reads as "it didn't move".
+  // ADDITIVE by design: hosts with no handshake (GAS, plain web) never get
+  // the class, so their existing full-page behaviour is untouched, and a
+  // granted fullscreen doesn't get it either.
+  function _syncDisplayModeClass() {
+    var el = document.documentElement;
+    if (!el || !el.classList) return;
+    el.classList.toggle('a2ui-inline',
+      (_hostContext.displayMode || 'inline') === 'inline');
+  }
   function _maybeRequestFullscreen(payload) {
     // Classic blocks dialect OR the v1.0 envelope's createSurface.components
     // (paint() decodes the latter internally via _rehydrateV1Surface; this
@@ -302,6 +328,7 @@ HANDSHAKE = """
       else if (typeof msg.id === 'string' && msg.id.indexOf('fsreq-') === 0 && msg.result.mode) {
         _hostContext.displayMode = msg.result.mode;
       }
+      _syncDisplayModeClass();
       sendInitialized();
       return;
     }
@@ -312,6 +339,7 @@ HANDSHAKE = """
     if (msg.method === 'ui/notifications/host-context-changed') {
       var patch = msg.params || {};
       for (var k in patch) { if (patch.hasOwnProperty(k)) _hostContext[k] = patch[k]; }
+      _syncDisplayModeClass();
       return;
     }
 

@@ -976,6 +976,14 @@ _RENDERERS['playbook'] = function(b) {
     'html,body{margin:0;padding:0;overflow-x:hidden;}' +
     '.asw-page{max-width:none!important;padding:0!important;margin:0!important;}' +
     '.asw-page>h1{display:none!important;}' +
+    // 2026-08-01: each slide carries min-height:100vh inline (right full-page,
+    // right in a GRANTED fullscreen). In an inline MCP Apps card, vh resolves
+    // against the HOST page viewport, not the card: a short slide sits under a
+    // full screen of empty space and you must scroll to find it — which reads
+    // as "the nav did nothing". The bundle handshake sets html.a2ui-inline
+    // when the host reports (or defaults to) inline display; no handshake
+    // means no class, so GAS, plain web and granted-fullscreen are untouched.
+    'html.a2ui-inline .' + uid + 'sl{min-height:0;}' +
     '</style>' +
     '<div style="width:100vw;background:#050810;">' +
     sharedHtml +
