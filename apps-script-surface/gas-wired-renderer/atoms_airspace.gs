@@ -60,7 +60,22 @@ _RENDERERS['airspace_command_deck'] = function(b) {
   var breakout     = fullscreen ?
     '<style>html,body{margin:0;padding:0;overflow:hidden;}' +
     '.asw-page{max-width:none!important;padding:0!important;margin:0!important;}' +
-    '.asw-page>h1{display:none!important;}</style>' : '';
+    '.asw-page>h1{display:none!important;}' +
+    // 2026-08-01: height:'fullscreen' is a REQUEST, not a guarantee. When a
+    // host refuses it — ChatGPT renders MCP Apps views in a fixed embedded
+    // panel and says so outright — the 100vh canvas is sized to the HOST page
+    // viewport rather than the panel. The radar centre lands at 50vh, so every
+    // aircraft is computed correctly and painted below the visible area, while
+    // the chyron and ticker still show because they are absolutely positioned
+    // top and bottom. That is exactly why this presented as "no plane data"
+    // and sent us chasing the ADS-B feed for hours: the feed was a red
+    // herring, the aircraft were simply off-screen.
+    // html.a2ui-inline is set by the bundle handshake from
+    // _hostContext.displayMode. No JS change needed here — the canvas
+    // re-syncs from offsetWidth/offsetHeight and recentres CX/CY on resize.
+    'html.a2ui-inline{overflow:auto!important;}' +
+    'html.a2ui-inline .asw-acd-fs{height:min(70vh,560px)!important;}' +
+    '</style>' : '';
 
   // ── Simulated flights ─────────────────────────────────────────────────────
   // Each flight: {callsign, type, alt ft, spd kt, bearing° from LFBO, dist nm, status, colour}
@@ -77,7 +92,8 @@ _RENDERERS['airspace_command_deck'] = function(b) {
 
   // ── Slate mode ────────────────────────────────────────────────────────────
   if (showSlate) {
-    return breakout + '<div style="background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';height:' + h + ';' +
+    return breakout + '<div class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
+      'style="background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';height:' + h + ';' +
       'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
       'font-family:\'Courier New\',monospace;position:relative;overflow:hidden;">' +
       '<div style="color:#00f2ff;font-size:0.65rem;letter-spacing:0.25em;opacity:0.5;margin-bottom:32px;">A2UI · AIRSPACE COMMAND DECK · BOOT SEQUENCE</div>' +
@@ -235,7 +251,8 @@ _RENDERERS['airspace_command_deck'] = function(b) {
     '@keyframes ' + uid + 'blink{0%,100%{opacity:1;}50%{opacity:0.2;}}' +
     '@keyframes ' + uid + 'reticle{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}' +
     '</style>' +
-    '<div style="position:relative;background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';overflow:hidden;height:' + h + ';font-family:\'Courier New\',monospace;">' +
+    '<div class="' + (fullscreen ? 'asw-acd-fs' : 'asw-acd') + '" ' +
+    'style="position:relative;background:#050810;border-radius:' + (fullscreen?'0':'10px') + ';overflow:hidden;height:' + h + ';font-family:\'Courier New\',monospace;">' +
 
     // Canvas — radar layer
     '<canvas id="' + uid + '" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>' +
