@@ -115,14 +115,18 @@ deployment reachable too. So:
 | `POST /chat` | a bearer token Google Chat signed, verified against `CHAT_AUDIENCE` |
 | `GET /status` | nothing (liveness only, returns `{"ok":true}`) |
 
-After Step 3 tells you what to put in **Authentication Audience**, come
-back and set it here — until you do, `/chat` refuses every request:
+Come back after Step 3 and set `CHAT_AUDIENCE` — until you do, `/chat`
+refuses every request. It takes a comma-separated list and accepts a token
+matching any entry, so set both forms and you cannot get it wrong:
 
 ```bash
 gcloud run services update YOUR_SERVICE_NAME \
   --project YOUR_PROJECT --region YOUR_REGION \
-  --update-env-vars CHAT_AUDIENCE=https://YOUR_SERVICE_URL/chat
+  --update-env-vars "CHAT_AUDIENCE=YOUR_CHAT_APP_PROJECT_NUMBER,https://YOUR_SERVICE_URL/chat"
 ```
+
+Both values name your own app, so listing both weakens nothing — see
+Step 3 for why you may not be able to tell which one Chat will send.
 
 **Don't drop `--max-instances`.** Every render launches a real headless
 Chromium process. The route guards above mean an anonymous caller can't
@@ -227,21 +231,37 @@ Now the steps:
    spaces and group conversations", depending on where you want it usable.
 5. Under **Connection settings** (see Gotcha #2), choose **HTTP endpoint
    URL** and paste `<your-service-url-from-step-2>/chat`.
-6. Set **Authentication Audience** to **App URL**. On a public deployment
-   this is the *only* thing standing between the `/chat` route and anyone
-   who finds the URL, so it is not optional here — the route refuses every
-   request until `CHAT_AUDIENCE` is set to match (go back and run the
-   `gcloud run services update` from Step 2 now).
+6. Set `CHAT_AUDIENCE`. On a public deployment this is the *only* thing
+   standing between `/chat` and anyone who finds the URL, so it is not
+   optional — the route refuses every request until it is set.
 
    Chat signs every webhook POST with a bearer token issued by
    `chat@system.gserviceaccount.com`, and `_require_chat_caller()` in
-   `server.py` verifies it. Two audience modes exist, and the code picks
-   the right verification path from the value you give it:
+   `server.py` verifies it. Which token you get depends on the
+   **Authentication Audience** setting:
 
-   | Authentication Audience | Set `CHAT_AUDIENCE` to | Token type |
+   | Authentication Audience | Audience value | Token type |
    |---|---|---|
    | App URL | `https://YOUR_SERVICE_URL/chat` | OIDC ID token |
-   | Project Number | your numeric project number | JWT signed with Chat's x509 certs |
+   | Project Number | the **Chat app's** project number — the "Project number (App ID)" shown at the top of the config page, which is not necessarily the project this service runs in | JWT signed with Chat's x509 certs |
+
+   **You may not have that setting.** The Workspace add-on style of the
+   configuration page ("Build this Chat app as a Workspace add-on") does
+   not expose an Authentication Audience control at all, and Google's docs
+   do not state which mode you get by default (checked 2026-08-01). That
+   is why `CHAT_AUDIENCE` takes a comma-separated list: set **both**
+   values and the deployment is correct either way.
+
+   ```
+   CHAT_AUDIENCE=YOUR_CHAT_APP_PROJECT_NUMBER,https://YOUR_SERVICE_URL/chat
+   ```
+
+   This is not a weakening. Both values name *your* app, so a token Chat
+   signed for anyone else matches neither. On the first real message the
+   service logs `chat auth: verified against audience '...'`, naming the
+   one that actually applied — narrow the list to it afterwards if you
+   want, though leaving both means changing the console setting later
+   won't 403 every message.
 
    *(On the IAM-gated alternative below you can skip this: granting
    `chat@system.gserviceaccount.com` the `roles/run.invoker` role is

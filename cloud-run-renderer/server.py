@@ -219,19 +219,48 @@ def _require_token():
 # better than a token in the URL, so it is the supported path here.
 #
 # Two audience modes exist (developers.google.com/workspace/chat/
-# verify-requests-from-chat). Which one applies depends on what you set as the
-# "Authentication Audience" in the Chat API configuration:
-#   App URL         -> the token is an OIDC ID token; audience is this
-#                      service's own /chat URL. Set CHAT_AUDIENCE to that URL.
+# verify-requests-from-chat), and which one you get depends on the
+# "Authentication Audience" setting in the Chat API configuration:
+#   App URL         -> the token is an OIDC ID token; the audience is this
+#                      service's own /chat URL.
 #   Project Number  -> the token is a JWT signed with the Chat service
-#                      account's x509 certs; audience is the project number.
-#                      Set CHAT_AUDIENCE to the number.
-# The digits-only check below picks the right verification call from the value
-# itself, so there is no second env var to keep consistent with the console.
+#                      account's x509 certs; the audience is the project
+#                      number of the CHAT APP, which is not necessarily the
+#                      project this service runs in.
+#
+# CHAT_AUDIENCE accepts a COMMA-SEPARATED LIST, and a token verifying against
+# any entry is accepted. That is not laxity — every value you put here names
+# your own app, so nothing Chat signs for someone else can match — and it
+# earns two concrete things:
+#
+#   1. The Workspace add-on style of the configuration page does not expose
+#      an "Authentication Audience" control AT ALL, and Google's docs do not
+#      state which mode you get by default (checked 2026-08-01). Listing both
+#      makes the deployment correct without a guess, and without a live
+#      outage while you find out which one it was.
+#   2. It makes changing that console setting, or moving the service, a
+#      non-breaking change rather than a 403 on every message.
+#
+# _log_chat_audience below prints which entry actually matched, so the list
+# can be narrowed to the single real value once observed.
 CHAT_AUDIENCE = os.environ.get('CHAT_AUDIENCE', '')
+CHAT_AUDIENCES = [a.strip() for a in CHAT_AUDIENCE.split(',') if a.strip()]
 CHAT_ISSUER = 'chat@system.gserviceaccount.com'
 CHAT_CERTS_URL = ('https://www.googleapis.com/service_accounts/v1/metadata/x509/'
                   + CHAT_ISSUER)
+
+
+def _observed_audience(bearer: str) -> str:
+    """The `aud` claim WITHOUT verifying anything — diagnostics only, never a
+    trust decision. Exists so a mismatch tells you what to set instead of
+    leaving you to guess, which is the whole reason the list above is a list.
+    Read no other claim this way."""
+    try:
+        payload = bearer.split('.')[1]
+        payload += '=' * (-len(payload) % 4)
+        return str(json.loads(base64.urlsafe_b64decode(payload)).get('aud'))
+    except Exception:
+        return '<unparseable>'
 
 
 def _require_chat_caller():
@@ -243,11 +272,11 @@ def _require_chat_caller():
     misconfigured deployment is obvious on the first message instead of being
     silently open (this exact "guard only if configured" shape left a gated
     Cloudflare Worker open once — see a2ui-private notes, 2026-07-19)."""
-    if not CHAT_AUDIENCE:
+    if not CHAT_AUDIENCES:
         return _forbidden('CHAT_AUDIENCE is not set — refusing to serve /chat. '
-                          'Set it to this service\'s /chat URL, or to the Chat '
-                          'app\'s project number, matching the Authentication '
-                          'Audience in the Chat API configuration.')
+                          'Set it to this service\'s /chat URL and/or the Chat '
+                          'app\'s project number (comma-separated), matching '
+                          'the Chat API configuration.')
 
     header = request.headers.get('Authorization', '')
     if not header.startswith('Bearer '):
@@ -264,23 +293,39 @@ def _require_chat_caller():
         return _forbidden('google-auth is not installed — cannot verify the '
                           'Chat bearer token; refusing the request')
 
-    try:
-        req = ga_requests.Request()
-        if CHAT_AUDIENCE.isdigit():
-            claims = id_token.verify_token(bearer, req, CHAT_AUDIENCE, CHAT_CERTS_URL)
-            ok = claims.get('iss') == CHAT_ISSUER
-        else:
-            claims = id_token.verify_oauth2_token(bearer, req, CHAT_AUDIENCE)
-            ok = claims.get('email') == CHAT_ISSUER
-    except Exception as e:
-        # The reason is logged, not returned: telling an unauthenticated caller
-        # WHY its token failed is free reconnaissance.
-        print(f'chat token verification failed: {type(e).__name__}: {e}', flush=True)
-        return _forbidden('invalid Chat bearer token')
+    req = ga_requests.Request()
+    failures = []
+    for audience in CHAT_AUDIENCES:
+        try:
+            # A numeric audience is the project-number mode, whose token is
+            # signed with the Chat SA's own x509 certs rather than Google's
+            # OIDC keys — a different verification call, not just a different
+            # expected value.
+            if audience.isdigit():
+                claims = id_token.verify_token(bearer, req, audience, CHAT_CERTS_URL)
+                issuer_ok = claims.get('iss') == CHAT_ISSUER
+            else:
+                claims = id_token.verify_oauth2_token(bearer, req, audience)
+                issuer_ok = claims.get('email') == CHAT_ISSUER
+        except Exception as e:
+            failures.append(f'{audience}: {type(e).__name__}: {e}')
+            continue
+        if not issuer_ok:
+            # Correctly signed for our audience but not by Chat. Worth its own
+            # loud line: it means something else in Google's estate is talking
+            # to this endpoint.
+            print(f'chat auth: token for audience {audience!r} was not issued '
+                  f'by {CHAT_ISSUER}', flush=True)
+            return _forbidden('bearer token was not issued by Google Chat')
+        print(f'chat auth: verified against audience {audience!r}', flush=True)
+        return None
 
-    if not ok:
-        return _forbidden('bearer token was not issued by Google Chat')
-    return None
+    # Reasons are LOGGED, not returned: telling an unauthenticated caller why
+    # its token failed is free reconnaissance. The observed `aud` is logged
+    # alongside so a genuine misconfiguration is a one-message diagnosis.
+    print(f'chat auth: rejected. token aud={_observed_audience(bearer)!r}, '
+          f'configured={CHAT_AUDIENCES!r}, failures={failures}', flush=True)
+    return _forbidden('invalid Chat bearer token')
 
 
 class _InvalidToken(ValueError):

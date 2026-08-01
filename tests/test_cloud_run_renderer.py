@@ -270,7 +270,7 @@ def test_auth_chat_fails_closed_without_audience(anon_client, monkeypatch):
     """An unset security variable must mean CLOSED, not 'skip the check'.
     The guard-only-if-configured shape is how a gated service silently ends
     up open."""
-    monkeypatch.setattr(crr_server, "CHAT_AUDIENCE", "")
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", [])
     resp = anon_client.post("/chat", json={"type": "MESSAGE",
                                            "message": {"text": "sla 82"}})
     assert resp.status_code == 403
@@ -278,7 +278,7 @@ def test_auth_chat_fails_closed_without_audience(anon_client, monkeypatch):
 
 
 def test_auth_chat_rejects_missing_bearer(anon_client, monkeypatch):
-    monkeypatch.setattr(crr_server, "CHAT_AUDIENCE", "https://example.invalid/chat")
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["https://example.invalid/chat"])
     resp = anon_client.post("/chat", json={"type": "MESSAGE",
                                            "message": {"text": "sla 82"}})
     assert resp.status_code == 403
@@ -288,7 +288,7 @@ def test_auth_chat_rejects_missing_bearer(anon_client, monkeypatch):
 def test_auth_chat_rejects_unverifiable_bearer(anon_client, monkeypatch):
     """A syntactically plausible token that Google did not sign must not pass,
     and the 403 must not explain WHY -- that is free reconnaissance."""
-    monkeypatch.setattr(crr_server, "CHAT_AUDIENCE", "https://example.invalid/chat")
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["https://example.invalid/chat"])
     resp = anon_client.post("/chat", json={"type": "MESSAGE",
                                            "message": {"text": "sla 82"}},
                             headers={"Authorization": "Bearer aaa.bbb.ccc"})
@@ -305,3 +305,29 @@ def test_auth_render_png_needs_no_token_only_a_signature(anon_client):
     b = _encode_block(SLA_BLOCK, width=200)
     resp = anon_client.get(f"/render.png?b={b}")
     assert resp.status_code != 403
+
+
+def test_auth_chat_accepts_a_list_of_audiences(anon_client, monkeypatch):
+    """CHAT_AUDIENCE is a comma-separated list because the Workspace add-on
+    style of the Chat config page does not expose an Authentication Audience
+    control, and Google's docs do not state the default (checked 2026-08-01).
+    Every entry still has to verify properly -- listing several does not make
+    any single one optional."""
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES",
+                        ["123456789012", "https://example.invalid/chat"])
+    resp = anon_client.post("/chat", json={"type": "MESSAGE",
+                                           "message": {"text": "sla 82"}},
+                            headers={"Authorization": "Bearer aaa.bbb.ccc"})
+    assert resp.status_code == 403
+    assert resp.get_json()["error"] == "invalid Chat bearer token"
+
+
+def test_observed_audience_is_diagnostic_only():
+    """It decodes without verifying, so it must never be used for a trust
+    decision -- this asserts the shape it is used in: a log string, tolerant
+    of garbage."""
+    import base64 as _b64
+    import json as _json
+    payload = _b64.urlsafe_b64encode(_json.dumps({"aud": "12345"}).encode()).decode().rstrip("=")
+    assert crr_server._observed_audience(f"x.{payload}.y") == "12345"
+    assert crr_server._observed_audience("not-a-jwt") == "<unparseable>"
