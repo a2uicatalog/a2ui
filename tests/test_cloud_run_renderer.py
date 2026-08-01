@@ -308,11 +308,11 @@ def test_auth_render_png_needs_no_token_only_a_signature(anon_client):
 
 
 def test_auth_chat_accepts_a_list_of_audiences(anon_client, monkeypatch):
-    """CHAT_AUDIENCE is a comma-separated list because the Workspace add-on
-    style of the Chat config page does not expose an Authentication Audience
-    control, and Google's docs do not state the default (checked 2026-08-01).
-    Every entry still has to verify properly -- listing several does not make
-    any single one optional."""
+    """CHAT_AUDIENCE is a comma-separated list because some Chat app configs
+    expose no Authentication Audience control at all (confirmed on a live
+    plain HTTP-endpoint app, 2026-08-01) and Google's docs do not say which
+    mode applies when it is absent. Every entry still has to verify properly
+    -- listing several does not make any single one optional."""
     monkeypatch.setattr(crr_server, "CHAT_AUDIENCES",
                         ["123456789012", "https://example.invalid/chat"])
     resp = anon_client.post("/chat", json={"type": "MESSAGE",

@@ -245,12 +245,15 @@ Now the steps:
    | App URL | `https://YOUR_SERVICE_URL/chat` | OIDC ID token |
    | Project Number | the **Chat app's** project number — the "Project number (App ID)" shown at the top of the config page, which is not necessarily the project this service runs in | JWT signed with Chat's x509 certs |
 
-   **You may not have that setting.** The Workspace add-on style of the
-   configuration page ("Build this Chat app as a Workspace add-on") does
-   not expose an Authentication Audience control at all, and Google's docs
-   do not state which mode you get by default (checked 2026-08-01). That
-   is why `CHAT_AUDIENCE` takes a comma-separated list: set **both**
-   values and the deployment is correct either way.
+   **You may not have that setting.** Some Chat app configurations show
+   no Authentication Audience control at all — confirmed on a live, plain
+   HTTP-endpoint app (not a Workspace add-on) in August 2026, where the
+   page offers Connection settings, Triggers and Visibility and nothing
+   else. Google's docs describe both audience modes but never say which
+   applies when the control is absent, so the audience is knowable only
+   from a real message. That is why `CHAT_AUDIENCE` takes a
+   comma-separated list: set **both** values and the deployment is correct
+   either way.
 
    ```
    CHAT_AUDIENCE=YOUR_CHAT_APP_PROJECT_NUMBER,https://YOUR_SERVICE_URL/chat

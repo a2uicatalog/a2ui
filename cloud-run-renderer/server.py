@@ -233,11 +233,13 @@ def _require_token():
 # your own app, so nothing Chat signs for someone else can match — and it
 # earns two concrete things:
 #
-#   1. The Workspace add-on style of the configuration page does not expose
-#      an "Authentication Audience" control AT ALL, and Google's docs do not
-#      state which mode you get by default (checked 2026-08-01). Listing both
-#      makes the deployment correct without a guess, and without a live
-#      outage while you find out which one it was.
+#   1. Some Chat app configurations have NO "Authentication Audience"
+#      control on the console page at all -- confirmed on a live, plain
+#      HTTP-endpoint app (not a Workspace add-on), 2026-08-01 -- and
+#      Google's docs never say which mode applies when the control is
+#      absent. The audience is then knowable only from a real message.
+#      Listing both makes the deployment correct without a guess, and
+#      without a live outage while you find out which one it was.
 #   2. It makes changing that console setting, or moving the service, a
 #      non-breaking change rather than a 403 on every message.
 #
