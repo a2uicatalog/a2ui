@@ -435,7 +435,13 @@ def build_api_catalog():
                 item(f"{BASE}/.well-known/ai-catalog.json", "application/json", "ARD discovery catalog"),
                 item(f"{BASE}/.well-known/mcp.json", "application/json", "MCP discovery pointer"),
                 item(f"{BASE}/.well-known/agent-card.json", "application/json", "A2A agent card"),
-                item(f"{BASE}/.well-known/oauth-protected-resource", "application/json", "OAuth protected-resource metadata (RFC 9728)"),
+                # Path-suffixed per RFC 9728 §3.1 — this document describes
+                # /mcp-auth, NOT the origin root. Published at the root path it
+                # tells every client that the unauthenticated /mcp is protected
+                # too; Claude then looked for dynamic client registration, found
+                # none, and refused to connect ("automatic client registration
+                # isn't supported... add an OAuth Client ID", 2026-08-01).
+                item(f"{BASE}/.well-known/oauth-protected-resource/mcp-auth", "application/json", "OAuth protected-resource metadata for /mcp-auth (RFC 9728)"),
                 item(f"{BASE}/.well-known/oauth-authorization-server", "application/json", "OAuth authorization-server metadata (RFC 8414)"),
             ],
             "describes": [

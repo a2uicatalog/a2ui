@@ -1,7 +1,0 @@
-{
-  "resource": "https://a2uicatalog.ai/mcp-auth",
-  "authorization_servers": ["https://a2uicatalog.ai"],
-  "bearer_methods_supported": ["header"],
-  "resource_documentation": "https://a2uicatalog.ai/auth.md",
-  "note": "RFC 9728 metadata. IMPORTANT: this describes the OPTIONAL authenticated MCP endpoint (/mcp-auth), not the primary one. The public MCP server at https://a2uicatalog.ai/mcp is unauthenticated, free, and needs no credential — most callers want that and can ignore this document entirely. /mcp-auth exists for enterprise platforms whose connector model requires attributed, credentialed access (e.g. Gemini Enterprise BYO-MCP, which offers OAuth 2.0 and nothing else). It serves the same tools as /mcp. Besides OAuth Bearer, /mcp-auth also accepts an X-Api-Key header or HTTP Basic credentials for platforms that cannot do OAuth; those are not RFC 9728-describable and are documented in /auth.md instead."
-}

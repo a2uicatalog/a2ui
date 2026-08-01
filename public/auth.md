@@ -29,7 +29,7 @@ Two MCP endpoints serve the **same tools**:
 
 Machine-readable discovery documents:
 
-- Protected resource metadata (RFC 9728): `https://a2uicatalog.ai/.well-known/oauth-protected-resource`
+- Protected resource metadata (RFC 9728): `https://a2uicatalog.ai/.well-known/oauth-protected-resource/mcp-auth` — path-suffixed, because it describes `/mcp-auth` only. There is deliberately **no** document at the well-known root: that form would describe the whole origin, telling clients the unauthenticated `/mcp` needs OAuth too.
 - Authorization server metadata (RFC 8414): `https://a2uicatalog.ai/.well-known/oauth-authorization-server`
 - Live server descriptor: `GET https://a2uicatalog.ai/mcp` with `Accept: application/json`
 

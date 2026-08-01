@@ -68,9 +68,9 @@
           "title": "A2A agent card"
         },
         {
-          "href": "https://a2uicatalog.ai/.well-known/oauth-protected-resource",
+          "href": "https://a2uicatalog.ai/.well-known/oauth-protected-resource/mcp-auth",
           "type": "application/json",
-          "title": "OAuth protected-resource metadata (RFC 9728)"
+          "title": "OAuth protected-resource metadata for /mcp-auth (RFC 9728)"
         },
         {
           "href": "https://a2uicatalog.ai/.well-known/oauth-authorization-server",
