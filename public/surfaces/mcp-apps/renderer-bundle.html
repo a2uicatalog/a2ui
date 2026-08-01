@@ -6742,8 +6742,18 @@ _RENDERERS['playbook'] = function(b) {
       'if(bn){var acc=bn.getAttribute("data-acc")||"#00f2ff";' +
         'bn.style.background=acc;bn.style.color="#000";}' +
       'window.scrollTo(0,0);' +
-      'if(window.history)window.history.replaceState(null,"","#"+id);' +
+      // Arm auto-advance BEFORE touching history. In a sandboxed iframe with
+      // an opaque origin (ChatGPT's MCP Apps host, and any host that omits
+      // allow-same-origin) replaceState throws SecurityError -- and the old
+      // `if(window.history)` guard did not catch it: history EXISTS, it is
+      // the CALL that throws. The throw escaped go() one statement before the
+      // timer was armed, so the slide painted correctly and then never
+      // advanced. Found 2026-08-01 running the Toulouse ATC playbook in
+      // ChatGPT; Claude's per-resource origin permits the write, so no host
+      // we had tested could surface it. Navigation must never sit downstream
+      // of a cosmetic URL update.
       'if(_dur[id])_tmr=setTimeout(function(){window.' + uid + 'go(_nxt[id]);},_dur[id]);' +
+      'try{if(window.history&&window.history.replaceState)window.history.replaceState(null,"","#"+id);}catch(e){}' +
     '};' +
     'window._A2UI_GO=window.' + uid + 'go;' +
     'var hash=window.location.hash.slice(1);' +
