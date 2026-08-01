@@ -331,3 +331,64 @@ def test_observed_audience_is_diagnostic_only():
     payload = _b64.urlsafe_b64encode(_json.dumps({"aud": "12345"}).encode()).decode().rstrip("=")
     assert crr_server._observed_audience(f"x.{payload}.y") == "12345"
     assert crr_server._observed_audience("not-a-jwt") == "<unparseable>"
+
+
+# -- Cloud Run strips the signature off tokens it authenticated (measured on
+# the live service, 2026-08-01: 34 chars where RS256 puts 342). These cover
+# the consequence, which is that in-app verification is impossible on an
+# IAM-gated deployment and must NOT be faked on a public one.
+
+def _unsigned_chat_token(aud, email=crr_server.CHAT_ISSUER):
+    import base64 as _b64, json as _json
+    def seg(d):
+        return _b64.urlsafe_b64encode(_json.dumps(d).encode()).decode().rstrip("=")
+    return f'{seg({"alg": "RS256"})}.{seg({"aud": aud, "email": email, "iss": email})}.SIGNATURE_REMOVED'
+
+
+def test_stripped_signature_refused_when_not_iam_gated(anon_client, monkeypatch):
+    """The public deployment is the one that actually needs this check, and on
+    it an unsigned token is just a forgery -- anyone can craft one."""
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["123456789012"])
+    monkeypatch.setattr(crr_server, "TRUST_CLOUD_RUN_IAM", False)
+    resp = anon_client.post("/chat", json={"type": "MESSAGE", "message": {"text": "sla 82"}},
+                            headers={"Authorization": "Bearer " + _unsigned_chat_token("123456789012")})
+    assert resp.status_code == 403
+
+
+def test_stripped_signature_accepted_when_iam_gated(anon_client, monkeypatch):
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["123456789012"])
+    monkeypatch.setattr(crr_server, "TRUST_CLOUD_RUN_IAM", True)
+    monkeypatch.setattr(crr_server, "_route_chat_command", lambda _t: None)
+    resp = anon_client.post("/chat", json={"type": "MESSAGE", "message": {"text": "zzz"}},
+                            headers={"Authorization": "Bearer " + _unsigned_chat_token("123456789012")})
+    assert resp.status_code != 403
+
+
+def test_iam_gated_still_checks_issuer_and_audience(anon_client, monkeypatch):
+    """IAM proves the caller holds run.invoker, not that it is Chat acting for
+    THIS app. Both remaining claims still have to hold."""
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["123456789012"])
+    monkeypatch.setattr(crr_server, "TRUST_CLOUD_RUN_IAM", True)
+    wrong_issuer = _unsigned_chat_token("123456789012", email="someone@example.com")
+    assert anon_client.post("/chat", json={"type": "MESSAGE"},
+                            headers={"Authorization": "Bearer " + wrong_issuer}).status_code == 403
+    wrong_aud = _unsigned_chat_token("999999999999")
+    assert anon_client.post("/chat", json={"type": "MESSAGE"},
+                            headers={"Authorization": "Bearer " + wrong_aud}).status_code == 403
+
+
+def test_lowercase_bearer_scheme_accepted(anon_client, monkeypatch):
+    """Cloud Run rewrites `Bearer` to `bearer` on the header it authenticated.
+    A case-sensitive check rejected every real request (found live)."""
+    monkeypatch.setattr(crr_server, "CHAT_AUDIENCES", ["123456789012"])
+    monkeypatch.setattr(crr_server, "TRUST_CLOUD_RUN_IAM", True)
+    monkeypatch.setattr(crr_server, "_route_chat_command", lambda _t: None)
+    resp = anon_client.post("/chat", json={"type": "MESSAGE", "message": {"text": "zzz"}},
+                            headers={"Authorization": "bearer " + _unsigned_chat_token("123456789012")})
+    assert resp.status_code != 403
+
+
+def test_has_real_signature():
+    assert not crr_server._has_real_signature(_unsigned_chat_token("1"))
+    assert crr_server._has_real_signature("a.b." + "x" * 342)
+    assert not crr_server._has_real_signature("not-a-jwt")

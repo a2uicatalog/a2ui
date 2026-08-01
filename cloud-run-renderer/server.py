@@ -252,6 +252,62 @@ CHAT_CERTS_URL = ('https://www.googleapis.com/service_accounts/v1/metadata/x509/
                   + CHAT_ISSUER)
 
 
+# Declares "this deployment sits behind Cloud Run IAM". Only meaningful for
+# accepting a token whose signature Cloud Run stripped — see the long comment
+# in _require_chat_caller. Default off, so a public deployment (the mode that
+# actually needs an in-app check) never accepts an unsigned token.
+TRUST_CLOUD_RUN_IAM = os.environ.get('TRUST_CLOUD_RUN_IAM', '') == '1'
+
+# A real RS256/ES256 JWT signature is hundreds of base64 chars. Cloud Run's
+# replacement is a short marker. 100 is comfortably between the two and does
+# not depend on the marker's exact text, which is undocumented and could
+# change.
+_MIN_REAL_SIGNATURE_CHARS = 100
+
+
+def _has_real_signature(bearer: str) -> bool:
+    parts = bearer.split('.')
+    return len(parts) == 3 and len(parts[2]) >= _MIN_REAL_SIGNATURE_CHARS
+
+
+def _jwt_claims_unverified(bearer: str) -> dict:
+    """Decode the payload WITHOUT checking the signature. Only ever safe when
+    something else has already authenticated the request — here, Cloud Run's
+    IAM layer. Never call this on a path that has no other authentication."""
+    payload = bearer.split('.')[1]
+    payload += '=' * (-len(payload) % 4)
+    return json.loads(base64.urlsafe_b64decode(payload))
+
+
+def _check_chat_claims_only(bearer: str):
+    """Claims check for the IAM-gated case, where the signature is gone.
+
+    Cloud Run has already proved WHO the caller is (only principals with
+    roles/run.invoker get this far). This adds the one thing IAM does not
+    express: that the caller is Chat acting for THIS app, rather than some
+    other invoker that happens to hold the role."""
+    try:
+        claims = _jwt_claims_unverified(bearer)
+    except Exception as e:
+        print(f'chat auth: unparseable token payload: {type(e).__name__}', flush=True)
+        return _forbidden('invalid Chat bearer token')
+
+    if claims.get('email') != CHAT_ISSUER and claims.get('iss') != CHAT_ISSUER:
+        print(f'chat auth: IAM-gated caller is not Chat (iss={claims.get("iss")!r}, '
+              f'email={claims.get("email")!r})', flush=True)
+        return _forbidden('bearer token was not issued by Google Chat')
+
+    audience = str(claims.get('aud'))
+    if audience not in CHAT_AUDIENCES:
+        print(f'chat auth: audience {audience!r} not in configured '
+              f'{CHAT_AUDIENCES!r}', flush=True)
+        return _forbidden('invalid Chat bearer token')
+
+    print(f'chat auth: accepted via Cloud Run IAM (signature stripped), '
+          f'audience {audience!r}', flush=True)
+    return None
+
+
 def _observed_audience(bearer: str) -> str:
     """The `aud` claim WITHOUT verifying anything — diagnostics only, never a
     trust decision. Exists so a mismatch tells you what to set instead of
@@ -280,10 +336,60 @@ def _require_chat_caller():
                           'app\'s project number (comma-separated), matching '
                           'the Chat API configuration.')
 
-    header = request.headers.get('Authorization', '')
-    if not header.startswith('Bearer '):
+    # Cloud Run offers a SECOND place the caller's token can arrive:
+    # X-Serverless-Authorization, for services that use Authorization for
+    # their own scheme (cloud.google.com/run/docs/authenticating/
+    # service-to-service). Read both.
+    #
+    # Case-insensitive on the scheme, and that is not defensive padding:
+    # measured on this live service 2026-08-01, Cloud Run rewrites the
+    # header it authenticated from `Bearer x` to lowercase `bearer x`. A
+    # `startswith('Bearer ')` check rejected every real request.
+    bearer = ''
+    for name in ('Authorization', 'X-Serverless-Authorization'):
+        value = request.headers.get(name, '')
+        if value[:7].lower() == 'bearer ':
+            bearer = value[7:].strip()
+            break
+    if not bearer:
+        # Header NAMES only, never values -- enough to diagnose without
+        # another deploy, harmless if it ever reaches a log sink.
+        print('chat auth: no bearer token. headers present: '
+              f'{sorted(request.headers.keys())}', flush=True)
         return _forbidden('missing bearer token')
-    bearer = header[len('Bearer '):].strip()
+
+    # -- The platform may have already destroyed the proof.
+    #
+    # Measured on this live IAM-gated service 2026-08-01: a token sent as
+    # `Authorization: Bearer <858-char JWT>` arrives at the container with a
+    # 34-character signature segment where a real RS256 signature is 342.
+    # Cloud Run verifies the token and then REPLACES its signature before
+    # forwarding, so the receiving service cannot replay it (Google documents
+    # this for X-Serverless-Authorization; it evidently applies to whichever
+    # header was used for IAM). Header and payload arrive intact.
+    #
+    # The consequence is worth stating plainly, because it is the opposite of
+    # what you would assume: ON AN IAM-GATED DEPLOYMENT, IN-APP CRYPTOGRAPHIC
+    # VERIFICATION OF THE CALLER IS IMPOSSIBLE. There is no bug to fix and no
+    # flag to set — the signature does not arrive. Verification only works on
+    # a --allow-unauthenticated deployment, where Cloud Run has no reason to
+    # touch the token, which is exactly the mode this check was written for.
+    #
+    # So when the signature is gone we do not pretend to verify. We check the
+    # CLAIMS (issuer, audience) and rely on Cloud Run's IAM for authenticity —
+    # which is sound, because a stripped signature is itself evidence that
+    # Cloud Run authenticated the request. That inference is only valid on a
+    # gated deployment, so it is gated behind an explicit declaration rather
+    # than inferred: a public deployment must never accept an unsigned token,
+    # since anyone could hand-craft one.
+    if not _has_real_signature(bearer):
+        if not TRUST_CLOUD_RUN_IAM:
+            print('chat auth: token signature was stripped by Cloud Run, so it '
+                  'cannot be verified here. If this service is deployed '
+                  '--no-allow-unauthenticated, set TRUST_CLOUD_RUN_IAM=1 to '
+                  'accept Cloud Run\'s own authentication. Refusing.', flush=True)
+            return _forbidden('invalid Chat bearer token')
+        return _check_chat_claims_only(bearer)
 
     try:
         from google.auth.transport import requests as ga_requests
