@@ -1846,9 +1846,15 @@ def _render_metric_row(b: dict) -> str:
         accent = m.get("accent", m.get("color", b.get("accent", "#6366f1")))
         trend  = "↑" if m.get("trend") == "up" else "↓" if m.get("trend") == "down" else ""
         tc     = "#16a34a" if m.get("trend") == "up" else "#dc2626" if m.get("trend") == "down" else "#6b7280"
-        sep    = '<div style="width:1px;background:#e5e7eb;margin:12px 0;"></div>' if i < len(metrics) - 1 else ""
+        # Divider as a BORDER on the cell, not a sibling element. It used to be
+        # its own <div>, which made it a grid ITEM: 4 metrics emitted 7
+        # children into a repeat(4,1fr) grid, so the separators ate half the
+        # cells and the row wrapped to 2 metrics with blanks between them.
+        # Any cols > 2 was silently wrong. Suppressing the border on the first
+        # cell of each row keeps the visual result identical for cols <= 2.
+        edge   = "" if i % cols == 0 else "border-left:1px solid #e5e7eb;"
         cells += (
-            f'<div style="text-align:center;padding:16px 8px;">'
+            f'<div style="text-align:center;padding:16px 8px;{edge}">'
             f'<div style="font-size:32px;font-weight:900;color:{accent};line-height:1;margin-bottom:4px;">'
             + (f'<span style="font-size:18px;">{m["prefix"]}</span>' if m.get("prefix") else "")
             + str(m.get("value",""))
@@ -1856,7 +1862,7 @@ def _render_metric_row(b: dict) -> str:
             + (f'<span style="font-size:16px;color:{tc};margin-left:4px;">{trend}</span>' if trend else "")
             + f'</div><div style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;">{m.get("label","")}</div>'
             + (f'<div style="font-size:11px;color:#9ca3af;margin-top:2px;">{m["sub"]}</div>' if m.get("sub") else "")
-            + f'</div>{sep}'
+            + '</div>'
         )
     return f'<div style="display:grid;grid-template-columns:repeat({cols},1fr);border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin:1.5rem 0;background:#fff;">{cells}</div>'
 
