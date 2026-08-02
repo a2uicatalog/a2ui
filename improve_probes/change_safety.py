@@ -4,8 +4,8 @@ ops = PRIVATE/"ops"
 targets = {
  "MCP Apps bundle (ui:// template)": (ops/"check_ui_view_version.py").exists(),
  "Worker renderer module":           (ops/"check_worker_renderer.py").exists(),
- "GAS public deployment":            False,
- "GAS API deployment":               False,
+ "GAS public deployment":            (ops/"check_gas_deployments.py").exists(),
+ "GAS API deployment":               (ops/"check_gas_deployments.py").exists(),
  "Cloud Run renderer":               False,
 }
 ungated = [k for k,v in targets.items() if not v]
