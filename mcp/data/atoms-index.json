@@ -3324,6 +3324,7 @@
    "type": "paragraph",
    "compact": "prose paragraph (GAS alias for body)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3332,6 +3333,7 @@
    "type": "text_block",
    "compact": "plain text block",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3340,6 +3342,7 @@
    "type": "blockquote",
    "compact": "styled pull-quote with attribution",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3348,6 +3351,7 @@
    "type": "spacer",
    "compact": "vertical whitespace gap",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3356,6 +3360,7 @@
    "type": "tag_chip",
    "compact": "inline tag chip",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3364,6 +3369,7 @@
    "type": "badge",
    "compact": "inline badge pill",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3372,6 +3378,7 @@
    "type": "inline_code",
    "compact": "monospace inline code span",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3380,6 +3387,7 @@
    "type": "code_block",
    "compact": "syntax-highlighted code block",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3388,6 +3396,7 @@
    "type": "link_button",
    "compact": "text hyperlink button",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3396,6 +3405,7 @@
    "type": "cta_button",
    "compact": "call-to-action button",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3414,6 +3424,7 @@
    "type": "info_card",
    "compact": "simple info card with title and body",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3438,6 +3449,7 @@
    "type": "dark_hero",
    "compact": "dark hero banner with gradient and CTA",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3446,6 +3458,7 @@
    "type": "glowing_stat",
    "compact": "neon-glow stat number on dark card",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3454,6 +3467,7 @@
    "type": "glass_card",
    "compact": "frosted-glass card with blur backdrop — dark-theme highlight box",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3462,6 +3476,7 @@
    "type": "gradient_border_card",
    "compact": "animated gradient border card",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3470,6 +3485,7 @@
    "type": "floating_orbs",
    "compact": "decorative blurred colour orbs background",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3486,6 +3502,7 @@
    "type": "dark_feature_grid",
    "compact": "dark-theme feature grid with icons",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3494,6 +3511,7 @@
    "type": "dark_divider",
    "compact": "dark-theme horizontal divider",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3510,6 +3528,7 @@
    "type": "depth_stack",
    "compact": "stacked cards with depth parallax",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3526,6 +3545,7 @@
    "type": "scroll_trigger",
    "compact": "scroll-triggered animated reveal",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3534,6 +3554,7 @@
    "type": "flow_connector",
    "compact": "animated beam connector between two or more nodes",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3542,6 +3563,7 @@
    "type": "live_metric",
    "compact": "animated counting number (alias for animated_counter)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3550,6 +3572,7 @@
    "type": "deadline_ticker",
    "compact": "countdown timer to a target date (alias)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3558,6 +3581,7 @@
    "type": "pattern_background",
    "compact": "dot-grid pattern background (alias)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3566,6 +3590,7 @@
    "type": "glitch_text",
    "compact": "RGB-split glitch-effect headline",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3598,6 +3623,7 @@
    "type": "floating_particles",
    "compact": "floating particles background (canvas placeholder)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3606,6 +3632,7 @@
    "type": "parallax_section",
    "compact": "parallax scroll section (canvas placeholder)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3614,6 +3641,7 @@
    "type": "scroll_progress",
    "compact": "fixed scroll-progress bar at page top",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3622,6 +3650,7 @@
    "type": "live_clock",
    "compact": "live ticking clock widget",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3630,6 +3659,7 @@
    "type": "decision_tree",
    "compact": "interactive collapsible decision tree",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3638,6 +3668,7 @@
    "type": "step_reveal_sequence",
    "compact": "tabbed step-by-step sequence",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3654,6 +3685,7 @@
    "type": "tooltip_glossary",
    "compact": "glossary with hover tooltips",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3662,6 +3694,7 @@
    "type": "focus_lens",
    "compact": "spotlight focus lens on blurred background",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3678,6 +3711,7 @@
    "type": "stagger_list",
    "compact": "stagger-animated list of items",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3686,6 +3720,7 @@
    "type": "liquid_button",
    "compact": "liquid morphing hover button",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3694,6 +3729,7 @@
    "type": "highlight_sweep",
    "compact": "animated highlight sweep text",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3702,6 +3738,7 @@
    "type": "progress_reveal",
    "compact": "scroll-triggered animated progress bar",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3710,6 +3747,7 @@
    "type": "big_reveal",
    "compact": "spring-animation big number or word reveal",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3718,6 +3756,7 @@
    "type": "kinetic_headline",
    "compact": "word-by-word kinetic headline animation",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3726,6 +3765,7 @@
    "type": "text_reveal_mask",
    "compact": "clip-path text reveal mask animation",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3734,6 +3774,7 @@
    "type": "split_reveal",
    "compact": "split-panel reveal animation",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3742,6 +3783,7 @@
    "type": "mesh_gradient",
    "compact": "dark card with radial mesh gradient background",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3750,6 +3792,7 @@
    "type": "stripe_background",
    "compact": "animated diagonal stripe background card",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3774,6 +3817,7 @@
    "type": "orbit_diagram",
    "compact": "animated orbit diagram with satellite nodes",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3782,6 +3826,7 @@
    "type": "noise_card",
    "compact": "dark card with film-grain noise texture",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3790,6 +3835,7 @@
    "type": "comparison_morph",
    "compact": "draggable before/after comparison slider",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3814,6 +3860,7 @@
    "type": "globe_3d",
    "compact": "interactive spinning 3-D globe (wire or earth)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3870,6 +3917,7 @@
    "type": "surface_unlocked",
    "compact": "achievement-style surface unlocked notification",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3886,6 +3934,7 @@
    "type": "url_anatomy",
    "compact": "annotated URL anatomy diagram",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3907,6 +3956,7 @@
    "type": "take_away_card",
    "compact": "bold screenshot-ready insight card",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3915,6 +3965,7 @@
    "type": "next_step_strip",
    "compact": "horizontal numbered next-steps strip",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3931,6 +3982,7 @@
    "type": "atom_anatomy",
    "compact": "rendered atom + raw schema side-by-side anatomy view",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3939,6 +3991,7 @@
    "type": "renderer_stats",
    "compact": "stat grid for renderer capability metrics",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3947,6 +4000,7 @@
    "type": "prompt_to_schema",
    "compact": "three-panel prompt → schema → output flow",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3987,6 +4041,7 @@
    "type": "surface_map",
    "compact": "A2UI surface diagram (schema → surfaces)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]

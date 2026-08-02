@@ -1,19 +1,45 @@
 {
   "name": "@a2uicatalog/mcp",
   "version": "0.1.1",
-  "description": "CLI + local MCP server for the A2UI Atomic Catalog: browse the 474-atom vocabulary, validate a payload (hallucinated atom = parse error, not a broken screen), get a shareable preview URL, and deploy a training.md to your own Google Apps Script. Run via `npx @a2uicatalog/mcp`. Pure-local for browsing/validation — no network, no secret, no account.",
+  "description": "CLI + local MCP server for the A2UI Atomic Catalog. Render an A2UI payload to HTML with no account and no MCP client (`npx @a2uicatalog/mcp render page.json`), browse and validate the 474-atom vocabulary offline, or run the local MCP server for Claude/Cursor. A hallucinated atom is a parse error, not a broken screen.",
   "type": "module",
-  "bin": { "a2uicatalog-mcp": "server.mjs" },
-  "engines": { "node": ">=18" },
+  "bin": {
+    "a2uicatalog-mcp": "server.mjs",
+    "a2ui": "cli.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "license": "MIT",
   "author": "Curtis Krygier",
   "homepage": "https://a2uicatalog.ai",
-  "repository": { "type": "git", "url": "git+https://github.com/a2uicatalog/a2ui.git", "directory": "mcp" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a2uicatalog/a2ui.git",
+    "directory": "mcp"
+  },
   "bugs": "https://github.com/a2uicatalog/a2ui/issues",
-  "keywords": ["mcp", "model-context-protocol", "cli", "a2ui", "ui-generation", "claude", "agent", "google-apps-script"],
-  "files": ["server.mjs", "demo.mjs", "test.mjs", "scripts", "data", "README.md"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cli",
+    "a2ui",
+    "ui-generation",
+    "claude",
+    "agent",
+    "google-apps-script"
+  ],
+  "files": [
+    "README.md",
+    "cli.mjs",
+    "data",
+    "demo.mjs",
+    "scripts",
+    "server.mjs",
+    "test.mjs"
+  ],
   "scripts": {
-    "test": "node test.mjs",
+    "test": "node test.mjs && node cli-test.mjs",
     "demo": "node demo.mjs",
     "sync-data": "node scripts/sync-data.mjs",
     "prepublishOnly": "npm run sync-data && npm test"

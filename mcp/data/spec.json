@@ -5679,7 +5679,8 @@
    "fields": {
     "label": "string. Metric name.",
     "value": "number. Current value.",
-    "previous": "number. Previous period value."
+    "previous": "number. Previous period value.",
+    "lower_is_better": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome."
    },
    "source": {
     "name": "a2uicatalog",
@@ -11027,6 +11028,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -11047,6 +11054,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -11067,6 +11080,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -11220,6 +11239,7 @@
    "compact_description": "prose paragraph (GAS alias for body)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11239,6 +11259,7 @@
    "compact_description": "plain text block",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11258,6 +11279,7 @@
    "compact_description": "styled pull-quote with attribution",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11278,6 +11300,7 @@
    "compact_description": "vertical whitespace gap",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11297,6 +11320,7 @@
    "compact_description": "inline tag chip",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11317,6 +11341,7 @@
    "compact_description": "inline badge pill",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11337,6 +11362,7 @@
    "compact_description": "monospace inline code span",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11356,6 +11382,7 @@
    "compact_description": "syntax-highlighted code block",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11376,6 +11403,7 @@
    "compact_description": "text hyperlink button",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11396,6 +11424,7 @@
    "compact_description": "call-to-action button",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11442,6 +11471,7 @@
    "compact_description": "simple info card with title and body",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11506,6 +11536,7 @@
    "compact_description": "dark hero banner with gradient and CTA",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11531,6 +11562,7 @@
    "compact_description": "neon-glow stat number on dark card",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11556,6 +11588,7 @@
    "compact_description": "frosted-glass card with blur backdrop — dark-theme highlight box",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11581,6 +11614,7 @@
    "compact_description": "animated gradient border card",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11606,6 +11640,7 @@
    "compact_description": "decorative blurred colour orbs background",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11630,6 +11665,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "glow is static"
+     }
     ]
    },
    "fields": {
@@ -11652,6 +11693,7 @@
    "compact_description": "dark-theme feature grid with icons",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11673,6 +11715,7 @@
    "compact_description": "dark-theme horizontal divider",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11696,6 +11739,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "static gradient, no animation"
+     }
     ]
    },
    "fields": {
@@ -11714,6 +11763,7 @@
    "compact_description": "stacked cards with depth parallax",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11736,6 +11786,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "text shows unscrambled"
+     }
     ]
    },
    "fields": {
@@ -11754,6 +11810,7 @@
    "compact_description": "scroll-triggered animated reveal",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11776,6 +11833,7 @@
    "compact_description": "animated beam connector between two or more nodes",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11801,6 +11859,7 @@
    "compact_description": "animated counting number (alias for animated_counter)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11826,6 +11885,7 @@
    "compact_description": "countdown timer to a target date (alias)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11846,6 +11906,7 @@
    "compact_description": "dot-grid pattern background (alias)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11869,6 +11930,7 @@
    "compact_description": "RGB-split glitch-effect headline",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11891,6 +11953,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "glow is static"
+     }
     ]
    },
    "fields": {
@@ -11912,6 +11980,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the magnetism is the button"
+     }
     ]
    },
    "fields": {
@@ -11932,6 +12006,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "cannot trigger; the web renderer also raises NameError"
+     }
     ]
    },
    "fields": {
@@ -11950,6 +12030,7 @@
    "compact_description": "floating particles background (canvas placeholder)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11969,6 +12050,7 @@
    "compact_description": "parallax scroll section (canvas placeholder)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11988,6 +12070,7 @@
    "compact_description": "fixed scroll-progress bar at page top",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12008,6 +12091,7 @@
    "compact_description": "live ticking clock widget",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12029,6 +12113,7 @@
    "compact_description": "interactive collapsible decision tree",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12049,6 +12134,7 @@
    "compact_description": "tabbed step-by-step sequence",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12070,6 +12156,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "thread reads, does not animate"
+     }
     ]
    },
    "fields": {
@@ -12087,6 +12179,7 @@
    "compact_description": "glossary with hover tooltips",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12107,6 +12200,7 @@
    "compact_description": "spotlight focus lens on blurred background",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12129,6 +12223,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "text shows without the boot animation"
+     }
     ]
    },
    "fields": {
@@ -12148,6 +12248,7 @@
    "compact_description": "stagger-animated list of items",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12169,6 +12270,7 @@
    "compact_description": "liquid morphing hover button",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12189,6 +12291,7 @@
    "compact_description": "animated highlight sweep text",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12211,6 +12314,7 @@
    "compact_description": "scroll-triggered animated progress bar",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12234,6 +12338,7 @@
    "compact_description": "spring-animation big number or word reveal",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12257,6 +12362,7 @@
    "compact_description": "word-by-word kinetic headline animation",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12280,6 +12386,7 @@
    "compact_description": "clip-path text reveal mask animation",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12302,6 +12409,7 @@
    "compact_description": "split-panel reveal animation",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12324,6 +12432,7 @@
    "compact_description": "dark card with radial mesh gradient background",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12346,6 +12455,7 @@
    "compact_description": "animated diagonal stripe background card",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12371,6 +12481,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "timeline reads, dots do not pulse"
+     }
     ]
    },
    "fields": {
@@ -12391,6 +12507,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "final figures shown, not counted up"
+     }
     ]
    },
    "fields": {
@@ -12408,6 +12530,7 @@
    "compact_description": "animated orbit diagram with satellite nodes",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12430,6 +12553,7 @@
    "compact_description": "dark card with film-grain noise texture",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12452,6 +12576,7 @@
    "compact_description": "draggable before/after comparison slider",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12475,6 +12600,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "neither interactive nor live-fed"
+     }
     ]
    },
    "fields": {
@@ -12500,6 +12631,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the quiz cannot be answered"
+     }
     ]
    },
    "fields": {
@@ -12522,6 +12659,7 @@
    "compact_description": "interactive spinning 3-D globe (wire or earth)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12549,6 +12687,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "renders and animates, no pan/hover"
+     }
     ]
    },
    "fields": {
@@ -12572,6 +12716,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -12614,6 +12764,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -12657,6 +12813,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "slides cannot be changed"
+     }
     ]
    },
    "fields": {
@@ -12676,6 +12838,7 @@
    "compact_description": "achievement-style surface unlocked notification",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12700,6 +12863,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the schema cannot be revealed"
+     }
     ]
    },
    "fields": {
@@ -12718,6 +12887,7 @@
    "compact_description": "annotated URL anatomy diagram",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12789,6 +12959,7 @@
    "compact_description": "bold screenshot-ready insight card",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12812,6 +12983,7 @@
    "compact_description": "horizontal numbered next-steps strip",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12834,6 +13006,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "nothing can be copied"
+     }
     ]
    },
    "fields": {
@@ -12853,6 +13031,7 @@
    "compact_description": "rendered atom + raw schema side-by-side anatomy view",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12874,6 +13053,7 @@
    "compact_description": "stat grid for renderer capability metrics",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12895,6 +13075,7 @@
    "compact_description": "three-panel prompt → schema → output flow",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12920,6 +13101,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the before/after animation is the comparison"
+     }
     ]
    },
    "fields": {
@@ -12944,6 +13131,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "no vote can be cast"
+     }
     ]
    },
    "fields": {
@@ -12968,6 +13161,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "no reaction can be sent"
+     }
     ]
    },
    "fields": {
@@ -12991,6 +13190,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "no hand can be raised"
+     }
     ]
    },
    "fields": {
@@ -13013,6 +13218,7 @@
    "compact_description": "A2UI surface diagram (schema → surfaces)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -13036,6 +13242,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "a stopwatch that cannot count is not a stopwatch"
+     }
     ]
    },
    "fields": {
@@ -13057,6 +13269,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the editor cannot edit"
+     }
     ]
    },
    "fields": {
