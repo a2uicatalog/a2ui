@@ -95,3 +95,5 @@ public-full/
 # a2ui-private, then removes them again) — this is the safety net if a build
 # is interrupted mid-merge, so the merged state can never get committed.
 atoms/.schema.yaml.public-only.bak
+improve.yaml
+improve_probes
