@@ -342,6 +342,141 @@
         }
       }
     },
+    "/api/render/batch": {
+      "post": {
+        "tags": [
+          "render"
+        ],
+        "operationId": "renderSurfaceBatch",
+        "summary": "Render many payloads in one call",
+        "description": "Same guards and surface policy as /api/render, applied per payload. PARTIAL SUCCESS is the contract: a malformed or refused payload returns its own status inside the results array and the rest still render — the batch is never failed over one bad entry. Max 25 payloads, 1 MB body, and one call against the daily allowance regardless of batch size.",
+        "parameters": [
+          {
+            "name": "surface",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "web",
+                "mcp-apps",
+                "google-apps-script-web",
+                "google-meet-stage"
+              ]
+            },
+            "description": "One surface for the whole batch; applied to every payload."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "payloads"
+                ],
+                "properties": {
+                  "payloads": {
+                    "type": "array",
+                    "maxItems": 25,
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "payloads": [
+                  {
+                    "title": "Q1",
+                    "blocks": [
+                      {
+                        "type": "heading",
+                        "text": "Q1"
+                      }
+                    ]
+                  },
+                  {
+                    "title": "Q2",
+                    "blocks": [
+                      {
+                        "type": "heading",
+                        "text": "Q2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Per-payload results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "rendered": {
+                      "type": "integer"
+                    },
+                    "failed": {
+                      "type": "integer"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "index": {
+                            "type": "integer"
+                          },
+                          "status": {
+                            "type": "integer"
+                          },
+                          "html": {
+                            "type": "string"
+                          },
+                          "error": {
+                            "type": "string"
+                          },
+                          "degraded": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "incompatible": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed batch, unknown surface, or over the 25-payload cap"
+          },
+          "413": {
+            "description": "Body larger than 1 MB"
+          },
+          "429": {
+            "description": "Daily render allowance exhausted"
+          }
+        }
+      }
+    },
     "/api/compose": {
       "post": {
         "tags": [
