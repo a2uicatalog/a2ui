@@ -1051,6 +1051,10 @@ clasp push &amp;&amp; clasp deploy</code></pre>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -1571,6 +1575,10 @@ def generate_index(atoms):
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
+    <!-- Registry backlink — the reciprocal half of the Smithery listing,
+         which verifies by finding a link to it on this site. Not decoration:
+         remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </main>
   {INDEX_JS}
@@ -2494,6 +2502,10 @@ def render_templates_page(atoms):
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -2547,6 +2559,10 @@ def render_try_page(atom_count):
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
@@ -2832,6 +2848,10 @@ def render_frugal_ai_ops_page():
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
     <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
   </footer>
   </div>
   {SITE_FOOT_JS}
