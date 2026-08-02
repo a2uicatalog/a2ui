@@ -332,7 +332,7 @@
 | `metar_feed` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `firestore_read` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `paragraph` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
-| `text_block` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `text_block` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `blockquote` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `spacer` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `tag_chip` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
@@ -354,13 +354,13 @@
 | `dark_feature_grid` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `dark_divider` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `ambient_gradient` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
-| `depth_stack` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `depth_stack` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `scramble_reveal` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
-| `scroll_trigger` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `scroll_trigger` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `flow_connector` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `live_metric` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `deadline_ticker` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
-| `pattern_background` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `pattern_background` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `glitch_text` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `neon_glow` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `magnetic_button` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
