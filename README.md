@@ -193,7 +193,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `ai_build_trace` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `airspace_command_deck` | — | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `alert_banner` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
-| `ambient_gradient` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `ambient_gradient` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `anchor_list` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `animated_beam` | ✅ | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `animated_border` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -219,7 +219,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `before_after_stack` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `benchmark_comparison` | ✅ | ✅ | — | ✅ | — | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `bento_grid` | ✅ | ✅ | — | ⚠️ | — | ✅ | ⚠️ | ✅ | [MagicUI / shadcn](https://magicui.design) · MIT |
-| `big_reveal` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `big_reveal` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `blockquote` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `blockquote_with_avatar` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `blur_fade_in` | ✅ | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -242,7 +242,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `chartjs_bar` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `chartjs_line` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `chartjs_pie` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ✅ | [OpenUI / Thesys](https://github.com/thesysdev/openui) · MIT |
-| `chat_sequence` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `chat_sequence` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `checklist_interactive` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `chip_group` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `choicebox_group` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -276,7 +276,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `count_up_stat` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `countdown_ring` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `countdown_timer` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `counter_group` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `counter_group` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `course_progress_card` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `css_dropdown_menu` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
 | `css_modal` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
@@ -293,7 +293,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `data_grid` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [IBM Carbon Design System](https://github.com/carbon-design-system/carbon) · Apache-2.0 |
 | `data_source` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `data_table_sortable` | ✅ | ✅ | — | ⚠️ | — | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `deadline_ticker` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `deadline_ticker` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `decision_tree` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `deprecation_notice` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
 | `depth_stack` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -337,7 +337,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `flashcard_deck` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `flip_card` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
 | `floating_badge` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `floating_orbs` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `floating_orbs` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `floating_particles` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `flow_connector` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `focus_lens` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -360,18 +360,18 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `gauge_sla` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `gdm_rocket_panel` | — | — | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `gemini_prompt` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `geo_contour_waves` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `geo_europe_airspace` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `geo_iso_fleet` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `geo_iso_heli_hover` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `geo_iso_rocket_launch` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `geo_contour_waves` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `geo_europe_airspace` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `geo_iso_fleet` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `geo_iso_heli_hover` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `geo_iso_rocket_launch` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `geo_iso_takeoff` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `geo_mercator_radar` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `geo_mercator_radar` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `github_activity_grid` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `github_repo_card` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `glass_card` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `glitch_text` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `globe_3d` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `glitch_text` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `globe_3d` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `glossary_inline` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
 | `glossary_term` | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `glow_button` | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -388,7 +388,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `heatmap` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
 | `heatmap_calendar` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [IBM Carbon Design System](https://github.com/carbon-design-system/carbon) · Apache-2.0 |
 | `highlight_box` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `highlight_sweep` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `highlight_sweep` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `highlighted_text` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `hint_reveal` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `hover_card` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -417,7 +417,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `key_takeaways` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `key_value` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `keyboard_shortcut` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
-| `kinetic_headline` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `kinetic_headline` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `knowledge_check` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `leaderboard_card` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `learning_objectives` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -427,10 +427,10 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `linkedin_post_image` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `liquid_button` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `live_aggregator` | ✅ | ✅ | — | ✅ | — | ✅ | ⚠️ | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `live_clock` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `live_clock` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `live_demo_embed` | ✅ | ⚠️ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `live_edit` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `live_metric` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `live_metric` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `live_vote` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `llm_comparison_table` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `loading_dots` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -464,8 +464,8 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `nav_bar` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `nav_link` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `navigation_menu` | ✅ | ✅ | — | — | — | ✅ | — | ⚠️ | [Radix UI / shadcn](https://www.radix-ui.com/primitives/docs/components/navigation-menu) · MIT |
-| `neon_glow` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `neon_text` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `neon_glow` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `neon_text` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `newsletter_cta` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `next_step_strip` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `noise_card` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -475,7 +475,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `number_odometer` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `numbered_list` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `onboarding_stepper` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `orbit_diagram` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `orbit_diagram` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `order_status_card` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ✅ | ✅ | [Shopify Polaris](https://github.com/Shopify/polaris) · MIT |
 | `otp_input` | ✅ | ✅ | — | ⚠️ | — | ✅ | — | — | [shadcn/ui](https://github.com/shadcn-ui/ui) · MIT |
 | `page_header` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -501,7 +501,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `progress_bar` | ✅ | ✅ | — | ✅ | — | ✅ | — | ⚠️ | [UIverse.io community](https://uiverse.io) · MIT |
 | `progress_checkpoint` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
 | `progress_circle` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | ⚠️ | [UIverse.io community](https://uiverse.io) · MIT |
-| `progress_reveal` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `progress_reveal` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `progress_ring` | ✅ | ✅ | ✅ | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `progress_store` | — | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `prompt_template` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -541,9 +541,9 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `schema_qr` | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | [QR-Code-generator (Project Nayuki)](https://www.nayuki.io/page/qr-code-generator-library) · MIT |
 | `schema_reveal` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `score_summary` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `scramble_reveal` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `scramble_reveal` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `script_run_button` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `scroll_progress` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `scroll_progress` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `scroll_to_top` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `scroll_trigger` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `search_result_card` | ✅ | ✅ | — | ✅ | — | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -577,30 +577,30 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `speed_counter` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `spinner` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
 | `split_pane` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `split_reveal` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `split_reveal` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `split_stat` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `spotlight_card` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `spotlight_cursor` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `spring_nodes` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `sprint_board` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [Atlassian Design System](https://atlassian.design) · Apache-2.0 |
 | `stacked_area` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `stagger_list` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `stagger_list` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `star_rating_display` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [UIverse.io community](https://uiverse.io) · MIT |
 | `star_rating_input` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
 | `stat_card` | ✅ | ✅ | — | ✅ | — | ✅ | — | ⚠️ | [UIverse.io community](https://uiverse.io) · MIT |
 | `status_dashboard` | ✅ | ✅ | — | ✅ | — | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `status_pill` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | — | [UIverse.io community](https://uiverse.io) · MIT |
-| `status_timeline` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `status_timeline` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `step_progress` | ✅ | ✅ | — | — | — | ✅ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `step_reveal_sequence` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `step_reveal_sequence` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `stepper` | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | ⚠️ | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `steps` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `stripe_background` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `stripe_background` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `study_timer` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `subheading` | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `summary_box` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
 | `surface_map` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `surface_unlocked` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `surface_unlocked` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `svg_path_draw` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tab_bar` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ⚠️ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tabbed_code` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -614,12 +614,12 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `task_list` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tasks_today` | — | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `terminal_block` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `terminal_boot` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `terminal_boot` | ⚠️ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `testimonial_card` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `text_block` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `text_callout` | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [OpenUI / Thesys](https://github.com/thesysdev/openui) · MIT |
 | `text_highlight` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
-| `text_reveal_mask` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `text_reveal_mask` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `tilt_card` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `time_estimate` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `timeline` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |

@@ -4,7 +4,7 @@ Decorative blurred colour orbs that float in a dark background area
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -8224,6 +8224,9 @@ blocks:
     works_on:
     - google-apps-script-web
     - mcp-apps
+    degraded_on:
+    - surface: web
+      note: animates, not interactive
   fields:
     title: string (optional). HUD title. Default "KOUROU ELA-4 — HEAVY LIFT INJECTION
       PROFILE".
@@ -8239,6 +8242,9 @@ blocks:
     works_on:
     - google-apps-script-web
     - mcp-apps
+    degraded_on:
+    - surface: web
+      note: animates, not interactive
   fields:
     title: string (optional). HUD title. Default "LFBO HELIPAD 2 — AIRBUS H160 HOVER
       PROFILE".
@@ -8256,6 +8262,9 @@ blocks:
     works_on:
     - google-apps-script-web
     - mcp-apps
+    degraded_on:
+    - surface: web
+      note: animates, not interactive
   fields:
     airline: string (optional). Airline ICAO for A321neo accent — AIB, EZY, AFR, BAW,
       DLH, RYR. Default AIB.
@@ -8678,7 +8687,10 @@ blocks:
   description: Decorative blurred colour orbs that float in a dark background area
   compact_description: decorative blurred colour orbs background
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     orbs: array of {colour, size, x, y} (optional)
     blur: number (optional, blur px)
@@ -8689,7 +8701,12 @@ blocks:
   description: Neon-coloured glowing text, ideal for dark technical pages
   compact_description: neon-glow coloured text
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: glow is static
   fields:
     text: string
     colour: 'string (optional, hex, default #22d3ee)'
@@ -8729,7 +8746,12 @@ blocks:
   description: Full-screen animated aurora background — alias for aurora_background
   compact_description: animated aurora/ambient gradient background
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: static gradient, no animation
   fields:
     title: string (optional)
     text: string (optional)
@@ -8751,7 +8773,12 @@ blocks:
     alias for encrypted_reveal
   compact_description: character-scramble text reveal on scroll
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: text shows unscrambled
   fields:
     text: 'string (alias: content, label)'
     title: string (optional)
@@ -8799,7 +8826,10 @@ blocks:
     for animated_counter
   compact_description: animated counting number (alias for animated_counter)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     value: 'number (alias: end)'
     start: number (optional)
@@ -8814,7 +8844,10 @@ blocks:
     — alias for countdown_timer
   compact_description: countdown timer to a target date (alias)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     target_date: 'string (ISO date, alias: target)'
     label: 'string (optional, alias: title)'
@@ -8838,7 +8871,10 @@ blocks:
   description: Cyan glitch-effect headline — periodic RGB-split animation
   compact_description: RGB-split glitch-effect headline
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (alias: title, label)'
     size: string (optional, CSS font-size, default 2rem)
@@ -8847,7 +8883,12 @@ blocks:
   description: Pulsing neon-glow text on a near-black background
   compact_description: pulsing neon-glow text on dark card
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: glow is static
   fields:
     text: 'string (alias: title, label)'
     color: 'string (optional, hex, default #22d3ee)'
@@ -8857,7 +8898,12 @@ blocks:
   description: Button that follows the cursor magnetically on hover
   compact_description: magnetic cursor-following button
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: the magnetism is the button
   fields:
     text: 'string (alias: label, title)'
     color: string (optional, hex background)
@@ -8866,7 +8912,12 @@ blocks:
   description: Button that triggers confetti explosion when clicked
   compact_description: click-to-trigger confetti button
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: cannot trigger; the web renderer also raises NameError
   fields:
     label: 'string (message shown after click, alias: text)'
     trigger: 'string (button label, alias: button)'
@@ -8897,7 +8948,10 @@ blocks:
   description: Thin fixed progress bar at the top of the viewport showing scroll position
   compact_description: fixed scroll-progress bar at page top
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     color: 'string (optional, hex, default #6366f1)'
     height: number (optional, px, default 3)
@@ -8906,7 +8960,10 @@ blocks:
   description: Live ticking clock on a dark card, updates every second
   compact_description: live ticking clock widget
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     label: 'string (optional, alias: title)'
     format: string (optional, 12h|24h, default 24h)
@@ -8928,7 +8985,10 @@ blocks:
   description: Tab-style step-by-step content with radio-button navigation
   compact_description: tabbed step-by-step sequence
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     steps: array of {title, text} — each step shown in its own tab panel
   source: *id007
@@ -8981,7 +9041,12 @@ blocks:
   description: Animated conversation thread with user/assistant bubbles
   compact_description: animated chat conversation thread
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: thread reads, does not animate
   fields:
     messages: array of {role (user|assistant), name (optional), text}
   source: *id007
@@ -9052,7 +9117,12 @@ blocks:
   description: Dark terminal window that types out boot/log lines one by one
   compact_description: animated terminal boot sequence
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: text shows without the boot animation
   fields:
     lines: array of strings — lines typed out in sequence
     title: string (optional, shown as terminal header)
@@ -9063,7 +9133,10 @@ blocks:
     and descriptions
   compact_description: stagger-animated list of items
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     items: array of strings or {icon, text, sub} objects
     direction: string (optional, up|down|left|right)
@@ -9085,7 +9158,10 @@ blocks:
   description: Text with an animated highlight sweep underline that plays on load
   compact_description: animated highlight sweep text
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (alias: content)'
     color: 'string (optional, highlight colour hex, default #fef08a yellow)'
@@ -9097,7 +9173,10 @@ blocks:
     view
   compact_description: scroll-triggered animated progress bar
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     value: 'number (0–100, alias: percent)'
     label: 'string (optional, alias: title)'
@@ -9109,7 +9188,10 @@ blocks:
   description: Large centred number or word that pops in with a spring scale animation
   compact_description: spring-animation big number or word reveal
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (the big value, alias: value, label)'
     sub: 'string (optional subtitle below, alias: subtitle)'
@@ -9121,7 +9203,10 @@ blocks:
   description: Headline where each word flies in with a staggered animation
   compact_description: word-by-word kinetic headline animation
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (alias: title)'
     size: string (optional, CSS font-size)
@@ -9133,7 +9218,10 @@ blocks:
   description: Headline that sweeps in from left using clip-path mask animation
   compact_description: clip-path text reveal mask animation
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (alias: title)'
     size: string (optional, CSS font-size)
@@ -9145,7 +9233,10 @@ blocks:
     it
   compact_description: split-panel reveal animation
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     text: 'string (optional, alias: content)'
@@ -9170,7 +9261,10 @@ blocks:
   description: Card with animated diagonal stripe background pattern
   compact_description: animated diagonal stripe background card
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     text: 'string (optional, alias: content)'
@@ -9182,7 +9276,12 @@ blocks:
   description: Vertical timeline with status dots (done/active/pending/error/warning)
   compact_description: status-dot vertical timeline
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: timeline reads, dots do not pulse
   fields:
     events: array of {title, date (optional), text (optional), status (done|active|pending|error|warning)}
     title: string (optional)
@@ -9191,7 +9290,12 @@ blocks:
   description: Row of animated counting stats separated by dividers
   compact_description: row of animated stat counters
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: final figures shown, not counted up
   fields:
     stats: 'array of {value, label, color (optional), prefix (optional), suffix (optional),
       decimals (optional)} (alias: items)'
@@ -9201,7 +9305,10 @@ blocks:
     on a dashed orbit ring
   compact_description: animated orbit diagram with satellite nodes
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     center: string (label for the central node)
     nodes: array of strings or {label, color} objects
@@ -9240,7 +9347,12 @@ blocks:
     submit input
   compact_description: interactive word cloud with optional live Sheet feed
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: neither interactive nor live-fed
   processing:
     required_scope: spreadsheets
   fields:
@@ -9257,7 +9369,12 @@ blocks:
     pass score, and result screen
   compact_description: multi-question interactive quiz
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: the quiz cannot be answered
   children:
     on_pass:
       shape: single
@@ -9277,7 +9394,10 @@ blocks:
     canvas — draggable with inertia
   compact_description: interactive spinning 3-D globe (wire or earth)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     size: number (optional, diameter px, default 300)
     color: 'string (optional, hex accent, default #6366f1)'
@@ -9294,7 +9414,12 @@ blocks:
     and animated link vectors — dark radar aesthetic
   compact_description: dark-theme interactive Mercator map with node pins and links
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: renders and animates, no pan/hover
   fields:
     title: string (optional)
     color: 'string (optional, hex accent, default #00f2ff)'
@@ -9307,7 +9432,12 @@ blocks:
     sine/cosine curves on dark background
   compact_description: animated atmospheric contour wave field
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: animates, not interactive
   fields:
     title: string (optional)
     color: 'string (optional, hex, default #a78bfa)'
@@ -9330,7 +9460,12 @@ blocks:
     simulated flight tracks, click-to-open TMA playbook
   compact_description: interactive European airspace map with airports and flights
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: animates, not interactive
   fields:
     title: string (optional)
     focus: 'string (optional, country name to highlight, alias: country)'
@@ -9354,7 +9489,12 @@ blocks:
     block array, with shared data feeds and slide navigation
   compact_description: multi-slide fullscreen presentation playbook
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: slides cannot be changed
   children:
     slides:
       shape: wrapper_list
@@ -9374,7 +9514,10 @@ blocks:
   description: Game-style "NEW SURFACE UNLOCKED" achievement notification card
   compact_description: achievement-style surface unlocked notification
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     icon: string (optional, emoji, default ⚡)
     surface: string (surface/feature name displayed large)
@@ -9386,7 +9529,12 @@ blocks:
     built this page
   compact_description: 'self-reveal: shows this page''s own JSON schema'
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: the schema cannot be revealed
   fields:
     title: string (optional)
     accent: string (optional, hex)
@@ -9479,7 +9627,12 @@ blocks:
     code
   compact_description: copyable monospace prompt/code block
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: nothing can be copied
   fields:
     prompt: 'string (text to display and copy, alias: text, content)'
     label: string (optional, header label)
@@ -9536,7 +9689,12 @@ blocks:
     new approach slides in'
   compact_description: old-vs-new stack comparison animation
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: the before/after animation is the comparison
   fields:
     items: 'array of strings (old approach items to cross out, alias: before_items)'
     before_label: string (optional)
@@ -9550,7 +9708,12 @@ blocks:
     Google Sheets backend'
   compact_description: live audience voting with real-time bar chart results
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: no vote can be cast
   fields:
     question: string
     options: array of strings (vote choices)
@@ -9564,7 +9727,12 @@ blocks:
     optional Sheet-backed totals
   compact_description: emoji reaction buttons with raining particles
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: no reaction can be sent
   fields:
     reactions: array of emoji strings (optional, default 🔥💡🤯👏)
     write_url: string (optional, GAS doGet URL to record reactions)
@@ -9577,7 +9745,12 @@ blocks:
     backend
   compact_description: raise-hand button with live participant count
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: no hand can be raised
   fields:
     question: string (optional, prompt text above button)
     label: string (optional, button label, default ✋ Raise hand)
@@ -9605,7 +9778,12 @@ blocks:
     loading — shows real page load time
   compact_description: live page-load stopwatch
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: a stopwatch that cannot count is not a stopwatch
   fields:
     label: string (optional, e.g. "Page loaded in")
     sub: string (optional, sub-label)
@@ -9616,7 +9794,12 @@ blocks:
     JSON block and a live rendered preview below
   compact_description: embedded live atom JSON editor with preview
   surfaces:
-    works_on: *id006
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: web
+      reason: the editor cannot edit
   fields:
     placeholder: string (optional, example atom JSON)
     accent: string (optional, hex)
@@ -11904,6 +12087,7 @@ blocks:
   compact_description: an icon that rises from the bottom of the screen to the top
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
   fields:

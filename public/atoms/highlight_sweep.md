@@ -4,7 +4,7 @@ Text with an animated highlight sweep underline that plays on load
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

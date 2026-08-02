@@ -4,7 +4,7 @@ Thin fixed progress bar at the top of the viewport showing scroll position
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

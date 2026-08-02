@@ -4,7 +4,7 @@ Spinning interactive 3-D wireframe or earth globe rendered on HTML5 canvas — d
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -6278,6 +6278,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/floating_orbs",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6427,6 +6428,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/live_metric",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6443,6 +6445,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/deadline_ticker",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6476,6 +6479,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/glitch_text",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6574,6 +6578,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/scroll_progress",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6590,6 +6595,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/live_clock",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6623,6 +6629,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/step_reveal_sequence",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6705,6 +6712,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/stagger_list",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6738,6 +6746,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/highlight_sweep",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6754,6 +6763,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/progress_reveal",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6770,6 +6780,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/big_reveal",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6786,6 +6797,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/kinetic_headline",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6802,6 +6814,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/text_reveal_mask",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6818,6 +6831,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/split_reveal",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6851,6 +6865,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/stripe_background",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6899,6 +6914,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/orbit_diagram",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6981,6 +6997,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/globe_3d",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7093,6 +7110,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/surface_unlocked",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],

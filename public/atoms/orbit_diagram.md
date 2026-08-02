@@ -4,7 +4,7 @@ Animated orbiting node diagram — central node with satellite labels on a dashe
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

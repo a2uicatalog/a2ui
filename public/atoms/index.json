@@ -3485,6 +3485,7 @@
    "type": "floating_orbs",
    "compact": "decorative blurred colour orbs background",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3562,6 +3563,7 @@
    "type": "live_metric",
    "compact": "animated counting number (alias for animated_counter)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3570,6 +3572,7 @@
    "type": "deadline_ticker",
    "compact": "countdown timer to a target date (alias)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3587,6 +3590,7 @@
    "type": "glitch_text",
    "compact": "RGB-split glitch-effect headline",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3637,6 +3641,7 @@
    "type": "scroll_progress",
    "compact": "fixed scroll-progress bar at page top",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3645,6 +3650,7 @@
    "type": "live_clock",
    "compact": "live ticking clock widget",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3662,6 +3668,7 @@
    "type": "step_reveal_sequence",
    "compact": "tabbed step-by-step sequence",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3704,6 +3711,7 @@
    "type": "stagger_list",
    "compact": "stagger-animated list of items",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3721,6 +3729,7 @@
    "type": "highlight_sweep",
    "compact": "animated highlight sweep text",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3729,6 +3738,7 @@
    "type": "progress_reveal",
    "compact": "scroll-triggered animated progress bar",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3737,6 +3747,7 @@
    "type": "big_reveal",
    "compact": "spring-animation big number or word reveal",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3745,6 +3756,7 @@
    "type": "kinetic_headline",
    "compact": "word-by-word kinetic headline animation",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3753,6 +3765,7 @@
    "type": "text_reveal_mask",
    "compact": "clip-path text reveal mask animation",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3761,6 +3774,7 @@
    "type": "split_reveal",
    "compact": "split-panel reveal animation",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3778,6 +3792,7 @@
    "type": "stripe_background",
    "compact": "animated diagonal stripe background card",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3802,6 +3817,7 @@
    "type": "orbit_diagram",
    "compact": "animated orbit diagram with satellite nodes",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3844,6 +3860,7 @@
    "type": "globe_3d",
    "compact": "interactive spinning 3-D globe (wire or earth)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3900,6 +3917,7 @@
    "type": "surface_unlocked",
    "compact": "achievement-style surface unlocked notification",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]

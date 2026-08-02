@@ -4,7 +4,7 @@ Animated progress bar that counts from 0 to a value when scrolled into view
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

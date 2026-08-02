@@ -4,7 +4,7 @@ Content hidden behind two coloured panels that slide apart to reveal it
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

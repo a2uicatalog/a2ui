@@ -11028,6 +11028,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -11048,6 +11054,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -11068,6 +11080,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -11622,6 +11640,7 @@
    "compact_description": "decorative blurred colour orbs background",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11646,6 +11665,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "glow is static"
+     }
     ]
    },
    "fields": {
@@ -11714,6 +11739,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "static gradient, no animation"
+     }
     ]
    },
    "fields": {
@@ -11755,6 +11786,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "text shows unscrambled"
+     }
     ]
    },
    "fields": {
@@ -11822,6 +11859,7 @@
    "compact_description": "animated counting number (alias for animated_counter)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11847,6 +11885,7 @@
    "compact_description": "countdown timer to a target date (alias)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11891,6 +11930,7 @@
    "compact_description": "RGB-split glitch-effect headline",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11913,6 +11953,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "glow is static"
+     }
     ]
    },
    "fields": {
@@ -11934,6 +11980,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the magnetism is the button"
+     }
     ]
    },
    "fields": {
@@ -11954,6 +12006,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "cannot trigger; the web renderer also raises NameError"
+     }
     ]
    },
    "fields": {
@@ -12012,6 +12070,7 @@
    "compact_description": "fixed scroll-progress bar at page top",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12032,6 +12091,7 @@
    "compact_description": "live ticking clock widget",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12074,6 +12134,7 @@
    "compact_description": "tabbed step-by-step sequence",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12095,6 +12156,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "thread reads, does not animate"
+     }
     ]
    },
    "fields": {
@@ -12156,6 +12223,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "text shows without the boot animation"
+     }
     ]
    },
    "fields": {
@@ -12175,6 +12248,7 @@
    "compact_description": "stagger-animated list of items",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12217,6 +12291,7 @@
    "compact_description": "animated highlight sweep text",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12239,6 +12314,7 @@
    "compact_description": "scroll-triggered animated progress bar",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12262,6 +12338,7 @@
    "compact_description": "spring-animation big number or word reveal",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12285,6 +12362,7 @@
    "compact_description": "word-by-word kinetic headline animation",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12308,6 +12386,7 @@
    "compact_description": "clip-path text reveal mask animation",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12330,6 +12409,7 @@
    "compact_description": "split-panel reveal animation",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12375,6 +12455,7 @@
    "compact_description": "animated diagonal stripe background card",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12400,6 +12481,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "timeline reads, dots do not pulse"
+     }
     ]
    },
    "fields": {
@@ -12420,6 +12507,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "final figures shown, not counted up"
+     }
     ]
    },
    "fields": {
@@ -12437,6 +12530,7 @@
    "compact_description": "animated orbit diagram with satellite nodes",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12506,6 +12600,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "neither interactive nor live-fed"
+     }
     ]
    },
    "fields": {
@@ -12531,6 +12631,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the quiz cannot be answered"
+     }
     ]
    },
    "fields": {
@@ -12553,6 +12659,7 @@
    "compact_description": "interactive spinning 3-D globe (wire or earth)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12580,6 +12687,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "renders and animates, no pan/hover"
+     }
     ]
    },
    "fields": {
@@ -12603,6 +12716,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -12645,6 +12764,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "web",
+      "note": "animates, not interactive"
+     }
     ]
    },
    "fields": {
@@ -12688,6 +12813,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "slides cannot be changed"
+     }
     ]
    },
    "fields": {
@@ -12707,6 +12838,7 @@
    "compact_description": "achievement-style surface unlocked notification",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -12731,6 +12863,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the schema cannot be revealed"
+     }
     ]
    },
    "fields": {
@@ -12868,6 +13006,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "nothing can be copied"
+     }
     ]
    },
    "fields": {
@@ -12957,6 +13101,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the before/after animation is the comparison"
+     }
     ]
    },
    "fields": {
@@ -12981,6 +13131,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "no vote can be cast"
+     }
     ]
    },
    "fields": {
@@ -13005,6 +13161,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "no reaction can be sent"
+     }
     ]
    },
    "fields": {
@@ -13028,6 +13190,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "no hand can be raised"
+     }
     ]
    },
    "fields": {
@@ -13074,6 +13242,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "a stopwatch that cannot count is not a stopwatch"
+     }
     ]
    },
    "fields": {
@@ -13095,6 +13269,12 @@
     "works_on": [
      "google-apps-script-web",
      "mcp-apps"
+    ],
+    "incompatible_on": [
+     {
+      "surface": "web",
+      "reason": "the editor cannot edit"
+     }
     ]
    },
    "fields": {

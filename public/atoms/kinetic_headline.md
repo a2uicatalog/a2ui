@@ -4,7 +4,7 @@ Headline where each word flies in with a staggered animation
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

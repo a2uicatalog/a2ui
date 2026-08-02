@@ -4,7 +4,7 @@ List of items that animate in with a staggered delay — supports icons and desc
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

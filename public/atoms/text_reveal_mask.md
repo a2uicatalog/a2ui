@@ -4,7 +4,7 @@ Headline that sweeps in from left using clip-path mask animation
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

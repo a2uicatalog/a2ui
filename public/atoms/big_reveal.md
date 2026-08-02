@@ -4,7 +4,7 @@ Large centred number or word that pops in with a spring scale animation
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

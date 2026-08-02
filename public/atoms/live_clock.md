@@ -4,7 +4,7 @@ Live ticking clock on a dark card, updates every second
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

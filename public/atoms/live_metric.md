@@ -4,7 +4,7 @@ Animated counter that counts up from start to a target value — alias for anima
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 
