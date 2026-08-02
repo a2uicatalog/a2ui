@@ -86,7 +86,6 @@ def main():
         digest.update(src.encode("utf-8"))
         parts.append(f"// ===== {f.name} =====\n{src}")
 
-    sha = digest.hexdigest()
     body = "\n\n".join(parts)
 
     # The staging boundary has to be compiled in. The concatenated sources
@@ -104,6 +103,31 @@ def main():
         print("✗ public/spec.json published no atoms — refusing to emit an empty allowlist", file=sys.stderr)
         sys.exit(1)
 
+    # AtomStyles.html is PURE CSS and load-bearing: the .gs renderers emit
+    # class="asw-paragraph" / "asw-btn" and so on, and without these rules the
+    # output is structurally correct and visually bare. It was excluded from
+    # the first cut alongside the client partials, which was wrong — those
+    # touch window/document and cannot run in a Worker, whereas this is a
+    # stylesheet with no runtime at all. Shipped unstyled for about an hour.
+    styles_path = RENDERER_DIR / "AtomStyles.html"
+    if not styles_path.exists():
+        print(f"✗ {styles_path} missing — rendered output would be unstyled", file=sys.stderr)
+        sys.exit(1)
+    css = "\n".join(re.findall(r"<style>(.*?)</style>", styles_path.read_text(encoding="utf-8"), re.S))
+    if not css.strip():
+        print("✗ AtomStyles.html contained no <style> block", file=sys.stderr)
+        sys.exit(1)
+
+    # The hash must cover the STYLESHEET too, and be taken only once every
+    # input is in. The first cut called hexdigest() before reading the CSS, so
+    # adding 27 KB of it left SOURCE_SHA byte-identical — which matters because
+    # the render cache is keyed on that hash and check_worker_renderer compares
+    # against it. A stylesheet-only change would have shipped invisibly behind
+    # both: stale pages served, staleness gate green. Exactly the ui:// cache
+    # failure of the day before, rebuilt inside its own fix.
+    digest.update(css.encode("utf-8"))
+    sha = digest.hexdigest()
+
     # `var` at module top level is module-scoped, not global — which is what we
     # want: cross-file references (atoms_*.gs reaching _RENDERERS from atom.gs)
     # resolve inside the module and nothing leaks to globalThis.
@@ -114,6 +138,7 @@ def main():
         f"{PRELUDE}\n\n{body}\n\n"
         f'export const SOURCE_SHA = "{sha}";\n'
         f"export const PUBLISHED_ATOMS = new Set({json.dumps(published)});\n"
+        f"export const ATOM_STYLES = {json.dumps(css)};\n"
         "export { renderAtoms, _RENDERERS };\n"
     )
 
