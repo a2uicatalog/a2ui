@@ -1049,7 +1049,7 @@ clasp push &amp;&amp; clasp deploy</code></pre>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
   </footer>
   </div>
@@ -1557,7 +1557,7 @@ def generate_index(atoms):
 {cards_html}  </div>
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   </main>
@@ -2368,7 +2368,7 @@ document.addEventListener('click', function (e) {{
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span><a href="/.well-known/ai-catalog.json">ARD catalog JSON</a></span>
   </footer>
   </div>
@@ -2480,7 +2480,7 @@ def render_templates_page(atoms):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
   </footer>
   </div>
@@ -2533,7 +2533,7 @@ def render_try_page(atom_count):
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
   </footer>
   </div>
@@ -2818,7 +2818,7 @@ def render_frugal_ai_ops_page():
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
-    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. All other marks belong to their respective owners.</span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
     <span>MIT License</span>
   </footer>
   </div>
