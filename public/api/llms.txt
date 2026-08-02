@@ -1,0 +1,38 @@
+# A2UI Atomic Catalog — API
+
+Scoped context for the REST surface. Full manual: https://a2uicatalog.ai/llms.txt
+
+## Render a payload
+
+POST https://a2uicatalog.ai/api/render
+Content-Type: application/json
+{"title":"Demo","theme":"light","blocks":[{"type":"stat_card","value":"1,234","label":"Daily users"}]}
+
+Returns a complete self-contained HTML page. No MCP, no connector, no deployment.
+Optional ?surface=web|mcp-apps|google-apps-script-web|google-meet-stage applies that
+surface's declared compatibility policy: atoms marked degraded_on render and are named
+in X-A2UI-Degraded; atoms marked incompatible_on are replaced by a visible note and
+named in X-A2UI-Incompatible. pdf, email and google-chat return 400 — this endpoint
+emits HTML.
+
+Limits: 256 KB body, 300 blocks, 12 levels of nesting, 50 requests/day. Cache hits are free.
+
+## Natural language to atoms
+
+POST https://a2uicatalog.ai/api/compose  {"prompt":"a dashboard with daily users and a bar chart"}
+Returns candidate atom blocks. 20 requests/day.
+
+## Search the vocabulary
+
+GET https://a2uicatalog.ai/ask?q=<question>   60 requests/day.
+
+## Declared data proxy
+
+GET https://a2uicatalog.ai/api/data/{source}  Sources declared in atoms/data-sources.yaml.
+
+## Contract
+
+- OpenAPI 3.1: https://a2uicatalog.ai/openapi.json
+- Versioning: header-based (X-API-Version), not URL path. https://a2uicatalog.ai/versioning.md
+- Auth: none required. https://a2uicatalog.ai/auth.md
+- Pricing: free. https://a2uicatalog.ai/pricing.md

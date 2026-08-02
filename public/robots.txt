@@ -59,6 +59,9 @@ Disallow: /frugal-ai-ops/
 
 Sitemap: https://a2uicatalog.ai/sitemap.xml
 Agentmap: /.well-known/ai-catalog.json
+# NLWeb Schema Feeds — structured feeds an agent can consume directly
+# rather than scraping HTML.
+Schemamap: https://a2uicatalog.ai/schema-map.xml
 
 # The rest of the machine surface. robots.txt is one of only two entry points
 # an agent has arriving cold (the other being /), and until 2026-08-02 it named

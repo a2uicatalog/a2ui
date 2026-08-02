@@ -41,6 +41,16 @@ policy:
     - public/index.md
     - public/auth.md
     - public/versioning.md
+    # Agent-readiness artefacts, declared 2026-08-02 against an external scan.
+    # pricing.md exists because agents need machine-readable cost to recommend
+    # a product; ours says free, which is the whole point and cheaper to state
+    # than to leave inferred. schema-map.xml is the NLWeb Schema Feeds index
+    # referenced by robots.txt's Schemamap: directive. Both are kept honest by
+    # tests/test_agent_readiness_files.py, which checks them against the code
+    # that enforces the limits rather than against themselves.
+    - public/pricing.md
+    - public/schema-map.xml
+    - public/api/**
     - public/developers/**
     - public/about/**
     - public/contact/**

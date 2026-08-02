@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NLWeb Schema Feeds: the structured-data feeds an agent can consume
+     directly rather than scraping HTML. Referenced from robots.txt. -->
+<schemamap xmlns="https://nlweb.ai/schemas/schemamap/1.0">
+  <feed>
+    <loc>https://a2uicatalog.ai/spec.json</loc>
+    <type>application/json</type>
+    <schema>https://a2uicatalog.ai/catalogue/atoms-json-schema.json</schema>
+    <description>Full typed atom vocabulary with per-atom fields and surface support</description>
+  </feed>
+  <feed>
+    <loc>https://a2uicatalog.ai/.well-known/ai-catalog.json</loc>
+    <type>application/json</type>
+    <description>Agentic Resource Discovery catalog — one entry per atom</description>
+  </feed>
+  <feed>
+    <loc>https://a2uicatalog.ai/catalogue/index.json</loc>
+    <type>application/json</type>
+    <description>Catalog selection menu — which atom pack to resolve for a task</description>
+  </feed>
+  <feed>
+    <loc>https://a2uicatalog.ai/openapi.json</loc>
+    <type>application/json</type>
+    <description>OpenAPI 3.1 description of the REST surface</description>
+  </feed>
+</schemamap>
