@@ -1385,6 +1385,18 @@ def generate_index(atoms):
   <meta name="description" content="{len(atoms)} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.">
   <link rel="canonical" href="https://a2uicatalog.ai/">
   <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json">
+  <!-- The machine surface, advertised from the front door. Added 2026-08-02:
+       an external agent-readiness scan scored Discovery 2/20 while every one
+       of these returned 200 — they existed and nothing pointed at them. An
+       agent arriving cold has two entry points, / and /robots.txt, and
+       /.well-known/api-catalog (an RFC 9727 linkset indexing the lot) was
+       referenced from neither. These are the conventional rels agents look
+       for; api-catalog is the one that makes the rest reachable in one hop. -->
+  <link rel="api-catalog" type="application/linkset+json" href="/.well-known/api-catalog">
+  <link rel="service-desc" type="application/json" href="/openapi.json" title="OpenAPI description">
+  <link rel="describedby" type="text/markdown" href="/llms.txt" title="llms.txt">
+  <link rel="alternate" type="text/markdown" href="/agents.md" title="Agent guide">
+  <link rel="alternate" type="application/json" href="/spec.json" title="Full atom vocabulary">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="A2UI Atomic Catalog">
   <meta property="og:title" content="A2UI Atomic Catalog">

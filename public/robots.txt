@@ -59,3 +59,20 @@ Disallow: /frugal-ai-ops/
 
 Sitemap: https://a2uicatalog.ai/sitemap.xml
 Agentmap: /.well-known/ai-catalog.json
+
+# The rest of the machine surface. robots.txt is one of only two entry points
+# an agent has arriving cold (the other being /), and until 2026-08-02 it named
+# none of these — an external agent-readiness scan scored Discovery 2/20 while
+# every document below returned 200. They existed; nothing pointed at them.
+# api-catalog is the RFC 9727 linkset indexing the lot, so an agent finding
+# only that line reaches everything else in one hop.
+# Comments by necessity: robots.txt has no standard directive for these, and a
+# bare unrecognised key risks a strict parser treating the file as malformed.
+# The <link rel> tags in every page <head> are the machine-parseable half.
+# api-catalog: https://a2uicatalog.ai/.well-known/api-catalog
+# llms.txt:    https://a2uicatalog.ai/llms.txt
+# openapi:     https://a2uicatalog.ai/openapi.json
+# agents.md:   https://a2uicatalog.ai/agents.md
+# vocabulary:  https://a2uicatalog.ai/spec.json
+# mcp:         https://a2uicatalog.ai/.well-known/mcp.json
+# agent-card:  https://a2uicatalog.ai/.well-known/agent-card.json
