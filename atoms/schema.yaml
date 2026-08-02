@@ -7414,7 +7414,7 @@ blocks:
     download links. Works on Google Apps Script only.
   compact_description: live list of Drive folder files
   surfaces:
-    works_on:
+    works_on: &id006
     - google-apps-script-web
     - mcp-apps
     degraded_on:
@@ -8442,7 +8442,11 @@ blocks:
   description: Plain text block rendered as a paragraph
   compact_description: plain text block
   surfaces:
-    works_on: &id006
+    # Own list, not the anchor. text_block DEFINED &id006 — the GAS-only
+    # default inherited by 79 atoms — which put a plain paragraph in charge of
+    # a claim about Apps Script. The anchor now lives on drive_file_list, which
+    # is GAS-bound by DriveApp and cannot be otherwise. Relocated 2026-08-02.
+    works_on:
     - google-apps-script-web
     - mcp-apps
   fields:
