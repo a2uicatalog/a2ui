@@ -266,6 +266,40 @@ _EXAMPLE_BLOCKS = {
     # the rule (Curtis, 2026-07-10).
     "airspace_command_deck": {"type": "airspace_command_deck", "height": "fullscreen",
         "chyron_title": "LFBO TMA", "chyron_subtitle": "Toulouse Blagnac Approach Control"},
+    # ── article_playbook lenses (spec/article-playbook-v0.1.md) — nested
+    # object shorthand in these fields' schema.yaml descriptions ("point",
+    # "url? (string, optional)") collides with example_payload()'s naive
+    # substring checks ("int" in ft, "optional" in ft applied to the WHOLE
+    # description string, not just the field's own top-level type) and
+    # produces wrong/empty auto-examples (points -> 1, items dropped
+    # entirely). Curated here instead of reworded around the heuristic —
+    # these are also the examples shown on each lens's public /atoms/ page.
+    "lens_quotes": {"type": "lens_quotes", "items": [
+        {"quote": "The results held even after controlling for prior experience.",
+         "context": "from the methodology section"}]},
+    "lens_structure": {"type": "lens_structure", "items": [
+        {"heading": "Method", "quote": "We recruited 214 participants over six weeks."}]},
+    "lens_themes": {"type": "lens_themes",
+        "source_excerpt": "The results held even after controlling for prior experience. Adoption was slower in smaller teams.",
+        "items": [
+            {"label": "Robustness", "evidence": "The results held even after controlling for prior experience.", "weight": 0.8},
+            {"label": "Team size effects", "evidence": "Adoption was slower in smaller teams.", "weight": 0.4}]},
+    "lens_eli5": {"type": "lens_eli5",
+        "source_excerpt": "The results held even after controlling for prior experience.",
+        "text": "The effect seems real, not just because some people already knew what they were doing.",
+        "evidence": ["The results held even after controlling for prior experience."]},
+    "lens_synthesis": {"type": "lens_synthesis",
+        "source_excerpt": "Adoption was slower in smaller teams.",
+        "points": [{"point": "Smaller teams adopted it more slowly.", "evidence": "Adoption was slower in smaller teams."}]},
+    "lens_freeform": {"type": "lens_freeform",
+        "source_excerpt": "The policy takes effect in the third quarter.",
+        "label": "Regulatory impact", "tier": "interpreted",
+        "text": "This would need to be in place before Q3.",
+        "evidence": ["The policy takes effect in the third quarter."]},
+    "lens_similar": {"type": "lens_similar", "verified": False, "items": [
+        {"title": "A related piece on the same topic", "why": "covers similar ground", "retrieved": False}]},
+    "lens_context": {"type": "lens_context", "items": [
+        {"label": "Prior work", "note": "An earlier study reached a similar conclusion.", "retrieved": False}]},
 }
 
 # visibility:private atoms (article_journey, journey_step) keep their example

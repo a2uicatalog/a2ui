@@ -16358,6 +16358,27 @@
           },
           "nav_background": {
             "type": "string"
+          },
+          "header": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "author": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "url"
+              ]
+            }
           }
         },
         "required": [

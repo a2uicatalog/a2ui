@@ -1,0 +1,202 @@
+name: article_playbook
+kind: stampable
+description: >
+  Article Playbook — give the agent a link, get a filtered, tiered view of
+  someone else's article: quotes, themes, ELI5, synthesis, similar-to.
+  Second runbook-as-data instance (spec/article-playbook-v0.1.md in
+  a2ui-private), sibling to learning_hub. Unlike learning_hub, this runbook's
+  whole reason for existing is that every lens except `quotes` is a
+  distortion of the source by construction — the composition below exists to
+  keep that distortion visible (epistemic tiers ARE hub subject tabs, colored
+  distinctly) and checkable (evidence spans verified as verbatim substrings
+  of `source_excerpt`), not just to lay out tabs.
+triggers:
+  - article playbook
+  - read this article
+  - summarize this article
+  - explain this article
+  - what does this article say
+surfaces: [google-apps-script-web]
+layout: hub
+composition:
+  strategy: lens_hub
+  container_atom: hub
+  hub_defaults:
+    background: "#0f172a"
+  # hub's persistent header (source url/author/date) — lives in the shell, not
+  # inside any one lens tab, per spec mitigation 4 ("the link is always on
+  # screen"). Requires hub's header extension (apps-script-surface/
+  # gas-wired-renderer/atoms_brevet.gs); absent header renders nothing, same
+  # as learning_hub's existing hub usage.
+  hub_header_from: source
+  # Tiers ARE hub subjects, not a bolted-on badge widget: each tier that has
+  # at least one present lens becomes one hub subject tab, colored by tier —
+  # hub's EXISTING per-subject accent-color rendering IS the "different
+  # accent, never interchangeable chrome" requirement (spec mitigation 1),
+  # for free. A tier with zero present lenses gets no tab at all, which is
+  # also exactly the documented multi-catalog degrade (spec: "a reader who
+  # does not want model speculation resolves extracted + interpreted and the
+  # external lenses degrade rather than render").
+  tier_subjects:
+    extracted:
+      label: "EXTRACTED · in their words"
+      color: "#0891b2"
+    interpreted:
+      label: "INTERPRETED · our reading"
+      color: "#7c3aed"
+    external:
+      label: "EXTERNAL · unverified"
+      color: "#dc2626"
+  # one hub "slide" per lens, grouped into its tier's subject. Reuses the
+  # EXACT key scripts/gen_public_catalog.py's gen_runbooks_index already
+  # validates atom refs against for stampable runbooks (same mechanism as
+  # learning_hub, no new checker needed).
+  slide_kind_atoms:
+    quotes: lens_quotes
+    structure: lens_structure
+    themes: lens_themes
+    eli5: lens_eli5
+    synthesis: lens_synthesis
+    similar: lens_similar
+    context: lens_context
+    freeform: lens_freeform
+  # default tier per named lens kind — validates the payload's own
+  # lenses[].tier against this (must match, except freeform: genuinely
+  # variable, tier comes from the payload only).
+  lens_tier:
+    quotes: extracted
+    structure: extracted
+    themes: interpreted
+    eli5: interpreted
+    synthesis: interpreted
+    similar: external
+    context: external
+  # machine-readable half of input_contract.content_by_lens — the engine's
+  # deterministic validation reads THIS; the prose below is for humans/agents.
+  # `quotes` is the one lens content_required cannot make merely-present:
+  # it must always be composed, with a source-only fallback (title + link,
+  # no items) if the payload omits it — see parsing_guide.
+  content_required:
+    quotes: [items]
+    structure: [items]
+    themes: [source_excerpt, items]
+    eli5: [source_excerpt, text, evidence]
+    synthesis: [source_excerpt, points]
+    similar: [items]
+    context: [items]
+    freeform: [source_excerpt, label, text]
+  templates:
+    quick: [quotes, eli5]
+    critical: [quotes, themes, synthesis]
+    research: [quotes, themes, synthesis, similar]
+input_contract:
+  title: string (required) — article title
+  source: >
+    object (required) — {url (required), author?, published?, read_minutes?,
+    retrieved: boolean (required, true only if the agent actually fetched
+    url in this session)}. Rendered in the hub header, not inside a lens —
+    it must stay on screen regardless of which lens tab is active.
+  source_excerpt: >
+    string (REQUIRED, ~8KB cap). Verbatim passages the agent actually drew
+    its claims from — not the whole article. A payload without it is
+    REFUSED, not degraded: evidence spans are only meaningful if they can be
+    checked against something, and this is the only thing they can be
+    checked against (spec mitigation 2). Copy this same string into the
+    `source_excerpt` field of every interpreted-tier lens block (themes,
+    eli5, synthesis, freeform) — the renderer verifies each lens's evidence
+    locally, one atom block at a time, so it needs its own copy rather than
+    shared page-level context.
+  lenses: >
+    array (required, non-empty). Each entry is {id, tier}, where id selects a
+    key from composition.slide_kind_atoms and tier is one of
+    extracted|interpreted|external — must match composition.lens_tier for
+    that id, except freeform, whose tier is genuinely caller-chosen. Each
+    present tier becomes one hub subject tab (composition.tier_subjects);
+    a tier with no present lens gets no tab. `quotes` is effectively
+    mandatory: if omitted, the engine
+    still renders a source-only tab from `source` rather than dropping the
+    reader's exit into the original text. A lens outside the caller's chosen
+    template (composition.templates) is marked off-template in the UI.
+  content_by_lens:
+    quotes: "items: array of {quote, context?}"
+    structure: "items: array of {heading, quote}"
+    themes: >
+      source_excerpt (copy of the payload-level field); items: array of
+      {label, evidence, weight?}. evidence is REQUIRED per item and MUST be a
+      verbatim substring of source_excerpt — an item that fails the check
+      renders with an "unverified" marker, never silently.
+    eli5: >
+      source_excerpt (copy); text (the simplified rewrite — hedges in the
+      original, e.g. "may", "some evidence suggests", MUST survive into
+      text rather than be compressed out); evidence: array of verbatim
+      substrings of source_excerpt the rewrite draws from.
+    synthesis: >
+      source_excerpt (copy); points: array of {point, evidence}, same
+      per-item verbatim-evidence requirement as themes.
+    similar: >
+      items: array of {title, why, url?, retrieved?}; verified: true only if
+      every item's url was actually retrieved this session. If verified is
+      false (or omitted), the lens renders in the EXTERNAL tab labelled
+      "suggestions, unverified" rather than as a bibliography. Never render
+      an unretrieved title as if it were a citation — if neither condition
+      (verified, or per-item retrieved) holds for an item, omit that item
+      rather than fabricate a bibliography entry.
+    context: "items: array of {label, note, url?, retrieved?} — same retrieval-honesty rule as similar."
+    freeform: >
+      source_excerpt (copy, if tier is extracted/interpreted); label
+      (agent-chosen, e.g. "Regulatory impact"); tier; text; evidence (array,
+      required in practice for extracted/interpreted tiers — external-tier
+      freeform is unverified by definition and may omit it); off_template
+      defaults true. Use this ONLY for a lens kind the catalogue lacks — a
+      lens kind that already exists above must be selected, not reinvented
+      here (spec: "inventing a lens kind — NO").
+parsing_guide: >
+  Consumers (the calling agent) fetch the article with their own tooling,
+  read it, and fill this contract; composition is the runbook's job, filling
+  it honestly is the consumer's. Six mitigations this runbook exists to
+  enforce, from spec/article-playbook-v0.1.md (a2ui-private):
+
+  1. Epistemic status must be visible per lens, not implied — hence
+  tier_subjects above: each tier is its own hub subject tab, colored
+  distinctly; never render two different tiers under the same tab or chrome.
+
+  2. Every interpreted claim (themes item, synthesis point, eli5 rewrite,
+  interpreted-tier freeform) carries a verbatim `evidence` span that is
+  checked against `source_excerpt`, not merely present. Missing evidence
+  renders an explicit "no supporting quote" marker rather than being
+  dropped; evidence not found verbatim in source_excerpt renders "unverified"
+  rather than being trusted. This is the single highest-value check in the
+  whole runbook — test it with a deliberately fabricated quote before
+  trusting a payload.
+
+  3. `quotes` is the one lens that is never truly optional — the reader's
+  exit into the author's own words must always be one click away. If a
+  caller's content omits it, compose a source-only quotes tab (title + link
+  from `source`) rather than drop the tab.
+
+  4. Source url/author/date live in the hub header (hub_header_from:
+  source), never inside a lens — a view of someone's article that doesn't
+  show whose article it is has already failed.
+
+  5. `similar` is the dangerous lens: a model will confidently invent
+  plausible articles it never read. Render it as a real citation list only
+  when `verified` is true; otherwise (the default) label it "suggestions,
+  unverified" within its EXTERNAL tab and never let an unretrieved title
+  read as if it were sourced.
+
+  6. No lens may exceed the source's own confidence. Hedges in the original
+  ("may", "some evidence suggests", "the author argues") are load-bearing,
+  not noise — dropping them during eli5/synthesis is the most common way a
+  faithful-looking summary becomes false.
+
+  Template selection: default to composition.templates.critical
+  (quotes + themes + synthesis) unless the caller names quick or research.
+  A lens outside the chosen template is composed anyway if requested, but
+  marked off-template in the rendered UI — "the model added a lens" must
+  stay visually distinguishable from "this is the standard view".
+
+  Pagination: same per-page ~8100 char ceiling and automatic subject-level
+  split as learning_hub (see runbooks/learning_hub.yaml's parsing_guide and
+  spec/nav-budget-pagination-v0.1.md, a2ui-private) — payload size here is
+  normally a non-issue (five lenses of a few hundred words is 2-4 KB), so
+  splitting is expected to be rare in practice.

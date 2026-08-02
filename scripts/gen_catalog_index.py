@@ -82,6 +82,18 @@ CATALOG_META = {
     "a2ui-gallery-v1": ("Annotated field guides",
         "Use for pin-annotated real-capture galleries — a component/primitive anatomy "
         "reference the reader scrolls through, grouped into sections with a sticky nav."),
+    "a2ui-lens-extracted-v1": ("article_playbook — extracted lenses",
+        "Use for article_playbook views that show only the source article's own words — "
+        "verbatim quotes and structure. Resolve alone for a reader who wants zero model "
+        "interpretation between them and the text."),
+    "a2ui-lens-interpreted-v1": ("article_playbook — interpreted lenses",
+        "Use for article_playbook views adding the model's reading of an article — themes, "
+        "ELI5, synthesis, and agent-proposed freeform lenses — each evidenced by a verbatim "
+        "span checked against the article's source_excerpt."),
+    "a2ui-lens-external-v1": ("article_playbook — external lenses",
+        "Use for article_playbook views that go beyond the source article itself — similar "
+        "reading suggestions and background context. Highest-risk tier: resolve only when a "
+        "reader explicitly wants model speculation, not by default."),
 }
 
 

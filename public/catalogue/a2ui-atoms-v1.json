@@ -19508,11 +19508,16 @@
       "nav_background": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
        "description": "string (optional, nav rail hex, defaults to background)"
+      },
+      "header": {
+       "description": "object (optional) — {url (required), author? (string), published? (string)}. A persistent bar pinned above the subject tabs, always on screen regardless of which subject/slide is active. Used by article_playbook (spec/article-playbook-v0.1.md, a2ui-private) to keep the source link visible outside any one lens tab; absent for callers that don't pass it.",
+       "type": "object"
       }
      },
      "required": [
       "component",
-      "subjects"
+      "subjects",
+      "header"
      ]
     }
    ],

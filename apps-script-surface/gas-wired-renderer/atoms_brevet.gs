@@ -400,6 +400,28 @@ _RENDERERS['hub'] = function(b) {
   var uid = 'hub' + Math.random().toString(36).substr(2, 8);
   if (!subjects.length) return '';
 
+  // Optional persistent source bar (article_playbook's hub_header_from:
+  // source — spec/article-playbook-v0.1.md mitigation 4: "the link is
+  // always on screen", never inside a lens tab so it can't disappear when a
+  // tab changes). Absent for callers that don't pass it (e.g. learning_hub),
+  // so this is purely additive.
+  var header = b.header;
+  var headerHtml = '';
+  var headerPad = 0;
+  if (header && header.url) {
+    var metaBits = [];
+    if (header.author)    metaBits.push(_esc(header.author));
+    if (header.published) metaBits.push(_esc(header.published));
+    var metaHtml = metaBits.length ? '<span style="opacity:0.6;">· ' + metaBits.join(' · ') + '</span>' : '';
+    headerHtml =
+      '<div style="padding:6px 12px;font-size:0.74rem;font-weight:600;' +
+      'border-bottom:1px solid rgba(0,0,0,0.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+      '<a href="' + _safeUrl(header.url) + '" target="_blank" rel="noopener" ' +
+      'style="color:inherit;text-decoration:none;">🔗 ' + _esc(header.url) + '</a>' + metaHtml +
+      '</div>';
+    headerPad = 30;
+  }
+
   var contentHtml = '';
   var bottomNavHtml = '';
   var colorsJs = '[';
@@ -473,8 +495,8 @@ _RENDERERS['hub'] = function(b) {
     '<div id="' + uid + 'body" style="font-family:\'Inter\',system-ui,sans-serif;background:#ffffff;min-height:100vh;">' +
     '<div id="' + uid + 'TOPNAV" style="position:fixed;top:0;left:0;right:0;z-index:400;background:#f8fafc;' +
     'border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 8px rgba(0,0,0,0.06);">' +
-    tabsHtml + '</div>' +
-    '<div id="' + uid + 'content" style="padding-top:64px;padding-bottom:72px;background:#ffffff;box-sizing:border-box;min-height:100vh;">' + contentHtml + '</div>' +
+    headerHtml + tabsHtml + '</div>' +
+    '<div id="' + uid + 'content" style="padding-top:' + (64 + headerPad) + 'px;padding-bottom:72px;background:#ffffff;box-sizing:border-box;min-height:100vh;">' + contentHtml + '</div>' +
     '<div id="' + uid + 'BOTNAV" style="position:fixed;bottom:0;left:0;right:0;z-index:400;background:#f8fafc;' +
     'border-top:1px solid rgba(0,0,0,0.08);box-shadow:0 -2px 8px rgba(0,0,0,0.06);">' +
     bottomNavHtml + '</div>' +

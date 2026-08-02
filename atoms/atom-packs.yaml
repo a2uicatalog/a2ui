@@ -551,3 +551,22 @@ a2ui-competition-v1:
 a2ui-gallery-v1:
 - primitive_plate
 - scroll_gallery
+
+# article_playbook (spec/article-playbook-v0.1.md, a2ui-private) — epistemic tier
+# IS the catalogId, not a parallel mechanism. A host that resolves only
+# a2ui-lens-extracted-v1 + a2ui-lens-interpreted-v1 gets a playbook with the
+# EXTERNAL lenses (similar, context) gracefully absent -- the documented
+# multi-catalog degrade, not a feature built for this runbook.
+a2ui-lens-extracted-v1:
+- lens_quotes
+- lens_structure
+
+a2ui-lens-interpreted-v1:
+- lens_themes
+- lens_eli5
+- lens_synthesis
+- lens_freeform
+
+a2ui-lens-external-v1:
+- lens_similar
+- lens_context

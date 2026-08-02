@@ -185,7 +185,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>subjects</td><td>array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom blocks]}]}</td><td>required</td></tr><tr><td>background</td><td>string (optional, page hex, default "#0f172a")</td><td>optional</td></tr><tr><td>nav_background</td><td>string (optional, nav rail hex, defaults to background)</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>subjects</td><td>array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom blocks]}]}</td><td>required</td></tr><tr><td>background</td><td>string (optional, page hex, default "#0f172a")</td><td>optional</td></tr><tr><td>nav_background</td><td>string (optional, nav rail hex, defaults to background)</td><td>optional</td></tr><tr><td>header</td><td>object — {url (required), author? (string), published? (string)}. A persistent bar pinned above the subject tabs, always on screen regardless of which subject/slide is active. Used by article_playbook (spec/article-playbook-v0.1.md, a2ui-private) to keep the source link visible outside any one lens tab; absent for callers that don't pass it.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

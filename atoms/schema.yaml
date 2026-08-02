@@ -11142,6 +11142,12 @@ blocks:
       blocks]}]}'
     background: string (optional, page hex, default "#0f172a")
     nav_background: string (optional, nav rail hex, defaults to background)
+    header: >-
+      object (optional) — {url (required), author? (string), published? (string)}.
+      A persistent bar pinned above the subject tabs, always on screen
+      regardless of which subject/slide is active. Used by article_playbook
+      (spec/article-playbook-v0.1.md, a2ui-private) to keep the source link
+      visible outside any one lens tab; absent for callers that don't pass it.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -12104,6 +12110,173 @@ blocks:
       as a flourish; an endless rise competes with the page on every scroll).
     fade_edges: boolean (optional, default true). Fade in near the bottom, fade
       out near the top, instead of appearing/disappearing abruptly.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_quotes
+  description: >
+    article_playbook EXTRACTED-tier lens — verbatim quotes from the source
+    article with optional surrounding context, rendered under the EXTRACTED
+    badge. The only lens that is never optional (spec/article-playbook-v0.1.md
+    in a2ui-private, mitigation 3): whatever else a playbook composes, this
+    lens is the reader's one-click exit into the author's own words.
+  compact_description: verbatim source quotes, EXTRACTED tier, always present
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    items: array (required). Array of {quote (string), context? (string, optional, surrounding sentence or section)}
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_structure
+  description: >
+    article_playbook EXTRACTED-tier lens — the source article's own section
+    headings paired with a verbatim quote from that section, rendered under
+    the EXTRACTED badge. Skeleton of the piece in the author's words, not a
+    paraphrase.
+  compact_description: verbatim heading/quote skeleton of the source, EXTRACTED tier
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    items: array (required). Array of {heading (string), quote (string, verbatim from that section)}
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_themes
+  description: >
+    article_playbook INTERPRETED-tier lens — weighted theme chips, each
+    carrying a verbatim evidence span from the source. `evidence` is a
+    REQUIRED field per item, not a convention — spec/article-playbook-v0.1.md's
+    mitigation 2 ("every interpreted claim carries a verbatim span, or renders
+    as unsupported") is meant to be enforced by the generated JSON Schema
+    (scripts/gen_atom_json_schemas.py), not by trusting the caller. `source_excerpt`
+    is carried on the atom itself (duplicated from the payload top level) so the
+    renderer can verify each evidence span is an actual substring without needing
+    cross-block context.
+  compact_description: weighted theme chips with required verbatim evidence, INTERPRETED tier
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    source_excerpt: string (required, verbatim passages the model actually read — evidence below is checked against this)
+    items: array (required). Array of {label (string), evidence (string, verbatim substring of source_excerpt), weight? (number, optional, 0-1 -- render as ordering, not a score; see spec Open Q2)}
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_eli5
+  description: >
+    article_playbook INTERPRETED-tier lens — a simplified rewrite of the
+    source, with the verbatim spans it was drawn from shown beneath it so a
+    reader can check the rewrite against the original. Hedges present in the
+    source ("may", "some evidence suggests") must survive into `text` rather
+    than be compressed out (spec mitigation 6).
+  compact_description: simplified rewrite with required verbatim evidence beneath, INTERPRETED tier
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    source_excerpt: string (required, verbatim passages the model actually read)
+    text: string (required, the simplified rewrite)
+    evidence: array (required) of string (verbatim substrings of source_excerpt the rewrite is drawn from)
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_synthesis
+  description: >
+    article_playbook INTERPRETED-tier lens — take-away points, each carrying
+    its own verbatim evidence span. Same evidence-required discipline as
+    lens_themes, at the per-point grain.
+  compact_description: take-away points with required verbatim evidence, INTERPRETED tier
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    source_excerpt: string (required, verbatim passages the model actually read)
+    points: array (required). Array of {point (string), evidence (string, verbatim substring of source_excerpt)}
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_freeform
+  description: >
+    article_playbook generic lens — the middle path between a catalogued lens
+    and an invented one (spec/article-playbook-v0.1.md, "lens_freeform — the
+    middle path that makes propose real"). An agent that finds an article
+    needs a lens kind the catalogue lacks (e.g. "Regulatory impact") fills
+    this generic, agent-labelled container rather than inventing a new atom.
+    Always rendered with an off-template badge. `tier` picks which epistemic
+    badge it renders under; `evidence` is only meaningful (and only checked)
+    for interpreted/extracted tiers — an external-tier freeform lens is
+    unverified by definition.
+  compact_description: agent-labelled generic lens, off-template badge, still evidenced
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    source_excerpt: string (required, verbatim passages the model actually read)
+    label: string (required, agent-supplied lens name, e.g. "Regulatory impact")
+    tier: 'string (optional, one of: extracted, interpreted, external. default: interpreted)'
+    text: string (required)
+    evidence: array (optional) of string (verbatim substrings of source_excerpt; required in practice for extracted/interpreted tiers -- renders unsupported marker if empty)
+    off_template: boolean (optional, default true)
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_similar
+  description: >
+    article_playbook EXTERNAL-tier lens — "similar to" suggestions, the
+    single most dangerous lens in the playbook because a model will
+    confidently invent plausible articles it never read
+    (spec/article-playbook-v0.1.md mitigation 5). Each item's `retrieved`
+    flag says whether the model actually fetched that URL in-session; when
+    `verified` is false the whole lens renders labelled "suggestions,
+    unverified" rather than as a bibliography.
+  compact_description: similar-article suggestions, EXTERNAL tier, retrieval flagged per item
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    verified: boolean (optional, default false, true only if every item was actually retrieved this session)
+    items: array (required). Array of {title (string), why (string), url? (string, optional), retrieved? (boolean, optional, default false)}
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: lens_context
+  description: >
+    article_playbook EXTERNAL-tier lens — background/context claims about
+    things not present in the source article (related events, prior work,
+    surrounding debate). Same retrieval-honesty discipline as lens_similar.
+  compact_description: background context claims, EXTERNAL tier, retrieval flagged per item
+  stage: preview
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    items: array (required). Array of {label (string), note (string), url? (string, optional), retrieved? (boolean, optional, default false)}
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
