@@ -1,7 +1,7 @@
 {
   "name": "@a2uicatalog/mcp",
-  "version": "0.2.0",
-  "description": "CLI + local MCP server for the A2UI Atomic Catalog. Render an A2UI payload to HTML with no account and no MCP client (`npx @a2uicatalog/mcp render page.json`), browse and validate the 474-atom vocabulary offline, or run the local MCP server for Claude/Cursor. A hallucinated atom is a parse error, not a broken screen.",
+  "version": "0.2.1",
+  "description": "CLI + local MCP server for the A2UI Atomic Catalog. Render an A2UI payload to HTML with no account and no MCP client (`npx -p @a2uicatalog/mcp a2ui render page.json`), browse and validate the 474-atom vocabulary offline, or run the local MCP server for Claude/Cursor. A hallucinated atom is a parse error, not a broken screen.",
   "type": "module",
   "bin": {
     "a2uicatalog-mcp": "server.mjs",

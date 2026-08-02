@@ -5,10 +5,16 @@
 // no MCP client, no connector, no deployment, no account. Compose a payload
 // against spec.json, render it, get HTML.
 //
-//   npx @a2uicatalog/mcp render page.json > page.html
-//   npx @a2uicatalog/mcp validate page.json
-//   npx @a2uicatalog/mcp atoms --surface email
-//   npx @a2uicatalog/mcp surfaces quiz_set
+//   npx -p @a2uicatalog/mcp a2ui render page.json > page.html
+//   npx -p @a2uicatalog/mcp a2ui validate page.json
+//   npx -p @a2uicatalog/mcp a2ui atoms --surface email
+//   npx -p @a2uicatalog/mcp a2ui surfaces quiz_set
+//
+// The -p is not optional. npx resolves a bare `npx <pkg>` to the bin whose
+// name MATCHES the package — here that would be `mcp`, and this package
+// publishes `a2uicatalog-mcp` and `a2ui` instead, so npx cannot choose and
+// errors with "could not determine executable to run". Shipped 0.2.0 with the
+// bare form documented and discovered on the first real invocation.
 //
 // ZERO DEPENDENCIES. Node 18+ has fetch built in, and the vocabulary ships in
 // data/ so validate and atoms work with no network at all. Only `render`
@@ -144,7 +150,10 @@ Surfaces for --surface: web · mcp-apps · google-apps-script-web · google-meet
 validate and atoms are fully offline — the vocabulary ships with the package.
 Only render makes a network call. No account, no API key, no MCP client.
 
-  npx @a2uicatalog/mcp render page.json > page.html
+  npx -p @a2uicatalog/mcp a2ui render page.json > page.html
+
+(-p is required: npx cannot pick between this package's two bins on its own.)
+Installed globally, it is just: a2ui render page.json
 `);
   },
 };
