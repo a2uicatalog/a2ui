@@ -78,7 +78,7 @@ def test_robots_points_at_the_schema_map():
 
 def test_section_llms_txt_link_only_published_paths():
     import re
-    for section in ("api", "atoms"):
+    for section in ("docs", "atoms"):
         txt = _load(section, "llms.txt")
         assert txt.startswith("# A2UI Atomic Catalog"), f"{section}/llms.txt missing a titled heading"
         for path in re.findall(r"https://a2uicatalog\.ai(/[\w./-]+)", txt):

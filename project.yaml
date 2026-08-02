@@ -50,7 +50,12 @@ policy:
     # that enforces the limits rather than against themselves.
     - public/pricing.md
     - public/schema-map.xml
-    - public/api/**
+    # /docs/, not /api/: the Worker claims a2uicatalog.ai/api/* and its
+    # catch-all answered this file with a JSON 404 within minutes of it being
+    # published. Serving it from the Worker instead would mean fetching the
+    # same path the Worker is routed on — a subrequest loop. Moving is the
+    # cheaper correct answer than fighting the routing.
+    - public/docs/**
     - public/developers/**
     - public/about/**
     - public/contact/**
