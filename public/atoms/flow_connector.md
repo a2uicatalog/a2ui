@@ -4,7 +4,7 @@ Animated dashed beam connecting two labelled nodes — alias for animated_beam. 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

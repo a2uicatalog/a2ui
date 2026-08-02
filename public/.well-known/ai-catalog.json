@@ -5975,6 +5975,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/paragraph",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6007,6 +6008,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/blockquote",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6023,6 +6025,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/spacer",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6039,6 +6042,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/tag_chip",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6055,6 +6059,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/badge",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6071,6 +6076,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/inline_code",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6086,6 +6092,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/code_block",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6101,6 +6108,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/link_button",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6117,6 +6125,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/cta_button",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6151,6 +6160,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/info_card",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6199,6 +6209,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/dark_hero",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6215,6 +6226,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/glowing_stat",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6231,6 +6243,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/glass_card",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6247,6 +6260,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/gradient_border_card",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6295,6 +6309,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/dark_feature_grid",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6311,6 +6326,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/dark_divider",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6391,6 +6407,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/flow_connector",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6519,6 +6536,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/floating_particles",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6535,6 +6553,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/parallax_section",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6583,6 +6602,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/decision_tree",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6631,6 +6651,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/tooltip_glossary",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6647,6 +6668,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/focus_lens",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6695,6 +6717,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/liquid_button",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6807,6 +6830,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/mesh_gradient",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6887,6 +6911,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/noise_card",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6903,6 +6928,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/comparison_morph",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7095,6 +7121,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/url_anatomy",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7132,6 +7159,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/take_away_card",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7148,6 +7176,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/next_step_strip",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7180,6 +7209,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/atom_anatomy",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7196,6 +7226,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/renderer_stats",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7212,6 +7243,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/prompt_to_schema",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -7292,6 +7324,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/surface_map",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],

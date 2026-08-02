@@ -4,7 +4,7 @@ Responsive feature grid on dark background — icon, title, description per cell
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

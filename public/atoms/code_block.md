@@ -4,7 +4,7 @@ Syntax-highlighted code block
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

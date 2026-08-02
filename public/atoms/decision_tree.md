@@ -4,7 +4,7 @@ Interactive collapsible decision tree with nested branches
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

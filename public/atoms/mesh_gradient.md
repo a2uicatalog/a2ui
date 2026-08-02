@@ -4,7 +4,7 @@ Dark card with radial mesh/blob gradient background — vivid multi-colour
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

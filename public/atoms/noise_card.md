@@ -4,7 +4,7 @@ Dark card with subtle SVG film-grain noise texture overlay
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -4,7 +4,7 @@ Visual diagram showing the A2UI surfaces — schema feeds into each render targe
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

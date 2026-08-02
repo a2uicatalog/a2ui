@@ -4,7 +4,7 @@ Full-width dark hero banner with gradient background, badge, headline, and CTA b
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

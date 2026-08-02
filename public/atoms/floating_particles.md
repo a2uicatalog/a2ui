@@ -4,7 +4,7 @@ Floating particle field background (canvas fallback placeholder)
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

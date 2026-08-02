@@ -193,7 +193,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. Metric name.</td><td>required</td></tr><tr><td>value</td><td>number. Current value.</td><td>required</td></tr><tr><td>previous</td><td>number. Previous period value.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>label</td><td>string. Metric name.</td><td>required</td></tr><tr><td>value</td><td>number. Current value.</td><td>required</td></tr><tr><td>previous</td><td>number. Previous period value.</td><td>required</td></tr><tr><td>lower_is_better</td><td>boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">

@@ -4,7 +4,7 @@ Parallax scroll section (canvas fallback placeholder)
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -4,7 +4,7 @@ Draggable before/after slider revealing two text panels side by side
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -120,6 +120,7 @@ a2ui-atoms-v1:
 a2ui-aviation-v1:
 - adsb_feed
 - airspace_command_deck
+- atc_vectoring
 - canvas_plexus
 - fids_board
 - geo_contour_waves

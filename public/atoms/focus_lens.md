@@ -4,7 +4,7 @@ Blurred background with a clear focused panel in the centre — spotlight effect
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

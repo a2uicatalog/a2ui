@@ -4,7 +4,7 @@ Card with an animated gradient border stroke on dark background
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -6229,6 +6229,10 @@
       "previous": {
        "description": "number. Previous period value.",
        "type": "number"
+      },
+      "lower_is_better": {
+       "description": "boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome.",
+       "type": "boolean"
       }
      },
      "required": [
@@ -13694,6 +13698,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13756,6 +13761,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13785,6 +13791,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13818,6 +13825,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13851,6 +13859,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13880,6 +13889,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13913,6 +13923,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13946,6 +13957,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -13983,6 +13995,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14064,6 +14077,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14199,6 +14213,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14252,6 +14267,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14305,6 +14321,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14358,6 +14375,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14485,6 +14503,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14522,6 +14541,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14715,6 +14735,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15011,6 +15032,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15040,6 +15062,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15143,6 +15166,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15234,6 +15258,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15267,6 +15292,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15374,6 +15400,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15673,6 +15700,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15862,6 +15890,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -15899,6 +15928,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16391,6 +16421,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16486,6 +16517,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16519,6 +16551,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16593,6 +16626,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16630,6 +16664,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16675,6 +16710,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -16904,6 +16940,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]

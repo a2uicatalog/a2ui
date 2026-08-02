@@ -4,7 +4,7 @@ Prose paragraph block (alias for body, google-apps-script-web only)
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

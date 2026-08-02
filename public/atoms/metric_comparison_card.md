@@ -13,6 +13,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 | label | string. Metric name. |
 | value | number. Current value. |
 | previous | number. Previous period value. |
+| lower_is_better | boolean (optional, default true). Which direction is GOOD, which decides whether the delta is green or red. Defaults to true because this card was written for response times; set false for traffic, revenue or any metric where a rise is the good outcome. |
 
 ## Example payload
 

@@ -4,7 +4,7 @@ Full-width call-to-action button linking to a URL
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

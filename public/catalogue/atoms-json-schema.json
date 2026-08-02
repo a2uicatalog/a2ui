@@ -4704,6 +4704,9 @@
           },
           "previous": {
             "type": "number"
+          },
+          "lower_is_better": {
+            "type": "boolean"
           }
         },
         "required": [

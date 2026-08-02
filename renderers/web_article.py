@@ -3635,7 +3635,14 @@ def _render_metric_comparison_card(b: dict) -> str:
     previous = b.get("previous", 0)
     try:
         pct = round((float(current) - float(previous)) / float(previous) * 100, 1) if previous else 0
-        delta_color = "#059669" if pct <= 0 else "#dc2626"  # lower is better for response time etc
+        # Polarity is a PROPERTY OF THE METRIC, not of the atom. This card was
+        # written for response times, where a rise is bad, and hardcoded that
+        # — so a traffic or revenue card showed its best day in alarm red.
+        # Default keeps the original behaviour; set lower_is_better:false for
+        # metrics where up is good.
+        lower_better = b.get("lower_is_better", True)
+        good = (pct <= 0) if lower_better else (pct >= 0)
+        delta_color = "#059669" if good else "#dc2626"
         delta_str = f"{'↓' if pct <= 0 else '↑'} {abs(pct)}%"
     except Exception:
         delta_str = ""

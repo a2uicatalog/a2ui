@@ -3878,6 +3878,10 @@ blocks:
     label: string. Metric name.
     value: number. Current value.
     previous: number. Previous period value.
+    lower_is_better: boolean (optional, default true). Which direction is
+      GOOD, which decides whether the delta is green or red. Defaults to
+      true because this card was written for response times; set false for
+      traffic, revenue or any metric where a rise is the good outcome.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -8425,6 +8429,7 @@ blocks:
   compact_description: prose paragraph (GAS alias for body)
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
   fields:
@@ -8447,7 +8452,10 @@ blocks:
   description: Styled pull-quote with optional attribution line
   compact_description: styled pull-quote with attribution
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
     attribution: string (optional)
@@ -8456,7 +8464,10 @@ blocks:
   description: Vertical whitespace gap between atoms
   compact_description: vertical whitespace gap
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     height: string or number (optional, CSS height e.g. 24 or "2rem")
   source: *id007
@@ -8464,7 +8475,10 @@ blocks:
   description: Small inline tag/label chip
   compact_description: inline tag chip
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
     color: string (optional, hex colour)
@@ -8473,7 +8487,10 @@ blocks:
   description: Inline badge pill with accent colour
   compact_description: inline badge pill
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
     color: string (optional, hex colour)
@@ -8482,7 +8499,10 @@ blocks:
   description: Monospace inline code span
   compact_description: monospace inline code span
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: string
   source: *id007
@@ -8490,7 +8510,10 @@ blocks:
   description: Syntax-highlighted code block
   compact_description: syntax-highlighted code block
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     language: string (optional, e.g. python, js, yaml)
     content: string
@@ -8499,7 +8522,10 @@ blocks:
   description: Text hyperlink styled as a button
   compact_description: text hyperlink button
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     url: string
     label: string
@@ -8508,7 +8534,10 @@ blocks:
   description: Full-width call-to-action button linking to a URL
   compact_description: call-to-action button
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     url: string
     label: string
@@ -8537,7 +8566,10 @@ blocks:
   description: Simple card with title and body text
   compact_description: simple info card with title and body
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string
     text: string
@@ -8571,7 +8603,10 @@ blocks:
     and CTA button
   compact_description: dark hero banner with gradient and CTA
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     heading: string
     subtext: string (optional)
@@ -8585,7 +8620,10 @@ blocks:
   description: Single large stat with neon glow effect on dark background
   compact_description: neon-glow stat number on dark card
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     value: string or number
     label: string (optional)
@@ -8602,6 +8640,7 @@ blocks:
     box
   surfaces:
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
   fields:
@@ -8617,7 +8656,10 @@ blocks:
   description: Card with an animated gradient border stroke on dark background
   compact_description: animated gradient border card
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     content: string (optional)
@@ -8656,7 +8698,10 @@ blocks:
     per cell
   compact_description: dark-theme feature grid with icons
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     features: array of {icon, title, description, colour}
     columns: integer (optional, default 3)
@@ -8666,7 +8711,10 @@ blocks:
   description: Thin horizontal rule for dark theme pages
   compact_description: dark-theme horizontal divider
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     colour: string (optional, hex)
     margin: string (optional, CSS margin)
@@ -8720,7 +8768,10 @@ blocks:
     string (simple pill) or a {role, name, detail} object (richer boxed card).
   compact_description: animated beam connector between two or more nodes
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     from: string or {role, name, detail} object (ignored if nodes is set)
     to: string or {role, name, detail} object (ignored if nodes is set)
@@ -8810,7 +8861,10 @@ blocks:
   description: Floating particle field background (canvas fallback placeholder)
   compact_description: floating particles background (canvas placeholder)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: 'string (optional, alias: label, text)'
   source: *id007
@@ -8818,7 +8872,10 @@ blocks:
   description: Parallax scroll section (canvas fallback placeholder)
   compact_description: parallax scroll section (canvas placeholder)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: 'string (optional, alias: label, text)'
   source: *id007
@@ -8845,7 +8902,10 @@ blocks:
   description: Interactive collapsible decision tree with nested branches
   compact_description: interactive collapsible decision tree
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     nodes: 'array of {text, children: [{text, children}]} — nested tree nodes'
     title: string (optional)
@@ -8953,7 +9013,10 @@ blocks:
   description: Glossary list where hovering a term shows its definition as a tooltip
   compact_description: glossary with hover tooltips
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     terms: array of {term, definition}
     text: 'string (optional, introductory prose, alias: intro)'
@@ -8963,7 +9026,10 @@ blocks:
     effect
   compact_description: spotlight focus lens on blurred background
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     text: 'string (optional, alias: content)'
@@ -8993,7 +9059,10 @@ blocks:
   description: Button that morphs between circular and rounded-rectangle on hover
   compact_description: liquid morphing hover button
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (alias: label, title)'
     color: string (optional, hex background)
@@ -9073,7 +9142,10 @@ blocks:
   description: Dark card with radial mesh/blob gradient background — vivid multi-colour
   compact_description: dark card with radial mesh gradient background
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     text: 'string (optional, alias: content)'
@@ -9126,7 +9198,10 @@ blocks:
   description: Dark card with subtle SVG film-grain noise texture overlay
   compact_description: dark card with film-grain noise texture
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     text: 'string (optional, alias: content)'
@@ -9137,7 +9212,10 @@ blocks:
   description: Draggable before/after slider revealing two text panels side by side
   compact_description: draggable before/after comparison slider
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     before: '{label (optional), text}'
     after: '{label (optional), text}'
@@ -9304,7 +9382,10 @@ blocks:
     ?p= parameter, and encoded payload
   compact_description: annotated URL anatomy diagram
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     accent: string (optional, hex)
   source: *id007
@@ -9355,7 +9436,10 @@ blocks:
   description: Bold single-insight pull-quote card designed to be screenshotted
   compact_description: bold screenshot-ready insight card
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     headline: 'string (alias: text, quote, insight)'
     sub: 'string (optional, attribution/source, alias: author, source)'
@@ -9367,7 +9451,10 @@ blocks:
   description: Horizontal strip of numbered next steps with optional links
   compact_description: horizontal numbered next-steps strip
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     steps: 'array of {number (optional), label, detail (optional, alias: action),
       url (optional)}'
@@ -9388,7 +9475,10 @@ blocks:
   description: Side-by-side panel showing a rendered atom alongside its raw JSON schema
   compact_description: rendered atom + raw schema side-by-side anatomy view
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   children:
     schema:
       shape: single
@@ -9402,7 +9492,10 @@ blocks:
     capabilities
   compact_description: stat grid for renderer capability metrics
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     stats: array of {value, label}
     sub: string (optional, footer note)
@@ -9413,7 +9506,10 @@ blocks:
     schema → rendered page'
   compact_description: three-panel prompt → schema → output flow
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     prompt: string (the input prompt text)
     schema: object or string (the generated JSON schema)
@@ -9481,7 +9577,10 @@ blocks:
     target
   compact_description: A2UI surface diagram (schema → surfaces)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     title: string (optional)
     surfaces: array of {name, icon, desc, color} (optional, defaults to GAS/Meet/Sites/Chat)
@@ -11140,6 +11239,54 @@ blocks:
     height: integer (optional, px, default 600)
     refresh_ms: integer (optional)
     data_source: string (optional, wired data source id)
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: atc_vectoring
+  stage: preview
+  description: Playable approach-control game on a static radar plan view. Aircraft
+    converge on the field; the player taps a target and issues heading and altitude
+    instructions to keep 3nm/1000ft separation and establish each one on the ILS.
+    Scored on landings, conflict seconds and time. FULL SCREEN ONLY — compose it
+    inside a playbook, which is what requests the mode; rendered inline it shows an
+    explanation instead of an unreadable board. Aircraft are simulated by design so
+    a round is repeatable; supply `aircraft` to author the scenario, or omit it and
+    let `difficulty` generate one.
+  compact_description: playable ATC vectoring game, fullscreen only
+  surfaces:
+    # No `web`: that surface is served by renderers/web_article.py, and a
+    # real-time canvas game has no static-article rendering. Declaring a
+    # surface we do not actually serve is the exact failure this catalogue
+    # is trying to stop doing.
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: Renders an explanation instead of the board unless the host grants full
+        screen; only hub and playbook request the mode.
+    incompatible_on:
+    - surface: email
+      reason: Canvas rendering and pointer interaction are unavailable in email clients
+    - surface: pdf
+      reason: Real-time simulation and input have no meaning in a static document
+    - surface: google-chat
+      reason: Canvas and pointer interaction are not supported in Chat cards
+  fields:
+    aircraft: array (optional) of {callsign, type, bearing, dist_nm, alt_ft, speed_kt}.
+      Omit to generate traffic from difficulty.
+    difficulty: '"training" | "standard" | "busy"  (optional, default "standard") —
+      3, 5 or 7 aircraft when aircraft is omitted.'
+    zoom: integer (optional). TMA radius shown in nm. Default 22 — smaller than the
+      command deck's 35 because 3nm separation must stay legible.
+    ils_runway: string (optional, default "32L"). Sets the localiser course.
+    ils_intercept_alt: integer (optional, default 3000). Altitude the ILS gate expects.
+    conflict_grace_s: integer (optional, default 8). Seconds a conflict may persist.
+    round_seconds: integer (optional, default 180). Round length.
+    weather_source: string (optional). A metar_feed name — live wind, temp and QNH
+      in the subtitle.
+    title: string (optional). Chyron headline.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

@@ -4,7 +4,7 @@ Bold single-insight pull-quote card designed to be screenshotted
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

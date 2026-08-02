@@ -4,7 +4,7 @@ Glossary list where hovering a term shows its definition as a tooltip
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

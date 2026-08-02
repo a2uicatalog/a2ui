@@ -4,7 +4,7 @@ Frosted-glass card with backdrop-filter blur. Use for dark-theme highlight boxes
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 
