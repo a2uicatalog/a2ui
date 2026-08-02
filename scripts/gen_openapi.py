@@ -166,6 +166,34 @@ def _paths():
                             "host and every atom as an addressable capability."),
             "responses": {"200": {"description": "ARD catalog",
                                   "content": {"application/json": {"schema": {"type": "object"}}}}}}},
+        "/api/render": {"post": {
+            "tags": ["render"], "operationId": "renderSurface",
+            "summary": "A2UI payload to HTML",
+            "description": ("POST a payload, get a complete self-contained HTML page back. "
+                            "The protocol-free path: no MCP, no connector, no deployment — "
+                            "compose against spec.json and render here. Serves the 474 "
+                            "published atoms; preview-stage atoms are reported in "
+                            "X-A2UI-Unpublished and rendered as a comment rather than markup. "
+                            "Atoms that perform a render-time server fetch (data_source, "
+                            "firestore_read, doc_ai_summary, multi_doc_ai_brief, "
+                            "gemini_handoff) are refused with 400 — deploy your own renderer "
+                            "for those. Limits: 256 KB body, 300 blocks, 12 levels of nesting, "
+                            "50 requests per IP per day."),
+            "requestBody": {"required": True, "content": {"application/json": {
+                "schema": {"type": "object", "required": ["blocks"], "properties": {
+                    "title": {"type": "string", "description": "Page title"},
+                    "theme": {"type": "string", "enum": ["light", "dark"]},
+                    "blocks": {"type": "array", "items": {"type": "object"},
+                               "description": "A2UI blocks-dialect atoms — see /spec.json"}}},
+                "example": {"title": "Weekly numbers", "theme": "light", "blocks": [
+                    {"type": "heading", "text": "This week"},
+                    {"type": "stat_card", "value": "1,234", "label": "Daily users", "delta": "+12%"}]}}}},
+            "responses": {
+                "200": {"description": "Rendered HTML page",
+                        "content": {"text/html": {"schema": {"type": "string"}}}},
+                "400": {"description": "Malformed payload, unrenderable atom, or limit exceeded"},
+                "413": {"description": "Body larger than 256 KB"},
+                "429": {"description": "Daily render allowance exhausted"}}}},
         "/api/compose": {"post": {
             "tags": ["compose"], "operationId": "composeFromText",
             "summary": "Natural language to atom blocks",
