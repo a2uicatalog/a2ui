@@ -8447,6 +8447,7 @@ blocks:
     # a claim about Apps Script. The anchor now lives on drive_file_list, which
     # is GAS-bound by DriveApp and cannot be otherwise. Relocated 2026-08-02.
     works_on:
+    - web
     - google-apps-script-web
     - mcp-apps
   fields:
@@ -8737,7 +8738,10 @@ blocks:
   description: Stacked layered cards with parallax depth — alias for card_stack
   compact_description: stacked cards with depth parallax
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     cards: 'array of {title, text} (alias: items)'
     count: integer (optional, max cards to show)
@@ -8757,7 +8761,10 @@ blocks:
     alias for reveal_on_scroll
   compact_description: scroll-triggered animated reveal
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     text: 'string (alias: content)'
     title: string (optional)
@@ -8816,7 +8823,10 @@ blocks:
   description: Dot-grid repeating pattern background — alias for dot_grid_background
   compact_description: dot-grid pattern background (alias)
   surfaces:
-    works_on: *id006
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
   fields:
     color: string (optional, dot colour hex)
     bg: string (optional, background colour)

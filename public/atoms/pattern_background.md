@@ -4,7 +4,7 @@ Dot-grid repeating pattern background — alias for dot_grid_background
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

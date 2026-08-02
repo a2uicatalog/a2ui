@@ -4,7 +4,7 @@ Content that animates in from a direction when scrolled into view — alias for 
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

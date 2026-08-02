@@ -4,7 +4,7 @@ Stacked layered cards with parallax depth — alias for card_stack
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 

@@ -3333,6 +3333,7 @@
    "type": "text_block",
    "compact": "plain text block",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3526,6 +3527,7 @@
    "type": "depth_stack",
    "compact": "stacked cards with depth parallax",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3542,6 +3544,7 @@
    "type": "scroll_trigger",
    "compact": "scroll-triggered animated reveal",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -3575,6 +3578,7 @@
    "type": "pattern_background",
    "compact": "dot-grid pattern background (alias)",
    "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]

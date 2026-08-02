@@ -13728,6 +13728,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14608,6 +14609,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14682,6 +14684,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -14867,6 +14870,7 @@
    ],
    "unevaluatedProperties": false,
    "x-surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]

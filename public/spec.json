@@ -11241,6 +11241,7 @@
    "compact_description": "plain text block",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11731,6 +11732,7 @@
    "compact_description": "stacked cards with depth parallax",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11771,6 +11773,7 @@
    "compact_description": "scroll-triggered animated reveal",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]
@@ -11864,6 +11867,7 @@
    "compact_description": "dot-grid pattern background (alias)",
    "surfaces": {
     "works_on": [
+     "web",
      "google-apps-script-web",
      "mcp-apps"
     ]

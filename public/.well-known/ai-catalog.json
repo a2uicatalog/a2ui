@@ -5992,6 +5992,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/text_block",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6359,6 +6360,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/depth_stack",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6391,6 +6393,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/scroll_trigger",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],
@@ -6456,6 +6459,7 @@
       "type": "application/vnd.a2ui.atom+json",
       "url": "https://a2uicatalog.ai/atoms/pattern_background",
       "capabilities": [
+        "web",
         "google-apps-script-web",
         "mcp-apps"
       ],

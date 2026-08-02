@@ -4,7 +4,7 @@ Plain text block rendered as a paragraph
 
 ## Surfaces
 
-google-apps-script-web, mcp-apps
+web, google-apps-script-web, mcp-apps
 
 ## Fields
 
