@@ -253,6 +253,23 @@
         "operationId": "renderSurface",
         "summary": "A2UI payload to HTML",
         "description": "POST a payload, get a complete self-contained HTML page back. The protocol-free path: no MCP, no connector, no deployment — compose against spec.json and render here. Serves the 474 published atoms; preview-stage atoms are reported in X-A2UI-Unpublished and rendered as a comment rather than markup. Atoms that perform a render-time server fetch (data_source, firestore_read, doc_ai_summary, multi_doc_ai_brief, gemini_handoff) are refused with 400 — deploy your own renderer for those. Limits: 256 KB body, 300 blocks, 12 levels of nesting, 50 requests per IP per day.",
+        "parameters": [
+          {
+            "name": "surface",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "web",
+                "mcp-apps",
+                "google-apps-script-web",
+                "google-meet-stage"
+              ]
+            },
+            "description": "Apply that surface's declared compatibility policy. Atoms marked degraded_on for it render and are named in X-A2UI-Degraded; atoms marked incompatible_on are replaced by a visible note and named in X-A2UI-Incompatible. Selects a POLICY, not a renderer — one renderer serves every accepted surface. pdf, email and google-chat are refused with 400: this endpoint emits HTML, and answering half-honestly about portability is worse than not answering. Omit for no policy."
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {

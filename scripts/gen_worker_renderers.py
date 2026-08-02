@@ -98,7 +98,30 @@ def main():
     if not spec_path.exists():
         print("✗ public/spec.json missing — run ops.py run catalog-rebuild first", file=sys.stderr)
         sys.exit(1)
-    published = sorted({a["type"] for a in json.loads(spec_path.read_text()).get("atoms", [])})
+    spec_atoms = json.loads(spec_path.read_text()).get("atoms", [])
+    published = sorted({a["type"] for a in spec_atoms})
+
+    # SURFACE_POLICY — the compatibility matrix, compiled in so POST /api/render
+    # can apply a surface's declared degradation instead of merely documenting
+    # it. Same source as PUBLISHED_ATOMS (spec.json), so it cannot drift from
+    # what is actually published, and it rides this generator rather than adding
+    # a sixth deploy target. Only atoms that DECLARE something are emitted:
+    # absence of a claim is not a claim of absence, and the caller treats a
+    # missing entry as works_on.
+    policy = {}
+    for a in spec_atoms:
+        s = a.get("surfaces") or {}
+        entry = {}
+        if s.get("works_on"):
+            entry["w"] = sorted(s["works_on"])
+        deg = [d.get("surface") for d in (s.get("degraded_on") or []) if d.get("surface")]
+        inc = [d.get("surface") for d in (s.get("incompatible_on") or []) if d.get("surface")]
+        if deg:
+            entry["d"] = sorted(deg)
+        if inc:
+            entry["i"] = sorted(inc)
+        if entry:
+            policy[a["type"]] = entry
     if not published:
         print("✗ public/spec.json published no atoms — refusing to emit an empty allowlist", file=sys.stderr)
         sys.exit(1)
@@ -126,6 +149,12 @@ def main():
     # both: stale pages served, staleness gate green. Exactly the ui:// cache
     # failure of the day before, rebuilt inside its own fix.
     digest.update(css.encode("utf-8"))
+    # ...and the surface policy, for the same reason. Emitted 2026-08-02 and
+    # initially left OUT of the digest, which would have let a compatibility
+    # reclassification ship behind an unchanged cache key and a green staleness
+    # gate — the third time this exact omission has been made in two days.
+    # Everything the module EXPORTS must be in the hash that identifies it.
+    digest.update(json.dumps(policy, sort_keys=True).encode("utf-8"))
     sha = digest.hexdigest()
 
     # `var` at module top level is module-scoped, not global — which is what we
@@ -138,6 +167,7 @@ def main():
         f"{PRELUDE}\n\n{body}\n\n"
         f'export const SOURCE_SHA = "{sha}";\n'
         f"export const PUBLISHED_ATOMS = new Set({json.dumps(published)});\n"
+        f"export const SURFACE_POLICY = {json.dumps(policy, separators=(',', ':'))};\n"
         f"export const ATOM_STYLES = {json.dumps(css)};\n"
         "export { renderAtoms, _RENDERERS };\n"
     )

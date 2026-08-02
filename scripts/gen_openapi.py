@@ -179,6 +179,18 @@ def _paths():
                             "gemini_handoff) are refused with 400 — deploy your own renderer "
                             "for those. Limits: 256 KB body, 300 blocks, 12 levels of nesting, "
                             "50 requests per IP per day."),
+            "parameters": [{
+                "name": "surface", "in": "query", "required": False,
+                "schema": {"type": "string",
+                           "enum": ["web", "mcp-apps", "google-apps-script-web", "google-meet-stage"]},
+                "description": ("Apply that surface's declared compatibility policy. Atoms marked "
+                                "degraded_on for it render and are named in X-A2UI-Degraded; atoms "
+                                "marked incompatible_on are replaced by a visible note and named in "
+                                "X-A2UI-Incompatible. Selects a POLICY, not a renderer — one renderer "
+                                "serves every accepted surface. pdf, email and google-chat are refused "
+                                "with 400: this endpoint emits HTML, and answering half-honestly about "
+                                "portability is worse than not answering. Omit for no policy."),
+            }],
             "requestBody": {"required": True, "content": {"application/json": {
                 "schema": {"type": "object", "required": ["blocks"], "properties": {
                     "title": {"type": "string", "description": "Page title"},
