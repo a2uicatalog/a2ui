@@ -226,13 +226,25 @@ HANDSHAKE = """
     // (paint() decodes the latter internally via _rehydrateV1Surface; this
     // check runs on the raw pre-decode payload, so it inspects both shapes
     // directly rather than duplicating that decode step just to look).
+    // Wired surfaces keep their atoms in `layout` under an `atom` key, not in
+    // `blocks` under `type` — so this check simply never saw one and every
+    // wired surface stayed an inline card regardless of what it contained.
     var blocks = (payload && payload.blocks) ||
       (payload && payload.createSurface && payload.createSurface.components) ||
+      (payload && payload.layout) ||
       (Array.isArray(payload) ? payload : []);
-    var hasDeepNav = blocks.some(function (b) {
-      var t = b && (b.component || b.type);
-      return t === 'hub' || t === 'playbook';
-    });
+    var _type = function (b) { return b && (b.component || b.type || b.atom); };
+    // WHICH SURFACES EARN THE VIEWPORT. Not "big" — surfaces you navigate
+    // rather than read past: hub and playbook have their own internal nav;
+    // concept_ladder is the article playbook's artifact, a rung rail whose
+    // whole argument structure is the point and which reads as a keyhole in a
+    // chat card; a2ui_wired_surface is an APP with inputs and buttons, and a
+    // form squeezed into a card is the worst of both. (2026-08-03, Curtis.)
+    var hasDeepNav = (payload && payload.type === 'a2ui_wired_surface') ||
+      blocks.some(function (b) {
+        var t = _type(b);
+        return t === 'hub' || t === 'playbook' || t === 'concept_ladder';
+      });
     if (!hasDeepNav) return;
     // gdm_rocket_panel / iso_fireworks_panel are fixed, half-viewport overlay
     // atoms (data-a2ui-overlay in atoms_canvas.gs) authored for the INLINE
@@ -245,7 +257,7 @@ HANDSHAKE = """
     // differently sized. If a payload mixes a hub with one of these, don't
     // drag it into fullscreen just because the hub is present.
     var hasFixedOverlay = blocks.some(function (b) {
-      var t = b && (b.component || b.type);
+      var t = _type(b);
       return t === 'gdm_rocket_panel' || t === 'iso_fireworks_panel';
     });
     if (hasFixedOverlay) return;
@@ -298,6 +310,10 @@ HANDSHAKE = """
       if (typeof window._a2uiBootWiredSurface === 'function') {
         window._a2uiBootWiredSurface(payload);
       }
+      // The wired branch returns before paint()'s tail, so it has to ask for
+      // itself — the tool-result handler's call ran against the raw payload
+      // before this decode, and never matched a wired surface anyway.
+      _maybeRequestFullscreen(payload);
       reportSize();
       return;
     }
