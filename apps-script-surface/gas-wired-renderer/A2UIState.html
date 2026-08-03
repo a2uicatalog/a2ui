@@ -879,7 +879,7 @@ var _a2uiBridge = {
         if (textEl) textEl.textContent = val;
       }
     } else if (prop === 'value') {
-      var inp = el.querySelector('input:not([type=checkbox]),textarea');
+      var inp = el.querySelector('input:not([type=checkbox]),textarea,select');
       if (inp) inp.value = val;
     } else if (prop === 'disabled') {
       var btn = el.querySelector('button');
@@ -1484,7 +1484,7 @@ window._a2uiBootWiredSurface = function(schema) {
           window._a2uiEngine.bindOutput(wireExpr, e.target.checked);
         });
       } else if (prop === 'onChange') {
-        var inp = domEl.querySelector('input:not([type=checkbox]),textarea');
+        var inp = domEl.querySelector('input:not([type=checkbox]),textarea,select');
         if (inp) inp.addEventListener('input', function(e) {
           window._a2uiEngine.bindOutput(wireExpr, e.target.value);
         });
