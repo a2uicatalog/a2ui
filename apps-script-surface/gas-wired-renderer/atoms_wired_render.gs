@@ -33,6 +33,26 @@ function _a2uiRenderWiredLayout(payload) {
   var primitives = payload.state_primitives || [];
   var content    = '';
 
+  // DECLARED fullscreen, same contract the canvas atoms use (height:
+  // 'fullscreen' on airspace_command_deck — the payload shape Curtis confirmed
+  // working in BOTH Claude and ChatGPT on 2026-08-01). Requesting the display
+  // mode from the host only changes the FRAME; without this the content stays
+  // inside .asw-page's 860px max-width and padding, which is why asking alone
+  // looked like nothing happened.
+  //
+  // DELIBERATELY NOT 100vh, and deliberately not overflow:hidden — that pair is
+  // the documented trap (atoms_airspace.gs): a display-mode grant is a REQUEST,
+  // and when a host refuses it (ChatGPT renders in a fixed embedded panel) a
+  // 100vh canvas sizes to the HOST viewport instead of the panel and paints its
+  // content off-screen. That presented as "no plane data" and cost a day. A
+  // document or a form needs the WIDTH escape, not a viewport-height canvas, so
+  // taking only the half that cannot misfire is the whole point: if the grant
+  // never comes, this degrades to a slightly wider column and nothing is lost.
+  var fsBreakout = (payload.fullscreen === true || payload.height === 'fullscreen')
+    ? '<style>.asw-page{max-width:none!important;padding:24px 32px!important;'
+      + 'margin:0!important;}</style>'
+    : '';
+
   layout.forEach(function(el) {
     var rawType = el.atom || el.type;
     // Layout structure primitives — not atoms, just HTML wrappers
@@ -94,5 +114,5 @@ function _a2uiRenderWiredLayout(payload) {
     }
   });
 
-  return content;
+  return fsBreakout + content;
 }
