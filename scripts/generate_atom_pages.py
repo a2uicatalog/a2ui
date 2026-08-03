@@ -1013,6 +1013,10 @@ def render_page(atom):
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display_name} — A2UI Atomic Catalog</title>
   <meta name="description" content="{desc or compact}">
@@ -1418,6 +1422,10 @@ def generate_index(atoms):
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Atomic Catalog</title>
   <meta name="description" content="{len(atoms)} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.">
@@ -2204,6 +2212,10 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
   <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
@@ -2392,6 +2404,10 @@ document.addEventListener('click', function (e) {{
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>{display} Atoms — A2UI Atomic Catalog</title>
   <meta name="description" content="{len(atoms)} A2UI atoms for the {display} surface.">
@@ -2498,6 +2514,10 @@ def render_templates_page(atoms):
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Templates — A2UI Atomic Catalog</title>
   <meta name="description" content="Every ComponentId/ChildList-eligible atom — {len(template_atoms)} templates whose children are independently addressable by ComponentId, per the A2UI v1.0 wire format.">
@@ -2552,6 +2572,10 @@ def render_try_page(atom_count):
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Try it — A2UI Atomic Catalog</title>
   <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
@@ -2817,6 +2841,10 @@ def render_frugal_ai_ops_page():
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Frugal AI Ops — A2UI Atomic Catalog</title>
   <meta name="description" content="A live demo of frugal AI ops: a small free-tier model extracts, deterministic code structures the result, and a second pass flags anything ungrounded instead of hiding it.">

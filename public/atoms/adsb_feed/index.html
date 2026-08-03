@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Adsb Feed — A2UI Atomic Catalog</title>
   <meta name="description" content="OpenSky Network ADS-B live traffic feed for a geographic bounding box. Fetches server-side on render (cached), refreshes client-side every refresh seconds. Publishes normalised flight objects {callsign, lat, lon, alt_ft, spd_kt, hdg, on_ground, squawk} to the named feed. Unauthenticated OpenSky limit is 400 req/day — keep cache TTL >= 15s.">
