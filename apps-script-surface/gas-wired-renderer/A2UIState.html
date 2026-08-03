@@ -723,20 +723,43 @@ A2UIStateEngine.prototype._initAction = function(p) {
   };
   var lastGen = 0;
 
+  // collect resolves RECURSIVELY through plain objects and arrays. It used to
+  // walk only the top level, so a nested `{source: {url: '#u.value'}}` reached
+  // the tool as the literal string '#u.value' — a silently wrong argument, the
+  // worst shape of failure available, and not a hypothetical: MCP tools take
+  // object arguments routinely (emit_runbook_surface's `source` is the case
+  // that found it, 2026-08-03). Depth is bounded because a collect spec is
+  // authored data, but the guard costs nothing and a cycle would otherwise
+  // hang the surface rather than fail it.
+  var _resolveCollect = function(expr, depth) {
+    if (depth > 8) return null;
+    if (typeof expr === 'string') {
+      if (expr.charAt(0) === '#') {
+        var par = self._parseWire(expr);
+        return par ? (self.nodes[par.nodeId] || {})[par.property] : undefined;
+      }
+      if (expr === '{{now}}') return new Date().toISOString().slice(0, 10);
+      return expr;
+    }
+    if (Array.isArray(expr)) {
+      return expr.map(function(v) { return _resolveCollect(v, depth + 1); });
+    }
+    if (expr && typeof expr === 'object') {
+      var out = {};
+      Object.keys(expr).forEach(function(k) {
+        out[k] = _resolveCollect(expr[k], depth + 1);
+      });
+      return out;
+    }
+    return expr;
+  };
+
   node._run = function() {
     var thisGen = ++lastGen;
     var collected = {};
     var cs = (p.props && p.props.collect) || {};
     Object.keys(cs).forEach(function(key) {
-      var expr = cs[key];
-      if (typeof expr === 'string' && expr.startsWith('#')) {
-        var par = self._parseWire(expr);
-        if (par) collected[key] = (self.nodes[par.nodeId] || {})[par.property];
-      } else if (expr === '{{now}}') {
-        collected[key] = new Date().toISOString().slice(0, 10);
-      } else {
-        collected[key] = expr;
-      }
+      collected[key] = _resolveCollect(cs[key], 0);
     });
 
     var config = {};
