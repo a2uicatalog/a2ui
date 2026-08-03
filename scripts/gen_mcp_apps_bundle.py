@@ -279,7 +279,12 @@ HANDSHAKE = """
       payload = _rehydrateV1Surface(payload.createSurface);
     }
     var root = document.getElementById('a2ui-root');
-    document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark');
+    // theme:"terminal" is the brand skin (AtomStyles.html) and is DARK PLUS a
+    // token repaint -- it sets both classes, so anything keying off the dark
+    // class in JS keeps working and never has to know a third theme exists.
+    var _terminal = payload.theme === 'terminal';
+    document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
+    document.body.classList.toggle('asw-terminal-theme', _terminal);
     // Wired dialect (spec/wired-transport-v0.1.md): expand templates, render the
     // layout with the SAME extracted loop GAS uses, then boot the state engine —
     // actions route through _a2uiActionTransport (host tools/call on this surface).

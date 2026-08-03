@@ -33,6 +33,30 @@
     --highlight-bg: rgba(255, 214, 10, 0.2);
   }
 
+  /* Terminal skin — the catalog brand palette (a2ui-private/spec/brand.md:
+     dark-first, monospace, calm). A surface asks for it with theme:"terminal";
+     the host applies it ON TOP of asw-dark-theme, never instead of it, so the
+     atoms that read the dark state in JS (theme_toggle, brevet_*, hub) still
+     see the class they poll for — this is a repaint of the dark tokens, not a
+     third theme they would each have to learn.
+     Only the six tokens brand.md actually declares are overridden; surface2 is
+     interpolated between surface and border because the brand names three
+     greys, not four, and status colours stay on the dark theme's values (a
+     palette that redefines "error" is making a claim brand.md does not). */
+  body.asw-terminal-theme {
+    --bg: #0a0e17;
+    --surface: #111826;
+    --surface2: #18202f;
+    --border: #1f2937;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #7c9cff;
+    --accent2: #a8bcff;
+    --font: ui-monospace, SFMono-Regular, Menlo, 'JetBrains Mono', monospace;
+    --mono: ui-monospace, SFMono-Regular, Menlo, 'JetBrains Mono', monospace;
+    --highlight-bg: rgba(124, 156, 255, 0.22);
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
