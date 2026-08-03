@@ -40,7 +40,23 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       var sc = res && res.structuredContent;
       if (sc && sc.ok === false) { onOk(sc); return; }   // structured report (e.g. lint errors)
       if (sc) { onOk({ ok: true, data: sc }); return; }  // tool result IS the data (e.g. compiled surface)
-      onOk({ ok: false, error: 'empty host response' });
+      // No structuredContent. That is NOT the same as no answer: an MCP tool
+      // reporting a normal failure returns isError with its reason in
+      // content[0].text and no structured payload at all. Reporting 'empty host
+      // response' here threw that reason away and replaced a precise message
+      // ('distill_document needs a non-empty markdown string') with one that
+      // says nothing and points nowhere — observed live 2026-08-03, where it
+      // cost a round of guessing at a tool that was answering correctly.
+      var txt = '';
+      if (res && res.content && res.content.length) {
+        for (var i = 0; i < res.content.length; i++) {
+          if (res.content[i] && res.content[i].type === 'text' && res.content[i].text) {
+            txt = String(res.content[i].text); break;
+          }
+        }
+      }
+      if (txt) { onOk({ ok: false, error: txt.slice(0, 400) }); return; }
+      onOk({ ok: false, error: 'host returned no content for ' + mcpTool });
     })['catch'](function(e) { onFail(e); });
     return;
   }
