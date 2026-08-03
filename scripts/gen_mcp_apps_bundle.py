@@ -417,6 +417,40 @@ HANDSHAKE = """
         post({ jsonrpc: '2.0', id: id, method: 'tools/call',
                params: { name: name, arguments: args || {} } });
       });
+    },
+    // ui/message (spec: docs/apps.mdx "Send message content to the host's chat
+    // interface" -- host SHOULD add it to the conversation and, per the
+    // interactive sequence diagram, "process message and follow up").
+    //
+    // This is the channel that makes a view able to START A MODEL TURN. Without
+    // it a view is a closed loop -- tools/call out, tool-result back into the
+    // iframe, model never involved -- which is why a button wired to a
+    // discovery call could return ok=true forever and produce nothing.
+    //
+    // TWO SPEC FACTS WORTH KNOWING BEFORE RELYING ON IT. There is no
+    // HostCapabilities flag for messaging, so it CANNOT be feature-detected:
+    // the only way to learn whether a host honours it is to send one and read
+    // the error. And "Host MAY request user consent", so a confirmation prompt
+    // is expected behaviour, not a failure. Both mean the caller has to be able
+    // to show a refusal, which is why this rejects with the host's own message
+    // rather than a generic one.
+    //
+    // Timeout is longer than callTool's: a consent dialog is a human deciding,
+    // and 15s of thinking time is not an error.
+    sendMessage: function (text, role) {
+      return new Promise(function (resolve, reject) {
+        var id = 'um-' + Math.random().toString(36).slice(2);
+        _pending[id] = { resolve: resolve, reject: reject };
+        setTimeout(function () {
+          if (_pending[id]) {
+            delete _pending[id];
+            reject(new Error('host did not answer ui/message (no consent decision?)'));
+          }
+        }, 60000);
+        post({ jsonrpc: '2.0', id: id, method: 'ui/message',
+               params: { role: role || 'user',
+                         content: { type: 'text', text: String(text == null ? '' : text) } } });
+      });
     }
   };
   window.addEventListener('message', function (ev) {
@@ -424,7 +458,9 @@ HANDSHAKE = """
     if (!msg || msg.jsonrpc !== '2.0' || !_pending[msg.id]) return;
     var pend = _pending[msg.id];
     delete _pending[msg.id];
-    if (msg.error) pend.reject(new Error(msg.error.message || 'tools/call failed'));
+    // Keep the host's OWN message. 'Message sending denied' is actionable;
+    // a generic string is not, and this handler serves both methods now.
+    if (msg.error) pend.reject(new Error(msg.error.message || 'host request failed'));
     else pend.resolve(msg.result);
   });
 

@@ -23792,7 +23792,40 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       'mcp:get_profile':          'get_profile',
       'mcp:save_profile':         'save_profile',
       'mcp:save_reading':         'save_reading',
+      // Deterministic, read-only, and it FINISHES in the surface — the
+      // runbook's method compiled to a surface, no model in the loop.
+      'mcp:describe_playbook':    'describe_playbook',
     };
+    // host:message — NOT a tool call. It hands text to the host's chat so the
+    // MODEL takes the next turn, which is the only way a surface can reach a
+    // reader it cannot compute itself (a critical reading needs verbatim
+    // quotation; a renderer cannot invent one). Declared like any other action,
+    // so `collect` composes the prompt from state.
+    //
+    // Consent is the host's to ask for and refusal is a legitimate answer, so
+    // the error is reported verbatim rather than flattened — a button that
+    // silently does nothing when consent is declined is the exact failure this
+    // surface has already shipped once.
+    if (type === 'host:message') {
+      var bridge = window._A2UI_HOST_BRIDGE;
+      if (!bridge || typeof bridge.sendMessage !== 'function') {
+        onOk({ ok: false, error: 'Sending to the conversation needs an MCP Apps host that ' +
+                                 'supports ui/message — inert here.' });
+        return;
+      }
+      var d = req.data || {};
+      var text = d.text || d.message || '';
+      if (!String(text).trim()) {
+        onOk({ ok: false, error: 'Nothing to send — no message text was collected.' });
+        return;
+      }
+      bridge.sendMessage(text, d.role)
+        .then(function() { onOk({ ok: true, data: { sent: true } }); })
+        ['catch'](function(e) {
+          onOk({ ok: false, error: (e && e.message) || 'The host refused to send the message.' });
+        });
+      return;
+    }
     var mcpTool = MCP_VERBS[type];
     if (!mcpTool) {
       onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this button is inert here.' });
@@ -25799,6 +25832,40 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
         post({ jsonrpc: '2.0', id: id, method: 'tools/call',
                params: { name: name, arguments: args || {} } });
       });
+    },
+    // ui/message (spec: docs/apps.mdx "Send message content to the host's chat
+    // interface" -- host SHOULD add it to the conversation and, per the
+    // interactive sequence diagram, "process message and follow up").
+    //
+    // This is the channel that makes a view able to START A MODEL TURN. Without
+    // it a view is a closed loop -- tools/call out, tool-result back into the
+    // iframe, model never involved -- which is why a button wired to a
+    // discovery call could return ok=true forever and produce nothing.
+    //
+    // TWO SPEC FACTS WORTH KNOWING BEFORE RELYING ON IT. There is no
+    // HostCapabilities flag for messaging, so it CANNOT be feature-detected:
+    // the only way to learn whether a host honours it is to send one and read
+    // the error. And "Host MAY request user consent", so a confirmation prompt
+    // is expected behaviour, not a failure. Both mean the caller has to be able
+    // to show a refusal, which is why this rejects with the host's own message
+    // rather than a generic one.
+    //
+    // Timeout is longer than callTool's: a consent dialog is a human deciding,
+    // and 15s of thinking time is not an error.
+    sendMessage: function (text, role) {
+      return new Promise(function (resolve, reject) {
+        var id = 'um-' + Math.random().toString(36).slice(2);
+        _pending[id] = { resolve: resolve, reject: reject };
+        setTimeout(function () {
+          if (_pending[id]) {
+            delete _pending[id];
+            reject(new Error('host did not answer ui/message (no consent decision?)'));
+          }
+        }, 60000);
+        post({ jsonrpc: '2.0', id: id, method: 'ui/message',
+               params: { role: role || 'user',
+                         content: { type: 'text', text: String(text == null ? '' : text) } } });
+      });
     }
   };
   window.addEventListener('message', function (ev) {
@@ -25806,7 +25873,9 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     if (!msg || msg.jsonrpc !== '2.0' || !_pending[msg.id]) return;
     var pend = _pending[msg.id];
     delete _pending[msg.id];
-    if (msg.error) pend.reject(new Error(msg.error.message || 'tools/call failed'));
+    // Keep the host's OWN message. 'Message sending denied' is actionable;
+    // a generic string is not, and this handler serves both methods now.
+    if (msg.error) pend.reject(new Error(msg.error.message || 'host request failed'));
     else pend.resolve(msg.result);
   });
 
