@@ -18,6 +18,21 @@ triggers:
   - teardown
 surfaces: [google-apps-script-web, mcp-apps, web]
 layout: concept_ladder
+# What this runbook needs from the CALLING HOST, declared the way atoms declare
+# works_on. `fetch` is not optional here: the contract requires verbatim
+# quotations from a source only the caller can read, and nothing is retrieved
+# server-side by design (no SSRF surface, no fetch budget, and the URL never
+# reaches us). A host without fetch should say so and ask for pasted text as its
+# FIRST move — accepting the contract and filling it from memory is the one
+# failure this runbook cannot detect and must never invite. Confirmed twice
+# 2026-08-03 against a connector-mode host with no browse action.
+requires_host:
+  - capability: fetch
+    reason: >-
+      You must read the source article yourself to supply verbatim quotations.
+      Without fetch, ask the user to paste the article text before calling this
+      runbook with content.
+    fallback: ask the user to paste the article text
 # Questions the CALLING MODEL must put to the user before filling the contract.
 # Returned by emit_runbook_surface's discovery call (runbook_id, no content)
 # alongside input_contract/parsing_guide. Ask them in conversation; do not guess

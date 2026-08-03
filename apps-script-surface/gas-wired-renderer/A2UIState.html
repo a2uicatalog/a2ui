@@ -13,7 +13,20 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
   // verb-by-verb). Checked before the GAS branch: the GAS server has no
   // handler for these, so on the Apps Script surface they refuse declaratively.
   if (type.indexOf('mcp:') === 0) {
-    var MCP_VERBS = { 'mcp:distill_document': 'distill_document' };
+    // ALLOWLIST, deliberately — a wired surface can only reach tools named
+    // here, so a payload cannot invoke arbitrary host tools by inventing a
+    // verb. Scope grows one reviewed verb at a time.
+    // The workspace verbs (2026-08-03) let a surface stamp a runbook and read
+    // its own reader's history; the store verbs are inert without a signed-in
+    // user, which the tools report honestly rather than erroring.
+    var MCP_VERBS = {
+      'mcp:distill_document':     'distill_document',
+      'mcp:emit_runbook_surface': 'emit_runbook_surface',
+      'mcp:list_readings':        'list_readings',
+      'mcp:get_profile':          'get_profile',
+      'mcp:save_profile':         'save_profile',
+      'mcp:save_reading':         'save_reading',
+    };
     var mcpTool = MCP_VERBS[type];
     if (!mcpTool) {
       onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this button is inert here.' });

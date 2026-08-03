@@ -50,6 +50,47 @@ memory when the manifest declares them.
   via template at serve time; `window.location` only as gas-fakes
   fallback (see a2uithoughts.md for the incident history).
 
+## Deploy discipline: deployed ≠ reachable
+
+This system's characteristic failure is not a broken build — it is a
+CORRECT build that never became true at the surface a user touches.
+Six instances to date: the `ui://` template cache, a lost deploy race,
+a clasp identity clobber, a Worker serving a stale compiled renderer,
+a parity gate that blocked the deploy that would have satisfied it, and
+a live capability three hosts could not discover. Assume this class
+first, not last.
+
+- **Never trust "I deployed it". Ask the live surface what it is
+  running.** `worker-verify`, `gas-verify`, `check_ui_view_version`,
+  `check_worker_renderer` each interrogate reality rather than a state
+  file. After any deploy, run the ones that cover what you changed.
+- **A change that is committed and pushed but not observable live is a
+  DEPLOY problem until proven otherwise.** Check the CI run before
+  re-reading the code — and before re-pushing.
+- **Two failures on the same symptom: STOP.** Report what you observed,
+  what you ruled out, and what you need. Do not attempt a third fix.
+  (Adapted from `ops/improve.yaml` `budget.stop_when`, which had this
+  rule while four consecutive pushes chased one misdiagnosed cause.)
+- **Distinguish "appeared then reverted" from "never appeared".** The
+  first is a race; the second is a gate or a trigger. They look
+  identical in a single snapshot and different in a timeline — poll
+  before concluding.
+- **Any deliberate `tools/list` change needs the parity suite updated in
+  the same commit** — the gate compares local to live, so an intended
+  difference deadlocks the deploy that would resolve it.
+
+## Improvement work is measured, not asserted
+
+`ops/improve.yaml` (private tier) declares the benchmark. When the work
+is improvement-shaped — "make X better", picking up backlog, or any
+session likely to touch a scored dimension:
+
+- **Score first.** A session is judged on the index delta it moved, not
+  the work it appeared to do. Without a baseline there is no delta.
+- **Report the delta at the end**, including when it is zero.
+- **If the session's real work fitted no dimension, say so** — that is
+  the declared trigger to revisit the benchmark, not a reason to skip it.
+
 ## Key references
 
 - `project.yaml` — inventory, policy, processes (the lifecycle catalogue)

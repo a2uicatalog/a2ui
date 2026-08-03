@@ -58,6 +58,13 @@
     "web"
    ],
    "layout": "concept_ladder",
+   "requires_host": [
+    {
+     "capability": "fetch",
+     "reason": "You must read the source article yourself to supply verbatim quotations. Without fetch, ask the user to paste the article text before calling this runbook with content.",
+     "fallback": "ask the user to paste the article text"
+    }
+   ],
    "elicit": [
     {
      "id": "lens",
