@@ -137,9 +137,20 @@ _RENDERERS['nav_link'] = function(b) {
 // ── theme_toggle ──────────────────────────────────────────────────────────────
 // Floating button that toggles body.asw-dark-theme. Atoms like hub react via
 // MutationObserver — no direct coupling needed.
-// Schema: { dark_bg, position ('bottom-right'|'top-right'), label_dark, label_light }
+// Schema: { dark_bg, position ('bottom-right'|'top-right'), label_dark,
+//           label_light, initial ('light'|'dark') }
+//
+// `initial` (2026-08-03) exists because the button used to assume every page
+// starts light. On a dark-by-default surface the first click computed
+// dark=!false=true, re-adding a class that was already there — so the first
+// press did visibly nothing and the label flipped the wrong way. It must be
+// told what the page it is mounted on already is.
+//
+// `dark_bg: ""` means DO NOT TOUCH the background: when a theme owns --bg (a
+// terminal-skinned surface, say), writing an inline body background overrides
+// the palette with a colour from this atom's defaults and quietly wins.
 _RENDERERS['theme_toggle'] = function(b) {
-  var darkBg     = b.dark_bg    || '#0f172a';
+  var darkBg     = b.dark_bg !== undefined ? b.dark_bg : '#0f172a';
   var pos        = b.position   || 'bottom-right';
   var labelDark  = b.label_dark  || '🌙';
   var labelLight = b.label_light || '☀️';
@@ -149,25 +160,33 @@ _RENDERERS['theme_toggle'] = function(b) {
     ? 'top:64px;right:12px;'
     : 'bottom:72px;right:12px;';
 
+  // The button's INITIAL paint has to agree with `initial` too — label and
+  // chrome both. Rendering light chrome on a dark page and correcting it on
+  // first click is the same bug as the state one, just visible for longer.
+  var startDark = b.initial === 'dark';
   return (
     '<button id="' + uid + '" ' +
-    'title="Mode sombre" ' +
+    'title="' + (startDark ? 'Light mode' : 'Dark mode') + '" ' +
     'style="position:fixed;' + posStyle + 'z-index:500;' +
-    'padding:7px 12px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.12);' +
-    'background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);' +
-    'cursor:pointer;font-size:0.88rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);' +
+    'padding:7px 12px;border-radius:10px;' +
+    'border:1.5px solid ' + (startDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)') + ';' +
+    'background:' + (startDark ? 'rgba(15,23,42,0.88)' : 'rgba(255,255,255,0.88)') + ';' +
+    (startDark ? 'color:#e2e8f0;' : '') +
+    'backdrop-filter:blur(8px);' +
+    'cursor:pointer;font-size:0.88rem;' +
+    'box-shadow:0 2px 8px rgba(0,0,0,' + (startDark ? '0.4' : '0.1') + ');' +
     'transition:all 0.2s;">' +
-    _esc(labelDark) +
+    _esc(startDark ? labelLight : labelDark) +
     '</button>' +
     '<script>(function(){' +
     'var btn=document.getElementById("' + uid + '");' +
     'var darkBg="' + darkBg + '";' +
     'var ld="' + _esc(labelDark) + '",ll="' + _esc(labelLight) + '";' +
-    'var dark=false;' +
+    'var dark=' + (b.initial === 'dark' ? 'true' : 'false') + ';' +
     'btn.addEventListener("click",function(){' +
     'dark=!dark;' +
     'document.body.classList.toggle("asw-dark-theme",dark);' +
-    'document.body.style.background=dark?darkBg:"";' +
+    'if(darkBg)document.body.style.background=dark?darkBg:"";' +
     'btn.textContent=dark?ll:ld;' +
     'btn.style.background=dark?"rgba(15,23,42,0.88)":"rgba(255,255,255,0.88)";' +
     'btn.style.borderColor=dark?"rgba(255,255,255,0.12)":"rgba(0,0,0,0.12)";' +

@@ -15,6 +15,19 @@
     --font: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
     --mono: 'Google Sans Mono', 'JetBrains Mono', monospace;
     --highlight-bg: rgba(251, 188, 4, 0.3);
+
+    /* Alias bridge to the WEBSITE's token vocabulary. Atoms rendered with
+       theme:"site" ask for --text-muted and --surface-2 (public/index.html and
+       the surface pages define those), while this renderer has always spelled
+       them --muted and --surface2. Same concept, two spellings, and inside this
+       bundle the site names resolved to nothing — so theme:"site" silently fell
+       back to its light literals and painted a white card on a dark page.
+       Aliasing here rather than renaming either side: the website's stylesheet
+       is not ours to churn, and every atom already shipped keeps working.
+       var() substitutes at use time, so these follow whichever theme class is
+       active on the element rather than freezing to :root's light values. */
+    --text-muted: var(--muted);
+    --surface-2: var(--surface2);
   }
 
   body.asw-dark-theme {
@@ -43,7 +56,12 @@
      interpolated between surface and border because the brand names three
      greys, not four, and status colours stay on the dark theme's values (a
      palette that redefines "error" is making a claim brand.md does not). */
-  body.asw-terminal-theme {
+  /* Scoped to require BOTH classes, which is what makes a theme toggle work on
+     a terminal-skinned surface: drop asw-dark-theme and the repaint drops with
+     it, back to the :root light tokens. Scoped to .asw-terminal-theme alone it
+     would survive the toggle and "light mode" would still be dark. Specificity
+     (0,3,1) also keeps it winning over plain .asw-dark-theme (0,2,1). */
+  body.asw-dark-theme.asw-terminal-theme {
     --bg: #0a0e17;
     --surface: #111826;
     --surface2: #18202f;
