@@ -43,125 +43,162 @@
   {
    "name": "article_playbook",
    "kind": "stampable",
-   "description": "Article Playbook — give the agent a link, get a filtered, tiered view of someone else's article: quotes, themes, ELI5, synthesis, similar-to. Second runbook-as-data instance (spec/article-playbook-v0.1.md in a2ui-private), sibling to learning_hub. Unlike learning_hub, this runbook's whole reason for existing is that every lens except `quotes` is a distortion of the source by construction — the composition below exists to keep that distortion visible (epistemic tiers ARE hub subject tabs, colored distinctly) and checkable (evidence spans verified as verbatim substrings of `source_excerpt`), not just to lay out tabs.\n",
+   "description": "Article Playbook — a steered critical reading of someone else's article, stamped into a concept_ladder artifact: an attribution bar naming the source, a hero mental-model card, then rungs down a rail. The rung progression is Toulmin (claim → grounds → warrant), so the analysis lands on the assumption joining evidence to conclusion — the thing a summary always drops. The reader picks an opening posture and states what they actually care about; that steering shapes the rungs after the spine and is recorded in the artifact. Fixed frame of reference, model judgement inside it.\n",
    "triggers": [
     "article playbook",
     "read this article",
-    "summarize this article",
-    "explain this article",
-    "what does this article say"
+    "analyse this article",
+    "critique this article",
+    "what does this article mean for",
+    "teardown"
    ],
    "surfaces": [
-    "google-apps-script-web"
+    "google-apps-script-web",
+    "mcp-apps",
+    "web"
    ],
-   "layout": "hub",
-   "composition": {
-    "strategy": "lens_hub",
-    "container_atom": "hub",
-    "hub_defaults": {
-     "background": "#0f172a"
+   "layout": "concept_ladder",
+   "elicit": [
+    {
+     "id": "lens",
+     "ask": "Which reading do you want — explain, apply to your domain, challenge, or situate it in prior art?",
+     "options": [
+      "explain",
+      "apply",
+      "challenge",
+      "situate"
+     ],
+     "default": "explain",
+     "note": "An opening posture, not a straitjacket — `concerns` below steers the rungs after the spine. If the user's concern clearly implies a posture, say which one you inferred rather than asking twice.\n"
     },
-    "hub_header_from": "source",
-    "tier_subjects": {
-     "extracted": {
-      "label": "EXTRACTED · in their words",
-      "color": "#0891b2"
+    {
+     "id": "domain",
+     "ask": "What's your primary area of interest, so I can test how this transfers? (e.g. a2ui, generative UI, enterprise ops)",
+     "required_for": [
+      "apply"
+     ],
+     "note": "Accepts several; each becomes its own applied rung."
+    },
+    {
+     "id": "concerns",
+     "ask": "Anything specific you want this reading to look for, or push back on?",
+     "note": "Free text, and the highest-value input here — this is what makes the reading theirs rather than generic. Verbatim into `source.steered_by`.\n"
+    }
+   ],
+   "composition": {
+    "strategy": "concept_ladder_lens",
+    "container_atom": "concept_ladder",
+    "rung_atom": "concept_rung",
+    "ladder_defaults": {
+     "use_plex_fonts": true
+    },
+    "spine": [
+     {
+      "id": "claim",
+      "label": "CLAIM",
+      "warrant_role": "claim"
      },
-     "interpreted": {
-      "label": "INTERPRETED · our reading",
-      "color": "#7c3aed"
+     {
+      "id": "grounds",
+      "label": "GROUNDS",
+      "warrant_role": "data"
      },
-     "external": {
-      "label": "EXTERNAL · unverified",
-      "color": "#dc2626"
+     {
+      "id": "warrant",
+      "label": "WARRANT",
+      "warrant_role": "warrant"
+     }
+    ],
+    "lenses": {
+     "explain": {
+      "appends": [
+       {
+        "id": "so_what",
+        "label": "SO WHAT",
+        "kind": "depth"
+       }
+      ]
+     },
+     "apply": {
+      "appends": [
+       {
+        "id": "transfer",
+        "label": "TRANSFER CONDITIONS",
+        "kind": "depth"
+       },
+       {
+        "id": "applied",
+        "label": "APPLIED · <domain>",
+        "kind": "example",
+        "repeats": "domain"
+       }
+      ]
+     },
+     "challenge": {
+      "appends": [
+       {
+        "id": "steelman",
+        "label": "STEELMAN",
+        "kind": "depth"
+       },
+       {
+        "id": "interrogation",
+        "label": "INTERROGATION",
+        "kind": "depth"
+       },
+       {
+        "id": "falsify",
+        "label": "WHAT WOULD FALSIFY",
+        "kind": "example"
+       }
+      ]
+     },
+     "situate": {
+      "appends": [
+       {
+        "id": "prior_art",
+        "label": "PRIOR ART",
+        "kind": "depth"
+       },
+       {
+        "id": "placement",
+        "label": "PLACEMENT",
+        "kind": "example"
+       }
+      ]
      }
     },
-    "slide_kind_atoms": {
-     "quotes": "lens_quotes",
-     "structure": "lens_structure",
-     "themes": "lens_themes",
-     "eli5": "lens_eli5",
-     "synthesis": "lens_synthesis",
-     "similar": "lens_similar",
-     "context": "lens_context",
-     "freeform": "lens_freeform"
-    },
-    "lens_tier": {
-     "quotes": "extracted",
-     "structure": "extracted",
-     "themes": "interpreted",
-     "eli5": "interpreted",
-     "synthesis": "interpreted",
-     "similar": "external",
-     "context": "external"
-    },
     "content_required": {
-     "quotes": [
-      "items"
+     "ladder": [
+      "title",
+      "source",
+      "model",
+      "rungs"
      ],
-     "structure": [
-      "items"
+     "source": [
+      "title",
+      "url"
      ],
-     "themes": [
-      "source_excerpt",
-      "items"
-     ],
-     "eli5": [
-      "source_excerpt",
-      "text",
-      "evidence"
-     ],
-     "synthesis": [
-      "source_excerpt",
-      "points"
-     ],
-     "similar": [
-      "items"
-     ],
-     "context": [
-      "items"
-     ],
-     "freeform": [
-      "source_excerpt",
+     "rung": [
       "label",
-      "text"
-     ]
-    },
-    "templates": {
-     "quick": [
-      "quotes",
-      "eli5"
-     ],
-     "critical": [
-      "quotes",
-      "themes",
-      "synthesis"
-     ],
-     "research": [
-      "quotes",
-      "themes",
-      "synthesis",
-      "similar"
+      "body"
      ]
     }
    },
    "input_contract": {
-    "title": "string (required) — article title",
-    "source": "object (required) — {url (required), author?, published?, read_minutes?, retrieved: boolean (required, true only if the agent actually fetched url in this session)}. Rendered in the hub header, not inside a lens — it must stay on screen regardless of which lens tab is active.\n",
-    "source_excerpt": "string (REQUIRED, ~8KB cap). Verbatim passages the agent actually drew its claims from — not the whole article. A payload without it is REFUSED, not degraded: evidence spans are only meaningful if they can be checked against something, and this is the only thing they can be checked against (spec mitigation 2). Copy this same string into the `source_excerpt` field of every interpreted-tier lens block (themes, eli5, synthesis, freeform) — the renderer verifies each lens's evidence locally, one atom block at a time, so it needs its own copy rather than shared page-level context.\n",
-    "lenses": "array (required, non-empty). Each entry is {id, tier}, where id selects a key from composition.slide_kind_atoms and tier is one of extracted|interpreted|external — must match composition.lens_tier for that id, except freeform, whose tier is genuinely caller-chosen. Each present tier becomes one hub subject tab (composition.tier_subjects); a tier with no present lens gets no tab. `quotes` is effectively mandatory: if omitted, the engine still renders a source-only tab from `source` rather than dropping the reader's exit into the original text. A lens outside the caller's chosen template (composition.templates) is marked off-template in the UI.\n",
-    "content_by_lens": {
-     "quotes": "items: array of {quote, context?}",
-     "structure": "items: array of {heading, quote}",
-     "themes": "source_excerpt (copy of the payload-level field); items: array of {label, evidence, weight?}. evidence is REQUIRED per item and MUST be a verbatim substring of source_excerpt — an item that fails the check renders with an \"unverified\" marker, never silently.\n",
-     "eli5": "source_excerpt (copy); text (the simplified rewrite — hedges in the original, e.g. \"may\", \"some evidence suggests\", MUST survive into text rather than be compressed out); evidence: array of verbatim substrings of source_excerpt the rewrite draws from.\n",
-     "synthesis": "source_excerpt (copy); points: array of {point, evidence}, same per-item verbatim-evidence requirement as themes.\n",
-     "similar": "items: array of {title, why, url?, retrieved?}; verified: true only if every item's url was actually retrieved this session. If verified is false (or omitted), the lens renders in the EXTERNAL tab labelled \"suggestions, unverified\" rather than as a bibliography. Never render an unretrieved title as if it were a citation — if neither condition (verified, or per-item retrieved) holds for an item, omit that item rather than fabricate a bibliography entry.\n",
-     "context": "items: array of {label, note, url?, retrieved?} — same retrieval-honesty rule as similar.",
-     "freeform": "source_excerpt (copy, if tier is extracted/interpreted); label (agent-chosen, e.g. \"Regulatory impact\"); tier; text; evidence (array, required in practice for extracted/interpreted tiers — external-tier freeform is unverified by definition and may omit it); off_template defaults true. Use this ONLY for a lens kind the catalogue lacks — a lens kind that already exists above must be selected, not reinvented here (spec: \"inventing a lens kind — NO\").\n"
-    }
+    "title": "string (required) — the ANALYSIS's title, stating a claim of its own (\"Structure Over Capability\"). Must not restate the source's headline: two pieces with the same title are one piece pretending to be the other.\n",
+    "source": "object (required) — {title, url, author?, publication?, published?, read_minutes?, label?, steered_by?}. The original, rendered as an attribution bar ABOVE the headline with `title` as a live link. `label` sets the bar's kicker (\"Analysis of\", \"Teardown of\", \"Challenge reading of\"). `steered_by` is the user's `concerns` answer, verbatim.\n",
+    "eyebrow": "string (optional) — who made THIS reading and under which lens, e.g. \"article playbook · lens: challenge\". Never the source's byline; the source has its own bar.\n",
+    "dek": "string (optional) — one italic line framing the reading.",
+    "hook": "string (optional) — the opening grabber. Backtick spans render as code.",
+    "model": "string (required) — the one-line mental model, rendered as the hero THE MODEL card. This is the artifact's money shot and the single sentence a reader will screenshot: the source's argument compressed to its load-bearing idea, in your words, without exceeding its confidence.\n",
+    "model_note": "string (optional) — one elaboration line inside the model card.",
+    "rungs": "array (required) of concept_rung objects — {id, kind ('depth'|'example'), badge?, label, title?, body, code?, code_caption?, takeaway?}. Spine rungs first (CLAIM, GROUNDS, WARRANT), then the lens's appended rungs. Every spine rung's `takeaway` MUST be a verbatim quotation from the source.\n",
+    "closing_note": "string (optional) — italic closing line.",
+    "theme": "string (optional) — light (default) or dark.",
+    "palette": "object (optional) — paper, paper_raised, ink, ink_soft, line, accent, accent_soft, blocked, blocked_soft, cleared, cleared_soft, mono_bg, mono_fg, mono_accent. Unset tokens keep the theme default.\n"
    },
-   "parsing_guide": "Consumers (the calling agent) fetch the article with their own tooling, read it, and fill this contract; composition is the runbook's job, filling it honestly is the consumer's. Six mitigations this runbook exists to enforce, from spec/article-playbook-v0.1.md (a2ui-private):\n1. Epistemic status must be visible per lens, not implied — hence tier_subjects above: each tier is its own hub subject tab, colored distinctly; never render two different tiers under the same tab or chrome.\n2. Every interpreted claim (themes item, synthesis point, eli5 rewrite, interpreted-tier freeform) carries a verbatim `evidence` span that is checked against `source_excerpt`, not merely present. Missing evidence renders an explicit \"no supporting quote\" marker rather than being dropped; evidence not found verbatim in source_excerpt renders \"unverified\" rather than being trusted. This is the single highest-value check in the whole runbook — test it with a deliberately fabricated quote before trusting a payload.\n3. `quotes` is the one lens that is never truly optional — the reader's exit into the author's own words must always be one click away. If a caller's content omits it, compose a source-only quotes tab (title + link from `source`) rather than drop the tab.\n4. Source url/author/date live in the hub header (hub_header_from: source), never inside a lens — a view of someone's article that doesn't show whose article it is has already failed.\n5. `similar` is the dangerous lens: a model will confidently invent plausible articles it never read. Render it as a real citation list only when `verified` is true; otherwise (the default) label it \"suggestions, unverified\" within its EXTERNAL tab and never let an unretrieved title read as if it were sourced.\n6. No lens may exceed the source's own confidence. Hedges in the original (\"may\", \"some evidence suggests\", \"the author argues\") are load-bearing, not noise — dropping them during eli5/synthesis is the most common way a faithful-looking summary becomes false.\nTemplate selection: default to composition.templates.critical (quotes + themes + synthesis) unless the caller names quick or research. A lens outside the chosen template is composed anyway if requested, but marked off-template in the rendered UI — \"the model added a lens\" must stay visually distinguishable from \"this is the standard view\".\nPagination: same per-page ~8100 char ceiling and automatic subject-level split as learning_hub (see runbooks/learning_hub.yaml's parsing_guide and spec/nav-budget-pagination-v0.1.md, a2ui-private) — payload size here is normally a non-issue (five lenses of a few hundred words is 2-4 KB), so splitting is expected to be rare in practice.\n"
+   "parsing_guide": "You fetch and read the article with your own tooling; nothing is retrieved on this side. Ask the `elicit` questions FIRST, then fill the contract.\nTHE SPINE IS NOT OPTIONAL, AND IT COMES FIRST. Three rungs, from the source only, before any judgement:\nCLAIM — what the author wants the reader to believe. State it as they would, at their level of confidence. GROUNDS — the evidence actually offered for it. What is on the page, not what a reasonable person might supply. WARRANT — the assumption that joins grounds to claim, usually unstated. This is the analytical centre of the whole artifact: a summary reports claim and grounds, and only a reading names the warrant. If you cannot articulate the warrant you have not finished reading.\nEach spine rung carries a VERBATIM quotation from the source in `takeaway`. Not a paraphrase — the author's words, so the reader can check your reading against the text without leaving the page.\nOnly then the steered rungs, per lens:\nexplain — SO WHAT: where the claim holds, what it changes, who it binds. apply — TRANSFER CONDITIONS first: what must be true for this argument to carry into another domain at all. Then one APPLIED rung per domain the user named. Conditions before application is what separates a real transfer from a glib analogy; a domain that fails the conditions should be told so. challenge — STEELMAN first: restate the argument in its strongest form, stronger than the author put it if you can. Then INTERROGATION of the warrant (attack the joint, not the conclusion). Then WHAT WOULD FALSIFY: name the evidence that would settle each disagreement. A challenge that cannot be settled by evidence is a complaint, and does not belong in the artifact. situate — PRIOR ART and PLACEMENT. Highest hallucination risk in this runbook: cite ONLY work you actually retrieved this session. Anything you are recalling rather than reading is labelled \"unverified, from memory\" in the rung body, or omitted. Never render an unretrieved title as though it were a citation — a fabricated bibliography is worse than an absent lens.\nRULES THAT HOLD ACROSS EVERY LENS:\n1. Never evaluate a claim the spine has not fairly stated. Exposition precedes judgement; that ordering is what stops a critique misrepresenting a piece it never summarised. 2. QUALIFIERS SURVIVE. The author's hedges — \"may\", \"in our experience\", \"some evidence suggests\" — are load-bearing. Dropping them is the most common way a faithful-looking summary becomes false, and no lens may state a claim more confidently than its source did. 3. MARK INFERENCE AS INFERENCE. Reading intent into a decision (\"this constraint is deliberate governance\") is an inference, not an observation, and must say so in the prose. An unfalsifiable charitable reading is still an unfalsifiable reading. 4. Attribution and steering stay on screen: `source.url` is always a live link, and the user's concerns go verbatim into `source.steered_by`. A reading that hides what shaped it is making a claim about its own neutrality that isn't true. 5. Disagreeing with the source is allowed and often the point — the value is in reaching conclusions the original author did not have in mind. Being unfair to it is not. The difference is entirely whether the spine did its job.\n"
   },
   {
    "name": "demo_launch",

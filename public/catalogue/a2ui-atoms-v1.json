@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (474 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (476 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -19755,6 +19755,139 @@
     "web",
     "google-apps-script-web",
     "google-meet-stage",
+    "mcp-apps"
+   ]
+  },
+  "concept_ladder": {
+   "type": "object",
+   "description": "A layered-depth concept explainer — an opening hook line, a hero \"mental model\" card carrying the one-line analogy, then depth rungs down a connected rail, each rung one level deeper into the concept, terminating in a worked-example rung. Shares article_journey's warm palette token system (paper/ink/accent/mono-* etc. via the palette field) and IBM Plex fonts so the article atoms read as one design system. renderers/web_article.py is the reference implementation; apps-script-surface/gas-wired-renderer/atoms_concept.gs is the port that carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the Worker's /api/render all compile from the .gs sources), verified at parity against the reference.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "concept_ladder"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Main heading."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title."
+      },
+      "dek": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Italic one-line subtitle under the title."
+      },
+      "source": {
+       "description": "object (optional) — {title, url, author?, publication?, published?, read_minutes?, label? (default \"Analysis of\"), steered_by?}. Set this whenever the ladder explains SOMEONE ELSE'S work: it renders an attribution bar ABOVE the eyebrow and headline, with the source title as a real link, so the artifact reads at first glance as a piece ABOUT that piece rather than a standalone article that could be mistaken for — or stand in for — the original. Provenance is structural here, not a phrasing convention: a derivative reading that hides its source is the copyright-and-honesty failure this field exists to make impossible. Omit for original work. `steered_by` (string or array of strings, optional) records what the reader asked this reading to look for, rendered under a READING STEERED BY rule inside the same bar — a steered reading is a different object from a neutral one, and which one you are looking at should never have to be inferred. Backtick spans render as inline code.",
+       "type": "array"
+      },
+      "hook": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). The opening grabber — rendered as a large accent-barred paragraph before the model card. Backtick spans render as inline code."
+      },
+      "model": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). The one-line mental-model analogy (\"think of it as...\") — rendered as a hero card labelled THE MODEL. Backtick spans render as inline code."
+      },
+      "model_note": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). One short elaboration line under the analogy inside the model card."
+      },
+      "rungs": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (required). Each item is a concept_rung atom object (see that type) — also independently addressable by ComponentId when emitted in the A2UI v1.0 ChildList wire format, so a live agent can deepen or patch one level without resending the whole surface."
+      },
+      "closing_note": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Italic closing line under the rungs. Backtick spans render as inline code."
+      },
+      "theme": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). 'light' (default) or 'dark' — selects the base palette before any per-token overrides."
+      },
+      "palette": {
+       "description": "object (optional). Same token set as article_journey: paper, paper_raised, ink, ink_soft, line, accent, accent_soft, blocked, blocked_soft, cleared, cleared_soft, mono_bg, mono_fg, mono_accent — each a CSS colour string. Unset tokens keep the theme default.",
+       "type": "object"
+      },
+      "use_plex_fonts": {
+       "description": "boolean (optional, default true). Loads IBM Plex Mono and IBM Plex Serif via same-origin @font-face — see THIRD-PARTY-NOTICES.md. Set false for system font stacks only.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component",
+      "rungs"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "concept_rung": {
+   "type": "object",
+   "description": "One depth level of a concept_ladder — a kind chip (DEPTH N or WORKED EXAMPLE), title, body copy, an optional terminal-styled code block with caption, and an optional terminal-styled takeaway line. Reads its colour tokens from the CSS custom properties an enclosing concept_ladder sets; renders with sane fallback colours standalone. Rarely authored outside concept_ladder.rungs, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "concept_rung"
+      },
+      "badge": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Rail-node label, e.g. the depth number or \"EX\". Defaults to 1-based position when rendered inside concept_ladder."
+      },
+      "kind": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). 'depth' (default) or 'example' — example rungs get the mono/terminal chip and node styling."
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Chip text override; defaults to \"DEPTH <badge>\" or \"WORKED EXAMPLE\" by kind."
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Rung heading. Backtick spans render as inline code."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Rung body copy — blank-line-separated paragraphs render as separate <p>s. Backtick spans render as inline code."
+      },
+      "code": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Verbatim code block, terminal-styled (escaped, never interpreted)."
+      },
+      "code_caption": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Italic caption line under the code block."
+      },
+      "takeaway": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Terminal-styled takeaway / pull-quote line."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-apps-script-web",
     "mcp-apps"
    ]
   }

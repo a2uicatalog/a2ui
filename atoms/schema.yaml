@@ -12281,3 +12281,133 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: concept_ladder
+  description: 'A layered-depth concept explainer — an opening hook line, a
+    hero "mental model" card carrying the one-line analogy, then depth rungs
+    down a connected rail, each rung one level deeper into the concept,
+    terminating in a worked-example rung. Shares article_journey''s warm
+    palette token system (paper/ink/accent/mono-* etc. via the palette field)
+    and IBM Plex fonts so the article atoms read as one design system.
+    renderers/web_article.py is the reference implementation;
+    apps-script-surface/gas-wired-renderer/atoms_concept.gs is the port that
+    carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the
+    Worker''s /api/render all compile from the .gs sources), verified at parity
+    against the reference.'
+  compact_description: layered-depth concept explainer — hook, mental-model card, depth rungs, worked example
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle
+        is CSP-clean (resourceDomains []) and /api/render sends no font-src — the
+        faces are blocked and the Georgia/system-mono fallback stack renders
+        instead. Layout, palette and rail are unaffected; only the typeface
+        changes. Pass use_plex_fonts false to opt out explicitly.
+    incompatible_on:
+    - surface: google-meet-stage
+      reason: Dense multi-level reading doesn't fit a presented slide
+    - surface: pdf
+      reason: No svg_raster.py entry
+    - surface: email
+      reason: CSS custom properties for palette theming are unreliable across
+        email clients
+    - surface: google-chat
+      reason: Chat cards have no equivalent of this layout
+  children:
+    rungs:
+      shape: simple
+  fields:
+    title: string (optional). Main heading.
+    eyebrow: string (optional). Small uppercase label above the title.
+    dek: string (optional). Italic one-line subtitle under the title.
+    source: 'object (optional) — {title, url, author?, publication?, published?,
+      read_minutes?, label? (default "Analysis of"), steered_by?}. Set this
+      whenever the ladder explains SOMEONE ELSE''S work: it renders an
+      attribution bar ABOVE the eyebrow and headline, with the source title as a
+      real link, so the artifact reads at first glance as a piece ABOUT that
+      piece rather than a standalone article that could be mistaken for — or
+      stand in for — the original. Provenance is structural here, not a phrasing
+      convention: a derivative reading that hides its source is the
+      copyright-and-honesty failure this field exists to make impossible. Omit
+      for original work. `steered_by` (string or array of strings, optional)
+      records what the reader asked this reading to look for, rendered under a
+      READING STEERED BY rule inside the same bar — a steered reading is a
+      different object from a neutral one, and which one you are looking at
+      should never have to be inferred. Backtick spans render as inline code.'
+    hook: string (optional). The opening grabber — rendered as a large
+      accent-barred paragraph before the model card. Backtick spans render
+      as inline code.
+    model: string (optional). The one-line mental-model analogy ("think of it
+      as...") — rendered as a hero card labelled THE MODEL. Backtick spans
+      render as inline code.
+    model_note: string (optional). One short elaboration line under the
+      analogy inside the model card.
+    rungs: 'array (required). Each item is a concept_rung atom object (see
+      that type) — also independently addressable by ComponentId when emitted
+      in the A2UI v1.0 ChildList wire format, so a live agent can deepen or
+      patch one level without resending the whole surface.'
+    closing_note: string (optional). Italic closing line under the rungs.
+      Backtick spans render as inline code.
+    theme: string (optional). 'light' (default) or 'dark' — selects the base
+      palette before any per-token overrides.
+    palette: 'object (optional). Same token set as article_journey: paper,
+      paper_raised, ink, ink_soft, line, accent, accent_soft, blocked,
+      blocked_soft, cleared, cleared_soft, mono_bg, mono_fg, mono_accent —
+      each a CSS colour string. Unset tokens keep the theme default.'
+    use_plex_fonts: boolean (optional, default true). Loads IBM Plex Mono and
+      IBM Plex Serif via same-origin @font-face — see THIRD-PARTY-NOTICES.md.
+      Set false for system font stacks only.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: concept_rung
+  description: 'One depth level of a concept_ladder — a kind chip (DEPTH N or
+    WORKED EXAMPLE), title, body copy, an optional terminal-styled code block
+    with caption, and an optional terminal-styled takeaway line. Reads its
+    colour tokens from the CSS custom properties an enclosing concept_ladder
+    sets; renders with sane fallback colours standalone. Rarely authored
+    outside concept_ladder.rungs, but is its own atom type so it can be
+    independently addressed by ComponentId in the A2UI v1.0 ChildList wire
+    format.'
+  compact_description: one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: Inherits concept_ladder's blocked IBM Plex faces under the MCP Apps
+        CSP — falls back to the system mono/serif stack. Structure unaffected.
+    incompatible_on:
+    - surface: google-meet-stage
+      reason: Not ported
+    - surface: pdf
+      reason: No svg_raster.py entry
+    - surface: email
+      reason: CSS custom properties for palette theming are unreliable across
+        email clients
+    - surface: google-chat
+      reason: Chat cards have no equivalent of this layout
+  fields:
+    badge: string (optional). Rail-node label, e.g. the depth number or "EX".
+      Defaults to 1-based position when rendered inside concept_ladder.
+    kind: string (optional). 'depth' (default) or 'example' — example rungs
+      get the mono/terminal chip and node styling.
+    label: string (optional). Chip text override; defaults to "DEPTH <badge>"
+      or "WORKED EXAMPLE" by kind.
+    title: string (optional). Rung heading. Backtick spans render as inline code.
+    body: string (optional). Rung body copy — blank-line-separated paragraphs
+      render as separate <p>s. Backtick spans render as inline code.
+    code: string (optional). Verbatim code block, terminal-styled (escaped,
+      never interpreted).
+    code_caption: string (optional). Italic caption line under the code block.
+    takeaway: string (optional). Terminal-styled takeaway / pull-quote line.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

@@ -239,6 +239,12 @@ a2ui-editorial-v1:
 - article_series_nav
 - author_bio_card
 - closing
+# The concept-explainer pair, promoted from private 2026-08-03 (per-artifact
+# opt-in) so runbooks/article_playbook.yaml — a PUBLISHED runbook — can name
+# concept_ladder as its container_atom. Sits with article_journey/journey_step:
+# same design-system tokens, same rail, same reason to be editorial.
+- concept_ladder
+- concept_rung
 - display_quote
 - footnote
 - footnote_group

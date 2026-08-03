@@ -934,7 +934,7 @@
       "title": "Editorial & long-form",
       "alwaysResolved": false,
       "whenToUse": "Use for articles/blog posts — intros, footnotes, table of contents, series navigation, further reading, social share.",
-      "atomCount": 24,
+      "atomCount": 26,
       "atoms": [
         {
           "type": "abbr_tooltip",
@@ -955,6 +955,19 @@
         {
           "type": "closing",
           "description": "article closing paragraph with hashtags"
+        },
+        {
+          "type": "concept_ladder",
+          "description": "layered-depth concept explainer — hook, mental-model card, depth rungs, worked example",
+          "children": {
+            "rungs": {
+              "shape": "simple"
+            }
+          }
+        },
+        {
+          "type": "concept_rung",
+          "description": "one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder"
         },
         {
           "type": "display_quote",

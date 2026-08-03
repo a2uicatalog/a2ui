@@ -7,9 +7,9 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Tooltip — A2UI Atomic Catalog</title>
-  <meta name="description" content="Renders a small, informational popup that appears when a user hovers">
-  <link rel="alternate" type="text/markdown" href="/atoms/tooltip.md">
+  <title>Concept Rung — A2UI Atomic Catalog</title>
+  <meta name="description" content="One depth level of a concept_ladder — a kind chip (DEPTH N or WORKED EXAMPLE), title, body copy, an optional terminal-styled code block with caption, and an optional terminal-styled takeaway line. Reads its colour tokens from the CSS custom properties an enclosing concept_ladder sets; renders with sane fallback colours standalone. Rarely authored outside concept_ladder.rungs, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.">
+  <link rel="alternate" type="text/markdown" href="/atoms/concept_rung.md">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -17,7 +17,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
       { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
-      { "@type": "ListItem", "position": 3, "name": "Tooltip", "item": "https://a2uicatalog.ai/atoms/tooltip/" }
+      { "@type": "ListItem", "position": 3, "name": "Concept Rung", "item": "https://a2uicatalog.ai/atoms/concept_rung/" }
     ]
   }
   </script>
@@ -170,59 +170,60 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / tooltip
+    atoms / concept_rung
   </nav>
 
-  <h1>Tooltip</h1>
-  <p class="desc">Renders a small, informational popup that appears when a user hovers</p>
+  <h1>Concept Rung</h1>
+  <p class="desc">One depth level of a concept_ladder — a kind chip (DEPTH N or WORKED EXAMPLE), title, body copy, an optional terminal-styled code block with caption, and an optional terminal-styled takeaway line. Reads its colour tokens from the CSS custom properties an enclosing concept_ladder sets; renders with sane fallback colours standalone. Rarely authored outside concept_ladder.rungs, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bd">mcp-apps ⚠</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>mcp-apps</td><td>Inherits concept_ladder's blocked IBM Plex faces under the MCP Apps CSP — falls back to the system mono/serif stack. Structure unaffected.</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of tooltip"><span style="position:relative;display:inline-block;"><span style="border-bottom:1px dotted #9ca3af;cursor:help;" onmouseenter="document.getElementById('05ca8fb9').style.display='block'" onmouseleave="document.getElementById('05ca8fb9').style.display='none'">Click to trigger</span><div id="05ca8fb9" style="display:none;position:absolute;z-index:10;bottom:calc(100%+6px);left:0;background:#111827;color:#f9fafb;border-radius:6px;padding:6px 10px;font-size:0.78rem;white-space:nowrap;max-width:220px;"></div></span></div>
+  <div class="preview-box" role="group" aria-label="Live preview of concept_rung"><div style="padding-bottom:1.6rem;"><div style="margin-bottom:0.5rem;"><span style="font-family:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-weight:700;font-size:0.72rem;letter-spacing:0.07em;padding:0.18em 0.6em;border-radius:4px;background:var(--accent-soft,#E4D3AC);color:var(--accent,#8C5B16);">DEPTH 2</span></div><h3 style="font-family:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-weight:600;font-size:1.08rem;line-height:1.32;margin:0 0 0.55rem;color:var(--ink,#1B1E1A);">The adapter: same payload, different surface</h3><p style="margin:0 0 0.9rem;max-width:60ch;line-height:1.6;color:var(--ink,#1B1E1A);">A <code style="font-family:ui-monospace,\'SF Mono\',Consolas,monospace;font-size:0.88em;background:var(--accent-soft,#E4D3AC);color:var(--accent,#8C5B16);padding:0.05em 0.35em;border-radius:3px;">stat_card</code> payload is identical across surfaces. What changes is the renderer — each surface ships its own implementation of the same contract.</p><blockquote style="margin:0;background:var(--mono-bg,#23261E);color:var(--mono-fg,#EDE8DA);font-family:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:0.86rem;line-height:1.6;padding:0.9rem 1.05rem;border-radius:8px;max-width:58ch;"><span style="color:var(--mono-accent,#D5A64E);font-weight:600;margin-right:0.5em;">&gt;</span>The JSON is the contract; the renderer is the adapter.</blockquote></div></div>
 </div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>trigger_text</td><td>string The text or element that, when hovered, reveals the tooltip.</td><td>required</td></tr><tr><td>tooltip_content</td><td>string The content displayed within the tooltip.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>badge</td><td>string. Rail-node label, e.g. the depth number or "EX". Defaults to 1-based position when rendered inside concept_ladder.</td><td>optional</td></tr><tr><td>kind</td><td>string. 'depth' (default) or 'example' — example rungs get the mono/terminal chip and node styling.</td><td>optional</td></tr><tr><td>label</td><td>string. Chip text override; defaults to "DEPTH <badge>" or "WORKED EXAMPLE" by kind.</td><td>optional</td></tr><tr><td>title</td><td>string. Rung heading. Backtick spans render as inline code.</td><td>optional</td></tr><tr><td>body</td><td>string. Rung body copy — blank-line-separated paragraphs render as separate <p>s. Backtick spans render as inline code.</td><td>optional</td></tr><tr><td>code</td><td>string. Verbatim code block, terminal-styled (escaped, never interpreted).</td><td>optional</td></tr><tr><td>code_caption</td><td>string. Italic caption line under the code block.</td><td>optional</td></tr><tr><td>takeaway</td><td>string. Terminal-styled takeaway / pull-quote line.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "tooltip",
-  "trigger_text": "Click to trigger",
-  "tooltip_content": "Tooltip content"
+  "type": "concept_rung"
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:tooltip",
-  "displayName": "Tooltip",
+  "identifier": "urn:air:a2uicatalog.ai:atom:concept_rung",
+  "displayName": "Concept Rung",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/tooltip",
+  "url": "https://a2uicatalog.ai/atoms/concept_rung",
   "capabilities": [
     "web",
-    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "Renders a small, informational popup that appears when a user hovers",
+  "description": "One depth level of a concept_ladder \u2014 a kind chip (DEPTH N or WORKED EXAMPLE), title, body copy, an optional terminal-styled code block with caption, and an optional terminal-styled takeaway line. Reads its colour tokens from the CSS custom properties an enclosing concept_ladder sets; renders with sane fallback colours standalone. Rarely authored outside concept_ladder.rungs, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.",
   "representativeQueries": [
-    "show a hover tooltip on a trigger element over a specified trigger element, using only CSS",
-    "renders a small, informational popup that appears when a user hovers",
-    "render a tooltip"
+    "show a one depth level (kind chip, title, body, code, takeaway) \u2014 normally used inside concept_ladder",
+    "one depth level of a concept_ladder \u2014 a kind chip (depth n or worked example), title, body copy, an",
+    "render a concept rung"
   ]
 }</code></pre>
   </div>

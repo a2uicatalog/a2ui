@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 474,
+ "atomCount": 476,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -4660,6 +4660,24 @@
     "web",
     "google-apps-script-web",
     "google-meet-stage",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "concept_ladder",
+   "compact": "layered-depth concept explainer — hook, mental-model card, depth rungs, worked example",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "concept_rung",
+   "compact": "one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
     "mcp-apps"
    ]
   }

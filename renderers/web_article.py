@@ -21174,6 +21174,72 @@ _RENDERERS['article_journey'] = _render_article_journey
 # article atoms read as one design system. Web is the reference
 # implementation; no atom.gs port yet (schema declares works_on: web only).
 
+def _journey_source_bar(b: dict) -> str:
+    """Attribution bar for an atom that analyses SOMEONE ELSE'S work.
+
+    Renders above the title so the first glance says "this is a piece about
+    that piece" — a derivative reading, not a standalone article that could be
+    mistaken for (or stand in for) the original. The source title is a real
+    link, so the original is always one click away.
+
+    Shared journey-design-system helper: concept_ladder uses it today,
+    article_journey can adopt it unchanged. Absent `source` renders nothing,
+    so every existing payload is unaffected.
+    """
+    src = b.get('source') or {}
+    if not src:
+        return ''
+    label = _esc(src.get('label') or 'Analysis of')
+    title = _esc(src.get('title') or '')
+    url = str(src.get('url') or '').strip()
+    linked = title and url.startswith(('https://', 'http://'))
+    title_html = (
+        f'<a href="{_esc(url)}" style="color:var(--ink);text-decoration:underline;'
+        f'text-underline-offset:2px;text-decoration-thickness:1px;">{title}</a>'
+        if linked else title
+    )
+    meta = ' · '.join(_esc(x) for x in [
+        src.get('author'), src.get('publication'), src.get('published'),
+        f"{src['read_minutes']} min read" if src.get('read_minutes') else None,
+    ] if x)
+
+    # What the reader asked this reading to look for. A steered reading is a
+    # different object from a neutral one, and hiding what shaped it is the same
+    # class of omission as hiding the source.
+    steered = src.get('steered_by')
+    steered_html = ''
+    if steered:
+        lines = steered if isinstance(steered, list) else [steered]
+        items = ''.join(
+            f'<div style="font-style:italic;font-size:0.86rem;line-height:1.45;'
+            f'color:var(--ink);max-width:56ch;">{_mdcode(str(s))}</div>'
+            for s in lines if s
+        )
+        if items:
+            steered_html = (
+                '<div style="margin-top:0.7rem;padding-top:0.6rem;'
+                'border-top:1px solid var(--line);">'
+                f'<div style="font-family:{_JOURNEY_MONO};font-size:0.62rem;font-weight:700;'
+                'letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);'
+                'margin-bottom:0.3rem;">Reading steered by</div>'
+                + items + '</div>'
+            )
+    return (
+        '<div style="background:var(--paper-raised);border:1px solid var(--line);'
+        'border-left:3px solid var(--accent);border-radius:8px;'
+        'padding:0.75rem 1rem;margin-bottom:1.5rem;">'
+        f'<div style="font-family:{_JOURNEY_MONO};font-size:0.66rem;font-weight:700;'
+        'letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);'
+        f'margin-bottom:0.35rem;">{label}</div>'
+        + (f'<div style="font-size:1.02rem;line-height:1.35;color:var(--ink);'
+           f'max-width:54ch;">{title_html}</div>' if title else '')
+        + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.74rem;'
+           f'color:var(--ink-soft);margin-top:0.3rem;">{meta}</div>' if meta else '')
+        + steered_html
+        + '</div>'
+    )
+
+
 def _render_concept_rung(b: dict) -> str:
     kind = b.get('kind', 'depth')
     kind = kind if kind in ('depth', 'example') else 'depth'
@@ -21294,6 +21360,10 @@ def _render_concept_ladder(b: dict) -> str:
         font_css
         + f'<div style="{css_vars};font-family:{_JOURNEY_SERIF};background:var(--paper);color:var(--ink);'
         'padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;border:1px solid var(--line);">'
+        # Attribution before everything, headline included: the first glance has
+        # to land on "this is a reading of X", never on a headline that could
+        # pass for — or stand in for — the original piece.
+        + _journey_source_bar(b)
         + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
            'text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:0.6em;'
            f'margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;background:var(--accent);'

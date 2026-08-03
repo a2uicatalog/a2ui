@@ -16597,6 +16597,143 @@
           "mathml"
         ],
         "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "concept_ladder"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "string"
+          },
+          "dek": {
+            "type": "string"
+          },
+          "source": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "author": {
+                  "type": "string"
+                },
+                "publication": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "read_minutes": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "steered_by": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "url"
+              ]
+            }
+          },
+          "hook": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "model_note": {
+            "type": "string"
+          },
+          "rungs": {
+            "type": "string",
+            "enum": [
+              "alsoindependentlyaddressablebyComponentIdwhenemittedintheA2UIv10ChildListwireformat",
+              "soaliveagentcandeepenorpatchonelevelwithoutresendingthewholesurface"
+            ]
+          },
+          "closing_note": {
+            "type": "string"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "string . 'light'",
+              "'dark' \u2014 selects the base palette before any per-token overrides."
+            ]
+          },
+          "palette": {
+            "type": "string"
+          },
+          "use_plex_fonts": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "rungs"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "concept_rung"
+          },
+          "badge": {
+            "type": "number"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "string . 'depth'",
+              "'example' \u2014 example rungs get the mono/terminal chip and node styling."
+            ]
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "string . Chip text override; defaults to \"DEPTH <badge>\"",
+              "\"WORKED EXAMPLE\" by kind."
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "code": {
+            "type": "integer"
+          },
+          "code_caption": {
+            "type": "string"
+          },
+          "takeaway": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
       }
     ]
   }

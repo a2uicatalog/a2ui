@@ -19,7 +19,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 474 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 476 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -8468,6 +8468,40 @@
         "show a native MathML equation typeset with the math font family",
         "native mathml equation typeset with the css `math` generic font family (stix / latin modern math) \u2014 no javascript, no",
         "render a math block"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:concept_ladder",
+      "displayName": "Concept Ladder",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/concept_ladder",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A layered-depth concept explainer \u2014 an opening hook line, a hero \"mental model\" card carrying the one-line analogy, then depth rungs down a connected rail, each rung one level deeper into the concept, terminating in a worked-example rung. Shares article_journey's warm palette token system (paper/ink/accent/mono-* etc. via the palette field) and IBM Plex fonts so the article atoms read as one design system. renderers/web_article.py is the reference implementation; apps-script-surface/gas-wired-renderer/atoms_concept.gs is the port that carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the Worker's /api/render all compile from the .gs sources), verified at parity against the reference.",
+      "representativeQueries": [
+        "show a layered-depth concept explainer \u2014 hook, mental-model card, depth rungs, worked example",
+        "a layered-depth concept explainer \u2014 an opening hook line, a hero \"mental model\" card carrying the one-line analogy,",
+        "render a concept ladder"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:concept_rung",
+      "displayName": "Concept Rung",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/concept_rung",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "One depth level of a concept_ladder \u2014 a kind chip (DEPTH N or WORKED EXAMPLE), title, body copy, an optional terminal-styled code block with caption, and an optional terminal-styled takeaway line. Reads its colour tokens from the CSS custom properties an enclosing concept_ladder sets; renders with sane fallback colours standalone. Rarely authored outside concept_ladder.rungs, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.",
+      "representativeQueries": [
+        "show a one depth level (kind chip, title, body, code, takeaway) \u2014 normally used inside concept_ladder",
+        "one depth level of a concept_ladder \u2014 a kind chip (depth n or worked example), title, body copy, an optional",
+        "render a concept rung"
       ]
     }
   ]

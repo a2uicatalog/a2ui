@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 474 atoms.** One line each:
+1. **Compact index — all 476 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 474 atoms)
+### Compact index (all 476 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -855,6 +855,8 @@ does not exist.
 - `brevet_timeline` — dated vertical revision timeline
 - `gdm_rocket_panel` — isometric rocket launch canvas animation, fixed half-viewport overlay
 - `math_block` — native MathML equation typeset with the math font family
+- `concept_ladder` — layered-depth concept explainer — hook, mental-model card, depth rungs, worked example
+- `concept_rung` — one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder
 ## Payload envelope (renderer contract — not in the catalog)
 
 Simple page:
