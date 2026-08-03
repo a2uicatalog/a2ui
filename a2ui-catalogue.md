@@ -524,6 +524,8 @@
 | `lens_freeform` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `lens_similar` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `lens_context` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `concept_ladder` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `concept_rung` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 
