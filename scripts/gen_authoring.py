@@ -12,7 +12,11 @@ original design; couldn't be bookmarked or deep-linked at all):
                               call at all, for planning/organizing ideas
                               before they're ready to lift. Also shows
                               what's currently in progress (launch-src/drafts/).
-  /authoring/workspace/      the A2UI Workspace — the SAME per-reader profile
+Also emitted, top-level rather than nested under /authoring/ — it is its own
+surface, not a tool inside the authoring suite, even though it shares this
+Worker and Access gate (2026-08-04):
+
+  /workspace/                the A2UI Workspace — the SAME per-reader profile
                               and reading history the MCP Apps surface inside
                               Claude uses (same Cloudflare Access `sub`, same
                               Durable Object; confirmed identical 2026-08-04).
@@ -291,7 +295,7 @@ def site_header():
       <a href="/renderer">Apps Script Renderer</a>
       <a href="/blog/drafts">Blog</a>
       <a href="/authoring" aria-current="page">Authoring</a>
-      <a href="/authoring/workspace/">Workspace</a>
+      <a href="/workspace/">Workspace</a>
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -541,7 +545,7 @@ def build_landing_page(playbook_html):
       <div class="hub-card-title">Prompt Builder</div>
       <div class="hub-card-desc">Paste a rough draft, pick an archetype, and either copy the assembled prompt into any LLM or run it live here via Vertex AI.</div>
     </a>
-    <a class="hub-card" href="/authoring/workspace/">
+    <a class="hub-card" href="/workspace/">
       <div class="hub-card-title">Workspace</div>
       <div class="hub-card-desc">The same profile and reading history the MCP Apps surface uses inside Claude — same Cloudflare Access identity, same store. Run the article playbook here via Vertex Gemini, one click, no chat needed.</div>
     </a>
@@ -778,7 +782,7 @@ a.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
 <body>
   <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="{bundle_src}" title="A2UI Workspace"></iframe>
   <div class="ws-bar">
-    <a class="ws-chip" href="/authoring/">← Authoring</a>
+    <a class="ws-chip" href="/">← A2UI Catalog</a>
     <span class="ws-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
   </div>
 <script>
@@ -1898,7 +1902,10 @@ def main():
         encoding="utf-8",
     )
 
-    workspace_dir = OUTPUT_DIR / "workspace"
+    # Top-level, not /authoring/workspace/ — Curtis wants it reachable as its
+    # own surface, not nested under the authoring hub it happens to share a
+    # Worker and an Access gate with (2026-08-04).
+    workspace_dir = ROOT / "public-full" / "workspace"
     workspace_dir.mkdir(parents=True, exist_ok=True)
     (workspace_dir / "index.html").write_text(build_workspace_page(), encoding="utf-8")
 
@@ -1906,7 +1913,7 @@ def main():
     total = sum(len(a["slots"]) for a in archetypes.values())
     print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/, "
           f"/authoring/templates/teaser-card-carousel/, /authoring/templates/single-post/, "
-          f"/authoring/workspace/ "
+          f"/workspace/ "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json, "
           f"{len(current_drafts)} draft(s) on the cooking board, "
           f"{len(carousel_drafts)} carousel draft(s), "
