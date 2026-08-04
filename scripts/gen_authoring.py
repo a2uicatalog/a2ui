@@ -618,9 +618,9 @@ def _bundle_hash():
 #     On success the WHOLE view is repainted with the finished reading via
 #     a fresh ui/notifications/tool-result — the same one-document
 #     replacement every host already does when a stamped reading is
-#     rendered (no "back to workspace" affordance exists yet on ANY host;
-#     see articles-as-app-views.md for that follow-up, deliberately not
-#     built here).
+#     rendered. The #ws-home-btn breadcrumb (host-level, outside the
+#     iframe) is this host's way back from that; no equivalent exists on a
+#     chat host yet (see articles-as-app-views.md for that follow-up).
 WORKSPACE_HOST_JS = """
 (function () {
   var iframe = document.getElementById('mcp-view');
@@ -663,6 +663,13 @@ WORKSPACE_HOST_JS = """
       })
       .catch(function (e) { setStatus('err', String(e && e.message || e)); });
   }
+
+  // The one persistent breadcrumb: works from ANY state — a reading, a
+  // sub-view, an error — because it lives outside the iframe and just
+  // re-runs the same boot call view:'home' defaults to.
+  document.getElementById('ws-home-btn').addEventListener('click', function () {
+    loadWorkspace();
+  });
 
   window.addEventListener('message', function (ev) {
     if (ev.source !== iframe.contentWindow) return;
@@ -746,7 +753,9 @@ WORKSPACE_HOST_JS = """
         .then(function (r) { return r.json(); })
         .then(function (resp) {
           if (!resp.ok) { setStatus('err', 'Reading failed: ' + resp.error); return; }
-          setStatus('live', 'Reading complete — analysed by ' + resp.analysed_by);
+          setStatus('live', resp.save_reading_error
+            ? 'Reading complete (NOT saved to history: ' + resp.save_reading_error + ')'
+            : 'Reading complete — analysed by ' + resp.analysed_by);
           send(resp.payload);
         })
         .catch(function (e) { setStatus('err', String(e && e.message || e)); });
@@ -781,7 +790,8 @@ html,body{{height:100%;background:var(--bg);font-family:ui-monospace,SFMono-Regu
 .ws-bar{{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}}
 .ws-bar>*{{pointer-events:auto}}
 .ws-chip{{display:inline-flex;align-items:center;gap:8px;background:rgba(10,14,23,.9);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}}
-a.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
+a.ws-chip:hover,button.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
+button.ws-chip{{font:inherit;letter-spacing:inherit;cursor:pointer}}
 .mcp-status-dot{{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}}
 .mcp-status-dot.live{{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}}
 .mcp-status-dot.err{{background:var(--red)}}
@@ -791,6 +801,13 @@ a.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
   <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="{bundle_src}" title="A2UI Workspace"></iframe>
   <div class="ws-bar">
     <a class="ws-chip" href="/">← A2UI Catalog</a>
+    <!-- Lives OUTSIDE the iframe, so it survives no matter what's painted
+         inside it — a reading, History, Profile. paint_result only ever
+         replaces the iframe's OWN content; nothing inside a reading's v1.0
+         surface can navigate the workspace, so a host-level control is the
+         only place this can live (Curtis, 2026-08-04: "we did not add
+         breadcrumb back to the workspace homepage in a created artifact"). -->
+    <button class="ws-chip" id="ws-home-btn" type="button">🏠 Workspace</button>
     <span class="ws-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
   </div>
 <script>
