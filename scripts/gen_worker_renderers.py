@@ -169,7 +169,11 @@ def main():
         f"export const PUBLISHED_ATOMS = new Set({json.dumps(published)});\n"
         f"export const SURFACE_POLICY = {json.dumps(policy, separators=(',', ':'))};\n"
         f"export const ATOM_STYLES = {json.dumps(css)};\n"
-        "export { renderAtoms, _RENDERERS };\n"
+        # _rehydrateV1Surface (atoms_v1_decode.gs) was compiled in all along but
+        # never exported, so the Worker held the v1.0 decoder and could not reach
+        # it — and emit_runbook_surface returns v1.0 envelopes, so every stamped
+        # reading was un-exportable to HTML for want of one word.
+        "export { renderAtoms, _RENDERERS, _rehydrateV1Surface };\n"
     )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
