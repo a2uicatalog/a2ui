@@ -61,6 +61,31 @@ function _journeySourceBar(b) {
     }
   }
 
+  // WHO READ IT. Once more than one model can write into a reader's history,
+  // this is what makes the history interpretable — two readings of one article
+  // are only comparable if you know which model produced each.
+  //
+  // A SELF-REPORT AND A FACT ARE DIFFERENT CLAIMS, and the rendering says which
+  // it is. When we called the model ourselves (a server-side reading) we
+  // observed it; when a model told us its own name we were merely told, and it
+  // can be wrong or silent about that. Overstating the second is the unearned
+  // confidence this runbook's parsing_guide forbids everywhere else. Absent
+  // entirely, the bar SAYS SO rather than quietly omitting the line — an
+  // unattributed reading should look unattributed.
+  // Read from EITHER place: the stamper copies contract fields onto the ladder
+  // (b.*) while source-shaped data arrives under source (src.*). Checking one
+  // only would render "not recorded" for a payload that plainly recorded it.
+  var analysed = src.analysed_by || b.analysed_by;
+  var analysedOk = src.analysed_verified || b.analysed_verified;
+  var analysedHtml =
+    '<div style="margin-top:0.55rem;font-family:' + _JOURNEY_MONO + ';font-size:0.62rem;'
+    + 'letter-spacing:0.06em;color:var(--ink-soft,' + pal.ink_soft + ');">'
+    + (analysed
+        ? 'Analysed by ' + _esc(String(analysed))
+          + (analysedOk ? '' : ' <span style="opacity:0.75;">(self-reported)</span>')
+        : 'Analysing model not recorded')
+    + '</div>';
+
   return '<div style="background:var(--paper-raised,' + pal.paper_raised + ');'
     + 'border:1px solid var(--line,' + pal.line + ');'
     + 'border-left:3px solid var(--accent,' + pal.accent + ');border-radius:8px;'
@@ -70,6 +95,7 @@ function _journeySourceBar(b) {
     + 'margin-bottom:0.35rem;">' + label + '</div>'
     + (title ? '<div style="font-size:1.02rem;line-height:1.35;color:var(--ink,' + pal.ink + ');'
        + 'max-width:54ch;">' + titleHtml + '</div>' : '')
+    + analysedHtml
     + (meta ? '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.74rem;'
        + 'color:var(--ink-soft,' + pal.ink_soft + ');margin-top:0.3rem;">' + meta + '</div>' : '')
     + steeredHtml
