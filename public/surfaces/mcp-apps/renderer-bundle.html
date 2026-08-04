@@ -23880,7 +23880,17 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
                   'gas:sheet_clear':  'store_clear' };
     var tool = VERBS[type];
     if (!tool) {
-      onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this action needs the Apps Script surface.' });
+      // Curtis, live: "why dependant on apps script? that's not normal." Correct
+      // — this message was written when the only unmapped verbs were gas:sheet_*
+      // ones, so "needs the Apps Script surface" was true THEN and is nonsense
+      // for anything else. Reaching here now means the verb matched no branch at
+      // all, and blaming a surface the reader is not using sends them to debug
+      // the wrong host. Say what actually happened, and name the verb.
+      onOk({ ok: false, error: 'This surface does not know the verb "' + type + '". It reached ' +
+             'no handler — not the host bridge, not Apps Script. Either the verb is misspelled ' +
+             'in the payload, or this renderer predates it (an MCP Apps host caches the view ' +
+             'template, so an older cached bundle will not have newer verbs — reconnecting the ' +
+             'connector forces a fresh one).' });
       return;
     }
     // Session isolation (wired-transport v0.1.1): the host injects
@@ -25868,9 +25878,18 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
             reject(new Error('host did not answer ui/message (no consent decision?)'));
           }
         }, 60000);
+        // content is an ARRAY of content blocks, not a single block. The spec
+        // prose (apps.mdx:1005) shows `content: { type: "text", text }` — a bare
+        // object — but claude.ai validates MCP's standard array shape and
+        // rejects the documented one outright:
+        //   {"expected":"array","code":"invalid_type","path":["params","content"],
+        //    "message":"Invalid input: expected array, received object"}
+        // (observed live, 2026-08-04). Following the implementation over the
+        // prose: an array is also what every other MCP content field uses, so
+        // the doc example is near-certainly the thing that is wrong.
         post({ jsonrpc: '2.0', id: id, method: 'ui/message',
                params: { role: role || 'user',
-                         content: { type: 'text', text: String(text == null ? '' : text) } } });
+                         content: [{ type: 'text', text: String(text == null ? '' : text) }] } });
       });
     }
   };

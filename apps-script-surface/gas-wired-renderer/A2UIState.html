@@ -114,7 +114,17 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
                   'gas:sheet_clear':  'store_clear' };
     var tool = VERBS[type];
     if (!tool) {
-      onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this action needs the Apps Script surface.' });
+      // Curtis, live: "why dependant on apps script? that's not normal." Correct
+      // — this message was written when the only unmapped verbs were gas:sheet_*
+      // ones, so "needs the Apps Script surface" was true THEN and is nonsense
+      // for anything else. Reaching here now means the verb matched no branch at
+      // all, and blaming a surface the reader is not using sends them to debug
+      // the wrong host. Say what actually happened, and name the verb.
+      onOk({ ok: false, error: 'This surface does not know the verb "' + type + '". It reached ' +
+             'no handler — not the host bridge, not Apps Script. Either the verb is misspelled ' +
+             'in the payload, or this renderer predates it (an MCP Apps host caches the view ' +
+             'template, so an older cached bundle will not have newer verbs — reconnecting the ' +
+             'connector forces a fresh one).' });
       return;
     }
     // Session isolation (wired-transport v0.1.1): the host injects

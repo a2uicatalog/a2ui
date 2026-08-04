@@ -447,9 +447,18 @@ HANDSHAKE = """
             reject(new Error('host did not answer ui/message (no consent decision?)'));
           }
         }, 60000);
+        // content is an ARRAY of content blocks, not a single block. The spec
+        // prose (apps.mdx:1005) shows `content: { type: "text", text }` — a bare
+        // object — but claude.ai validates MCP's standard array shape and
+        // rejects the documented one outright:
+        //   {"expected":"array","code":"invalid_type","path":["params","content"],
+        //    "message":"Invalid input: expected array, received object"}
+        // (observed live, 2026-08-04). Following the implementation over the
+        // prose: an array is also what every other MCP content field uses, so
+        // the doc example is near-certainly the thing that is wrong.
         post({ jsonrpc: '2.0', id: id, method: 'ui/message',
                params: { role: role || 'user',
-                         content: { type: 'text', text: String(text == null ? '' : text) } } });
+                         content: [{ type: 'text', text: String(text == null ? '' : text) }] } });
       });
     }
   };

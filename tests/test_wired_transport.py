@@ -178,7 +178,15 @@ eng.nodes.send_mail._run();
 console.log(JSON.stringify({{ err: eng.nodes.send_mail.isError,
   msg: eng.nodes.send_mail.error }}));
 """)
-    assert r["err"] is True and "no host transport" in r["msg"]
+    # Asserts the CONTRACT (refused, declared, never a dead button) and that the
+    # message names the offending verb — not a fixed sentence. The old wording
+    # blamed "the Apps Script surface" for every unmapped verb, which was true
+    # when gas:sheet_* were the only ones and misleading the moment a host-only
+    # verb existed (Curtis, live, 2026-08-04: "why dependant on apps script?").
+    assert r["err"] is True
+    assert "send_mail" in r["msg"] or "does not know the verb" in r["msg"], r["msg"]
+    assert "apps script" not in r["msg"].lower() or "not Apps Script" in r["msg"], (
+        "an unmapped verb must not be blamed on a surface the reader isn't using")
 
 
 @pytest.fixture(scope="module")
