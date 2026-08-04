@@ -67,6 +67,13 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       'mcp:describe_playbook':    'describe_playbook',
       // Reopening a kept reading: decode + repaint, no model involved.
       'mcp:export_reading':       'export_reading',
+      // Workspace navigation (2026-08-04): the home screen's tool cards and
+      // every sub-view's "← Workspace" breadcrumb call open_workspace again
+      // with a different `view`, repainted via paint_result. Missing here
+      // meant every nav click fired, failed immediately with "no host
+      // transport", and showed nothing — no feedback message was wired to
+      // those actions' isError either, so the failure was completely silent.
+      'mcp:open_workspace':       'open_workspace',
     };
     var mcpTool = MCP_VERBS[type];
     if (!mcpTool) {
@@ -266,7 +273,19 @@ A2UIStateEngine.prototype.compileWires = function(layoutEl, domBridge) {
   });
 };
 
+// Array form (2026-08-04): fires each target in order, all with the SAME
+// eventValue. Added so onRowClick can both select a row AND immediately run
+// the action that opens it — true one-click, where before it took a row
+// click to set state and a SEPARATE button press to act on it (Curtis:
+// "history items are not clickable — would be good to have one click
+// access"). Targets after the first are typically an action's `.run`, which
+// ignores eventValue and reads its own `collect` — so ordering matters: put
+// the state-setting wire(s) before the `.run` that depends on them.
 A2UIStateEngine.prototype.bindOutput = function(wireExpr, eventValue) {
+  if (Array.isArray(wireExpr)) {
+    wireExpr.forEach(function(w) { this.bindOutput(w, eventValue); }, this);
+    return;
+  }
   if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) { console.warn('[A2UI] Malformed output wire: "' + wireExpr + '"'); return; }
   var parsed = this._parseWire(wireExpr);
   if (!parsed) return;

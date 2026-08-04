@@ -62,6 +62,11 @@ PRIVATE_SPEC = Path.home() / "a2ui-private" / "spec"
 PLAYBOOK_MD = PRIVATE_SPEC / "article-writing-playbook-v0.1.md"
 RUNBOOK_MD = PRIVATE_SPEC / "article-formats-runbook-v0.1.md"
 ARCHETYPES_JSON = PRIVATE_SPEC / "prompt-builder-archetypes.json"
+# Single source of truth for the Workspace's tool allowlist (2026-08-04) —
+# see a2uithoughts.md's "workspace verb parity" entry. blog-worker's
+# WORKSPACE_TOOLS reads the same file at its own build time (an ordinary
+# same-repo import there); this is the cross-repo half of that fix.
+WORKSPACE_VERBS_JSON = Path.home() / "a2ui-private" / "mcp-worker" / "src" / "workspace-verbs.json"
 # Optional: the "run it here (Vertex AI)" pane. Calls the blog-worker Worker's
 # /authoring/api/{lift,dispatch} routes (a2ui-private/blog-worker/src/authoring.js)
 # — that's operational plumbing (Vertex AI auth, GitHub PR dispatch), a
@@ -588,12 +593,13 @@ def _bundle_hash():
 # proven live; this reuses its exact message-handling shape rather than
 # inventing a second one. Differences from /play, and why:
 #
-#   - APP_TOOLS is the account-bound tool set (mirrors A2UIState.html's
-#     MCP_VERBS in a2ui-catalogue, plus open_workspace — see
-#     workspace.js's WORKSPACE_TOOLS in a2ui-private, which this must be
-#     kept in sync with BY HAND: the two repos cannot share this constant
-#     at build time, same "kept in sync by hand" rule this file's own
-#     site_header() already lives by).
+#   - APP_TOOLS is the account-bound tool set, substituted in at generation
+#     time from mcp-worker/src/workspace-verbs.json (a2ui-private) — the
+#     SAME file blog-worker's WORKSPACE_TOOLS reads. Used to be a third
+#     hand-typed copy of that list (plus a2ui-catalogue's OWN
+#     A2UIState.html MCP_VERBS as a fourth, broader one); one of the four
+#     drifted silently (2026-08-04, see a2uithoughts.md's "workspace verb
+#     parity" entry) before this consolidation.
 #   - tools/call proxies to /authoring/api/workspace-tool, not /mcp — the
 #     Access-gated, per-reader endpoint, not the public one.
 #   - ui/initialize declares displayMode:'fullscreen' unconditionally: the
@@ -625,13 +631,12 @@ WORKSPACE_HOST_JS = """
     text.textContent = msg;
   }
 
-  // Mirrors workspace.js's WORKSPACE_TOOLS (a2ui-private) — see the header
-  // comment above for why this cannot be shared at build time.
-  var APP_TOOLS = {
-    open_workspace: 1, describe_playbook: 1, save_profile: 1, get_profile: 1,
-    save_reading: 1, list_readings: 1, distill_document: 1,
-    emit_runbook_surface: 1, export_reading: 1
-  };
+  // Same list mcp-worker/src/workspace-verbs.json declares — substituted in
+  // at generation time (see build_workspace_page()), not hand-typed here.
+  // See a2uithoughts.md's "workspace verb parity" entry (2026-08-04): this
+  // used to be a fourth hand-synced copy, and one of the four drifted
+  // silently.
+  var APP_TOOLS = __WORKSPACE_VERBS_JSON__;
 
   function send(payload) {
     iframe.contentWindow.postMessage({
@@ -692,7 +697,7 @@ WORKSPACE_HOST_JS = """
 
     if (msg.method === 'tools/call' && msg.id !== undefined) {
       var toolName = msg.params && msg.params.name;
-      if (!APP_TOOLS[toolName]) {
+      if (APP_TOOLS.indexOf(toolName) === -1) {
         iframe.contentWindow.postMessage({
           jsonrpc: '2.0', id: msg.id,
           error: { code: -32601, message: 'tool not app-callable from this host: ' + toolName }
@@ -758,6 +763,9 @@ WORKSPACE_HOST_JS = """
 
 def build_workspace_page():
     bundle_src = "/surfaces/mcp-apps/renderer-bundle.html?v=" + _bundle_hash()
+    workspace_verbs = json.loads(WORKSPACE_VERBS_JSON.read_text(encoding="utf-8"))
+    host_js = WORKSPACE_HOST_JS.replace(
+        "__WORKSPACE_VERBS_JSON__", json.dumps(workspace_verbs))
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -786,7 +794,7 @@ a.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
     <span class="ws-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
   </div>
 <script>
-{WORKSPACE_HOST_JS}
+{host_js}
 </script>
 </body>
 </html>

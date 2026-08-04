@@ -78,6 +78,19 @@ first, not last.
 - **Any deliberate `tools/list` change needs the parity suite updated in
   the same commit** — the gate compares local to live, so an intended
   difference deadlocks the deploy that would resolve it.
+- **A wired surface's `mcp:<verb>` action is only real if the renderer's own
+  transport allowlist knows it too.** `mcp-worker/src/tools.js` declaring an
+  action and `apps-script-surface/gas-wired-renderer/A2UIState.html`'s
+  `MCP_VERBS` map are two hand-synced lists in two repos; a verb in one but
+  not the other fails INSTANTLY and — unless the action also has its own
+  error-feedback element wired — SILENTLY (found live 2026-08-04: the
+  Workspace nav restructure shipped `mcp:open_workspace` actions with no
+  transport entry; every click did nothing visible at all). Guarded by
+  `mcp-worker`'s `test-workspace-verb-parity.mjs` (a deploy gate, vendored
+  mirror of `A2UIState.html` — same pattern as the `bom_emitter`/
+  `training_parser` parity tests), but that only catches the drift, it
+  doesn't remove the hand-sync. See `a2uithoughts.md`'s "workspace verb
+  parity" entry for the proposed manifest-driven fix.
 
 ## Improvement work is measured, not asserted
 
