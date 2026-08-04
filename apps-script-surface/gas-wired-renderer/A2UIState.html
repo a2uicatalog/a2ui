@@ -1562,7 +1562,20 @@ window._a2uiBootWiredSurface = function(schema) {
 
     Object.keys(wire).forEach(function(prop) {
       var wireExpr = wire[prop];
-      if (typeof wireExpr !== 'string' || !wireExpr.startsWith('#')) return;
+      // Array form (2026-08-04): this guard used to reject anything that
+      // wasn't a bare '#node.prop' string — which silently dropped EVERY
+      // binder branch below (onRowClick included) the moment a wire value
+      // became an array, since the reject happens before prop is even
+      // checked. bindOutput has supported arrays since the same commit that
+      // introduced them here; this guard just never learned to let one
+      // through. Real regression, found live: onRowClick's array form
+      // shipped, and NO row got a click listener at all — not stale rows,
+      // not new ones, none — because this function returned before reaching
+      // the onRowClick branch every single time.
+      var isValidWire = typeof wireExpr === 'string' ? wireExpr.startsWith('#')
+        : Array.isArray(wireExpr) && wireExpr.length > 0 &&
+          wireExpr.every(function(w) { return typeof w === 'string' && w.startsWith('#'); });
+      if (!isValidWire) return;
 
       if (prop === 'setDone') {
         var csDoneEl = domEl.querySelector('[data-cs-done]');
