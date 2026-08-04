@@ -503,6 +503,10 @@
 | `sheet_badge` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `theme_toggle` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `tool_tile` | — | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `lens_grid` | — | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `domain_picker` | — | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `tab_group` | — | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `quiet_link` | — | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `gdm_rocket_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `iso_fireworks_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `content_tabs` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
