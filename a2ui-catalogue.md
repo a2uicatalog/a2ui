@@ -502,6 +502,7 @@
 | `presence_surface` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `sheet_badge` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `theme_toggle` | — | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `tool_tile` | — | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `gdm_rocket_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `iso_fireworks_panel` | — | — | — | — | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `content_tabs` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |

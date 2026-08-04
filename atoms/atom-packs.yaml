@@ -115,6 +115,7 @@ a2ui-atoms-v1:
 - theme_toggle
 - timeline
 - toggle_switch
+- tool_tile
 - tooltip
 - tree_view
 a2ui-aviation-v1:
