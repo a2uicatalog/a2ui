@@ -381,7 +381,12 @@ _RENDERERS['data_table_sortable'] = function(b) {
   rows.forEach(function(row, ri) {
     var bg = '';
     if (striped && ri % 2 === 1) bg = 'background:#f8fafc;';
-    html += '<tr style="' + bg + '">';
+    // data-row-json is what _a2uiBindRowClicks (A2UIState.html) reads to answer
+    // "which row was clicked". NOTHING in the catalogue emitted it, so the
+    // onRowClick wire has always been declarable, documented and INERT — it
+    // bound to a selector no atom satisfied. Emitting it here makes the wire
+    // real for every surface that declares it, not just the one that found it.
+    html += '<tr data-row-json="' + _esc(JSON.stringify(row)) + '" style="' + bg + '">';
     columns.forEach(function(col) {
       var val   = row[col.key];
       var align = col.type === 'number' ? 'right' : 'left';
