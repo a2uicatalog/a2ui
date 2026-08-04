@@ -192,6 +192,23 @@ _RENDERERS['theme_toggle'] = function(b) {
     'btn.style.borderColor=dark?"rgba(255,255,255,0.12)":"rgba(0,0,0,0.12)";' +
     'btn.style.color=dark?"#e2e8f0":"";' +
     'btn.style.boxShadow=dark?"0 2px 8px rgba(0,0,0,0.4)":"0 2px 8px rgba(0,0,0,0.1)";' +
+    // OPT-IN persistence (2026-08-04): every repaint (any nav click on a
+    // wired surface that navigates via paint_result) re-declares this atom
+    // fresh with a hardcoded `initial` — so a manual toggle got silently
+    // reset on the next click, every time, until Curtis called it "annoying"
+    // and asked to enforce a saved preference instead. Same direct-engine-
+    // call pattern the claim/resolve buttons already use elsewhere in this
+    // file (bypassing the standard wire-prop system, which has no event
+    // carrying "which theme it became" to hand a collect{} spec) — inert
+    // unless a surface passes BOTH persist_to (a ValueStore id) and
+    // persist_action (an action id); every other theme_toggle in the
+    // catalog is completely unaffected.
+    (b.persist_to && b.persist_action ?
+      'if(window._a2uiEngine){try{' +
+      'window._a2uiEngine.trigger(' + JSON.stringify(String(b.persist_to)) + ',"setValue",dark?"dark":"light");' +
+      'var _pa=window._a2uiEngine.nodes[' + JSON.stringify(String(b.persist_action)) + '];' +
+      'if(_pa&&_pa._run)_pa._run();' +
+      '}catch(e){}}' : '') +
     '});' +
     '})();<\/script>'
   );
