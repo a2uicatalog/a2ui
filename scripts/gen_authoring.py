@@ -12,6 +12,20 @@ original design; couldn't be bookmarked or deep-linked at all):
                               call at all, for planning/organizing ideas
                               before they're ready to lift. Also shows
                               what's currently in progress (launch-src/drafts/).
+  /authoring/workspace/      the A2UI Workspace — the SAME per-reader profile
+                              and reading history the MCP Apps surface inside
+                              Claude uses (same Cloudflare Access `sub`, same
+                              Durable Object; confirmed identical 2026-08-04).
+                              A browser HOST ADAPTER for the a2ui-catalogue
+                              renderer bundle, modeled directly on
+                              public/surfaces/mcp-apps/play/'s proven
+                              iframe+postMessage pattern — see that file and
+                              a2ui-private/blog-worker/src/workspace.js before
+                              changing either side. Where Claude drafts a
+                              chat message and hands the reading off, this
+                              host answers ui/message itself: a bounded
+                              Gemini function-calling loop against Vertex,
+                              through the SAME article_playbook contract.
 
 REAL BOUNDARY, same pattern as scripts/merge_private_schema.py and
 _PRIVATE_EXAMPLE_BLOCKS in generate_atom_pages.py: all source content
@@ -277,6 +291,7 @@ def site_header():
       <a href="/renderer">Apps Script Renderer</a>
       <a href="/blog/drafts">Blog</a>
       <a href="/authoring" aria-current="page">Authoring</a>
+      <a href="/authoring/workspace/">Workspace</a>
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -526,6 +541,10 @@ def build_landing_page(playbook_html):
       <div class="hub-card-title">Prompt Builder</div>
       <div class="hub-card-desc">Paste a rough draft, pick an archetype, and either copy the assembled prompt into any LLM or run it live here via Vertex AI.</div>
     </a>
+    <a class="hub-card" href="/authoring/workspace/">
+      <div class="hub-card-title">Workspace</div>
+      <div class="hub-card-desc">The same profile and reading history the MCP Apps surface uses inside Claude — same Cloudflare Access identity, same store. Run the article playbook here via Vertex Gemini, one click, no chat needed.</div>
+    </a>
     <a class="hub-card" href="/authoring/posts/">
       <div class="hub-card-title">LinkedIn Posts</div>
       <div class="hub-card-desc">Draft posts, review them against your own tone via Gemini, link them to articles, and track posted engagement — all through the same registry the stats pipe reads.</div>
@@ -542,6 +561,232 @@ def build_landing_page(playbook_html):
   <div class="playbook-doc" style="margin-top:36px">{playbook_html}</div>
 </div>"""
     return _page_shell("Authoring", body)
+
+
+def _bundle_hash():
+    """Content hash of the generated renderer bundle, stamped into the iframe
+    src as a cache-buster — same function, same reasoning, as
+    generate_atom_pages.py's own _bundle_hash() (the americano cache-HIT
+    incident, 2026-07-11: an edge cache served a STALE bundle behind a fixed
+    URL). Not imported from that module — this script's own guard (_guard(),
+    above) makes it runnable stand-alone against a public-only checkout, and
+    importing generate_atom_pages.py would pull in its own (much heavier)
+    top-level work. Small, pure, worth a second copy rather than a coupling.
+    """
+    import hashlib
+    f = ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html"
+    return hashlib.sha1(f.read_bytes()).hexdigest()[:10] if f.exists() else "0"
+
+
+# The host-adapter script. Modeled DIRECTLY on
+# public/surfaces/mcp-apps/play/index.html's proven iframe+postMessage
+# pattern — that page already IS "a browser page acting as an MCP Apps host,"
+# proven live; this reuses its exact message-handling shape rather than
+# inventing a second one. Differences from /play, and why:
+#
+#   - APP_TOOLS is the account-bound tool set (mirrors A2UIState.html's
+#     MCP_VERBS in a2ui-catalogue, plus open_workspace — see
+#     workspace.js's WORKSPACE_TOOLS in a2ui-private, which this must be
+#     kept in sync with BY HAND: the two repos cannot share this constant
+#     at build time, same "kept in sync by hand" rule this file's own
+#     site_header() already lives by).
+#   - tools/call proxies to /authoring/api/workspace-tool, not /mcp — the
+#     Access-gated, per-reader endpoint, not the public one.
+#   - ui/initialize declares displayMode:'fullscreen' unconditionally: the
+#     iframe genuinely occupies the whole viewport here (CSS below), so
+#     there is no separate mode to negotiate — and it is answered
+#     immediately rather than defaulting to 'inline', which would clamp
+#     height the workspace does not need clamped.
+#   - ui/message has NO chat to hand a draft to on this host, so it is not
+#     proxied at all: it is answered IMMEDIATELY (a fast ack, not a long
+#     wait — Gemini's own reading can run past the bundle's internal
+#     ui/message timeout, which this host does not control and must not
+#     race), then /authoring/api/workspace-read is called asynchronously.
+#     Progress and failure show in THIS page's own status chip, not through
+#     the wired surface's pending/error state, because by the time an
+#     answer exists the ack has already resolved that state to "sent".
+#     On success the WHOLE view is repainted with the finished reading via
+#     a fresh ui/notifications/tool-result — the same one-document
+#     replacement every host already does when a stamped reading is
+#     rendered (no "back to workspace" affordance exists yet on ANY host;
+#     see articles-as-app-views.md for that follow-up, deliberately not
+#     built here).
+WORKSPACE_HOST_JS = """
+(function () {
+  var iframe = document.getElementById('mcp-view');
+  var dot = document.getElementById('mcp-status-dot');
+  var text = document.getElementById('mcp-status-text');
+  function setStatus(cls, msg) {
+    dot.className = 'mcp-status-dot' + (cls ? ' ' + cls : '');
+    text.textContent = msg;
+  }
+
+  // Mirrors workspace.js's WORKSPACE_TOOLS (a2ui-private) — see the header
+  // comment above for why this cannot be shared at build time.
+  var APP_TOOLS = {
+    open_workspace: 1, describe_playbook: 1, save_profile: 1, get_profile: 1,
+    save_reading: 1, list_readings: 1, distill_document: 1,
+    emit_runbook_surface: 1, export_reading: 1
+  };
+
+  function send(payload) {
+    iframe.contentWindow.postMessage({
+      jsonrpc: '2.0',
+      method: 'ui/notifications/tool-result',
+      params: { content: [{ type: 'text', text: 'Workspace' }], structuredContent: payload }
+    }, '*');
+  }
+
+  var viewReady = false;
+
+  function loadWorkspace() {
+    setStatus('', 'Opening your workspace…');
+    fetch('/authoring/api/workspace-tool', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'open_workspace', arguments: {} })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (resp) {
+        if (!resp.ok) { setStatus('err', 'Could not open workspace: ' + resp.error); return; }
+        setStatus('live', 'Workspace open');
+        send(resp.structuredContent);
+      })
+      .catch(function (e) { setStatus('err', String(e && e.message || e)); });
+  }
+
+  window.addEventListener('message', function (ev) {
+    if (ev.source !== iframe.contentWindow) return;
+    var msg = ev.data;
+    if (!msg || msg.jsonrpc !== '2.0') return;
+
+    if (msg.method === 'ui/initialize') {
+      iframe.contentWindow.postMessage({
+        jsonrpc: '2.0', id: msg.id,
+        result: {
+          protocolVersion: '2026-01-26',
+          hostContext: { theme: 'dark', displayMode: 'fullscreen', availableDisplayModes: ['fullscreen'] },
+          capabilities: { serverTools: {}, logging: {} }
+        }
+      }, '*');
+      return;
+    }
+
+    if (msg.method === 'ui/notifications/initialized') {
+      viewReady = true;
+      setStatus('', 'View ready…');
+      loadWorkspace();
+      return;
+    }
+
+    // Already fullscreen unconditionally (see header comment) — any request
+    // is granted immediately, never negotiated.
+    if (msg.method === 'ui/request-display-mode' && msg.id !== undefined) {
+      iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id, result: { mode: 'fullscreen' } }, '*');
+      return;
+    }
+
+    if (msg.method === 'tools/call' && msg.id !== undefined) {
+      var toolName = msg.params && msg.params.name;
+      if (!APP_TOOLS[toolName]) {
+        iframe.contentWindow.postMessage({
+          jsonrpc: '2.0', id: msg.id,
+          error: { code: -32601, message: 'tool not app-callable from this host: ' + toolName }
+        }, '*');
+        return;
+      }
+      fetch('/authoring/api/workspace-tool', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: toolName, arguments: (msg.params && msg.params.arguments) || {} })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (resp) {
+          if (resp.ok) {
+            iframe.contentWindow.postMessage(
+              { jsonrpc: '2.0', id: msg.id, result: { structuredContent: resp.structuredContent } }, '*');
+          } else {
+            iframe.contentWindow.postMessage(
+              { jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: resp.error || 'tool call failed' } }, '*');
+          }
+        })
+        .catch(function (e) {
+          iframe.contentWindow.postMessage(
+            { jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: String(e && e.message || e) } }, '*');
+        });
+      return;
+    }
+
+    if (msg.method === 'ui/message' && msg.id !== undefined) {
+      var parts = msg.params && msg.params.content;
+      var textMsg = Array.isArray(parts) ? parts.map(function (p) { return p.text || ''; }).join('\\n') : '';
+      if (!textMsg.trim()) {
+        iframe.contentWindow.postMessage(
+          { jsonrpc: '2.0', id: msg.id, error: { code: -32602, message: 'empty message' } }, '*');
+        return;
+      }
+      // ACK IMMEDIATELY. See header comment: this host does not race the
+      // bundle's own ui/message timeout with however long Gemini takes.
+      iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id, result: {} }, '*');
+      setStatus('', 'Reading via Gemini — this can take a while for a real article…');
+      fetch('/authoring/api/workspace-read', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text: textMsg })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (resp) {
+          if (!resp.ok) { setStatus('err', 'Reading failed: ' + resp.error); return; }
+          setStatus('live', 'Reading complete — analysed by ' + resp.analysed_by);
+          send(resp.payload);
+        })
+        .catch(function (e) { setStatus('err', String(e && e.message || e)); });
+      return;
+    }
+  });
+
+  setTimeout(function () {
+    if (!viewReady) setStatus('err', 'No response from view — check console');
+  }, 8000);
+})();
+"""
+
+
+def build_workspace_page():
+    bundle_src = "/surfaces/mcp-apps/renderer-bundle.html?v=" + _bundle_hash()
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Workspace — A2UI Catalog (full)</title>
+<style>
+:root{{--bg:#0a0e17;--card:#111826;--border:#1f2937;--text:#e6edf3;--muted:#8b949e;--indigo:#7c9cff;--green:#3fb950;--red:#f85149}}
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{height:100%;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo,'JetBrains Mono',monospace}}
+#mcp-view{{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}}
+.ws-bar{{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}}
+.ws-bar>*{{pointer-events:auto}}
+.ws-chip{{display:inline-flex;align-items:center;gap:8px;background:rgba(10,14,23,.9);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}}
+a.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
+.mcp-status-dot{{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}}
+.mcp-status-dot.live{{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}}
+.mcp-status-dot.err{{background:var(--red)}}
+</style>
+</head>
+<body>
+  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="{bundle_src}" title="A2UI Workspace"></iframe>
+  <div class="ws-bar">
+    <a class="ws-chip" href="/authoring/">← Authoring</a>
+    <span class="ws-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
+  </div>
+<script>
+{WORKSPACE_HOST_JS}
+</script>
+</body>
+</html>
+"""
 
 
 def build_promptbuilder_page(archetypes, spec_atoms, lift_pane_html, lift_pane_js):
@@ -1653,10 +1898,15 @@ def main():
         encoding="utf-8",
     )
 
+    workspace_dir = OUTPUT_DIR / "workspace"
+    workspace_dir.mkdir(parents=True, exist_ok=True)
+    (workspace_dir / "index.html").write_text(build_workspace_page(), encoding="utf-8")
+
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
     print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/, "
-          f"/authoring/templates/teaser-card-carousel/, /authoring/templates/single-post/ "
+          f"/authoring/templates/teaser-card-carousel/, /authoring/templates/single-post/, "
+          f"/authoring/workspace/ "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json, "
           f"{len(current_drafts)} draft(s) on the cooking board, "
           f"{len(carousel_drafts)} carousel draft(s), "
