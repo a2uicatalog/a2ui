@@ -11737,10 +11737,14 @@ blocks:
     - surface: email
       note: Renders as plain text (icon, label, count) with no click affordance.
   fields:
-    icon: string (optional). Emoji shown in a small circular badge. This atom
-      does not map icon NAMES to glyphs itself — pass the actual emoji
-      character; a caller wanting a fixed icon-token vocabulary owns that
-      mapping.
+    icon: string (optional). An ICON TOKEN (not an emoji or a font ligature),
+      shown as an inline SVG line-icon in a small circular badge — "user",
+      "book", "folder" today, extend the lookup table in atoms_nav.gs as more
+      are needed. Inline, deliberately not a web font — Material Symbols
+      (icon_feature_grid) loads from an external CDN the MCP Apps bundle's
+      CSP-clean-by-design principle is very likely to block. A token this
+      atom does not recognise renders as literal text instead of nothing, so
+      passing an emoji directly still degrades visibly rather than silently.
     label: string (required). The tile's title.
     count: number (optional). Shown muted, in parentheses, right after label.
     badge: string (optional). Small pill in the top-right corner, e.g. "POC".

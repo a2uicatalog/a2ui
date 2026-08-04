@@ -214,6 +214,29 @@ _RENDERERS['theme_toggle'] = function(b) {
   );
 };
 
+// Icon token -> inline SVG markup (Curtis's spec, 2026-08-04). Inline, not a
+// web font: icon_feature_grid's Material Symbols was rejected the SAME day
+// for exactly this reason — it loads from fonts.googleapis.com, an external
+// CDN the MCP Apps bundle's "CSP-clean by design" principle (resourceDomains
+// deliberately empty, see mcp-worker's mcpUiCsp()) is very likely to block,
+// degrading to raw ligature text ("person", "search") instead of an icon.
+// Inline SVG has no such dependency — it is just markup, exactly as safe as
+// the bundle's own inline <script> tags. Extend this table as more tokens
+// are needed; an unrecognised token falls back to literal text (e.g. an
+// emoji a caller passes directly) rather than rendering nothing.
+var _TOOL_TILE_ICONS = {
+  user: '<circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5"></path>',
+  book: '<path d="M4 5.5C6 4.5 9 4.5 12 6c3-1.5 6-1.5 8-.5v13c-2-1-5-1-8 .5-3-1.5-6-1.5-8-.5z"></path><path d="M12 6v13"></path>',
+  folder: '<path d="M3 7h6l2 2h10v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path>'
+};
+function _toolTileIcon(token) {
+  var inner = _TOOL_TILE_ICONS[token];
+  if (!inner) return _esc(token);
+  return '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#fff" ' +
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ' +
+    'aria-hidden="true">' + inner + '</svg>';
+}
+
 // ── tool_tile ────────────────────────────────────────────────────────────────
 // Large icon+title tile, the WHOLE tile clickable — for a small set of primary
 // choices (an app/tool selector), not a data-dense card. Designed 2026-08-04
@@ -227,7 +250,7 @@ _RENDERERS['theme_toggle'] = function(b) {
 // domEl.querySelector('button').
 _RENDERERS['tool_tile'] = function(b) {
   var uid   = 'tl' + Math.random().toString(36).substr(2, 6);
-  var icon  = _esc(b.icon || '');
+  var icon  = _toolTileIcon(b.icon || '');
   var label = _esc(b.label || '');
   var count = (b.count !== undefined && b.count !== null && b.count !== '')
     ? ' <span style="opacity:.75;font-weight:600;">(' + _esc(String(b.count)) + ')</span>' : '';
