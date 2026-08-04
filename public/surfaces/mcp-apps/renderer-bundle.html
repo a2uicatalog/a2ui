@@ -19976,6 +19976,53 @@ _RENDERERS['theme_toggle'] = function(b) {
   );
 };
 
+// ── tool_tile ────────────────────────────────────────────────────────────────
+// Large icon+title tile, the WHOLE tile clickable — for a small set of primary
+// choices (an app/tool selector), not a data-dense card. Designed 2026-08-04
+// for the Workspace's home screen: bigger visual weight than a plain button,
+// pairs with the flat `row_open` grid wrapper (see tools.js) for a 3-column
+// layout — the wired dialect's layout array has no nested-children atoms
+// (unlike the blocks dialect), so there is no separate "tile_grid" container
+// atom; each tile is its own flat layout element with its own wire.onClick,
+// exactly like ripple_button, which is also why this renders a <button> as
+// its own top-level element — the generic onClick binder finds it via
+// domEl.querySelector('button').
+_RENDERERS['tool_tile'] = function(b) {
+  var uid   = 'tl' + Math.random().toString(36).substr(2, 6);
+  var icon  = _esc(b.icon || '');
+  var label = _esc(b.label || '');
+  var count = (b.count !== undefined && b.count !== null && b.count !== '')
+    ? ' <span style="opacity:.75;font-weight:600;">(' + _esc(String(b.count)) + ')</span>' : '';
+  var variant = b.variant === 'violet_magenta' ? 'violet_magenta' : 'indigo';
+  var gradient = variant === 'violet_magenta'
+    ? 'linear-gradient(135deg,#7c3aed,#c026d3)'
+    : 'linear-gradient(135deg,#6d6af7,#4f46e5)';
+  var glowShadow = variant === 'violet_magenta'
+    ? '0 8px 20px -8px rgba(192,38,212,.4)'
+    : '0 8px 20px -6px rgba(79,70,229,.45)';
+  var highlightA = variant === 'violet_magenta' ? '.2' : '.25';
+  var badgeHtml = b.badge
+    ? '<span style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.25);' +
+      'color:#fff;font-size:9px;font-weight:800;letter-spacing:.06em;padding:3px 8px;' +
+      'border-radius:999px;">' + _esc(b.badge) + '</span>'
+    : '';
+  return (
+    '<button id="' + uid + '" style="position:relative;display:flex;flex-direction:column;' +
+    'gap:14px;align-items:flex-start;text-align:left;width:100%;' +
+    'background:' + gradient + ';border-radius:22px;padding:22px;' +
+    'box-shadow:' + glowShadow + ',inset 0 1px 0 rgba(255,255,255,' + highlightA + ');' +
+    'border:none;cursor:pointer;font-family:inherit;transition:transform 0.15s;" ' +
+    'onmouseover="this.style.transform=\'translateY(-2px)\'" ' +
+    'onmouseout="this.style.transform=\'\'">' +
+    badgeHtml +
+    '<span style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);' +
+    'display:flex;align-items:center;justify-content:center;font-size:19px;line-height:1;' +
+    'flex-shrink:0;">' + icon + '</span>' +
+    '<span style="font-size:16px;font-weight:600;color:#fff;">' + label + count + '</span>' +
+    '</button>'
+  );
+};
+
 // ── breadcrumb ────────────────────────────────────────────────────────────────
 // Trail of page links — reads _A2UI_NAV at runtime to highlight the current page.
 // Pass an ordered array of {slug, label, icon?} — the current page is highlighted.

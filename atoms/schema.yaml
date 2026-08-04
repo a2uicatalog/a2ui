@@ -11717,6 +11717,41 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: tool_tile
+  stage: preview
+  description: Large icon+title tile, the WHOLE tile clickable — for a small
+    set of primary choices (an app/tool selector), not a data-dense card.
+    Bigger visual weight than a plain button. The wired dialect has no
+    nested-children container atom, so lay several of these out as a grid by
+    wrapping them in row_open/row_close with style "display:grid;
+    grid-template-columns:repeat(N,1fr)" (row_open's own default
+    display:flex is overridden by a later declaration in the same style
+    string — normal CSS cascade, not a special case this atom needs to
+    know about).
+  compact_description: large icon+title tile, whole tile clickable, for an app/tool selector grid
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders as plain text (icon, label, count) with no click affordance.
+  fields:
+    icon: string (optional). Emoji shown in a small circular badge. This atom
+      does not map icon NAMES to glyphs itself — pass the actual emoji
+      character; a caller wanting a fixed icon-token vocabulary owns that
+      mapping.
+    label: string (required). The tile's title.
+    count: number (optional). Shown muted, in parentheses, right after label.
+    badge: string (optional). Small pill in the top-right corner, e.g. "POC".
+    variant: string (optional, default "indigo"). "indigo" (bold indigo/violet
+      gradient) or "violet_magenta" (violet-to-magenta gradient) — two fixed
+      color treatments, not an arbitrary color prop, so a grid of tiles reads
+      as one deliberate palette rather than a random assortment.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: gdm_rocket_panel
   description: Fixed-position canvas launch animation -- an isometric rocket
     climbing through exhaust trail and sparks to a HUD telemetry readout.
