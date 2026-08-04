@@ -65,6 +65,8 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       // Deterministic, read-only, and it FINISHES in the surface — the
       // runbook's method compiled to a surface, no model in the loop.
       'mcp:describe_playbook':    'describe_playbook',
+      // Reopening a kept reading: decode + repaint, no model involved.
+      'mcp:export_reading':       'export_reading',
     };
     var mcpTool = MCP_VERBS[type];
     if (!mcpTool) {
