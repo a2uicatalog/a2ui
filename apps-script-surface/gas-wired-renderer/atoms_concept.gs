@@ -225,7 +225,24 @@ _RENDERERS['concept_ladder'] = function(b) {
 
   var fontCss = (b.use_plex_fonts !== false) ? _journeyFontCss() : '';
 
-  return fontCss
+  // DECLARED fullscreen, same contract airspace_command_deck uses and the wired
+  // renderer honours: the artifact escapes .asw-page's 860px column when the
+  // payload asks for it. A reading is a rung rail whose argument structure IS
+  // the point, and it reads as a keyhole in a chat card.
+  //
+  // DELIBERATELY NOT 100vh, and NOT overflow:hidden. That pair is the documented
+  // trap (atoms_airspace.gs): a display-mode grant is a REQUEST, and a host that
+  // refuses it sizes a 100vh canvas to the HOST viewport rather than the panel,
+  // painting content off-screen — which presented as "no plane data" and cost a
+  // day. Prose wants the WIDTH escape, not a viewport-height canvas, so taking
+  // only the half that cannot misfire is the whole point: if the grant never
+  // comes, this degrades to a wider column and nothing breaks.
+  var fsCss = (b.fullscreen === true || b.height === 'fullscreen')
+    ? '<style>.asw-page{max-width:none!important;padding:24px 32px!important;'
+      + 'margin:0!important;}</style>'
+    : '';
+
+  return fsCss + fontCss
     + '<div style="' + cssVars + ';font-family:' + _JOURNEY_SERIF + ';background:var(--paper);'
     + 'color:var(--ink);padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;'
     + 'border:1px solid var(--line);">'
