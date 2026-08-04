@@ -11756,6 +11756,110 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: lens_grid
+  stage: preview
+  description: Grid of selectable cards for a config question with a small
+    fixed set of options, each worth a short explanation — unlike a dropdown,
+    which hides the explanation until opened. Not driven by the standard
+    onClick wire (there is no event carrying "which card"); pass target (a
+    ValueStore id) and the card's own click updates it directly, mirroring
+    theme_toggle's persist_to pattern.
+  compact_description: selectable card grid for a small, explained set of options
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders as a plain list, no selection state or click affordance.
+  fields:
+    target: string (required). A ValueStore primitive's id, set to a card's
+      value on click.
+    options: array of {value, label, caption?, selected?} (required).
+    columns: number (optional, default 2).
+    gap: number (optional, px, default 10).
+    selected: string (optional). Current value, for which card renders
+      highlighted on first paint — a repaint must pass the reader's last
+      choice back in here or it resets, same rule as theme_toggle's initial.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: domain_picker
+  stage: preview
+  description: One filled pill ("use my saved default") beside a free-text
+    field, for a config question that almost always wants the same answer but
+    sometimes needs a one-off override. The pill and the field write the SAME
+    target ValueStore — whichever the reader touched last wins, so there is
+    no separate "which mode" flag anywhere to fall out of sync.
+  compact_description: default-pill plus free-text override for a config question
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders the free-text field only, no pill, no click affordance.
+  fields:
+    target: string (required). A ValueStore primitive's id.
+    default_option: object {label} (optional). The pill's label, e.g. "From
+      my profile".
+    default_domains: string (optional). What the pill resets target to.
+    free_entry: object {placeholder} (optional). Placeholder for the text
+      field.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: tab_group
+  stage: preview
+  description: Pill tabs that switch which ONE of several sibling atoms is
+    visible, e.g. "how will you give me the source — a URL, a file, or pasted
+    text" — rather than showing every input area stacked and unlabelled at
+    once. panels maps a tab's value to ANOTHER layout element's id and
+    toggles that element's own wrapper directly; safe regardless of layout
+    order, since the whole surface's markup exists before any atom's script
+    runs. Same direct-engine pattern as lens_grid/domain_picker.
+  compact_description: pill tabs that show/hide sibling layout elements
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders as plain text tab labels; every sibling panel stays visible
+        (no show/hide, no click affordance).
+  fields:
+    target: string (optional). A ValueStore primitive's id, set to the
+      selected tab's value on click.
+    options: array of {value, label, selected?} (required).
+    panels: object mapping a tab value to another layout element's id
+      (required) — that element's wrapper is shown when its tab is selected,
+      hidden otherwise.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: quiet_link
+  stage: preview
+  description: A secondary action with no button chrome — centered, small,
+    muted, underlined text — so a screen's ONE primary action (a full-chrome
+    button) stays visually singular. Still a real button underneath, so the
+    standard onClick wire every other clickable atom uses works unchanged.
+  compact_description: chromeless secondary text action, for use beside one primary button
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders as plain text, no click affordance.
+  fields:
+    text: string (required).
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: gdm_rocket_panel
   description: Fixed-position canvas launch animation -- an isometric rocket
     climbing through exhaust trail and sparks to a HUD telemetry readout.

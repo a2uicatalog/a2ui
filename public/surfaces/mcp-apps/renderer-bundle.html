@@ -19989,7 +19989,10 @@ _RENDERERS['theme_toggle'] = function(b) {
 var _TOOL_TILE_ICONS = {
   user: '<circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5"></path>',
   book: '<path d="M4 5.5C6 4.5 9 4.5 12 6c3-1.5 6-1.5 8-.5v13c-2-1-5-1-8 .5-3-1.5-6-1.5-8-.5z"></path><path d="M12 6v13"></path>',
-  folder: '<path d="M3 7h6l2 2h10v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path>'
+  folder: '<path d="M3 7h6l2 2h10v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path>',
+  magnifier: '<circle cx="10" cy="10" r="6"></circle><path d="M20 20l-5-5"></path>',
+  bolt: '<path d="M12 2 4 13h6l-1 9 9-13h-6z"></path>',
+  globe: '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13 15 0 0 1 0 18a13 15 0 0 1 0-18"></path>'
 };
 function _toolTileIcon(token) {
   var inner = _TOOL_TILE_ICONS[token];
@@ -20043,6 +20046,178 @@ _RENDERERS['tool_tile'] = function(b) {
     'flex-shrink:0;">' + icon + '</span>' +
     '<span style="font-size:16px;font-weight:600;color:#fff;">' + label + count + '</span>' +
     '</button>'
+  );
+};
+
+// ── lens_grid ────────────────────────────────────────────────────────────────
+// 2-column (configurable) grid of selectable cards — a config question with a
+// small, fixed set of options, each worth a one-line explanation (unlike a
+// dropdown, which hides the explanation until opened). Designed 2026-08-04
+// for the Workspace's Read & Analyse screen (lens: explain/apply/challenge/
+// situate). Same direct-engine pattern as theme_toggle's persist_to/
+// persist_action (see that atom's header comment for why): the standard
+// wire-prop system has no event carrying "which card was clicked", so this
+// atom updates its own selected-state styling AND calls the engine directly,
+// rather than going through wire.onClick.
+_RENDERERS['lens_grid'] = function(b) {
+  var uid     = 'lg' + Math.random().toString(36).substr(2, 6);
+  var options = b.options || [];
+  var target  = b.target || '';
+  var cols    = parseInt(b.columns || 2, 10);
+  var gap     = parseInt(b.gap || 10, 10);
+  var selected = b.selected || (options[0] && options[0].value) || '';
+
+  var cards = options.map(function(o) {
+    var isSel = o.value === selected;
+    return '<button type="button" data-lg-value="' + _esc(o.value) + '" style="' +
+      'text-align:left;cursor:pointer;font-family:inherit;padding:14px;border-radius:12px;' +
+      'border:1.5px solid ' + (isSel ? '#4f46e5' : '#e2e5ea') + ';background:#fff;">' +
+      '<div style="font-size:14px;font-weight:700;color:#111827;">' + _esc(o.label || '') + '</div>' +
+      (o.caption ? '<div style="font-size:12px;color:#6b7280;margin-top:2px;">' + _esc(o.caption) + '</div>' : '') +
+      '</button>';
+  }).join('');
+
+  return (
+    '<div id="' + uid + '" style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:' + gap + 'px;">' +
+    cards +
+    '</div>' +
+    '<script>(function(){' +
+    'var wrap=document.getElementById("' + uid + '");' +
+    'var btns=wrap.querySelectorAll("button");' +
+    'for(var i=0;i<btns.length;i++){' +
+    '(function(btn){' +
+    'btn.addEventListener("click",function(){' +
+    'for(var j=0;j<btns.length;j++)btns[j].style.borderColor="#e2e5ea";' +
+    'btn.style.borderColor="#4f46e5";' +
+    (target ?
+      'if(window._a2uiEngine){try{' +
+      'window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",btn.getAttribute("data-lg-value"));' +
+      '}catch(e){}}' : '') +
+    '});' +
+    '})(btns[i]);' +
+    '}' +
+    '})();<\/script>'
+  );
+};
+
+// ── domain_picker ────────────────────────────────────────────────────────────
+// One filled pill ("use my saved default") beside a free-text field — for a
+// config question that almost always wants the same answer (whatever is
+// already on the reader's profile) but sometimes needs a one-off override.
+// Designed 2026-08-04 for the Workspace's Read & Analyse screen. Same
+// direct-engine pattern as lens_grid/theme_toggle: the pill click resets the
+// target ValueStore to default_domains; typing sets it to whatever was
+// typed. Both write the SAME state atom, so whichever happened last wins —
+// there is no separate "which mode is active" flag to keep in sync.
+_RENDERERS['domain_picker'] = function(b) {
+  var uid     = 'dp' + Math.random().toString(36).substr(2, 6);
+  var target  = b.target || '';
+  var pillLabel   = (b.default_option && b.default_option.label) || 'From my profile';
+  var placeholder = (b.free_entry && b.free_entry.placeholder) || 'Or type a domain…';
+  var defaultVal  = b.default_domains || '';
+
+  return (
+    '<div id="' + uid + '" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+    '<button type="button" style="padding:7px 16px;border-radius:999px;border:1.5px solid #4f46e5;' +
+    'background:#4f46e5;color:#fff;font-size:13px;font-weight:600;cursor:pointer;' +
+    'font-family:inherit;white-space:nowrap;flex-shrink:0;">' + _esc(pillLabel) + '</button>' +
+    '<input type="text" placeholder="' + _esc(placeholder) + '" style="flex:1 1 160px;min-width:160px;' +
+    'padding:8px 12px;border-radius:8px;border:1.5px solid #d9dcf5;font-size:14px;font-family:inherit;">' +
+    '</div>' +
+    '<script>(function(){' +
+    'var wrap=document.getElementById("' + uid + '");' +
+    'var pill=wrap.querySelector("button");' +
+    'var inp=wrap.querySelector("input");' +
+    'pill.addEventListener("click",function(){' +
+    'inp.value="";' +
+    (target ?
+      'if(window._a2uiEngine){try{' +
+      'window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",' + JSON.stringify(String(defaultVal)) + ');' +
+      '}catch(e){}}' : '') +
+    '});' +
+    'inp.addEventListener("input",function(){' +
+    (target ?
+      'if(window._a2uiEngine){try{' +
+      'window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",inp.value);' +
+      '}catch(e){}}' : '') +
+    '});' +
+    '})();<\/script>'
+  );
+};
+
+// ── tab_group ────────────────────────────────────────────────────────────────
+// Pill tabs that switch which ONE of several sibling atoms is visible — e.g.
+// "how will you give me the source: a URL, a file, or pasted text" — rather
+// than showing all three input areas stacked and unlabelled. Designed
+// 2026-08-04 for the Workspace's Read & Analyse screen. Same direct-engine
+// pattern as lens_grid/domain_picker/theme_toggle, PLUS direct DOM
+// manipulation of sibling wrapper divs — `panels` maps a tab value to
+// another layout element's id, and this atom toggles that element's
+// #a2ui-<id> wrapper (the standard wrapper _a2uiRenderWiredLayout gives
+// every id'd layout element) directly. Safe regardless of layout ORDER: the
+// whole layout's HTML is inserted in one shot before any atom's own
+// <script> runs, so every wrapper div already exists by the time this one
+// looks for it, whichever position in the array either atom is at.
+_RENDERERS['tab_group'] = function(b) {
+  var uid     = 'tg' + Math.random().toString(36).substr(2, 6);
+  var options = b.options || [];
+  var target  = b.target || '';
+  var panels  = b.panels || {};
+  var preSel  = options.filter(function(o) { return o.selected; })[0];
+  var selected = (preSel && preSel.value) || (options[0] && options[0].value) || '';
+
+  var pills = options.map(function(o) {
+    var isSel = o.value === selected;
+    return '<button type="button" data-tg-value="' + _esc(o.value) + '" style="' +
+      'padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;' +
+      'font-size:13px;font-weight:600;border:1.5px solid ' + (isSel ? '#4f46e5' : '#d9dcf5') + ';' +
+      'background:' + (isSel ? '#4f46e5' : '#fff') + ';color:' + (isSel ? '#fff' : '#374151') + ';">' +
+      _esc(o.label || o.value) + '</button>';
+  }).join('');
+
+  function panelJs(valueExpr) {
+    return Object.keys(panels).map(function(val) {
+      return 'ez(' + JSON.stringify(String(panels[val])) + ',' + valueExpr + '===' + JSON.stringify(String(val)) + ');';
+    }).join('');
+  }
+
+  return (
+    '<div id="' + uid + '" style="display:inline-flex;gap:8px;flex-wrap:wrap;">' + pills + '</div>' +
+    '<script>(function(){' +
+    'function ez(id,show){var el=document.getElementById("a2ui-"+id);if(el)el.style.display=show?"":"none";}' +
+    panelJs(JSON.stringify(String(selected))) +
+    'var wrap=document.getElementById("' + uid + '");' +
+    'var btns=wrap.querySelectorAll("button");' +
+    'for(var i=0;i<btns.length;i++){' +
+    '(function(btn){' +
+    'btn.addEventListener("click",function(){' +
+    'var v=btn.getAttribute("data-tg-value");' +
+    'for(var j=0;j<btns.length;j++){btns[j].style.background="#fff";btns[j].style.color="#374151";btns[j].style.borderColor="#d9dcf5";}' +
+    'btn.style.background="#4f46e5";btn.style.color="#fff";btn.style.borderColor="#4f46e5";' +
+    panelJs('v') +
+    (target ? 'if(window._a2uiEngine){try{window._a2uiEngine.trigger(' + JSON.stringify(String(target)) + ',"setValue",v);}catch(e){}}' : '') +
+    '});' +
+    '})(btns[i]);' +
+    '}' +
+    '})();<\/script>'
+  );
+};
+
+// ── quiet_link ───────────────────────────────────────────────────────────────
+// A secondary action with no button chrome — centered, small, muted text.
+// Designed 2026-08-04 for a screen's ONE primary action to stay visually
+// singular (a full-chrome ripple_button beside it would compete). Still a
+// real <button> underneath (not an <a>, no href) so the SAME generic
+// onClick wire binder every other clickable atom uses finds it via
+// domEl.querySelector('button') — no special-cased wiring needed.
+_RENDERERS['quiet_link'] = function(b) {
+  var uid = 'ql' + Math.random().toString(36).substr(2, 6);
+  return (
+    '<div style="text-align:center;">' +
+    '<button id="' + uid + '" type="button" style="background:none;border:none;' +
+    'color:#6b7280;font-size:13px;font-family:inherit;cursor:pointer;text-decoration:underline;' +
+    'text-underline-offset:2px;padding:4px;">' + _esc(b.text || '') + '</button>' +
+    '</div>'
   );
 };
 

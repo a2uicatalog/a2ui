@@ -41,6 +41,7 @@ a2ui-atoms-v1:
 - data_table_sortable
 - diagram
 - divider
+- domain_picker
 - empty_state
 - file_tree
 - file_upload
@@ -68,6 +69,7 @@ a2ui-atoms-v1:
 - json_tree_viewer
 - key_takeaways
 - key_value
+- lens_grid
 - link_button
 - live_refresh
 - markdown_block
@@ -88,6 +90,7 @@ a2ui-atoms-v1:
 - progress_bar
 - progress_ring
 - progress_store
+- quiet_link
 - quote
 - script_run_button
 - section_break
@@ -106,6 +109,7 @@ a2ui-atoms-v1:
 - subheading
 - summary_box
 - tab_bar
+- tab_group
 - tabbed_code
 - table
 - tabs
