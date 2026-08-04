@@ -23775,6 +23775,42 @@ var MAX_PATTERN_LENGTH = 200;
 // host (JSON-RPC tools/call over the MCP Apps bridge; sheet verbs map onto the
 // worker's store_* tools) → none (DECLARED error state — never a dead button).
 function _a2uiActionTransport(type, req, onOk, onFail) {
+  // host:message is dispatched FIRST, outside the mcp: prefix gate below.
+  // It lived inside that gate once and was therefore unreachable — the verb
+  // does not start with 'mcp:', so it fell straight through to the GAS branch
+  // and refused with 'needs the Apps Script surface'. An allowlist keyed on a
+  // prefix silently excludes every verb that is not a tool call.
+  // host:message — NOT a tool call. It hands text to the host's chat so the
+  // MODEL takes the next turn, which is the only way a surface can reach a
+  // reader it cannot compute itself (a critical reading needs verbatim
+  // quotation; a renderer cannot invent one). Declared like any other action,
+  // so `collect` composes the prompt from state.
+  //
+  // Consent is the host's to ask for and refusal is a legitimate answer, so
+  // the error is reported verbatim rather than flattened — a button that
+  // silently does nothing when consent is declined is the exact failure this
+  // surface has already shipped once.
+  if (type === 'host:message') {
+    var bridge = window._A2UI_HOST_BRIDGE;
+    if (!bridge || typeof bridge.sendMessage !== 'function') {
+      onOk({ ok: false, error: 'Sending to the conversation needs an MCP Apps host that ' +
+                               'supports ui/message — inert here.' });
+      return;
+    }
+    var d = req.data || {};
+    var text = d.text || d.message || '';
+    if (!String(text).trim()) {
+      onOk({ ok: false, error: 'Nothing to send — no message text was collected.' });
+      return;
+    }
+    bridge.sendMessage(text, d.role)
+      .then(function() { onOk({ ok: true, data: { sent: true } }); })
+      ['catch'](function(e) {
+        onOk({ ok: false, error: (e && e.message) || 'The host refused to send the message.' });
+      });
+    return;
+  }
+
   // mcp:* verbs — HOST-ONLY tool calls (wired-transport: scope grows
   // verb-by-verb). Checked before the GAS branch: the GAS server has no
   // handler for these, so on the Apps Script surface they refuse declaratively.
@@ -23796,36 +23832,6 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       // runbook's method compiled to a surface, no model in the loop.
       'mcp:describe_playbook':    'describe_playbook',
     };
-    // host:message — NOT a tool call. It hands text to the host's chat so the
-    // MODEL takes the next turn, which is the only way a surface can reach a
-    // reader it cannot compute itself (a critical reading needs verbatim
-    // quotation; a renderer cannot invent one). Declared like any other action,
-    // so `collect` composes the prompt from state.
-    //
-    // Consent is the host's to ask for and refusal is a legitimate answer, so
-    // the error is reported verbatim rather than flattened — a button that
-    // silently does nothing when consent is declined is the exact failure this
-    // surface has already shipped once.
-    if (type === 'host:message') {
-      var bridge = window._A2UI_HOST_BRIDGE;
-      if (!bridge || typeof bridge.sendMessage !== 'function') {
-        onOk({ ok: false, error: 'Sending to the conversation needs an MCP Apps host that ' +
-                                 'supports ui/message — inert here.' });
-        return;
-      }
-      var d = req.data || {};
-      var text = d.text || d.message || '';
-      if (!String(text).trim()) {
-        onOk({ ok: false, error: 'Nothing to send — no message text was collected.' });
-        return;
-      }
-      bridge.sendMessage(text, d.role)
-        .then(function() { onOk({ ok: true, data: { sent: true } }); })
-        ['catch'](function(e) {
-          onOk({ ok: false, error: (e && e.message) || 'The host refused to send the message.' });
-        });
-      return;
-    }
     var mcpTool = MCP_VERBS[type];
     if (!mcpTool) {
       onOk({ ok: false, error: 'Verb ' + type + ' has no host transport — this button is inert here.' });
