@@ -12350,7 +12350,12 @@ _RENDERERS['masonry_elevation'] = function(b) {
   var subTextFill = style === 'blueprint' ? '#7f9db8' : '#3c4043';
 
   var parts = [
-    '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">',
+    // width="100%" + preserveAspectRatio, not a fixed pixel width — same
+    // pattern chartjs_bar already uses. A literal width="660" overflowed
+    // the new two-column wall_builder layout's ~320-380px right column
+    // (found live 2026-08-05, wiring that layout) since nothing here or in
+    // AtomStyles.html makes an <svg> shrink to its container by default.
+    '<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">',
     '<rect width="' + W + '" height="' + H + '" fill="' + bgFill + '"/>',
   ];
   if (style !== 'blueprint') {

@@ -22148,7 +22148,10 @@ def _render_masonry_elevation(b: dict) -> str:
     sub_text_fill = "#7f9db8" if style == "blueprint" else "#3c4043"
 
     parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
+        # width="100%" + preserveAspectRatio, not a fixed pixel width — same
+        # fix as the JS renderer (atoms_charts.gs), same reason: a literal
+        # width overflows a narrow column with nothing to shrink it.
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet">',
         f'<rect width="{W}" height="{H}" fill="{bg_fill}"/>',
     ]
     if style != "blueprint":
