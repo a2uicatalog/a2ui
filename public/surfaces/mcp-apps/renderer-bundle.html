@@ -26411,12 +26411,26 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
   var _pending = {};
   window._A2UI_HOST_BRIDGE = {
     callTool: function (name, args) {
+      // Found live 2026-08-06: compose_surface (Composer, on the Workspace host
+      // only — see gen_authoring.py's WORKSPACE_HOST_JS special-case) is the
+      // one mcp: tools/call action that runs a REAL Gemini generation
+      // server-side rather than a deterministic lookup, and it intermittently
+      // outlasted the 15s ceiling every other tools/call action here is
+      // legitimately fast enough for — the client-side bridge gave up and
+      // rejected with "host tools/call timeout" while the host was still
+      // waiting on Vertex, even on calls that would otherwise have succeeded.
+      // Bumped to the same "this can genuinely take a while" tier sendMessage
+      // below already uses (60s for a human consent decision) but longer
+      // still, since a compose call can involve a validation-retry round trip
+      // (two sequential model calls, not one). A hung/broken call now takes
+      // longer to surface as an error, which is the right trade-off — nothing
+      // else calling through this bridge should ever legitimately approach it.
       return new Promise(function (resolve, reject) {
         var id = 'tc-' + Math.random().toString(36).slice(2);
         _pending[id] = { resolve: resolve, reject: reject };
         setTimeout(function () {
           if (_pending[id]) { delete _pending[id]; reject(new Error('host tools/call timeout: ' + name)); }
-        }, 15000);
+        }, 120000);
         post({ jsonrpc: '2.0', id: id, method: 'tools/call',
                params: { name: name, arguments: args || {} } });
       });
