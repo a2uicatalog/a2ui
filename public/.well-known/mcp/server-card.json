@@ -112,5 +112,6 @@
       "name": "identify_model",
       "description": "CALL THIS FIRST, before any other a2ui-catalog tool, once per session. Declares your own model identity so this response can hand you capability-matched guidance up front — some models need simpler, judgment-free tools; skipping this just means you default to the full toolkit, including tools that require sizing/pagination judgment…"
     }
-  ]
+  ],
+  "toolAvailabilityNotes": "All 25 tools listed are served to most callers. Callers that declare their model via identify_model as 'haiku' are instead served a curated 8-of-25 subset (judgment-heavy tools like sizing/pagination removed) — currently excluded for that tier: delete_reading, describe_playbook, distill_document, emit_deployment, export_reading, get_profile, list_readings, make_surface_url, open_workspace, preview_url, publish_url, render_ping, save_profile, save_reading, unpublish_url, wall_calc, whoami. Call identify_model first to get the tool set your model can reliably use."
 }

@@ -8,12 +8,16 @@ itself.
 """
 import json
 import os
-import re
+import sys
+from pathlib import Path
 
 import pytest
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 PUBLIC = os.path.join(ROOT, "public")
+
+sys.path.insert(0, str(Path(ROOT) / "scripts"))
+import gen_server_card  # noqa: E402
 
 
 def _load(*parts):
@@ -43,24 +47,23 @@ def test_server_card_tools_match_the_worker():
     because one-directional (card subset-of live) is exactly how the
     2026-08-05 drift slipped through: the card advertised 15 tools while
     tools.js defined 25, and a subset check can't see under-listing.
+
+    Uses gen_server_card.live_tools() — the SAME import-and-execute
+    extraction the generator itself uses — rather than a second,
+    independent regex parse of tools.js. Two parsers of the same fact can
+    disagree; a reformat of tools.js (prettier, a renamed allTools) would
+    silently break a hand-rolled regex here without touching the
+    generator at all. One source of truth for "what tools.js defines."
+
     mcp-worker is a sibling private repo, so skip when absent rather than
     fail — the public repo must still build standalone.
     """
-    tools_js = os.path.join(ROOT, "..", "a2ui-private", "mcp-worker", "src", "tools.js")
-    if not os.path.isfile(tools_js):
+    try:
+        live = gen_server_card.live_tools()
+    except FileNotFoundError:
         pytest.skip("mcp-worker not present (public repo standalone build)")
-    with open(tools_js, encoding="utf-8") as f:
-        src = f.read()
-
-    # Scope the name search to the allTools array specifically — a bare
-    # "name: '...'" search also matches unrelated object literals elsewhere
-    # in the file (e.g. `MCP_SERVER = { name: 'a2uicatalog', ... }`), which
-    # would silently inflate the live-tool set this test compares against.
-    start = src.index("const allTools = [")
-    end = src.index("\n  ];", start)
-    all_tools_src = src[start:end]
-    live_names = set(re.findall(r"\{\s*name:\s*'([a-zA-Z_][a-zA-Z0-9_]*)'", all_tools_src))
-    assert live_names, "could not find any tool names in tools.js's allTools array — regex or markers stale?"
+    live_names = {t["name"] for t in live}
+    assert live_names, "tools.js's mcpTools(null) returned no tools — is tools.js broken?"
 
     card = json.loads(_load(".well-known", "mcp", "server-card.json"))
     card_names = {t["name"] for t in card["tools"]}

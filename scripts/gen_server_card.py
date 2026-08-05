@@ -46,13 +46,21 @@ def _truncate(text):
     return cut.rstrip(".,;:—-") + "…"  # visible marker — never a silent cut
 
 
-def _live_tools():
+def live_tools():
+    """The live tool list: {"name", "description"} per tool, straight from
+    tools.js's mcpTools(null) (imported and executed, not regexed) — the
+    single source of truth both this generator AND
+    tests/test_agent_readiness_files.py's parity check use, so there's one
+    place that knows how to ask tools.js what it defines, not two that can
+    independently drift.
+
+    Raises FileNotFoundError if the private sibling repo isn't checked out,
+    RuntimeError if the node import itself fails — callers decide what to
+    do (the CLI below exits; the test skips on the former, fails on the
+    latter).
+    """
     if not TOOLS_JS.is_file():
-        sys.exit(
-            f"gen_server_card: {TOOLS_JS} not found — clone a2ui-private as a "
-            "sibling of a2ui-catalogue (this generator reads the live tools/list "
-            "straight from mcp-worker's tools.js, same as gen_worker_renderers.py)"
-        )
+        raise FileNotFoundError(str(TOOLS_JS))
     node_script = (
         f"import {{ mcpTools }} from {json.dumps(str(TOOLS_JS))};"
         "process.stdout.write(JSON.stringify(mcpTools(null).map(t => "
@@ -63,19 +71,76 @@ def _live_tools():
         capture_output=True, text=True,
     )
     if result.returncode != 0:
-        sys.exit(f"gen_server_card: node import of tools.js failed:\n{result.stderr}")
+        raise RuntimeError(f"node import of tools.js failed:\n{result.stderr}")
+    return json.loads(result.stdout)
+
+
+def haiku_gated_names():
+    """Names present in mcpTools(null) but absent from mcpTools('haiku') —
+    derived by actually calling tools.js's own exported mcpTools() with
+    both arguments and diffing, not by hand-copying MODEL_TOOL_GATES'
+    'haiku' list (which isn't even exported). If tools.js ever adds a
+    second gated tier, this only ever reports the haiku one — a hand-typed
+    fact drifting is exactly the bug class this whole generator exists to
+    prevent, so deliberately not doing that here for tiers this doesn't
+    check.
+    """
+    node_script = (
+        f"import {{ mcpTools }} from {json.dumps(str(TOOLS_JS))};"
+        "const full = new Set(mcpTools(null).map(t => t.name));"
+        "const haiku = new Set(mcpTools('haiku').map(t => t.name));"
+        "process.stdout.write(JSON.stringify([...full].filter(n => !haiku.has(n))));"
+    )
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"node haiku-gate probe failed:\n{result.stderr}")
     return json.loads(result.stdout)
 
 
 def main():
-    live = _live_tools()
+    try:
+        live = live_tools()
+    except FileNotFoundError as e:
+        sys.exit(
+            f"gen_server_card: {e} not found — clone a2ui-private as a sibling "
+            "of a2ui-catalogue (this generator reads the live tools/list "
+            "straight from mcp-worker's tools.js, same as gen_worker_renderers.py)"
+        )
+    except RuntimeError as e:
+        sys.exit(f"gen_server_card: {e}")
+    try:
+        gated = haiku_gated_names()
+    except RuntimeError as e:
+        sys.exit(f"gen_server_card: {e}")
+
     card = json.loads(CARD.read_text(encoding="utf-8"))
     card["tools"] = [
         {"name": t["name"], "description": _truncate(t["description"])}
         for t in live
     ]
+    # The card otherwise implies all tools are unconditionally available,
+    # which is false: a caller that identifies itself (via identify_model)
+    # as 'haiku' is served a curated subset server-side. Surfacing that
+    # here is the difference between an agent discovering the gate by
+    # having a call rejected and knowing about it up front.
+    if gated:
+        available = len(live) - len(gated)
+        card["toolAvailabilityNotes"] = (
+            f"All {len(live)} tools listed are served to most callers. Callers that "
+            "declare their model via identify_model as 'haiku' are instead served a "
+            f"curated {available}-of-{len(live)} subset (judgment-heavy tools like "
+            "sizing/pagination removed) — currently excluded for that tier: "
+            f"{', '.join(sorted(gated))}. Call identify_model first to get the tool "
+            "set your model can reliably use."
+        )
+    else:
+        card.pop("toolAvailabilityNotes", None)
     CARD.write_text(json.dumps(card, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"gen_server_card: wrote {len(live)} tools -> {CARD.relative_to(ROOT)}")
+    print(f"gen_server_card: wrote {len(live)} tools -> {CARD.relative_to(ROOT)}"
+          + (f" ({len(gated)} gated for haiku)" if gated else ""))
 
 
 if __name__ == "__main__":
