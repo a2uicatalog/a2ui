@@ -178,6 +178,7 @@
 | `copy_to_clipboard` | ✅ | — | — | ⚠️ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `conversion_funnel` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `gauge_sla` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `masonry_elevation` | ✅ | — | — | ❌ | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `stacked_area` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `scatter_trend` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `call_mood_board` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |

@@ -7866,13 +7866,24 @@ _RENDERERS['form_textarea'] = function(b) {
   var uid   = 'ta' + Math.random().toString(36).substr(2, 6);
   var label = b.label       || '';
   var ph    = b.placeholder || '';
+  var val   = b.value       || '';
   var rows  = parseInt(b.rows || 4, 10);
+  // `value` (2026-08-06) — real, editable, submittable pre-fill, distinct
+  // from `placeholder`'s greyed-out hint text. Found live: a reader
+  // reasonably expected an example shown via `placeholder` to already be a
+  // usable value and submitted an empty prompt when it wasn't — placeholder
+  // text was never a real value in any browser, but Composer's own example
+  // read enough like real content that the distinction wasn't obvious.
+  // Content goes BETWEEN the tags (a textarea's actual value), never a
+  // `value=""` attribute — `_esc` still applies since this is unescaped
+  // user/model-composed text landing inside HTML.
   return '<div style="display:flex;flex-direction:column;gap:4px;width:100%;">'
     + (label ? '<label style="font-size:0.8rem;font-weight:600;color:#374151;">' + _esc(label) + '</label>' : '')
     + '<textarea id="' + uid + '" rows="' + rows + '" placeholder="' + _esc(ph) + '"'
     + ' style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;'
     + 'font-size:0.875rem;color:#111827;background:#fff;resize:vertical;font-family:inherit;outline:none;'
     + 'transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#6366f1\'" onblur="this.style.borderColor=\'#d1d5db\'">'
+    + _esc(val)
     + '</textarea>'
     + '</div>';
 };
