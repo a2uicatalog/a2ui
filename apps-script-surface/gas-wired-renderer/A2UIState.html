@@ -61,6 +61,19 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       'mcp:list_readings':        'list_readings',
       'mcp:delete_reading':       'delete_reading',
       'mcp:wall_calc':            'wall_calc',
+      // compose_surface is NOT a real mcp-worker tool — it only exists on
+      // the full.a2uicatalog.ai Workspace host, which special-cases this
+      // exact verb name in its own tools/call interception (WORKSPACE_HOST_JS,
+      // gen_authoring.py) to reach /authoring/api/workspace-compose instead
+      // of the generic tool proxy. Declared here anyway because this
+      // allowlist is what makes the wired dialect willing to ATTEMPT the
+      // tools/call at all ("a wired surface can only reach tools named
+      // here") — on any OTHER host (Claude, ChatGPT) this call will fail
+      // with a clean "no host transport" error, which is correct: Composer's
+      // generation step only exists on the Workspace; on a chat host the
+      // model composes directly instead (get_catalog + render_surface, no
+      // tool needed at all — see the Composer brief's live-test finding).
+      'mcp:compose_surface':      'compose_surface',
       'mcp:get_profile':          'get_profile',
       'mcp:save_profile':         'save_profile',
       'mcp:save_reading':         'save_reading',

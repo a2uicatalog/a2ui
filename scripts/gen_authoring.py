@@ -704,6 +704,39 @@ WORKSPACE_HOST_JS = """
 
     if (msg.method === 'tools/call' && msg.id !== undefined) {
       var toolName = msg.params && msg.params.name;
+      // compose_surface (Composer, 2026-08-05) is NOT a real mcp-worker tool
+      // — it has no entry in workspace-verbs.json/APP_TOOLS on purpose, so
+      // that allowlist stays scoped to tools that genuinely exist on the
+      // other end of the generic proxy below. Its generation step needs
+      // Vertex credentials, which only THIS worker (blog-worker) has —
+      // mcp-worker has none — so it is handled entirely host-side,
+      // special-cased here rather than routed through the generic
+      // /authoring/api/workspace-tool proxy. A normal awaited tools/call
+      // (no ui/message-style immediate-ack dance needed): the wired
+      // dialect's own action._run() already renders isPending while this
+      // fetch is in flight, for however long the Gemini call takes.
+      if (toolName === 'compose_surface') {
+        fetch('/authoring/api/workspace-compose', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify((msg.params && msg.params.arguments) || {})
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (resp) {
+            if (resp.ok) {
+              iframe.contentWindow.postMessage(
+                { jsonrpc: '2.0', id: msg.id, result: { structuredContent: resp.payload } }, '*');
+            } else {
+              iframe.contentWindow.postMessage(
+                { jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: resp.error || 'compose failed' } }, '*');
+            }
+          })
+          .catch(function (e) {
+            iframe.contentWindow.postMessage(
+              { jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: String(e && e.message || e) } }, '*');
+          });
+        return;
+      }
       if (APP_TOOLS.indexOf(toolName) === -1) {
         iframe.contentWindow.postMessage({
           jsonrpc: '2.0', id: msg.id,
