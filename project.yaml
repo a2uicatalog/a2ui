@@ -336,6 +336,21 @@ generators:
       0/2, and the markdown-fallback checks — /agents.md is served as real
       text/markdown via public/_headers. Atom counts are read from spec.json,
       never written as literals.
+  gen_server_card:
+    script: scripts/gen_server_card.py
+    source: ../a2ui-private/mcp-worker/src/tools.js — mcpTools(null), the
+      exact function the Worker calls to answer a real MCP tools/list
+      request (the live tool surface, not a hand-maintained copy)
+    outputs: [public/.well-known/mcp/server-card.json]
+    publish: >-
+      ci deploys the committed file as-is; the generator itself is NOT a CI
+      step (same posture as gen_worker_renderers — CI never has the private
+      repo checked out) and deliberately NOT chained into catalog-rebuild
+      (which must stay buildable from the public repo alone). Run locally
+      via `ops.py run mcp-server-card-sync` whenever tools.js's tool list
+      changes. Fixes the drift orank caught 2026-08-05 — card advertised 15
+      tools, live server served 25 — the card had been hand-written once
+      (512e26b4) and never regenerated since.
   gen_renderer_manifest:
     script: scripts/gen_renderer_manifest.py
     source: apps-script-surface/gas-wired-renderer/*.gs + atoms/atom-packs.yaml

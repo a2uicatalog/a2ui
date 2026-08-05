@@ -16,8 +16,8 @@ gen_worker_renderers.py (public -> private) and mcp-sdk-sync-data's
 
 NOT run in CI (.github/workflows/deploy.yml never has the private repo
 checked out either — gen_worker_renderers.py is likewise absent from that
-workflow). Run locally via `ops.py run catalog-rebuild` whenever tools.js
-changes.
+workflow). Run locally via `ops.py run mcp-server-card-sync` whenever
+tools.js changes.
 """
 import json
 import subprocess
@@ -28,7 +28,13 @@ ROOT = Path(__file__).resolve().parent.parent
 TOOLS_JS = ROOT.parent / "a2ui-private" / "mcp-worker" / "src" / "tools.js"
 CARD = ROOT / "public" / ".well-known" / "mcp" / "server-card.json"
 
-DESC_BUDGET = 180  # matches the existing card's own hand-truncated length
+# 340, not the original card's incidental ~180: a card previewing tools
+# before a caller opens a transport is exactly the wrong place to silently
+# drop the trust/custody clauses on the two tools with real side effects
+# (emit_deployment's "we hold no creds", publish_url's "ONE WEEK retention
+# ... anyone with the link can view") — both sit past 180 chars in the live
+# descriptions. 340 comfortably covers both without ballooning every entry.
+DESC_BUDGET = 340
 
 
 def _truncate(text):
@@ -36,7 +42,8 @@ def _truncate(text):
         return text
     cut = text[:DESC_BUDGET]
     last_space = cut.rfind(" ")
-    return cut[:last_space] if last_space > 0 else cut
+    cut = cut[:last_space] if last_space > 0 else cut
+    return cut.rstrip(".,;:—-") + "…"  # visible marker — never a silent cut
 
 
 def _live_tools():

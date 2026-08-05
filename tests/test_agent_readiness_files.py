@@ -8,6 +8,7 @@ itself.
 """
 import json
 import os
+import re
 
 import pytest
 
@@ -33,21 +34,43 @@ def test_server_card_shape():
 
 
 def test_server_card_tools_match_the_worker():
-    """The card's tool list must match what the Worker actually exposes.
+    """The card's tool list must match what the Worker actually exposes —
+    in BOTH directions.
 
-    The card is hand-generated from a live tools/list; nothing stops it drifting
-    afterwards. mcp-worker is a sibling private repo, so skip when absent rather
-    than fail — the public repo must still build standalone.
+    scripts/gen_server_card.py regenerates the card FROM tools.js, but
+    nothing stops someone hand-editing the card afterwards, so this stays a
+    real assertion rather than trusting the generator ran. Bidirectional
+    because one-directional (card subset-of live) is exactly how the
+    2026-08-05 drift slipped through: the card advertised 15 tools while
+    tools.js defined 25, and a subset check can't see under-listing.
+    mcp-worker is a sibling private repo, so skip when absent rather than
+    fail — the public repo must still build standalone.
     """
     tools_js = os.path.join(ROOT, "..", "a2ui-private", "mcp-worker", "src", "tools.js")
     if not os.path.isfile(tools_js):
         pytest.skip("mcp-worker not present (public repo standalone build)")
     with open(tools_js, encoding="utf-8") as f:
         src = f.read()
+
+    # Scope the name search to the allTools array specifically — a bare
+    # "name: '...'" search also matches unrelated object literals elsewhere
+    # in the file (e.g. `MCP_SERVER = { name: 'a2uicatalog', ... }`), which
+    # would silently inflate the live-tool set this test compares against.
+    start = src.index("const allTools = [")
+    end = src.index("\n  ];", start)
+    all_tools_src = src[start:end]
+    live_names = set(re.findall(r"\{\s*name:\s*'([a-zA-Z_][a-zA-Z0-9_]*)'", all_tools_src))
+    assert live_names, "could not find any tool names in tools.js's allTools array — regex or markers stale?"
+
     card = json.loads(_load(".well-known", "mcp", "server-card.json"))
+    card_names = {t["name"] for t in card["tools"]}
     for t in card["tools"]:
-        assert f"name: '{t['name']}'" in src or f'name: "{t["name"]}"' in src, \
+        assert t["name"] in live_names, \
             f"server-card.json advertises tool '{t['name']}' which tools.js does not define"
+    missing = live_names - card_names
+    assert not missing, \
+        f"tools.js defines tool(s) {sorted(missing)} that server-card.json does not advertise " \
+        "— rerun `ops.py run mcp-server-card-sync`"
 
 
 def test_pricing_md_states_the_real_limits():
