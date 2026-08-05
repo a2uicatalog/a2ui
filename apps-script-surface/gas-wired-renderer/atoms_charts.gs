@@ -344,6 +344,28 @@ _RENDERERS['data_table_sortable'] = function(b) {
   var compact = b.compact === true || b.compact === 'true';
   var uid     = Math.random().toString(36).substr(2,6);
 
+  // Selectable rows + per-row delete (2026-08-05, Workspace History multi-
+  // select). Both are opt-in via these three props — a table with none of
+  // them behaves exactly as before. `_select`/`_delete` columns need a real
+  // `row.id` to act on; a row missing one renders an empty cell rather than
+  // wiring a control that would silently do nothing.
+  //   select_state       — ValueStore id holding the array of selected row ids
+  //   select_count_state — companion ValueStore id holding that array's length
+  //   delete_action_id   — action id to run (via its own collect: {ids: '#select_state.value'})
+  //                        for BOTH a per-row delete (sets the array to [rowId]
+  //                        first) and an external bulk "Delete N" button that
+  //                        targets the same action — one action, one tool call,
+  //                        two entry points.
+  // `_delete`'s header cell used to render but its body cell rendered nothing
+  // (no case for it in the row loop below) — a column that existed in the
+  // header and did nothing in every row it was declared for. Fixed here
+  // rather than left as-is now that a real caller (History) needs it to work.
+  var selectState = b.select_state || '';
+  var countState  = b.select_count_state || '';
+  var deleteAction = b.delete_action_id || '';
+  var hasSelect  = columns.some(function(c) { return (typeof c === 'object' ? c.key : c) === '_select'; });
+  var hasDelete  = columns.some(function(c) { return (typeof c === 'object' ? c.key : c) === '_delete'; });
+
   // Normalise string shortcuts to objects so col.key / col.label are always defined
   columns = columns.map(function(col) {
     return typeof col === 'string' ? { key: col, label: col } : col;
@@ -360,13 +382,20 @@ _RENDERERS['data_table_sortable'] = function(b) {
   if (title) html += '<div class="a2ui-table-title">' + _esc(title) + '</div>';
 
   html += '<div class="a2ui-table-wrap" style="overflow-x:auto;">';
+  html += '<style>' +
+    '#tbl-' + uid + ' tr.a2ui-row-selected{background:#eef2ff !important;}' +
+    '#tbl-' + uid + ' .a2ui-row-check{width:15px;height:15px;cursor:pointer;vertical-align:middle;}' +
+    '#tbl-' + uid + ' .a2ui-row-del{border:none;background:transparent;color:#94a3b8;cursor:pointer;' +
+      'font-size:14px;line-height:1;padding:4px 6px;border-radius:5px;}' +
+    '#tbl-' + uid + ' .a2ui-row-del:hover{background:#fee2e2;color:#dc2626;}' +
+    '</style>';
   html += '<table id="tbl-' + uid + '" class="a2ui-data-table' + (striped ? ' striped' : '') + '" style="width:100%;border-collapse:collapse;font-size:13px;">';
 
   // Header
   html += '<thead><tr>';
   columns.forEach(function(col) {
-    if (col.key === '_delete') {
-      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:40px;"></th>';
+    if (col.key === '_delete' || col.key === '_select') {
+      html += '<th style="background:#1e293b;color:#f1f5f9;padding:' + cellPad + ';width:34px;"></th>';
       return;
     }
     var align = col.type === 'number' ? 'right' : 'left';
@@ -381,13 +410,36 @@ _RENDERERS['data_table_sortable'] = function(b) {
   rows.forEach(function(row, ri) {
     var bg = '';
     if (striped && ri % 2 === 1) bg = 'background:#f8fafc;';
+    var rowId = row && row.id;
     // data-row-json is what _a2uiBindRowClicks (A2UIState.html) reads to answer
     // "which row was clicked". NOTHING in the catalogue emitted it, so the
     // onRowClick wire has always been declarable, documented and INERT — it
     // bound to a selector no atom satisfied. Emitting it here makes the wire
     // real for every surface that declares it, not just the one that found it.
-    html += '<tr data-row-json="' + _esc(JSON.stringify(row)) + '" style="' + bg + '">';
+    html += '<tr data-row-json="' + _esc(JSON.stringify(row)) + '"' +
+      (rowId !== undefined ? ' data-row-id="' + _esc(String(rowId)) + '"' : '') +
+      ' style="' + bg + '">';
     columns.forEach(function(col) {
+      if (col.key === '_select') {
+        html += '<td style="padding:' + cellPad + ';text-align:center;border-bottom:1px solid #f1f5f9;">' +
+          (rowId !== undefined
+            ? '<input type="checkbox" class="a2ui-row-check" onclick="event.stopPropagation()" ' +
+              'onchange="event.stopPropagation();_a2uiTableToggleSelect(' + _esc(JSON.stringify(String(uid))) + ',' +
+              _esc(JSON.stringify(String(rowId))) + ',this.checked,this)">'
+            : '') +
+          '</td>';
+        return;
+      }
+      if (col.key === '_delete') {
+        html += '<td style="padding:' + cellPad + ';text-align:center;border-bottom:1px solid #f1f5f9;">' +
+          (rowId !== undefined
+            ? '<button type="button" class="a2ui-row-del" title="Delete" ' +
+              'onclick="event.stopPropagation();_a2uiTableDeleteOne(' + _esc(JSON.stringify(String(uid))) + ',' +
+              _esc(JSON.stringify(String(rowId))) + ')">✕</button>'
+            : '') +
+          '</td>';
+        return;
+      }
       var val   = row[col.key];
       var align = col.type === 'number' ? 'right' : 'left';
       var disp  = (val === null || val === undefined) ? '' : String(val);
@@ -396,6 +448,45 @@ _RENDERERS['data_table_sortable'] = function(b) {
     html += '</tr>';
   });
   html += '</tbody></table></div>';
+
+  // Selection/delete wiring — direct engine calls (same escape hatch
+  // theme_toggle's persist_to/persist_action use), because a raw <tr>/<input>
+  // inside this atom's own HTML has no layout.id for the standard
+  // wire/compileWires mechanism to bind to. Global helper functions (not IIFE-
+  // scoped per instance) so N tables on one surface — Today/Yesterday/Earlier
+  // — all share the SAME selected-ids state without needing N copies of this
+  // logic; each call carries its own uid/state ids as arguments instead.
+  if (hasSelect || hasDelete) {
+    html += '<script>' +
+      'window._a2uiTableToggleSelect = window._a2uiTableToggleSelect || function(uid, rowId, checked, cb) {' +
+        'var eng = window._a2uiEngine; if (!eng) return;' +
+        'var stateId = cb.closest("table").getAttribute("data-select-state");' +
+        'var countId = cb.closest("table").getAttribute("data-count-state");' +
+        'if (!stateId) return;' +
+        'var node = eng.nodes[stateId]; var cur = (node && Array.isArray(node.value)) ? node.value.slice() : [];' +
+        'var idx = cur.indexOf(rowId);' +
+        'if (checked && idx === -1) cur.push(rowId);' +
+        'if (!checked && idx !== -1) cur.splice(idx, 1);' +
+        'eng.trigger(stateId, "setValue", cur);' +
+        'if (countId) eng.trigger(countId, "setValue", cur.length);' +
+        'var tr = cb.closest("tr"); if (tr) tr.classList.toggle("a2ui-row-selected", checked);' +
+      '};' +
+      'window._a2uiTableDeleteOne = window._a2uiTableDeleteOne || function(uid, rowId) {' +
+        'var tbl = document.getElementById("tbl-" + uid); if (!tbl) return;' +
+        'var eng = window._a2uiEngine; if (!eng) return;' +
+        'var stateId = tbl.getAttribute("data-select-state"); var countId = tbl.getAttribute("data-count-state");' +
+        'var actionId = tbl.getAttribute("data-delete-action");' +
+        'if (stateId) eng.trigger(stateId, "setValue", [rowId]);' +
+        'if (countId) eng.trigger(countId, "setValue", 1);' +
+        'var act = actionId && eng.nodes[actionId]; if (act && act._run) act._run();' +
+      '};' +
+      '(function(){ var t = document.getElementById("tbl-' + uid + '"); if (!t) return;' +
+      (selectState ? 't.setAttribute("data-select-state", ' + JSON.stringify(String(selectState)) + ');' : '') +
+      (countState  ? 't.setAttribute("data-count-state", '  + JSON.stringify(String(countState))  + ');' : '') +
+      (deleteAction ? 't.setAttribute("data-delete-action", ' + JSON.stringify(String(deleteAction)) + ');' : '') +
+      ' })();' +
+      '</script>';
+  }
 
   return '<div class="a2ui-data-table-sortable">' + html + '</div>';
 };

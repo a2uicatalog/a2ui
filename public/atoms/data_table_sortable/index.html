@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>headers</td><td>array of strings. Column headers.</td><td>required</td></tr><tr><td>rows</td><td>array of arrays. Table rows.</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>headers</td><td>array of strings. Column headers.</td><td>required</td></tr><tr><td>rows</td><td>array of arrays. Table rows.</td><td>required</td></tr><tr><td>select_state</td><td>(wired dialect only) ValueStore id holding the array of selected row ids. Combine with a column whose key is _select to get a per-row checkbox; each row needs a real id field to be selectable.</td><td>required</td></tr><tr><td>select_count_state</td><td>(wired dialect only) companion ValueStore id holding the selected array's length — wire a NumericThreshold to it to show/hide a bulk action bar.</td><td>required</td></tr><tr><td>delete_action_id</td><td>(wired dialect only) action id to run for row deletion. A column whose key is _delete renders a per-row delete button that sets select_state to just that row's id and runs this action directly; the same action id can be targeted by an external Delete-N-selected button via the standard collect wiring, ids from select_state's value.</td><td>required</td></tr></tbody></table>
   </div>
 
   <div class="section">
@@ -220,7 +220,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
       "17",
       "Pending"
     ]
-  ]
+  ],
+  "select_state": [],
+  "select_count_state": [],
+  "delete_action_id": "Delete action id"
 }</code></pre>
   </div>
 
