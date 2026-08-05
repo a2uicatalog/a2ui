@@ -22093,3 +22093,114 @@ def _render_gdm_rocket_panel(b: dict) -> str:
 
 
 _RENDERERS["gdm_rocket_panel"] = _render_gdm_rocket_panel
+
+
+# ── masonry_elevation ─────────────────────────────────────────────────────
+# Deliberate re-translation (Python, this file's language) of the SAME
+# geometry the wired-dialect renderer implements in JS
+# (a2ui-catalogue/apps-script-surface/gas-wired-renderer/atoms_charts.gs) —
+# courses stacked bottom-up, running-bond half-unit stagger on alternate
+# rows, mortar-joint gaps, three render_style variants. Kept as source
+# (not shared code) because this file has no JS interop; if the geometry
+# changes, change both — same discipline this repo already applies to
+# training_parser.gs vs parse_training_md.py (see tests/test_parser_parity.py).
+def _shade_hex(hex_colour: str, percent: float) -> str:
+    h = str(hex_colour).lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    try:
+        num = int(h, 16)
+    except ValueError:
+        return "#" + h
+    r, g, bl = (num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF
+    amt = round(2.55 * percent)
+    r = max(0, min(255, r + amt))
+    g = max(0, min(255, g + amt))
+    bl = max(0, min(255, bl + amt))
+    return "#%02x%02x%02x" % (r, g, bl)
+
+
+def _render_masonry_elevation(b: dict) -> str:
+    width_mm = float(b.get("width_mm") or 1)
+    height_mm = float(b.get("height_mm") or 1)
+    unit_l_mm = float(b.get("unit_l_mm") or 1)
+    course_h_mm = float(b.get("course_h_mm") or 1)
+    courses = max(1, int(b.get("courses") or 1))
+    pattern = "stack" if b.get("pattern") == "stack" else "running"
+    colour = b.get("colour") or "#8d9499"
+    label = b.get("label") or ""
+    stats_line = b.get("stats_line") or ""
+    style = b.get("render_style") if b.get("render_style") in ("textured", "blueprint") else "flat"
+
+    W, H = 660, 400
+    mx, top, bottom = 40, 52, 344
+    draw_w, draw_h = W - 2 * mx, bottom - top
+    scale = min(draw_w / width_mm, draw_h / height_mm)
+    unit_px = unit_l_mm * scale
+    course_px = course_h_mm * scale
+    wall_w = width_mm * scale
+    x0 = mx + (draw_w - wall_w) / 2
+    gap = max(1.0, min(2.5, course_px * 0.08))
+
+    bg_fill = "#0d1b2a" if style == "blueprint" else "#f5f6f8"
+    mortar_fill = "#0d1b2a" if style == "blueprint" else "#d9dbe0"
+    text_fill = "#a8c5e0" if style == "blueprint" else "#202124"
+    sub_text_fill = "#7f9db8" if style == "blueprint" else "#3c4043"
+
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
+        f'<rect width="{W}" height="{H}" fill="{bg_fill}"/>',
+    ]
+    if style != "blueprint":
+        parts.append(
+            f'<rect x="{x0:.1f}" y="{bottom - courses * course_px:.1f}" '
+            f'width="{wall_w:.1f}" height="{courses * course_px:.1f}" fill="{mortar_fill}"/>'
+        )
+
+    for c in range(courses):
+        y = bottom - (c + 1) * course_px
+        offset = (unit_px / 2) if (pattern == "running" and c % 2) else 0.0
+        x = x0 - offset
+        block_idx = 0
+        while x < x0 + wall_w - 0.5:
+            bx = max(x, x0)
+            bw = min(x + unit_px, x0 + wall_w) - bx - gap
+            if bw > 1:
+                if style == "flat":
+                    fill, stroke, stroke_w, rx = colour, None, 0, 1.5
+                elif style == "textured":
+                    fill = _shade_hex(colour, 8 if (c + block_idx) % 2 == 0 else -8)
+                    stroke, stroke_w, rx = _shade_hex(colour, -18), 0.75, 1.5
+                else:  # blueprint
+                    fill, stroke, stroke_w, rx = "none", "#5b8fc7", 1, 0
+                stroke_attr = f' stroke="{stroke}" stroke-width="{stroke_w}"' if stroke_w else ""
+                parts.append(
+                    f'<rect x="{bx:.1f}" y="{y + gap:.1f}" width="{bw:.1f}" '
+                    f'height="{course_px - gap:.1f}" rx="{rx}" fill="{fill}"{stroke_attr}/>'
+                )
+            x += unit_px
+            block_idx += 1
+
+    line_colour = "#a8c5e0" if style == "blueprint" else "#3c4043"
+    parts.append(
+        f'<line x1="{x0 - 8:.1f}" y1="{bottom:.1f}" x2="{x0 + wall_w + 8:.1f}" y2="{bottom:.1f}" '
+        f'stroke="{line_colour}" stroke-width="2"/>'
+    )
+    if label:
+        parts.append(
+            f'<text x="{W / 2:.0f}" y="30" text-anchor="middle" '
+            f'font-family="Roboto,Arial,sans-serif" font-size="17" font-weight="700" '
+            f'fill="{text_fill}">{_esc(label)}</text>'
+        )
+    if stats_line:
+        parts.append(
+            f'<text x="{W / 2:.0f}" y="{bottom + 30:.0f}" text-anchor="middle" '
+            f'font-family="Roboto,Arial,sans-serif" font-size="15" fill="{sub_text_fill}">'
+            f'{_esc(stats_line)}</text>'
+        )
+    parts.append("</svg>")
+
+    return '<div class="a2ui-masonry-elevation">' + "".join(parts) + "</div>"
+
+
+_RENDERERS["masonry_elevation"] = _render_masonry_elevation

@@ -492,6 +492,112 @@ _RENDERERS['data_table_sortable'] = function(b) {
 };
 
 // ─────────────────────────────────────────────────────────
+// 5b. masonry_elevation — coursed block/brick wall elevation
+// ─────────────────────────────────────────────────────────
+// Draws courses bottom-up with a running-bond stagger on alternate rows
+// (half-unit offset) or none for stack bond, mortar-joint gaps between
+// blocks. Takes the wall's SHAPE (dimensions, per-block dimensions, course/
+// per-course counts, pattern) — not a pre-computed rect list — so callers
+// hand it the same numbers a calc tool already produced (e.g. the Wall
+// Builder POC's wall_calc: actual_w_mm/actual_h_mm/courses/per_course) and
+// this atom owns the geometry-to-SVG translation, same division of
+// responsibility data_table_sortable already has with its callers.
+// width_mm/height_mm should be the ACTUAL built dimensions (rounded up to a
+// whole number of courses/units), not the raw requested ones, or the last
+// partial row silently clips.
+_RENDERERS['masonry_elevation'] = function(b) {
+  var widthMm    = parseFloat(b.width_mm) || 1;
+  var heightMm   = parseFloat(b.height_mm) || 1;
+  var unitLMm    = parseFloat(b.unit_l_mm) || 1;
+  var courseHMm  = parseFloat(b.course_h_mm) || 1;
+  var courses    = Math.max(1, parseInt(b.courses, 10) || 1);
+  var perCourse  = Math.max(1, parseInt(b.per_course, 10) || 1); // not used in the draw loop (width/unit_l already bound it) — kept for callers that want it echoed/validated
+  var pattern    = b.pattern === 'stack' ? 'stack' : 'running';
+  var colour     = b.colour || '#8d9499';
+  var label      = b.label || '';
+  var statsLine  = b.stats_line || '';
+  var style      = (b.render_style === 'textured' || b.render_style === 'blueprint') ? b.render_style : 'flat';
+
+  var W = 660, H = 400;
+  var mx = 40, top = 52, bottom = 344;
+  var drawW = W - 2 * mx, drawH = bottom - top;
+  var scale = Math.min(drawW / widthMm, drawH / heightMm);
+  var unitPx   = unitLMm * scale;
+  var coursePx = courseHMm * scale;
+  var wallW    = widthMm * scale;
+  var x0  = mx + (drawW - wallW) / 2;
+  var gap = Math.max(1.0, Math.min(2.5, coursePx * 0.08));
+
+  var bgFill      = style === 'blueprint' ? '#0d1b2a' : '#f5f6f8';
+  var mortarFill  = style === 'blueprint' ? '#0d1b2a' : '#d9dbe0';
+  var textFill    = style === 'blueprint' ? '#a8c5e0' : '#202124';
+  var subTextFill = style === 'blueprint' ? '#7f9db8' : '#3c4043';
+
+  var parts = [
+    '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">',
+    '<rect width="' + W + '" height="' + H + '" fill="' + bgFill + '"/>',
+  ];
+  if (style !== 'blueprint') {
+    parts.push('<rect x="' + x0.toFixed(1) + '" y="' + (bottom - courses * coursePx).toFixed(1) + '" ' +
+      'width="' + wallW.toFixed(1) + '" height="' + (courses * coursePx).toFixed(1) + '" fill="' + mortarFill + '"/>');
+  }
+
+  for (var c = 0; c < courses; c++) {
+    var y = bottom - (c + 1) * coursePx;
+    var offset = (pattern === 'running' && c % 2) ? unitPx / 2 : 0.0;
+    var x = x0 - offset;
+    var blockIdx = 0;
+    while (x < x0 + wallW - 0.5) {
+      var bx = Math.max(x, x0);
+      var bw = Math.min(x + unitPx, x0 + wallW) - bx - gap;
+      if (bw > 1) {
+        var fill, stroke, strokeWidth, rx;
+        if (style === 'flat') {
+          fill = colour; stroke = null; strokeWidth = 0; rx = 1.5;
+        } else if (style === 'textured') {
+          // Alternating shade by (course, block) parity — a cheap stand-in
+          // for real material variation, not a texture image (no external
+          // assets, same zero-dependency discipline as this file's other
+          // atoms).
+          fill = _shadeHex(colour, ((c + blockIdx) % 2 === 0) ? 8 : -8);
+          stroke = _shadeHex(colour, -18); strokeWidth = 0.75; rx = 1.5;
+        } else { // blueprint
+          fill = 'none'; stroke = '#5b8fc7'; strokeWidth = 1; rx = 0;
+        }
+        parts.push('<rect x="' + bx.toFixed(1) + '" y="' + (y + gap).toFixed(1) + '" ' +
+          'width="' + bw.toFixed(1) + '" height="' + (coursePx - gap).toFixed(1) + '" rx="' + rx + '" ' +
+          'fill="' + fill + '"' + (strokeWidth ? ' stroke="' + stroke + '" stroke-width="' + strokeWidth + '"' : '') + '/>');
+      }
+      x += unitPx;
+      blockIdx++;
+    }
+  }
+  parts.push('<line x1="' + (x0 - 8).toFixed(1) + '" y1="' + bottom.toFixed(1) + '" ' +
+    'x2="' + (x0 + wallW + 8).toFixed(1) + '" y2="' + bottom.toFixed(1) + '" ' +
+    'stroke="' + (style === 'blueprint' ? '#a8c5e0' : '#3c4043') + '" stroke-width="2"/>');
+  if (label) parts.push('<text x="' + (W / 2) + '" y="30" text-anchor="middle" ' +
+    'font-family="Roboto,Arial,sans-serif" font-size="17" font-weight="700" fill="' + textFill + '">' + _esc(label) + '</text>');
+  if (statsLine) parts.push('<text x="' + (W / 2) + '" y="' + (bottom + 30) + '" text-anchor="middle" ' +
+    'font-family="Roboto,Arial,sans-serif" font-size="15" fill="' + subTextFill + '">' + _esc(statsLine) + '</text>');
+  parts.push('</svg>');
+
+  return '<div class="a2ui-masonry-elevation">' + parts.join('') + '</div>';
+};
+
+function _shadeHex(hex, percent) {
+  hex = String(hex).replace('#', '');
+  if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  var num = parseInt(hex, 16);
+  if (isNaN(num)) return '#' + hex;
+  var r = (num >> 16) & 0xff, g = (num >> 8) & 0xff, bl = num & 0xff;
+  var amt = Math.round(2.55 * percent);
+  r  = Math.max(0, Math.min(255, r + amt));
+  g  = Math.max(0, Math.min(255, g + amt));
+  bl = Math.max(0, Math.min(255, bl + amt));
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1);
+}
+
+// ─────────────────────────────────────────────────────────
 // 6. metric_comparison_card — compare two metrics
 // ─────────────────────────────────────────────────────────
 _RENDERERS['metric_comparison_card'] = function(b) {

@@ -4681,6 +4681,33 @@
               "object",
               "array"
             ]
+          },
+          "select_state": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "select_count_state": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "delete_action_id": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
           }
         },
         "required": [
