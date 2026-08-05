@@ -711,11 +711,30 @@ WORKSPACE_HOST_JS = """
       // Vertex credentials, which only THIS worker (blog-worker) has —
       // mcp-worker has none — so it is handled entirely host-side,
       // special-cased here rather than routed through the generic
-      // /authoring/api/workspace-tool proxy. A normal awaited tools/call
-      // (no ui/message-style immediate-ack dance needed): the wired
-      // dialect's own action._run() already renders isPending while this
-      // fetch is in flight, for however long the Gemini call takes.
+      // /authoring/api/workspace-tool proxy.
+      //
+      // ACK-THEN-NOTIFY, not a plain awaited tools/call (2026-08-06 rewrite).
+      // This used to await the whole fetch before answering — relying on the
+      // bundle's own client-side tools/call ceiling (raised 15s -> 120s the
+      // same day) to outlast a real Gemini generation. It still didn't:
+      // found live, repeatedly, that generation (plus a validation-retry
+      // round trip) can genuinely exceed even 120s, and there is no fixed
+      // ceiling worth picking — any one is eventually wrong. Mirrors
+      // ui/message's OWN proven pattern just below instead: ack near-
+      // instantly with a stub that is neither an error NOR paintable (so the
+      // wired action's own paint_result guard — `r.data.type ===
+      // 'a2ui_wired_surface' || r.data.blocks || r.data.createSurface`,
+      // A2UIState.html — never fires on it), track progress in THIS page's
+      // own status chip instead of the wired surface's pending state (which
+      // the ack has already resolved), and replace the WHOLE view via a
+      // fresh, independent send() once the real result is ready. Removes the
+      // client-side timeout from this path entirely — the only remaining
+      // ceiling is however long a reader is willing to watch the status chip.
       if (toolName === 'compose_surface') {
+        iframe.contentWindow.postMessage(
+          { jsonrpc: '2.0', id: msg.id,
+            result: { structuredContent: { ok: true, composing: true } } }, '*');
+        setStatus('', 'Composing — this can take a while for a real Gemini call…');
         fetch('/authoring/api/workspace-compose', {
           method: 'POST', credentials: 'same-origin',
           headers: { 'content-type': 'application/json' },
@@ -723,18 +742,13 @@ WORKSPACE_HOST_JS = """
         })
           .then(function (r) { return r.json(); })
           .then(function (resp) {
-            if (resp.ok) {
-              iframe.contentWindow.postMessage(
-                { jsonrpc: '2.0', id: msg.id, result: { structuredContent: resp.payload } }, '*');
-            } else {
-              iframe.contentWindow.postMessage(
-                { jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: resp.error || 'compose failed' } }, '*');
-            }
+            if (!resp.ok) { setStatus('err', 'Compose failed: ' + resp.error); return; }
+            setStatus('live', resp.corrected
+              ? 'Composed (auto-corrected) — analysed by ' + resp.analysed_by
+              : 'Composed — analysed by ' + resp.analysed_by);
+            send(resp.payload);
           })
-          .catch(function (e) {
-            iframe.contentWindow.postMessage(
-              { jsonrpc: '2.0', id: msg.id, error: { code: -32603, message: String(e && e.message || e) } }, '*');
-          });
+          .catch(function (e) { setStatus('err', String(e && e.message || e)); });
         return;
       }
       if (APP_TOOLS.indexOf(toolName) === -1) {
