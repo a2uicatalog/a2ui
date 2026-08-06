@@ -351,6 +351,26 @@ generators:
       changes. Fixes the drift orank caught 2026-08-05 — card advertised 15
       tools, live server served 25 — the card had been hand-written once
       (512e26b4) and never regenerated since.
+  gen_slack_mapping:
+    script: ../a2ui-private/slack-compiler/classify.py
+    source: atoms/schema.yaml + atoms/atom-packs.yaml (the atom surface) +
+      a2ui-private/slack-compiler/slack-targets.json (the VERIFIED Slack Block
+      Kit inventory — every block/element shape in it was checked against a
+      live blocks.validate call, not read off the docs; see that file's own
+      header for the 8 shape errors that check caught)
+    outputs: [../a2ui-private/slack-compiler/mapping.json,
+              ../a2ui-private/slack-compiler/a2ui-slack-safe.json]
+    publish: >-
+      NOTHING is published — both outputs are private-tier planning artefacts
+      for the Slack compiler (a2ui-private/slack-compiler/). Registered here
+      anyway because the mapping is DERIVED FROM atoms/schema.yaml: a new atom
+      silently makes it stale, which is exactly the drift class this registry
+      exists to catch. Same local-only posture as gen_server_card and
+      gen_worker_renderers — CI never has the private repo checked out, so
+      this is never a CI step. Run `ops.py run slack-audit` after any atom
+      change. Note the two sibling scripts (validate_targets.py,
+      compile_atoms.py) need a live Slack bot token and so can NEVER run in
+      CI; classify.py itself is pure derivation with no network.
   gen_renderer_manifest:
     script: scripts/gen_renderer_manifest.py
     source: apps-script-surface/gas-wired-renderer/*.gs + atoms/atom-packs.yaml
