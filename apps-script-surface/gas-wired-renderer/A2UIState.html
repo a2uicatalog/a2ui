@@ -89,6 +89,9 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
       // transport", and showed nothing — no feedback message was wired to
       // those actions' isError either, so the failure was completely silent.
       'mcp:open_workspace':       'open_workspace',
+      // Links view's bulk-revoke button (2026-08-07) — same "declare it here
+      // or it fails instantly and silently" trap as open_workspace above.
+      'mcp:unlink_slack_account': 'unlink_slack_account',
     };
     var mcpTool = MCP_VERBS[type];
     if (!mcpTool) {

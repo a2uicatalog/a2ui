@@ -230,7 +230,8 @@ var _TOOL_TILE_ICONS = {
   folder: '<path d="M3 7h6l2 2h10v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path>',
   magnifier: '<circle cx="10" cy="10" r="6"></circle><path d="M20 20l-5-5"></path>',
   bolt: '<path d="M12 2 4 13h6l-1 9 9-13h-6z"></path>',
-  globe: '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13 15 0 0 1 0 18a13 15 0 0 1 0-18"></path>'
+  globe: '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13 15 0 0 1 0 18a13 15 0 0 1 0-18"></path>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>'
 };
 function _toolTileIcon(token) {
   var inner = _TOOL_TILE_ICONS[token];
