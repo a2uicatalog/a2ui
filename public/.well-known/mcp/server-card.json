@@ -93,6 +93,10 @@
       "description": "Export a kept reading as something that outlives this connector. format \"html\" returns ONE self-contained file — styles inlined, no network, opens in any browser years from now with nothing installed. \"url\" rebuilds a link against any renderer (yours by preference). \"surface\" returns the payload for repainting in place. \"json\" returns…"
     },
     {
+      "name": "render_reading_to_slack",
+      "description": "Post a kept reading into Slack as real, native Block Kit — the continuity proof: generate here, save it, and the SAME content reopens in Slack, not a link back to a renderer. Requires the caller's Slack account to already be linked (`/a2ui link` in Slack) and only works on an authenticated connection — it posts to a real workspace using…"
+    },
+    {
       "name": "list_readings",
       "description": "The reader's recent stamped surfaces, newest first — what makes \"compare this to my last three teardowns\" answerable at all. Optionally filter to one runbook. Returns available:false when nobody is signed in."
     },
@@ -113,5 +117,5 @@
       "description": "CALL THIS FIRST, before any other a2ui-catalog tool, once per session. Declares your own model identity so this response can hand you capability-matched guidance up front — some models need simpler, judgment-free tools; skipping this just means you default to the full toolkit, including tools that require sizing/pagination judgment…"
     }
   ],
-  "toolAvailabilityNotes": "All 25 tools listed are served to most callers. Callers that declare their model via identify_model as 'haiku' are instead served a curated 8-of-25 subset (judgment-heavy tools like sizing/pagination removed) — currently excluded for that tier: delete_reading, describe_playbook, distill_document, emit_deployment, export_reading, get_profile, list_readings, make_surface_url, open_workspace, preview_url, publish_url, render_ping, save_profile, save_reading, unpublish_url, wall_calc, whoami. Call identify_model first to get the tool set your model can reliably use."
+  "toolAvailabilityNotes": "All 26 tools listed are served to most callers. Callers that declare their model via identify_model as 'haiku' are instead served a curated 8-of-26 subset (judgment-heavy tools like sizing/pagination removed) — currently excluded for that tier: delete_reading, describe_playbook, distill_document, emit_deployment, export_reading, get_profile, list_readings, make_surface_url, open_workspace, preview_url, publish_url, render_ping, render_reading_to_slack, save_profile, save_reading, unpublish_url, wall_calc, whoami. Call identify_model first to get the tool set your model can reliably use."
 }
