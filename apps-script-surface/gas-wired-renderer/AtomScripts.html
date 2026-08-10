@@ -27,12 +27,13 @@
   })();
 
   // ── Theme Management ──
+  // 'terminal' is the a2uicatalog.ai brand palette (spec/brand.md) — it layers
+  // ON TOP of asw-dark-theme (see AtomStyles.html's body.asw-dark-theme.asw-terminal-theme
+  // selector; the tokens only apply combined, never terminal alone) rather than
+  // replacing it, so every existing dark-theme rule keeps working underneath it.
   function setTheme(theme) {
-    if (theme === 'dark') {
-      document.body.classList.add('asw-dark-theme');
-    } else {
-      document.body.classList.remove('asw-dark-theme');
-    }
+    document.body.classList.toggle('asw-dark-theme', theme === 'dark' || theme === 'terminal');
+    document.body.classList.toggle('asw-terminal-theme', theme === 'terminal');
   }
 
   // ── Quiz Question (Interactive) ──

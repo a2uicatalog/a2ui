@@ -3,17 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>A2UI Builder</title>
+<title>Catalog — Builder</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #05070f;
+  /* Neutrals match a2uicatalog.ai's exact brand tokens (spec/brand.md).
+     indigo/cyan/violet/amber stay as-is — a genuine multi-hue semantic
+     system (category/status coding across the builder UI), not a single
+     accent; flattening it to brand's one accent would lose that distinction. */
+  --bg:        #0a0e17;
   --panel:     rgba(255,255,255,0.03);
-  --border:    rgba(255,255,255,0.09);
-  --muted:     #64748b;
+  --border:    #1f2937;
+  --muted:     #8b949e;
   --dim:       #94a3b8;
-  --text:      #cbd5e1;
+  --text:      #e6edf3;
   --bright:    #f1f5f9;
   --indigo:    #6366f1;
   --cyan:      #38bdf8;

@@ -107,6 +107,14 @@ function doGet(e) {
   if (deck)    return _renderDeckSlide(deck, slide || '');
   if (slide !== undefined) return _renderAirspaceSlide(slide);
   if (e && e.parameter && e.parameter.mode === 'builder') {
+    // The VIEW was never gated, only the individual mutating actions inside
+    // it — inconsistent with every other diagnostic route in this file
+    // (?debug=, ?inspect_nav=, ?debug_t212= all check this first). Found
+    // 2026-08-10: any signed-in Google account could open the full builder
+    // UI, including an AI-generate feature (callGemini, Code.private.gs)
+    // that itself had no gate either — see that fix alongside this one.
+    var builderDenied = _builderAccessError_();
+    if (builderDenied) return _errorPage(builderDenied);
     return HtmlService.createHtmlOutputFromFile('PageBuilder')
       .setTitle('A2UI Page Builder')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -2840,6 +2848,7 @@ function _trainingHubRebuild_(index, props) {
   var webAppUrl = _publicBaseUrl_();
   var hub = {
     title: 'Training Hub',
+    theme: 'terminal', // a2uicatalog.ai brand palette (spec/brand.md) — see AtomStyles.html
     blocks: [
       { type: 'heading', text: 'Training Hub' },
       { type: 'body', text: 'Interactive training apps generated from training.md documents. ' +

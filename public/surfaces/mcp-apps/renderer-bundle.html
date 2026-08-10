@@ -2249,17 +2249,21 @@ _RENDERERS['further_reading'] = function(b) {
     '<div style="font-weight:700;color:#374151;margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
 };
 
+// Was fully hardcoded light-theme hex — invisible borders and clashing blue
+// link text under any dark theme (including the new 'terminal' brand theme).
+// Switched to the shared CSS custom properties so it follows whichever theme
+// class the page shell applies, the same pattern the AtomPage.html nav bar uses.
 _RENDERERS['resources_list'] = function(b) {
   var items = b.items || [];
   var rows = items.map(function(item){
-    var size = item.size ? '<span style="font-size:0.75rem;color:#9ca3af;">' + _esc(item.size) + '</span>' : '';
-    var type = item.type ? '<span style="font-size:0.72rem;background:#f3f4f6;padding:2px 6px;border-radius:4px;color:#6b7280;">' + _esc(item.type.toUpperCase()) + '</span>' : '';
-    return '<a href="' + _esc(item.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
-      '<span style="font-size:0.88rem;color:#1d4ed8;font-weight:500;">' + _esc(item.title||'') + '</span>' +
+    var size = item.size ? '<span style="font-size:0.75rem;color:var(--muted);">' + _esc(item.size) + '</span>' : '';
+    var type = item.type ? '<span style="font-size:0.72rem;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--muted);">' + _esc(item.type.toUpperCase()) + '</span>' : '';
+    return '<a href="' + _esc(item.url||'#') + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);text-decoration:none;">' +
+      '<span style="font-size:0.88rem;color:var(--accent);font-weight:500;">' + _esc(item.title||'') + '</span>' +
       '<div style="display:flex;align-items:center;gap:8px;">' + size + type + '</div></a>';
   }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;margin:1.2rem 0;">' +
-    '<div style="font-weight:700;color:#374151;margin-bottom:4px;">📎 Resources</div>' + rows + '</div>';
+  return '<div style="border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:1.2rem 0;">' +
+    '<div style="font-weight:700;color:var(--text);margin-bottom:4px;">📎 Resources</div>' + rows + '</div>';
 };
 
 _RENDERERS['sidebar_note'] = function(b) {
@@ -24335,12 +24339,13 @@ var qrcodegen;
   })();
 
   // ── Theme Management ──
+  // 'terminal' is the a2uicatalog.ai brand palette (spec/brand.md) — it layers
+  // ON TOP of asw-dark-theme (see AtomStyles.html's body.asw-dark-theme.asw-terminal-theme
+  // selector; the tokens only apply combined, never terminal alone) rather than
+  // replacing it, so every existing dark-theme rule keeps working underneath it.
   function setTheme(theme) {
-    if (theme === 'dark') {
-      document.body.classList.add('asw-dark-theme');
-    } else {
-      document.body.classList.remove('asw-dark-theme');
-    }
+    document.body.classList.toggle('asw-dark-theme', theme === 'dark' || theme === 'terminal');
+    document.body.classList.toggle('asw-terminal-theme', theme === 'terminal');
   }
 
   // ── Quiz Question (Interactive) ──

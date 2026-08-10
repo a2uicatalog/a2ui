@@ -17,12 +17,12 @@
     display: flex;
     align-items: center;
     gap: 0;
-    background: rgba(5,7,15,0.92);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid var(--border);
     z-index: 1000;
     padding: 0 16px;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font);
   }
   .a2ui-nav-back {
     display: flex;
@@ -30,9 +30,9 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.04);
-    color: #94a3b8;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
     font-size: 0.75rem;
     font-weight: 600;
     text-decoration: none;
@@ -42,16 +42,16 @@
     flex-shrink: 0;
   }
   .a2ui-nav-back:hover {
-    background: rgba(255,255,255,0.08);
-    color: #e2e8f0;
-    border-color: rgba(255,255,255,0.14);
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--accent);
   }
   .a2ui-nav-title {
     flex: 1;
     text-align: center;
     font-size: 0.78rem;
     font-weight: 700;
-    color: #f1f5f9;
+    color: var(--text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -63,9 +63,9 @@
     gap: 5px;
     padding: 6px 10px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.04);
-    color: #64748b;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
     font-size: 0.72rem;
     font-weight: 600;
     text-decoration: none;
@@ -74,9 +74,9 @@
     flex-shrink: 0;
   }
   .a2ui-nav-home:hover {
-    background: rgba(99,102,241,0.12);
-    color: #818cf8;
-    border-color: rgba(99,102,241,0.22);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   }
   .a2ui-nav-has-header .asw-page {
     padding-top: 64px !important;
@@ -84,7 +84,11 @@
   </style>
   <? } ?>
 </head>
-<body class="<?= theme === 'dark' ? 'asw-dark-theme' : '' ?><?= navSlug ? ' a2ui-nav-has-header' : '' ?>">
+<? /* 'terminal' = the a2uicatalog.ai brand palette (spec/brand.md); it layers
+      ON asw-dark-theme (see AtomStyles.html), never replaces it — same pairing
+      as setTheme() client-side, kept in step so there is no flash of the wrong
+      theme before JS runs. */ ?>
+<body class="<?= (theme === 'dark' || theme === 'terminal') ? 'asw-dark-theme' : '' ?><?= theme === 'terminal' ? ' asw-terminal-theme' : '' ?><?= navSlug ? ' a2ui-nav-has-header' : '' ?>">
 
   <? if (navSlug) { ?>
   <nav class="a2ui-nav">
