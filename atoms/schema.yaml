@@ -12631,3 +12631,147 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: layer_stack
+  stage: preview
+  description: 'Declarative labelled layers for a layered architecture — a
+    protocol stack, a request path, any "what lives at which level" picture.
+    Each layer is a band carrying a mono technical fact (`field`) beside a
+    plain-language gloss (`note`) — primitive_plate''s labelling pairing,
+    without its image substrate: a primitive_plate pin annotates a REAL
+    capture and must never annotate a hand-drawn illustration, and an abstract
+    stack has no capture to pin. Two things concept_ladder cannot do: declare
+    `columns` and each layer renders its `cells` side by side, so ONE stack
+    carries a per-layer comparison of two systems; and set a layer or cell to
+    `status: absent` and it renders a visibly hollow, dashed band, so a level a
+    system does NOT define reads as a stated absence rather than an omission
+    from the diagram. Shares article_journey / concept_ladder''s palette token
+    system and IBM Plex fonts so the explainer atoms read as one design system.
+    renderers/web_article.py is the reference implementation;
+    apps-script-surface/gas-wired-renderer/atoms_layers.gs is the port that
+    carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and
+    the Worker''s /api/render all compile from the .gs sources).'
+  compact_description: labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: IBM Plex is @font-face'd from a2uicatalog.ai, but the MCP Apps bundle
+        is CSP-clean (resourceDomains []) and /api/render sends no font-src — the
+        faces are blocked and the Georgia/system-mono fallback stack renders
+        instead. Layout, palette and bands are unaffected; only the typeface
+        changes. Pass use_plex_fonts false to opt out explicitly.
+    incompatible_on:
+    - surface: google-meet-stage
+      reason: Dense multi-layer reading doesn't fit a presented slide
+    - surface: pdf
+      reason: No svg_raster.py entry
+    - surface: email
+      reason: CSS custom properties for palette theming are unreliable across
+        email clients
+    - surface: google-chat
+      reason: Chat cards have no equivalent of this layout
+  children:
+    layers:
+      shape: simple
+  fields:
+    title: string (optional). Main heading.
+    eyebrow: string (optional). Small uppercase label above the title.
+    dek: string (optional). Italic one-line subtitle under the title.
+    caption: string (optional). One prose line under the header, before the
+      stack. Backtick spans render as inline code.
+    source: 'object (optional) — same attribution bar as concept_ladder
+      {title, url, author?, publication?, published?, read_minutes?, label?,
+      steered_by?}. Set it whenever the stack describes SOMEONE ELSE''S
+      system, so the artifact reads as a piece ABOUT that system rather than
+      one that could stand in for its documentation.'
+    order: string (optional). 'bottom_up' (default) or 'top_down'. Which end of
+      the picture the FIRST declared layer lands at. bottom_up puts it at the
+      bottom — the wire/transport end — so the array reads the way a stack is
+      spoken aloud, from the bottom up. Badge numbering always follows the
+      declared order, not the visual one.
+    base_label: string (optional). Axis caption printed under the stack, e.g.
+      "bytes on the wire".
+    top_label: string (optional). Axis caption printed above the stack, e.g.
+      "meaning".
+    columns: 'array (optional). Each item {label, accent?} — a column header.
+      When present, every layer''s `cells` render side by side beneath these
+      headers, which is how one stack carries a per-layer comparison of two
+      systems. Omit (or give one column) for a plain single stack. `accent` is
+      a CSS colour string for that column''s header and rule. Each label ALSO
+      repeats quietly inside every cell of its column: the header row is a long
+      way up by the time you reach the bottom band, colour cannot carry column
+      identity because the cell fill already encodes `status`, and a band stays
+      self-describing when rendered alone by ComponentId. The repeat is
+      suppressed on a band that spans all columns, and on single-column stacks.'
+    layers: 'array (required). Each item is a stack_layer atom object (see that
+      type) — also independently addressable by ComponentId when emitted in the
+      A2UI v1.0 ChildList wire format, so a live agent can patch one layer
+      without resending the whole surface.'
+    theme: string (optional). 'light' (default) or 'dark' — selects the base
+      palette before any per-token overrides.
+    palette: 'object (optional). Same token set as article_journey and
+      concept_ladder: paper, paper_raised, ink, ink_soft, line, accent,
+      accent_soft, blocked, blocked_soft, cleared, cleared_soft, mono_bg,
+      mono_fg, mono_accent — each a CSS colour string. Unset tokens keep the
+      theme default. `status` maps onto these: present -> cleared, absent ->
+      blocked, partial -> accent.'
+    use_plex_fonts: boolean (optional, default true). Loads IBM Plex Mono and
+      IBM Plex Serif via same-origin @font-face — see THIRD-PARTY-NOTICES.md.
+      Set false for system font stacks only.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: stack_layer
+  stage: preview
+  description: 'One band of a layer_stack — a badge, the layer name, and either
+    a single field/note pane or one pane per column via `cells`. Reads its
+    colour tokens from the CSS custom properties an enclosing layer_stack sets
+    and renders with sane fallback colours standalone. Rarely authored outside
+    layer_stack.layers, but is its own atom type so it can be independently
+    addressed by ComponentId in the A2UI v1.0 ChildList wire format.'
+  compact_description: one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: mcp-apps
+      note: Inherits layer_stack's blocked IBM Plex faces under the MCP Apps
+        CSP — falls back to the system mono/serif stack. Structure unaffected.
+    incompatible_on:
+    - surface: google-meet-stage
+      reason: Not ported
+    - surface: pdf
+      reason: No svg_raster.py entry
+    - surface: email
+      reason: CSS custom properties for palette theming are unreliable across
+        email clients
+    - surface: google-chat
+      reason: Chat cards have no equivalent of this layout
+  fields:
+    name: string (required). The layer name, e.g. "Transport".
+    badge: string (optional). Small label above the name — defaults to the
+      1-based position in layer_stack.layers as declared.
+    field: string (optional). The technical/schema fact, rendered monospace.
+      Used when the layer has no `cells`.
+    note: string (optional). The plain-language gloss. Used when the layer has
+      no `cells`. Backtick spans render as inline code.
+    examples: array of strings (optional). Concrete instances at this layer,
+      rendered as a wrapping chip row across the foot of the band, e.g.
+      "stdio", "Streamable HTTP".
+    status: string (optional). 'present' (default), 'absent' or 'partial'.
+      absent renders the pane hollow with a dashed border — the point is that a
+      layer a system does not define stays VISIBLE and reads as a stated
+      absence. Maps onto the palette's cleared / blocked / accent tokens.
+    cells: 'array (optional). One entry per layer_stack column, index-aligned
+      with it. Each item {field?, note?, status?} — the same three fields, per
+      column. Given cells, the layer''s own field/note/status are ignored.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

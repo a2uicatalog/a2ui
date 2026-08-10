@@ -21382,6 +21382,281 @@ def _render_concept_ladder(b: dict) -> str:
 _RENDERERS['concept_ladder'] = _render_concept_ladder
 
 
+# ─── layer_stack / stack_layer ────────────────────────────────────────────────
+# Declarative labelled layers for a layered architecture — a protocol stack, a
+# request path, any "what lives at which level" picture.
+#
+# Keeps primitive_plate's labelling pairing (`field` = the mono technical fact,
+# `note` = the plain-language gloss) and drops its image substrate: a
+# primitive_plate pin annotates a REAL capture and must never annotate a
+# hand-drawn illustration, and an abstract stack has no capture to pin.
+#
+# Two things this does that concept_ladder can't. `columns` renders each layer's
+# `cells` side by side, so ONE stack carries a per-layer comparison of two
+# systems (the case that prompted the atom: MCP declares a session and no
+# document model; A2UI declares a document model and no session contract).
+# And `status: absent` renders a visibly hollow band, so a layer a system does
+# not define reads as a STATED absence rather than an omission from the diagram.
+#
+# Shares the article_journey / concept_ladder design system — palette tokens,
+# IBM Plex, _mdcode — so the explainer atoms read as one system.
+
+# status -> (strong token, soft token) in the journey palette
+_LAYER_STATUS_TOKENS = {
+    'present': ('cleared', 'cleared_soft'),
+    'absent': ('blocked', 'blocked_soft'),
+    'partial': ('accent', 'accent_soft'),
+}
+
+
+def _layer_status(value) -> str:
+    v = str(value or 'present').strip().lower()
+    return v if v in _LAYER_STATUS_TOKENS else 'present'
+
+
+def _layer_token(name: str) -> str:
+    """`cleared_soft` -> `var(--cleared-soft,<light default>)`."""
+    return f'var(--{name.replace("_", "-")},{_JOURNEY_PALETTE_LIGHT[name]})'
+
+
+def _layer_cell_html(cell: dict, stretch: bool = False, label: str = '') -> str:
+    """One field/note pane — the whole band when there are no columns, one
+    column of it when there are. `stretch` spans it across every column;
+    `label` repeats the column name inside the pane."""
+    status = _layer_status(cell.get('status'))
+    strong, soft = _LAYER_STATUS_TOKENS[status]
+    absent = status == 'absent'
+    field = str(cell.get('field') or '').strip()
+    note = str(cell.get('note') or '').strip()
+
+    inner = ''
+    # The column header sits once at the top of the stack, which is a long way
+    # up by the time you are reading the bottom band — so each pane repeats its
+    # column quietly. Colour can't carry this instead: the fill already encodes
+    # `status`, and a second colour encoding on the same mark makes both
+    # ambiguous. It also keeps a band self-describing when rendered ALONE, which
+    # stack_layer's own ComponentId addressability invites.
+    # Set as a PILL, not just smaller text: it shares a bubble with `field`, and
+    # both are mono uppercase, so weight alone leaves the tag reading as content.
+    # Differentiate by form. The recipe is the band's existing `examples` chip
+    # (paper fill, line border, full radius) so the tag rhymes with vocabulary
+    # already on screen rather than introducing a new one — and staying small
+    # keeps it from competing with `field`, which is the actual content.
+    if label:
+        inner += (
+            '<div style="margin-bottom:0.45rem;">'
+            f'<span style="display:inline-block;font-family:{_JOURNEY_MONO};font-size:0.6rem;'
+            'font-weight:700;letter-spacing:0.1em;text-transform:uppercase;line-height:1;'
+            f'padding:0.32em 0.65em;border-radius:999px;background:{_layer_token("paper")};'
+            f'border:1px solid {_layer_token("line")};color:{_layer_token("ink_soft")};">'
+            f'{_esc(label)}</span></div>'
+        )
+    if field:
+        inner += (
+            f'<div style="font-family:{_JOURNEY_MONO};font-size:0.78rem;line-height:1.45;'
+            f'font-weight:600;color:{_layer_token(strong)};word-break:break-word;">{_esc(field)}</div>'
+        )
+    if note:
+        inner += (
+            f'<div style="font-size:0.88rem;line-height:1.55;max-width:46ch;'
+            f'color:{_layer_token("ink_soft") if absent else _layer_token("ink")};'
+            f'margin-top:{"0.35rem" if field else "0"};">{_mdcode(note)}</div>'
+        )
+    if not (field or note):
+        # An absent layer with nothing to say still has to occupy its slot —
+        # a blank cell reads as "not filled in", an em-dash as "nothing here".
+        inner += (
+            f'<div style="font-family:{_JOURNEY_MONO};font-size:0.9rem;'
+            f'color:{_layer_token("ink_soft")};">&mdash;</div>'
+        )
+
+    return (
+        f'<div style="background:{"transparent" if absent else _layer_token(soft)};'
+        f'border:1px {"dashed" if absent else "solid"} {_layer_token(strong)};'
+        'border-radius:8px;padding:0.7rem 0.85rem;min-width:0;'
+        + ('grid-column:2 / -1;' if stretch else '')
+        + '">' + inner + '</div>'
+    )
+
+
+def _render_stack_layer(b: dict) -> str:
+    """One band of a layer_stack. Renders standalone (no column headers) so it
+    stays independently addressable by ComponentId."""
+    status = _layer_status(b.get('status'))
+    strong, _soft = _LAYER_STATUS_TOKENS[status]
+    name = str(b.get('name') or '').strip()
+    badge = str(b.get('badge') or '').strip()
+    cells = [c for c in (b.get('cells') or []) if isinstance(c, dict)]
+    if not cells:
+        # Single-column band — the layer's own field/note IS the one cell.
+        cells = [{'field': b.get('field'), 'note': b.get('note'), 'status': status}]
+
+    # `_columns` is injected by layer_stack onto its own copy of the layer (never
+    # authored, never read off the payload the caller passed in). It carries the
+    # stack's column count down so a layer with FEWER cells than there are
+    # columns — the "this level applies to everything" band, e.g. one shared
+    # observation under a two-system comparison — spans the full width and stays
+    # aligned with the column headers, instead of hiding under column one.
+    span = int(b.get('_columns') or 0) or len(cells)
+    span = max(span, len(cells))
+    stretch = len(cells) == 1 and span > 1
+    # Injected alongside `_columns`. Repeats are pointless with one column, and
+    # wrong on a stretched band (it spans them all, so it belongs to none).
+    labels = list(b.get('_column_labels') or []) if span > 1 and not stretch else []
+
+    name_col = (
+        '<div style="display:flex;flex-direction:column;gap:0.3rem;padding-top:0.15rem;min-width:0;">'
+        + (f'<span style="font-family:{_JOURNEY_MONO};font-size:0.62rem;font-weight:700;'
+           f'letter-spacing:0.09em;color:{_layer_token("ink_soft")};">{_esc(badge)}</span>'
+           if badge else '')
+        + (f'<span style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:0.92rem;'
+           f'line-height:1.3;color:{_layer_token("ink")};word-break:break-word;">{_mdcode(name)}</span>'
+           if name else '')
+        + '</div>'
+    )
+
+    examples = [str(x) for x in (b.get('examples') or []) if str(x).strip()]
+    examples_html = ''
+    if examples:
+        chips = ''.join(
+            f'<span style="font-family:{_JOURNEY_MONO};font-size:0.7rem;line-height:1;'
+            f'padding:0.32em 0.6em;border-radius:999px;background:{_layer_token("paper")};'
+            f'border:1px solid {_layer_token("line")};color:{_layer_token("ink_soft")};'
+            f'white-space:nowrap;">{_esc(x)}</span>'
+            for x in examples
+        )
+        examples_html = (
+            '<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.6rem;'
+            'padding-left:0.15rem;">' + chips + '</div>'
+        )
+
+    return (
+        f'<div style="background:{_layer_token("paper_raised")};border:1px solid {_layer_token("line")};'
+        f'border-left:3px solid {_layer_token(strong)};border-radius:10px;'
+        'padding:0.85rem 1rem;">'
+        + f'<div style="display:grid;grid-template-columns:minmax(6rem,9rem) repeat({span},minmax(0,1fr));'
+          'gap:0.75rem;align-items:start;">'
+        + name_col
+        + ''.join(
+            _layer_cell_html(c, stretch=stretch,
+                             label=labels[i] if i < len(labels) else '')
+            for i, c in enumerate(cells)
+        )
+        + '</div>'
+        + examples_html
+        + '</div>'
+    )
+
+_RENDERERS['stack_layer'] = _render_stack_layer
+
+
+def _render_layer_stack(b: dict) -> str:
+    pal = _journey_palette(b)
+    css_vars = ';'.join(f'--{k.replace("_", "-")}:{v}' for k, v in pal.items())
+    layers = [l for l in (b.get('layers') or []) if isinstance(l, dict)]
+    columns = [c for c in (b.get('columns') or []) if isinstance(c, dict)]
+    order = str(b.get('order') or 'bottom_up').strip().lower()
+    order = order if order in ('bottom_up', 'top_down') else 'bottom_up'
+
+    eyebrow = _esc(b.get('eyebrow', ''))
+    title = _esc(b.get('title', ''))
+    dek = _esc(b.get('dek', ''))
+    caption = _mdcode(b.get('caption', '')) if b.get('caption') else ''
+
+    # Badge defaults follow the AUTHORED order, so in a bottom_up stack the
+    # first-declared (bottom) layer is 1 — which is how you'd say it aloud.
+    prepared = []
+    for i, layer in enumerate(layers):
+        d = dict(layer)
+        d.setdefault('badge', str(i + 1))
+        prepared.append((i, d))
+
+    ncols = max((len(l.get('cells') or []) for _, l in prepared), default=0)
+    ncols = max(ncols, len(columns), 1)
+    col_labels = [str((columns[i] if i < len(columns) else {}).get('label') or '')
+                  for i in range(ncols)]
+    for _i, d in prepared:
+        # parent-injected; see _render_stack_layer
+        d['_columns'] = ncols
+        d['_column_labels'] = col_labels
+    visual = list(reversed(prepared)) if order == 'bottom_up' else prepared
+
+    grid_cols = f'minmax(6rem,9rem) repeat({ncols},minmax(0,1fr))'
+
+    header_html = ''
+    if columns:
+        heads = ''
+        for idx in range(ncols):
+            col = columns[idx] if idx < len(columns) else {}
+            accent = str(col.get('accent') or '').strip()
+            colour = _esc(accent) if accent else _layer_token('accent')
+            heads += (
+                f'<div style="font-family:{_JOURNEY_MONO};font-size:0.68rem;font-weight:700;'
+                f'letter-spacing:0.09em;text-transform:uppercase;color:{colour};'
+                f'padding:0 0.85rem 0.15rem;border-bottom:2px solid {colour};">'
+                f'{_esc(col.get("label", ""))}</div>'
+            )
+        header_html = (
+            f'<div style="display:grid;grid-template-columns:{grid_cols};gap:0.75rem;'
+            'align-items:end;margin-bottom:0.6rem;"><div></div>' + heads + '</div>'
+        )
+
+    def _axis(text: str) -> str:
+        return (
+            f'<div style="font-family:{_JOURNEY_MONO};font-size:0.64rem;font-weight:700;'
+            f'letter-spacing:0.1em;text-transform:uppercase;color:{_layer_token("ink_soft")};'
+            'display:flex;align-items:center;gap:0.6em;margin:0.55rem 0;">'
+            f'<span style="height:1.5px;width:1.4em;background:{_layer_token("line")};'
+            f'display:inline-block;"></span>{_esc(text)}</div>'
+        )
+
+    bands = ''.join(
+        f'<div data-component-id="{_esc(layer.get("id") or f"layer-{i + 1}")}" '
+        'style="scroll-margin-top:1.5rem;">'
+        + _RENDERERS.get(layer.get('component') or layer.get('type') or 'stack_layer',
+                         _render_stack_layer)(layer)
+        + '</div>'
+        for i, layer in visual
+    )
+
+    stack_inner = (
+        header_html
+        + (_axis(b['top_label']) if b.get('top_label') else '')
+        + f'<div style="display:flex;flex-direction:column;gap:0.5rem;">{bands}</div>'
+        + (_axis(b['base_label']) if b.get('base_label') else '')
+    )
+    # Multi-column bands cannot compress below a readable width — let the stack
+    # scroll inside its own box rather than force the page to scroll sideways.
+    if ncols > 1:
+        stack_inner = (
+            f'<div style="overflow-x:auto;"><div style="min-width:{9 + ncols * 11}rem;">'
+            + stack_inner + '</div></div>'
+        )
+
+    font_css = _journey_font_css() if b.get('use_plex_fonts', True) else ''
+
+    return (
+        font_css
+        + f'<div style="{css_vars};font-family:{_JOURNEY_SERIF};background:var(--paper);color:var(--ink);'
+        'padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;border:1px solid var(--line);">'
+        + _journey_source_bar(b)
+        + (f'<div style="font-family:{_JOURNEY_MONO};font-size:0.72rem;font-weight:600;letter-spacing:0.09em;'
+           'text-transform:uppercase;color:var(--ink-soft);display:flex;align-items:center;gap:0.6em;'
+           f'margin-bottom:1rem;"><span style="width:1.5em;height:1.5px;background:var(--accent);'
+           f'display:inline-block;"></span>{eyebrow}</div>' if eyebrow else '')
+        + (f'<h2 style="font-family:{_JOURNEY_MONO};font-weight:600;font-size:clamp(1.4rem,3.6vw,1.9rem);'
+           f'line-height:1.2;margin:0 0 0.7rem;color:var(--ink);">{title}</h2>' if title else '')
+        + (f'<p style="font-style:italic;color:var(--ink-soft);font-size:1.05rem;max-width:46ch;'
+           f'margin:0 0 1.1rem;">{dek}</p>' if dek else '')
+        + (f'<p style="margin:0 0 1.3rem;max-width:58ch;line-height:1.6;color:var(--ink);">{caption}</p>'
+           if caption else '')
+        + stack_inner
+        + '</div>'
+    )
+
+_RENDERERS['layer_stack'] = _render_layer_stack
+
+
 def _render_tooltip_glossary(b: dict) -> str:
     terms = b.get('terms', {})
     text = b.get('text', '')

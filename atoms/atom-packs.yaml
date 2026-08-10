@@ -260,6 +260,13 @@ a2ui-editorial-v1:
 - headline_list
 - intro
 - journey_step
+# The layered-architecture pair (2026-08-10, stage: preview). Same design-system
+# tokens, same palette, same reason to be editorial as concept_ladder — it is
+# the explainer atom for "what lives at which level" that a depth ladder can't
+# carry, because a stack is co-existing layers rather than one concept getting
+# deeper.
+- layer_stack
+- stack_layer
 - news_digest
 - particle_burst
 - post_metadata_bar

@@ -364,8 +364,20 @@ def test_no_script_block_self_terminates(bundle):
 
 def test_bundle_size_guard(bundle):
     # Catches accidental inclusion of Code.gs / schema snapshots / vendored
-    # blobs. Raw concat is ~1.2 MB today.
-    assert len(bundle) < 2_000_000, f"bundle ballooned to {len(bundle)} bytes"
+    # blobs. Raw concat is ~2.0 MB today (534 atoms).
+    #
+    # Ceiling raised 2.0 -> 2.5 MB on 2026-08-10. The 2 MB figure was set in
+    # 090be3c9 (2026-07-10, "concat-not-extract") when the concat was ~1.2 MB —
+    # ~1.65x headroom, chosen as an ACCIDENT tripwire, never from a host limit.
+    # A month and 72 atoms later the bundle reached 2.005 MB and the guard fired
+    # on ordinary growth, which is the one thing it was not built to detect.
+    # If it fires again, check the delta before raising it: a jump of hundreds of
+    # KB in one commit is the accident this exists for; a few KB is another atom.
+    #
+    # OPEN QUESTION, deliberately not encoded here: nobody has established what
+    # a ui:// template inlined into an iframe actually costs on claude.ai or
+    # ChatGPT. This number bounds our own carelessness, not the host's tolerance.
+    assert len(bundle) < 2_500_000, f"bundle ballooned to {len(bundle)} bytes"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
 
 
