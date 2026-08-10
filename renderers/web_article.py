@@ -2276,7 +2276,7 @@ def _render_star_rating_input(b: dict) -> str:
     max_s   = int(b.get("max_stars", 5))
     initial = int(b.get("initial_rating", 0))
     label   = b.get("label", "")
-    uid     = abs(hash(name + str(max_s))) % 100000
+    uid     = abs(_wa_shash(name + str(max_s))) % 100000
 
     inputs_html = "".join(
         f'<input type="radio" id="sr{uid}_{i}" name="sr{uid}" value="{i}"'
@@ -2311,7 +2311,7 @@ def _render_segmented_control(b: dict) -> str:
     selected = b.get("selected_value", b.get("selected", ""))
     name     = b.get("name", "seg")
     label    = b.get("label", "")
-    uid      = abs(hash(str(options) + name)) % 100000
+    uid      = abs(_wa_shash(str(options) + name)) % 100000
 
     norm = [{"value": o, "label": o} if isinstance(o, str) else o for o in options]
     if not selected and norm:
@@ -2349,7 +2349,7 @@ def _render_zoomable_image(b: dict) -> str:
     url    = b.get("image_url", b.get("url", ""))
     alt    = b.get("alt_text", b.get("alt", ""))
     factor = float(b.get("zoom_factor", 1.5))
-    uid    = abs(hash(url)) % 100000
+    uid    = abs(_wa_shash(url)) % 100000
     style  = (
         f'<style>'
         f'.zi{uid}{{overflow:hidden;border-radius:10px;cursor:zoom-in;'
@@ -2372,7 +2372,7 @@ def _render_custom_checkbox_group(b: dict) -> str:
     label   = b.get("group_label", b.get("label", ""))
     name    = b.get("name", "chk")
     options = b.get("options", b.get("items", []))
-    uid     = abs(hash(str(options) + name)) % 100000
+    uid     = abs(_wa_shash(str(options) + name)) % 100000
 
     check_svg = (
         '<svg width="11" height="9" viewBox="0 0 11 9" fill="none">'
@@ -2595,7 +2595,7 @@ def _render_tabbed_code(b: dict) -> str:
     tabs = b.get("tabs", [])
     if not tabs:
         return ""
-    uid = abs(hash(str(tabs))) % 100000
+    uid = abs(_wa_shash(str(tabs))) % 100000
     labels = "".join(
         f'<label for="tc-{uid}-{i}" style="padding:6px 14px;cursor:pointer;font-size:0.78rem;'
         f'font-weight:600;border-bottom:2px solid {"#7c3aed" if i==0 else "transparent"};'
@@ -3362,7 +3362,7 @@ def _render_chartjs_bar(b: dict) -> str:
     chart_w = w - pad_l - pad_r
     chart_h = h - pad_t - pad_b
     
-    chart_id = f"bar_{id(b)}"
+    chart_id = f"bar_{_wa_oid(b)}"
     
     # Y-axis ticks and horizontal grid lines
     grid_lines = ""
@@ -3483,7 +3483,7 @@ def _render_chartjs_line(b: dict) -> str:
     chart_w = w - pad_l - pad_r
     chart_h = h - pad_t - pad_b
     
-    chart_id = f"line_{id(b)}"
+    chart_id = f"line_{_wa_oid(b)}"
     
     # Draw horizontal grid lines (e.g., 4 intervals)
     grid_lines = ""
@@ -3663,7 +3663,7 @@ def _render_mini_sparkline_set(b: dict) -> str:
     cols = min(len(series), 4) if series else 2
     cards = []
     
-    chart_id = f"spark_{id(b)}"
+    chart_id = f"spark_{_wa_oid(b)}"
     
     for si, s in enumerate(series):
         label = s.get("label", "")
@@ -3741,7 +3741,7 @@ def _render_donut_stat(b: dict) -> str:
     stroke_dasharray = 251.327
     stroke_dashoffset = stroke_dasharray - (percentage / 100) * stroke_dasharray
     
-    donut_id = f"donut_{id(b)}"
+    donut_id = f"donut_{_wa_oid(b)}"
     
     svg_html = f"""
     <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -3850,7 +3850,7 @@ def _render_heatmap(b: dict) -> str:
             x_labels += f'<text x="{x}" y="{pad_t - 10}" fill="rgba(255,255,255,0.4)" font-size="10" font-family="monospace" text-anchor="middle">{lbl}</text>'
             
     cells_html = []
-    heatmap_id = f"heat_{id(b)}"
+    heatmap_id = f"heat_{_wa_oid(b)}"
     
     for r_idx, row in enumerate(data):
         for c_idx, val in enumerate(row):
@@ -3905,11 +3905,16 @@ def _render_uptime_timeline(b: dict) -> str:
     days   = b.get("days", 30)
     import random, hashlib
     seed = int(hashlib.md5(str(uptime).encode()).hexdigest()[:8], 16)
-    random.seed(seed)
+    # A private Random, NOT random.seed(): the global call reseeded the
+    # process-wide RNG as a side effect, so any renderer drawing from the
+    # global stream afterwards produced output that depended on whether this
+    # atom happened to appear earlier on the page. Self-contained here, and it
+    # stops one atom silently determining another's.
+    rng = random.Random(seed)
     outage_rate = (100 - uptime) / 100
     blocks = []
     for _ in range(days):
-        r = random.random()
+        r = rng.random()
         if r < outage_rate:
             color = "#dc2626"
         elif r < outage_rate * 3:
@@ -3969,7 +3974,7 @@ def _render_punch_card(b: dict) -> str:
             y_labels += f'<text x="{pad_l - 12}" y="{y}" fill="rgba(255,255,255,0.4)" font-size="9" font-family="monospace" text-anchor="end">{lbl}</text>'
             
     bubbles_html = []
-    punch_id = f"punch_{id(b)}"
+    punch_id = f"punch_{_wa_oid(b)}"
     
     for r_idx, row in enumerate(data):
         for c_idx, val in enumerate(row):
@@ -4150,7 +4155,7 @@ def _svg_sankey_flow(b: dict) -> str:
     gradients_html = []
     links_html = []
     
-    sankey_id = f"sankey_{id(b)}"
+    sankey_id = f"sankey_{_wa_oid(b)}"
     
     for idx, link in enumerate(raw_links):
         s, t, v = link["source"], link["target"], float(link.get("value", 1))
@@ -4482,7 +4487,7 @@ def _render_sentiment_summary(b: dict) -> str:
         </div>
         """
         
-    gauge_id = f"sent_gauge_{id(b)}"
+    gauge_id = f"sent_gauge_{_wa_oid(b)}"
     stroke_dasharray = 109.956
     stroke_dashoffset = stroke_dasharray - (sentiment_index / 100.0) * stroke_dasharray
     
@@ -4546,7 +4551,7 @@ def _render_sentiment_summary(b: dict) -> str:
         area_points.append((points[0][0], center_y))
         area_path = " ".join(f"{'M' if i == 0 else 'L'} {px:.1f} {py:.1f}" for i, (px, py) in enumerate(area_points)) + " Z"
         
-        journey_id = f"sent_journey_{id(b)}"
+        journey_id = f"sent_journey_{_wa_oid(b)}"
         
         journey_svg = f"""
         <div style="flex-grow:1; height:140px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; min-width:240px;">
@@ -4661,7 +4666,7 @@ def _render_conversion_funnel(b: dict) -> str:
     
     max_val = max(float(s.get("value", 1)) for s in steps)
     
-    funnel_id = f"funnel_{id(b)}"
+    funnel_id = f"funnel_{_wa_oid(b)}"
     elements = []
     
     # Render defs for neon glow & linear gradients
@@ -4774,7 +4779,7 @@ def _render_gauge_sla(b: dict) -> str:
     nx = 150 + 85 * math.cos(rad)
     ny = 140 + 85 * math.sin(rad)
     
-    gauge_id = f"gauge_sla_{id(b)}"
+    gauge_id = f"gauge_sla_{_wa_oid(b)}"
     
     if pct >= 95:
         status_color = "#10b981"
@@ -4900,7 +4905,7 @@ def _render_stacked_area(b: dict) -> str:
         path_pts = " ".join(f"{px:.1f},{py:.1f}" for px, py in coords)
         area_pts = f"{pad_l:.1f},{pad_t + chart_h:.1f} " + path_pts + f" {pad_l + chart_w:.1f},{pad_t + chart_h:.1f}"
         
-        layer_id = f"stack_layer_{s_idx}_{id(b)}"
+        layer_id = f"stack_layer_{s_idx}_{_wa_oid(b)}"
         
         defs_html.append(f"""
         <linearGradient id="{layer_id}_area_grad" x1="0" y1="0" x2="0" y2="1">
@@ -5037,14 +5042,14 @@ def _render_scatter_trend(b: dict) -> str:
         cx = pad_l + ((px - min_x) / rng_x) * chart_w
         cy = pad_t + (1 - (py - min_y) / rng_y) * chart_h
         dots_html.append(f"""
-        <circle cx="{cx:.1f}" cy="{cy:.1f}" r="4.5" fill="#10b981" stroke="#fff" stroke-width="1.5" filter="url(#scatter_glow_{id(b)})" style="cursor:pointer;" />
+        <circle cx="{cx:.1f}" cy="{cy:.1f}" r="4.5" fill="#10b981" stroke="#fff" stroke-width="1.5" filter="url(#scatter_glow_{_wa_oid(b)})" style="cursor:pointer;" />
         """)
         
     svg_html = f"""
     <div style="width:100%; height:240px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:12px; box-sizing:border-box;">
       <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <filter id="scatter_glow_{id(b)}" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id="scatter_glow_{_wa_oid(b)}" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -5057,7 +5062,7 @@ def _render_scatter_trend(b: dict) -> str:
         
         <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{label_x.upper()}</text>
         
-        <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{id(b)})" />
+        <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{_wa_oid(b)})" />
         
         {"".join(dots_html)}
       </svg>
@@ -7024,7 +7029,7 @@ def _render_variant_selector(b: dict) -> str:
     label   = b.get("label", "")
     items   = b.get("items", [])
     default = b.get("default_value", "")
-    uid     = abs(hash(name + label)) % 999983
+    uid     = abs(_wa_shash(name + label)) % 999983
 
     label_html = (
         f'<div style="font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:8px;">'
@@ -7239,7 +7244,7 @@ def _render_animated_counter(b: dict) -> str:
                      "suffix": b.get("suffix", ""), "prefix": b.get("prefix", "")}]
     duration = float(b.get("duration", 2))
     _COLORS  = ["#1a73e8","#34a853","#ea4335","#9c27b0","#ff6d00","#00bcd4"]
-    uid      = abs(hash(str(counters))) % 100000
+    uid      = abs(_wa_shash(str(counters))) % 100000
 
     style_parts = []
     items_html  = ""
@@ -8048,7 +8053,7 @@ def _render_data_grid(b: dict) -> str:
     pages      = [rows[i:i+per_page] for i in range(0, max(len(rows), 1), per_page)] if pagination else [rows]
     multi      = len(pages) > 1
     total      = len(rows)
-    uid        = abs(hash(title + str(len(columns)) + str(total) + str(per_page))) % 999983
+    uid        = abs(_wa_shash(title + str(len(columns)) + str(total) + str(per_page))) % 999983
 
     STATUS_COLORS = {
         "active":   ("#d4edda", "#155724"), "inactive": ("#e2e3e5", "#383d41"),
@@ -8406,7 +8411,7 @@ def _render_vote_button_group(b: dict) -> str:
     style   = b.get("style", "pill")
     title   = b.get("title", "")
     multi   = b.get("allow_multi", False)
-    uid     = abs(hash(str(options) + style + title)) % 100000
+    uid     = abs(_wa_shash(str(options) + style + title)) % 100000
     inp     = "checkbox" if multi else "radio"
     name    = f"vbg{uid}"
 
@@ -8479,7 +8484,7 @@ def _render_effect_overlay(b: dict) -> str:
     status  = b.get("status", "")
     message = b.get("message", "")
     color   = b.get("color", "#00f2ff")
-    uid     = abs(hash(trigger + status + message)) % 100000
+    uid     = abs(_wa_shash(trigger + status + message)) % 100000
 
     status_html = (
         f'<div style="font-size:0.68rem;color:#64748b;text-align:center;padding:6px 0 0;'
@@ -8560,7 +8565,7 @@ def _render_skeleton_stage_card(b: dict) -> str:
     variant = b.get("variant", "card")
     lines   = max(1, int(b.get("lines", 3)))
     count   = max(1, int(b.get("count", 1)))
-    uid     = abs(hash(variant + str(lines) + str(count))) % 100000
+    uid     = abs(_wa_shash(variant + str(lines) + str(count))) % 100000
 
     css = (
         f'<style>'
@@ -9569,7 +9574,10 @@ def _render_match_exercise(b: dict) -> str:
     defs  = [p.get("definition", "") for p in pairs]
     if b.get("shuffle", True):
         defs = defs[:]
-        _random.shuffle(defs)
+        # Seeded off the same content digest `uid` already derives from, so the
+        # exercise shuffles identically on every render. Unseeded, this was the
+        # last renderer that could rewrite its own markup with no input change.
+        _random.Random(uid).shuffle(defs)
 
     left_col  = "".join(
         f'<div style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:8px;'
@@ -11020,7 +11028,8 @@ def _render_sparkline(b: dict) -> str:
 
 def _render_toggle_switch(b: dict) -> str:
     import random, string
-    uid = "tog" + "".join(random.choices(string.ascii_lowercase, k=5))
+    # Was random.choices — the last per-process source of id churn.
+    uid = "tog" + "".join(string.ascii_lowercase[(_wa_shash(b) >> (5 * i)) % 26] for i in range(5))
     label = b.get("label","")
     checked = " checked" if b.get("is_checked") else ""
     name = b.get("name", uid)
@@ -11158,15 +11167,75 @@ for _stub in ["call_mood_board","capability_checklist","combobox","contributor_l
 # ── NEW WEB RENDERERS — Batch 1 (ported from GAS atom.gs) ─────────────────────
 # Ported: abbr_tooltip → callout (A-C first pass, ~45 atoms)
 # Translation rules: b.field||'x' → b.get('field','x'), _esc → _esc,
-#   _markdownToHtml → _md_inline, Math.random uid → _wa_uid()
+#   _markdownToHtml → _md_inline, Math.random uid → _wa_uid(b)
 import html as _wa_h
 import uuid as _wa_uuid
+import json as _wa_json
+import hashlib as _wa_hashlib
 
 def _esc(v):
     return _wa_h.escape(str(v) if v is not None else '')
 
-def _wa_uid():
-    return _wa_uuid.uuid4().hex[:8]
+def _wa_uid(b=None):
+    """A DOM-unique id for one block's generated markup.
+
+    DERIVED FROM CONTENT, not random (changed 2026-08-08). It used to be
+    uuid4().hex[:8], which made every render of the same atom produce
+    different markup — so `catalog-rebuild` manufactured a ~33-file diff in
+    public/atoms/ with ZERO content change, every single time.
+
+    That is not merely untidy: it hides real changes in noise. A genuine
+    regeneration of the MCP Apps pages (carrying a corrected cache-bust
+    hash) sat uncommitted and unnoticed in exactly that noise until someone
+    diffed the tree token by token.
+
+    Hashing the BLOCK rather than using a counter is deliberate: a counter is
+    reproducible for an identical input sequence, but inserting one atom
+    would renumber every atom after it and produce the same misleading
+    whole-catalogue diff. A content hash keeps an atom's id stable no matter
+    what happens around it, so a diff appears only where content actually
+    changed.
+
+    Collisions: 8 hex chars over the atoms on one page. These ids only need
+    to be unique WITHIN a rendered document, and a block that hashes
+    identically is by definition identical markup, so a collision between two
+    truly different blocks is the only failure — ~1 in 4 billion per pair.
+    Falls back to a random uid when called without a block, so any caller
+    that cannot supply one keeps working exactly as before.
+    """
+    if b is None:
+        return _wa_uuid.uuid4().hex[:8]
+    try:
+        canon = _wa_json.dumps(b, sort_keys=True, default=str, separators=(',', ':'))
+    except Exception:
+        return _wa_uuid.uuid4().hex[:8]
+    return _wa_hashlib.sha1(canon.encode('utf-8')).hexdigest()[:8]
+
+
+def _wa_shash(x):
+    """Stable replacement for Python's built-in hash() in generated ids.
+
+    `hash()` on str/bytes/tuples is RANDOMIZED PER PROCESS (PYTHONHASHSEED,
+    default since Python 3.3), so `abs(_wa_shash(str(options)+name)) % 100000`
+    produced a different element id on every run — the last source of the
+    spurious catalog-rebuild diff, and the least obvious one, since the code
+    reads as though it is already deriving the id from content.
+
+    md5 is used as a plain non-cryptographic digest here (ids, not secrets)
+    purely because it is stable across processes and Python versions, which
+    is the entire requirement."""
+    return int(_wa_hashlib.md5(str(x).encode('utf-8')).hexdigest()[:12], 16)
+
+
+def _wa_oid(b):
+    """Deterministic replacement for `id(b)` in generated element ids.
+
+    `id()` is a MEMORY ADDRESS — it changes every process run, so the same
+    atom rendered twice produced different SVG gradient/filter ids
+    (bar_grad_bar_140668031442688_0 vs ..._140564358721856_0). Same problem
+    as _wa_uid's, same fix. Digits only, so it drops into the existing
+    `f"bar_{_wa_oid(b)}"` string shapes without changing their form."""
+    return str(int(_wa_uid(b), 16))
 
 
 def _render_abbr_tooltip(b: dict) -> str:
@@ -11245,7 +11314,7 @@ _RENDERERS['action_items'] = _render_action_items
 
 
 def _render_agenda_block(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     accent = b.get('accent', '#6366f1')
     slots = b.get('slots', [])
     type_colors = {'break':'#f3f4f6','keynote':'#ede9fe','workshop':'#dbeafe','panel':'#d1fae5','social':'#fef3c7'}
@@ -11603,7 +11672,7 @@ _RENDERERS['changelog_entry'] = _render_changelog_entry
 
 
 def _render_checklist_interactive(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     items = b.get('items', [])
     rows = ''
     for i, item in enumerate(items):
@@ -11619,7 +11688,7 @@ _RENDERERS['checklist_interactive'] = _render_checklist_interactive
 
 
 def _render_chip_group(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     chips = b.get('chips', [])
     accent = b.get('accent', '#6366f1')
     multi = b.get('multiple', False)
@@ -11711,7 +11780,7 @@ _RENDERERS['code_diff'] = _render_code_diff
 
 
 def _render_code_snippet_pair(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     snippets = b.get('snippets', [])
     if not snippets:
         return ''
@@ -11829,7 +11898,7 @@ _RENDERERS['comparison_table'] = _render_comparison_table
 
 
 def _render_concept_map(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     nodes = b.get('nodes', [])
     center = b.get('center', b.get('title', 'Core Concept'))
     accent = b.get('accent', '#6366f1')
@@ -11882,7 +11951,7 @@ _RENDERERS['contact_card'] = _render_contact_card
 
 
 def _render_copy_code_button(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     code = b.get('code', '')
     lang = b.get('language', 'text')
     escaped = code.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
@@ -11900,7 +11969,7 @@ _RENDERERS['copy_code_button'] = _render_copy_code_button
 def _render_copy_to_clipboard(b: dict) -> str:
     text = b.get('text', '')
     label = b.get('label', 'Copy')
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     import base64
     encoded = base64.b64encode(text.encode()).decode()
     return (f'<button onclick="navigator.clipboard.writeText(atob(\'{encoded}\'));this.textContent=\'✓\';'
@@ -12049,7 +12118,7 @@ _RENDERERS['document_link'] = _render_document_link
 
 
 def _render_dropdown_menu(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label', 'Menu')
     items = b.get('items', [])
     opts = ''.join(f'<option value="{_esc(str(item.get("value",item) if isinstance(item,dict) else item))}">'
@@ -12191,7 +12260,7 @@ _RENDERERS['feature_matrix'] = _render_feature_matrix
 
 
 def _render_feedback_prompt(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     question = b.get('question', 'Was this helpful?')
     yes_label = b.get('yes_label', 'Yes')
     no_label = b.get('no_label', 'No')
@@ -12435,7 +12504,7 @@ _RENDERERS['hint_reveal'] = _render_hint_reveal
 
 
 def _render_hover_card(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     trigger = b.get('trigger_text') or b.get('label', 'Hover me')
     content = b.get('content') or b.get('text', '')
     return (f'<span style="position:relative;display:inline-block;">'
@@ -12758,7 +12827,7 @@ _RENDERERS['metric_card'] = _render_metric_card
 
 
 def _render_newsletter_cta(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     title = b.get('title', 'Subscribe to the newsletter')
     placeholder = b.get('placeholder', 'you@example.com')
     button = b.get('button_label') or b.get('button', 'Subscribe')
@@ -12829,7 +12898,7 @@ _RENDERERS['pagination'] = _render_pagination
 
 
 def _render_parallax_card(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     image = b.get('image', '')
     title = b.get('title', '')
     text = b.get('text') or b.get('description', '')
@@ -12897,7 +12966,7 @@ _RENDERERS['pipeline'] = _render_pipeline
 
 
 def _render_poll_block(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     question = b.get('question', '')
     options = b.get('options', [])
     opts_html = ''
@@ -13022,7 +13091,7 @@ _RENDERERS['pull_stat'] = _render_pull_stat
 
 
 def _render_quiz_block(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     question = b.get('question', '')
     options = b.get('options', [])
     correct = b.get('correct') or b.get('answer', 0)
@@ -13067,7 +13136,7 @@ _RENDERERS['quote'] = _render_quote
 
 
 def _render_reading_progress_bar(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     color = b.get('color', '#6366f1')
     height = b.get('height', '4px')
     return (f'<div id="{uid}" style="position:fixed;top:0;left:0;width:0%;height:{_esc(str(height))};'
@@ -13247,7 +13316,7 @@ _RENDERERS['social_feed_embed'] = _render_social_feed_embed
 
 
 def _render_spinner(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     size = b.get('size', '32px')
     color = b.get('color', '#6366f1')
     label = b.get('label', '')
@@ -13374,7 +13443,7 @@ _RENDERERS['summary_box'] = _render_summary_box
 
 
 def _render_tab_bar(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#6366f1')
     css = (f'<style>#{uid} input{{display:none;}}'
@@ -13527,7 +13596,7 @@ _RENDERERS['timeline'] = _render_timeline
 
 
 def _render_toast_notification(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     text = b.get('text', '')
     variant = b.get('variant', 'info')
     icon_map = {'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'error': '❌'}
@@ -13548,7 +13617,7 @@ _RENDERERS['toast_notification'] = _render_toast_notification
 
 
 def _render_tooltip(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     trigger = b.get('trigger_text') or b.get('label', 'hover me')
     content = b.get('content') or b.get('text', '')
     return (f'<span style="position:relative;display:inline-block;">'
@@ -13628,12 +13697,23 @@ _RENDERERS['warning_box'] = _render_warning_box
 
 
 def _render_word_scramble(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     word = b.get('word', '')
     hint = b.get('hint', '')
     import random
+    # Seeded from the word, not the global RNG — same block, same scramble on
+    # every render (see _wa_uid). Determinism has a sharp edge here that it
+    # doesn't have for element ids: an unseeded shuffle that happened to
+    # return the word unscrambled was a puzzle broken for one render, whereas
+    # a SEEDED one is broken forever for that word. So walk the seed until the
+    # scramble actually differs; a word whose letters are all identical
+    # ("aaa") can never differ, hence the bound.
     letters = list(word.upper())
-    random.shuffle(letters)
+    rng = random.Random(word)
+    for _ in range(8):
+        rng.shuffle(letters)
+        if ''.join(letters) != word.upper():
+            break
     scrambled = ''.join(letters)
     return (f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:18px 22px;margin:1.5rem 0;text-align:center;">'
             f'<div style="font-size:0.82rem;color:#9ca3af;margin-bottom:8px;">Unscramble:</div>'
@@ -13660,7 +13740,7 @@ _RENDERERS['word_scramble'] = _render_word_scramble
 def _render_call_mood_board(b: dict) -> str:
     moods = b.get('moods', [])
     title = b.get('title', 'Mood Board')
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     items = ''
     for mood in moods:
         emoji = mood.get('emoji', '😊') if isinstance(mood, dict) else str(mood)
@@ -13697,7 +13777,7 @@ _RENDERERS['capability_checklist'] = _render_capability_checklist
 
 
 def _render_combobox(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     options = b.get('options', [])
     label = b.get('label', '')
     placeholder = b.get('placeholder', 'Type to search...')
@@ -13794,7 +13874,7 @@ _RENDERERS['expert_endorsement'] = _render_expert_endorsement
 
 
 def _render_gauge_sla(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     value = float(b.get('value', 0))
     target = float(b.get('target', 99.9))
     label = b.get('label', 'SLA')
@@ -13866,7 +13946,7 @@ _RENDERERS['heatmap_calendar'] = _render_heatmap_calendar
 
 
 def _render_image_hotspots(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     image = b.get('image', '')
     hotspots = b.get('hotspots', [])
     alt = b.get('alt', '')
@@ -13920,7 +14000,7 @@ _RENDERERS['inventory_table'] = _render_inventory_table
 
 
 def _render_live_aggregator(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     title = b.get('title', 'Live Feed')
     sources = b.get('sources', [])
     items_html = ''.join(f'<div style="padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:0.84rem;">'
@@ -13982,7 +14062,7 @@ _RENDERERS['media_stream_card'] = _render_media_stream_card
 
 
 def _render_multi_select_input(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     options = b.get('options', [])
     label = b.get('label', '')
     selected = set(b.get('selected', []))
@@ -13991,7 +14071,7 @@ def _render_multi_select_input(b: dict) -> str:
         val = opt if isinstance(opt, str) else opt.get('value', str(opt))
         text = opt if isinstance(opt, str) else opt.get('label', str(opt))
         chk = 'checked' if val in selected else ''
-        oid = f'{uid}_{_wa_uid()}'
+        oid = f'{uid}_{_wa_uid(b)}'
         items += (f'<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;'
                   f'border-radius:6px;cursor:pointer;font-size:0.88rem;">'
                   f'<input type="checkbox" id="{oid}" value="{_esc(str(val))}" {chk} '
@@ -14004,7 +14084,7 @@ _RENDERERS['multi_select_input'] = _render_multi_select_input
 
 
 def _render_otp_input(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     length = b.get('length', 6)
     label = b.get('label', 'Enter OTP')
     boxes = ''.join(
@@ -14144,7 +14224,7 @@ _RENDERERS['social_proof_banner'] = _render_social_proof_banner
 # ── NEW WEB RENDERERS — Batch 6 (animated_counter → tabs + 7 no-GAS, ~60 atoms)
 
 def _render_animated_counter(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     target = b.get('target') or b.get('value', 0)
     prefix = b.get('prefix', '')
     suffix = b.get('suffix', '')
@@ -14332,7 +14412,7 @@ _RENDERERS['card_grid'] = _render_card_grid
 
 
 def _render_carousel(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     slides = b.get('slides', [])
     autoplay = b.get('autoplay', False)
     n = len(slides)
@@ -14491,7 +14571,7 @@ _RENDERERS['checklist'] = _render_checklist
 def _render_code_walkthrough(b: dict) -> str:
     steps = b.get('steps', [])
     lang = b.get('language', '')
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     html = f'<div style="margin:1.5rem 0;">'
     for i, step in enumerate(steps):
         title = step.get('title', f'Step {i+1}')
@@ -14514,7 +14594,7 @@ _RENDERERS['code_walkthrough'] = _render_code_walkthrough
 
 
 def _render_countdown(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     target = b.get('target') or b.get('date', '')
     label = b.get('label', 'Time remaining')
     return (f'<div style="text-align:center;padding:20px;border:1px solid #e5e7eb;border-radius:12px;margin:1.5rem 0;">'
@@ -14534,7 +14614,7 @@ _RENDERERS['countdown'] = _render_countdown
 
 
 def _render_dark_mode_toggle(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     light_label = b.get('light_label', '☀️')
     dark_label = b.get('dark_label', '🌙')
     return (f'<button id="{uid}" onclick="(function(el){{var d=document.documentElement;'
@@ -14568,13 +14648,13 @@ _RENDERERS['device_frame'] = _render_device_frame
 
 
 def _render_emoji_reaction(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     emojis = b.get('emojis', ['👍', '❤️', '🎉', '🤔'])
     counts = b.get('counts', {})
     buttons = ''
     for emoji in emojis:
         cnt = counts.get(emoji, 0)
-        eid = f'{uid}_{_wa_uid()}'
+        eid = f'{uid}_{_wa_uid(b)}'
         buttons += (f'<button id="{eid}" onclick="(function(el,e){{var c=parseInt(el.dataset.count||0)+1;'
                     f'el.dataset.count=c;el.querySelector(\'.cnt\').textContent=c;el.style.background=\'#ede9fe\';}})('
                     f'document.getElementById(\'{eid}\'),\'{emoji}\')" '
@@ -14638,7 +14718,7 @@ _RENDERERS['feature_section'] = _render_feature_section
 
 
 def _render_form_field(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label', '')
     field_type = b.get('field_type') or b.get('type_input', 'text')
     placeholder = b.get('placeholder', '')
@@ -14854,7 +14934,7 @@ _RENDERERS['mini_chart'] = _render_mini_chart
 
 
 def _render_nps_score(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     question = b.get('question', 'How likely are you to recommend this?')
     low = b.get('low_label', 'Not likely')
     high = b.get('high_label', 'Very likely')
@@ -14954,7 +15034,7 @@ _RENDERERS['progress_steps'] = _render_progress_steps
 
 
 def _render_radio_group(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     options = b.get('options', [])
     label = b.get('label', '')
     selected = b.get('selected', '')
@@ -14974,7 +15054,7 @@ _RENDERERS['radio_group'] = _render_radio_group
 
 
 def _render_range_slider(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label', '')
     min_v = b.get('min', 0)
     max_v = b.get('max', 100)
@@ -14992,7 +15072,7 @@ _RENDERERS['range_slider'] = _render_range_slider
 
 
 def _render_select_field(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label', '')
     options = b.get('options', [])
     placeholder = b.get('placeholder', 'Select an option')
@@ -15131,7 +15211,7 @@ _RENDERERS['table_of_contents'] = _render_table_of_contents
 
 
 def _render_tabs(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     tabs = b.get('tabs', [])
     accent = b.get('accent', '#6366f1')
     css = (f'<style>#{uid} input{{display:none;}}'
@@ -15219,7 +15299,7 @@ _RENDERERS['text_input'] = _render_text_input
 
 
 def _render_ticker_tape(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     items = b.get('items', [])
     speed = b.get('speed', 30)
     separator = b.get('separator', ' · ')
@@ -15249,7 +15329,7 @@ _RENDERERS['video_player'] = _render_video_player
 
 
 def _render_waitlist_form(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     title = b.get('title', 'Join the waitlist')
     placeholder = b.get('placeholder', 'your@email.com')
     button = b.get('button_label', 'Join waitlist')
@@ -15342,7 +15422,7 @@ _RENDERERS['figma_embed'] = _render_figma_embed
 
 
 def _render_number_odometer(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     value = b.get('value', 0)
     prefix = b.get('prefix', '')
     suffix = b.get('suffix', '')
@@ -15366,7 +15446,7 @@ _RENDERERS['number_odometer'] = _render_number_odometer
 
 
 def _render_typewriter(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     texts = b.get('texts', [b.get('text', '')])
     speed = b.get('speed', 80)
     loop = b.get('loop', True)
@@ -15440,7 +15520,7 @@ _RENDERERS['toc'] = _render_toc
 
 
 def _render_number_input(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label', '')
     min_v = b.get('min', '')
     max_v = b.get('max', '')
@@ -15457,7 +15537,7 @@ _RENDERERS['number_input'] = _render_number_input
 
 
 def _render_password_input(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label', 'Password')
     placeholder = b.get('placeholder', '••••••••')
     return (f'<div style="margin:1rem 0;">'
@@ -15505,7 +15585,7 @@ _RENDERERS['shortcut_row'] = _render_shortcut_row
 
 
 def _render_text_reveal(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     preview = b.get('preview', '')
     full = b.get('full') or b.get('text', '')
     label = b.get('label', 'Read more')
@@ -15521,7 +15601,7 @@ _RENDERERS['text_reveal'] = _render_text_reveal
 
 
 def _render_toggletip(b: dict) -> str:
-    uid = _wa_uid()
+    uid = _wa_uid(b)
     label = b.get('label') or b.get('trigger', '?')
     content = b.get('content') or b.get('text', '')
     return (f'<span style="position:relative;display:inline-block;">'
@@ -16293,7 +16373,7 @@ def _svg_gauge_sla(b: dict) -> str:
     nx = 150 + 85 * math.cos(rad)
     ny = 140 + 85 * math.sin(rad)
 
-    gauge_id = f"gauge_sla_{id(b)}"
+    gauge_id = f"gauge_sla_{_wa_oid(b)}"
 
     if pct >= 95:
         status_color = "#10b981"
@@ -16435,13 +16515,13 @@ def _svg_scatter_trend(b: dict) -> str:
         cx = pad_l + ((px - min_x) / rng_x) * chart_w
         cy = pad_t + (1 - (py - min_y) / rng_y) * chart_h
         dots_html.append(f"""
-        <circle cx="{cx:.1f}" cy="{cy:.1f}" r="4.5" fill="#10b981" stroke="#fff" stroke-width="1.5" filter="url(#scatter_glow_{id(b)})" style="cursor:pointer;" />
+        <circle cx="{cx:.1f}" cy="{cy:.1f}" r="4.5" fill="#10b981" stroke="#fff" stroke-width="1.5" filter="url(#scatter_glow_{_wa_oid(b)})" style="cursor:pointer;" />
         """)
 
     return f"""
       <svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <filter id="scatter_glow_{id(b)}" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id="scatter_glow_{_wa_oid(b)}" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="2" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -16454,7 +16534,7 @@ def _svg_scatter_trend(b: dict) -> str:
 
         <text x="{pad_l + chart_w / 2.0}" y="{pad_t + chart_h + 34}" fill="rgba(255,255,255,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="0.05em">{label_x.upper()}</text>
 
-        <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{id(b)})" />
+        <line x1="{x1_proj:.1f}" y1="{y1_proj:.1f}" x2="{x2_proj:.1f}" y2="{y2_proj:.1f}" stroke="#00f2ff" stroke-width="2.5" stroke-dasharray="4,4" filter="url(#scatter_glow_{_wa_oid(b)})" />
 
         {"".join(dots_html)}
       </svg>
@@ -17480,7 +17560,7 @@ _RENDERERS["rubric_card"] = _render_rubric_card
 
 
 def _render_knowledge_check(b: dict) -> str:
-    uid = 'kc' + __import__('uuid').uuid4().hex[:6]
+    uid = 'kc' + _wa_uid(b)[:6]
     question = _esc(b.get('question', 'Comprehension check'))
     options = b.get('options', [])
     correct = int(b.get('correct', 0))
@@ -17543,7 +17623,7 @@ _RENDERERS["achievement_badge"] = _render_achievement_badge
 
 def _render_annotation_highlight(b: dict) -> str:
     import re as _re
-    uid = 'anhl' + __import__('uuid').uuid4().hex[:6]
+    uid = 'anhl' + _wa_uid(b)[:6]
     text = b.get('text', '')
     notes = b.get('notes', [])
     out = _esc(text)
@@ -17623,7 +17703,7 @@ _RENDERERS["skill_radar"] = _render_skill_radar
 
 
 def _render_spaced_repetition_card(b: dict) -> str:
-    uid = 'spc' + __import__('uuid').uuid4().hex[:6]
+    uid = 'spc' + _wa_uid(b)[:6]
     front = _esc(b.get('front', 'Term or question'))
     back = _esc(b.get('back', 'Answer or definition'))
     accent = b.get('accent', '#a78bfa')
@@ -17652,7 +17732,7 @@ def _render_study_timer(b: dict) -> str:
     brk = int(b.get('break_mins', 5))
     accent = b.get('accent', '#6366f1')
     label = _esc(b.get('label', 'Study Timer'))
-    uid = 'stmr' + __import__('uuid').uuid4().hex[:6]
+    uid = 'stmr' + _wa_uid(b)[:6]
     return (
         f'<div style="font-family:system-ui,sans-serif;padding:24px;border-radius:14px;text-align:center;'
         f'background:#f9fafb;border:1px solid #e5e7eb;">'
@@ -17780,7 +17860,7 @@ _RENDERERS["workspace_logo_strip"] = _render_workspace_logo_strip
 
 
 def _render_canvas_plexus(b: dict) -> str:
-    uid = 'plx' + __import__('uuid').uuid4().hex[:6]
+    uid = 'plx' + _wa_uid(b)[:6]
     count = int(b.get('count', 80))
     colour = b.get('colour', '#6366f1')
     max_dist = int(b.get('max_dist', 110))
@@ -17812,7 +17892,7 @@ _RENDERERS["canvas_plexus"] = _render_canvas_plexus
 
 
 def _render_isometric_mesh(b: dict) -> str:
-    uid = 'iso' + __import__('uuid').uuid4().hex[:6]
+    uid = 'iso' + _wa_uid(b)[:6]
     colour = b.get('colour', '#6366f1')
     h = int(b.get('height', 320))
     bg = b.get('bg', '#0d1117')
@@ -18133,7 +18213,7 @@ _RENDERERS["course_progress_card"] = _render_course_progress_card
 
 
 def _render_scenario_branch(b: dict) -> str:
-    uid = 'sb' + __import__('uuid').uuid4().hex[:6]
+    uid = 'sb' + _wa_uid(b)[:6]
     scene = _md(b.get('scenario') or b.get('situation') or '')
     context = _md(b.get('context', ''))
     choices = b.get('choices', [])
@@ -20772,7 +20852,7 @@ def _render_schema_qr(b: dict) -> str:
     sub = _esc(b.get('sub', ''))
     size = int(b.get('size', 220))
     is_interactive = bool(b.get('is_interactive', False))
-    uid = f"{abs(hash((url, label, sub, size))) % 100000:05x}"
+    uid = f"{abs(_wa_shash((url, label, sub, size))) % 100000:05x}"
 
     qr_html = _qr_svg(url, size) or (
         '<div style="width:' + str(size) + 'px;height:' + str(size) + 'px;margin:0 auto;'
