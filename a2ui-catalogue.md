@@ -534,6 +534,16 @@
 | `concept_rung` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `layer_stack` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 | `stack_layer` | ✅ | — | — | ❌ | ❌ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `verdict_checklist` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `constraint_fix_triad` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `incident_finding` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `wrong_vs_right` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `agent_demo_card` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `wishlist_panel` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `trace_step` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `stat_inline_badge` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `problem_chapter` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
+| `resource_link_row` | ✅ | — | — | — | — | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) |
 
 ✅ works fully  ⚠️ degraded — renders with caveats  ❌ incompatible — do not use
 
