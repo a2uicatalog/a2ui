@@ -1,0 +1,45 @@
+services:
+  slack-surface:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      # Every platform var below is a pass-through, not a requirement — the
+      # app itself treats all of them as optional() (see src/config.js) and
+      # fails closed per-request per platform, so this file must not impose
+      # a stricter "must be set" gate than the app does. Set only the ones
+      # for the platform(s) you're enabling; leave the rest blank in .env.
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET:-}
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN:-}
+      SLACK_DEFAULT_CHANNEL: ${SLACK_DEFAULT_CHANNEL:-#general}
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set in .env}
+      MCP_ALLOWED_OWNERS: ${MCP_ALLOWED_OWNERS:-}
+      SQLITE_PATH: /data/slack-surface.db
+      # DATABASE_URL: intentionally unset here — this compose file targets the
+      # zero-cost default (SQLite on a local volume, see README). Set it in
+      # .env if you want the Postgres backend instead.
+
+      # Microsoft Teams — see .env.example / README's Teams setup section.
+      TEAMS_APP_ID: ${TEAMS_APP_ID:-}
+      TEAMS_APP_PASSWORD: ${TEAMS_APP_PASSWORD:-}
+      TEAMS_AUTH_TENANT: ${TEAMS_AUTH_TENANT:-}
+      TEAMS_DEV_BYPASS_AUTH: ${TEAMS_DEV_BYPASS_AUTH:-}
+
+      # D-bucket image-render fallback — required for Google Chat below,
+      # optional (exotic-atom fallback only) for Slack/Teams.
+      RENDER_SIGNING_KEY: ${RENDER_SIGNING_KEY:-}
+      RENDER_BASE_URL: ${RENDER_BASE_URL:-}
+
+      # Google Chat — see .env.example / README's Chat setup section.
+      CHAT_AUDIENCE: ${CHAT_AUDIENCE:-}
+      TRUST_CLOUD_RUN_IAM: ${TRUST_CLOUD_RUN_IAM:-}
+      CHAT_DEV_BYPASS_AUTH: ${CHAT_DEV_BYPASS_AUTH:-}
+      # Chat proactive posting — no attachable service identity off Cloud
+      # Run, so this (a full JSON key) is the only option here.
+      GOOGLE_SERVICE_ACCOUNT_KEY: ${GOOGLE_SERVICE_ACCOUNT_KEY:-}
+    volumes:
+      - slack-surface-data:/data
+
+volumes:
+  slack-surface-data:

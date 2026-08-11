@@ -9062,7 +9062,6 @@ blocks:
     surface, not just web). General-purpose protocol/architecture diagram;
     not limited to 2-role chat threads the way chat_sequence is.
   compact_description: multi-actor sequence diagram — arrows, notes, alt/opt/loop frames
-  stage: preview
   surfaces:
     works_on:
     - web
@@ -11966,7 +11965,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: content_tabs
-  stage: preview
   description: 'Tabbed panels where each pane holds real nested atom blocks — the generic
     multi-section single-page container ("several distinct views of one payload") without
     needing named-page infrastructure. Unlike `tabs` (code-oriented, single content string
@@ -12632,7 +12630,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: layer_stack
-  stage: preview
   description: 'Declarative labelled layers for a layered architecture — a
     protocol stack, a request path, any "what lives at which level" picture.
     Each layer is a band carrying a mono technical fact (`field`) beside a
@@ -12726,7 +12723,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: stack_layer
-  stage: preview
   description: 'One band of a layer_stack — a badge, the layer name, and either
     a single field/note pane or one pane per column via `cells`. Reads its
     colour tokens from the CSS custom properties an enclosing layer_stack sets
@@ -12775,3 +12771,205 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: verdict_checklist
+  stage: preview
+  description: 'Primitive-by-primitive (or claim-by-claim) teardown list, each
+    row carrying a yes/partial/no verdict badge — the "does X actually do Y"
+    gotcha-list pattern real field-report articles use to compare a claim
+    against what was actually verified. Distinct from a generic before_after
+    or versus_block: those compare two states/options side by side, this is a
+    single ordered list of independent verdicts, each with its own badge.'
+  compact_description: labelled items each with a yes/partial/no verdict badge
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    title: string (optional). Heading above the list.
+    items: 'array (required). Each item {label, verdict, note}. label: string
+      (required), the thing being verified. verdict: string (required), one
+      of "yes", "partial", "no". note: string (optional), one-line detail.'
+  source: *id001
+- type: constraint_fix_triad
+  stage: preview
+  description: 'A repeatable bold-lead constraint -> why it breaks the naive
+    approach -> the actual fix, the "constraint, consequence, fix" pattern
+    real field-report articles repeat several times in a row when walking
+    through a series of hard requirements (e.g. signing, expiry, caching,
+    IAM). One atom is one triad; author several in sequence for the full
+    walkthrough.'
+  compact_description: constraint, why it breaks, the fix — one repeatable card
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    constraint: string (required). The hard constraint, stated plainly.
+    breaks: string (required). Why the naive approach fails against it.
+    fix: string (required). The actual fix. Backtick spans render as inline
+      code.
+  source: *id001
+- type: incident_finding
+  stage: preview
+  description: 'One bold-lead diagnosis plus supporting detail, meant to
+    repeat 2-4 times as a retrospective''s "what we actually found" section,
+    with a shared closing synthesis carried on the LAST item in the sequence
+    only. Matches real published incident-retrospective articles'' structure:
+    several independent findings, then one paragraph naming the shared
+    lesson.'
+  compact_description: bold-lead diagnosis + detail, optional closing synthesis on the last one
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    headline: string (required). The one-line diagnosis.
+    detail: string (required). Supporting explanation.
+    synthesis: string (optional). Set ONLY on the last finding in a sequence —
+      the shared lesson across all of them. Renders as a distinct closing
+      note.
+  source: *id001
+- type: wrong_vs_right
+  stage: preview
+  description: 'A narrow list of "it''s X, not Y" corrective pairs — the
+    exact-API-field-naming gotcha pattern real field-report articles use when
+    documenting commonly-confused names/terms. Distinct from before_after
+    (compares two STATES of one thing) and versus_block (compares two
+    OPTIONS): this corrects a specific naming/terminology mistake, pair by
+    pair, and is meant to be short and scannable, not a full comparison.'
+  compact_description: '"it''s X, not Y" corrective name/term pairs'
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    title: string (optional). Heading above the list.
+    pairs: 'array (required). Each item {wrong, right}. wrong: string
+      (required), the commonly-assumed (incorrect) name. right: string
+      (required), the actual correct name. Backtick spans render as inline
+      code.'
+  source: *id001
+- type: agent_demo_card
+  stage: preview
+  description: 'A named case study of one agent/demo, listing which
+    primitives/tools it actually used — the "Demo Agent" pattern real
+    field-report articles use to show a worked example, distinct from the
+    existing case_study_card (a business-education situation/data-points/
+    analysis-questions pattern with an optional hidden model answer). This
+    one is technical and always-visible: name, one-line description, and a
+    flat list of the primitives/tools exercised.'
+  compact_description: named demo/agent case study with the primitives it used
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    name: string (required). The demo/agent's name.
+    description: string (required). One or two sentences on what it does.
+    primitives_used: array of strings (required). The primitive/tool/atom
+      names it exercises, rendered as a chip row.
+  source: *id001
+- type: wishlist_panel
+  stage: preview
+  description: 'Bold-titled asks grouped under labelled subheads — a
+    structured "what''s missing" inventory, distinct from key_takeaways
+    (which is affirmative, summarizing what WAS learned): this is explicitly
+    a gap list, the pattern real field-report articles close on when naming
+    what a platform/API is still missing.'
+  compact_description: grouped, bold-titled "what's missing" asks under labelled subheads
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    title: string (optional). Heading above the panel.
+    groups: 'array (required). Each item {heading, items}. heading: string
+      (required). items: array of strings (required), each rendered with a
+      bold leading phrase before a colon (write "Bold ask: detail.").'
+  source: *id001
+- type: trace_step
+  stage: preview
+  description: 'One numbered step of a request-trace narrative — prose plus
+    optional inline code, meant to accompany sequence_diagram as the prose
+    narration companion when walking a reader through "tracing one request
+    end to end". Author one trace_step per hop; pair with a sequence_diagram
+    showing the same hops visually.'
+  compact_description: one numbered step of a request-trace walkthrough, prose plus optional code
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    step_number: number (required). 1-based position in the trace.
+    title: string (required). Short label for this hop.
+    body: string (required). Prose explaining what happens at this step.
+      Backtick spans render as inline code.
+    code: string (optional). A short code/command snippet for this step,
+      rendered in a monospace block.
+  source: *id001
+- type: stat_inline_badge
+  stage: preview
+  description: 'A bolded "number + noun" callout meant to sit inline inside
+    running prose (e.g. embedded within a body/text_block''s own flow) rather
+    than stand alone as a card — the "468 typed atoms" pattern woven
+    directly into a sentence, distinct from the standalone stat_card/
+    pull_stat, which are always their own block.'
+  compact_description: small inline bolded "number + noun" badge for use inside prose
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    value: string (required). The number/figure, e.g. "534".
+    label: string (required). The noun it modifies, e.g. "typed atoms".
+  source: *id001
+- type: problem_chapter
+  stage: preview
+  description: 'A self-contained numbered narrative unit — headline, body,
+    and a closing one-line "angle"/takeaway callout baked directly into the
+    same atom — matching the "## Problem N:" spine pattern real
+    field-report articles use as their top-level structure, so authoring one
+    chapter is one atom instead of hand-assembling a heading + body +
+    callout every time.'
+  compact_description: numbered narrative chapter with a built-in closing takeaway callout
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    number: number (required). 1-based chapter number.
+    headline: string (required). The chapter's title.
+    body: string (required). The chapter's prose. Backtick spans render as
+      inline code.
+    angle_label: string (optional). Label before the closing callout, e.g.
+      "Frugality angle". Defaults to "Takeaway".
+    angle_text: string (required). The one-line closing takeaway.
+  source: *id001
+- type: resource_link_row
+  stage: preview
+  description: 'One row of a closing resource/CTA list — name, link, and an
+    optional one-line note — meant to repeat as a compact resource table at
+    the end of an article, the pattern real field-report articles close on
+    ("Live catalog", "MCP endpoint", etc. as named links). Distinct from a
+    generic table: this is a fixed, styled CTA-row shape, not arbitrary
+    tabular data.'
+  compact_description: one named-link resource row for a closing CTA list
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    label: string (required). The link's visible text.
+    url: url (required). The destination.
+    note: string (optional). One short line of context after the link.
+  source: *id001

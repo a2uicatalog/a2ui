@@ -10,7 +10,7 @@
       "title": "A2UI base atoms",
       "alwaysResolved": true,
       "whenToUse": "The standard catalog — structure, text, data display, inputs, actions and the wired state connectors. ALWAYS resolved; every surface uses it.",
-      "atomCount": 94,
+      "atomCount": 95,
       "atoms": [
         {
           "type": "accordion_item",
@@ -94,6 +94,16 @@
         {
           "type": "combobox",
           "description": "searchable filterable dropdown — shadcn/Headless UI pattern"
+        },
+        {
+          "type": "content_tabs",
+          "description": "tabbed panels holding nested atom blocks",
+          "children": {
+            "tabs": {
+              "shape": "wrapper_list",
+              "inner_path": "blocks"
+            }
+          }
         },
         {
           "type": "copy_to_clipboard",
@@ -531,7 +541,7 @@
       "title": "Data visualisation",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
-      "atomCount": 20,
+      "atomCount": 21,
       "atoms": [
         {
           "type": "benchmark_comparison",
@@ -591,6 +601,10 @@
         {
           "type": "scatter_trend",
           "description": "coordinate scatter plot with regression trend line"
+        },
+        {
+          "type": "sequence_diagram",
+          "description": "multi-actor sequence diagram — arrows, notes, alt/opt/loop frames"
         },
         {
           "type": "skill_bars",
@@ -934,7 +948,7 @@
       "title": "Editorial & long-form",
       "alwaysResolved": false,
       "whenToUse": "Use for articles/blog posts — intros, footnotes, table of contents, series navigation, further reading, social share.",
-      "atomCount": 26,
+      "atomCount": 28,
       "atoms": [
         {
           "type": "abbr_tooltip",
@@ -998,6 +1012,15 @@
           "description": "series link or transparency note at article top"
         },
         {
+          "type": "layer_stack",
+          "description": "labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow",
+          "children": {
+            "layers": {
+              "shape": "simple"
+            }
+          }
+        },
+        {
           "type": "particle_burst",
           "description": "click anywhere to burst coloured gravity particles from click point"
         },
@@ -1032,6 +1055,10 @@
         {
           "type": "source_citation",
           "description": "numbered RAG source card with title excerpt and URL"
+        },
+        {
+          "type": "stack_layer",
+          "description": "one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack"
         },
         {
           "type": "table_of_contents",

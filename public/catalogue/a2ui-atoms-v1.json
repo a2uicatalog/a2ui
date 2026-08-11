@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (476 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (480 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -15221,6 +15221,52 @@
     "mcp-apps"
    ]
   },
+  "sequence_diagram": {
+   "type": "object",
+   "description": "Multi-actor message sequence diagram — participant boxes with dashed lifelines, per-message arrow rows in order, note bands, and labelled alt/opt/loop/par frames. Feature-parity with the mermaid sequenceDiagram / Google-A2A convention (solid arrow = call, dashed = return/async; optional autonumber) but fully declarative for an LLM (it describes actors + messages structurally, never mermaid syntax) and self-contained (pure HTML/CSS, no client-side JS — renders on every surface, not just web). General-purpose protocol/architecture diagram; not limited to 2-role chat threads the way chat_sequence is.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "sequence_diagram"
+      },
+      "accent": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, hex, default \"#6366f1\")"
+      },
+      "theme": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, \"light\"|\"dark\"|\"site\", default \"light\"). \"site\" follows the host page's light/dark theme (its CSS custom properties) instead of baking a fixed one — for embedding in a themed site."
+      },
+      "autonumber": {
+       "description": "boolean (optional, default false) — prefix each message with a sequential number badge (mermaid's autonumber).",
+       "type": "boolean"
+      },
+      "actors": {
+       "description": "required array of participants, left→right. Each is a plain string (used as both id and label) OR an object {id, label} for a mermaid-style alias (messages/notes may reference the short id while the box shows the friendly label).",
+       "type": "array"
+      },
+      "messages": {
+       "description": "array; each item is one of — MESSAGE {from, to, text, kind?} where from/to are actor ids or labels; kind=\"return\" (aliases reply=true / dashed=true) renders a DASHED arrow (a return or async/stream) vs the default solid arrow (a call/request), the mermaid -->> / ->> distinction; NOTE {note=true, text, over?} where over (an actor, or [a,b] pair) anchors the note box over that lifeline / across that span (mermaid's Note over X / Note over X,Y); omit over for a full-width band; FRAME {frame=\"alt\"|\"opt\"|\"loop\"|\"par\"|\"group\", label, messages=[...], else?=[{label, messages}]} a labelled bordered box grouping nested messages (mermaid's alt/opt/loop/par control-flow frame; alt/par use the optional else branches for alternatives; frames nest).",
+       "type": "array"
+      }
+     },
+     "required": [
+      "component",
+      "actors"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "mcp-apps"
+   ]
+  },
   "chat_sequence": {
    "type": "object",
    "description": "Animated conversation thread with user/assistant bubbles",
@@ -19721,6 +19767,45 @@
     "mcp-apps"
    ]
   },
+  "content_tabs": {
+   "type": "object",
+   "description": "Tabbed panels where each pane holds real nested atom blocks — the generic multi-section single-page container (\"several distinct views of one payload\") without needing named-page infrastructure. Unlike `tabs` (code-oriented, single content string per pane), each pane runs the shared block renderer over its own blocks array, like color_section/columns do for their children.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "content_tabs"
+      },
+      "accent": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Active-tab underline colour."
+      },
+      "default_index": {
+       "description": "integer (optional, default 0). Which tab is open on load.",
+       "type": "number"
+      },
+      "tabs": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "[{'label': 'string', 'blocks': 'array of atom blocks', 'max_width': 'string (optional, e.g. \"90%\" or \"800px\"). Caps and centres this tab\\'s own panel content, independent of any color_section a tab\\'s blocks may also use — set uniformly across tabs for a consistent inset regardless of each tab\\'s internal wrapping.'}]"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
   "math_block": {
    "type": "object",
    "description": "Native MathML equation typeset with the CSS `math` generic font family (STIX / Latin Modern Math) — no JavaScript, no external library. The agent emits standard MathML; the surface draws it. Great for maths and science content — fractions, roots, integrals, matrices — rendered with correct spacing and alignment.",
@@ -19891,6 +19976,140 @@
      },
      "required": [
       "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "layer_stack": {
+   "type": "object",
+   "description": "Declarative labelled layers for a layered architecture — a protocol stack, a request path, any \"what lives at which level\" picture. Each layer is a band carrying a mono technical fact (`field`) beside a plain-language gloss (`note`) — primitive_plate's labelling pairing, without its image substrate: a primitive_plate pin annotates a REAL capture and must never annotate a hand-drawn illustration, and an abstract stack has no capture to pin. Two things concept_ladder cannot do: declare `columns` and each layer renders its `cells` side by side, so ONE stack carries a per-layer comparison of two systems; and set a layer or cell to `status: absent` and it renders a visibly hollow, dashed band, so a level a system does NOT define reads as a stated absence rather than an omission from the diagram. Shares article_journey / concept_ladder's palette token system and IBM Plex fonts so the explainer atoms read as one design system. renderers/web_article.py is the reference implementation; apps-script-surface/gas-wired-renderer/atoms_layers.gs is the port that carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the Worker's /api/render all compile from the .gs sources).",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "layer_stack"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Main heading."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title."
+      },
+      "dek": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Italic one-line subtitle under the title."
+      },
+      "caption": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). One prose line under the header, before the stack. Backtick spans render as inline code."
+      },
+      "source": {
+       "description": "object (optional) — same attribution bar as concept_ladder {title, url, author?, publication?, published?, read_minutes?, label?, steered_by?}. Set it whenever the stack describes SOMEONE ELSE'S system, so the artifact reads as a piece ABOUT that system rather than one that could stand in for its documentation.",
+       "type": "object"
+      },
+      "order": {
+       "description": "string (optional). 'bottom_up' (default) or 'top_down'. Which end of the picture the FIRST declared layer lands at. bottom_up puts it at the bottom — the wire/transport end — so the array reads the way a stack is spoken aloud, from the bottom up. Badge numbering always follows the declared order, not the visual one.",
+       "type": "string"
+      },
+      "base_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Axis caption printed under the stack, e.g. \"bytes on the wire\"."
+      },
+      "top_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Axis caption printed above the stack, e.g. \"meaning\"."
+      },
+      "columns": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (optional). Each item {label, accent?} — a column header. When present, every layer's `cells` render side by side beneath these headers, which is how one stack carries a per-layer comparison of two systems. Omit (or give one column) for a plain single stack. `accent` is a CSS colour string for that column's header and rule. Each label ALSO repeats quietly inside every cell of its column: the header row is a long way up by the time you reach the bottom band, colour cannot carry column identity because the cell fill already encodes `status`, and a band stays self-describing when rendered alone by ComponentId. The repeat is suppressed on a band that spans all columns, and on single-column stacks."
+      },
+      "layers": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (required). Each item is a stack_layer atom object (see that type) — also independently addressable by ComponentId when emitted in the A2UI v1.0 ChildList wire format, so a live agent can patch one layer without resending the whole surface."
+      },
+      "theme": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). 'light' (default) or 'dark' — selects the base palette before any per-token overrides."
+      },
+      "palette": {
+       "description": "object (optional). Same token set as article_journey and concept_ladder: paper, paper_raised, ink, ink_soft, line, accent, accent_soft, blocked, blocked_soft, cleared, cleared_soft, mono_bg, mono_fg, mono_accent — each a CSS colour string. Unset tokens keep the theme default. `status` maps onto these: present -> cleared, absent -> blocked, partial -> accent.",
+       "type": "object"
+      },
+      "use_plex_fonts": {
+       "description": "boolean (optional, default true). Loads IBM Plex Mono and IBM Plex Serif via same-origin @font-face — see THIRD-PARTY-NOTICES.md. Set false for system font stacks only.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component",
+      "layers"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "stack_layer": {
+   "type": "object",
+   "description": "One band of a layer_stack — a badge, the layer name, and either a single field/note pane or one pane per column via `cells`. Reads its colour tokens from the CSS custom properties an enclosing layer_stack sets and renders with sane fallback colours standalone. Rarely authored outside layer_stack.layers, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "stack_layer"
+      },
+      "name": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The layer name, e.g. \"Transport\"."
+      },
+      "badge": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small label above the name — defaults to the 1-based position in layer_stack.layers as declared."
+      },
+      "field": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). The technical/schema fact, rendered monospace. Used when the layer has no `cells`."
+      },
+      "note": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). The plain-language gloss. Used when the layer has no `cells`. Backtick spans render as inline code."
+      },
+      "examples": {
+       "description": "array of strings (optional). Concrete instances at this layer, rendered as a wrapping chip row across the foot of the band, e.g. \"stdio\", \"Streamable HTTP\".",
+       "type": "array"
+      },
+      "status": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). 'present' (default), 'absent' or 'partial'. absent renders the pane hollow with a dashed border — the point is that a layer a system does not define stays VISIBLE and reads as a stated absence. Maps onto the palette's cleared / blocked / accent tokens."
+      },
+      "cells": {
+       "description": "array (optional). One entry per layer_stack column, index-aligned with it. Each item {field?, note?, status?} — the same three fields, per column. Given cells, the layer's own field/note/status are ignored.",
+       "type": "array"
+      }
+     },
+     "required": [
+      "component",
+      "name"
      ]
     }
    ],

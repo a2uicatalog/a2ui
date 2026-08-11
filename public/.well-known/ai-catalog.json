@@ -19,7 +19,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 476 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 480 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -6641,6 +6641,22 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:sequence_diagram",
+      "displayName": "Sequence Diagram",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/sequence_diagram",
+      "capabilities": [
+        "web",
+        "mcp-apps"
+      ],
+      "description": "Multi-actor message sequence diagram \u2014 participant boxes with dashed lifelines, per-message arrow rows in order, note bands, and labelled alt/opt/loop/par frames. Feature-parity with the mermaid sequenceDiagram / Google-A2A convention (solid arrow = call, dashed = return/async; optional autonumber) but fully declarative for an LLM (it describes actors + messages structurally, never mermaid syntax) and self-contained (pure HTML/CSS, no client-side JS \u2014 renders on every surface, not just web). General-purpose protocol/architecture diagram; not limited to 2-role chat threads the way chat_sequence is.",
+      "representativeQueries": [
+        "show a multi-actor sequence diagram \u2014 arrows, notes, alt/opt/loop frames",
+        "multi-actor message sequence diagram \u2014 participant boxes with dashed lifelines, per-message arrow rows in order, note",
+        "render a sequence diagram"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:chat_sequence",
       "displayName": "Chat Sequence",
       "type": "application/vnd.a2ui.atom+json",
@@ -8453,6 +8469,24 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:content_tabs",
+      "displayName": "Content Tabs",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/content_tabs",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Tabbed panels where each pane holds real nested atom blocks \u2014 the generic multi-section single-page container (\"several distinct views of one payload\") without needing named-page infrastructure. Unlike `tabs` (code-oriented, single content string per pane), each pane runs the shared block renderer over its own blocks array, like color_section/columns do for their children.",
+      "representativeQueries": [
+        "show a tabbed panels holding nested atom blocks",
+        "tabbed panels where each pane holds real nested atom blocks \u2014 the generic multi-section single-page container",
+        "render a content tabs"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:math_block",
       "displayName": "Math Block",
       "type": "application/vnd.a2ui.atom+json",
@@ -8502,6 +8536,40 @@
         "show a one depth level (kind chip, title, body, code, takeaway) \u2014 normally used inside concept_ladder",
         "one depth level of a concept_ladder \u2014 a kind chip (depth n or worked example), title, body copy, an optional",
         "render a concept rung"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:layer_stack",
+      "displayName": "Layer Stack",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/layer_stack",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Declarative labelled layers for a layered architecture \u2014 a protocol stack, a request path, any \"what lives at which level\" picture. Each layer is a band carrying a mono technical fact (`field`) beside a plain-language gloss (`note`) \u2014 primitive_plate's labelling pairing, without its image substrate: a primitive_plate pin annotates a REAL capture and must never annotate a hand-drawn illustration, and an abstract stack has no capture to pin. Two things concept_ladder cannot do: declare `columns` and each layer renders its `cells` side by side, so ONE stack carries a per-layer comparison of two systems; and set a layer or cell to `status: absent` and it renders a visibly hollow, dashed band, so a level a system does NOT define reads as a stated absence rather than an omission from the diagram. Shares article_journey / concept_ladder's palette token system and IBM Plex fonts so the explainer atoms read as one design system. renderers/web_article.py is the reference implementation; apps-script-surface/gas-wired-renderer/atoms_layers.gs is the port that carries it to every other surface (GAS ?p= URLs, the MCP Apps bundle and the Worker's /api/render all compile from the .gs sources).",
+      "representativeQueries": [
+        "show a labelled layer bands \u2014 field/note per layer, optional side-by-side columns, absent layers render hollow",
+        "declarative labelled layers for a layered architecture \u2014 a protocol stack, a request path, any \"what lives at which",
+        "render a layer stack"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:stack_layer",
+      "displayName": "Stack Layer",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/stack_layer",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "One band of a layer_stack \u2014 a badge, the layer name, and either a single field/note pane or one pane per column via `cells`. Reads its colour tokens from the CSS custom properties an enclosing layer_stack sets and renders with sane fallback colours standalone. Rarely authored outside layer_stack.layers, but is its own atom type so it can be independently addressed by ComponentId in the A2UI v1.0 ChildList wire format.",
+      "representativeQueries": [
+        "show a one layer band (badge, name, field/note or per-column cells) \u2014 normally used inside layer_stack",
+        "one band of a layer_stack \u2014 a badge, the layer name, and either a single field/note pane or one pane per column via",
+        "render a stack layer"
       ]
     }
   ]

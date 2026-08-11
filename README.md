@@ -9,7 +9,7 @@
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
 <!-- readme-badges:start -->
-[![Atoms](https://img.shields.io/badge/atoms-476-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
+[![Atoms](https://img.shields.io/badge/atoms-480-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
 [![Surfaces](https://img.shields.io/badge/surfaces-8-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
 [![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
 [![ARD](https://img.shields.io/badge/ARD-ai--catalog.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ai-catalog.json)
@@ -180,7 +180,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-476 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+480 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | email | pdf | Source · license |
 |---|---|---|---|---|---|---|---|---|---|
@@ -270,6 +270,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `confetti_burst` | ✅ | ✅ | ✅ | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `confetti_trigger` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `confidence_bar` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `content_tabs` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `contributor_list` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `conversation_snippet` | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `conversion_funnel` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -422,6 +423,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `keyboard_shortcut` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `kinetic_headline` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `knowledge_check` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `layer_stack` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `leaderboard_card` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `learning_objectives` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `learning_path_selector` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -554,6 +556,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `section_label` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `segmented_control` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [UIverse.io community](https://uiverse.io) · MIT |
 | `sentiment_summary` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `sequence_diagram` | ✅ | — | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `series_overview_card` | ✅ | ✅ | — | — | ⚠️ | ✅ | ⚠️ | — | [shadcn/ui](https://github.com/a2uicatalog/a2ui) · MIT |
 | `share_quote` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [Flowbite](https://github.com/a2uicatalog/a2ui) · MIT |
 | `sheet_form` | ✅ | ✅ | ✅ | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -586,6 +589,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `spotlight_cursor` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `spring_nodes` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `sprint_board` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [Atlassian Design System](https://atlassian.design) · Apache-2.0 |
+| `stack_layer` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `stacked_area` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `stagger_list` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `star_rating_display` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [UIverse.io community](https://uiverse.io) · MIT |

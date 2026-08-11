@@ -267,6 +267,22 @@ a2ui-editorial-v1:
 # deeper.
 - layer_stack
 - stack_layer
+# 10 article-artifact-template atoms (2026-08-11, stage: preview), grounded in
+# real content-shape patterns pulled from this estate's own published
+# field-report articles (launch-src/001-006*.md) — same editorial reason to
+# sit here as journey_step/concept_rung: each is a repeatable unit a writer
+# composes into an article_journey/concept_ladder-shaped piece, not a
+# standalone card.
+- agent_demo_card
+- constraint_fix_triad
+- incident_finding
+- problem_chapter
+- resource_link_row
+- stat_inline_badge
+- trace_step
+- verdict_checklist
+- wishlist_panel
+- wrong_vs_right
 - news_digest
 - particle_burst
 - post_metadata_bar

@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 476 atoms.** One line each:
+1. **Compact index — all 480 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 476 atoms)
+### Compact index (all 480 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -750,6 +750,7 @@ does not exist.
 - `live_clock` — live ticking clock widget
 - `decision_tree` — interactive collapsible decision tree
 - `step_reveal_sequence` — tabbed step-by-step sequence
+- `sequence_diagram` — multi-actor sequence diagram — arrows, notes, alt/opt/loop frames
 - `chat_sequence` — animated chat conversation thread
 - `tooltip_glossary` — glossary with hover tooltips
 - `focus_lens` — spotlight focus lens on blurred background
@@ -854,9 +855,12 @@ does not exist.
 - `flashcard_deck` — flip-card deck of question answer pairs
 - `brevet_timeline` — dated vertical revision timeline
 - `gdm_rocket_panel` — isometric rocket launch canvas animation, fixed half-viewport overlay
+- `content_tabs` — tabbed panels holding nested atom blocks
 - `math_block` — native MathML equation typeset with the math font family
 - `concept_ladder` — layered-depth concept explainer — hook, mental-model card, depth rungs, worked example
 - `concept_rung` — one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder
+- `layer_stack` — labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow
+- `stack_layer` — one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack
 ## Payload envelope (renderer contract — not in the catalog)
 
 Simple page:
@@ -927,7 +931,7 @@ import json, zlib, base64
 payload = {...}  # the payload you just built
 raw = json.dumps(payload, ensure_ascii=False).encode()
 enc = base64.urlsafe_b64encode(zlib.compress(raw, level=9, wbits=31)).rstrip(b"=").decode()
-print("GAS:", "https://script.google.com/macros/s/AKfycbx2G0A7eXuJSrwEvE7ph2Hc9QAtljCYwU1LK9tISLVhQf7Aa6euXgvsnE71XESOrxmYNw/exec?p=" + enc)
+print("GAS:", "https://script.google.com/macros/s/AKfycbzqMKh68wM1YhsSCkTq_SG78MkubQwV7LVXavwPbZ06voMiMZdR8tc83ned6qJPmWTZyg/exec?p=" + enc)
 print("MCP Apps:", "https://a2uicatalog.ai/play#p=" + enc)
 print("URL chars:", len(enc))
 ```

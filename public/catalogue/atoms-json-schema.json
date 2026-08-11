@@ -12088,6 +12088,79 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "sequence_diagram"
+          },
+          "accent": {
+            "type": "string"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "string (optional, \"light",
+              "dark",
+              "site\", default \"light\"). \"site\" follows the host page's light/dark theme (its CSS custom properties) instead of baking a fixed one \u2014 for embedding in a themed site."
+            ]
+          },
+          "autonumber": {
+            "type": "boolean"
+          },
+          "actors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label"
+              ]
+            }
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "from",
+                "to",
+                "text"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "actors"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "chat_sequence"
           },
           "messages": {
@@ -16591,6 +16664,48 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "content_tabs"
+          },
+          "accent": {
+            "type": "string"
+          },
+          "default_index": {
+            "type": "integer"
+          },
+          "tabs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "blocks": {
+                  "type": "string"
+                },
+                "max_width": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "blocks"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "tabs"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "math_block"
           },
           "mathml": {
@@ -16759,6 +16874,176 @@
         },
         "required": [
           "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "layer_stack"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "string"
+          },
+          "dek": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "source": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "author": {
+                  "type": "string"
+                },
+                "publication": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "read_minutes": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "steered_by": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "url"
+              ]
+            }
+          },
+          "order": {
+            "type": "string",
+            "enum": [
+              "thewire/transportend\u2014sothearrayreadsthewayastackisspokenaloud",
+              "fromthebottomupBadgenumberingalwaysfollowsthedeclaredorder",
+              "notthevisualone"
+            ]
+          },
+          "base_label": {
+            "type": "integer"
+          },
+          "top_label": {
+            "type": "integer"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "accent": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label"
+              ]
+            }
+          },
+          "layers": {
+            "type": "string",
+            "enum": [
+              "alsoindependentlyaddressablebyComponentIdwhenemittedintheA2UIv10ChildListwireformat",
+              "soaliveagentcanpatchonelayerwithoutresendingthewholesurface"
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "string . 'light'",
+              "'dark' \u2014 selects the base palette before any per-token overrides."
+            ]
+          },
+          "palette": {
+            "type": "string",
+            "enum": [
+              "eachaCSScolourstringUnsettokenskeepthethemedefault`status`mapsontothese:present->cleared",
+              "absent->blocked",
+              "partial->accent"
+            ]
+          },
+          "use_plex_fonts": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "layers"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "stack_layer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "badge": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "examples": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "type",
+          "name"
         ],
         "additionalProperties": false
       }

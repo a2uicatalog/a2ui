@@ -1,0 +1,29 @@
+{
+  "name": "a2uicatalog-a2h-printer-copilotkit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CopilotKit Channels mode for a2uicatalog a2h Printer — hosted, LLM-agent-driven Slack/Telegram/Teams delivery via CopilotKit's Channels SDK. NOT sovereign (uses CopilotKit's hosted Intelligence backend) — see ../README.md for how this differs from the self-hosted mode in ../src/.",
+  "scripts": {
+    "slack": "tsx --env-file=.env channel.ts",
+    "telegram": "tsx --env-file=.env telegram-channel.ts",
+    "teams": "tsx --env-file=.env teams-channel.ts",
+    "whatsapp": "tsx --env-file=.env whatsapp-channel.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/google-vertex": "^5.0.46",
+    "@copilotkit/channels": "^0.8.0",
+    "@copilotkit/channels-core": "^0.8.0",
+    "@copilotkit/channels-slack": "^0.8.0",
+    "@copilotkit/channels-teams": "^0.8.0",
+    "@copilotkit/channels-telegram": "^0.8.0",
+    "@copilotkit/channels-whatsapp": "^0.8.0",
+    "@copilotkit/channels-ui": "^0.8.0",
+    "@copilotkit/runtime": "^1.66.4",
+    "@copilotkit/shared": "^1.66.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.11"
+  }
+}

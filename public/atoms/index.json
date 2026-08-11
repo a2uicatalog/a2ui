@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 476,
+ "atomCount": 480,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -3674,6 +3674,14 @@
    ]
   },
   {
+   "type": "sequence_diagram",
+   "compact": "multi-actor sequence diagram — arrows, notes, alt/opt/loop frames",
+   "surfaces": [
+    "web",
+    "mcp-apps"
+   ]
+  },
+  {
    "type": "chat_sequence",
    "compact": "animated chat conversation thread",
    "surfaces": [
@@ -4654,6 +4662,16 @@
    ]
   },
   {
+   "type": "content_tabs",
+   "compact": "tabbed panels holding nested atom blocks",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
    "type": "math_block",
    "compact": "native MathML equation typeset with the math font family",
    "surfaces": [
@@ -4675,6 +4693,24 @@
   {
    "type": "concept_rung",
    "compact": "one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "layer_stack",
+   "compact": "labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "stack_layer",
+   "compact": "one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack",
    "surfaces": [
     "web",
     "google-apps-script-web",
