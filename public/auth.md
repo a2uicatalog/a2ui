@@ -1,4 +1,4 @@
-# Authentication — A2UI Atomic Catalog
+# auth.md — A2UI Atomic Catalog Authentication
 
 **Most agents need no credential at all.** The primary MCP server is public and
 unauthenticated. If you are here because a scanner or a spec told you to look for
