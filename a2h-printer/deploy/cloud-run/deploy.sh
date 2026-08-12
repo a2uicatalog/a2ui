@@ -35,6 +35,29 @@
 #                              signing/verifying with the same key. Only
 #                              read when RENDER_BASE_URL is set. Default:
 #                              render-signing-key
+#   SLACK_SIGNING_SECRET_NAME / SLACK_BOT_TOKEN_SECRET_NAME /
+#   MCP_AUTH_TOKEN_SECRET_NAME / TEAMS_APP_PASSWORD_SECRET_NAME
+#                              Secret Manager secret NAMES this run writes
+#                              to — default to this script's original
+#                              literals (slack-signing-secret, slack-bot-
+#                              token, mcp-auth-token, teams-app-password),
+#                              unchanged from every prior release. Override
+#                              ALL FOUR (plus BUCKET_NAME below) with a
+#                              distinct value whenever SERVICE_NAME differs
+#                              from the default — running this script twice
+#                              in ONE project with just a different
+#                              SERVICE_NAME and no other overrides adds a
+#                              new version to the SAME secrets the first
+#                              service reads via :latest (silently rotating
+#                              its live MCP_AUTH_TOKEN/Teams password out
+#                              from under it) and mounts the SAME GCS bucket
+#                              for SQLite from two concurrent Cloud Run
+#                              services — exactly the concurrent-writer case
+#                              README.md's own storage section says GCS-FUSE
+#                              SQLite is unsafe for. Found live 2026-08-12
+#                              standing up a second instance; these vars are
+#                              the fix, mirroring RENDER_SIGNING_KEY_SECRET's
+#                              already-existing override pattern above.
 #   TEAMS_APP_ID / TEAMS_APP_PASSWORD  enables the Microsoft Teams surface
 #                              when BOTH are set (README.md's "Teams app
 #                              setup"). Unset by default: /api/messages then
@@ -87,6 +110,13 @@ SLACK_DEFAULT_CHANNEL="${SLACK_DEFAULT_CHANNEL:-#general}"
 MIN_INSTANCES="${MIN_INSTANCES:-0}"
 RENDER_BASE_URL="${RENDER_BASE_URL:-}"
 RENDER_SIGNING_KEY_SECRET="${RENDER_SIGNING_KEY_SECRET:-render-signing-key}"
+# See header comment above — override all four whenever SERVICE_NAME/
+# BUCKET_NAME differ from the default, to avoid colliding with another
+# instance's secrets in the same project.
+SLACK_SIGNING_SECRET_NAME="${SLACK_SIGNING_SECRET_NAME:-slack-signing-secret}"
+SLACK_BOT_TOKEN_SECRET_NAME="${SLACK_BOT_TOKEN_SECRET_NAME:-slack-bot-token}"
+MCP_AUTH_TOKEN_SECRET_NAME="${MCP_AUTH_TOKEN_SECRET_NAME:-mcp-auth-token}"
+TEAMS_APP_PASSWORD_SECRET_NAME="${TEAMS_APP_PASSWORD_SECRET_NAME:-teams-app-password}"
 # Comma-separated slack:{team_id}:{user_id} the /mcp token may act for.
 # Unset = permissive (any caller-asserted identity accepted, logged loudly).
 # Set it: /mcp derives the storage key from caller-supplied args with nothing
@@ -118,11 +148,11 @@ create_or_update_secret() {
     printf '%s' "$value" | gcloud secrets versions add "$name" --project "$PROJECT_ID" --data-file=-
   fi
 }
-create_or_update_secret slack-signing-secret "$SLACK_SIGNING_SECRET"
-create_or_update_secret slack-bot-token "$SLACK_BOT_TOKEN"
-create_or_update_secret mcp-auth-token "$MCP_AUTH_TOKEN"
+create_or_update_secret "$SLACK_SIGNING_SECRET_NAME" "$SLACK_SIGNING_SECRET"
+create_or_update_secret "$SLACK_BOT_TOKEN_SECRET_NAME" "$SLACK_BOT_TOKEN"
+create_or_update_secret "$MCP_AUTH_TOKEN_SECRET_NAME" "$MCP_AUTH_TOKEN"
 if [[ -n "$TEAMS_APP_ID" && -n "$TEAMS_APP_PASSWORD" ]]; then
-  create_or_update_secret teams-app-password "$TEAMS_APP_PASSWORD"
+  create_or_update_secret "$TEAMS_APP_PASSWORD_SECRET_NAME" "$TEAMS_APP_PASSWORD"
 fi
 
 echo "==> Granting the Cloud Run runtime service account access to these secrets"
@@ -131,8 +161,8 @@ echo "==> Granting the Cloud Run runtime service account access to these secrets
 # idempotent (add-iam-policy-binding no-ops if already present).
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
 RUNTIME_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
-SECRETS_TO_GRANT=(slack-signing-secret slack-bot-token mcp-auth-token)
-SET_SECRETS="SLACK_SIGNING_SECRET=slack-signing-secret:latest,SLACK_BOT_TOKEN=slack-bot-token:latest,MCP_AUTH_TOKEN=mcp-auth-token:latest"
+SECRETS_TO_GRANT=("$SLACK_SIGNING_SECRET_NAME" "$SLACK_BOT_TOKEN_SECRET_NAME" "$MCP_AUTH_TOKEN_SECRET_NAME")
+SET_SECRETS="SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET_NAME}:latest,SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN_SECRET_NAME}:latest,MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN_SECRET_NAME}:latest"
 SET_ENV_VARS="SLACK_DEFAULT_CHANNEL=${SLACK_DEFAULT_CHANNEL}"
 if [[ -n "$MCP_ALLOWED_OWNERS" ]]; then
   echo "    /mcp identity gate ON — token may act only for: ${MCP_ALLOWED_OWNERS}"
@@ -148,8 +178,8 @@ if [[ -n "$RENDER_BASE_URL" ]]; then
 fi
 if [[ -n "$TEAMS_APP_ID" && -n "$TEAMS_APP_PASSWORD" ]]; then
   echo "    Teams surface ON — App ID: ${TEAMS_APP_ID}"
-  SECRETS_TO_GRANT+=(teams-app-password)
-  SET_SECRETS="${SET_SECRETS},TEAMS_APP_PASSWORD=teams-app-password:latest"
+  SECRETS_TO_GRANT+=("$TEAMS_APP_PASSWORD_SECRET_NAME")
+  SET_SECRETS="${SET_SECRETS},TEAMS_APP_PASSWORD=${TEAMS_APP_PASSWORD_SECRET_NAME}:latest"
   SET_ENV_VARS="${SET_ENV_VARS},TEAMS_APP_ID=${TEAMS_APP_ID}"
   if [[ -n "$TEAMS_AUTH_TENANT" ]]; then
     SET_ENV_VARS="${SET_ENV_VARS},TEAMS_AUTH_TENANT=${TEAMS_AUTH_TENANT}"
