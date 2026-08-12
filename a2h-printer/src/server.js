@@ -6,8 +6,31 @@ import { handleMcp } from './routes/mcp.js';
 import { handleServerCard } from './routes/wellknown.js';
 import { handleHealthz } from './routes/healthz.js';
 import { selfCheckChatAuth } from './lib/chat-auth.js';
+import { rateLimit } from './lib/rate-limit.js';
 
 const app = new Hono();
+
+// Defense-in-depth only — see rate-limit.js's own header comment. Applied
+// globally, before every route, ahead of /status too (a health-check
+// storm shouldn't get a free pass either).
+app.use('*', rateLimit);
+
+// Boot-time echo of the SAME check teams-security.js/chat-security.js each
+// make per-request — those are the real enforcement (structurally inert
+// whenever NODE_ENV!=='production'), this is just making the state visible
+// BEFORE the first request, not a second gate. Roast-panel finding,
+// 2026-08-12: the Dockerfile's NODE_ENV=production is the only thing
+// standing between "bypass disabled" and "wide open," and the README's own
+// "runs anywhere Docker runs" claim means someone deploying via a bare
+// `node src/server.js` (skipping the Dockerfile) could forget to set it
+// with no warning until this line existed.
+if ((config.teamsDevBypassAuth || config.chatDevBypassAuth) && process.env.NODE_ENV !== 'production') {
+  console.warn(
+    '[boot] WARNING: a dev auth-bypass flag is set (TEAMS_DEV_BYPASS_AUTH/' +
+    'CHAT_DEV_BYPASS_AUTH) and NODE_ENV is not "production". Inbound auth ' +
+    'is BYPASSED for the affected platform(s). Never run this combination ' +
+    'on a deployment reachable by anyone but you.');
+}
 
 // NOT /healthz: that exact literal path is swallowed by Google's edge (GFE)
 // ahead of Cloud Run — confirmed empirically 2026-08-08 (curl to /healthz

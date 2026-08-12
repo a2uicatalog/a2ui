@@ -37,9 +37,19 @@ in CopilotKit's dashboard/logs before assuming the bridge is broken.
 
 ## Install — for a human OR an AI coding agent following this file
 
-Each step below is marked **[scriptable]** (run it directly, no human needed) or **[human]**
-(requires an interactive browser login or TUI prompt — an agent following this file should stop
-and ask the operator to complete these, not attempt to automate them).
+**Fastest path: `./setup.sh`** — runs every scriptable step for you (npm installs, `.env`
+scaffolding, the one static config value CopilotKit's own CLI doesn't provision), invokes each
+interactive CLI step in turn and waits for you, and prompts you directly for the two values only
+you can supply (`INTELLIGENCE_API_KEY`, `CHANNEL_CODE`) instead of sending you back to this file
+to find where they go. Safe to re-run — never overwrites an existing `.env`, only fills in what's
+missing.
+
+The manual walkthrough below is the same steps, spelled out — useful if you'd rather do each one
+yourself, or if you're an AI coding agent that should understand what `setup.sh` is actually
+doing rather than just running it blind. Each step is marked **[scriptable]** (run it directly,
+no human needed) or **[human]** (requires an interactive browser login or TUI prompt — an agent
+following this file manually should stop and ask the operator to complete these, not attempt to
+automate them).
 
 1. **[human]** Install the CopilotKit CLI and log in:
    ```sh
@@ -110,7 +120,39 @@ Open the playground (prints its own local URL) and point it at `localhost:3978` 
 Adaptive Cards without any Azure Bot registration. Only set `TEAMS_APP_ID`/`TEAMS_APP_PASSWORD`/
 `TEAMS_TENANT_ID` (all **[human]**, from a real Azure Bot resource) once you need a real tenant.
 
-### WhatsApp (optional, unproven — the most setup of the four)
+## Architecture
+
+See `../ARCHITECTURE.md`'s "one repo, two entrypoints, one shared core" section for why this
+lives as a sibling to `../src/` rather than folded into its platform-adapter registry, and how
+`a2ui-bridge.ts`'s Tier 2 fallback shares its signing implementation
+(`../src/lib/crypto-utils.js`'s `signRenderUrl`) with the self-hosted mode — same
+`RENDER_SIGNING_KEY`, same public renderer, zero duplicated signing logic.
+
+## Files
+
+- `channel.ts` / `telegram-channel.ts` / `teams-channel.ts` — one entrypoint per platform, each
+  importing the SAME `a2ui-tool.ts`/`a2ui-bridge.ts` unchanged (the point being that the bridge
+  code itself is platform-independent, not reimplemented per platform)
+- `a2ui-bridge.ts` — Tier 1 (native CopilotKit primitive mapping) + Tier 2 (signed-image
+  fallback, delegating to the shared printer core)
+- `a2ui-tool.ts` — the single `render_a2ui_atom` `ChannelTool` + system prompt, shared by every
+  channel entrypoint so a prompt change can't silently drift between platforms
+
+---
+
+## ⚠️ WhatsApp — experimental, unverified, you would be the first live test
+
+Slack, Telegram, and Teams above are all confirmed working, to the degrees shown in this
+README's own proof table. WhatsApp is genuinely different, which is why it's set apart down
+here rather than presented as a fourth peer alongside them.
+
+**Read this before spending 15+ minutes on Meta's setup flow below.** This adapter has never
+actually been run against a real message. `whatsapp-channel.ts` exists, imports the same
+unchanged, already-proven bridge code (`a2ui-bridge.ts`/`a2ui-tool.ts`), and its own header
+comment says so directly: *"this is the first live attempt at this specific adapter."*
+Everything about it is real and complete except proof. If you set this up and hit a problem,
+the most likely explanation is this specific adapter, not the shared rendering logic underneath
+it — that part already has Slack- and Telegram-grade evidence behind it.
 
 Unlike Telegram, there is no "just get a token" path — WhatsApp needs a real Meta Business
 integration, and it receives messages via an inbound **webhook**, not long-polling, so this
@@ -148,20 +190,6 @@ Per Meta's own "WhatsApp Cloud API Get Started" guide:
    Telegram/Teams paths above, it's plausibly this adapter, not the shared bridge code
    (`a2ui-bridge.ts`/`a2ui-tool.ts` are unchanged from the platforms already proven live).
 
-## Architecture
+## License
 
-See `../ARCHITECTURE.md`'s "one repo, two entrypoints, one shared core" section for why this
-lives as a sibling to `../src/` rather than folded into its platform-adapter registry, and how
-`a2ui-bridge.ts`'s Tier 2 fallback shares its signing implementation
-(`../src/lib/crypto-utils.js`'s `signRenderUrl`) with the self-hosted mode — same
-`RENDER_SIGNING_KEY`, same public renderer, zero duplicated signing logic.
-
-## Files
-
-- `channel.ts` / `telegram-channel.ts` / `teams-channel.ts` — one entrypoint per platform, each
-  importing the SAME `a2ui-tool.ts`/`a2ui-bridge.ts` unchanged (the point being that the bridge
-  code itself is platform-independent, not reimplemented per platform)
-- `a2ui-bridge.ts` — Tier 1 (native CopilotKit primitive mapping) + Tier 2 (signed-image
-  fallback, delegating to the shared printer core)
-- `a2ui-tool.ts` — the single `render_a2ui_atom` `ChannelTool` + system prompt, shared by every
-  channel entrypoint so a prompt change can't silently drift between platforms
+MIT — see `../LICENSE`.

@@ -1,5 +1,5 @@
 services:
-  slack-surface:
+  a2h-printer:
     build: .
     ports:
       - "8080:8080"
@@ -15,7 +15,12 @@ services:
       SLACK_DEFAULT_CHANNEL: ${SLACK_DEFAULT_CHANNEL:-#general}
       MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set in .env}
       MCP_ALLOWED_OWNERS: ${MCP_ALLOWED_OWNERS:-}
-      SQLITE_PATH: /data/slack-surface.db
+      # Roast-panel finding, 2026-08-12: documented in .env.example but was
+      # never passed through here — a Compose user behind a reverse proxy
+      # (exactly who needs this) had no way to set it without hand-editing
+      # this file themselves.
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
+      SQLITE_PATH: /data/a2h-printer.db
       # DATABASE_URL: intentionally unset here — this compose file targets the
       # zero-cost default (SQLite on a local volume, see README). Set it in
       # .env if you want the Postgres backend instead.
@@ -39,7 +44,7 @@ services:
       # Run, so this (a full JSON key) is the only option here.
       GOOGLE_SERVICE_ACCOUNT_KEY: ${GOOGLE_SERVICE_ACCOUNT_KEY:-}
     volumes:
-      - slack-surface-data:/data
+      - a2h-printer-data:/data
 
 volumes:
-  slack-surface-data:
+  a2h-printer-data:

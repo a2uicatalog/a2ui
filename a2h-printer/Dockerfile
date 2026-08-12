@@ -20,6 +20,6 @@ COPY package.json ./
 COPY src ./src
 # SQLite lives on a mounted volume in production (see README's Cloud Run
 # GCS-FUSE instructions) — this default path is for local/docker-compose use.
-ENV SQLITE_PATH=/data/slack-surface.db
+ENV SQLITE_PATH=/data/a2h-printer.db
 EXPOSE 8080
 CMD ["node", "src/server.js"]

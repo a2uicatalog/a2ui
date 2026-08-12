@@ -346,3 +346,7 @@ it (`src/storage/index.js`).
   adapter registry generalizes to a fourth surface with a genuinely different auth
   shape (a static secret header, unlike Slack's HMAC or Teams/Chat's JWTs). See
   `ARCHITECTURE.md` for the sketch and what building it for real would take.
+
+## License
+
+MIT — see `LICENSE`.

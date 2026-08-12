@@ -17,6 +17,14 @@
 #   SLACK_BOT_TOKEN         from Slack app's OAuth & Permissions page (xoxb-...)
 #   MCP_AUTH_TOKEN          generate with: openssl rand -hex 32
 #
+# Also required, but with an explicit escape hatch each (see the two deploy-
+# time guards below, added after a 2026-08-12 roast-panel pass):
+#   MCP_ALLOWED_OWNERS — or set MCP_ALLOW_OPEN_IDENTITY=1 to proceed without
+#                         one (e.g. a throwaway/demo deployment).
+#   BUCKET_NAME + all four *_SECRET_NAME vars below — only when SERVICE_NAME
+#                         is set to something other than the default; no
+#                         escape hatch, this one's a real collision otherwise.
+#
 # Optional:
 #   REGION                  default us-central1
 #   SERVICE_NAME             default a2uicatalog-slack-surface
@@ -99,6 +107,16 @@ set -euo pipefail
 : "${SLACK_BOT_TOKEN:?Set SLACK_BOT_TOKEN}"
 : "${MCP_AUTH_TOKEN:?Set MCP_AUTH_TOKEN}"
 
+# Captured BEFORE any default is applied below — this is how the multi-
+# instance guard (further down) tells "caller explicitly named a value"
+# apart from "caller is using the default."
+_SERVICE_NAME_WAS_SET="${SERVICE_NAME+x}"
+_BUCKET_NAME_WAS_SET="${BUCKET_NAME+x}"
+_SLACK_SIGNING_SECRET_NAME_WAS_SET="${SLACK_SIGNING_SECRET_NAME+x}"
+_SLACK_BOT_TOKEN_SECRET_NAME_WAS_SET="${SLACK_BOT_TOKEN_SECRET_NAME+x}"
+_MCP_AUTH_TOKEN_SECRET_NAME_WAS_SET="${MCP_AUTH_TOKEN_SECRET_NAME+x}"
+_TEAMS_APP_PASSWORD_SECRET_NAME_WAS_SET="${TEAMS_APP_PASSWORD_SECRET_NAME+x}"
+
 REGION="${REGION:-us-central1}"
 # Kept as the original service name deliberately, even though the repo/package
 # renamed to "a2h-printer" — renaming a LIVE service means re-pointing an
@@ -131,6 +149,55 @@ TRUST_CLOUD_RUN_IAM="${TRUST_CLOUD_RUN_IAM:-}"
 CHAT_SERVICE_ACCOUNT="${CHAT_SERVICE_ACCOUNT:-}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+# ── Deploy-time guard #1: multi-instance secret/bucket collision ───────────
+# Roast-panel finding, 2026-08-12: a deployer who overrides SERVICE_NAME but
+# forgets even one of the four *_SECRET_NAME vars (or BUCKET_NAME) silently
+# reproduces the exact collision this script's header comment already warns
+# about — a comment is not a guard. This makes it structurally impossible
+# instead: naming a non-default SERVICE_NAME REQUIRES every other override
+# to also be explicit. Deploy-time only — does not touch any already-running
+# service, since it only fires on a NEW invocation of this script.
+if [[ -n "$_SERVICE_NAME_WAS_SET" && "$SERVICE_NAME" != "a2uicatalog-slack-surface" ]]; then
+  _missing_overrides=()
+  for _var in BUCKET_NAME SLACK_SIGNING_SECRET_NAME SLACK_BOT_TOKEN_SECRET_NAME \
+              MCP_AUTH_TOKEN_SECRET_NAME TEAMS_APP_PASSWORD_SECRET_NAME; do
+    _was_set_name="_${_var}_WAS_SET"
+    if [[ -z "${!_was_set_name:-}" ]]; then
+      _missing_overrides+=("$_var")
+    fi
+  done
+  if [[ ${#_missing_overrides[@]} -gt 0 ]]; then
+    echo "ERROR: SERVICE_NAME=${SERVICE_NAME} differs from the default, but the" >&2
+    echo "       following overrides were NOT explicitly set: ${_missing_overrides[*]}" >&2
+    echo "       Running with only SERVICE_NAME changed will write to the SAME" >&2
+    echo "       Secret Manager secrets and GCS bucket the default-named service" >&2
+    echo "       uses — silently rotating its live credentials and sharing its" >&2
+    echo "       SQLite storage. Set all five explicitly (see this script's header" >&2
+    echo "       comment for what each one does) before deploying a second instance." >&2
+    exit 1
+  fi
+fi
+
+# ── Deploy-time guard #2: /mcp identity gate must be an explicit choice ────
+# Roast-panel finding, 2026-08-12: MCP_ALLOWED_OWNERS unset is a DELIBERATE
+# runtime default (see the var's own comment above) — flipping it fail-
+# closed at RUNTIME would silently break every already-deployed instance on
+# next boot, the exact incident the runtime default was chosen to avoid.
+# This is the other half: a NEW deploy must actively acknowledge running
+# open, rather than getting there by never having read this far. Set
+# MCP_ALLOWED_OWNERS for real, or set MCP_ALLOW_OPEN_IDENTITY=1 to proceed
+# anyway (e.g. for a throwaway/demo deployment where this genuinely doesn't
+# matter yet).
+if [[ -z "$MCP_ALLOWED_OWNERS" && "${MCP_ALLOW_OPEN_IDENTITY:-}" != "1" ]]; then
+  echo "ERROR: MCP_ALLOWED_OWNERS is unset. Without it, any holder of" >&2
+  echo "       MCP_AUTH_TOKEN can read or write ANY identity's data via /mcp." >&2
+  echo "       Set MCP_ALLOWED_OWNERS to a comma-separated allowlist (find" >&2
+  echo "       yours with the /a2ui whoami slash command once Slack is live)," >&2
+  echo "       or set MCP_ALLOW_OPEN_IDENTITY=1 to explicitly proceed without" >&2
+  echo "       one anyway." >&2
+  exit 1
+fi
 
 echo "==> Bucket for persistent SQLite storage (gs://${BUCKET_NAME})"
 if ! gcloud storage buckets describe "gs://${BUCKET_NAME}" --project "$PROJECT_ID" >/dev/null 2>&1; then

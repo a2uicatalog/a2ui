@@ -5,9 +5,20 @@
 // optional() instead and fails closed per-request in its own adapter — a
 // deployer enabling only a subset of platforms must be able to boot with
 // the rest entirely unset. See adapters/registry.js.
+//
+// Prints a clean one-line message and exits, rather than throwing — an
+// uncaught Error here surfaces as a raw Node stack trace, which is the
+// actual first thing a brand-new deployer following the README sees if
+// they miss one line of .env (found in a 2026-08-12 roast-panel pass).
+// Still fails exactly as fast and as loud — process.exit(1) is not a
+// softer failure mode, just a legible one.
 function required(name) {
   const v = process.env[name];
-  if (!v) throw new Error(`Missing required env var: ${name}`);
+  if (!v) {
+    console.error(`\n${name} is required and is not set.\n` +
+      `See .env.example for how to generate/obtain it, then set it in your .env.\n`);
+    process.exit(1);
+  }
   return v;
 }
 
@@ -39,7 +50,7 @@ export const config = {
   // Storage: SQLite by default (see storage/ layer); DATABASE_URL switches to
   // Postgres behind the same interface. Plan: cuddly-yawning-brook.md #3.
   databaseUrl: optional('DATABASE_URL', null),
-  sqlitePath: optional('SQLITE_PATH', './data/slack-surface.db'),
+  sqlitePath: optional('SQLITE_PATH', './data/a2h-printer.db'),
   // D-bucket image fallback (atoms with no native Slack block — exotic
   // charts, genuinely visual atoms). Both optional TOGETHER: a deployment
   // that omits them keeps today's behavior (render-to-slack.js passes no

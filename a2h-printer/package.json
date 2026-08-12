@@ -2,6 +2,7 @@
   "name": "a2uicatalog-a2h-printer",
   "private": true,
   "version": "1.1.0",
+  "license": "MIT",
   "type": "module",
   "description": "a2uicatalog a2h Printer — the signed-image-render mechanism (the \"printer\") that lets a2uicatalog content reach any chat host. Self-hosted mode: a Slack/Teams/Chat bot deployers run on their own infrastructure, no a2uicatalog.ai account, no data leaves the deployer's container. See copilotkit/ for the hosted, agentic CopilotKit Channels mode.",
   "main": "src/server.js",

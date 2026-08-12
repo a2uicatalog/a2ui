@@ -1,0 +1,117 @@
+name: a2h Printer — CI
+
+# Roast-panel finding, 2026-08-12: a2h-printer/ (self-hosted mode + the
+# CopilotKit sibling in copilotkit/) had ZERO automated checks — every
+# verification during its own build session was boot-it-and-curl-it by
+# hand. This is the minimum real gate: syntax across both trees, a genuine
+# cross-boundary import check (copilotkit/ imports src/lib/crypto-utils.js
+# directly — nothing previously caught that link breaking), and the actual
+# smoke suite against a live-booted instance.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "a2h-printer/**"
+  pull_request:
+    paths:
+      - "a2h-printer/**"
+  workflow_dispatch: {}
+
+jobs:
+  self-hosted:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: a2h-printer
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install
+        run: npm install
+
+      - name: Syntax check every src/ file
+        run: |
+          fail=0
+          for f in $(find src -name "*.js"); do
+            node --check "$f" || fail=1
+          done
+          exit $fail
+
+      - name: Boot with dev-bypass flags + smoke suite
+        run: |
+          PORT=8080 MCP_AUTH_TOKEN=ci_mcp_token \
+            SLACK_SIGNING_SECRET=ci_slack_secret SLACK_BOT_TOKEN=xoxb-ci \
+            TEAMS_APP_ID=ci-app-id TEAMS_APP_PASSWORD=ci-pw TEAMS_DEV_BYPASS_AUTH=1 \
+            CHAT_AUDIENCE=ci-chat-audience CHAT_DEV_BYPASS_AUTH=1 \
+            RENDER_SIGNING_KEY=ci_render_key RENDER_BASE_URL=http://localhost:9999 \
+            node src/server.js &
+          server_pid=$!
+          for i in $(seq 1 20); do
+            curl -sf localhost:8080/status >/dev/null 2>&1 && break
+            sleep 0.5
+          done
+          curl -sf localhost:8080/status || { echo "::error::server never became ready"; exit 1; }
+
+          fail=0
+          SLACK_SIGNING_SECRET=ci_slack_secret bash scripts/smoke/slack.sh http://localhost:8080 || fail=1
+          bash scripts/smoke/teams.sh http://localhost:8080 --bypass-armed || fail=1
+          bash scripts/smoke/chat.sh http://localhost:8080 --bypass-armed || fail=1
+          MCP_AUTH_TOKEN=ci_mcp_token bash scripts/smoke/mcp.sh http://localhost:8080 || fail=1
+
+          kill "$server_pid" 2>/dev/null || true
+          exit $fail
+
+  copilotkit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: a2h-printer/copilotkit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install
+        run: npm install
+
+      - name: Syntax check every .ts entrypoint (Node's native type-stripping, parse-only)
+        run: |
+          fail=0
+          for f in *.ts; do
+            node --experimental-strip-types --check "$f" || fail=1
+          done
+          exit $fail
+
+      - name: Cross-boundary import check (a2ui-bridge.ts -> ../src/lib/crypto-utils.js)
+        # a2ui-bridge.ts and a2ui-tool.ts are the two files with no top-level
+        # side effects (no listener start, no network call, no required()
+        # throw) — safe to actually import, not just syntax-check. This is
+        # the real regression test for the shared-signing-implementation
+        # link: if src/lib/crypto-utils.js ever moves or drops
+        # signRenderUrl's export, THIS is what catches it, not a comment.
+        run: |
+          node --experimental-strip-types -e "
+            import('./a2ui-bridge.ts').then((m) => {
+              if (typeof m.a2uiAtomToImage !== 'function' || typeof m.a2uiAtomToCopilotKit !== 'function') {
+                console.error('a2ui-bridge.ts import shape looks wrong');
+                process.exit(1);
+              }
+              console.log('a2ui-bridge.ts imports cleanly, ../src/lib/crypto-utils.js resolved OK');
+            }).catch((e) => { console.error(e); process.exit(1); })
+          "
+          node --experimental-strip-types -e "
+            import('./a2ui-tool.ts').then((m) => {
+              if (typeof m.renderA2uiAtomTool === 'undefined' || typeof m.fetchWeatherTool === 'undefined') {
+                console.error('a2ui-tool.ts import shape looks wrong');
+                process.exit(1);
+              }
+              console.log('a2ui-tool.ts imports cleanly');
+            }).catch((e) => { console.error(e); process.exit(1); })
+          "

@@ -2,6 +2,7 @@
   "name": "a2uicatalog-a2h-printer-copilotkit",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "type": "module",
   "description": "CopilotKit Channels mode for a2uicatalog a2h Printer — hosted, LLM-agent-driven Slack/Telegram/Teams delivery via CopilotKit's Channels SDK. NOT sovereign (uses CopilotKit's hosted Intelligence backend) — see ../README.md for how this differs from the self-hosted mode in ../src/.",
   "scripts": {

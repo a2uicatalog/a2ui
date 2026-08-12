@@ -82,22 +82,32 @@ function chartElement(chartType: "bar" | "line" | "pie", props: Record<string, u
 /** Table-shaped atoms -> CopilotKit's Table/Row/Cell (confirmed native, see header comment). */
 const TABLE_ATOMS = new Set(["table", "data_table_sortable"]);
 
-/** a2uicatalog's table-shaped props -> CopilotKit Table children. Tolerant of
- * a couple of plausible shapes (rows of objects keyed by column, or rows of
- * plain arrays) since the exact a2uicatalog `table` schema wasn't pulled
- * from the live catalog before writing this — verify against a real
- * response and tighten if it doesn't match. */
+/** a2uicatalog's table/data_table_sortable props -> CopilotKit Table children.
+ * VERIFIED 2026-08-12 against a live a2uicatalog.ai/mcp get_atom_schema call
+ * for both atom types (roast-panel finding — the original prototype's dual-
+ * shape handling here was a guess, never checked against the real schema,
+ * and never actually matched it): `headers` is ALWAYS a flat array of
+ * strings, `rows` is ALWAYS an array of arrays — never objects keyed by
+ * column, never {header} objects, on either atom type. `table`'s own
+ * `caption` field has no equivalent CopilotKit Table prop (channels-ui's
+ * TableProps only has `columns`/children — checked directly against its
+ * .d.ts), so it renders as a Markdown line immediately above the table;
+ * Renderable (what thread.post accepts) is explicitly documented to allow
+ * an array, so returning [Markdown, Table] together is a supported shape,
+ * not a workaround. data_table_sortable's wired-dialect-only fields
+ * (select_state, select_count_state, delete_action_id) are irrelevant here
+ * — this bridge only ever gets a static prop snapshot from the model, never
+ * live ValueStore-bound state. */
 function tableElement(props: Record<string, unknown>) {
-  const headers = (props.headers ?? props.columns) as (string | { header: string })[] | undefined;
-  const columns = Array.isArray(headers)
-    ? headers.map((h) => ({ header: typeof h === "string" ? h : h.header }))
-    : undefined;
-  const rows = (props.rows ?? []) as unknown[];
-  const rowElements = rows.map((row) => {
-    const cells = Array.isArray(row) ? row : Object.values(row as Record<string, unknown>);
-    return Row({ children: cells.map((c) => Cell({ children: String(c) })) });
-  });
-  return Table({ columns, children: rowElements });
+  const headers = (props.headers ?? []) as string[];
+  const columns = headers.map((h) => ({ header: String(h) }));
+  const rows = (props.rows ?? []) as string[][];
+  const rowElements = rows.map((row) =>
+    Row({ children: row.map((c) => Cell({ children: String(c) })) }),
+  );
+  const table = Table({ columns, children: rowElements });
+  const caption = props.caption as string | undefined;
+  return caption ? [Markdown({ children: caption }), table] : table;
 }
 
 /** Text-family atoms with no styled analogue in CopilotKit's primitive set -> plain Markdown. */
