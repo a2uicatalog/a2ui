@@ -1,8 +1,0 @@
-{
-  "type": "message",
-  "id": "smoke-activity-1",
-  "serviceUrl": "https://smba.trafficmanager.net/smoke/",
-  "text": "__TEXT__",
-  "conversation": { "id": "C_SMOKE", "tenantId": "TEN_SMOKE" },
-  "from": { "id": "U_SMOKE_DISPLAY", "aadObjectId": "U_SMOKE" }
-}

@@ -1,6 +1,0 @@
-{
-  "type": "MESSAGE",
-  "space": { "name": "spaces/SMOKE_SPACE" },
-  "user": { "name": "users/SMOKE_USER" },
-  "message": { "argumentText": "__TEXT__" }
-}
