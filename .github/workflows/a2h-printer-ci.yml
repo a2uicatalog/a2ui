@@ -49,19 +49,72 @@ jobs:
             TEAMS_APP_ID=ci-app-id TEAMS_APP_PASSWORD=ci-pw TEAMS_DEV_BYPASS_AUTH=1 \
             CHAT_AUDIENCE=ci-chat-audience CHAT_DEV_BYPASS_AUTH=1 \
             RENDER_SIGNING_KEY=ci_render_key RENDER_BASE_URL=http://localhost:9999 \
-            node src/server.js &
+            node src/server.js > /tmp/a2h-server.log 2>&1 &
           server_pid=$!
+          ready=0
           for i in $(seq 1 20); do
-            curl -sf localhost:8080/status >/dev/null 2>&1 && break
+            curl -sf localhost:8080/status >/dev/null 2>&1 && { ready=1; break; }
             sleep 0.5
           done
-          curl -sf localhost:8080/status || { echo "::error::server never became ready"; exit 1; }
+          if [ "$ready" != "1" ]; then
+            echo "::error::server never became ready — captured log follows"
+            cat /tmp/a2h-server.log
+            exit 1
+          fi
 
           fail=0
           SLACK_SIGNING_SECRET=ci_slack_secret bash scripts/smoke/slack.sh http://localhost:8080 || fail=1
           bash scripts/smoke/teams.sh http://localhost:8080 --bypass-armed || fail=1
           bash scripts/smoke/chat.sh http://localhost:8080 --bypass-armed || fail=1
           MCP_AUTH_TOKEN=ci_mcp_token bash scripts/smoke/mcp.sh http://localhost:8080 || fail=1
+
+          # Round-2 roast-panel finding, 2026-08-12: the boot-time bypass
+          # warning and the rate limiter both shipped without their own
+          # regression test — added here rather than left to "it worked
+          # when I tested it locally."
+          echo "== Checking boot-time dev-bypass warning fired =="
+          grep -q "dev auth-bypass flag is set" /tmp/a2h-server.log \
+            && echo "PASS: boot warning present" \
+            || { echo "FAIL: boot warning missing from server log"; fail=1; }
+
+          kill "$server_pid" 2>/dev/null || true
+          exit $fail
+
+      - name: Rate limiter — separate buckets actually isolated
+        run: |
+          PORT=8081 MCP_AUTH_TOKEN=ci_mcp_token \
+            SLACK_SIGNING_SECRET=ci_slack_secret SLACK_BOT_TOKEN=xoxb-ci \
+            RATE_LIMIT_WEBHOOK_MAX_PER_WINDOW=5 RATE_LIMIT_MCP_MAX_PER_WINDOW=5 \
+            node src/server.js > /tmp/a2h-rl-server.log 2>&1 &
+          server_pid=$!
+          ready=0
+          for i in $(seq 1 20); do
+            curl -sf localhost:8081/status >/dev/null 2>&1 && { ready=1; break; }
+            sleep 0.5
+          done
+          if [ "$ready" != "1" ]; then
+            echo "::error::rate-limit test server never became ready"; cat /tmp/a2h-rl-server.log; exit 1
+          fi
+
+          fail=0
+          # Exhaust the webhook bucket (limit=5): the 6th request must 429.
+          for i in $(seq 1 5); do
+            curl -s -o /dev/null -X POST localhost:8081/slack/command \
+              -H 'Content-Type: application/x-www-form-urlencoded' --data 'text=list'
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8081/slack/command \
+            -H 'Content-Type: application/x-www-form-urlencoded' --data 'text=list')
+          [ "$code" = "429" ] && echo "PASS: webhook bucket enforces its limit" \
+            || { echo "FAIL: expected 429 after exhausting webhook bucket, got $code"; fail=1; }
+
+          # /mcp must be COMPLETELY UNAFFECTED by the webhook bucket above —
+          # this is the actual regression this test exists to catch (round-1's
+          # bug was exactly this: one shared bucket for both).
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8081/mcp \
+            -H "Authorization: Bearer ci_mcp_token" -H 'Content-Type: application/json' \
+            --data '{"jsonrpc":"2.0","id":1,"method":"ping"}')
+          [ "$code" = "200" ] && echo "PASS: /mcp bucket isolated from exhausted webhook bucket" \
+            || { echo "FAIL: expected /mcp to still be 200 (isolated bucket), got $code"; fail=1; }
 
           kill "$server_pid" 2>/dev/null || true
           exit $fail

@@ -192,4 +192,4 @@ Per Meta's own "WhatsApp Cloud API Get Started" guide:
 
 ## License
 
-MIT — see `../LICENSE`.
+MIT — see `LICENSE`.

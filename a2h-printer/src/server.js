@@ -6,14 +6,26 @@ import { handleMcp } from './routes/mcp.js';
 import { handleServerCard } from './routes/wellknown.js';
 import { handleHealthz } from './routes/healthz.js';
 import { selfCheckChatAuth } from './lib/chat-auth.js';
-import { rateLimit } from './lib/rate-limit.js';
+import { createRateLimiter } from './lib/rate-limit.js';
 
 const app = new Hono();
 
-// Defense-in-depth only — see rate-limit.js's own header comment. Applied
-// globally, before every route, ahead of /status too (a health-check
-// storm shouldn't get a free pass either).
-app.use('*', rateLimit);
+// Defense-in-depth only — see rate-limit.js's own header comment. TWO
+// separate limiter instances (own bucket Map each), applied to their own
+// route groups — NOT one shared global limiter (round-1 version, fixed
+// 2026-08-12): Slack/Teams/Chat webhooks all arrive from that platform's
+// own shared infrastructure IP, so a busy workspace's real traffic must
+// not compete for the same budget /mcp needs, and vice versa. /status and
+// the .well-known discovery doc stay unthrottled — pure reads, no state
+// changed, and CI/monitoring traffic shouldn't need to reason about a
+// rate limit at all.
+const webhookLimiter = createRateLimiter({ maxPerWindow: config.rateLimitWebhookMaxPerWindow });
+const mcpLimiter = createRateLimiter({ maxPerWindow: config.rateLimitMcpMaxPerWindow });
+app.use('/mcp', mcpLimiter);
+app.use('/slack/command', webhookLimiter);
+app.use('/slack/interactivity', webhookLimiter);
+app.use('/api/messages', webhookLimiter);
+app.use('/chat', webhookLimiter);
 
 // Boot-time echo of the SAME check teams-security.js/chat-security.js each
 // make per-request — those are the real enforcement (structurally inert

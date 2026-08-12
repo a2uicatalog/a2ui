@@ -196,6 +196,12 @@ if [[ -z "$MCP_ALLOWED_OWNERS" && "${MCP_ALLOW_OPEN_IDENTITY:-}" != "1" ]]; then
   echo "       yours with the /a2ui whoami slash command once Slack is live)," >&2
   echo "       or set MCP_ALLOW_OPEN_IDENTITY=1 to explicitly proceed without" >&2
   echo "       one anyway." >&2
+  echo "" >&2
+  echo "       Redeploying a service that was ALREADY LIVE and working before" >&2
+  echo "       2026-08-12? This is a new safety gate, not a regression — that" >&2
+  echo "       service has been running with this same permissive posture all" >&2
+  echo "       along; MCP_ALLOW_OPEN_IDENTITY=1 keeps it working exactly as" >&2
+  echo "       before while you decide whether to lock it down for real." >&2
   exit 1
 fi
 

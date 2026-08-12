@@ -28,6 +28,14 @@ function optional(name, fallback = undefined) {
 
 export const config = {
   port: Number(optional('PORT', 8080)),
+  // Two SEPARATE rate-limit ceilings (see lib/rate-limit.js's own header
+  // comment for why webhook traffic and /mcp traffic must not share one
+  // bucket). Webhook default (120/min = 2 req/sec) is generous for one
+  // workspace's real human-triggered traffic; /mcp's default is higher
+  // (300/min) since a single legitimate agent call can be a real bulk
+  // operation (e.g. save_reading in a loop), not spread across many humans.
+  rateLimitWebhookMaxPerWindow: Number(optional('RATE_LIMIT_WEBHOOK_MAX_PER_WINDOW', 120)),
+  rateLimitMcpMaxPerWindow: Number(optional('RATE_LIMIT_MCP_MAX_PER_WINDOW', 300)),
   // Optional, NOT required() — matches Teams' existing pattern below rather
   // than crashing boot when Slack alone is unconfigured. A deployer who only
   // wants Teams (or, later, only Chat) must be able to start this process
