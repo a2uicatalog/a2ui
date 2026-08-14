@@ -7850,6 +7850,13 @@
               "scroll\", default \"wrap\")"
             ]
           },
+          "same_tab": {
+            "type": "string",
+            "enum": [
+              "otherwiseeverytapleavesatabbehind",
+              "andfourpagesonaphonemeansfourtabs"
+            ]
+          },
           "chips": {
             "type": "array",
             "items": {

@@ -99,6 +99,7 @@ a2ui-atoms-v1:
 - sheet_form_submit
 - sheet_preview
 - skeleton
+- sortable_list
 - spacer
 - spinner
 - split_pane

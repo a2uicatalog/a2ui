@@ -9610,6 +9610,10 @@
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
        "description": "string (optional, \"wrap\"|\"scroll\", default \"wrap\")"
       },
+      "same_tab": {
+       "description": "bool (optional, default false). Chip links open in a new tab by default, which is right for OUTBOUND links from an embedded surface. Set this when the chips are navigation WITHIN one app — otherwise every tap leaves a tab behind, and four pages on a phone means four tabs.",
+       "type": "boolean"
+      },
       "chips": {
        "description": "array (required). Array of {label, color? (hex), url? (href), active? (bool)}",
        "type": "array"

@@ -12,6 +12,7 @@ web, google-apps-script-web, mcp-apps
 |---|---|
 | label | string (optional, group heading) |
 | layout | string (optional, "wrap"|"scroll", default "wrap") |
+| same_tab | bool (optional, default false). Chip links open in a new tab by default, which is right for OUTBOUND links from an embedded surface. Set this when the chips are navigation WITHIN one app — otherwise every tap leaves a tab behind, and four pages on a phone means four tabs. |
 | chips | array (required). Array of {label, color? (hex), url? (href), active? (bool)} |
 
 ## Example payload

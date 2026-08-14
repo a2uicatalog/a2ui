@@ -278,6 +278,58 @@ _RENDERERS['bullet_list'] = function(b) {
   return html;
 };
 
+// sortable_list — drag to reorder. A DATA atom, not a domain one: it renders
+// whatever {id, label} pairs it is given and emits a position, so the same atom
+// serves form fields, a shopping run, or any other AUTHORED ordering. There is
+// deliberately no sortable_jobs and no sortable_fields — that is the shape the
+// vocabulary already drifted into once (onFlightClick, onAssign: one named
+// event per use case, each with its own binding branch).
+//
+// The gesture stays entirely inside the atom and never reaches the state
+// engine; only the RESULT crosses the wire, as one discrete `onReorder` event
+// carrying {id, order}. That is what lets a continuous, 60fps interaction live
+// inside a declarative binding model — same containment the canvas atoms and
+// comparison_morph already rely on.
+//
+// `order` is FRACTIONAL: a drop between neighbours takes the midpoint of their
+// two orders, so exactly ONE item changes. Dense re-indexing would rewrite
+// every row's position on every drag, which turns a one-line, reviewable diff
+// into a wall of noise — and reviewability is the whole point where the result
+// is an overlay someone accepts or reverts.
+//
+// KNOWN LIMIT: HTML5 drag-and-drop, so this is a pointer interaction. It does
+// not work on touch, and drag alone is an accessibility failure — it must
+// always supplement a keyboard or written path, never replace one.
+_RENDERERS['sortable_list'] = function(b) {
+  var items = Array.isArray(b.items) ? b.items : [];
+  var html = '<div data-a2ui-sortable style="margin:var(--a2ui-block-gap,1.25rem) 0;">';
+  if (!items.length) {
+    return html + '<div style="padding:12px;color:var(--muted,#6b7280);font-size:0.875rem;">'
+         + _esc(b.emptyMessage || 'Nothing to reorder.') + '</div></div>';
+  }
+  if (b.label) {
+    html += '<div style="font-size:0.8rem;font-weight:600;color:var(--muted,#6b7280);'
+          + 'margin-bottom:6px;">' + _esc(b.label) + '</div>';
+  }
+  for (var i = 0; i < items.length; i++) {
+    var it = items[i] || {};
+    var ord = (it.order === undefined || it.order === null) ? i : it.order;
+    html += '<div draggable="true" data-sid="' + _esc(String(it.id === undefined ? i : it.id))
+         + '" data-sorder="' + _esc(String(ord)) + '"'
+         + (it.group === undefined || it.group === null ? ''
+            : ' data-sgroup="' + _esc(String(it.group)) + '"')
+         + ' style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin:4px 0;'
+         + 'background:var(--surface,#f9fafb);border:1px solid var(--border,#e5e7eb);'
+         + 'border-radius:8px;cursor:grab;font-size:0.9rem;color:var(--text,#111827);">'
+         + '<span aria-hidden="true" style="color:var(--muted,#9ca3af);line-height:1;">⠿</span>'
+         + '<span>' + _esc(it.label === undefined ? String(it.id) : it.label) + '</span>'
+         + (it.note ? '<span style="margin-left:auto;font-size:0.78rem;color:var(--muted,#6b7280);">'
+                      + _esc(it.note) + '</span>' : '')
+         + '</div>';
+  }
+  return html + '</div>';
+};
+
 // ── Category B: Link / Navigation Renderers ─────────────────────────────────
 
 _RENDERERS['link_button'] = function(b) {
@@ -3815,14 +3867,21 @@ _RENDERERS['section_break'] = function(b) {
     '</div>';
 };
 
+// same_tab: a chip row is often a set of OUTBOUND links, where a new tab is
+// right — the surface may be an embedded iframe the reader does not want to
+// lose. But the same atom is the natural fit for a row of page links WITHIN an
+// app, and there _blank means every tap leaves a tab behind: navigating four
+// pages on a phone ends with four tabs. Found in maison 2026-08-14, where the
+// whole nav is one chip_group. Opt-in so nothing already shipped moves.
 _RENDERERS['chip_group'] = function(b) {
   var uid    = Math.random().toString(36).substr(2, 6);
   var scroll = b.layout === 'scroll';
   var chips  = b.chips || [];
+  var target = b.same_tab ? '_top' : '_blank';
   var chipsHtml = chips.map(function(c) {
     var bg     = c.active ? (c.color || '#6366f1') : (c.color ? c.color + '18' : '#f3f4f6');
     var tc     = c.active ? '#fff' : (c.color || '#374151');
-    var tag    = c.url ? 'a href="' + _esc(c.url) + '" target="_blank" rel="noopener"' : 'span';
+    var tag    = c.url ? 'a href="' + _esc(c.url) + '" target="' + target + '" rel="noopener"' : 'span';
     var endTag = c.url ? 'a' : 'span';
     return '<' + tag + ' style="display:inline-flex;align-items:center;background:' + bg + ';color:' + tc + ';border-radius:99px;padding:4px 14px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;cursor:' + (c.url ? 'pointer' : 'default') + ';">' + _esc(c.label || '') + '</' + endTag + '>';
   }).join('');
