@@ -1,6 +1,8 @@
 # Durable pause — Action Contract Extension v0.1
 
-**Status:** Draft v0.1 (2026-08-14)
+**Status:** Draft v0.1 (2026-08-14) — **implemented and in production** in
+`maison` (`pause.py`, verbs `snag:delete` / `snag:delete!` / `pause:decide`),
+which is the reference implementation for this document.
 **Applies to:** any wired action whose effect a human must authorise, or which
 cannot complete until someone decides something.
 **Requires no renderer change.** That is the main finding of this document —
@@ -27,11 +29,14 @@ component, waits for a click. Tier 2 is the AG-UI field guide's *"the token is
 parked, durably, for a minute or a month"* — process-execution semantics, where
 the run is suspended in state that outlives every page that observed it.
 
-**We want Tier 2, and we already have one instance of it.** `maison`'s
-`layout.save_pending` / `load_pending` / `clear_pending` parks a proposed form
-change keyed by `(page, who)`, discovers it at page-build time, and resumes it
-when the owner presses Apply. It survives reloads and devices. It was written
-for one case and never generalised.
+**We want Tier 2.** `maison` had one hand-rolled instance of it before this
+document existed — `layout.save_pending` / `load_pending` / `clear_pending`
+parks a proposed form change keyed by `(page, who)`, discovers it at page-build
+time, and resumes it on Apply. It was written for that one case and never
+named. `maison/pause.py` is now the generalised form, with `snag:delete` as its
+first consumer: a delete that parks rather than deletes, and a real gap closed
+rather than a demonstration (undo covers fifteen minutes; nothing covered a job
+filed against the wrong house a day later).
 
 ## The load-bearing constraint
 
