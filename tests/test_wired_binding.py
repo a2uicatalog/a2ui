@@ -348,15 +348,19 @@ def test_the_bridge_can_deliver_subject_id(binder_selectors):
         "A2UIState.html, or the value never reaches the atom")
 
 
-def test_confirm_gate_wires_approve_and_decline_to_different_buttons(render_wired):
-    """Two buttons, one control each — the mistake this atom is built to avoid.
+def test_a_gate_frames_real_buttons_rather_than_owning_them(render_wired):
+    """gate_open/gate_close is FLAT, and that is the design, not a convention.
 
-    onClick binds querySelector('button'), which takes whichever is FIRST in
-    the DOM. Wiring a gate that way binds approval to whichever button the
-    markup happens to put first, and the failure is silent AND destructive:
-    the same one-control-is-one-element assumption that made form_radio_group
-    unusable, with worse consequences. So confirm/decline are addressed by
-    their own data attributes through their own wire props.
+    The alternative was one atom holding both buttons. It renders identically
+    and costs the engine two permanent wire props, because one element with two
+    buttons makes querySelector('button') ambiguous — a problem that exists
+    only because the buttons were grouped. Built that way on 2026-08-14 and
+    replaced the same day.
+
+    Flat means each button stays a top-level layout element and binds through
+    the ordinary onClick every other button uses, which is the same reason
+    row_open is flat: a container would take its contents out of the layout the
+    binder walks.
     """
     payload = {
         "type": "a2ui_wired_surface", "title": "gate probe",
@@ -364,30 +368,33 @@ def test_confirm_gate_wires_approve_and_decline_to_different_buttons(render_wire
         "state_primitives": [],
         "actions": [{"id": "act", "type": "mcp:get_profile", "props": {}}],
         "layout": [
-            {"id": "gate", "atom": "confirm_gate",
+            {"atom": "gate_open",
              "props": {"prompt": "Delete it?", "tone": "danger",
-                       "decision_id": "park-123"},
-             "wire": {"onConfirm": "#act.run", "onCancel": "#act.run"}},
+                       "decision_id": "park-123"}},
+            {"id": "yes", "atom": "ripple_button", "props": {"label": "Yes"},
+             "wire": {"onClick": "#act.run"}},
+            {"id": "no", "atom": "ripple_button", "props": {"label": "Cancel"},
+             "wire": {"onClick": "#act.run"}},
+            {"atom": "gate_close"},
         ],
     }
-    seg = _segment_for(render_wired(payload), "gate")
-    assert seg, "confirm_gate must render"
-    assert "data-confirm" in seg and "data-cancel" in seg, (
-        "each button needs its own hook, or the binder cannot tell approval "
-        "from refusal")
-    # Decline must be as reachable as approve, or the gate is a speed bump.
-    assert _count(seg, "button") == 2
-    # The decision travels with the answer: a confirmation that cannot say
-    # what it confirmed is not one.
-    assert 'data-decision-id="park-123"' in seg
+    html = render_wired(payload)
+    assert 'data-decision-id="park-123"' in html, (
+        "the decision must be named on the frame — a confirmation that cannot "
+        "say what it confirms is not one")
 
+    # Each button binds on its own, through the standard contract.
+    for el in ("yes", "no"):
+        seg = _segment_for(html, el)
+        assert seg and _count(seg, "button") == 1, (
+            f"{el} must be its own singly-bindable element")
+    assert not _unbound(payload, html, {"onClick": ["button"]})
+
+    # And the engine gained nothing permanent for it.
     src = STATE.read_text()
-    # One branch per prop, which is the dispatch's convention and what
-    # test_dialect_reachability's parser reads. A combined
-    # `prop === 'onConfirm' || prop === 'onCancel'` binds correctly and is
-    # still wrong here: that test reports the first half as an orphaned
-    # no-op wire, which sends someone to fix a binder that works.
-    assert "prop === 'onConfirm'" in src and "prop === 'onCancel'" in src, (
-        "confirm_gate's wires need a branch each in A2UIState.html")
-    assert "onConfirm: 1" in src and "onCancel: 1" in src, (
-        "both must be declared in OUTPUT_WIRE_PROPS or the engine drops them")
+    for gone in ("onConfirm", "onCancel"):
+        assert gone not in src, (
+            f"{gone} is back in the engine — the flat gate exists so the wire "
+            "vocabulary does not grow for a layout decision")
+
+

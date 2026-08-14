@@ -73,6 +73,40 @@ function _a2uiRenderWiredLayout(payload) {
       return;
     }
     if (rawType === 'group_close') { content += '</div>'; return; }
+    // gate_open/gate_close: the pause before an irreversible action — a frame
+    // and a question, wrapped around the ordinary buttons that answer it.
+    //
+    // FLAT, and here that is the whole design rather than a convention. The
+    // buttons inside carry the wires that do the work, and each one binds
+    // through the SAME `onClick` every other button uses because each is its
+    // own top-level layout element. Putting them inside a single atom instead
+    // was tried and rejected on 2026-08-14: one element holding two buttons
+    // makes `querySelector('button')` ambiguous, which needs new wire props to
+    // disambiguate — a permanent addition to the engine's vocabulary, solving
+    // a problem that only exists because the buttons were grouped. Same reason
+    // row_open above is flat.
+    //
+    // What the wrapper still buys, and composition alone does not: the pairing
+    // is checkable. A gate_open whose span contains fewer than two wired
+    // buttons is a gate the reader cannot decline, and that is decidable from
+    // the payload (see wirecheck in consuming apps).
+    if (rawType === 'gate_open') {
+      var kp = el.props || {};
+      var kTone = kp.tone === 'danger' ? '#b91c1c' : 'var(--accent,#0f766e)';
+      // decision_id names what is being decided. In the durable tier it is a
+      // record parked server-side; see spec/durable-pause-v0.1.md.
+      var kId = kp.decision_id
+        ? ' data-decision-id="' + _esc(String(kp.decision_id)) + '"' : '';
+      content += '<div class="a2ui-gate"' + kId + ' style="border:1px solid ' + kTone +
+        ';border-radius:10px;padding:14px;margin-bottom:12px;' + (kp.style || '') + '">' +
+        (kp.prompt ? '<div style="font-size:15px;font-weight:600;color:var(--text,#374151);' +
+          'margin-bottom:' + (kp.detail ? '4px' : '10px') + ';">' + _esc(kp.prompt) + '</div>' : '') +
+        (kp.detail ? '<div style="font-size:13px;color:var(--muted,#6b7280);' +
+          'margin-bottom:10px;">' + _esc(kp.detail) + '</div>' : '') +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+      return;
+    }
+    if (rawType === 'gate_close') { content += '</div></div>'; return; }
 
     var props = el.props || {};
     var block = {};

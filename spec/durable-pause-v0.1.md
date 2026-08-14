@@ -141,13 +141,48 @@ state IS the mechanism and the stream is a projection of it — which is the sam
 position `spec/a2ui-state.yaml`'s derivation boundary already takes, reached
 independently and earlier.
 
-## Increment 1: the in-page gate
+## Increment 1: `gate_open` / `gate_close`
 
-Tier 1 is worth shipping first, provided its atom is shaped to take a
-server-parked decision later rather than needing replacement. Concretely, the
-atom renders `prompt` / confirm / decline and carries an opaque `decision_id`;
-in Tier 1 the host mints that id per page, and in Tier 2 the server supplies
-it. Nothing in the atom changes between the two.
+Tier 1 ships first, shaped so the server can supply the decision later rather
+than needing replacement.
+
+It is a **flat structure primitive pair**, like `row_open`/`row_close` and
+`group_open`/`group_close` — handled in `atoms_wired_render.gs`, not an entry
+in `atoms/schema.yaml`, and not a member of any catalog. (Structure primitives
+have never been registered as atoms; they are renderer vocabulary. Worth noting
+that this convention is undocumented outside the renderer source itself, which
+is a real gap and not one this document fixes.)
+
+```json
+{"atom": "gate_open", "props": {"prompt": "Delete \"Tap drips\"?",
+                                "detail": "This cannot be undone.",
+                                "tone": "danger",
+                                "decision_id": "park-123"}},
+{"id": "yes", "atom": "ripple_button", "props": {"label": "Yes, delete"},
+ "wire": {"onClick": "#delete.run"}},
+{"id": "no",  "atom": "ripple_button", "props": {"label": "Cancel"},
+ "wire": {"onClick": "#dismiss.run"}},
+{"atom": "gate_close"}
+```
+
+`decision_id` lands on the frame as `data-decision-id`. In Tier 1 the host
+mints it per page; in Tier 2 the server supplies the id of a parked record.
+Nothing about the markup changes between the two.
+
+**Why flat rather than one atom.** A single `confirm_gate` atom owning both
+buttons was built on 2026-08-14 and replaced the same day. One element holding
+two buttons makes the binder's `querySelector('button')` ambiguous, so it
+needed two new output wire props (`onConfirm`, `onCancel`) to disambiguate —
+a permanent addition to the engine's vocabulary, and to every gate that reads
+it, solving a problem that existed only because the buttons had been grouped.
+Flat keeps each button a top-level layout element binding through the ordinary
+`onClick`, which is the same argument that makes `row_open` flat: a container
+takes its contents out of the layout the binder walks.
+
+What the wrapper still buys over loose composition is that **the pairing stays
+checkable**. A `gate_open` span containing fewer than two wired buttons is a
+gate the reader cannot decline, and that is decidable from the payload — a
+rule for `wirecheck` in consuming apps.
 
 What Tier 1 must NOT do is express its pending state as a wire on the acting
 action, because that is precisely the shape Tier 2 cannot use.

@@ -2744,48 +2744,6 @@ _RENDERERS['file_upload'] = function(b) {
     '</div>';
 };
 
-// The pause before an irreversible action: state what will happen, then make
-// the person say yes. See spec/durable-pause-v0.1.md.
-//
-// Shaped so the SAME atom serves both tiers. `decision_id` is opaque here —
-// in the in-page tier the host mints one per page, and in the durable tier the
-// server supplies the id of a decision parked in its own store. Nothing in
-// this renderer changes between the two, which is the point: an atom that
-// expressed "pending" as a wire on the acting action could not be reused,
-// because a wire is a claim about THIS page and resolves false on any later
-// load (A2UI's own recorded lesson — a parked decision would render hidden).
-//
-// Two buttons rather than a checkbox-and-continue: decline has to be as
-// reachable as approve, or the gate is a speed bump that teaches people to
-// click through it.
-_RENDERERS['confirm_gate'] = function(b) {
-  var prompt = b.prompt || 'Are you sure?';
-  var detail = b.detail || '';
-  var confirmLabel = b.confirm_label || 'Yes, do it';
-  var cancelLabel = b.cancel_label || 'Cancel';
-  var decisionId = b.decision_id || '';
-  var tone = b.tone === 'danger' ? '#b91c1c' : 'var(--accent,#0f766e)';
-  return '<div class="a2ui-confirm-gate" data-decision-id="' + _esc(String(decisionId)) + '" ' +
-      'style="border:1px solid ' + tone + ';border-radius:10px;padding:14px;margin-bottom:12px;">' +
-    '<div style="font-size:15px;font-weight:600;color:var(--text,#374151);margin-bottom:' +
-      (detail ? '4px' : '10px') + ';">' + _esc(prompt) + '</div>' +
-    (detail ? '<div style="font-size:13px;color:var(--muted,#6b7280);margin-bottom:10px;">' +
-      _esc(detail) + '</div>' : '') +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-      // The confirm carries data-confirm so the binder can find it: onClick
-      // binds querySelector('button'), which would otherwise take whichever
-      // button is first in the DOM and wire approval to the cancel control.
-      '<button type="button" data-confirm style="background:' + tone + ';color:#fff;border:0;' +
-        'border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer;">' +
-        _esc(confirmLabel) + '</button>' +
-      '<button type="button" data-cancel style="background:transparent;' +
-        'color:var(--muted,#6b7280);border:1px solid var(--border,#d1d5db);' +
-        'border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer;">' +
-        _esc(cancelLabel) + '</button>' +
-    '</div>' +
-  '</div>';
-};
-
 // Deliberately NOT a mode of file_upload, which reads a file's TEXT into
 // another field: pointing that at a JPEG produces mojibake in a textarea. A
 // photo is bytes, it goes to a server rather than into the payload, and the

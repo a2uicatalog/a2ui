@@ -70,8 +70,6 @@ fails too.
 | `onRowClick` | **the whole clicked row** | `object` |
 | `onReorder` | the moved item's new position `{id, order, group?}` | `object` |
 | `onSearch` | **nothing** — see below | `event` (`null`) |
-| `onConfirm` | the gate's `decision_id` | `string` |
-| `onCancel` | the gate's `decision_id` | `string` |
 | `onFlightClick` | the clicked flight | `object` |
 | `onAssign` | the assigned person | `object` |
 

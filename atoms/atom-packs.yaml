@@ -29,7 +29,6 @@ a2ui-atoms-v1:
 - callout
 - chip_group
 - code
-- confirm_gate
 - content_tabs
 - code_block
 - code_diff
