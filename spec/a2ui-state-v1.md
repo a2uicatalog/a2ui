@@ -50,6 +50,52 @@ Examples: `#amount_mem.value`, `#amount_check.isInvalid`, `#wizard.activeIndex`
 | **Output wire** | Visual atom event | User event → state node input trigger |
 | **Primitive wire** | Behavioral atom input | State output → primitive input, reactive |
 
+#### 2.2.1 What each output wire emits
+
+The per-atom tables in §3.1 give this for the pilot five. This is the complete
+list, because the engine has grown props since — and because a consumer needs
+it in one place, keyed by prop rather than by atom.
+
+Gated by `tests/test_wire_emission.py` against `OUTPUT_WIRE_PROPS` and the
+binder's own `bindOutput` call sites, in both directions: a prop the engine
+gains without a row here fails, and a row here the engine no longer accepts
+fails too.
+
+| prop | emits | type |
+|---|---|---|
+| `onChange` | the control's current value | `string` |
+| `onClick` | nothing — the click IS the signal | `event` (`null`) |
+| `onToggle` | the checkbox state | `boolean` |
+| `setDone` | the checkbox state | `boolean` |
+| `onRowClick` | **the whole clicked row** | `object` |
+| `onReorder` | the moved item's new position `{id, order, group?}` | `object` |
+| `onSearch` | **nothing** — see below | `event` (`null`) |
+| `onConfirm` | the gate's `decision_id` | `string` |
+| `onCancel` | the gate's `decision_id` | `string` |
+| `onFlightClick` | the clicked flight | `object` |
+| `onAssign` | the assigned person | `object` |
+
+**Two of these contradict the obvious assumption**, and both have cost working
+pages, so they are called out rather than left to be skimmed:
+
+`onRowClick` emits the ROW, not an id. That is the right contract — a click
+may want more than one field — but a consumer writing `collect: {id:
+"#sel.value"}` receives a dict where the server expects a string, and matches
+no record. **A wire cannot narrow it:** per §2.1 the expression splits at the
+first dot, so `#sel.value.id` reads a literal property named `"value.id"` and
+resolves to nothing. The narrowing has to happen server-side, at the one
+boundary that sees every shape a selection can arrive in.
+
+`onSearch` emits nothing. The query is not delivered — the search control
+writes its text to a store through `onChange` like any other input, and
+`onSearch` is only the trigger; the action reads the text through its own
+`collect{}`. Wiring `onSearch` into a store expecting the query silently
+stores `null`.
+
+Note the failure mode both share. Per §2.3 wire failures are never silent —
+but that guarantee covers a wire that does not RESOLVE. A wire that resolves
+and delivers the wrong SHAPE is outside it, and produces no warning anywhere.
+
 ### 2.3 Error Behaviour (required engine behaviour)
 
 | Condition | Engine behaviour |

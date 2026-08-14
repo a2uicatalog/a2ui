@@ -10,11 +10,19 @@ from WHAT VALUE FLOWS, and only the first was ever asked. A payload can be
 fully bound, fully rendered, and still deliver a dict into a field that wanted
 a string.
 
-The table lives in spec/wire-emission-v0.1.md because consumers read specs, not
-renderers. This gate keeps the two honest in BOTH directions: a prop the binder
-gained and the spec did not is an undocumented shape someone will guess wrong,
-and a row the spec kept after the binder dropped it is a lie in the more
-dangerous direction -- it reads as verified.
+The correction that matters: the shape WAS documented. spec/a2ui-state-v1.md
+has said `onRowClick | Output | object` since the pilot registry was written.
+The consumer got it wrong anyway, because nothing checked -- and the engine had
+meanwhile grown seven more output props that never reached the spec at all.
+
+So this is not a missing contract. It is an UNENFORCED one, drifting. The fix
+is a gate over the existing document, in both directions: a prop the binder
+gains without a row is an undocumented shape someone will guess wrong, and a
+row the spec keeps after the binder drops it is worse -- it reads as verified.
+
+Writing a second table elsewhere would have made it worse still. Two
+hand-maintained copies of one list is the exact drift this repo has been bitten
+by three times (MCP_VERBS, the parser parity pair, the frozen renderer copies).
 """
 import re
 from pathlib import Path
@@ -23,7 +31,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "apps-script-surface" / "gas-wired-renderer" / "A2UIState.html"
-SPEC = ROOT / "spec" / "wire-emission-v0.1.md"
+SPEC = ROOT / "spec" / "a2ui-state-v1.md"
 
 # How each emitted expression is classified. Read as: the SHAPE a consumer must
 # be prepared to receive, not the JS that produces it.
@@ -40,18 +48,21 @@ SHAPE_OF_EXPR = [
 
 @pytest.fixture(scope="module")
 def declared():
-    """{prop: shape} as spec/wire-emission-v0.1.md states it."""
+    """{prop: shape} as spec/a2ui-state-v1.md states it."""
     rows = {}
-    for line in SPEC.read_text().splitlines():
+    body = SPEC.read_text()
+    # Only the consolidated table in 2.2.1 -- the per-atom tables in 3.1 give
+    # the same props again and would mask a drop from the complete list.
+    section = body[body.index("#### 2.2.1"):body.index("### 2.3 Error Behaviour")]
+    for line in section.splitlines():
         m = re.match(r"\|\s*`(\w+)`\s*\|[^|]*\|\s*(.+?)\s*\|\s*$", line)
         if not m:
             continue
-        shape = m.group(2).replace("`", "").strip()
-        # "string (may be empty)" -> string; "{id, order, group?}" -> object
-        if shape.startswith("{"):
-            shape = "object"
-        shape = shape.split(" (")[0].strip()
-        rows[m.group(1)] = shape
+        shape = m.group(2).replace("*", "").replace("`", "").strip()
+        # "event (null)" -> null; "object" stays object
+        if "null" in shape:
+            shape = "null"
+        rows[m.group(1)] = shape.split(" (")[0].strip()
     assert rows, "no table rows parsed out of the spec -- update this parser"
     return rows
 
@@ -68,7 +79,7 @@ def binder_props():
 def test_the_spec_and_the_binder_declare_the_same_props(declared, binder_props):
     undocumented = sorted(binder_props - set(declared))
     assert not undocumented, (
-        "output wire props the engine accepts but spec/wire-emission-v0.1.md "
+        "output wire props the engine accepts but spec/a2ui-state-v1.md "
         "does not describe. A consumer has no way to learn the shape except by "
         "guessing, and the guess that cost two pages on 2026-08-14 was the "
         f"reasonable one: {undocumented}")
@@ -137,8 +148,8 @@ def test_the_three_surprising_shapes_are_spelled_out(declared):
     assert declared["onRowClick"] == "object"
     assert declared["onSearch"] == "null"
     assert declared["onClick"] == "null"
-    for needle in ("emits the ROW, not an id", "onSearch` emits `null`"):
+    for needle in ("emits the ROW, not an id", "emits nothing. The query is not"):
         assert needle in body, (
-            f"spec/wire-emission-v0.1.md must call out {needle!r} in prose -- "
+            f"spec/a2ui-state-v1.md must call out {needle!r} in prose -- "
             "the table alone gets skimmed, and these are the ones that cost "
             "working pages")
