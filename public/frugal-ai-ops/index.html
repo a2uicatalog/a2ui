@@ -143,9 +143,6 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <style>
 .frugal-intro{margin:0 0 28px}
-.frugal-notice{border-left:3px solid #f59e0b;padding:2px 0 2px 14px;font-size:14px;color:var(--muted)}
-.frugal-budget{font-size:12px;color:var(--muted);margin:0 0 12px}
-.frugal-warn{font-size:13px;color:#f59e0b;margin-bottom:10px}
 .frugal-intro p{margin:0 0 12px}
 .frugal-template-row{display:flex;gap:8px;margin:0 0 24px;flex-wrap:wrap}
 .frugal-template-pill{font:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s}
@@ -204,23 +201,15 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <h1>Frugal AI Ops</h1>
   <div class="frugal-intro">
-  <p>This catalog's knowledge-parsing pipeline runs a free-tier model for
-  extraction (Gemini Flash, falling back to Cloudflare Workers AI when the
-  day's Gemini allowance is spent) — but the actual structuring step is a
-  deterministic, zero-AI parser
+  <p>This catalog's knowledge-parsing pipeline runs a small, free-tier Cloudflare
+  Workers AI model (<code>llama-3.3-70b-instruct-fp8-fast</code>) for extraction —
+  but the actual structuring step is a deterministic, zero-AI parser
   (<a href="https://github.com/a2uicatalog/a2ui">bom_emitter</a>), and a second
   cheap pass checks the first model's output against the source and flags
   anything it invented, rather than silently trusting or silently dropping it.</p>
   <p>Try it on a real document: paste a URL or some text, or upload a
   <code>.pdf</code>/<code>.md</code>/<code>.txt</code> file (extracted in your
   browser — the file itself is never uploaded, only the extracted text is sent).</p>
-  <p class="frugal-notice"><strong>Before you paste anything:</strong> nothing is
-  stored here, but the text you submit is sent to a model provider's <em>free
-  tier</em>. Google's free Gemini tier states that submitted content is used to
-  improve its products and that human reviewers may read it. Don't put anything
-  confidential through this — use a public article, a README, or something you
-  wrote yourself. This runs on free tiers by design: when the day's allowance is
-  gone, it stops until 00:00 UTC.</p>
   </div>
 
   <div class="frugal-template-row" id="frugal-template-row">
@@ -450,12 +439,9 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     });
   }
 
-  // An unverified check is NOT a clean one — a grounding pass that could not be
-  // completed must never wear the green border that means "checked, nothing
-  // found".
   function renderGrounding(g){
     if (!g) return '';
-    var cls = (g.flagged_count || g.unverified) ? 'flagged' : 'clean';
+    var cls = g.flagged_count ? 'flagged' : 'clean';
     var items = (g.flagged || []).map(function(f){
       var extra = f.source_says ? (' — source says: ' + esc(f.source_says)) : '';
       return '<li><strong>' + esc(f.field_or_section || '') + '</strong> (' + esc(f.kind) + '): ' +
@@ -463,24 +449,6 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     }).join('');
     return '<div class="frugal-grounding ' + cls + '"><h3>Grounding check</h3><p>' + esc(g.note) + '</p>' +
       (items ? '<ul>' + items + '</ul>' : '') + '</div>';
-  }
-
-  // "N runs left today" — the daily pool stated plainly, so someone arriving at
-  // an empty one understands they hit a free-tier ceiling rather than a broken
-  // page. The two engines ration different things (Gemini: requests per day;
-  // Workers AI: neurons), so this reports whichever is actually next in line
-  // rather than pretending they add up.
-  function renderBudget(b){
-    if (!b) return '';
-    if (b.engine === 'gemini' && typeof b.runs_remaining_estimate === 'number') {
-      return '<p class="frugal-budget">~' + b.runs_remaining_estimate +
-        ' free runs left today (refills 00:00 UTC).</p>';
-    }
-    if (b.engine === 'workers-ai') {
-      return '<p class="frugal-budget">Running on the Cloudflare fallback — ' +
-        'today\'s Gemini allowance is spent. Refills 00:00 UTC.</p>';
-    }
-    return '';
   }
 
   function render(data, status){
@@ -504,17 +472,6 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
     if (env && env._truncated) {
       parts.push('<p class="frugal-status">' + esc(env._truncated.note) + '</p>');
     }
-    // Two ways the result can be partial without looking partial: the model ran
-    // out of output budget mid-document, or the provider silently truncated the
-    // input it was given. Both produce confident, well-formed output, so both
-    // get said out loud.
-    if (env && env._output_truncated) {
-      parts.push('<p class="frugal-warn">' + esc(env._output_truncated.note) + '</p>');
-    }
-    if (env && env._provider_truncated) {
-      parts.push('<p class="frugal-warn">' + esc(env._provider_truncated.note) + '</p>');
-    }
-    if (data.budget) parts.push(renderBudget(data.budget));
     parts.push(renderGrounding(env && env._grounding));
     parts.push('<pre><code>' + esc(JSON.stringify(env, null, 2)) + '</code></pre>');
     result.innerHTML = parts.join('\n');

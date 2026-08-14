@@ -190,21 +190,22 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of alert_banner"><!-- unknown block type: info --></div>
+  <div class="preview-box" role="group" aria-label="Live preview of alert_banner"><div style="border-left:4px solid #3b82f6;background:#f9fafb;padding:12px 16px;border-radius:0 8px 8px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;"><span style="font-size:1.1rem;">ℹ️</span><div style="font-weight:500;">A concise description of the content.</div></div></div>
 </div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>message</td><td>string The main message to display in the banner.</td><td>required</td></tr><tr><td>type</td><td>string The type of alert (e.g., "info", "warning", "error", "success").</td><td>required</td></tr><tr><td>icon</td><td>string Optional icon name to display next to the message.</td><td>optional</td></tr><tr><td>action_label</td><td>string Optional text for an action button.</td><td>optional</td></tr><tr><td>action_url</td><td>string Optional URL for the action button.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>text</td><td>string. The banner message. NOT `message` — every renderer reads `text`, so a banner built with `message` renders empty apart from its icon.</td><td>required</td></tr><tr><td>variant</td><td>string. Severity — "info", "success", "warning" or "critical". "error" is accepted as a synonym for "critical": inline_alert knows the first word and this atom the second, and each used to fall back silently to "info" on the other. NOT `type`, which is the block discriminator.</td><td>required</td></tr><tr><td>icon</td><td>string Optional icon name to display next to the message.</td><td>optional</td></tr><tr><td>action_label</td><td>string Optional text for an action button.</td><td>optional</td></tr><tr><td>action_url</td><td>string Optional URL for the action button.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "info",
-  "message": "Your action was completed successfully."
+  "type": "alert_banner",
+  "text": "A concise description of the content.",
+  "variant": "primary"
 }</code></pre>
   </div>
 

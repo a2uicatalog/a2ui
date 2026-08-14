@@ -17,6 +17,7 @@
 
 a2ui-atoms-v1:
 - accordion_item
+- actual_vs_estimate
 - alert_banner
 - back_button
 - badge

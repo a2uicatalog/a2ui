@@ -168,6 +168,51 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
     })['catch'](function(e) { onFail(e); });
     return;
   }
+  // http — a plain HTTP backend that speaks the envelope (wired-transport
+  // v0.2). Curtis, live: "why dependant on apps script? that's not normal."
+  // It never was: the dialect needs a server that answers {ok,data,error},
+  // and Apps Script was merely the first one wired. This is the general case
+  // — any backend serves the surface, and actions POST straight back to it.
+  //
+  // Deliberately the LAST branch, immediately before the inert fallback, so
+  // it is strictly ADDITIVE: it can only ever fire where this function would
+  // otherwise have declared the buttons dead. No existing surface can have
+  // its transport changed by this, whatever it sets — which is a stronger
+  // guarantee than ordering it by capability precedence would give, and the
+  // reason the honesty rule below still reads as the true last resort.
+  if (window._A2UI_HTTP_ENDPOINT && typeof fetch === 'function') {
+    fetch(window._A2UI_HTTP_ENDPOINT, {
+      method: 'POST',
+      // Same-origin session cookie. The ENDPOINT authenticates the caller —
+      // the client never asserts an identity, so no payload can claim one.
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: type, req: req })
+    }).then(function (res) {
+      // A non-2xx STILL carries the envelope by contract: the backend answers
+      // 401/403/500 with {ok:false,error} so the reason reaches the wired
+      // feedback element rather than dying in a console. Only an unparseable
+      // body is a transport fault, and even that reports the status instead
+      // of swallowing it.
+      return res.json()['catch'](function () {
+        return { ok: false, error: 'The backend answered HTTP ' + res.status +
+                                   ' with a body that is not JSON.' };
+      });
+    }).then(function (body) {
+      // The envelope is NORMATIVE (spec/gas-actions-v1.yaml): the client
+      // copies r.data into node.result, so a handler returning its payload
+      // un-enveloped yields result=null SILENTLY — the 2026-07-02 incident
+      // that made the contract normative to begin with. Name it instead.
+      if (!body || typeof body.ok !== 'boolean') {
+        onOk({ ok: false, error: 'The backend response carried no {ok,data,error} ' +
+                                 'envelope, so this action has no result. The handler ' +
+                                 'for "' + type + '" is returning its payload un-enveloped.' });
+        return;
+      }
+      onOk(body);
+    })['catch'](function (e) { onFail(e); });
+    return;
+  }
   onOk({ ok: false, error: 'This app needs a backend this host cannot reach — its buttons are inert here.' });
 }
 

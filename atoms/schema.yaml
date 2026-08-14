@@ -627,6 +627,64 @@ blocks:
     - line: integer
       text: string
   source: *id001
+- type: actual_vs_estimate
+  stage: preview
+  # Ported to GAS (atom.gs) alongside the Python reference, so it renders in
+  # the MCP Apps bundle today. It does NOT reach the live GAS deployments or
+  # the Worker's /api/render until `ops.py run renderer-release` ships the
+  # .gs sources — same standing as layer_stack.
+  description: 'A quantity carrying BOTH what is known and what is projected, each
+    labelled, neither omittable. A data atom rather than a domain one: cost is only
+    the first instance. The same shape holds for effort (hours worked vs hours
+    estimated), for work items (closed vs open) and for anything else an app tracks
+    with an actual alongside a forecast — which is most things worth tracking.
+
+    Exists because that distinction is where composed answers go wrong. Asked "what
+    has this cost", a model resolves the ambiguity by guessing, and on 2026-08-14
+    presented a EUR300 estimate for unstarted work under the heading "COST".
+    Selection prose can ask it not to; a required-field shape makes it
+    unrepresentable. Both figures are mandatory for exactly that reason.
+
+    The contract runs in two directions, which is the point. Upward it constrains
+    what a UI can say. Downward it tells the data layer what it must be able to
+    produce: an app that cannot separate incurred from projected cannot fill this
+    atom, and discovering that is the useful part.'
+  compact_description: one quantity as actual + estimate, both labelled, neither omittable
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: email
+      note: Renders as stacked labelled rows without the grid.
+    incompatible_on:
+    - surface: pdf
+      reason: No svg_raster.py entry
+  fields:
+    label: 'string (required). What the quantity IS — "Cost", "Effort", "Jobs".'
+    actual: 'number (required). The known value, UNFORMATTED. Money spent, hours
+      worked, items closed.'
+    estimate: 'number (required). The projected value. Never fold this into
+      `actual`; that is the error the atom exists to prevent.'
+    unit: 'string (optional). Prefixed if it is a currency symbol ("EUR", "$"),
+      suffixed otherwise (" hours", " jobs"). The renderer formats; the author
+      supplies numbers.'
+    show_total: 'boolean (optional, default true). The renderer DERIVES
+      actual + estimate — the author never supplies it. A one-payload, one-render
+      arithmetic belongs to the renderer under the derivation boundary rule, and
+      an author who supplies a sum can supply a wrong one. Set false where adding
+      the two is nonsense.'
+    actual_label: string (optional). Overrides "Actual", e.g. "Spent so far".
+    estimate_label: string (optional). Overrides "Estimated", e.g. "Still to come".
+    total_label: string (optional). Overrides "Committed".
+    caption: 'string (optional). One honest sentence, e.g. "Nothing has been spent
+      yet; EUR340 of work is planned."'
+    accent: string (optional). Hex colour for the total.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: stat_card
   description: Glowing neon stat card — large value with label and optional delta
   compact_description: single KPI value with label delta and accent colour indicator
@@ -1646,8 +1704,11 @@ blocks:
       reason: Relies on complex CSS for layout, icons, and interactive elements which
         are not reliably supported.
   fields:
-    message: string The main message to display in the banner.
-    type: string The type of alert (e.g., "info", "warning", "error", "success").
+    text: 'string. The banner message. NOT `message` — every renderer reads `text`, so a banner built with `message` renders empty apart from its icon.'
+    variant: 'string. Severity — "info", "success", "warning" or "critical".
+      "error" is accepted as a synonym for "critical": inline_alert knows the
+      first word and this atom the second, and each used to fall back silently
+      to "info" on the other. NOT `type`, which is the block discriminator.'
     icon: string Optional icon name to display next to the message.
     action_label: string Optional text for an action button.
     action_url: string Optional URL for the action button.
@@ -4997,7 +5058,10 @@ blocks:
     - surface: pdf
       note: renders as plain text with emoji prefix; no colour
   fields:
-    type: string. Severity level — "info", "warning", "error", or "success".
+    variant: 'string. Severity — "info", "success", "warning" or "error".
+      "critical" is accepted as a synonym for "error" (see alert_banner). NOT
+      `type`, which is the block discriminator — a severity put there is
+      ignored or replaces the atom name. Renderers read `variant`.'
     message: string. The alert text.
     detail: string (optional). A secondary line of smaller detail text.
     icon: string (optional). Override the default icon for the severity type.

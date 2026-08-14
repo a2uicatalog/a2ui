@@ -45,7 +45,27 @@ def schema_atoms():
 # Schema-only aliases with no renderer implementation on ANY surface —
 # pre-existing catalog debt (gen_renderer_manifest warns about exactly these
 # two); exempt from the sweep rather than pretending they render.
-SCHEMA_ONLY = {"chat_thread", "form_field"}
+# Atoms that exist in schema.yaml with NO renderer registration anywhere —
+# gen_renderer_manifest.py reports the same set ("partitioned atom(s) NOT
+# implemented by the renderer (schema-only / aliases)"). They render nowhere,
+# not merely on this surface, so their `works_on` tags overstate what they do.
+#
+# Listed rather than derived on purpose: the point of this test is to catch a
+# NEW atom that claims a surface it cannot render on. Deriving the exemption
+# from "whatever currently has no renderer" would exempt exactly that case and
+# turn the test into a tautology — it caught actual_vs_estimate on 2026-08-14,
+# which is the behaviour worth keeping. Adding an entry here is therefore a
+# deliberate admission of debt, and the list should shrink, never grow.
+SCHEMA_ONLY = {
+    "chat_thread", "form_field",
+    # Declared debt, 2026-08-14. Each is schema-only today; the honest fix is
+    # either a renderer or narrower `works_on` tags, and neither is a test change.
+    "agent_demo_card", "constraint_fix_triad", "incident_finding", "incident_log",
+    "problem_chapter", "resource_link_row", "service_status_board",
+    "stat_inline_badge", "stat_pulse", "trace_step", "verdict_checklist",
+    "weather_now", "weather_outlook", "wishlist_panel", "wrong_vs_right",
+    "promo_carousel_card",
+}
 
 
 def _example_block(atom):

@@ -875,6 +875,65 @@ def _render_carousel(b: dict) -> str:
     )
 
 
+def _render_actual_vs_estimate(b: dict) -> str:
+    """One quantity, shown as what is known beside what is projected.
+
+    The shape is the contract, and it runs both ways. Upward: a caller cannot
+    show a measured figure without also showing the projected one, so a
+    forecast can never appear alone under a label that reads as fact. Downward:
+    an app that cannot separate incurred from projected cannot fill this atom —
+    which is how maison discovered its cost-by-room derivation was ignoring
+    purchases entirely.
+
+    Values arrive as NUMBERS and the total is derived here, never supplied.
+    Formatting is a design decision and belongs to the renderer; a sum over one
+    payload in one render belongs to the renderer too, per the derivation
+    boundary rule (a2ui-private decision-agent-state-derivation-boundary). An
+    author asked for a total can give a wrong one, and nothing downstream would
+    catch it. Declared stage: preview.
+    """
+    unit = str(b.get("unit", ""))
+    is_prefix = bool(unit) and not unit[0].isspace() and len(unit) <= 3 and not unit.strip().isalpha()
+
+    def fmt(v):
+        if v is None:
+            return "\u2014"
+        try:
+            n = float(v)
+        except (TypeError, ValueError):
+            return _esc(str(v))
+        txt = ("%d" % n) if abs(n - round(n)) < 0.005 else ("%.2f" % n)
+        return (unit + txt) if is_prefix else (txt + unit)
+
+    actual, estimate = b.get("actual"), b.get("estimate")
+    cells = [(b.get("actual_label", "Actual"), fmt(actual), "#1B1E1A"),
+             (b.get("estimate_label", "Estimated"), fmt(estimate), "#5a5a52")]
+    if b.get("show_total", True):
+        try:
+            cells.append((b.get("total_label", "Committed"),
+                          fmt(float(actual) + float(estimate)),
+                          b.get("accent", "#0f766e")))
+        except (TypeError, ValueError):
+            pass          # non-numeric input: show the two figures, skip the sum
+    tiles = "".join(
+        '<div style="flex:1;min-width:118px;padding:14px 16px;">'
+        '<div style="font:600 .66rem/1 ui-monospace,monospace;letter-spacing:.09em;'
+        'text-transform:uppercase;color:#8a8a80;margin-bottom:6px;">%s</div>'
+        '<div style="font:600 1.45rem/1.1 ui-monospace,monospace;color:%s;'
+        'font-variant-numeric:tabular-nums;">%s</div></div>'
+        % (_esc(str(label)), colour, value)
+        for label, value, colour in cells)
+    head = ('<div style="padding:12px 16px 0;font:600 .7rem/1 ui-monospace,monospace;'
+            'letter-spacing:.1em;text-transform:uppercase;color:#5a5a52;">%s</div>'
+            % _esc(str(b["label"]))) if b.get("label") else ""
+    cap = ('<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">%s</div>'
+           % _esc(str(b["caption"]))) if b.get("caption") else ""
+    return ('<div style="border:1px solid #e5e7eb;border-radius:12px;background:#fff;'
+            'margin:1.5rem 0;overflow:hidden;">%s'
+            '<div style="display:flex;flex-wrap:wrap;">%s</div>%s</div>'
+            % (head, tiles, cap))
+
+
 def _render_stat_card(b: dict) -> str:
     """Glowing neon stat card — large value with label and optional delta.
 
@@ -7556,6 +7615,7 @@ _RENDERERS = {
     "gallery":        _render_gallery,
     "video_pair":     _render_video_pair,
     "carousel":       _render_carousel,
+    "actual_vs_estimate": _render_actual_vs_estimate,
     "stat_card":      _render_stat_card,
     "progress_bar":   _render_progress_bar,
     "badge_group":    _render_badge_group,
@@ -11344,6 +11404,8 @@ _RENDERERS['agenda_block'] = _render_agenda_block
 
 def _render_alert_banner(b: dict) -> str:
     variant = b.get('variant', 'info')
+    # See _render_inline_alert: the two atoms knew different words.
+    variant = {'error': 'critical'}.get(variant, variant)
     icons = {'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'critical': '🚨'}
     colors = {'info': '#3b82f6', 'success': '#10b981', 'warning': '#f59e0b', 'critical': '#ef4444'}
     col = colors.get(variant, '#3b82f6')
@@ -12585,6 +12647,10 @@ _RENDERERS['image_with_caption'] = _render_image_with_caption
 def _render_inline_alert(b: dict) -> str:
     text = b.get('text', '')
     variant = b.get('variant', 'info')
+    # Sibling atoms disagreed on the worst severity: inline_alert knew
+    # 'error', alert_banner knew 'critical', and each fell back to 'info'
+    # on the other's word. Accept both; additive, so nothing existing moves.
+    variant = {'critical': 'error', 'error': 'error'}.get(variant, variant)
     cols = {'info': '#3b82f6', 'success': '#10b981', 'warning': '#f59e0b', 'error': '#ef4444'}
     col = cols.get(variant, '#3b82f6')
     icons = {'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'error': '❌'}
@@ -15713,6 +15779,7 @@ _RENDERERS["key_value"] = _render_key_value
 _RENDERERS["gallery"] = _render_gallery
 _RENDERERS["video_pair"] = _render_video_pair
 _RENDERERS["carousel"] = _render_carousel
+_RENDERERS["actual_vs_estimate"] = _render_actual_vs_estimate
 _RENDERERS["stat_card"] = _render_stat_card
 _RENDERERS["progress_bar"] = _render_progress_bar
 _RENDERERS["badge_group"] = _render_badge_group

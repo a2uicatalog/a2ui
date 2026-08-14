@@ -1,0 +1,297 @@
+# atoms/agentic-prose.yaml — SELECTION guidance, for an agent choosing an atom.
+#
+# REPO-ONLY. Deliberately not compiled into public/spec.json: this is an
+# experiment (see a2ui-private/launch/agentic-prose/), and publishing 25 atoms
+# of untested prose to a2uicatalog.ai before knowing whether it works is the
+# opposite of the staging discipline the rest of the catalogue follows.
+#
+# WHY THIS FILE EXISTS
+# The schema says what an atom IS (`description`, `fields`) and where it WORKS
+# (`surfaces:`). Both are written for a human who has already decided to use
+# it. Neither answers the question a model must answer first, on every turn:
+# when should I reach for this rather than something else?
+#
+# In a design system for people that guidance lives socially — in review, and
+# in having someone with taste say "that's a sentence, not a dashboard". An
+# agent has no such colleague. If it isn't written down it doesn't exist.
+#
+# THE SHAPE
+#   use_when  — the situation this atom is the right answer to.
+#   not_when  — the situations it is NOT, each naming the atom to use instead.
+#   answers   — the reader's question, in their words. Matching intent to
+#               vocabulary is the actual retrieval problem.
+#
+# `not_when` is the half that does the work and the half nobody writes. A
+# vocabulary with no "don't" produces a dashboard for every question. Precedent
+# for writing negative guidance with reasons already exists in the schema —
+# `incompatible_on` does it for surfaces; this does it for selection.
+#
+# Scope: the 25 atoms an agent resolves for the maison domain (base + charts).
+# tests/test_agentic_prose.py holds it honest against schema.yaml.
+
+version: 1
+scope:
+  catalogs: [a2ui-atoms-v1, a2ui-charts-v1]
+  domain: >-
+    Household building and maintenance jobs — status, cost, planning. Chosen
+    because it is a real app with a real agent, not a demo.
+
+# ─── The rule that outranks every entry below ────────────────────────────────
+preamble: >-
+  Most answers are a sentence. Reach for `body` unless the answer is genuinely
+  a comparison, a set of states, an ordered plan, or a decision to be made. A
+  single number is a sentence, not a metric card. Two things on one dimension
+  is a sentence, not a table. Building more UI than the answer needs makes it
+  slower to read, not richer.
+
+atoms:
+
+  # ── Restraint ──────────────────────────────────────────────────────────────
+  body:
+    use_when: >-
+      The default, and the right answer far more often than the rest of this
+      file suggests. Any answer that reads as one or two sentences.
+    not_when: >-
+      The reader must compare items (data_table_sortable) or scan a set of
+      states (key_value). Something needs to be acted on now (alert_banner).
+    answers: ["what's the situation", "is X done", "anything I should know"]
+
+  callout:
+    use_when: >-
+      One thing genuinely worth noticing, in a sentence — the safety issue, the
+      job that has slipped twice, the number that changed.
+    not_when: >-
+      More than one thing (that is a list, not a callout — every callout after
+      the first stops being noticeable). Routine information (body). Something
+      requiring immediate action (alert_banner).
+    answers: ["what should I pay attention to"]
+
+  empty_state:
+    use_when: >-
+      A query legitimately returned nothing and that IS the answer. "No roofing
+      jobs" is information, not a failure.
+    not_when: >-
+      Something went wrong (inline_alert — an error is not an empty state). The
+      answer is one line of prose and needs no ceremony (body).
+    answers: ["are there any X", "what's outstanding in Y"]
+
+  inline_alert:
+    use_when: >-
+      Something is wrong or missing, mentioned in the flow of an answer that
+      continues around it.
+    not_when: >-
+      It is the whole answer and needs the top of the surface (alert_banner).
+      It is merely notable, not wrong (callout).
+    answers: ["why is this number odd", "what failed"]
+
+  # ── Status ─────────────────────────────────────────────────────────────────
+  status_pill:
+    use_when: >-
+      Showing one item's state as a word, inline or in a row — open, scheduled,
+      done, verified.
+    not_when: >-
+      The state needs explaining (body). Many items each with a state — that is
+      a column in data_table_sortable, not a scatter of pills.
+    answers: ["what state is this in"]
+
+  badge:
+    use_when: >-
+      A short label attached to something — a trade, a category, a count.
+    not_when: >-
+      The label carries state (status_pill, which colours by meaning). It is
+      the answer rather than an annotation on one (body).
+    answers: ["what kind of thing is this"]
+
+  alert_banner:
+    use_when: >-
+      Something needs attention BEFORE the rest of the answer — a safety issue,
+      an overdue job, a blocked task. Full width, top of the surface.
+    not_when: >-
+      Merely interesting (callout). Mid-flow within a longer answer
+      (inline_alert). Nothing is actually wrong — a banner that fires routinely
+      stops being read, which costs you the one time it matters.
+    answers: ["is anything dangerous", "what needs doing now"]
+
+  stat_card:
+    use_when: >-
+      ONE number that is the answer, with a label and optionally its movement —
+      total spent, jobs open.
+    not_when: >-
+      Three or more related numbers (metric_row). The number needs a sentence
+      of context to mean anything (body). A proportion of a whole (donut_stat).
+    answers: ["how much", "how many"]
+
+  key_value:
+    use_when: >-
+      The facts about ONE thing — a job's room, trade, effort, cost, status.
+      Two to eight pairs, scanned rather than read.
+    not_when: >-
+      Several things sharing the same fields (data_table_sortable — repeated
+      key_value blocks are a table drawn badly). One fact (body).
+    answers: ["tell me about this job", "what are the details"]
+
+  progress_bar:
+    use_when: >-
+      Completion against a known total — jobs done in a project, spend against
+      budget.
+    not_when: >-
+      There is no meaningful denominator (stat_card — a bar with an invented
+      total is a lie). Comparing several things' progress (data_table_sortable).
+    answers: ["how far through are we", "how much of the budget is gone"]
+
+  # ── Analysis ───────────────────────────────────────────────────────────────
+  data_table_sortable:
+    use_when: >-
+      Several items compared on several fields, where the reader will look
+      things up and scan. The workhorse for any list of jobs.
+    not_when: >-
+      One item (key_value). One dimension across a few items where the shape is
+      the point (chartjs_bar). Fewer than three rows — that is prose.
+    answers: ["what's open", "show me everything in X", "list the jobs"]
+
+  metric_row:
+    use_when: >-
+      Three to five headline numbers that belong together — the top of a status
+      answer.
+    not_when: >-
+      One number (stat_card). Numbers needing comparison rather than
+      announcement (chartjs_bar). More than about five — a row of metrics stops
+      being scannable and becomes a wall.
+    answers: ["give me the headlines", "present the current status"]
+
+  chartjs_bar:
+    use_when: >-
+      Comparing a quantity across four or more named categories where the SHAPE
+      is the point — which room dominates, where the outlier sits.
+    not_when: >-
+      Fewer than four categories (key_value or a sentence reads faster). Values
+      the reader needs to look up precisely (data_table_sortable). A single
+      total (stat_card). Anything over time (chartjs_line).
+    answers: ["which room costs most", "how is it distributed"]
+
+  chartjs_line:
+    use_when: >-
+      A quantity over time with enough points for the trend to be real —
+      spend by month, jobs closed per week.
+    not_when: >-
+      Categories rather than time (chartjs_bar). Fewer than about five points —
+      a line through three dots implies a trend that is not there. One
+      direction with no detail (trend_indicator).
+    answers: ["how has this changed", "are we spending more"]
+
+  donut_stat:
+    use_when: >-
+      One proportion of a whole, where the fraction is the point — share of
+      jobs verified, budget consumed.
+    not_when: >-
+      More than one proportion (a donut per slice is a table drawn as
+      decoration — use data_table_sortable). No real denominator (stat_card).
+      Comparing categories (chartjs_bar).
+    answers: ["what proportion", "how much of it is done"]
+
+  trend_indicator:
+    use_when: >-
+      Direction of travel inline, next to a number — up, down, flat, with a
+      word of context.
+    not_when: >-
+      The trend needs its shape shown (chartjs_line). There is no prior period
+      to compare against — a direction with no baseline is invented.
+    answers: ["is it getting better or worse"]
+
+  # ── Framework ──────────────────────────────────────────────────────────────
+  heading:
+    use_when: >-
+      A composed surface has genuinely distinct sections the reader will skip
+      between.
+    not_when: >-
+      The surface is one idea. A heading over a single block is furniture; it
+      adds a line to read and no structure.
+    answers: []
+
+  numbered_list:
+    use_when: >-
+      Order carries meaning — a sequence to work through, jobs ranked by what
+      to do first.
+    not_when: >-
+      The items are unordered (icon_list — numbering unordered things implies a
+      priority you did not compute). Items have several fields each
+      (data_table_sortable).
+    answers: ["what should I do first", "what's the plan"]
+
+  icon_list:
+    use_when: >-
+      A handful of unordered items each worth a line, where a small mark helps
+      distinguish them.
+    not_when: >-
+      Order matters (numbered_list). Items share fields worth comparing
+      (data_table_sortable). More than about seven — that is a table.
+    answers: ["what needs buying", "what's involved"]
+
+  summary_box:
+    use_when: >-
+      A composed surface is long enough that the reader deserves the gist
+      before the detail.
+    not_when: >-
+      The surface is short — a summary of two blocks is longer than the blocks.
+      The summary IS the answer (body).
+    answers: ["give me the short version"]
+
+  timeline:
+    use_when: >-
+      Events in time where the sequence is the point — a job's history from
+      open through done to verified.
+    not_when: >-
+      Two events (a sentence). Things that merely have dates but no narrative
+      (data_table_sortable with a date column).
+    answers: ["what happened with this", "how did we get here"]
+
+  actual_vs_estimate:
+    use_when: >-
+      Any quantity where part is known and part is projected — money spent vs
+      still to come, hours worked vs remaining, items closed vs open. Reach for
+      it the moment a question could be answered with either figure alone,
+      because either alone is misleading.
+    not_when: >-
+      Only one of the two exists and the other is genuinely unknown — say so in
+      a sentence (body) rather than showing a zero that reads as a measurement.
+      A single unambiguous number with no projection (stat_card). Several
+      quantities at once (metric_row).
+    answers: ["what has this cost", "how much is left", "how far through are we"]
+
+  # ── Decision ───────────────────────────────────────────────────────────────
+  info_card:
+    use_when: >-
+      Presenting something for the reader to consider and act on — a proposal,
+      a recommendation, one option among several.
+    not_when: >-
+      Simply stating a fact (body). It demands immediate attention
+      (alert_banner). It is one of several structured items
+      (data_table_sortable).
+    answers: ["what do you suggest", "here's what I found"]
+
+  cta_button:
+    use_when: >-
+      There is exactly one obvious next action and the reader can take it here.
+    not_when: >-
+      Nothing actually happens when it is pressed — a button that does not act
+      is worse than no button. Several equal actions (that is a choice, and
+      needs form_field or a list, not a row of buttons).
+    answers: []
+
+  form_field:
+    use_when: >-
+      Something must be supplied before the next step — a date, an amount, a
+      choice.
+    not_when: >-
+      The value is already known or inferable (do not ask). It is a decision
+      between named options rather than free input.
+    answers: ["what do you need from me"]
+
+  key_takeaways:
+    use_when: >-
+      Two to four conclusions worth separating from the analysis that produced
+      them.
+    not_when: >-
+      One conclusion (body or callout). The takeaways ARE the whole answer —
+      then they are just the answer, and the framing is decoration.
+    answers: ["so what does this mean", "what should I take from this"]

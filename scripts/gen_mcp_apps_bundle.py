@@ -596,7 +596,28 @@ def escape_script_close(js):
     return js.replace("</script", "<\\/script")
 
 
-def build_bundle():
+def build_bundle(boot_block=None, title="A2UI Catalog renderer — MCP Apps View",
+                 viewport=False):
+    """Concatenate the renderer into a self-contained browser page.
+
+    `boot_block` is the trailing <script> that decides HOW the page gets its
+    payload and where actions go — the only part that is host-specific. It
+    defaults to HANDSHAKE (the MCP Apps View protocol), which is what
+    main() writes and what the published artifact must keep byte-for-byte.
+    Passing a different block reuses the identical core + client partials on
+    another host: see gen_http_bundle() for the plain-HTTP one, which exists
+    because the wired dialect needs a backend that speaks the envelope, not
+    Apps Script and not an MCP host specifically.
+    """
+    if boot_block is None:
+        boot_block = HANDSHAKE
+    # A standalone page needs a viewport meta or a phone assumes ~980px and
+    # renders the whole thing at about 0.4x — measured on an iPhone 13 profile,
+    # 2026-08-14. Off by default so the MCP Apps bundle stays byte-identical:
+    # that one is mounted in a host-sized iframe where the tag is inert anyway,
+    # and its output is a published artifact.
+    viewport_meta = ('\n<meta name="viewport" content="width=device-width,initial-scale=1">'
+                     if viewport else "")
     atom_styles = (RENDERER_DIR / "AtomStyles.html").read_text().strip()
 
     core_parts = [PRELUDE]
@@ -624,15 +645,15 @@ def build_bundle():
         f"// ==== {name} ====\n{partial_body(name)}" for name in PARTIALS
     ))
 
-    for label, block in (("core", core), ("client", client), ("handshake", HANDSHAKE)):
+    for label, block in (("core", core), ("client", client), ("handshake", boot_block)):
         assert "</script" not in block, \
             f"{label} block still contains a raw </script — would truncate in the browser"
 
     return f"""<!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>A2UI Catalog renderer — MCP Apps View</title>
+<meta charset="utf-8">{viewport_meta}
+<title>{title}</title>
 {atom_styles}
 <style>
 body {{ padding: 24px; }}
@@ -697,11 +718,112 @@ body {{ padding: 24px; }}
 {pdfjs_module_block()}
 </script>
 <script>
-{HANDSHAKE}
+{boot_block}
 </script>
 </body>
 </html>
 """
+
+
+HTTP_BOOT = """
+// ---- plain-HTTP host boot (wired-transport v0.2) ----
+// The third host for the wired dialect, after GAS and the MCP Apps view.
+// Everything above this block is byte-identical to the MCP Apps bundle —
+// only the boot differs, because the only thing that ever differed between
+// hosts is where the payload comes from and where actions go.
+(function () {
+  // Declaring the endpoint is what selects the http transport in
+  // _a2uiActionTransport (A2UIState.html). It is the LAST branch there, so
+  // setting it cannot shadow gas or the host bridge; on this page neither
+  // exists, which is precisely the case it was added to serve.
+  window._A2UI_HTTP_ENDPOINT = window._A2UI_HTTP_ENDPOINT || '/a2ui/action';
+  var SURFACE_URL = window._A2UI_SURFACE_URL || '/a2ui/surface';
+
+  function paint(payload) {
+    if (payload && !Array.isArray(payload) && payload.version === 'v1.0' && payload.createSurface) {
+      payload = _rehydrateV1Surface(payload.createSurface);
+    }
+    var root = document.getElementById('a2ui-root');
+    var _terminal = payload.theme === 'terminal';
+    document.body.classList.toggle('asw-dark-theme', payload.theme === 'dark' || _terminal);
+    document.body.classList.toggle('asw-terminal-theme', _terminal);
+    if (payload.type === 'a2ui_wired_surface') {
+      if (payload.variants || payload.wired_templates) {
+        payload = _expandWiredSurface(payload, '', '');
+      }
+      root.innerHTML = _a2uiRenderWiredLayout(payload);
+      _reExecuteScripts(root);
+      if (typeof window._a2uiBootWiredSurface === 'function') {
+        window._a2uiBootWiredSurface(payload);
+      }
+      return;
+    }
+    root.innerHTML = renderAtoms(payload.blocks || [], { theme: payload.theme });
+    root.classList.toggle('a2ui-with-overlay', !!root.querySelector('[data-a2ui-overlay]'));
+    root.classList.toggle('a2ui-overlay-left', !!root.querySelector('[data-a2ui-overlay="left-half"]'));
+    _reExecuteScripts(root);
+  }
+
+  // innerHTML-injected <script> tags never execute (browsers block it) —
+  // same re-execution the MCP Apps handshake does, same reason.
+  function _reExecuteScripts(scope) {
+    var scripts = scope.querySelectorAll('script');
+    for (var i = 0; i < scripts.length; i++) {
+      var old = scripts[i], s = document.createElement('script');
+      if (old.src) { s.src = old.src; } else { s.textContent = old.textContent; }
+      old.parentNode.replaceChild(s, old);
+    }
+  }
+
+  // The repaint sink: a handler can answer an action with a whole new surface
+  // (paint_result), exactly as on the MCP Apps host.
+  window._A2UI_PAINT = paint;
+
+  function fail(msg) {
+    var root = document.getElementById('a2ui-root');
+    // A page that cannot load its own surface says so on the page. The blank
+    // screen is the failure mode this whole codebase keeps re-learning.
+    root.innerHTML = '<div style="padding:24px;font:15px/1.5 system-ui;color:#b91c1c">' +
+                     '<strong>This page could not load its surface.</strong><br>' +
+                     String(msg).replace(/[<>&]/g, '') + '</div>';
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch(SURFACE_URL + window.location.search, { credentials: 'same-origin' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('The server answered HTTP ' + r.status + ' for ' + SURFACE_URL + '.');
+        return r.json();
+      })
+      .then(function (body) {
+        // Surfaces arrive in the SAME envelope as actions — one contract for
+        // the whole transport, so an auth failure on load reads the same way
+        // it would on a button press.
+        if (body && typeof body.ok === 'boolean') {
+          if (!body.ok) { fail(body.error || 'The server declined to render it.'); return; }
+          paint(body.data);
+          return;
+        }
+        paint(body);
+      })
+      ['catch'](function (e) { fail((e && e.message) || e); });
+  });
+})();
+"""
+
+
+def gen_http_bundle(out_path, title="A2UI wired surface"):
+    """Write the plain-HTTP variant of the bundle to an arbitrary path.
+
+    Deliberately NOT written under public/ by default: project.yaml requires
+    everything there to trace to a publication rule, and this artifact belongs
+    to whichever app is serving it, not to a2uicatalog.ai.
+    """
+    out = Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    bundle = build_bundle(boot_block=HTTP_BOOT, title=title, viewport=True)
+    out.write_text(bundle)
+    print("wrote %s (%d bytes, http host)" % (out, len(bundle)))
+    return out
 
 
 def write_qrcodegen_partial():
@@ -722,7 +844,19 @@ def write_qrcodegen_partial():
     print("wrote %s (%d bytes)" % (out, out.stat().st_size))
 
 
-def main():
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # --host=http --out=<path> emits the plain-HTTP variant somewhere else and
+    # touches NOTHING in public/. No args = the MCP Apps bundle, unchanged.
+    if "--host=http" in argv:
+        out = next((a.split("=", 1)[1] for a in argv if a.startswith("--out=")), None)
+        if not out:
+            raise SystemExit("--host=http requires --out=<path> (never defaulted "
+                             "into public/ — see gen_http_bundle)")
+        title = next((a.split("=", 1)[1] for a in argv if a.startswith("--title=")),
+                     "A2UI wired surface")
+        gen_http_bundle(out, title=title)
+        return
     bundle = build_bundle()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(bundle)

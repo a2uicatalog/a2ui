@@ -1585,7 +1585,19 @@ _RENDERERS['inline_alert'] = function(b) {
     warning: {bg:'#fffbeb',border:'#f59e0b',fg:'#92400e',icon:'⚠️'},
     error:   {bg:'#fef2f2',border:'#ef4444',fg:'#991b1b',icon:'❌'}
   };
-  var tc = typeConfig[b.type] || typeConfig['info'];
+  // Sibling atoms disagreed on the worst severity: inline_alert knew
+  // 'error', alert_banner knew 'critical', and each silently fell back to
+  // 'info' on the other's word. An author — or a model — that learns one
+  // vocabulary uses it on both. Accept both everywhere; additive, so no
+  // existing payload changes.
+  typeConfig.critical = typeConfig.error;
+  // b.variant, NOT b.type: `type` is the block discriminator and is always
+  // 'inline_alert' here, so the old lookup never matched and every alert
+  // rendered as 'info' regardless of what the author asked for. Found
+  // 2026-08-14 when a model tried to set it and put the severity in the
+  // discriminator instead. Matches alert_banner (atom.gs) and the Python
+  // reference renderer, both of which already read `variant`.
+  var tc = typeConfig[b.variant] || typeConfig['info'];
   return '<div style="display:flex;align-items:flex-start;gap:10px;background:' + tc.bg + ';border-left:4px solid ' + tc.border + ';border-radius:0 8px 8px 0;padding:12px 16px;margin:0.75rem 0;">'
     + '<span style="font-size:0.95rem;flex-shrink:0;">' + tc.icon + '</span>'
     + '<div style="flex:1;font-size:0.875rem;color:' + tc.fg + ';">' + _esc(b.message || '') + '</div>'

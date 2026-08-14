@@ -182,7 +182,10 @@ _RENDERERS['callout'] = function(b) {
 _RENDERERS['alert_banner'] = function(b) {
   var variant = b.variant || 'info'; // info, success, warning, critical
   var icons = { info: 'ℹ️', success: '✅', warning: '⚠️', critical: '🚨' };
+  icons.error = icons.critical;   // see inline_alert: the two atoms knew
+                                  // different words for the worst case
   var colors = { info: 'var(--accent)', success: 'var(--green)', warning: 'var(--orange)', critical: 'var(--red)' };
+  colors.error = colors.critical;
   
   return '<div class="asw-callout" style="border-left-color:' + colors[variant] + '; background:var(--surface2);">' +
          '<span class="asw-callout-icon">' + (b.icon || icons[variant]) + '</span>' +
@@ -1525,6 +1528,46 @@ _RENDERERS['carousel'] = function(b) {
   var dots = slides.map(function(s,i){ return '<label for="' + cid + '_s' + (i+1) + '" class="' + cid + '-dot"></label>'; }).join('');
   var captionHtml = b.caption ? '<p style="font-size:0.82rem;opacity:0.6;margin-top:8px;text-align:center;">' + _esc(b.caption) + '</p>' : '';
   return css + perSlide + '<div class="' + cid + '">' + inputs + '<div class="' + cid + '-inner"><div class="' + cid + '-track">' + slidesHtml + '</div></div><div class="' + cid + '-dots">' + dots + '</div></div>' + captionHtml;
+};
+
+// ─── actual_vs_estimate ───────────────────────────────────────────────────────
+// One quantity as what is KNOWN beside what is PROJECTED. The shape is the
+// contract: a caller cannot show a measured figure without also showing the
+// projected one, so a forecast can never appear alone under a label reading as
+// fact. Values arrive as NUMBERS and the total is derived HERE, never supplied
+// — an author asked for a sum can give a wrong one. Parity port of
+// renderers/web_article.py _render_actual_vs_estimate. stage: preview.
+_RENDERERS['actual_vs_estimate'] = function(b) {
+  var unit = b.unit === undefined ? '' : String(b.unit);
+  var isPrefix = unit && !/^\s/.test(unit) && unit.length <= 3 && !/^[a-z]+$/i.test(unit.trim());
+  function fmt(v) {
+    if (v === undefined || v === null || v === '') return '\u2014';
+    var n = Number(v);
+    if (isNaN(n)) return _esc(String(v));
+    var txt = Math.abs(n - Math.round(n)) < 0.005 ? String(Math.round(n)) : n.toFixed(2);
+    return isPrefix ? unit + txt : txt + unit;
+  }
+  var accent = b.accent || '#0f766e';
+  var cells = [[b.actual_label || 'Actual', fmt(b.actual), '#1B1E1A'],
+               [b.estimate_label || 'Estimated', fmt(b.estimate), '#5a5a52']];
+  var a = Number(b.actual), e = Number(b.estimate);
+  if (b.show_total !== false && !isNaN(a) && !isNaN(e)) {
+    cells.push([b.total_label || 'Committed', fmt(a + e), accent]);
+  }
+  var tiles = cells.map(function(c) {
+    return '<div style="flex:1;min-width:118px;padding:14px 16px;">'
+      + '<div style="font:600 .66rem/1 ui-monospace,monospace;letter-spacing:.09em;'
+      + 'text-transform:uppercase;color:#8a8a80;margin-bottom:6px;">' + _esc(String(c[0])) + '</div>'
+      + '<div style="font:600 1.45rem/1.1 ui-monospace,monospace;color:' + c[2] + ';'
+      + 'font-variant-numeric:tabular-nums;">' + c[1] + '</div></div>';
+  }).join('');
+  var head = b.label ? '<div style="padding:12px 16px 0;font:600 .7rem/1 ui-monospace,monospace;'
+      + 'letter-spacing:.1em;text-transform:uppercase;color:#5a5a52;">' + _esc(String(b.label)) + '</div>' : '';
+  var cap = b.caption ? '<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">'
+      + _esc(String(b.caption)) + '</div>' : '';
+  return '<div style="border:1px solid #e5e7eb;border-radius:12px;background:#fff;'
+      + 'margin:1.5rem 0;overflow:hidden;">' + head
+      + '<div style="display:flex;flex-wrap:wrap;">' + tiles + '</div>' + cap + '</div>';
 };
 
 _RENDERERS['stat_card'] = function(b) {

@@ -10,7 +10,7 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 
 | Field | Type |
 |---|---|
-| type | string. Severity level — "info", "warning", "error", or "success". |
+| variant | string. Severity — "info", "success", "warning" or "error". "critical" is accepted as a synonym for "error" (see alert_banner). NOT `type`, which is the block discriminator — a severity put there is ignored or replaces the atom name. Renderers read `variant`. |
 | message | string. The alert text. |
 | detail | string (optional). A secondary line of smaller detail text. |
 | icon | string (optional). Override the default icon for the severity type. |
@@ -19,7 +19,8 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 
 ```json
 {
-  "type": "info",
+  "type": "inline_alert",
+  "variant": "primary",
   "message": "Your action was completed successfully."
 }
 ```

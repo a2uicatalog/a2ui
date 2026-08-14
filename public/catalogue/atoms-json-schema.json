@@ -2202,12 +2202,22 @@
             "type": "string",
             "const": "alert_banner"
           },
-          "message": {
-            "type": "string"
-          },
-          "alert_banner_type": {
+          "text": {
             "type": "string",
-            "description": "Renamed from 'type' to avoid the discriminator collision. Original: string The type of alert (e.g., \"info\", \"warning\", \"error\", \"success\")."
+            "enum": [
+              "everyrendererreads`text`",
+              "soabannerbuiltwith`message`rendersemptyapartfromitsicon"
+            ]
+          },
+          "variant": {
+            "type": "string",
+            "enum": [
+              "\"info\"",
+              "\"success\"",
+              "\"warning\"or\"critical\"\"error\"isacceptedasasynonymfor\"critical\":inline_alertknowsthefirstwordandthisatomthesecond",
+              "andeachusedtofallbacksilentlyto\"info\"ontheotherNOT`type`",
+              "whichistheblockdiscriminator"
+            ]
           },
           "icon": {
             "type": "string"
@@ -2222,8 +2232,8 @@
         },
         "required": [
           "type",
-          "message",
-          "alert_banner_type"
+          "text",
+          "variant"
         ],
         "additionalProperties": false
       },
@@ -6108,15 +6118,14 @@
             "type": "string",
             "const": "inline_alert"
           },
-          "inline_alert_type": {
+          "variant": {
             "type": "string",
             "enum": [
               "\"info\"",
-              "\"warning\"",
-              "\"error\"",
-              "or\"success\""
-            ],
-            "description": "Renamed from 'type' to avoid the discriminator collision. Original: string. Severity level \u2014 \"info\", \"warning\", \"error\", or \"success\"."
+              "\"success\"",
+              "\"warning\"or\"error\"\"critical\"isacceptedasasynonymfor\"error\"(seealert_banner)NOT`type`",
+              "whichistheblockdiscriminator\u2014aseverityputthereisignoredorreplacestheatomnameRenderersread`variant`"
+            ]
           },
           "message": {
             "type": "string"
@@ -6130,7 +6139,7 @@
         },
         "required": [
           "type",
-          "inline_alert_type",
+          "variant",
           "message"
         ],
         "additionalProperties": false

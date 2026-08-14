@@ -399,3 +399,185 @@ console.log(JSON.stringify({blank: html.indexOf('target="_blank"') > -1,
         assert p.returncode == 0, p.stderr[-500:]
         r = json.loads(p.stdout)
     assert r["blank"] and r["noopener"]
+
+
+# ─── http transport (wired-transport v0.2) ───────────────────────────────────
+# The branch that takes the dialect off Apps Script: any backend that speaks
+# the {ok,data,total,error} envelope can host a wired surface. It sits LAST in
+# _a2uiActionTransport, immediately before the inert fallback, so it is purely
+# additive — the tests below assert both halves of that claim.
+
+HTTP_STUB = """
+window._A2UI_HTTP_ENDPOINT = '/a2ui/action';
+var posted = [];
+global.fetch = function (url, opts) {
+  posted.push({ url: url, opts: opts, body: JSON.parse(opts.body) });
+  return Promise.resolve({
+    status: 200,
+    json: function () { return Promise.resolve(RESPONSE); }
+  });
+};
+"""
+
+
+def test_http_transport_posts_verb_and_returns_envelope():
+    """Endpoint set, no google, no bridge: the action POSTs {type, req} to the
+    endpoint and the envelope's data lands on node.result unchanged."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+var RESPONSE = {{ ok: true, data: [{{ round: 1, m1_score_a: 21 }}], total: 1 }};
+{HTTP_STUB}
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+var eng = window._a2uiEngine;
+eng.nodes.load_scores._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ posted: posted,
+    ok: eng.nodes.load_scores.isSuccess,
+    rows: eng.nodes.load_scores.result,
+    total: eng.nodes.load_scores.total }}));
+}}, 20);
+""")
+    assert len(r["posted"]) == 1
+    call = r["posted"][0]
+    assert call["url"] == "/a2ui/action"
+    assert call["opts"]["method"] == "POST"
+    # The client never asserts an identity — the cookie rides, the endpoint decides.
+    assert call["opts"]["credentials"] == "same-origin"
+    assert call["body"]["type"] == "gas:sheet_query"
+    assert r["ok"] is True
+    assert r["rows"] == [{"round": 1, "m1_score_a": 21}]
+    assert r["total"] == 1
+
+
+def test_http_transport_collect_resolves_from_live_state():
+    """collect{} resolves against the state graph before the POST, exactly as
+    it does on gas/host — the backend receives values, never wire expressions."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+var RESPONSE = {{ ok: true, data: {{ inserted_rows: 1 }} }};
+{HTTP_STUB}
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+window._a2uiEngine.nodes.save_round_1._run();
+setTimeout(function () {{ console.log(JSON.stringify(posted[0].body)); }}, 20);
+""")
+    assert r["type"] == "gas:sheet_append"
+    assert r["req"]["data"] == {"round": "1", "m1_score_a": "21"}
+
+
+def test_http_transport_surfaces_backend_error_verbatim():
+    """A declared failure ({ok:false}) reaches node.error intact — the reason
+    the backend gave, not a flattened stand-in. Same rule the mcp: branch
+    learned on 2026-08-03 when a precise message got replaced by a useless one."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+var RESPONSE = {{ ok: false, error: 'Room "conservatory" is not in the rooms collection.' }};
+{HTTP_STUB}
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+var eng = window._a2uiEngine;
+eng.nodes.save_round_1._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ err: eng.nodes.save_round_1.isError,
+    msg: eng.nodes.save_round_1.error }}));
+}}, 20);
+""")
+    assert r["err"] is True
+    assert r["msg"] == 'Room "conservatory" is not in the rooms collection.'
+
+
+def test_http_transport_names_an_unenveloped_response():
+    """The 2026-07-02 incident, at the HTTP boundary: a handler returning its
+    payload bare must not yield result=null silently — it must say so, and
+    name the verb whose handler is wrong."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+var RESPONSE = [{{ round: 1 }}];
+{HTTP_STUB}
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+var eng = window._a2uiEngine;
+eng.nodes.load_scores._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ err: eng.nodes.load_scores.isError,
+    msg: eng.nodes.load_scores.error }}));
+}}, 20);
+""")
+    assert r["err"] is True
+    assert "envelope" in r["msg"] and "gas:sheet_query" in r["msg"]
+
+
+def test_http_transport_reports_status_on_non_json_body():
+    """A 502 HTML error page is a transport fault, but the status still has to
+    reach the reader rather than being swallowed as a generic failure."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+window._A2UI_HTTP_ENDPOINT = '/a2ui/action';
+global.fetch = function () {{
+  return Promise.resolve({{
+    status: 502,
+    json: function () {{ return Promise.reject(new Error('not json')); }}
+  }});
+}};
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+var eng = window._a2uiEngine;
+eng.nodes.load_scores._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ err: eng.nodes.load_scores.isError,
+    msg: eng.nodes.load_scores.error }}));
+}}, 20);
+""")
+    assert r["err"] is True
+    assert "502" in r["msg"] and "not JSON" in r["msg"]
+
+
+def test_http_transport_is_additive_gas_still_wins():
+    """The additive guarantee, half one: with a REAL GAS client present, the
+    gas branch still takes the action even though an endpoint is also set.
+    This is what makes the change safe to land on a shared engine."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+var gasCalls = 0, httpCalls = 0;
+window._A2UI_HTTP_ENDPOINT = '/a2ui/action';
+global.fetch = function () {{ httpCalls++; return Promise.resolve(
+  {{ status: 200, json: function () {{ return Promise.resolve({{ ok: true, data: [] }}); }} }}); }};
+global.google = {{ script: {{ run: {{
+  withSuccessHandler: function (ok) {{ this._ok = ok; return this; }},
+  withFailureHandler: function () {{ return this; }},
+  a2uiAction: function () {{ gasCalls++; this._ok({{ ok: true, data: [] }}); }}
+}} }} }};
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+window._a2uiEngine.nodes.load_scores._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ gas: gasCalls, http: httpCalls }}));
+}}, 20);
+""")
+    assert r["gas"] == 1 and r["http"] == 0
+
+
+def test_http_transport_is_additive_host_bridge_still_wins():
+    """The additive guarantee, half two: an MCP Apps view keeps the host
+    bridge for sheet verbs even with an endpoint set."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+var toolCalls = 0, httpCalls = 0;
+window._A2UI_HTTP_ENDPOINT = '/a2ui/action';
+global.fetch = function () {{ httpCalls++; return Promise.resolve(
+  {{ status: 200, json: function () {{ return Promise.resolve({{ ok: true, data: [] }}); }} }}); }};
+window._A2UI_HOST_BRIDGE = {{ callTool: function () {{
+  toolCalls++;
+  return Promise.resolve({{ structuredContent: {{ ok: true, data: [] }} }});
+}} }};
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+window._a2uiEngine.nodes.load_scores._run();
+setTimeout(function () {{
+  console.log(JSON.stringify({{ tool: toolCalls, http: httpCalls }}));
+}}, 20);
+""")
+    assert r["tool"] == 1 and r["http"] == 0
+
+
+def test_no_endpoint_still_declares_inert():
+    """And with no endpoint set, the honesty rule is untouched: the fallback
+    below the http branch is still reached and still says the buttons are
+    inert. Adding a transport must not quietly remove the declared error."""
+    r = _node(BOOT_STUB + ENGINE + f"""
+global.fetch = function () {{ throw new Error('fetch must not be called'); }};
+window._a2uiBootWiredSurface({json.dumps(SCHEMA)});
+var eng = window._a2uiEngine;
+eng.nodes.save_round_1._run();
+console.log(JSON.stringify({{err: eng.nodes.save_round_1.isError,
+  msg: eng.nodes.save_round_1.error}}));
+""")
+    assert r["err"] is True
+    assert "cannot reach" in r["msg"] and "inert" in r["msg"]

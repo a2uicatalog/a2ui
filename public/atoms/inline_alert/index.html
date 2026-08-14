@@ -190,20 +190,21 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of inline_alert"><!-- unknown block type: info --></div>
+  <div class="preview-box" role="group" aria-label="Live preview of inline_alert"><div style="display:inline-flex;align-items:center;gap:6px;background:#3b82f618;color:#3b82f6;border:1px solid #3b82f640;border-radius:6px;padding:4px 12px;font-size:0.83rem;font-weight:500;">ℹ️ </div></div>
 </div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>type</td><td>string. Severity level — "info", "warning", "error", or "success".</td><td>required</td></tr><tr><td>message</td><td>string. The alert text.</td><td>required</td></tr><tr><td>detail</td><td>string. A secondary line of smaller detail text.</td><td>optional</td></tr><tr><td>icon</td><td>string. Override the default icon for the severity type.</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>variant</td><td>string. Severity — "info", "success", "warning" or "error". "critical" is accepted as a synonym for "error" (see alert_banner). NOT `type`, which is the block discriminator — a severity put there is ignored or replaces the atom name. Renderers read `variant`.</td><td>required</td></tr><tr><td>message</td><td>string. The alert text.</td><td>required</td></tr><tr><td>detail</td><td>string. A secondary line of smaller detail text.</td><td>optional</td></tr><tr><td>icon</td><td>string. Override the default icon for the severity type.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "info",
+  "type": "inline_alert",
+  "variant": "primary",
   "message": "Your action was completed successfully."
 }</code></pre>
   </div>
