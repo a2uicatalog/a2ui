@@ -1088,6 +1088,13 @@ var _a2uiBridge = {
       var stId = stEl && stEl.getAttribute('data-a2ui-standings');
       var stFn = stId && window._A2UI_STANDINGS && window._A2UI_STANDINGS[stId];
       if (stFn) stFn(prop, prop === 'standings_mode' ? val : (Array.isArray(val) ? val : []));
+    } else if (prop === 'subject_id') {
+      // What a photo_upload attaches to. Written as an ATTRIBUTE rather than
+      // into a variable because the atom's own inline script reads it at
+      // upload time — the record is usually created by the action immediately
+      // before, so the value lands after that markup was written. Same
+      // reasoning as href on a link whose target does not exist yet.
+      el.setAttribute('data-subject-id', val == null ? '' : String(val));
     } else if (prop === 'href') {
       var a = el.tagName === 'A' ? el : el.querySelector('a');
       if (a) { a.href = String(val); a.style.pointerEvents = val ? '' : 'none'; a.style.opacity = val ? '' : '0.4'; }

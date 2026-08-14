@@ -305,3 +305,44 @@ def test_the_group_rule_is_what_makes_it_pass(render_wired, binder_selectors):
     assert bad and "binder attaches to the first only" in bad[0], (
         "a radio group must be reported as mis-bound the moment the delegated "
         "branch is not there. Got: %r" % (bad,))
+
+
+def test_photo_upload_reads_its_subject_at_upload_time(render_wired):
+    """`subject_id` is an INPUT wire onto an attribute, not a variable.
+
+    The record a photo attaches to is normally created by the action
+    immediately before the atom becomes visible — the confirmation-block
+    pattern — so the value arrives AFTER this markup was written. Baking it
+    into the inline script at render time would capture the empty string
+    forever and every upload would refuse with "nothing to attach this photo
+    to yet", which looks like a broken control rather than a stale read.
+    """
+    payload = {
+        "type": "a2ui_wired_surface", "title": "photo probe",
+        "app": {"id": "probe"},
+        "state_primitives": [],
+        "actions": [{"id": "act", "type": "mcp:get_profile", "props": {}}],
+        "layout": [
+            {"id": "shot", "atom": "photo_upload",
+             "props": {"label": "Add a photo", "endpoint": "/photo/upload"},
+             "wire": {"subject_id": "#act.id"}},
+        ],
+    }
+    html = render_wired(payload)
+    seg = _segment_for(html, "shot")
+    assert seg, "photo_upload must render"
+    # Camera AND library on mobile: `image/*` alone is what offers both.
+    assert 'accept="image/*"' in seg
+    # `capture` forces the camera and drops the library, so it must be opt-in.
+    assert "capture=" not in seg
+    # Read through the attribute the bridge writes, not a render-time constant.
+    assert 'getAttribute("data-subject-id")' in seg
+
+
+def test_the_bridge_can_deliver_subject_id(binder_selectors):
+    """The input-wire half. Without this branch the wire above is accepted,
+    resolves, and silently sets nothing — the renderer's oldest failure mode."""
+    src = STATE.read_text()
+    assert "prop === 'subject_id'" in src, (
+        "photo_upload's subject_id wire needs a setProp branch in "
+        "A2UIState.html, or the value never reaches the atom")

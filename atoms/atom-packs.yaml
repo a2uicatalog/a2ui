@@ -86,6 +86,7 @@ a2ui-atoms-v1:
 - pagination
 - palette
 - paragraph
+- photo_upload
 - presence_surface
 - print_button
 - progress_bar

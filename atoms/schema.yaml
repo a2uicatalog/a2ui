@@ -4573,6 +4573,56 @@ blocks:
     name: PDF.js (Mozilla)
     url: https://mozilla.github.io/pdf.js/
     license: Apache-2.0
+- type: photo_upload
+  description: Take or choose a PHOTO and upload it to the host's own endpoint,
+    with a local preview before the bytes leave the phone. Deliberately not a
+    mode of file_upload — that atom reads a file's TEXT into another field, so
+    pointing it at a JPEG yields mojibake in a textarea. On mobile, the default
+    accept of 'image/*' offers BOTH the camera and the photo library (iOS shows
+    Take Photo / Photo Library / Browse); set `capture` only when the picture
+    must be taken now, since it removes the library option on most mobile
+    browsers. Uploads as multipart to `endpoint`, NOT as an A2UI action — the
+    wired transport posts JSON, and base64-in-JSON inflates a phone photo by a
+    third for no gain. The host answers in the usual {ok, error} envelope, so a
+    refusal (too large, not signed in, nothing to attach to) reads as a
+    sentence rather than a dead control.
+  compact_description: camera-or-library photo picker -> multipart upload
+  stage: preview
+  surfaces:
+    works_on:
+    - mcp-apps
+    - google-apps-script-web
+    incompatible_on:
+    - surface: email
+      reason: File inputs non-functional in email
+    - surface: pdf
+      reason: Static only
+    - surface: google-chat
+      reason: No file-input widget in Chat cards
+  fields:
+    label: string (optional). Label above the picker. Default 'Add a photo'.
+    accept: 'string (optional). File input accept attribute. Default
+      ''image/*'', which is what offers the camera AND the library on mobile.'
+    capture: 'string (optional). Sets the HTML capture attribute —
+      ''environment'' for the rear camera, ''user'' for the front. FORCES the
+      camera and drops the library option on most mobile browsers, so leave it
+      unset unless the photo must be taken at that moment.'
+    endpoint: string. Where the multipart POST goes, on the host's own origin.
+    field: string (optional). Form field name for the file. Default 'photo'.
+    subject_field: 'string (optional). Form field name carrying the id the
+      photo attaches to. Default ''subject_id''.'
+    max_mb: number (optional). Refused above this, client-side, before the
+      upload starts. Default 12.
+    wired: 'Takes a `subject_id` wire — the record the photo attaches to. Read
+      at UPLOAD time rather than render time, because that record is usually
+      created by the action immediately before this atom becomes visible (the
+      confirmation-block pattern), so the value arrives after the markup was
+      written. Same reasoning as a wired `href` on a link whose target does not
+      exist yet.'
+  source:
+    name: HTML Media Capture (W3C)
+    url: https://www.w3.org/TR/html-media-capture/
+    license: W3C Recommendation
 - type: form_field
   description: Field wrapper — a labelled input with optional hint text and an inline
     error line (red border + message). Use when a field needs guidance or validation

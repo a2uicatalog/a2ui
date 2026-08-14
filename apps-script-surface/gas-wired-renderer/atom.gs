@@ -2744,6 +2744,76 @@ _RENDERERS['file_upload'] = function(b) {
     '</div>';
 };
 
+// Deliberately NOT a mode of file_upload, which reads a file's TEXT into
+// another field: pointing that at a JPEG produces mojibake in a textarea. A
+// photo is bytes, it goes to a server rather than into the payload, and the
+// thing it belongs to has to exist first. Different contract, different atom.
+//
+// The upload is multipart to the host's own endpoint, NOT an A2UI action: the
+// wired transport posts JSON, and base64-in-JSON inflates a 4 MB phone photo
+// by a third for no gain. `subject_id` arrives by wire because the record it
+// attaches to is usually created by the action immediately before this — see
+// the setProp branch in A2UIState.html.
+_RENDERERS['photo_upload'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var label = b.label || 'Add a photo';
+  // "image/*" alone is what gets you BOTH on a phone: iOS offers Take Photo,
+  // Photo Library and Browse; Android the equivalent chooser. `capture` is an
+  // opt-in that FORCES the camera and removes the library option on most
+  // mobile browsers — right for a "photograph this now" flow, wrong when the
+  // picture may already be in the roll. Default is the choice, not the camera.
+  var accept = b.accept || 'image/*';
+  var capture = b.capture ? ' capture="' + _esc(String(b.capture)) + '"' : '';
+  var endpoint = b.endpoint || '';
+  var fieldName = b.field || 'photo';
+  var subjectField = b.subject_field || 'subject_id';
+  var maxMb = Number(b.max_mb || 12);
+  return '<div id="pu-wrap-' + uid + '" style="margin-bottom:12px;">' +
+    (label ? '<label for="pu-' + uid + '" style="display:block;font-size:14px;font-weight:600;color:var(--text,#374151);margin-bottom:4px;">' + _esc(label) + '</label>' : '') +
+    '<input type="file" id="pu-' + uid + '" accept="' + _esc(accept) + '"' + capture + ' ' +
+      'style="display:block;width:100%;font-size:13px;color:var(--muted,#6b7280);">' +
+    '<img id="pu-prev-' + uid + '" alt="" style="display:none;max-width:100%;max-height:220px;' +
+      'margin-top:8px;border-radius:8px;">' +
+    '<div id="pu-status-' + uid + '" style="font-size:12px;color:var(--muted,#6b7280);margin-top:4px;"></div>' +
+    '<script>(function(){' +
+      'var wrap=document.getElementById("pu-wrap-' + uid + '");' +
+      'var inp=document.getElementById("pu-' + uid + '");' +
+      'var prev=document.getElementById("pu-prev-' + uid + '");' +
+      'var status=document.getElementById("pu-status-' + uid + '");' +
+      'inp.addEventListener("change",function(){' +
+        'var f=inp.files&&inp.files[0];if(!f)return;' +
+        // The preview is the whole point on a phone: it proves the right
+        // picture was picked BEFORE a slow upload over a rural connection.
+        'try{prev.src=URL.createObjectURL(f);prev.style.display="block";}catch(e){}' +
+        'if(f.size> ' + maxMb + '*1024*1024){' +
+          'status.textContent="That photo is over ' + maxMb + ' MB — take it again at a smaller size.";return;}' +
+        // Read the subject at UPLOAD time, not at render time: the record is
+        // typically created by the action just before this, so the value
+        // arrives after this markup was written.
+        'var host=wrap.closest("[data-subject-id]")||wrap;' +
+        'var subject=host.getAttribute("data-subject-id")||"";' +
+        'var url=' + JSON.stringify(String(endpoint)) + ';' +
+        'if(!url){status.textContent="No upload endpoint configured.";return;}' +
+        'if(!subject){status.textContent="Nothing to attach this photo to yet.";return;}' +
+        'var fd=new FormData();' +
+        'fd.append(' + JSON.stringify(String(fieldName)) + ',f,f.name||"photo.jpg");' +
+        'fd.append(' + JSON.stringify(String(subjectField)) + ',subject);' +
+        'status.textContent="Uploading "+(f.name||"photo")+"…";' +
+        'fetch(url,{method:"POST",body:fd,credentials:"same-origin"})' +
+          '.then(function(r){return r.json();})' +
+          '.then(function(j){' +
+            // The host answers in the same {ok,error} envelope its actions
+            // use, so a refusal reads as a sentence rather than a dead
+            // control — the same honesty rule the transport enforces.
+            'if(j&&j.ok===false){status.textContent=j.error||"The upload was refused.";return;}' +
+            'status.textContent="Photo saved.";' +
+          '})[\'catch\'](function(e){' +
+            'status.textContent="The upload failed: "+((e&&e.message)||e);});' +
+      '});' +
+    '})();<\/script>' +
+    '</div>';
+};
+
 _RENDERERS['form_select'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var label = b.label || '';
