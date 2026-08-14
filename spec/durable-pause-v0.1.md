@@ -117,6 +117,27 @@ it runs the frozen payload through the ordinary dispatcher — so the verb's own
 role checks and validation still apply, and a parked decision cannot become a
 way around them. On decline it consumes the record and says so.
 
+**One gate, however many transports.** `maison`'s version is reached from one
+surface because maison has one. `212tradingbot` is the better demonstration:
+its `gate_proposal_decision()` is reached by a session-authed web POST, a
+JWT-verified Google Chat card click, and a bridge-key-authed Slack relay — three
+transports with three auth models, ending at one chokepoint that holds the
+approver allowlist. Each transport authenticates its own caller; NONE of them
+decides whether the decision may be made. Put that check at the chokepoint or
+it has to be right in three places.
+
+That repo also carries two refinements this document previously left to the
+implementer, both worth naming as the expected shape rather than an option:
+
+- **Expiry on DRIFT, not only on time.** Re-quote at approval and refuse if the
+  underlying moved past a tolerance since the proposal
+  (`PROPOSAL_DRIFT_THRESHOLD_PCT`). Time-expiry alone lets a stale approval
+  execute against a changed world inside the window.
+- **The approve transition must be ATOMIC.** A double-click or a retry racing
+  to approve the same decision has to produce exactly one winner — a
+  compare-and-set on the status, not a read-then-write. maison's consumed
+  pointer is weaker: it is single-threaded by accident, not by construction.
+
 ### 4. Re-entrancy
 
 Parking the same `(scope, subject, who)` twice replaces rather than appends.
