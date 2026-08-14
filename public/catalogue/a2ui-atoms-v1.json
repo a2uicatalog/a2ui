@@ -7080,11 +7080,14 @@
       },
       "default_value": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). Pre-selected option value."
+       "description": "string (optional). Pre-selected option value. `selected_value` is accepted as a synonym — the renderer read only that spelling while this file documented only this one, so the documented prop pre-selected nothing until 2026-08-14."
       },
       "rules": {
        "description": "array of strings (optional). e.g. ['required'].",
        "type": "array"
+      },
+      "wired": {
+       "description": "Carries `onChange` in the wired dialect, emitting the CHECKED option's value, and accepts a `value` wire that checks the matching option. The binding DELEGATES over the group rather than reading the first input, so N elements behave as one control. This is the single-select alternative to combobox for the case a dropdown gets wrong: few options, on a phone, where a dropdown costs two taps and a modal to answer a three-way question."
       }
      },
      "required": [

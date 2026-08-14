@@ -5520,10 +5520,23 @@
             ]
           },
           "default_value": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "therendererreadonlythatspellingwhilethisfiledocumentedonlythisone",
+              "sothedocumentedproppre-selectednothinguntil2026-08-14"
+            ]
           },
           "rules": {
             "type": "string"
+          },
+          "wired": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
           }
         },
         "required": [

@@ -2788,12 +2788,19 @@ _RENDERERS['form_select'] = function(b) {
     '</div>';
 };
 
+// Wired-capable since 2026-08-14: A2UIState's onChange binding delegates over
+// the group rather than listening to the first radio, and setProp('value')
+// checks the matching option instead of assigning to one. Before that the atom
+// rendered perfectly and reported only its first option — the silent class.
 _RENDERERS['form_radio_group'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var label = b.label || '';
   var name = b.name || ('radio_' + uid);
   var options = b.options || [];
-  var selectedValue = b.selected_value || '';
+  // schema.yaml documented `default_value` while this read `selected_value`, so
+  // the documented prop pre-selected nothing. Both accepted rather than one
+  // renamed: payloads exist for each spelling.
+  var selectedValue = b.selected_value || b.default_value || '';
 
   var optionsHtml = '';
   for (var i = 0; i < options.length; i++) {

@@ -156,6 +156,31 @@ known_debt:
                           # test_unregistered_atoms_match_declared_debt's GAS-drift
                           # check (which correctly ignores it, see that test's docstring).
 
+  frozen_renderer_copies:  # declared 2026-08-14, while fixing form_radio_group's
+                        # output binding "catalogue-wide" and needing an honest
+                        # answer to what "wide" is. FOUR files carry the
+                        # output-wire dispatch (`prop === 'onChange'`). One is
+                        # maintained — gas-wired-renderer/A2UIState.html. One is
+                        # COMPILED from it — public/surfaces/mcp-apps/renderer-
+                        # bundle.html, via gen_mcp_apps_bundle. The two below are
+                        # neither: hand-copies frozen at the 2026-07-05 import
+                        # that have received no renderer change since (no
+                        # same_tab, no sortable_list, no radio-group binding).
+                        #
+                        # They are listed rather than patched ON PURPOSE. Cherry-
+                        # picking one fix into a file that is forty commits stale
+                        # buys nothing and costs the truth — it makes a dead
+                        # mirror look maintained, which is how the next reader
+                        # concludes the bug is fixed everywhere when it is fixed
+                        # in one live place and two museums.
+                        #
+                        # Audited by test_no_undeclared_renderer_engine_copies:
+                        # a FIFTH copy appearing is the thing to prevent, since
+                        # each one is a hand-sync nobody signed up for. Deleting
+                        # or regenerating these two clears the entry.
+    - apps-script-surface/gas-schema-renderer/A2UIState.html      # schema dialect, superseded
+    - apps-script-surface/gas-wired-renderer-starter/A2UIState.html  # starter template
+
 # Declared processes — management as data. Run via: python3 scripts/ops.py run <name>
 # The runner executes from repo root, resolves {{inventory.paths}} from this
 # file, stops on first failure, and appends every run to ops/log.jsonl.

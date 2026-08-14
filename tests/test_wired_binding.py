@@ -46,20 +46,35 @@ def binder_selectors():
     """
     src = STATE.read_text()
     out = {}
-    # onClick / onChange / onToggle each do `domEl.querySelector('...')` inside
-    # their own branch of the output-wire dispatch.
+    # onClick / onChange / onToggle each own a branch of the output-wire
+    # dispatch. A branch may contain MORE than one querySelector: onChange
+    # gained a group path in 2026-08 (see GROUP_SELECTORS below), so read every
+    # selector in the branch rather than only the first, in source order.
     for prop in ("onClick", "onChange", "onToggle"):
         m = re.search(
-            r"prop === '%s'\)\s*\{\s*var \w+ = domEl\.querySelector\('([^']+)'\)" % prop,
-            src,
+            r"prop === '%s'\)\s*\{(.*?)\n      \} else if \(prop ===" % prop,
+            src, re.S,
         )
-        if m:
-            out[prop] = m.group(1)
+        if not m:
+            continue
+        sels = re.findall(r"domEl\.querySelector\('([^']+)'\)", m.group(1))
+        if sels:
+            out[prop] = sels
     assert "onClick" in out and "onChange" in out, (
         "could not read the binder's selectors out of A2UIState.html -- the "
         "dispatch shape changed; update this parser rather than hardcoding."
     )
     return out
+
+
+# Selectors whose match means the binder DELEGATES over the container instead
+# of attaching to one element. Read as: "if this matches, N elements are one
+# control and finding N of them is correct, not a bug."
+#
+# Everything not listed here binds a SINGLE element via querySelector, which is
+# why _unbound treats a multi-match as a failure. That distinction is the whole
+# point of this pair of rules -- see test_a_radio_group_bound_one_at_a_time.
+GROUP_SELECTORS = frozenset({"input[type=radio]"})
 
 
 @pytest.fixture(scope="module")
@@ -102,23 +117,33 @@ def _segment_for(html, el_id):
     return m.group(1) if m else None
 
 
-def _matches(segment, selector):
-    """Approximate a CSS selector against raw markup.
+def _count(segment, selector):
+    """How many elements a selector would match in this markup.
 
-    Only the shapes the binder actually uses: a comma-separated list of tag
-    names, optionally with :not([type=checkbox]).
+    Approximate, and only over the shapes the binder actually uses: a
+    comma-separated list of tag names, optionally with :not([type=checkbox]) or
+    a [type=x] filter.
+
+    Counts rather than returns a bool because "how many" is the question that
+    matters: querySelector takes the FIRST, so two matches and one match are
+    different outcomes for the same wire.
     """
+    n = 0
     for part in selector.split(","):
         part = part.strip()
         neg = ":not([type=checkbox])" in part
-        tag = part.split(":")[0].strip()
-        if neg:
-            for m in re.finditer(r"<%s\b([^>]*)>" % tag, segment):
-                if 'type="checkbox"' not in m.group(1) and "type=checkbox" not in m.group(1):
-                    return True
-        elif re.search(r"<%s\b" % tag, segment):
-            return True
-    return False
+        want = re.search(r"\[type=(\w+)\]", part.split(":not")[0])
+        tag = re.split(r"[:\[]", part)[0].strip()
+        for m in re.finditer(r"<%s\b([^>]*)>" % tag, segment):
+            attrs = m.group(1)
+            typ = re.search(r'type=["\']?(\w+)', attrs)
+            typ = typ.group(1) if typ else None
+            if neg and typ == "checkbox":
+                continue
+            if want and typ != want.group(1):
+                continue
+            n += 1
+    return n
 
 
 def _unbound(payload, html, selectors):
@@ -129,12 +154,35 @@ def _unbound(payload, html, selectors):
             continue
         seg = _segment_for(html, el["id"])
         for prop in wire:
-            sel = selectors.get(prop)
-            if sel is None:
+            sels = selectors.get(prop)
+            if not sels:
                 continue          # a wire prop this test cannot check yet
-            if seg is None or not _matches(seg, sel):
+            if seg is None:
                 bad.append(f"{el['id']} ({el.get('atom')}) .{prop} "
-                           f"-> no element matching {sel!r}")
+                           f"-> element never rendered")
+                continue
+            # Source order matters: the binder takes the first branch that
+            # matches, exactly as the dispatch does.
+            for sel in sels:
+                n = _count(seg, sel)
+                if not n:
+                    continue
+                if sel in GROUP_SELECTORS:
+                    break         # delegated over the container: N is fine
+                if n > 1:
+                    # The silent one. The control renders, the selector
+                    # matches, and the binder still only ever hears the first
+                    # of them -- which is how form_radio_group shipped
+                    # bindable-looking and dead until 2026-08-14.
+                    bad.append(
+                        f"{el['id']} ({el.get('atom')}) .{prop} -> {n} elements "
+                        f"match {sel!r} but the binder attaches to the first "
+                        f"only; this control needs a delegated branch in "
+                        f"A2UIState.html (and an entry in GROUP_SELECTORS)")
+                break
+            else:
+                bad.append(f"{el['id']} ({el.get('atom')}) .{prop} "
+                           f"-> no element matching any of {sels!r}")
     return bad
 
 
@@ -194,3 +242,66 @@ def test_a_correctly_wired_surface_passes(render_wired, binder_selectors):
     }
     bad = _unbound(good, render_wired(good), binder_selectors)
     assert not bad, "these are the atoms the wired dialect documents: " + str(bad)
+
+
+def test_a_radio_group_binds_as_one_control(render_wired, binder_selectors):
+    """form_radio_group + onChange, the fourth cause this file exists for.
+
+    Until 2026-08-14 the atom rendered N perfectly good radios and the binder
+    did querySelector('input:not([type=checkbox]),...') -- which MATCHES a
+    radio. So the wire looked bound, this test would have passed it, and the
+    surface reported only the first option's value no matter what you picked.
+
+    That is why _unbound counts instead of asking yes/no: the failure was never
+    "nothing matched", it was "N matched and only one was wired".
+    """
+    payload = {
+        "type": "a2ui_wired_surface", "title": "radio probe",
+        "app": {"id": "probe"},
+        "state_primitives": [{"id": "v", "primitive": "ValueStore",
+                              "props": {"initialValue": ""}}],
+        "actions": [],
+        "layout": [
+            {"id": "sev", "atom": "form_radio_group",
+             "props": {"label": "severity",
+                       "options": [{"label": "low", "value": "low"},
+                                   {"label": "high", "value": "high"}]},
+             "wire": {"onChange": "#v.setValue"}},
+        ],
+    }
+    html = render_wired(payload)
+    seg = _segment_for(html, "sev")
+    assert seg and _count(seg, "input[type=radio]") == 2, (
+        "the atom must render one input per option -- otherwise this test is "
+        "proving nothing about the group case")
+    assert not _unbound(payload, html, binder_selectors)
+
+
+def test_the_group_rule_is_what_makes_it_pass(render_wired, binder_selectors):
+    """The negative control for the rule above, not for the binder.
+
+    Drop the delegated branch from what the test believes the binder does, and
+    the radio group must go straight back to being reported as broken. Without
+    this, GROUP_SELECTORS could silently grow into a list that excuses every
+    multi-match and the count rule would be decoration.
+    """
+    payload = {
+        "type": "a2ui_wired_surface", "title": "radio probe",
+        "app": {"id": "probe"},
+        "state_primitives": [{"id": "v", "primitive": "ValueStore",
+                              "props": {"initialValue": ""}}],
+        "actions": [],
+        "layout": [
+            {"id": "sev", "atom": "form_radio_group",
+             "props": {"label": "severity",
+                       "options": [{"label": "low", "value": "low"},
+                                   {"label": "high", "value": "high"}]},
+             "wire": {"onChange": "#v.setValue"}},
+        ],
+    }
+    without_group = {k: [s for s in v if s not in GROUP_SELECTORS]
+                     for k, v in binder_selectors.items()}
+    bad = _unbound(payload, render_wired(payload), without_group)
+    assert bad and "binder attaches to the first only" in bad[0], (
+        "a radio group must be reported as mis-bound the moment the delegated "
+        "branch is not there. Got: %r" % (bad,))

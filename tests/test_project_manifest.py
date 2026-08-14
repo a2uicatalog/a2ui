@@ -90,3 +90,73 @@ def test_unregistered_atoms_match_declared_debt():
     assert not stale_debt, (
         "declared debt entries that ARE GAS-registered and are now also "
         f"in schema.yaml — remove from project.yaml known_debt: {stale_debt}")
+
+
+# ─── One engine, one compiler, and no unsigned mirrors ───────────────────────
+
+MAINTAINED_ENGINE = "apps-script-surface/gas-wired-renderer/A2UIState.html"
+COMPILED_ENGINE = "public/surfaces/mcp-apps/renderer-bundle.html"
+
+
+def test_no_undeclared_renderer_engine_copies():
+    """Every file carrying the output-wire dispatch is accounted for.
+
+    Declared 2026-08-14. form_radio_group's binding was fixed in the one
+    maintained engine and compiled into the one generated target — and the
+    honest question "is it fixed catalogue-wide?" turned out to need a list,
+    because two further hand-copies of the same dispatch have been sitting
+    frozen since the 2026-07-05 import.
+
+    The risk this guards is not those two. It is the FIFTH copy: every
+    additional mirror is a hand-sync that no process owns, and the repo has
+    already been bitten by that shape twice (MCP_VERBS, training_parser). A new
+    one must be a deliberate, declared act.
+    """
+    # TRACKED files only, deliberately. public-full/ is a gitignored local
+    # build of the gated full mirror and is present or absent depending on
+    # whether anyone has run catalog-rebuild-full lately — scanning it would
+    # make this gate pass in CI and fail on a developer's machine for a reason
+    # that is not drift. It is a compiled target of that process, and stale
+    # until it next runs, exactly like the bundle is until renderer-release.
+    tracked = subprocess.run(
+        ["git", "ls-files", "*.html", "*.js", "*.gs"],
+        cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
+    dispatch = sorted(
+        rel for rel in tracked
+        if "node_modules" not in rel
+        and "prop === 'onChange'" in (ROOT / rel).read_text(errors="ignore")
+    )
+    accounted = ({MAINTAINED_ENGINE, COMPILED_ENGINE}
+                 | set(MANIFEST["known_debt"]["frozen_renderer_copies"]))
+    undeclared = sorted(set(dispatch) - accounted)
+    assert not undeclared, (
+        "new copies of the wired output-wire dispatch, owned by no generator "
+        "and declared nowhere — each is a hand-sync waiting to drift. Compile "
+        "it from the engine, or declare it in project.yaml "
+        f"known_debt.frozen_renderer_copies: {undeclared}")
+
+    gone = sorted(accounted - set(dispatch) - {COMPILED_ENGINE})
+    assert not gone, (
+        "declared frozen renderer copies that no longer carry the dispatch — "
+        f"delete the entry from project.yaml known_debt: {gone}")
+
+
+def test_the_frozen_copies_really_are_frozen():
+    """The claim the entry above rests on, checked rather than asserted.
+
+    If someone starts maintaining one of these again, the debt entry becomes a
+    lie in the direction that matters — it would tell a reader "already dead,
+    ignore it" about a file that is live. Cheapest true signal: the renderer
+    changes that landed after the import are absent.
+    """
+    since_import = ("same_tab", "sortable_list")
+    for rel in MANIFEST["known_debt"]["frozen_renderer_copies"]:
+        engine = (ROOT / rel).read_text()
+        sibling = (ROOT / rel).parent / "atom.gs"
+        body = engine + (sibling.read_text() if sibling.exists() else "")
+        present = [m for m in since_import if m in body]
+        assert not present, (
+            f"{rel} has picked up post-import renderer work {present} — it is "
+            "being maintained after all, so it is not frozen debt. Either "
+            "bring it fully in sync (and give it a generator) or remove the "
+            "declaration.")
