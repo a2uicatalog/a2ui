@@ -216,7 +216,7 @@ function _a2uiActionTransport(type, req, onOk, onFail) {
   onOk({ ok: false, error: 'This app needs a backend this host cannot reach — its buttons are inert here.' });
 }
 
-var OUTPUT_WIRE_PROPS = { onChange: 1, onClick: 1, onToggle: 1, onRowClick: 1, onFlightClick: 1, onSearch: 1, onAssign: 1, setDone: 1, onReorder: 1 };
+var OUTPUT_WIRE_PROPS = { onChange: 1, onClick: 1, onToggle: 1, onRowClick: 1, onFlightClick: 1, onSearch: 1, onAssign: 1, setDone: 1, onReorder: 1, onConfirm: 1, onCancel: 1 };
 
 function A2UIStateEngine(spec) {
   this.nodes     = {};
@@ -1658,6 +1658,30 @@ function _a2uiBindRowClicks(wrapEl) {
   });
 }
 
+// confirm_gate renders TWO buttons, so onClick's querySelector('button') would
+// bind whichever is FIRST in the DOM — approval wired to the cancel control, or
+// the reverse, depending on markup order. That is the same
+// one-control-is-one-element assumption that made form_radio_group unusable in
+// this dialect, except here the failure is both silent AND destructive. Each
+// button is therefore addressed by its own attribute through its own wire prop.
+//
+// One branch per prop above, rather than a combined one, because that is the
+// dispatch's convention and tests/test_dialect_reachability.py reads it.
+function _a2uiBindGateButton(domEl, sel, wireExpr) {
+  var btn = domEl.querySelector(sel);
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    // The decision id travels WITH the answer: in the durable tier it names a
+    // record parked in the server's store, and a confirmation that cannot say
+    // what it confirmed is not one. Read at click time, since the id can
+    // arrive by wire after this markup was written.
+    var host = domEl.getAttribute('data-decision-id') !== null
+      ? domEl : domEl.querySelector('[data-decision-id]');
+    window._a2uiEngine.bindOutput(
+      wireExpr, host ? (host.getAttribute('data-decision-id') || '') : '');
+  });
+}
+
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
 // Boot is CALLABLE (wired-transport v0.1): GAS pages boot on DOMContentLoaded
@@ -1753,6 +1777,10 @@ window._a2uiBootWiredSurface = function(schema) {
             window._a2uiEngine.bindOutput(wireExpr, e.target.value);
           });
         }
+      } else if (prop === 'onConfirm') {
+        _a2uiBindGateButton(domEl, '[data-confirm]', wireExpr);
+      } else if (prop === 'onCancel') {
+        _a2uiBindGateButton(domEl, '[data-cancel]', wireExpr);
       } else if (prop === 'onClick') {
         var btn = domEl.querySelector('button');
         if (btn) btn.addEventListener('click', function() {

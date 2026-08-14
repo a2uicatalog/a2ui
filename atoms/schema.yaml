@@ -4573,6 +4573,49 @@ blocks:
     name: PDF.js (Mozilla)
     url: https://mozilla.github.io/pdf.js/
     license: Apache-2.0
+- type: confirm_gate
+  description: The pause before an irreversible action — states what will
+    happen, then makes the person say yes. Carries `onConfirm` and `onCancel`
+    as SEPARATE output wires because it renders two buttons; onClick would bind
+    whichever is first in the DOM, which is approval wired to the cancel
+    control depending on markup order. Both wires emit the atom's opaque
+    `decision_id`, so an approval always says WHAT it approved. Shaped to serve
+    two tiers without changing (spec/durable-pause-v0.1.md) — in the in-page
+    tier the host mints decision_id per page; in the durable tier the server
+    supplies the id of a decision parked in its own store, discovered at
+    build time. Deliberately does NOT express its pending state as a wire on
+    the acting action, because a wire is a claim about THIS page and resolves
+    false on any later load, so a genuinely parked decision would render
+    hidden.
+  compact_description: confirm/cancel gate before a destructive action
+  stage: preview
+  surfaces:
+    works_on:
+    - mcp-apps
+    - google-apps-script-web
+    incompatible_on:
+    - surface: email
+      reason: No interactive buttons in email
+    - surface: pdf
+      reason: Static only
+  fields:
+    prompt: string. What is about to happen, in one sentence.
+    detail: string (optional). The consequence, if it needs more than the
+      prompt — what cannot be undone, what else it affects.
+    confirm_label: string (optional). Default 'Yes, do it'.
+    cancel_label: string (optional). Default 'Cancel'.
+    decision_id: 'string (optional). Opaque id echoed by both wires. In the
+      durable tier this names a decision parked server-side.'
+    tone: "string (optional). 'danger' for a red frame and confirm button;
+      anything else uses the surface accent."
+    wired: 'onConfirm and onCancel are output wires, each emitting
+      decision_id. Point onConfirm at the action that does the work (or, in the
+      durable tier, at the decide verb) and onCancel at whatever dismisses it.
+      Wiring only onConfirm leaves a gate the reader cannot back out of.'
+  source:
+    name: CopilotKit (renderAndWaitForResponse) / AG-UI human-in-the-loop
+    url: https://docs.copilotkit.ai/reference/hooks/useCopilotAction
+    license: MIT
 - type: photo_upload
   description: Take or choose a PHOTO and upload it to the host's own endpoint,
     with a local preview before the bytes leave the phone. Deliberately not a

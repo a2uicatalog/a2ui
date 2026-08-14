@@ -346,3 +346,48 @@ def test_the_bridge_can_deliver_subject_id(binder_selectors):
     assert "prop === 'subject_id'" in src, (
         "photo_upload's subject_id wire needs a setProp branch in "
         "A2UIState.html, or the value never reaches the atom")
+
+
+def test_confirm_gate_wires_approve_and_decline_to_different_buttons(render_wired):
+    """Two buttons, one control each — the mistake this atom is built to avoid.
+
+    onClick binds querySelector('button'), which takes whichever is FIRST in
+    the DOM. Wiring a gate that way binds approval to whichever button the
+    markup happens to put first, and the failure is silent AND destructive:
+    the same one-control-is-one-element assumption that made form_radio_group
+    unusable, with worse consequences. So confirm/decline are addressed by
+    their own data attributes through their own wire props.
+    """
+    payload = {
+        "type": "a2ui_wired_surface", "title": "gate probe",
+        "app": {"id": "probe"},
+        "state_primitives": [],
+        "actions": [{"id": "act", "type": "mcp:get_profile", "props": {}}],
+        "layout": [
+            {"id": "gate", "atom": "confirm_gate",
+             "props": {"prompt": "Delete it?", "tone": "danger",
+                       "decision_id": "park-123"},
+             "wire": {"onConfirm": "#act.run", "onCancel": "#act.run"}},
+        ],
+    }
+    seg = _segment_for(render_wired(payload), "gate")
+    assert seg, "confirm_gate must render"
+    assert "data-confirm" in seg and "data-cancel" in seg, (
+        "each button needs its own hook, or the binder cannot tell approval "
+        "from refusal")
+    # Decline must be as reachable as approve, or the gate is a speed bump.
+    assert _count(seg, "button") == 2
+    # The decision travels with the answer: a confirmation that cannot say
+    # what it confirmed is not one.
+    assert 'data-decision-id="park-123"' in seg
+
+    src = STATE.read_text()
+    # One branch per prop, which is the dispatch's convention and what
+    # test_dialect_reachability's parser reads. A combined
+    # `prop === 'onConfirm' || prop === 'onCancel'` binds correctly and is
+    # still wrong here: that test reports the first half as an orphaned
+    # no-op wire, which sends someone to fix a binder that works.
+    assert "prop === 'onConfirm'" in src and "prop === 'onCancel'" in src, (
+        "confirm_gate's wires need a branch each in A2UIState.html")
+    assert "onConfirm: 1" in src and "onCancel: 1" in src, (
+        "both must be declared in OUTPUT_WIRE_PROPS or the engine drops them")
