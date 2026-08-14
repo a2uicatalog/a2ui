@@ -25194,6 +25194,7 @@ A2UIStateEngine.prototype._initPrimitives = function(primitives) {
       case 'DerivedStore':    self._initDerivedStore(p);     break;
       case 'StringTemplate':   self._initStringTemplate(p);   break;
       case 'RowBinder':        self._initRowBinder(p);        break;
+      case 'ObjectFields':     self._initObjectFields(p);     break;
       default: console.warn('[A2UI] Unknown primitive: "' + p.primitive + '"');
     }
   });
@@ -25672,6 +25673,43 @@ A2UIStateEngine.prototype._initRowBinder = function(p) {
       }
     });
     self._set(p.id, 'count', rows.length);
+  };
+  this.nodes[p.id] = node;
+};
+
+// ObjectFields: read named fields out of ONE object-valued store and expose
+// them as ordinary scalar properties. RowBinder's sibling — that one unpacks a
+// delivered ARRAY, this one unpacks a single delivered OBJECT.
+//
+// Why it has to exist. A wire is `#node.property` and _parseWire splits at the
+// FIRST dot, so `#sel.value.title` reads a literal property named "value.title"
+// and resolves to nothing (deliberately — see the wire syntax rules). That
+// leaves any object a wire delivers unreadable by the client: onRowClick hands
+// over the whole clicked row, and a surface wanting to show which row was
+// picked had no way to reach its title. maison paid for a SERVER ROUND TRIP on
+// 2026-08-14 to render a sentence out of data the client already held.
+//
+// Strictly inside the derivation boundary: one delivered object, one render,
+// no compute, nothing crossing stores or time. Pure projection, exactly as
+// RowBinder is for arrays.
+//
+// Fields are DECLARED rather than exposed wholesale, so `#sel.title` is a
+// property the engine knows about — an undeclared one warns per the wire
+// error contract instead of silently resolving to undefined.
+A2UIStateEngine.prototype._initObjectFields = function(p) {
+  var self   = this;
+  var fields = (p.props && p.props.fields) || [];
+  var node   = {};
+  fields.forEach(function(f) { node[f] = ''; });
+  node._recompute = function(source) {
+    // A non-object (null before the first click, a string, an array) clears
+    // rather than throws: the pre-selection state is legitimate and common.
+    var obj = (source && typeof source === 'object' && !Array.isArray(source))
+      ? source : {};
+    fields.forEach(function(f) {
+      var v = obj[f];
+      self._set(p.id, f, (v === undefined || v === null) ? '' : v);
+    });
   };
   this.nodes[p.id] = node;
 };

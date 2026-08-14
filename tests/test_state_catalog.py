@@ -3,6 +3,7 @@ in sync with the renderer's state primitives — the companion to the atom catal
 that makes wired-surface authoring validate against one agreed vocabulary.
 """
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -19,6 +20,9 @@ RENDERER_PRIMITIVES = {
     # not derivation) and RowBinder (query-row -> ValueStore rehydration,
     # pure projection). Both declared in spec/a2ui-state.yaml.
     "StringTemplate", "RowBinder",
+    # 2026-08-14: ObjectFields — RowBinder's sibling for a single delivered
+    # OBJECT rather than an array. Pure projection, boundary untouched.
+    "ObjectFields",
 }
 
 
@@ -133,3 +137,84 @@ def test_renderer_derived_ops_matches_engine():
         f"RENDERER_DERIVED_OPS out of sync with engine source: "
         f"engine has {engine_ops}, set has {RENDERER_DERIVED_OPS}"
     )
+
+
+# ─── Running the real engine ─────────────────────────────────────────────────
+
+def _run_engine(body):
+    """Execute `body` against the REAL A2UIStateEngine in node.
+
+    Same posture as tests/test_wired_binding.py: the engine under test is the
+    shipped source, not a description of it. OUT(x) is how the snippet returns.
+    """
+    import re as _re
+    import subprocess
+    import sys
+    import tempfile
+
+    src = (ROOT / "apps-script-surface" / "gas-wired-renderer" / "A2UIState.html").read_text()
+    blocks = _re.findall(r"<script>(.*?)</script>", src, _re.S)
+    engine = [b for b in blocks if "A2UIStateEngine.prototype._initPrimitives" in b]
+    assert engine, "A2UIStateEngine not found in A2UIState.html — update this harness"
+
+    with tempfile.TemporaryDirectory() as td:
+        drv = Path(td) / "d.js"
+        drv.write_text(
+            "global.window = global;\n"
+            "global.document = { getElementById: function(){ return null; },\n"
+            "                    querySelector: function(){ return null; },\n"
+            "                    addEventListener: function(){} };\n"
+            + "\n".join(engine) + "\n"
+            + "var __out = null; function OUT(v){ __out = v; }\n"
+            + body + "\n"
+            + "process.stdout.write(JSON.stringify(__out));\n")
+        r = subprocess.run(["node", str(drv)], capture_output=True, text=True, timeout=120)
+        assert r.returncode == 0, r.stderr[-2000:]
+        return json.loads(r.stdout)
+
+
+def test_object_fields_projects_a_delivered_object():
+    """The client can read a field out of an object a wire delivered.
+
+    Without this, it cannot. A wire is `#node.property` and _parseWire splits at
+    the FIRST dot, so `#sel.value.title` reads a literal property named
+    "value.title" and resolves to nothing — by design, per the wire syntax
+    rules. The consequence went unnoticed until 2026-08-14: onRowClick hands
+    over the whole clicked row, and a surface wanting to name the row you
+    picked had no way to reach its title, so maison spent a SERVER ROUND TRIP
+    rendering a sentence out of data the client was already holding.
+    """
+    out = _run_engine("""
+      var eng = new A2UIStateEngine({
+        state_primitives: [
+          { id: 'sel',  primitive: 'ValueStore', props: { initialValue: '' } },
+          { id: 'pick', primitive: 'ObjectFields',
+            props: { source: '#sel.value', fields: ['title', 'status'] } }
+        ],
+        actions: [], layout: []
+      });
+      var seen = [];
+      // Before anything is clicked: declared, empty, not undefined.
+      seen.push([eng.nodes.pick.title, eng.nodes.pick.status]);
+      eng.trigger('sel', 'setValue', { id: 'x1', title: 'Tap drips', status: 'open' });
+      seen.push([eng.nodes.pick.title, eng.nodes.pick.status]);
+      // A non-object clears rather than throws — the pre-selection state is
+      // legitimate, and so is a store that held a plain id.
+      eng.trigger('sel', 'setValue', 'just-an-id');
+      seen.push([eng.nodes.pick.title, eng.nodes.pick.status]);
+      OUT(seen);
+    """)
+    assert out == [["", ""], ["Tap drips", "open"], ["", ""]]
+
+
+def test_object_fields_is_declared_in_the_state_catalog():
+    """A primitive the engine runs but the catalog omits is one no author can
+    discover — the same gap that left seven output wire props undocumented."""
+    import yaml
+    spec = yaml.safe_load((ROOT / "spec" / "a2ui-state.yaml").read_text())
+    ids = {p["id"] for p in spec["primitives"]}
+    src = (ROOT / "apps-script-surface" / "gas-wired-renderer" / "A2UIState.html").read_text()
+    running = set(re.findall(r"case '(\w+)':\s*self\._init\w+\(p\)", src))
+    assert running <= ids, (
+        "primitives the engine dispatches but spec/a2ui-state.yaml does not "
+        f"declare: {sorted(running - ids)}")

@@ -42,6 +42,9 @@ StringTemplate — string interpolation over named wire inputs — the text sibl
 RowBinder — unpack delivered query rows back into ValueStores — form rehydration after reload; pure projection of ONE delivered array, no compute
   props: bind: array of { match: {field: value}, take: field, into: storeId } — last matching row wins (append-only stores)
   readable fields: count
+ObjectFields — read named fields out of ONE object-valued store and expose them as scalars — RowBinder's sibling (that unpacks a delivered ARRAY, this unpacks a single delivered OBJECT). Exists because a wire is
+  props: fields: array of field names to expose, e.g. [title, room_label, status] — declared rather than wholesale so an undeclared field warns per the wire error contract, source: '#nodeId.field' — the object-valued store to read
+  readable fields: t, h, e,  , d, e, c, l, a, r, e, d,  , `, f, i, e, l, d, s, `, ,,  , e, a, c, h,  , d, e, f, a, u, l, t, i, n, g,  , t, o,  , ', ',  , b, e, f, o, r, e,  , t, h, e,  , f, i, r, s, t,  , d, e, l, i, v, e, r, y,  , o, r,  , w, h, e, n,  , t, h, e,  , s, o, u, r, c, e,  , i, s,  , n, o, t,  , a, n,  , o, b, j, e, c, t
 StepNavigator — tracks current step in a multi-step flow
   props: totalSteps: integer (default 2)
   readable fields: activeIndex

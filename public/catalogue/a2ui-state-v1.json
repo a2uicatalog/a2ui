@@ -293,6 +293,34 @@
     "count"
    ]
   },
+  "ObjectFields": {
+   "type": "object",
+   "description": "read named fields out of ONE object-valued store and expose them as scalars — RowBinder's sibling (that unpacks a delivered ARRAY, this unpacks a single delivered OBJECT). Exists because a wire is",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "ObjectFields"
+      },
+      "fields": {
+       "description": "array of field names to expose, e.g. [title, room_label, status] — declared rather than wholesale so an undeclared field warns per the wire error contract"
+      },
+      "source": {
+       "description": "'#nodeId.field' — the object-valued store to read"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-readableFields": "the declared `fields`, each defaulting to '' before the first delivery or when the source is not an object"
+  },
   "StepNavigator": {
    "type": "object",
    "description": "tracks current step in a multi-step flow",

@@ -84,6 +84,12 @@ primitives:
     wire_inputs:
       rows: "array — '#actionId.result'"
     readable_fields: [count]
+  - id: ObjectFields
+    purpose: read named fields out of ONE object-valued store and expose them as scalars — RowBinder's sibling (that unpacks a delivered ARRAY, this unpacks a single delivered OBJECT). Exists because a wire is #node.property and splits at the FIRST dot, so #sel.value.title resolves to nothing and any object a wire delivers is otherwise unreadable by the client. Pure projection, no compute, boundary untouched.
+    props:
+      fields: "array of field names to expose, e.g. [title, room_label, status] — declared rather than wholesale so an undeclared field warns per the wire error contract"
+      source: "'#nodeId.field' — the object-valued store to read"
+    readable_fields: "the declared `fields`, each defaulting to '' before the first delivery or when the source is not an object"
   - id: StepNavigator
     purpose: tracks current step in a multi-step flow
     props: { totalSteps: "integer (default 2)" }
