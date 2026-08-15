@@ -1133,6 +1133,16 @@ var _a2uiBridge = {
       // before, so the value lands after that markup was written. Same
       // reasoning as href on a link whose target does not exist yet.
       el.setAttribute('data-subject-id', val == null ? '' : String(val));
+    } else if (prop === 'src') {
+      // preview_frame: re-navigate the iframe in place, swap the placeholder.
+      // No repaint — this is the whole point of the atom.
+      var frameEl = el.querySelector('[data-a2ui-frame]');
+      var placeEl = el.querySelector('[data-a2ui-frame-placeholder]');
+      if (frameEl) {
+        frameEl.src = val ? String(val) : 'about:blank';
+        frameEl.style.display = val ? '' : 'none';
+      }
+      if (placeEl) placeEl.style.display = val ? 'none' : 'flex';
     } else if (prop === 'href') {
       var a = el.tagName === 'A' ? el : el.querySelector('a');
       if (a) { a.href = String(val); a.style.pointerEvents = val ? '' : 'none'; a.style.opacity = val ? '' : '0.4'; }
@@ -1415,12 +1425,36 @@ function _a2uiUpdateTableRows(el, rows) {
     return;
   }
   var html = '';
+  // _select's checkbox handler (_a2uiTableToggleSelect, atoms_charts.gs) never
+  // reads uid — only _a2uiTableDeleteOne does — so an empty fallback here is
+  // harmless if the wrapping <table> id is ever missing; kept for parity with
+  // the static renderer's markup rather than because this path needs it.
+  var _selUid = ((el.querySelector('table') || {}).id || '').replace(/^tbl-/, '');
   rows.forEach(function(row) {
     var rowJson = _a2uiSanitize(JSON.stringify(row));
     html += '<tr style="cursor:pointer;" data-row-json="' + rowJson + '">';
     cols.forEach(function(col) {
       var key = typeof col === 'string' ? col : col.key;
-      if (key === '_delete') {
+      if (key === '_select') {
+        // Mirrors _RENDERERS['data_table_sortable'] (atoms_charts.gs) exactly
+        // — that renderer only fires on FIRST paint (rows given directly in
+        // the payload); a table whose rows arrive later via a wire (every
+        // onLoad-driven table: weekend, shopping, purchasing, ...) repaints
+        // through THIS function instead, which never had a `_select` case at
+        // all. Declarable, and inert the moment rows load asynchronously —
+        // the same class of bug _delete's body cell had before it was fixed
+        // here (2026-08-05 comment above _RENDERERS['data_table_sortable']).
+        // Found live 2026-08-15: maison's Purchasing page ticked nothing.
+        var selRowId = row && row.id;
+        html += '<td style="padding:4px 8px;border-bottom:1px solid #f1f5f9;text-align:center;">'
+          + (selRowId !== undefined
+             ? '<input type="checkbox" class="a2ui-row-check" onclick="event.stopPropagation()" '
+               + 'onchange="event.stopPropagation();_a2uiTableToggleSelect('
+               + _a2uiSanitize(JSON.stringify(String(_selUid))) + ','
+               + _a2uiSanitize(JSON.stringify(String(selRowId))) + ',this.checked,this)">'
+             : '')
+          + '</td>';
+      } else if (key === '_delete') {
         var delKey     = col.delete_key    || 'id';
         var actNode    = col.action_node   || 'delete_row';
         var keyMemNode = col.key_mem_node  || 'delete_key_mem';
@@ -1687,7 +1721,19 @@ function _a2uiBindRowClicks(wrapEl) {
   }
   if (!layoutEl || !layoutEl.wire || !layoutEl.wire.onRowClick) return;
   var wireExpr = layoutEl.wire.onRowClick;
-  wrapEl.querySelectorAll('tbody tr').forEach(function(row) {
+  // [data-row-json] excludes the "no results" placeholder _a2uiUpdateTableRows
+  // renders for an empty/null rows array (colspan message text, no attribute)
+  // — 'tbody tr' alone bound a click listener onto that row too, and this
+  // function is called AT BOOT for every table with onRowClick declared,
+  // against whatever the table shows the instant the page paints. A table
+  // fed by a wire (any onLoad-driven table — this is not suggestion-table-
+  // specific) starts with `result: null` before its action has ever run, so
+  // that placeholder is what actually gets bound. Clicking it delivered {}
+  // (JSON.parse's own fallback for a missing attribute) instead of doing
+  // nothing, which read on the receiving StringTemplate as a real but empty
+  // selection — "nothing yet" — rather than no click having happened at all.
+  // Found live 2026-08-15 on maison's purchase-suggestions table.
+  wrapEl.querySelectorAll('tbody tr[data-row-json]').forEach(function(row) {
     row.addEventListener('click', function() {
       var rowData = {};
       try { rowData = JSON.parse(this.getAttribute('data-row-json') || '{}'); } catch(e) {}

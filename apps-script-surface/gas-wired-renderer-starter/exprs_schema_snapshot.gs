@@ -44,7 +44,7 @@ RowBinder — unpack delivered query rows back into ValueStores — form rehydra
   readable fields: count
 ObjectFields — read named fields out of ONE object-valued store and expose them as scalars — RowBinder's sibling (that unpacks a delivered ARRAY, this unpacks a single delivered OBJECT). Exists because a wire is
   props: fields: array of field names to expose, e.g. [title, room_label, status] — declared rather than wholesale so an undeclared field warns per the wire error contract, source: '#nodeId.field' — the object-valued store to read
-  readable fields: t, h, e,  , d, e, c, l, a, r, e, d,  , `, f, i, e, l, d, s, `, ,,  , e, a, c, h,  , d, e, f, a, u, l, t, i, n, g,  , t, o,  , ', ',  , b, e, f, o, r, e,  , t, h, e,  , f, i, r, s, t,  , d, e, l, i, v, e, r, y,  , o, r,  , w, h, e, n,  , t, h, e,  , s, o, u, r, c, e,  , i, s,  , n, o, t,  , a, n,  , o, b, j, e, c, t
+  readable fields: the declared \`fields\`, each defaulting to '' before the first delivery or when the source is not an object
 StepNavigator — tracks current step in a multi-step flow
   props: totalSteps: integer (default 2)
   readable fields: activeIndex

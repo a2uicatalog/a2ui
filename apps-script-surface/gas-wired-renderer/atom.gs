@@ -330,17 +330,64 @@ _RENDERERS['sortable_list'] = function(b) {
   return html + '</div>';
 };
 
+// preview_frame — an iframe whose SRC is bound to a wire, so picking a value
+// elsewhere on the page re-navigates it CLIENT-SIDE: no server round trip, no
+// paint_result, nothing else on the page repainted. A DATA atom, same spirit
+// as sortable_list: it knows nothing about what the iframe shows, only that
+// its `src` prop is wired to another node's value. No new engine mechanism —
+// compileWires already forwards any non-output wire prop into
+// domBridge.setProp(id, propName, val); this just gives `src` a place to
+// land, the same path text interpolation already uses to patch a span.
+//
+// Meant to sit next to a picker (a `menu`/`select` atom) and a StringTemplate
+// primitive that turns the picked value into a URL:
+//   {"atom": "preview_frame", "id": "atom_preview",
+//    "props": {"label": "Preview", "height": 360},
+//    "wire": {"src": "#preview_url.value"}}
+//
+// Same-origin only in practice: nothing here relaxes sandboxing. A
+// cross-origin src is subject to the embedded page's own frame-ancestors /
+// X-Frame-Options exactly as any other iframe, and inside the GAS iframe
+// sandbox this degrades the same way embed_google_slides/embed_youtube do.
+_RENDERERS['preview_frame'] = function(b) {
+  var src = b.src || '';
+  var height = parseInt(b.height, 10) || 320;
+  var label = b.label ? '<div style="font-size:0.8rem;font-weight:600;color:var(--muted,#6b7280);'
+      + 'margin-bottom:6px;">' + _esc(b.label) + '</div>' : '';
+  var placeholder = '<div data-a2ui-frame-placeholder style="display:' + (src ? 'none' : 'flex')
+      + ';align-items:center;justify-content:center;height:' + height + 'px;'
+      + 'border:1px dashed var(--border,#e5e7eb);border-radius:8px;color:var(--muted,#6b7280);'
+      + 'font-size:0.875rem;background:var(--surface,#f9fafb);">'
+      + _esc(b.emptyMessage || 'Nothing selected yet.') + '</div>';
+  var frame = '<iframe data-a2ui-frame src="' + _esc(src) + '" style="display:' + (src ? '' : 'none')
+      + ';width:100%;height:' + height + 'px;border:1px solid var(--border,#e5e7eb);border-radius:8px;" '
+      + 'loading="lazy" title="' + _esc(b.label || 'Preview') + '"></iframe>';
+  return '<div>' + label + placeholder + frame + '</div>';
+};
+
 // ── Category B: Link / Navigation Renderers ─────────────────────────────────
 
+// same_tab: same opt-in chip_group already has, and the same reasoning —
+// default NEW TAB (right for the common case, an outbound link to somewhere
+// that is not this app), same_tab:true for an in-app "go to this page" link
+// that should behave like ordinary navigation. link_button/cta_button
+// shipped hard-coded to target="_top" (same tab) with no opt-out at all,
+// which is exactly backwards for an outbound product/vendor link — clicking
+// one on a plain (non-iframed) host REPLACED the app instead of opening
+// alongside it. Default flipped here; existing same-tab USES (in-app "next
+// page" links) opt in explicitly. Found live 2026-08-15, maison's purchase-
+// suggestion links.
 _RENDERERS['link_button'] = function(b) {
+  var target = b.same_tab ? '_top' : '_blank';
   return '<div style="margin:12px 0;">' +
-         '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" target="_top">' + _esc(b.label) + '</a>' +
+         '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" target="' + target + '">' + _esc(b.label) + '</a>' +
          '</div>';
 };
 
 _RENDERERS['cta_button'] = function(b) {
+  var target = b.same_tab ? '_top' : '_blank';
   return '<div style="margin:16px 0;text-align:center;">' +
-         '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" style="padding:10px 24px;font-size:0.85rem;" target="_top">' + _esc(b.label) + '</a>' +
+         '<a href="' + _safeUrl(b.url) + '" class="asw-btn asw-btn-primary" style="padding:10px 24px;font-size:0.85rem;" target="' + target + '">' + _esc(b.label) + '</a>' +
          '</div>';
 };
 

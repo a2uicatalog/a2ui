@@ -693,6 +693,58 @@ blocks:
     supplement a keyboard or written path, never replace one.'
   source: *id001
 
+- type: preview_frame
+  stage: preview
+  # Renderer in atom.gs, src-binding in A2UIState.html's domBridge (setProp
+  # 'src'). No new engine mechanism: compileWires already forwards any
+  # non-output wire prop to domBridge.setProp, the same path text
+  # interpolation uses — this just gives `src` somewhere to land.
+  description: 'An iframe whose `src` is driven by a wire, so picking a value
+    elsewhere on the page re-navigates it CLIENT-SIDE — no server round trip,
+    no paint_result, nothing else on the page repainted.
+
+    A DATA atom, same spirit as sortable_list: it renders whatever src it is
+    given and reacts to whatever is wired into it; it has no opinion on what
+    the iframe shows. Meant to sit next to a picker (menu/select) and a
+    StringTemplate primitive that turns the picked value into a URL — e.g. a
+    "preview this before you commit it" panel, where committing is a SEPARATE,
+    ordinary action.
+
+    Same-origin only in practice: nothing here relaxes sandboxing. A
+    cross-origin src is subject to the embedded page''s own frame-ancestors /
+    X-Frame-Options exactly as any other iframe.'
+  compact_description: iframe whose src is wired to another node's value, so picking updates it with no repaint
+  surfaces:
+    works_on:
+    - mcp-apps
+    degraded_on:
+    - surface: google-apps-script-web
+      note: Renders and re-navigates the same as MCP Apps, but is subject to
+        the GAS iframe sandbox's restrictions on nested frames the same way
+        embed_google_slides/embed_youtube already are — a cross-origin src may
+        not load there even though a same-origin one does.
+    - surface: web
+      note: Renders a static iframe at the initial `src`; the Python
+        reference renderer has no wire engine, so it never re-navigates.
+    incompatible_on:
+    - surface: email
+      reason: No scripting and no iframes in an email client
+    - surface: pdf
+      reason: Static document, nothing to navigate
+  fields:
+    src: 'string (optional). Initial iframe URL. Empty renders the
+      placeholder instead of an iframe. Normally left empty and driven
+      entirely by `wire.src`.'
+    label: 'string (optional). A small heading above the frame.'
+    height: 'number (optional). Frame height in px. Default 320.'
+    emptyMessage: 'string (optional). Shown in the placeholder before a src
+      exists. Default "Nothing selected yet."'
+  notes: 'The `src` prop is not a wire OUTPUT — document it as an input:
+    `wire: {src: "#someNode.value"}` on the atom''s own layout entry, the same
+    generic mechanism that lets any atom''s prop track a ValueStore or
+    Computed/StringTemplate primitive.'
+  source: *id001
+
 - type: actual_vs_estimate
   stage: preview
   # Ported to GAS (atom.gs) alongside the Python reference, so it renders in
@@ -8796,6 +8848,14 @@ blocks:
   fields:
     url: string
     label: string
+    same_tab: 'boolean (optional). Default false (opens in a NEW tab) — right
+      for the common case, an outbound link to somewhere that is not this
+      app. Same opt-in chip_group already has: set true for an in-app
+      "go to this page" link, which should behave like ordinary
+      navigation rather than leaving a tab behind. Flipped from
+      always-same-tab to this default 2026-08-15 after an outbound
+      product-vendor link replaced the whole app instead of opening
+      alongside it.'
   source: *id007
 - type: cta_button
   description: Full-width call-to-action button linking to a URL
@@ -8809,6 +8869,9 @@ blocks:
     url: string
     label: string
     color: string (optional, hex)
+    same_tab: 'boolean (optional). Default false (opens in a NEW tab) — see
+      link_button''s same_tab for the full reasoning; same field, same
+      default, same atom family.'
   source: *id007
 - type: nav_link
   description: Single CTA button or link that navigates to a named A2UI page. Automatically
@@ -11400,6 +11463,43 @@ blocks:
       regardless of which subject/slide is active. Used by article_playbook
       (spec/article-playbook-v0.1.md, a2ui-private) to keep the source link
       visible outside any one lens tab; absent for callers that don't pass it.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: hub_rail
+  stage: preview
+  # Alternate layout for hub's data shape: sticky left rail (subjects as
+  # collapsible <details> sections, slides as an indented sub-list) instead
+  # of top-tabs + bottom-pills. Same schema as `hub`, layout-only variant —
+  # evaluate before promoting/replacing hub. Renderer in atoms_brevet.gs
+  # (gas-wired-renderer), modeled on atoms_gallery.gs's scroll_gallery sticky
+  # rail (860px collapse breakpoint). NOT live anywhere until
+  # `ops.py run renderer-release` — same standing as other preview atoms.
+  description: 'Full-screen deck navigation container: subjects as a sticky, collapsible left
+    rail (one section per subject, slides listed beneath the active one), content on the right.
+    Same data shape as `hub`, alternate layout — always-visible "syllabus" of subjects and
+    slides instead of top tabs/bottom pills.'
+  compact_description: deck navigation shell — left-rail layout (subjects + slides always visible)
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+  children:
+    subjects:
+      shape: wrapper_list
+      inner_path: slides.blocks
+  fields:
+    subjects: 'array (required) of {id, label, color (hex), slides: [{id, label, blocks: [atom
+      blocks]}]}'
+    background: string (optional, page hex, default "#0f172a")
+    nav_background: string (optional, rail hex, defaults to background)
+    header: >-
+      object (optional) — {url (required), author? (string), published? (string)}.
+      A persistent bar pinned above the rail, always on screen regardless of
+      which subject/slide is active. Same purpose as `hub`'s header field
+      (spec/article-playbook-v0.1.md, a2ui-private); absent for callers that
+      don't pass it.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

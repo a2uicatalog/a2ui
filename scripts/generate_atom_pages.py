@@ -255,6 +255,13 @@ _EXAMPLE_BLOCKS = {
             {"blocks": [{"type": "heading", "text": "Fractions"}]}]},
         {"label": "Physics", "color": "#00f2ff", "slides": [
             {"blocks": [{"type": "body", "text": "Forces and motion."}]}]}]},
+    # Same data shape as hub — layout-only preview variant (left rail instead
+    # of top-tabs+pills) — so the same two-subject example exercises both.
+    "hub_rail": {"type": "hub_rail", "subjects": [
+        {"label": "Maths", "color": "#6366f1", "slides": [
+            {"blocks": [{"type": "heading", "text": "Fractions"}]}]},
+        {"label": "Physics", "color": "#00f2ff", "slides": [
+            {"blocks": [{"type": "body", "text": "Forces and motion."}]}]}]},
     "playbook": {"type": "playbook", "slides": [
         {"id": "intro", "accent": "#00f2ff",
          "blocks": [{"type": "heading", "text": "Kickoff"}]},

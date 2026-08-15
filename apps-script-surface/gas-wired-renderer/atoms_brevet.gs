@@ -559,6 +559,187 @@ _RENDERERS['hub'] = function(b) {
     '})();<\/script>'
   );
 };
+
+// ── hub_rail (preview) ───────────────────────────────────────────────────────
+// Alternate layout for hub's exact data shape: sticky left rail (subjects as
+// collapsible <details> sections, slides as an indented sub-list beneath the
+// active one), content on the right — instead of top-tabs + bottom-pills.
+// Evaluate before promoting/replacing `hub`; does not touch that renderer.
+// Layout precedent: atoms_gallery.gs _RENDERERS['scroll_gallery'] (sticky rail,
+// numbered sections + indented sub-links, 860px collapse) — adapted here to add
+// per-subject exclusive open/close (via native <details>) and slide switching.
+_RENDERERS['hub_rail'] = function(b) {
+  var subjects = b.subjects || [];
+  var bg  = b.background     || '#0f172a';  // dark mode content colour
+  var nav = b.nav_background || bg;         // dark mode rail colour
+  var uid = 'hrail' + Math.random().toString(36).substr(2, 8);
+  if (!subjects.length) return '';
+
+  // Optional persistent source bar (article_playbook's hub_header_from:
+  // source — spec/article-playbook-v0.1.md mitigation 4: "the link is
+  // always on screen", never inside a lens tab so it can't disappear when a
+  // tab changes). Absent for callers that don't pass it (e.g. learning_hub),
+  // so this is purely additive. Sticky at top, full width, above the rail —
+  // still "always on screen" regardless of which subject/slide is active.
+  var header = b.header;
+  var headerHtml = '';
+  if (header && header.url) {
+    var metaBits = [];
+    if (header.author)    metaBits.push(_esc(header.author));
+    if (header.published) metaBits.push(_esc(header.published));
+    var metaHtml = metaBits.length ? '<span style="opacity:0.6;">· ' + metaBits.join(' · ') + '</span>' : '';
+    headerHtml =
+      '<div id="' + uid + 'HDR" style="position:sticky;top:0;z-index:400;padding:6px 12px;font-size:0.74rem;font-weight:600;' +
+      'background:#f8fafc;border-bottom:1px solid rgba(0,0,0,0.08);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+      '<a href="' + _safeUrl(header.url) + '" target="_blank" rel="noopener" ' +
+      'style="color:inherit;text-decoration:none;">🔗 ' + _esc(header.url) + '</a>' + metaHtml +
+      '</div>';
+  }
+
+  var contentHtml    = '';
+  var railGroupsHtml  = '';
+  var colorsJs = '[';
+  var countsJs = '[';
+
+  for (var si = 0; si < subjects.length; si++) {
+    var subj    = subjects[si];
+    var slides  = subj.slides || [];
+    var accent  = subj.color || '#6366f1';
+    var isActiveSubject = si === 0;
+    colorsJs   += (si ? ',' : '') + '"' + accent + '"';
+    countsJs   += (si ? ',' : '') + slides.length;
+
+    contentHtml += '<div id="' + uid + 'S' + si + '" style="display:' + (isActiveSubject ? 'block' : 'none') + ';">';
+    var subHtml = '';
+    for (var sli = 0; sli < slides.length; sli++) {
+      var slide     = slides[sli];
+      var slideHtml = '';
+      var blocks    = slide.blocks || [];
+      for (var bi = 0; bi < blocks.length; bi++) {
+        // component || type: same dispatch fallback as atom.gs renderAtoms —
+        // hub's inline recursion loop was missing it (childlist-migration v0.1
+        // implementation notes, 2026-07-09); carried forward here identically.
+        var fn = _RENDERERS[blocks[bi].component || blocks[bi].type];
+        if (fn) slideHtml += fn(blocks[bi]);
+      }
+      contentHtml += '<div id="' + uid + 'S' + si + 'L' + sli + '" style="display:' + (sli === 0 ? 'block' : 'none') + ';">' + slideHtml + '</div>';
+
+      var isActivePill = si === 0 && sli === 0;
+      subHtml +=
+        '<div id="' + uid + 'P' + si + '_' + sli + '" ' +
+        'onclick="window[\'' + uid + '\'].sl(' + si + ',' + sli + ')" ' +
+        'style="cursor:pointer;padding:6px 10px 6px 26px;border-radius:8px;margin:2px 6px;' +
+        'font-size:0.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all 0.15s;' +
+        'background:' + (isActivePill ? accent : 'transparent') + ';' +
+        'color:' + (isActivePill ? '#fff' : 'rgba(0,0,0,0.6)') + ';">' +
+        _esc(slides[sli].label || ('Slide ' + (sli + 1))) + '</div>';
+    }
+    contentHtml += '</div>';
+
+    // Subject section: <details> gives free native collapse/expand; subj()
+    // below normalises .open state so exactly one subject is ever expanded,
+    // regardless of native click-toggle behaviour on the <summary>.
+    railGroupsHtml +=
+      '<details id="' + uid + 'D' + si + '"' + (isActiveSubject ? ' open' : '') + ' style="margin-bottom:4px;">' +
+      '<summary id="' + uid + 'T' + si + '" ' +
+      'onclick="window[\'' + uid + '\'].subj(' + si + ')" ' +
+      'style="cursor:pointer;list-style:none;padding:9px 12px;border-radius:10px;' +
+      'font-size:0.82rem;font-weight:800;letter-spacing:0.01em;transition:all 0.18s;' +
+      'background:' + (isActiveSubject ? accent : 'transparent') + ';' +
+      'color:' + (isActiveSubject ? '#fff' : 'rgba(0,0,0,0.7)') + ';">' +
+      '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' +
+      (isActiveSubject ? '#fff' : accent) + ';margin-right:8px;"></span>' +
+      _esc(subj.label || ('Subject ' + (si + 1))) +
+      '</summary>' +
+      '<div class="' + uid + 'sub">' + subHtml + '</div>' +
+      '</details>';
+  }
+
+  colorsJs += ']';
+  countsJs += ']';
+
+  return (
+    '<style>' +
+    'body{background:#ffffff;margin:0;}' +
+    '.asw-page>h1{display:none;}' +
+    'summary::-webkit-details-marker{display:none;}' +
+    '#' + uid + 'body,#' + uid + 'content,#' + uid + 'rail{transition:background 0.25s;}' +
+    '#' + uid + 'HDR{transition:background 0.25s,border-color 0.25s;}' +
+    '.' + uid + 'layout{display:flex;gap:0;align-items:flex-start;}' +
+    '#' + uid + 'rail{flex:0 0 220px;position:sticky;top:16px;max-height:calc(100vh - 32px);' +
+    'overflow-y:auto;padding:12px 8px;box-sizing:border-box;}' +
+    '#' + uid + 'content{flex:1;min-width:0;padding:20px 24px;box-sizing:border-box;}' +
+    '@media(max-width:860px){' +
+    '.' + uid + 'layout{flex-direction:column;}' +
+    '#' + uid + 'rail{position:static;width:100%;max-height:none;flex:1 1 auto;}' +
+    '}' +
+    '</style>' +
+    '<div id="' + uid + 'body" style="font-family:\'Inter\',system-ui,sans-serif;background:#ffffff;min-height:100vh;">' +
+    headerHtml +
+    '<div class="' + uid + 'layout">' +
+    '<div id="' + uid + 'rail" style="background:#f8fafc;border-right:1px solid rgba(0,0,0,0.08);">' + railGroupsHtml + '</div>' +
+    '<div id="' + uid + 'content" style="background:#ffffff;">' + contentHtml + '</div>' +
+    '</div>' +
+    '</div>' +
+    '<script>(function(){' +
+    'var C=' + colorsJs + ';' +
+    'var BG="' + bg + '",NAV="' + nav + '";' +
+    'var cs=0,cl=[],dark=false;' +
+    'var counts=' + countsJs + ';' +
+    'for(var i=0;i<counts.length;i++)cl.push(0);' +
+    'function g(id){return document.getElementById("' + uid + '"+id);}' +
+    'function iTab(){return dark?{c:"rgba(255,255,255,0.35)"}:{c:"rgba(0,0,0,0.7)"};}'  +
+    'function iPill(){return dark?{bg:"rgba(255,255,255,0.07)",c:"rgba(255,255,255,0.4)"}:{bg:"transparent",c:"rgba(0,0,0,0.6)"};}'  +
+    'function applyTheme(d){' +
+    'dark=d;' +
+    'var cb=d?BG:"#ffffff",navb=d?NAV:"#f8fafc";' +
+    'var cardBg=d?"#f8fafc":"#ffffff";' +  // reading surface stays light in dark mode — content atoms hardcode dark text
+    'var bdr=d?"rgba(255,255,255,0.07)":"rgba(0,0,0,0.08)";' +
+    'var wrap=g("body"),ct=g("content"),rl=g("rail"),hd=g("HDR");' +
+    'if(wrap)wrap.style.background=cb;' +
+    'if(ct)ct.style.background=cardBg;' +
+    'document.body.style.background=cb;' +
+    'if(rl){rl.style.background=navb;rl.style.borderRightColor=bdr;}' +
+    'if(hd){hd.style.background=navb;hd.style.borderBottomColor=bdr;}' +
+    'var ts=iTab(),ps=iPill();' +
+    'for(var i=0;i<counts.length;i++){' +
+    'if(i!==cs){var t=g("T"+i);if(t){t.style.color=ts.c;t.style.background="transparent";}}' +
+    'for(var j=0;j<counts[i];j++){if(!(i===cs&&j===cl[i])){var p=g("P"+i+"_"+j);if(p){p.style.background=ps.bg;p.style.color=ps.c;}}}' +
+    '}' +
+    '}' +
+    'var obs=new MutationObserver(function(ms){ms.forEach(function(m){' +
+    'if(m.attributeName==="class"){var d=document.body.classList.contains("asw-dark-theme");if(d!==dark)applyTheme(d);}' +
+    '});});' +
+    'obs.observe(document.body,{attributes:true,attributeFilter:["class"]});' +
+    'window["' + uid + '"]={' +
+    'subj:function(si){' +
+    'if(si===cs){var dtl0=g("D"+si);if(dtl0)dtl0.open=true;return;}' +
+    'var ts=iTab();' +
+    'g("S"+cs).style.display="none";' +
+    'var od=g("D"+cs);if(od)od.open=false;' +
+    'var ot=g("T"+cs);ot.style.background="transparent";ot.style.color=ts.c;' +
+    'cs=si;' +
+    'g("S"+si).style.display="block";' +
+    'var nd=g("D"+si);if(nd)nd.open=true;' +
+    'var nt=g("T"+si);nt.style.background=C[si];nt.style.color="#fff";' +
+    'window["' + uid + '"].sl(si,cl[si]);window.scrollTo(0,0);' +
+    '},' +
+    'sl:function(si,sli){' +
+    'var ps=iPill();' +
+    'var op=g("P"+si+"_"+cl[si]),os=g("S"+si+"L"+cl[si]);' +
+    'if(op){op.style.background=ps.bg;op.style.color=ps.c;}' +
+    'if(os)os.style.display="none";' +
+    'cl[si]=sli;' +
+    'var np=g("P"+si+"_"+sli),ns=g("S"+si+"L"+sli);' +
+    'if(np){np.style.background=C[si];np.style.color="#fff";}' +
+    'if(ns)ns.style.display="block";' +
+    'window.scrollTo(0,0);' +
+    '}};' +
+    'applyTheme(document.body.classList.contains("asw-dark-theme"));' +  // sync initial theme on load (auto-dark / saved pref)
+    '})();<\/script>'
+  );
+};
+
 // ── catalogue_provenance ──────────────────────────────────────────────────────
 // Demo flow-diagram atom — circles connected by gradient lines showing catalogue sources.
 // Schema: { label?, sources [{icon?, what, catalogue, note?, color?}] }

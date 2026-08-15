@@ -61,6 +61,7 @@ a2ui-atoms-v1:
 - heading
 - highlight_box
 - hub
+- hub_rail
 - icon_list
 - image
 - image_with_caption
@@ -88,6 +89,7 @@ a2ui-atoms-v1:
 - paragraph
 - photo_upload
 - presence_surface
+- preview_frame
 - print_button
 - progress_bar
 - progress_ring

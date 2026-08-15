@@ -11149,6 +11149,14 @@
           },
           "label": {
             "type": "string"
+          },
+          "same_tab": {
+            "type": "string",
+            "enum": [
+              "rightforthecommoncase",
+              "anoutboundlinktosomewherethatisnotthisappSameopt-inchip_groupalreadyhas:settrueforanin-app\"gotothispage\"link",
+              "whichshouldbehavelikeordinarynavigationratherthanleavingatabbehindFlippedfromalways-same-tabtothisdefault2026-08-15afteranoutboundproduct-vendorlinkreplacedthewholeappinsteadofopeningalongsideit"
+            ]
           }
         },
         "required": [
@@ -11173,6 +11181,14 @@
           },
           "color": {
             "type": "string"
+          },
+          "same_tab": {
+            "type": "string",
+            "enum": [
+              "seelink_button'ssame_tabforthefullreasoning;samefield",
+              "samedefault",
+              "sameatomfamily"
+            ]
           }
         },
         "required": [

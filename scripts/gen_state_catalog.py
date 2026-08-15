@@ -163,6 +163,16 @@ def _kvline(props):
     return str(props)
 
 
+def _esc_bt(s):
+    """Escape a prose value for safe embedding in the _EXPR_SCHEMA_SNAPSHOT JS
+    template literal (backtick-delimited) — a literal backtick or `${` in any
+    YAML-sourced field (purpose, props, readable_fields, wiring pattern body,
+    etc.) otherwise breaks the generated .gs file's syntax outright, silently,
+    only surfacing as a clasp push failure. See spec/a2ui-state.yaml's
+    ObjectFields.readable_fields for the case that first hit this."""
+    return (str(s).replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${"))
+
+
 def _render_snapshot(src):
     """Compose the _EXPR_SCHEMA_SNAPSHOT text: state vocab from a2ui-state.yaml,
     actions from gas-actions-v1.yaml — each section from its canonical source."""
@@ -175,31 +185,38 @@ def _render_snapshot(src):
          f'Wire syntax: "{src["wire_syntax"]["form"]}" — the # prefix is required.',
          BAR, "1. STATE PRIMITIVES  (state_primitives array)", BAR]
     for p in src["primitives"]:
-        L.append(f'{p["id"]} — {p["purpose"]}')
+        L.append(_esc_bt(f'{p["id"]} — {p["purpose"]}'))
         if p.get("props"):
-            L.append("  props: " + _kvline(p["props"]))
+            L.append("  props: " + _esc_bt(_kvline(p["props"])))
         if p.get("readable_fields"):
-            L.append("  readable fields: " + ", ".join(p["readable_fields"]))
+            rf = p["readable_fields"]
+            # Usually a static list of field names ([activeIndex]); some
+            # primitives (e.g. ObjectFields) have genuinely dynamic readable
+            # fields and declare this as a prose string instead — join only
+            # applies to the list case, or ", ".join silently iterates the
+            # string character-by-character.
+            rf_text = ", ".join(rf) if isinstance(rf, list) else str(rf)
+            L.append("  readable fields: " + _esc_bt(rf_text))
         if p.get("action_targets"):
-            L.append("  action targets: " + ", ".join(p["action_targets"]))
+            L.append("  action targets: " + _esc_bt(", ".join(p["action_targets"])))
         if p.get("example"):
-            L.append("  example: " + json.dumps(p["example"]))
+            L.append("  example: " + _esc_bt(json.dumps(p["example"])))
     L += [BAR, "2. DERIVEDSTORE OPS  (within augment_rows add array)", BAR]
     for op in src.get("derived_store_ops", []):
-        L.append(f'{op["op"]} — props: {_kvline(op.get("props", {}))} → {op.get("output","")}')
+        L.append(_esc_bt(f'{op["op"]} — props: {_kvline(op.get("props", {}))} → {op.get("output","")}'))
     L += [BAR, "3. COLUMN RENDER HINTS  (data_table columns array)", BAR]
     for h in src.get("column_hints", []):
-        L.append(f'{h["type"]} — {h.get("renders","")}'
-                 + (f'  (extra: {_kvline(h.get("extra_props"))})' if h.get("extra_props") else ""))
+        L.append(_esc_bt(f'{h["type"]} — {h.get("renders","")}'
+                 + (f'  (extra: {_kvline(h.get("extra_props"))})' if h.get("extra_props") else "")))
     L += [BAR, "4. ACTION TYPES  (actions array) — from spec/gas-actions-v1.yaml", BAR]
     actions = yaml.safe_load(open(ACTIONS_SRC))["actions"]
     for verb, spec_a in actions.items():
         desc = (spec_a or {}).get("description", "") if isinstance(spec_a, dict) else ""
-        L.append(f'gas:{verb} — {" ".join(str(desc).split())}')
+        L.append(_esc_bt(f'gas:{verb} — {" ".join(str(desc).split())}'))
     L += [BAR, "5. WIRING PATTERNS", BAR]
     for w in src.get("wiring_patterns", []):
-        L.append(w["title"] + ":")
-        L += ["  " + ln for ln in w["body"].rstrip().splitlines()]
+        L.append(_esc_bt(w["title"]) + ":")
+        L += ["  " + _esc_bt(ln) for ln in w["body"].rstrip().splitlines()]
     L.append("`;")
     return "\n".join(L) + "\n"
 
