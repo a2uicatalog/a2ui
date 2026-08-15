@@ -29,6 +29,25 @@ the manifest declares them.
 5. Encoded `?p=` URLs are emitted by `scripts/make_url.py` only — never
    hand-typed or copied between surfaces.
 
+6. **Mutating git commands must name the repo explicitly:**
+   `git -C <path> add|commit|push`. Ambient cwd and a leading `cd` do not
+   count — the shell cwd resets between calls. Commits and pushes go through
+   the declared processes in rule 2, never raw git.
+
+## This checkout is incomplete on its own
+
+`ops/`, `thoughts/`, `a2uithoughts.md`, `improve.yaml` and `improve_probes` are
+**symlinks into a sibling private repo and are not tracked here.** A standalone
+clone of this repo has none of them, so every `ops.py` invocation above will
+fail until they exist. Maintainers: clone the private repo as a sibling
+directory and run its bootstrap.
+
+- **CI must check out both repos and recreate the links** before running
+  `ops.py` — see `.github/workflows/deploy-full-catalog.yml`.
+- If something reports "file not found" for a path that plainly exists on your
+  machine, run `git ls-files <path>` before theorising — an untracked symlink
+  is the usual answer.
+
 Private-side operations (clasp identities, deploy mechanics, GAS gotchas) are
 documented in the **a2ui-private** repo's `AGENTS.md` — read that too before any
 deployment work.
