@@ -23,6 +23,19 @@ Use the A2UI catalog when you need to SHOW something to a user rather than descr
 
 Do not use it for plain prose answers, for data retrieval (it renders data, it does not fetch it beyond declared sources), or where the host cannot display HTML.
 
+## Writing
+
+Build logs and architecture write-ups from operating this catalog in production — real incidents, real fixes, dated and attributed. Full list below; [sitemap](https://a2uicatalog.ai/blog/sitemap.xml) is the machine-readable version.
+
+- [Building in the Age of Frontier Models: Why Frugality is My Go-To Architecture](https://a2uicatalog.ai/blog/001-frugality-architecture/): Artifact distillation — spend the model once, keep the output forever. Five problems nobody asked me to solve.
+- [Rich UI in Gemini Enterprise: A Field Report on A2A Agents and A2UI Primitives](https://a2uicatalog.ai/blog/002-gemini-enterprise-field-report-a2a-a2ui-part1/): Every component in the A2UI v0.8 Basic Catalog tested against a real Gemini Enterprise agent, plus two working demo agents built entirely from them.
+- [Rich UI in Gemini Enterprise, Part 2 — The Print-Rendering Workaround for Custom Catalogs](https://a2uicatalog.ai/blog/003-gemini-enterprise-field-report-a2a-a2ui-part2/): Gemini Enterprise only renders 18 standard-catalog primitives; the fix renders custom charts/gauges server-side to an image through the one primitive that always works.
+- [The A2UI Catalog Now Renders Inside Claude.ai](https://a2uicatalog.ai/blog/004-mcp-apps-inside-claude-ai/): One connector URL, 474 typed atoms rendering inline in the conversation — no HTML written.
+- [Rich UI in Google Chat: a real, self-hostable bot built on the print-channel trick](https://a2uicatalog.ai/blog/005-google-chat-print-channel-bundle/): The self-hostable Cloud Run bundle, a wire-level trace of one request, and the Chat-setup gotchas Google's docs don't lead with.
+- [The A2UI Catalog Now Renders Inside ChatGPT](https://a2uicatalog.ai/blog/006-mcp-apps-inside-chatgpt/): Same connector URL, same payloads, a second host — and three latent defects that existing connections had been quietly hiding.
+- [MCP Apps Isn't A2UI's Competitor — It's How It Travels](https://a2uicatalog.ai/blog/007-mcp-apps-portability/): Where transport, envelope and document model actually sit — how the same payload reaches Claude, ChatGPT and this site without three separate builds.
+- [MCP, A2UI, and a Durable Object per Human](https://a2uicatalog.ai/blog/008-mcp-durable-state/): Where per-user UI state actually lives across MCP, A2UI and A2A — covers Cloudflare's Project Think, Durable Objects per reader, and six real defects found wiring it up.
+
 ## Source
 
 - [GitHub repository](https://github.com/a2uicatalog/a2ui): Source, license, and the full atom schema.
