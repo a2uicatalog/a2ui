@@ -24,7 +24,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 — gen_sitemap.py's git_lastmod_map() reads full commit
+      # history to build <lastmod> dates (2026-08-16). The default shallow
+      # checkout (fetch-depth: 1) would give `git log` only the tip commit,
+      # so the sitemap would silently ship with almost no lastmod coverage
+      # in CI despite working perfectly in a local full clone.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:

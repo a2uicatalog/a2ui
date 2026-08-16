@@ -1,3 +1,9 @@
+---
+title: A2UI Atomic Catalog — Versioning & deprecation policy
+description: How this API changes, how you find out, and what is guaranteed not to break under you.
+canonical: https://a2uicatalog.ai/versioning.md
+---
+
 # Versioning and deprecation policy
 
 How this API changes, how you find out, and what is guaranteed not to break under you.

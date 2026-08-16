@@ -1,3 +1,9 @@
+---
+title: A2UI Atomic Catalog — Authentication guide
+description: Why you almost certainly need no credential to call the A2UI MCP server, plus the optional OAuth path for platforms that require one.
+canonical: https://a2uicatalog.ai/auth.md
+---
+
 # auth.md — A2UI Atomic Catalog Authentication
 
 **Most agents need no credential at all.** The primary MCP server is public and

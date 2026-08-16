@@ -9,6 +9,11 @@ main = "src/worker.js"
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# Cloudflare's documented convention: serves public/404.html (with a real
+# 404 status) for any unmatched path, instead of the platform default —
+# an empty body, no Content-Type, on every miss (an agent-readiness
+# finding, 2026-08-16: "404s ... lack markdown recovery guidance").
+not_found_handling = "404-page"
 # The Worker runs FIRST only for the bare homepage. Every other path — all 474
 # atom pages, their .md twins, /.well-known/*, openapi.json, images — is served
 # straight from assets with no Worker in front of it, so this change cannot add

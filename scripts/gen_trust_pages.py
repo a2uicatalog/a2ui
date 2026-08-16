@@ -249,7 +249,13 @@ data-source registry — network access is not open-ended.</p>
     }
 
 
-AGENTS_MD = """# A2UI Atomic Catalog — agent guide
+AGENTS_MD = """---
+title: A2UI Atomic Catalog — agent guide
+description: {n} typed UI atoms an AI agent composes into real rendered interfaces instead of generating HTML.
+canonical: https://a2uicatalog.ai/agents.md
+---
+
+# A2UI Atomic Catalog — agent guide
 
 > {n} typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
 > Apps Script, Google Chat and MCP Apps — instead of generating HTML.
@@ -384,7 +390,13 @@ def main():
     # Deliberately NOT the same content as agents.md: this is a description
     # of the SITE (what it is, top links); agents.md is a HOW-TO for the MCP
     # server. Different questions, kept separate rather than aliased.
-    index_md = f"""# A2UI Atomic Catalog
+    index_md = f"""---
+title: A2UI Atomic Catalog
+description: {n} typed UI atoms an AI agent composes into real rendered interfaces instead of generating HTML.
+canonical: {BASE}/
+---
+
+# A2UI Atomic Catalog
 
 {n} typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
 Apps Script, Google Chat and MCP Apps — instead of generating HTML.

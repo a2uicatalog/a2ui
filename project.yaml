@@ -42,6 +42,7 @@ policy:
     - public/index.md
     - public/auth.md
     - public/versioning.md
+    - public/404.html
     # Agent-readiness artefacts, declared 2026-08-02 against an external scan.
     # pricing.md exists because agents need machine-readable cost to recommend
     # a product; ours says free, which is the whole point and cheaper to state
