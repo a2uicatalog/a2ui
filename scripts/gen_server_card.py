@@ -27,6 +27,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS_JS = ROOT.parent / "a2ui-private" / "mcp-worker" / "src" / "tools.js"
 CARD = ROOT / "public" / ".well-known" / "mcp" / "server-card.json"
+# The a2uicatalog-docs server (docs-tools.js) — a genuinely separate MCP
+# identity from the product server above, added 2026-08-16 to close an
+# orank "Product + docs MCP coverage" finding. Its own card at a sibling
+# .well-known path, same reasoning as the product card: a scanner that
+# finds both servers should be able to match each against its OWN card
+# rather than comparing this repo's one card against whichever MCP
+# endpoint it most recently probed (confirmed live: orank flagged the
+# product card as "drifted" against /mcp-docs's 2 tools once a second
+# server existed to compare it to).
+DOCS_TOOLS_JS = ROOT.parent / "a2ui-private" / "mcp-worker" / "src" / "docs-tools.js"
+DOCS_CARD = ROOT / "public" / ".well-known" / "mcp-docs" / "server-card.json"
 
 # 340, not the original card's incidental ~180: a card previewing tools
 # before a caller opens a transport is exactly the wrong place to silently
@@ -72,6 +83,26 @@ def live_tools():
     )
     if result.returncode != 0:
         raise RuntimeError(f"node import of tools.js failed:\n{result.stderr}")
+    return json.loads(result.stdout)
+
+
+def live_docs_tools():
+    """Same idea as live_tools(), for the separate a2uicatalog-docs server
+    (docs-tools.js's docsMcpTools() — no model-gating parameter, unlike the
+    product server's mcpTools(model))."""
+    if not DOCS_TOOLS_JS.is_file():
+        raise FileNotFoundError(str(DOCS_TOOLS_JS))
+    node_script = (
+        f"import {{ docsMcpTools }} from {json.dumps(str(DOCS_TOOLS_JS))};"
+        "process.stdout.write(JSON.stringify(docsMcpTools().map(t => "
+        "({name: t.name, description: t.description}))));"
+    )
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"node import of docs-tools.js failed:\n{result.stderr}")
     return json.loads(result.stdout)
 
 
@@ -141,6 +172,20 @@ def main():
     CARD.write_text(json.dumps(card, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"gen_server_card: wrote {len(live)} tools -> {CARD.relative_to(ROOT)}"
           + (f" ({len(gated)} gated for haiku)" if gated else ""))
+
+    try:
+        docs_live = live_docs_tools()
+    except FileNotFoundError as e:
+        sys.exit(f"gen_server_card: {e} not found — same sibling-repo requirement as above")
+    except RuntimeError as e:
+        sys.exit(f"gen_server_card: {e}")
+    docs_card = json.loads(DOCS_CARD.read_text(encoding="utf-8"))
+    docs_card["tools"] = [
+        {"name": t["name"], "description": _truncate(t["description"])}
+        for t in docs_live
+    ]
+    DOCS_CARD.write_text(json.dumps(docs_card, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"gen_server_card: wrote {len(docs_live)} tools -> {DOCS_CARD.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,23 @@
+{
+  "name": "a2uicatalog-docs",
+  "displayName": "A2UI Atomic Catalog — Documentation",
+  "description": "A genuinely separate MCP server from a2uicatalog (https://a2uicatalog.ai/mcp): this one answers questions FROM this product's own documentation (auth, versioning, pricing, API surface, runbook catalog) rather than taking product actions. search_docs(query) returns ranked, real (never fabricated) sections with the source URL.",
+  "version": "1.0.0",
+  "serverUrl": "https://a2uicatalog.ai/mcp-docs",
+  "transport": "streamable-http",
+  "authentication": {
+    "type": "none",
+    "required": false
+  },
+  "documentation": "https://a2uicatalog.ai/llms.txt",
+  "tools": [
+    {
+      "name": "search_docs",
+      "description": "Search this product's documentation (auth, versioning, pricing, API surface, runbook catalog) for a plain-English query. Returns ranked sections with a snippet and the real source URL — never fabricated content."
+    },
+    {
+      "name": "list_docs",
+      "description": "List indexed documentation sections (title, section, url) without a search query, for browsing the full indexed set."
+    }
+  ]
+}
