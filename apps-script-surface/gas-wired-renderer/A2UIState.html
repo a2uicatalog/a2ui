@@ -1617,13 +1617,32 @@ function _a2uiUpdatePhotoGrid(el, images) {
 // input (atoms_photo_stepper.gs's whole point: no JS-tracked index to lose
 // sync with). Rebuilding the DOM would blow that state away and snap
 // everyone back to slide 1 the moment anybody's vote landed. So this
-// patches each slide's badge/vote-button/voter-line IN PLACE, by index,
-// and touches nothing else.
+// patches each slide's badge/vote-button/voter-line IN PLACE, and touches
+// nothing else.
+//
+// Matched by data-ps-id, NOT array index: board:get re-sorts its candidate
+// list by star count on every call while voting is open, so a candidate's
+// position in `images` can move the instant ANY vote lands — including the
+// one just cast on the slide currently showing. Patching by index against a
+// reordered array would silently swap a DIFFERENT candidate's photo/name/
+// vote-button into the slide the radio's :checked state still has open.
+// Confirmed live: voting on slide N, then voting again, showed a THIRD,
+// never-clicked candidate's id under the same vote button on the second
+// refresh — the position held, the identity underneath it didn't.
 function _a2uiUpdatePhotoStepper(el, images) {
   var wrap = el.querySelector('[data-photo-stepper]');
   if (!wrap) { console.warn('[A2UI] no photo-stepper wrap in', el && el.id); return; }
-  (images || []).forEach(function(img, i) {
-    var slide = wrap.querySelector('[data-ps-slide="' + i + '"]');
+  // A map, not a per-image dynamic CSS selector: candidate ids are
+  // arbitrary data (SKUs today, but the atom does not require that), and
+  // building a '[data-ps-id="' + id + '"]' selector string per image would
+  // need full CSS-selector escaping to be safe, not just quote-escaping.
+  var byId = {};
+  wrap.querySelectorAll('[data-ps-id]').forEach(function(s) {
+    byId[s.getAttribute('data-ps-id')] = s;
+  });
+  (images || []).forEach(function(img) {
+    if (!img || img.id === undefined || img.id === null) return;
+    var slide = byId[String(img.id)];
     if (!slide) return;
     var badge = slide.querySelector('[class*="-badge"]');
     if (badge) {
@@ -1633,7 +1652,18 @@ function _a2uiUpdatePhotoStepper(el, images) {
     }
     var voteBtn = slide.querySelector('[data-row-json]');
     if (voteBtn) {
-      voteBtn.setAttribute('data-row-json', _a2uiSanitize(JSON.stringify(img)));
+      // Raw JSON.stringify, NOT _a2uiSanitize: that helper HTML-entity-
+      // escapes for building innerHTML markup strings (where the browser's
+      // parser decodes the entities back out on insert). setAttribute()
+      // never parses HTML — it stores exactly the string it is given — so
+      // sanitizing here baked literal "&quot;" text into the attribute,
+      // corrupting the JSON. _a2uiBindRowClicks' JSON.parse then silently
+      // failed (caught, defaulting to {}), so every click fired the wire
+      // with an EMPTY row — no candidate_id ever reached star_toggle.
+      // Confirmed live: load_board's onLoad fires this patch immediately on
+      // first paint, so the bug hit before any user interaction at all, not
+      // just after a subsequent update.
+      voteBtn.setAttribute('data-row-json', JSON.stringify(img));
       voteBtn.textContent = img.active ? '★ Starred — tap to unstar' : '☆ Star this one';
     }
     var voters = slide.querySelector('.ps-voters');
