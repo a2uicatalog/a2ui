@@ -463,6 +463,7 @@ LLMS_TXT = """# A2UI Atomic Catalog
 ## Integrate
 
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
+- [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
 - [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.

@@ -269,6 +269,14 @@ MCP server (no auth, no signup):
 `GET` it with `Accept: application/json` for a machine-readable descriptor listing every tool,
 its rate limits and documentation links. `POST` speaks JSON-RPC 2.0 (MCP Streamable HTTP).
 
+Documentation MCP server (no auth, separate identity — `a2uicatalog-docs`):
+
+    https://a2uicatalog.ai/mcp-docs
+
+`search_docs(query)` answers questions FROM this product's own docs (auth, versioning,
+pricing, API surface, runbook catalog). Use the server above to take actions; use this one
+to answer doc questions.
+
 ## When to use this
 
 Use it when you need to SHOW something rather than describe it: a chart, a status board, a
@@ -319,6 +327,9 @@ DEVELOPERS_LLMS_TXT = """# A2UI Atomic Catalog — Developers
 - MCP server: https://a2uicatalog.ai/mcp — no API key, no signup. `POST` speaks JSON-RPC 2.0
   (Streamable HTTP). `GET` with `Accept: application/json` returns a live server descriptor
   (every tool, current rate limits).
+- Documentation MCP server: https://a2uicatalog.ai/mcp-docs — a separate identity
+  (`a2uicatalog-docs`) exposing `search_docs(query)`/`list_docs()` over this product's own
+  docs, distinct from the product server above.
 - REST: `GET /spec.json` (full atom vocabulary), `GET /catalogue/atoms-json-schema.json`
   (strict per-atom JSON Schema for constrained decoding), `POST /api/compose` (natural
   language to atom blocks).

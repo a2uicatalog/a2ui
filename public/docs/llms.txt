@@ -32,6 +32,8 @@ GET https://a2uicatalog.ai/api/data/{source}  Sources declared in atoms/data-sou
 
 ## Contract
 
+- Docs search (MCP): https://a2uicatalog.ai/mcp-docs — search_docs(query)/list_docs(), a
+  separate MCP identity from the product server at /mcp.
 - OpenAPI 3.1: https://a2uicatalog.ai/openapi.json
 - Versioning: header-based (X-API-Version), not URL path. https://a2uicatalog.ai/versioning.md
 - Auth: none required. https://a2uicatalog.ai/auth.md
