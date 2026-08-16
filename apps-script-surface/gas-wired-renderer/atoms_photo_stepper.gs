@@ -39,6 +39,7 @@ _RENDERERS['photo_stepper'] = function(b) {
     '.' + sid + '-badge{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.65);color:#fff;font-size:0.78rem;font-weight:700;padding:3px 9px;border-radius:99px;}' +
     '.' + sid + '-badge.ps-badge-active{background:' + accent + ';color:#fff;}' +
     '.' + sid + '-vote{margin-top:10px;display:inline-block;background:' + accent + ';color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:0.85rem;font-weight:600;cursor:pointer;}' +
+    '.' + sid + '-source{margin-top:10px;margin-left:10px;display:inline-block;color:#9ca3af;font-size:0.82rem;text-decoration:underline;}' +
     '.' + sid + '-nav{position:absolute;top:0;bottom:64px;width:15%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,0.55);cursor:pointer;user-select:none;}' +
     '.' + sid + '-nav:hover{color:rgba(255,255,255,0.9);}' +
     '.' + sid + '-prev{left:0;} .' + sid + '-next{right:0;}' +
@@ -81,6 +82,8 @@ _RENDERERS['photo_stepper'] = function(b) {
     var badge = img.badge ? '<span class="' + badgeCls + '">' + _esc(img.badge) + '</span>' : '';
     var voters = img.starred_by_display ? '<div class="ps-voters">' + _esc(img.starred_by_display) + '</div>' : '';
     var price = img.price_display ? '<div class="ps-price">' + _esc(img.price_display) + '</div>' : '';
+    var source = img.source_url ? '<a class="' + sid + '-source" href="' + _esc(img.source_url) +
+      '" target="_blank" rel="noopener">Open source listing &#8599;</a>' : '';
     return '<div class="' + sid + '-slide" data-ps-slide="' + i + '">' +
       '<img src="' + _esc(img.url || '') + '" alt="' + _esc(img.alt || '') + '" loading="lazy">' +
       badge +
@@ -88,6 +91,7 @@ _RENDERERS['photo_stepper'] = function(b) {
       price + voters +
       '<button type="button" class="' + sid + '-vote" data-row-json="' + rowJson + '">' +
       (img.active ? '★ Starred — tap to unstar' : '☆ Star this one') + '</button>' +
+      source +
       '</div></div>';
   }).join('');
 

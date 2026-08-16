@@ -837,13 +837,15 @@ blocks:
         exists to fall back to — same standing as photo_grid/sortable_list.
   fields:
     images: 'array (required). Objects of {id, url, alt?, name?, price_display?,
-      badge?, active?, starred_by_display?}. Same shape family as photo_grid
-      (id/url/badge/active carry the identical meaning), plus three fields
-      specific to a one-at-a-time review: `name`/`price_display` render as
-      the slide''s caption title/subtitle, `starred_by_display` is a plain
-      pre-joined string (e.g. "Curtis, Marianne") shown under the caption —
-      the atom does not aggregate voter names itself, the caller derives
-      that string server-side, same reasoning photo_grid gives for `badge`
+      badge?, active?, starred_by_display?, source_url?}. Same shape family
+      as photo_grid (id/url/badge/active carry the identical meaning), plus
+      fields specific to a one-at-a-time review: `name`/`price_display`
+      render as the slide''s caption title/subtitle, `starred_by_display` is
+      a plain pre-joined string (e.g. "Curtis, Marianne") shown under the
+      caption, `source_url` (optional) renders a plain "Open source listing"
+      link in the caption when present — the atom does not aggregate voter
+      names or validate the link itself, the caller derives both server-
+      side, same reasoning photo_grid gives for `badge`
       and `active` being caller-derived rather than computed by the atom.'
     accent: 'string (optional, hex, default #0f766e). Vote-button and active-
       badge colour.'
