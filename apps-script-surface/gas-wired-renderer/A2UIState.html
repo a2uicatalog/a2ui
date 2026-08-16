@@ -1092,10 +1092,13 @@ var _a2uiBridge = {
       console.log('[A2UI] setProp rows', id, Array.isArray(val) ? val.length : val);
       var ccBody = el.querySelector('[data-cc-body]');
       var pgBody = el.querySelector('[data-photo-grid]');
+      var psBody = el.querySelector('[data-photo-stepper]');
       if (ccBody) {
         _a2uiUpdateChatCard(el, val);
       } else if (pgBody) {
         _a2uiUpdatePhotoGrid(el, val);
+      } else if (psBody) {
+        _a2uiUpdatePhotoStepper(el, val);
       } else {
         _a2uiUpdateTableRows(el, val);
       }
@@ -1606,6 +1609,43 @@ function _a2uiUpdatePhotoGrid(el, images) {
   }).join('');
   wrap.innerHTML = html;
   _a2uiBindRowClicks(el);
+}
+
+// photo_stepper's live-update counterpart. Deliberately NOT a full
+// innerHTML rebuild like _a2uiUpdatePhotoGrid above — the stepper's
+// "which slide is showing" is the browser's OWN :checked state on a radio
+// input (atoms_photo_stepper.gs's whole point: no JS-tracked index to lose
+// sync with). Rebuilding the DOM would blow that state away and snap
+// everyone back to slide 1 the moment anybody's vote landed. So this
+// patches each slide's badge/vote-button/voter-line IN PLACE, by index,
+// and touches nothing else.
+function _a2uiUpdatePhotoStepper(el, images) {
+  var wrap = el.querySelector('[data-photo-stepper]');
+  if (!wrap) { console.warn('[A2UI] no photo-stepper wrap in', el && el.id); return; }
+  (images || []).forEach(function(img, i) {
+    var slide = wrap.querySelector('[data-ps-slide="' + i + '"]');
+    if (!slide) return;
+    var badge = slide.querySelector('[class*="-badge"]');
+    if (badge) {
+      badge.textContent = img.badge || '';
+      badge.style.display = img.badge ? '' : 'none';
+      badge.classList.toggle('ps-badge-active', !!img.active);
+    }
+    var voteBtn = slide.querySelector('[data-row-json]');
+    if (voteBtn) {
+      voteBtn.setAttribute('data-row-json', _a2uiSanitize(JSON.stringify(img)));
+      voteBtn.textContent = img.active ? '★ Starred — tap to unstar' : '☆ Star this one';
+    }
+    var voters = slide.querySelector('.ps-voters');
+    if (voters) voters.textContent = img.starred_by_display || '';
+  });
+  // Deliberately NOT calling _a2uiBindRowClicks again here — unlike
+  // _a2uiUpdatePhotoGrid, this function never removes or recreates the
+  // vote-button elements, so their ORIGINAL listeners (bound once, at
+  // first paint) are still correctly attached. Re-binding would stack a
+  // second listener on the same persistent button on every single 'rows'
+  // update, and a click would then fire the star action once per
+  // accumulated listener instead of once.
 }
 
 function _a2uiUpdateChatCard(el, rows) {

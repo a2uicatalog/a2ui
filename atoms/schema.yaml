@@ -779,6 +779,94 @@ blocks:
     where every tile is also a live action.'
   source: *id001
 
+- type: photo_stepper
+  stage: preview
+  # Renderer in atoms_photo_stepper.gs, live-update counterpart
+  # _a2uiUpdatePhotoStepper in A2UIState.html. Reaches the MCP Apps bundle
+  # today; NOT live on the GAS deployments or the Worker''s /api/render
+  # until `ops.py run renderer-release` — same standing as photo_grid,
+  # sortable_list, actual_vs_estimate.
+  description: 'One photo full-size at a time, with prev/next and a vote
+    button per slide — the sibling photo_grid does not cover: reviewing
+    options ONE AT A TIME with full attention, rather than scanning a grid.
+    Neither replaces the other; pick per use case, or offer both.
+
+    Paging is the SAME pure-CSS radio-input trick the existing `carousel`
+    atom already uses (sibling :checked selectors drive the slide
+    transform) — no JS-tracked index to go stale, and critically, nothing
+    for a live data refresh to disturb: `carousel` never had a live-update
+    wire to worry about, but this atom does, and the radio''s own
+    browser-owned :checked state surviving a vote untouched is what stops
+    "vote on photo 12, get silently bounced back to photo 1" from ever
+    being possible in the first place — not a bug that was fixed, a
+    failure mode the design does not have.
+
+    That is also why this atom''s live-update path (_a2uiUpdatePhotoStepper)
+    is NOT a rebuild like photo_grid''s own _a2uiUpdatePhotoGrid — it patches
+    each slide''s badge/vote-button/voter-line IN PLACE, by index, and
+    touches nothing else. A consequence worth knowing before using this
+    atom: because the update path patches EXISTING slide elements rather
+    than creating them, the caller should populate the initial `images`
+    prop with real data at render time (server-side), not rely purely on
+    the `rows` wire to populate an empty first paint — an update arriving
+    before any slide exists to patch has nothing to act on.
+
+    Reuses photo_grid''s click contract exactly for the vote button (same
+    data-row-json attribute, same generalised [data-row-json] binder in
+    A2UIState.html) — the third consumer of a mechanism built once for
+    data_table''s own onRowClick.'
+  compact_description: full-size one-at-a-time photo stepper — carousel-style
+    CSS paging, per-slide vote button reusing photo_grid''s click contract,
+    live badge/voter updates patched in place so voting never resets position
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: Renders as a static, non-paging stack of slides; no Python
+        renderer exists for this atom yet, and CSS-only paging still needs
+        the radio inputs' sibling-selector behaviour a static article
+        render does not exercise interactively either way.
+    incompatible_on:
+    - surface: email
+      reason: No scripting, and no Python static renderer for this atom
+        exists to fall back to — same standing as photo_grid/sortable_list.
+    - surface: pdf
+      reason: No scripting, and no Python static renderer for this atom
+        exists to fall back to — same standing as photo_grid/sortable_list.
+  fields:
+    images: 'array (required). Objects of {id, url, alt?, name?, price_display?,
+      badge?, active?, starred_by_display?}. Same shape family as photo_grid
+      (id/url/badge/active carry the identical meaning), plus three fields
+      specific to a one-at-a-time review: `name`/`price_display` render as
+      the slide''s caption title/subtitle, `starred_by_display` is a plain
+      pre-joined string (e.g. "Curtis, Marianne") shown under the caption —
+      the atom does not aggregate voter names itself, the caller derives
+      that string server-side, same reasoning photo_grid gives for `badge`
+      and `active` being caller-derived rather than computed by the atom.'
+    accent: 'string (optional, hex, default #0f766e). Vote-button and active-
+      badge colour.'
+  wire:
+    rows: 'Same alias data_table/photo_grid use for their own live-update
+      wire. See this atom''s own description for why the update path
+      patches slides in place rather than rebuilding — populate `images`
+      with real data at render time; do not rely on this wire alone to
+      populate an empty first paint.'
+    onRowClick: 'Fires from the per-slide vote button, not the photo itself
+      (unlike photo_grid, where the tile IS the click target) — a full-size
+      review view benefits from prev/next and the photo both being free of
+      an accidental-tap-votes risk. WHOLE clicked slide object delivered,
+      same data-row-json contract as photo_grid/data_table; array form
+      (["#sel.setValue", "#action.run"]) selects and immediately runs an
+      action in one tap, inherited from onRowClick generally.'
+  notes: 'Prev/next navigation is NOT wired at all — it is pure CSS
+    (radio-input labels targeting sibling ids), the same as `carousel`.
+    There is nothing for onRowClick or any other wire to report about
+    stepping between slides, because nothing server-side needs to know
+    which slide is currently showing for this atom to work.'
+  source: *id001
+
 - type: preview_frame
   stage: preview
   # Renderer in atom.gs, src-binding in A2UIState.html's domBridge (setProp

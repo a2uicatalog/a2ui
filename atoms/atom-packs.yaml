@@ -88,6 +88,7 @@ a2ui-atoms-v1:
 - palette
 - paragraph
 - photo_grid
+- photo_stepper
 - photo_upload
 - presence_surface
 - preview_frame
