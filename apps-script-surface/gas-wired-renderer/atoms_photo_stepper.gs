@@ -70,7 +70,12 @@ _RENDERERS['photo_stepper'] = function(b) {
   var navSets = images.map(function(img, i) {
     var prevIdx = i === 0 ? n : i;
     var nextIdx = i === n - 1 ? 1 : i + 2;
-    return '<div class="' + sid + '-navset' + (i + 1) + '" style="display:contents;">' +
+    // No inline style here: an inline `style` attribute always beats a class
+    // selector in the cascade, so `style="display:contents"` would have
+    // permanently overridden the :checked toggle above and left every
+    // slide's nav arrows stacked at once (or effectively invisible) instead
+    // of only the current slide's pair showing.
+    return '<div class="' + sid + '-navset' + (i + 1) + '">' +
       '<label for="' + sid + '_s' + prevIdx + '" class="' + sid + '-nav ' + sid + '-prev">&#10094;</label>' +
       '<label for="' + sid + '_s' + nextIdx + '" class="' + sid + '-nav ' + sid + '-next">&#10095;</label>' +
       '</div>';
