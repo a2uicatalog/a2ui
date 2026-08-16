@@ -1603,9 +1603,15 @@ function _a2uiUpdatePhotoGrid(el, images) {
     var badge = img.badge ? '<span class="pg-badge' + (img.active ? ' pg-badge-active' : '') +
       '">' + _a2uiSanitize(img.badge) + '</span>' : '';
     var cap = img.caption ? '<figcaption>' + _a2uiSanitize(img.caption) + '</figcaption>' : '';
+    // Same reasoning as the GAS-side renderer's own copy (atoms_photo_grid.gs)
+    // — no <img src=""> when there is no photo, or it renders as a broken-
+    // image glyph instead of the figure's own neutral background.
+    var media = img.url
+      ? '<img src="' + _a2uiSanitize(img.url) + '" alt="' + _a2uiSanitize(img.alt || '') + '" loading="lazy">'
+      : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
+        'justify-content:center;color:#9aa0a6;font-size:0.78rem;">No photo</div>';
     return '<figure class="' + activeCls + '" data-row-json="' + rowJson + '">' +
-      '<img src="' + _a2uiSanitize(img.url || '') + '" alt="' + _a2uiSanitize(img.alt || '') + '" loading="lazy">' +
-      badge + cap + '</figure>';
+      media + badge + cap + '</figure>';
   }).join('');
   wrap.innerHTML = html;
   _a2uiBindRowClicks(el);

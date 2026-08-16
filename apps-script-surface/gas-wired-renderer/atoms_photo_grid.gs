@@ -44,8 +44,17 @@ function _a2uiPhotoGridItemsHtml(images) {
     var badge = img.badge ? '<span class="pg-badge' + (img.active ? ' pg-badge-active' : '') +
       '">' + _esc(img.badge) + '</span>' : '';
     var cap = img.caption ? '<figcaption>' + _esc(img.caption) + '</figcaption>' : '';
+    // No <img src=""> when there is no photo — a candidate sourced from a
+    // web search (agent.find_purchase_suggestions) never gets one, that
+    // tool has no image field to give — an empty src renders as a broken-
+    // image glyph, confirmed live (Maison board tile, 2026-08-16). The
+    // figure's own background already reads as empty; this just doesn't
+    // draw the broken-icon on top of it.
+    var media = img.url
+      ? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '" loading="lazy">'
+      : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
+        'justify-content:center;color:#9aa0a6;font-size:0.78rem;">No photo</div>';
     return '<figure class="' + activeCls + '" data-row-json="' + rowJson + '">' +
-      '<img src="' + _esc(img.url || '') + '" alt="' + _esc(img.alt || '') + '" loading="lazy">' +
-      badge + cap + '</figure>';
+      media + badge + cap + '</figure>';
   }).join('');
 }

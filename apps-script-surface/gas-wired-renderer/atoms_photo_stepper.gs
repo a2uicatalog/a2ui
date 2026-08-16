@@ -157,8 +157,17 @@ _RENDERERS['photo_stepper'] = function(b) {
     // index, so a re-sorted refresh still lands on the correct slide rather
     // than silently swapping in a different candidate's data underneath
     // whichever photo the radio's :checked state is currently showing.
+    // No <img src=""> when there is no photo — same reasoning photo_grid's
+    // own fix carries (a candidate sourced from a web search never gets
+    // one): an empty src renders as a broken-image glyph, confirmed live
+    // on a Maison board tile 2026-08-16. The slide's own dark background
+    // already reads as empty; this just doesn't draw the broken icon on it.
+    var media = img.url
+      ? '<img src="' + _esc(img.url) + '" alt="' + _esc(img.alt || '') + '" loading="lazy">'
+      : '<div style="width:100%;height:100%;display:flex;align-items:center;' +
+        'justify-content:center;color:#6b7280;font-size:1rem;background:#000;">No photo available</div>';
     return '<div class="' + sid + '-slide" data-ps-slide="' + i + '" data-ps-id="' + _esc(String(img.id || '')) + '">' +
-      '<img src="' + _esc(img.url || '') + '" alt="' + _esc(img.alt || '') + '" loading="lazy">' +
+      media +
       badge +
       '<div class="' + sid + '-cap"><div class="ps-name">' + _esc(img.name || img.alt || '') + '</div>' +
       price + voters +
