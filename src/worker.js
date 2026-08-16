@@ -1,11 +1,12 @@
 // src/worker.js — content negotiation for the HOMEPAGE ONLY.
 //
 // Everything on a2uicatalog.ai is a static asset served by the Workers assets
-// runtime. This Worker exists solely so the homepage can answer two questions
-// it could not answer as a flat file:
+// runtime. This Worker exists solely so the homepage can answer questions it
+// could not answer as a flat file:
 //
 //   GET /?mode=agent                  -> structured JSON summary, not marketing HTML
 //   GET /  Accept: text/markdown      -> the markdown twin, with a correct Vary header
+//   GET /  UA: a known AI crawler     -> the markdown twin, even if it sent Accept: text/html
 //
 // SCOPE IS THE WHOLE POINT. wrangler.toml sets:
 //     run_worker_first = ["/"]
@@ -23,6 +24,22 @@
 
 const AGENT_VIEW = '/agent-view.json';
 const MARKDOWN_TWIN = '/index.md';
+
+// Known AI-crawler User-Agent substrings (case-insensitive). These bots
+// commonly send Accept: text/html regardless of what they can actually use,
+// so Accept-header negotiation alone never triggers for them — an
+// agent-readiness finding, 2026-08-16: "no probed bot User-Agent ... receives
+// markdown when requesting HTML." Matched separately from the Accept-header
+// path below, which stays exactly as strict as it was for everyone else.
+const BOT_USER_AGENTS = [
+  'gptbot', 'claudebot', 'chatgpt-user', 'perplexitybot',
+  'google-extended', 'applebot-extended', 'ora-agent', 'deepseekbot',
+];
+
+function isKnownBot(userAgent) {
+  const ua = (userAgent || '').toLowerCase();
+  return BOT_USER_AGENTS.some((b) => ua.includes(b));
+}
 
 /** Serve a static asset's BODY under a different URL, with our own headers. */
 async function serveAsset(env, request, path, headers) {
@@ -55,14 +72,18 @@ export default {
       // through to the normal homepage rather than erroring.
     }
 
-    // ── Accept: text/markdown — serve the markdown twin ──────────────────────
-    // Deliberately conservative: markdown is served ONLY when the client asked
-    // for it AND did not ask for HTML. Every browser sends
-    // "text/html,application/xhtml+xml,...,*/*", so this can never flip a real
-    // browser onto the markdown branch — a naive substring test on */* would.
+    // ── Accept: text/markdown, OR a known bot UA — serve the markdown twin ───
+    // Accept-header negotiation is deliberately conservative: markdown is
+    // served ONLY when the client asked for it AND did not ask for HTML.
+    // Every browser sends "text/html,application/xhtml+xml,...,*/*", so this
+    // can never flip a real browser onto the markdown branch — a naive
+    // substring test on */* would. The bot-UA path is separate and looser ON
+    // PURPOSE: these crawlers commonly send Accept: text/html regardless of
+    // what they can actually use, so they'd never hit the branch above.
     const accept = request.headers.get('Accept') || '';
     const wantsMarkdown = accept.includes('text/markdown') && !accept.includes('text/html');
-    if (wantsMarkdown) {
+    const isBot = isKnownBot(request.headers.get('User-Agent'));
+    if (wantsMarkdown || isBot) {
       const res = await serveAsset(env, request, MARKDOWN_TWIN, {
         'Content-Type': 'text/markdown; charset=utf-8',
         'Access-Control-Allow-Origin': '*',
@@ -70,7 +91,10 @@ export default {
         // REQUIRED, not decorative: without it a CDN can serve whichever
         // variant landed in cache first to the other kind of client — the
         // exact cache-poisoning failure acceptmarkdown.com warns about.
-        'Vary': 'Accept',
+        // Varying on User-Agent too, not just Accept, since the bot-UA path
+        // above means the SAME Accept header can now get two different
+        // bodies depending on who's asking.
+        'Vary': 'Accept, User-Agent',
         'Cache-Control': 'public, max-age=300',
       });
       if (res) return res;
