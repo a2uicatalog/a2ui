@@ -1091,8 +1091,11 @@ var _a2uiBridge = {
     } else if (prop === 'rows') {
       console.log('[A2UI] setProp rows', id, Array.isArray(val) ? val.length : val);
       var ccBody = el.querySelector('[data-cc-body]');
+      var pgBody = el.querySelector('[data-photo-grid]');
       if (ccBody) {
         _a2uiUpdateChatCard(el, val);
+      } else if (pgBody) {
+        _a2uiUpdatePhotoGrid(el, val);
       } else {
         _a2uiUpdateTableRows(el, val);
       }
@@ -1581,6 +1584,30 @@ function _a2uiUpdateTableRows(el, rows) {
   _a2uiBindRowClicks(el);
 }
 
+// photo_grid's live-update counterpart (atoms_photo_grid.gs renders the
+// FIRST paint; this redraws on every 'rows' wire update after). Independent
+// copy of the item-HTML-building logic rather than sharing the .gs
+// renderer's function — same duplication _a2uiUpdateTableRows already
+// carries against data_table_sortable's own row markup, for the same
+// reason: GAS-side (_esc) and browser-side (_a2uiSanitize) are two
+// different environments this bundle runs in.
+function _a2uiUpdatePhotoGrid(el, images) {
+  var wrap = el.querySelector('[data-photo-grid]');
+  if (!wrap) { console.warn('[A2UI] no photo-grid wrap in', el && el.id); return; }
+  var html = (images || []).map(function(img) {
+    var rowJson = _a2uiSanitize(JSON.stringify(img));
+    var activeCls = img.active ? ' pg-active' : '';
+    var badge = img.badge ? '<span class="pg-badge' + (img.active ? ' pg-badge-active' : '') +
+      '">' + _a2uiSanitize(img.badge) + '</span>' : '';
+    var cap = img.caption ? '<figcaption>' + _a2uiSanitize(img.caption) + '</figcaption>' : '';
+    return '<figure class="' + activeCls + '" data-row-json="' + rowJson + '">' +
+      '<img src="' + _a2uiSanitize(img.url || '') + '" alt="' + _a2uiSanitize(img.alt || '') + '" loading="lazy">' +
+      badge + cap + '</figure>';
+  }).join('');
+  wrap.innerHTML = html;
+  _a2uiBindRowClicks(el);
+}
+
 function _a2uiUpdateChatCard(el, rows) {
   var body = el.querySelector('[data-cc-body]');
   var foot = el.querySelector('[data-cc-foot]');
@@ -1733,7 +1760,15 @@ function _a2uiBindRowClicks(wrapEl) {
   // nothing, which read on the receiving StringTemplate as a real but empty
   // selection — "nothing yet" — rather than no click having happened at all.
   // Found live 2026-08-15 on maison's purchase-suggestions table.
-  wrapEl.querySelectorAll('tbody tr[data-row-json]').forEach(function(row) {
+  //
+  // Selector generalised from 'tbody tr[data-row-json]' to plain
+  // '[data-row-json]' (2026-08-16, added for photo_grid): the attribute
+  // check alone is what excludes the placeholder — the 'tbody tr' prefix
+  // only ever narrowed WHICH elements could carry it, to table rows
+  // specifically. Any future atom emitting the same attribute on its own
+  // clickable tiles gets the identical click contract for free, table or
+  // not — no per-atom special-casing needed here.
+  wrapEl.querySelectorAll('[data-row-json]').forEach(function(row) {
     row.addEventListener('click', function() {
       var rowData = {};
       try { rowData = JSON.parse(this.getAttribute('data-row-json') || '{}'); } catch(e) {}

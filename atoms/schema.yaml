@@ -693,6 +693,92 @@ blocks:
     supplement a keyboard or written path, never replace one.'
   source: *id001
 
+- type: photo_grid
+  stage: preview
+  # Renderer in atoms_photo_grid.gs, click binding + live update in
+  # A2UIState.html (_a2uiUpdatePhotoGrid, and _a2uiBindRowClicks's own
+  # selector generalised from `tbody tr[data-row-json]` to plain
+  # `[data-row-json]` to cover this atom's tiles too — same click contract
+  # data_table already has, not a new engine mechanism). Reaches the MCP
+  # Apps bundle today; NOT live on the GAS deployments or the Worker's
+  # /api/render until `ops.py run renderer-release` — same standing as
+  # sortable_list/actual_vs_estimate.
+  description: 'A clickable image grid: every tile is both a photo and a row.
+
+    Built to close a real gap — data_table has no way to show what a row
+    IS, only what it says about itself, so a photo-driven decision (which
+    wallpaper, which chair) forced a text table plus a separate "View
+    photo" link plus a separate select-then-tap-a-button flow before an
+    action could fire. This atom is the shape that removes all three: the
+    thing you look at and the thing you click are the same element.
+
+    Reuses data_table''s onRowClick contract exactly — same data-row-json
+    attribute, same _a2uiBindRowClicks binder, same array-wire form for
+    "select AND immediately run an action" in one tap (shipped 2026-08-04
+    for onRowClick, inherited here for free rather than rebuilt). A DATA
+    atom, not a domain one, same reasoning sortable_list gives for its own
+    genericness: it renders whatever {id, url, ...} objects it is given and
+    fires whatever the caller wired onRowClick to, so the same atom serves
+    a voting board, a photo picker, or a product chooser without a second
+    named atom per use case.
+
+    `badge` and `active` exist because a click-driven UI still has to show
+    its OWN state back — a starred tile that does not visibly read as
+    starred after the tap is a button that looks like it did nothing. Both
+    are plain strings/booleans the caller derives server-side (a star
+    count, a "you picked this" flag); the atom does not compute either.'
+  compact_description: clickable image grid — data-row-json tiles, reuses
+    data_table's onRowClick contract; badge + active show per-tile state
+  surfaces:
+    works_on:
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: web
+      note: Renders as a static grid; no Python renderer exists for this atom
+        yet, so tiles are not clickable outside the wired dialect.
+    incompatible_on:
+    - surface: email
+      reason: No scripting, and no Python static renderer for this atom exists
+        to fall back to — same standing as sortable_list.
+    - surface: pdf
+      reason: No scripting, and no Python static renderer for this atom exists
+        to fall back to — same standing as sortable_list.
+  fields:
+    images: 'array (required). Objects of {id, url, alt?, caption?, badge?,
+      active?}. `id` is what data-row-json carries back to onRowClick (along
+      with every other field on the object — the WHOLE row, same contract
+      data_table''s onRowClick already has). `caption` overlays the bottom of
+      the tile. `badge` is a short string pinned top-right (a count, a
+      status) — omit it for no badge. `active` outlines the tile and tints
+      its badge to mark "this one is in a selected/chosen state" from the
+      caller''s own point of view.'
+    cols: 'integer (optional, default 3). 2-4 reads best; more than 4 on a
+      phone-width viewport crowds captions into illegibility.'
+  wire:
+    rows: 'Same alias data_table uses for its own initial-population/live-
+      update wire — an action or ValueStore''s array output re-renders the
+      grid in place (via _a2uiUpdatePhotoGrid) exactly the way a table''s
+      rows refresh after onSuccess, no full page reload needed to see a
+      tile''s badge change after an action fires.'
+    onRowClick: 'Fires once per tap with the WHOLE clicked image object
+      (data-row-json''s contract — a wire cannot drill into a delivered
+      object, unpack fields with ObjectFields the way every other
+      onRowClick consumer already does). Array form (["#sel.setValue",
+      "#action.run"]) selects AND immediately runs an action in one tap —
+      inherited from onRowClick generally, not new to this atom, but the
+      whole point of building this rather than reusing data_table: a text
+      row can defer the action to a second click and lose nothing; a photo
+      tile that requires "click, then find and tap a separate button
+      below" defeats the reason to show the photo at all.'
+  notes: 'The click target IS the photo — there is deliberately no separate
+    zoom/lightbox affordance the way the static `gallery` atom has, because
+    a lightbox''s own click-to-open would compete with onRowClick for the
+    same tap. Pair this with `gallery` instead of trying to make one atom
+    do both jobs: gallery for pure browsing with a full-size zoom, photo_grid
+    where every tile is also a live action.'
+  source: *id001
+
 - type: preview_frame
   stage: preview
   # Renderer in atom.gs, src-binding in A2UIState.html's domBridge (setProp
