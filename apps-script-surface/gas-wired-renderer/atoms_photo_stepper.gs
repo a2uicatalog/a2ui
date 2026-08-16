@@ -56,13 +56,29 @@ _RENDERERS['photo_stepper'] = function(b) {
     '#' + mid + ':checked ~ .' + sid + '{display:block;}' +
     '.' + sid + ' input[type=radio]{display:none;}' +
     '.' + sid + '-inner{position:relative;height:100%;width:100%;}' +
-    '.' + sid + '-track{display:flex;height:100%;transition:transform 0.35s ease;width:' + (n * 100) + '%;}' +
+    // z-index:6 + pointer-events:none is the counterweight to .sid-nav's
+    // z-index:5 below, and it has to live HERE rather than on the caption.
+    // The :checked paging rule puts a `transform` on this track, and a
+    // transform CREATES A STACKING CONTEXT — so every descendant, the
+    // caption and its controls included, is sealed inside the track and can
+    // never outrank a sibling of the track however high its own z-index is.
+    // Raising the caption is therefore a no-op (tried, measured, does
+    // nothing); the track is the only element that can be lifted.
+    // Lifted, it would eat every arrow click — hence pointer-events:none
+    // here, handed back to the two real controls only (see .sid-vote /
+    // .sid-source below).
+    '.' + sid + '-track{display:flex;height:100%;transition:transform 0.35s ease;width:' + (n * 100) + '%;position:relative;z-index:6;pointer-events:none;}' +
     '.' + sid + '-slide{width:' + (100 / n) + '%;flex:0 0 ' + (100 / n) + '%;position:relative;height:100%;}' +
     '.' + sid + '-slide img{width:100%;height:100%;display:block;object-fit:contain;background:#000;}' +
     // Caption is a gradient overlay ON the photo, not a bar below it —
     // matches the immersive reference this redesign targets.
-    '.' + sid + '-cap{position:absolute;left:0;right:0;bottom:0;padding:36px 24px 22px;background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));color:#fff;pointer-events:none;}' +
-    '.' + sid + '-cap > *{pointer-events:auto;}' +
+    '.' + sid + '-cap{position:absolute;left:0;right:0;bottom:0;padding:36px 24px 22px;background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));color:#fff;}' +
+    // Only the two CONTROLS take clicks back from the track's
+    // pointer-events:none, never `.sid-cap > *`: the name/price/voters lines
+    // are full-width blocks, so handing them a hit area would put the same
+    // bug back mirrored — the caption eating the nav arrows across the whole
+    // bottom band instead of the arrows eating the vote button.
+    '.' + sid + '-vote,.' + sid + '-source{pointer-events:auto;}' +
     '.' + sid + '-cap .ps-name{font-size:1.05rem;font-weight:600;}' +
     '.' + sid + '-cap .ps-price{color:#d1d5db;font-size:0.85rem;margin-top:2px;}' +
     '.' + sid + '-cap .ps-voters{color:#d1d5db;font-size:0.78rem;margin-top:8px;}' +
@@ -80,7 +96,10 @@ _RENDERERS['photo_stepper'] = function(b) {
     '.' + sid + '-nav{position:absolute;top:0;bottom:0;width:15%;z-index:5;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:rgba(255,255,255,0.5);cursor:pointer;user-select:none;transition:background 0.15s;}' +
     '.' + sid + '-nav:hover{background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.9);}' +
     '.' + sid + '-prev{left:0;} .' + sid + '-next{right:0;}' +
-    '.' + sid + '-topbar{position:absolute;top:0;left:0;right:0;z-index:6;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0));pointer-events:none;}' +
+    // 8, not 6: the track above now sits at 6 and comes LATER in DOM order,
+    // so an equal z-index would let an opaque slide paint over the Back
+    // control. Must stay strictly above the track.
+    '.' + sid + '-topbar{position:absolute;top:0;left:0;right:0;z-index:8;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0));pointer-events:none;}' +
     '.' + sid + '-topbar > *{pointer-events:auto;}' +
     '.' + sid + '-close{color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;cursor:pointer;background:rgba(0,0,0,0.4);border-radius:99px;padding:6px 14px;}' +
     '.' + sid + '-count{color:#d1d5db;font-size:0.8rem;background:rgba(0,0,0,0.4);padding:4px 11px;border-radius:99px;}' +
