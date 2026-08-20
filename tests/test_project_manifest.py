@@ -26,10 +26,51 @@ def _matches(path, pattern):
     return fnmatch.fnmatch(path, pattern)
 
 
+# Only things that could appear on disk AFTER a checkout that a plain walk
+# wouldn't already correctly exclude -- see _tracked_files()'s own
+# docstring for why the checkout's origin already handles everything else.
+_RUNTIME_ARTIFACT_DIRS = {"__pycache__", ".pytest_cache", ".git"}
+_RUNTIME_ARTIFACT_SUFFIXES = (".pyc", ".pyo")
+
+
 def _tracked_files():
-    out = subprocess.run(["git", "ls-files"], cwd=ROOT,
-                         capture_output=True, text=True)
-    return out.stdout.splitlines()
+    """Files git considers part of the repo. Falls back to a plain
+    filesystem walk when there's no `.git` at all -- this repo is
+    sometimes checked out from a tarball/archive export rather than a git
+    clone (confirmed live 2026-08-20: curtiskrygier/repo-improvement-
+    agent's own daily gap-finding agent does exactly this, deliberately,
+    to avoid needing a git binary/credentials in its own container).
+
+    The fallback is SAFE, not just convenient, for what these two tests
+    actually need: GitHub's tarball/archive endpoint exports ONLY
+    git-tracked content in the first place (the same as `git archive`
+    would produce) -- gitignored files (public-full/, etc.) were never
+    present in the checkout to begin with, so a plain walk over a
+    freshly-extracted tree already matches what `git ls-files` would have
+    said. Two real gaps, both filtered out explicitly below rather than
+    assumed away: (1) artifacts created LOCALLY during THIS test run
+    itself (bytecode caches, pytest's own cache dir) never went through
+    git at all, and nothing about the checkout's origin excludes them;
+    (2) a checkout tool can add SYMLINKS after extraction for its own
+    purposes (confirmed live, 2026-08-20: the daily gap-finding agent
+    above recreates a2uithoughts.md etc. as symlinks into a sibling
+    checkout, purely for its own convenience) -- Path.is_file() follows a
+    symlink and would happily report one as a normal tracked-looking
+    file, exactly the git-sees-a-symlink-as-a-FILE problem this repo's own
+    .gitignore already anchors these same paths to avoid. Excluding
+    symlinks entirely in the fallback keeps this test's real question
+    ("is this genuinely tracked in a2uicatalog's OWN history") from being
+    fooled by something a checkout mechanism bolted on afterward."""
+    if (ROOT / ".git").exists():
+        out = subprocess.run(["git", "ls-files"], cwd=ROOT,
+                             capture_output=True, text=True)
+        return out.stdout.splitlines()
+    return sorted(
+        str(p.relative_to(ROOT)) for p in ROOT.rglob("*")
+        if p.is_file() and not p.is_symlink()
+        and not any(part in _RUNTIME_ARTIFACT_DIRS for part in p.relative_to(ROOT).parts)
+        and p.suffix not in _RUNTIME_ARTIFACT_SUFFIXES
+    )
 
 
 def test_private_globs_are_untracked():
@@ -118,9 +159,9 @@ def test_no_undeclared_renderer_engine_copies():
     # make this gate pass in CI and fail on a developer's machine for a reason
     # that is not drift. It is a compiled target of that process, and stale
     # until it next runs, exactly like the bundle is until renderer-release.
-    tracked = subprocess.run(
-        ["git", "ls-files", "*.html", "*.js", "*.gs"],
-        cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
+    # Reuses _tracked_files() (see its own docstring for the no-.git
+    # fallback) rather than a second, unguarded git subprocess call.
+    tracked = [f for f in _tracked_files() if f.endswith((".html", ".js", ".gs"))]
     dispatch = sorted(
         rel for rel in tracked
         if "node_modules" not in rel
