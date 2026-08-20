@@ -18,8 +18,18 @@ from pathlib import Path
 try:
     import yaml
 except ImportError:
+    # A plain, raised ImportError (not sys.exit) so a caller that imports
+    # this module as a LIBRARY (e.g. tests/test_mcp_apps_bundle.py, which
+    # reuses this file's example blocks) gets an ordinary, catchable
+    # exception rather than an uncatchable SystemExit -- confirmed live,
+    # 2026-08-20: the old sys.exit(1) here crashed pytest's own collection
+    # machinery with an INTERNALERROR instead of a normal, readable
+    # collection failure, because SystemExit is a BaseException, not an
+    # Exception. Still fails loudly with the same friendly stderr message
+    # when run standalone (`python3 scripts/generate_atom_pages.py`) --
+    # an uncaught exception exits non-zero either way.
     print("pip install pyyaml", file=sys.stderr)
-    sys.exit(1)
+    raise
 
 ROOT       = Path(__file__).parent.parent
 SCHEMA     = ROOT / "atoms" / "schema.yaml"
@@ -44,8 +54,11 @@ try:
     import web_article as _web_renderer
     _RENDERER_TYPES = set(_web_renderer._RENDERERS.keys())
 except Exception as e:
+    # Same reasoning as the yaml import above: raise, don't sys.exit, so
+    # this stays importable-as-a-library even when the renderer import
+    # fails for some reason.
     print(f"ERROR: failed to import web_article renderer: {e}", file=sys.stderr)
-    sys.exit(1)
+    raise
 
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
