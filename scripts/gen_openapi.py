@@ -464,10 +464,12 @@ LLMS_TXT = """# A2UI Atomic Catalog
 
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
+- [Developer documentation]({base}/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
 - [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
+- [Pricing and rate limits]({base}/pricing.md): Free tier limits and self-hosting options.
 - [Versioning & deprecation policy]({base}/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
@@ -519,6 +521,7 @@ def build_api_catalog():
             ],
             "item": [
                 item(f"{BASE}/mcp", "application/json", "MCP server (JSON-RPC 2.0, Streamable HTTP)"),
+                item(f"{BASE}/mcp-docs", "application/json", "Documentation MCP server (a2uicatalog-docs)"),
                 item(f"{BASE}/ask", "application/json", "NLWeb natural-language catalog search"),
                 item(f"{BASE}/api/compose", "application/json", "Natural language to atom blocks"),
                 item(f"{BASE}/api/data/{{source}}", "application/json", "Declared data-source proxy"),
@@ -537,8 +540,10 @@ def build_api_catalog():
                 item(f"{BASE}/.well-known/oauth-authorization-server", "application/json", "OAuth authorization-server metadata (RFC 8414)"),
             ],
             "describes": [
+                item(f"{BASE}/developers/", "text/html", "Developer documentation and API guide"),
                 item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
                 item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
+                item(f"{BASE}/pricing.md", "text/markdown", "Pricing and rate limits"),
             ],
         }],
     }

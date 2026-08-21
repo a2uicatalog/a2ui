@@ -28,6 +28,11 @@
           "title": "MCP server (JSON-RPC 2.0, Streamable HTTP)"
         },
         {
+          "href": "https://a2uicatalog.ai/mcp-docs",
+          "type": "application/json",
+          "title": "Documentation MCP server (a2uicatalog-docs)"
+        },
+        {
           "href": "https://a2uicatalog.ai/ask",
           "type": "application/json",
           "title": "NLWeb natural-language catalog search"
@@ -80,6 +85,11 @@
       ],
       "describes": [
         {
+          "href": "https://a2uicatalog.ai/developers/",
+          "type": "text/html",
+          "title": "Developer documentation and API guide"
+        },
+        {
           "href": "https://a2uicatalog.ai/versioning.md",
           "type": "text/markdown",
           "title": "Versioning and deprecation policy"
@@ -88,6 +98,11 @@
           "href": "https://a2uicatalog.ai/auth.md",
           "type": "text/markdown",
           "title": "Authentication guide"
+        },
+        {
+          "href": "https://a2uicatalog.ai/pricing.md",
+          "type": "text/markdown",
+          "title": "Pricing and rate limits"
         }
       ]
     }
