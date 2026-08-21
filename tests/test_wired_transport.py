@@ -13,6 +13,14 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).parent.parent
+# a2ui-private checks out as a true SIBLING directory of this repo, both in
+# Curtis's own local layout and in the daily gap-finding agent's own cloud
+# checkout topology (RepoTopology.siblings) -- ROOT.parent resolves to the
+# right place in both. NOT "/home/curtis/a2ui-private/..." (a hardcoded,
+# Curtis-machine-only convenience symlink) -- confirmed live, 2026-08-21,
+# via curtiskrygier/repo-improvement-agent's own daily agent: that path
+# doesn't exist at all in the cloud-executed harness, only locally.
+AMERICANO_WIRED_JSON = ROOT.parent / "a2ui-private" / "tests" / "americano_wired.json"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import gen_mcp_apps_bundle as gen  # noqa: E402
@@ -128,7 +136,7 @@ def test_play_host_injects_session_token():
 
 
 def test_americano_payload_rehydrates_names():
-    payload = json.loads(Path("/home/curtis/a2ui-private/tests/americano_wired.json").read_text())
+    payload = json.loads(AMERICANO_WIRED_JSON.read_text())
     binders = [s for s in payload["wired_templates"]["state"]
                if isinstance(s, dict) and s.get("id") == "binder_players"]
     assert len(binders) == 1
@@ -207,7 +215,7 @@ def test_bundle_carries_wired_path(core_js):
 def test_americano_renders_through_extracted_loop(core_js):
     """Acceptance: the real americano payload's expanded layout renders via
     the SAME loop GAS uses, inside the bundle core, headlessly."""
-    payload = json.loads(Path("/home/curtis/a2ui-private/tests/americano_wired.json").read_text())
+    payload = json.loads(AMERICANO_WIRED_JSON.read_text())
     with tempfile.TemporaryDirectory() as td:
         pj = Path(td) / "p.json"
         pj.write_text(json.dumps(payload))
