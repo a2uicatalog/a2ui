@@ -12,5 +12,8 @@
 # /api-reference page exists (the real reference is openapi.json, linked
 # prominently from /developers/), so send probes there instead of a bare 404.
 /api /developers/ 301
+/api-docs /developers/ 301
 /api-reference /developers/ 301
+/docs /developers/ 301
 /docs/api /developers/ 301
+/documentation /developers/ 301

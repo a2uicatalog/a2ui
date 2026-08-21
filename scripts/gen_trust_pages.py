@@ -298,12 +298,16 @@ declared sources), or on hosts that cannot display HTML.
 
 | Document | URL |
 |---|---|
+| Developer guide & API docs | https://a2uicatalog.ai/developers/ |
 | OpenAPI specification | https://a2uicatalog.ai/openapi.json |
 | Full atom vocabulary | https://a2uicatalog.ai/spec.json |
 | Strict per-atom JSON Schema | https://a2uicatalog.ai/catalogue/atoms-json-schema.json |
 | Catalog selection menu | https://a2uicatalog.ai/catalogue/index.json |
 | ARD discovery document | https://a2uicatalog.ai/.well-known/ai-catalog.json |
-| Auth and rate limits | https://a2uicatalog.ai/.well-known/agent-auth.md |
+| Auth & rate limits | https://a2uicatalog.ai/.well-known/agent-auth.md |
+| Authentication guide | https://a2uicatalog.ai/auth.md |
+| Pricing & limits | https://a2uicatalog.ai/pricing.md |
+| Versioning policy | https://a2uicatalog.ai/versioning.md |
 | Agent overview | https://a2uicatalog.ai/llms.txt |
 
 ## Terms

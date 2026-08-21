@@ -6,10 +6,12 @@
 
 - [MCP server](https://a2uicatalog.ai/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server](https://a2uicatalog.ai/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
+- [Developer documentation](https://a2uicatalog.ai/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
 - [NLWeb search](https://a2uicatalog.ai/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [OpenAPI specification](https://a2uicatalog.ai/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
 - [Auth & rate limits](https://a2uicatalog.ai/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide](https://a2uicatalog.ai/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
+- [Pricing and rate limits](https://a2uicatalog.ai/pricing.md): Free tier limits and self-hosting options.
 - [Versioning & deprecation policy](https://a2uicatalog.ai/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog](https://a2uicatalog.ai/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema](https://a2uicatalog.ai/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
