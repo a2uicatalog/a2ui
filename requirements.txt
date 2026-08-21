@@ -1,0 +1,11 @@
+# This repo's own real, empirically-confirmed test dependencies -- did not
+# exist before this file (2026-08-21). Matches exactly what this repo's own
+# CI (deploy.yml) already installs by hand; the full local test suite (540+
+# tests) passes with just these three plus a `node` binary on PATH, which
+# this file intentionally does not cover -- it is a separate runtime
+# dependency (a real subprocess call, not a pip package) used by
+# test_mcp_apps_bundle.py and 8 other files to exercise the compiled JS
+# renderer bundle.
+pytest
+pyyaml
+markdown
