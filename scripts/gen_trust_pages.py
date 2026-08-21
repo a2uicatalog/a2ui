@@ -66,7 +66,7 @@ footer{{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}}
 <nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
 <div class="wrap">
 <h1>{title}</h1>
-<p class="k">A2UI Atomic Catalog</p>
+<h2 class="k">A2UI Atomic Catalog</h2>
 {body}
 </div>
 <footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.

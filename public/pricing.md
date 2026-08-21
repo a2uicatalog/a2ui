@@ -1,4 +1,4 @@
-# Pricing
+# Pricing — A2UI Atomic Catalog
 
 **Free. No signup, no API key, no card.**
 
