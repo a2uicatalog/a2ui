@@ -81,6 +81,22 @@ _EXAMPLE_BLOCKS = {
     # {"type": "schema_qr"} preview — the QR renders nothing without a url.
     "schema_qr": {"type": "schema_qr", "url": "https://a2uicatalog.ai",
         "label": "Scan to open on any device", "size": 200},
+    # Same class of gap as math_block above: `images` is a REQUIRED array of
+    # {id, url, alt?, caption?, badge?, active?} objects, but
+    # example_payload()'s auto-generation has no way to synthesize an array
+    # of object literals — it produced a bare integer (`"images": 1`)
+    # instead, which the renderer can't iterate, throwing internally and
+    # emitting "Error rendering" — caught live via the daily gap-finding
+    # agent's own test sweep, 2026-08-21. Real image URLs already used
+    # elsewhere on this site (see primitive_plate/scroll_gallery above),
+    # not placeholders.
+    "photo_grid": {"type": "photo_grid", "cols": 3, "images": [
+        {"id": "card", "url": "https://a2uicatalog.ai/gallery/ge-primitives/card.png",
+         "alt": "Card primitive", "caption": "Card", "badge": "3"},
+        {"id": "button", "url": "https://a2uicatalog.ai/gallery/ge-primitives/button.png",
+         "alt": "Button primitive", "caption": "Button", "active": True},
+        {"id": "og-card", "url": "https://a2uicatalog.ai/brand/og-card.png",
+         "alt": "Open Graph brand card", "caption": "Brand card"}]},
     # ── ChildList/ComponentId atoms (schema.yaml `children:`) — the generic
     # auto-generator can't synthesize meaningful nested child blocks, so
     # every one of these needs a curated example or the templates browser
