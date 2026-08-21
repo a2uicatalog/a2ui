@@ -44,12 +44,36 @@ def test_registered_scripts_exist():
     assert not gone, f"registered generator script(s) missing from disk: {gone}"
 
 
+# Two declared outputs are genuinely never expected to exist on a fresh
+# checkout — regenerated on demand, locally, and never committed anywhere:
+#   - gen_authoring -> public-full/authoring/: publish: "none — gated
+#     full.a2uicatalog.ai only" — public-full/ is itself gitignored, a
+#     local-only build (`ops.py run catalog-rebuild-full`).
+#   - gen_renderer_manifest -> ops/renderer-manifest.json: publish: "none —
+#     build artifact consumed by scripts/check_core.py" — ops/ is a
+#     gitignored symlink into a2ui-private's own durable home, and this
+#     specific file is a build artifact, not tracked content there either.
+# Confirmed live, 2026-08-21 (curtiskrygier/repo-improvement-agent's own
+# daily gap-finding agent): a REAL run against this repo's actual current
+# HEAD — with a2ui-private checked out as a real sibling, containing real,
+# committed generated files for the OTHER private-tier generators
+# (gen_worker_renderers, gen_slack_mapping — those DO exist and DO keep
+# being checked here, correctly; a sibling repo being checked out doesn't
+# mean everything under it is exempt) — still failed only on these two.
+_LOCAL_BUILD_ONLY_PREFIXES = ("public-full/", "ops/")
+
+
 def test_declared_outputs_exist():
     """Dereference check: a declared output that doesn't exist is a
-    compliant pointer to a dead target."""
+    compliant pointer to a dead target — excluding the small, explicit set
+    of outputs that are local-build-only by design (see
+    _LOCAL_BUILD_ONLY_PREFIXES's own comment), which are never expected to
+    exist on a fresh checkout at all."""
     dead = []
     for name, g in GENERATORS.items():
         for out in g.get("outputs", []):
+            if out.startswith(_LOCAL_BUILD_ONLY_PREFIXES):
+                continue
             p = ROOT / out
             if out.endswith("/"):
                 if not (p.is_dir() and any(p.iterdir())):
