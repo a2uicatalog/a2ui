@@ -332,10 +332,71 @@
     return { element: el, controller: createReasoningTraceController(adapter) };
   }
 
+  // ─── live_state_dashboard controller ────────────────────────────────────
+  // StateSnapshot + StateDelta (JSON Patch), patch-mode. Extends
+  // status_dashboard's own key/status-grid shape (see renderers/
+  // web_article.py's _render_status_dashboard for the static precedent)
+  // with live updates. Unlike every append-mode controller above, this one
+  // does NOT apply patches itself -- a2ui-stream-runtime.v1.js's own
+  // dispatch() already maintains the patched document per routing key
+  // (StateSnapshot is a hard reset, StateDelta merges via jsonPatchApply)
+  // and hands it through as `event.state` on every dispatched event. This
+  // controller's entire job is rendering whatever `event.state` currently
+  // holds -- proving that patch-mode genuinely needs zero atom-specific
+  // patch logic, exactly as the brief's own §3 design claims.
+  // Expected state shape: `{ items: [{ key, label, status }, ...] }`.
+  // `status` is a free-form string (e.g. "online"/"degraded"/"offline") --
+  // rendering maps it to a data-attribute for CSS, not a hardcoded enum,
+  // so a page can style whatever status vocabulary its own backend emits.
+  function createLiveStateDashboardController(adapter) {
+    return {
+      onEvent(event) {
+        const state = event.state || {};
+        const items = Array.isArray(state.items) ? state.items : [];
+        adapter.setItems(items.map((it) => {
+          const key = it && it.key != null ? String(it.key) : '';
+          return {
+            key,
+            label: it && it.label != null ? String(it.label) : key,
+            status: it && it.status != null ? String(it.status) : 'unknown',
+          };
+        }));
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveStateDashboard(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-state-dashboard';
+    el.innerHTML = '<div class="a2ui-state-dashboard-grid"></div>';
+    container.appendChild(el);
+    const gridEl = el.querySelector('.a2ui-state-dashboard-grid');
+    const adapter = {
+      setItems(items) {
+        gridEl.innerHTML = '';
+        for (const it of items) {
+          const cell = document.createElement('div');
+          cell.className = 'a2ui-state-dashboard-item';
+          cell.dataset.status = it.status;
+          cell.dataset.key = it.key;
+          const dot = document.createElement('span');
+          dot.className = 'a2ui-state-dashboard-dot';
+          cell.appendChild(dot);
+          cell.appendChild(document.createTextNode(it.label + ': ' + it.status));
+          gridEl.appendChild(cell);
+        }
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveStateDashboardController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
-    createReasoningTraceController,
-    mountToolCallCard, mountReasoningTrace,
+    createReasoningTraceController, createLiveStateDashboardController,
+    mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
