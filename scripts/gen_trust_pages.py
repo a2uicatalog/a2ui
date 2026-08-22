@@ -204,6 +204,56 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
 <li><a href="/spec.json">spec.json</a> — {n} atom definitions and field contracts</li>
 <li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
+<li><a href="/webhooks/">Webhooks &amp; Events</a> — real-time event streaming and delivery patterns</li>
+</ul>"""),
+        "auth": dict(
+            title="Authentication &amp; Security Docs",
+            desc="A2UI Atomic Catalog authentication docs: unauthenticated MCP/REST access, rate limits, and enterprise OAuth.",
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "WebPage",
+                "url": f"{BASE}/auth/", "name": "Authentication & Security Docs — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Authentication and security documentation for developers and AI agents integrating with the A2UI Atomic Catalog.</p>
+
+<h2>Public Unauthenticated Access</h2>
+<p>The primary MCP server (<code>https://a2uicatalog.ai/mcp</code>) and public REST endpoints (<code>/api/compose</code>, <code>/ask</code>, <code>/spec.json</code>) require <strong>no API key</strong> and <strong>no account signup</strong>. Clients can send requests immediately.</p>
+
+<h2>Auth Documentation &amp; Policies</h2>
+<ul>
+<li><a href="/auth.md">Authentication Guide (Markdown)</a> — architectural explanation and OAuth discovery</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; Rate Limits</a> — per-endpoint rate limits and enforcement policies</li>
+<li><a href="/.well-known/oauth-authorization-server">OAuth Authorization Server Metadata</a> (RFC 8414)</li>
+<li><a href="/.well-known/oauth-protected-resource/mcp-auth">OAuth Protected Resource Metadata</a> (RFC 9728)</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a></li>
+<li><a href="/mcp">MCP Server Endpoint</a></li>
+</ul>"""),
+        "webhooks": dict(
+            title="Webhooks &amp; Event Delivery",
+            desc="A2UI Atomic Catalog webhooks and event delivery documentation: SSE streaming, JSON-RPC notifications, and Chat webhooks.",
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "WebPage",
+                "url": f"{BASE}/webhooks/", "name": "Webhooks & Event Delivery — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Event delivery, webhook integration, and streaming documentation for the A2UI Atomic Catalog.</p>
+
+<h2>Event Delivery Architecture</h2>
+<p>A2UI uses modern streaming and push transports designed for AI agents and chat surfaces:</p>
+<ul>
+<li><strong>MCP Streamable HTTP / JSON-RPC</strong> — live streaming tool invocations over <code>/mcp</code></li>
+<li><strong>Server-Sent Events (SSE)</strong> — live incremental streaming on <code>/ask</code> (pass <code>Accept: text/event-stream</code>)</li>
+<li><strong>Google Chat Webhooks</strong> — server-side rendering of cardsV2 messages directly posted to incoming webhook URLs</li>
+</ul>
+
+<h2>Developer Resources</h2>
+<ul>
+<li><a href="/docs/">API Documentation</a> — endpoint schemas and transport contracts</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable spec</li>
+<li><a href="/mcp">MCP Server Endpoint</a> — live streamable JSON-RPC 2.0 interface</li>
+<li><a href="/developers/">Developers Guide</a> — deployment and integration guides</li>
 </ul>"""),
         "about": dict(
             title="About",
