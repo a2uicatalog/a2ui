@@ -20,6 +20,8 @@
   },
   "documentation": {
     "openapi": "https://a2uicatalog.ai/openapi.json",
+    "developers": "https://a2uicatalog.ai/developers/",
+    "api_docs": "https://a2uicatalog.ai/docs/",
     "llms": "https://a2uicatalog.ai/llms.txt",
     "agents": "https://a2uicatalog.ai/agents.md",
     "auth": "https://a2uicatalog.ai/auth.md",

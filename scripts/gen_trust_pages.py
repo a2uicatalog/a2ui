@@ -195,6 +195,8 @@ unauthenticated, and machine-readable.</p>
             }, indent=2),
             body=f"""
 <p>Predictable entry point for developer resources and API reference documents.</p>
+<p>Primary integration surface: <a href="/mcp">the MCP server at /mcp</a> — no API key, no
+signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <ul>
 <li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
