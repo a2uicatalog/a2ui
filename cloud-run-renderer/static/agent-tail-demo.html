@@ -55,6 +55,19 @@
   .a2ui-state-dashboard-item[data-status=degraded] .a2ui-state-dashboard-dot { background: #f59e0b; }
   .a2ui-state-dashboard-item[data-status=offline] .a2ui-state-dashboard-dot,
   .a2ui-state-dashboard-item[data-status=error] .a2ui-state-dashboard-dot { background: #dc2626; }
+
+  .a2ui-file-edit-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
+  .a2ui-file-edit-card[data-lifecycle=streaming] { border-color: #93c5fd; background: #eff6ff; }
+  .a2ui-file-edit-card[data-lifecycle=complete] { border-color: #86efac; }
+  .a2ui-file-edit-card[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-file-edit-name { font-weight: 700; font-family: monospace; }
+  .a2ui-file-edit-path { font-family: monospace; font-size: 0.78rem; color: #6b7280; margin-bottom: 6px; }
+  .a2ui-file-edit-newfile-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; color: #1e40af; background: #dbeafe; padding: 1px 6px; border-radius: 8px; margin-bottom: 6px; }
+  .a2ui-file-edit-removed { background: #fef2f2; color: #991b1b; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; white-space: pre-wrap; }
+  .a2ui-file-edit-added { background: #f0fdf4; color: #166534; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; white-space: pre-wrap; }
+  .a2ui-file-edit-result { font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
+  .a2ui-file-edit-result[data-ok=true] { color: #166534; }
+  .a2ui-file-edit-result[data-ok=false] { color: #991b1b; }
 </style>
 </head>
 <body>
@@ -102,7 +115,7 @@ document.getElementById('connect').addEventListener('click', () => {
   // produce.
   runtime = A2UIStream.A2UIStreamRuntime({
     container: toolCallsContainer,
-    mountAtom(family, key) {
+    mountAtom(family, key, event) {
       if (family === 'lifecycle') {
         // The step tracker is a SINGLE instance for the whole run, not
         // one per lifecycle event's own key — mount it once into its own
@@ -116,6 +129,17 @@ document.getElementById('connect').addEventListener('click', () => {
         return A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
       }
       if (family === 'tool_call') {
+        // Real routing choice at mount time: the FIRST event for a given
+        // toolCallId already carries the real tool name (ToolCallStart),
+        // so a file-editing call gets the specialized live_diff_card
+        // instead of the generic JSON-args card -- same container, same
+        // family, same lifecycle machinery, just a different real view
+        // for a real, common case (daily_agent.py's own runs call
+        // edit_file/write_file on every real run that ships a fix).
+        const toolName = (event && event.payload && event.payload.toolName) || '';
+        if (toolName === 'edit_file' || toolName === 'write_file') {
+          return A2UIAtomsLive.mountFileEditCard(toolCallsContainer).controller;
+        }
         return A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
       }
       if (family === 'reasoning') {

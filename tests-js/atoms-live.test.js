@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
-  createReasoningTraceController, createLiveStateDashboardController,
+  createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -302,6 +302,63 @@ test('live_state_dashboard: an item missing a label falls back to its key; missi
     state: { items: [{ key: 'db' }] },
   });
   assert.deepEqual(adapter.calls.items, [{ key: 'db', label: 'db', status: 'unknown' }]);
+});
+
+// ─── live_diff_card ──────────────────────────────────────────────────────
+function fakeDiffAdapter() {
+  const calls = { name: null, path: null, diff: null, status: null, result: null, resultError: null };
+  return {
+    calls,
+    setName(n) { calls.name = n; },
+    setPath(p) { calls.path = p; },
+    setDiff(d) { calls.diff = d; },
+    setStatus(s) { calls.status = s; },
+    setResult(ok, isError) { calls.result = ok; calls.resultError = isError; },
+  };
+}
+
+test('live_diff_card: edit_file renders old_string as removed, new_string as added', () => {
+  const adapter = fakeDiffAdapter();
+  const ctrl = createFileEditCardController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.name, 'edit_file');
+  ctrl.onEvent({
+    type: 'ToolCallArgs',
+    payload: { toolCallId: 't1', args: { path: 'daily_agent.py', old_string: 'MAX = 10', new_string: 'MAX = 20' } },
+    lifecycle: 'streaming',
+  });
+  assert.equal(adapter.calls.path, 'daily_agent.py');
+  assert.deepEqual(adapter.calls.diff, { removed: 'MAX = 10', added: 'MAX = 20', isNewFile: false });
+});
+
+test('live_diff_card: write_file renders as a new file, no removed side', () => {
+  const adapter = fakeDiffAdapter();
+  const ctrl = createFileEditCardController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'write_file' }, lifecycle: 'streaming' });
+  ctrl.onEvent({
+    type: 'ToolCallArgs',
+    payload: { toolCallId: 't1', args: { path: 'new_module.py', content: 'def f():\n    pass\n' } },
+    lifecycle: 'streaming',
+  });
+  assert.deepEqual(adapter.calls.diff, { removed: null, added: 'def f():\n    pass\n', isNewFile: true });
+});
+
+test('live_diff_card: a real {ok:true} ToolCallResult is a success, {ok:false} is a failure', () => {
+  const adapter = fakeDiffAdapter();
+  const ctrl = createFileEditCardController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ToolCallResult', payload: { toolCallId: 't1', result: { ok: false, error: 'no match' }, isError: true }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.result, false);
+  assert.equal(adapter.calls.resultError, true);
+});
+
+test('live_diff_card: a connection error with no result yet still reports failure, not silence', () => {
+  const adapter = fakeDiffAdapter();
+  const ctrl = createFileEditCardController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' }, lifecycle: 'error' });
+  assert.equal(adapter.calls.result, false);
+  assert.equal(adapter.calls.resultError, true);
 });
 
 console.log('all a2ui-atoms-live tests defined');
