@@ -78,10 +78,40 @@
   .a2ui-run-sketch-node[data-status=error] { fill: #dc2626; }
 
   .a2ui-cost-trend { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; width: 156px; }
-  .a2ui-cost-trend-value { font-size: 0.75rem; font-weight: 700; font-family: monospace; color: #374151; margin-bottom: 4px; }
+  .a2ui-cost-trend-header { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+  .a2ui-cost-trend-value { font-size: 0.75rem; font-weight: 700; font-family: monospace; color: #374151; border-radius: 4px; padding: 1px 3px; margin: -1px -3px; }
+  .a2ui-cost-trend-rate { font-size: 0.68rem; color: #6b7280; margin-bottom: 4px; min-height: 1em; }
   .a2ui-cost-trend-svg { width: 100%; height: 44px; display: block; }
   .a2ui-cost-trend-line { stroke: #2563eb; stroke-width: 1.5; fill: none; }
   .a2ui-cost-trend-dot { fill: #2563eb; }
+
+  /* A live "this is happening right now" heartbeat, and a real flash on
+     each genuine update -- real feedback, 2026-08-22: "make it human
+     relatable and feel real time... maybe flashing in between updates." */
+  .a2ui-cost-trend-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; flex-shrink: 0; }
+  .a2ui-cost-trend[data-lifecycle=streaming] .a2ui-cost-trend-live-dot {
+    background: #2563eb; animation: a2ui-cost-heartbeat 1.6s ease-in-out infinite;
+  }
+  .a2ui-cost-trend-pulse { animation: a2ui-cost-flash 900ms ease-out; }
+  .a2ui-cost-trend-ping { fill: none; stroke: #2563eb; stroke-width: 1.5; opacity: 0; }
+  .a2ui-cost-trend[data-lifecycle=streaming] .a2ui-cost-trend-ping {
+    animation: a2ui-cost-ping 1.8s ease-out infinite;
+  }
+  @keyframes a2ui-cost-heartbeat {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  @keyframes a2ui-cost-flash {
+    0% { background: #bfdbfe; }
+    100% { background: transparent; }
+  }
+  @keyframes a2ui-cost-ping {
+    0% { r: 3; opacity: 0.7; }
+    100% { r: 9; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .a2ui-cost-trend-live-dot, .a2ui-cost-trend-pulse, .a2ui-cost-trend-ping { animation: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -104,6 +134,8 @@
   <div style="flex:1;min-width:0;">
     <h2 style="font-size:1rem;">Tool calls</h2>
     <div id="tool-calls"></div>
+    <h2 style="font-size:1rem;">Log</h2>
+    <div id="log-output-container"></div>
   </div>
   <div>
     <h2 style="font-size:1rem;">Run sketch</h2>
@@ -121,8 +153,10 @@ const stepContainer = document.getElementById('step-tracker-container');
 const toolCallsContainer = document.getElementById('tool-calls');
 const sketchContainer = document.getElementById('run-sketch-container');
 const costTrendContainer = document.getElementById('cost-trend-container');
+const logOutputContainer = document.getElementById('log-output-container');
 let runtime = null;
 let sketchController = null;
+let logController = null;
 
 function setConnected(connected) {
   statusEl.textContent = connected ? 'connected' : 'disconnected';
@@ -135,6 +169,7 @@ document.getElementById('connect').addEventListener('click', () => {
   toolCallsContainer.innerHTML = '';
   sketchContainer.innerHTML = '';
   costTrendContainer.innerHTML = '';
+  logOutputContainer.innerHTML = '';
 
   // agent_run_sketch wants the UNION of lifecycle + tool_call events
   // across every routing key in the run, not one controller per key like
@@ -143,6 +178,7 @@ document.getElementById('connect').addEventListener('click', () => {
   // dispatch (see a2ui-atoms-live.v1.js's own createAgentRunSketchController
   // docstring for the full reasoning).
   sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
+  logController = A2UIAtomsLive.mountLogOutput(logOutputContainer).controller;
 
   // Real bug found live, 2026-08-22 (while building watch-live.html):
   // RunStarted routes on runId, StepStarted routes on stepId -- two
@@ -208,7 +244,7 @@ document.getElementById('connect').addEventListener('click', () => {
         // internal id bookkeeping (toolCallId/node id) is what makes
         // receiving a union across keys safe.
         return {
-          onEvent(e) { primary.onEvent(e); sketchController.onEvent(e); },
+          onEvent(e) { primary.onEvent(e); sketchController.onEvent(e); logController.onEvent(e); },
           destroy() { primary.destroy(); },
         };
       }

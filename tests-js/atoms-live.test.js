@@ -6,7 +6,7 @@ const path = require('node:path');
 const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
-  createAgentRunSketchController, createLiveCostTrendController,
+  createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -435,10 +435,10 @@ test('agent_run_sketch: the SAME real toolCallId only ever creates one node, not
 
 // ─── live_cost_trend ─────────────────────────────────────────────────────
 function fakeCostTrendAdapter() {
-  const calls = { points: null, status: null };
+  const calls = { points: null, rate: undefined, status: null };
   return {
     calls,
-    setPoints(p) { calls.points = p; },
+    setPoints(p, rate) { calls.points = p; calls.rate = rate; },
     setStatus(s) { calls.status = s; },
   };
 }
@@ -487,6 +487,108 @@ test('live_cost_trend: a later StateDelta append is reflected because the runtim
   });
   assert.equal(adapter.calls.points.length, 2);
   assert.equal(adapter.calls.points[1].cumulativeCostUsd, 0.014);
+});
+
+test('live_cost_trend: rate is null on the very first point -- no elapsed time to measure yet', () => {
+  const adapter = fakeCostTrendAdapter();
+  let t = 1000;
+  const ctrl = createLiveCostTrendController(adapter, () => t);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { points: [{ turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 }] },
+  });
+  assert.equal(adapter.calls.rate, null);
+});
+
+test('live_cost_trend: computes a real $/min rate from client-observed elapsed time', () => {
+  const adapter = fakeCostTrendAdapter();
+  let t = 0;
+  const ctrl = createLiveCostTrendController(adapter, () => t);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { points: [{ turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 }] },
+  });
+  t = 30000;   // 30s later, cost went from 0.01 to 0.04 -- 0.03 over 0.5min = 0.06/min
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { points: [
+      { turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 },
+      { turn: 1, cumulativeTokens: 4000, cumulativeCostUsd: 0.04 },
+    ] },
+  });
+  assert.ok(Math.abs(adapter.calls.rate - 0.06) < 1e-9);
+});
+
+test('live_cost_trend: does not estimate a rate from a near-zero elapsed window', () => {
+  const adapter = fakeCostTrendAdapter();
+  let t = 0;
+  const ctrl = createLiveCostTrendController(adapter, () => t);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { points: [{ turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 }] },
+  });
+  t = 100;   // 100ms later -- far too little elapsed time for a sane estimate
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { points: [
+      { turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 },
+      { turn: 1, cumulativeTokens: 1100, cumulativeCostUsd: 0.011 },
+    ] },
+  });
+  assert.equal(adapter.calls.rate, null);
+});
+
+// ─── log_output ──────────────────────────────────────────────────────────
+function fakeLogAdapter() {
+  const calls = { log: null, status: null };
+  return {
+    calls,
+    setLog(t) { calls.log = t; },
+    setStatus(s) { calls.status = s; },
+  };
+}
+
+test('log_output: formats a real event sequence as timestamped lines, in order', () => {
+  const adapter = fakeLogAdapter();
+  const ctrl = createLogOutputController(adapter);
+  ctrl.onEvent({ type: 'RunStarted', payload: {}, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'StepStarted', payload: { title: 'Turn 0' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolName: 'read_file' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ToolCallResult', payload: { isError: false }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'RunFinished', payload: {}, lifecycle: 'complete' });
+
+  const lines = adapter.calls.log.trim().split('\n');
+  assert.equal(lines.length, 5);
+  assert.match(lines[0], /run started/);
+  assert.match(lines[1], /Turn 0/);
+  assert.match(lines[2], /read_file/);
+  assert.match(lines[3], /✓ ok/);
+  assert.match(lines[4], /run finished/);
+  // Every line is timestamped -- real client-observed time, not a claim
+  // of exact server-side event time (AG-UI's own wire format drops that).
+  for (const l of lines) assert.match(l, /^\[\d{1,2}:\d{2}:\d{2}/);
+});
+
+test('log_output: a failed tool call and a run error both show as visibly distinct lines', () => {
+  const adapter = fakeLogAdapter();
+  const ctrl = createLogOutputController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolName: 'run_tests' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ToolCallResult', payload: { isError: true }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'RunError', payload: { message: 'budget exceeded' }, lifecycle: 'error' });
+
+  const lines = adapter.calls.log.trim().split('\n');
+  assert.match(lines[1], /✗ error/);
+  assert.match(lines[2], /run error: budget exceeded/);
+});
+
+test('log_output: a connection error with no RunError yet still appends a visible line, not silence', () => {
+  const adapter = fakeLogAdapter();
+  const ctrl = createLogOutputController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolName: 'edit_file' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolName: 'edit_file' }, lifecycle: 'error' });
+
+  const lines = adapter.calls.log.trim().split('\n');
+  assert.match(lines[lines.length - 1], /connection error/);
 });
 
 console.log('all a2ui-atoms-live tests defined');
