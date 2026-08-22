@@ -1,0 +1,15 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "A2UI Atomic Catalog",
+      "description": "Pick, compose, render, and connect to the A2UI typed UI vocabulary for AI agents.",
+      "skills": [
+        "a2ui-catalog",
+        "a2ui-compose",
+        "a2ui-mcp"
+      ]
+    }
+  ]
+}

@@ -216,6 +216,15 @@ generators:
     source: atoms/schema.yaml
     outputs: [public/.well-known/ai-catalog.json]
     publish: repo-committed, served by Cloudflare
+  gen_agent_skills_index:
+    script: scripts/gen_agent_skills_index.py
+    source: skills/*/SKILL.md (frontmatter name/description + a sha256 of
+      the real file bytes, computed here — never hand-typed, the failure
+      mode a digest exists to prevent)
+    outputs: [public/.well-known/agent-skills/index.json]
+    publish: repo-committed, served by Cloudflare. Same local-only posture
+      as generate_ard_catalog/gen_server_card — not in deploy.yml's CI
+      steps; run locally and commit the output when skills/ changes.
   gen_compat_matrix:
     script: scripts/gen_compat_matrix.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "a2ui-catalog",
+      "description": "Pick the right A2UI atoms and read their real field contracts before composing a UI payload. Use when deciding WHAT to render — searching the A2UI Atomic Catalog's 480 typed UI atoms (charts, gauges, ",
+      "type": "skill-md",
+      "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-catalog/SKILL.md",
+      "digest": "sha256:25ee2214a628672392e451b8626708577fed478f52ab53c2d1d30d2c125a5132"
+    },
+    {
+      "name": "a2ui-compose",
+      "description": "Compose an A2UI payload (typed atom blocks) and render it into real HTML — a chart, dashboard, status board, decision tree, or any structured UI, once the right atoms are already known (see the a2ui-c",
+      "type": "skill-md",
+      "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-compose/SKILL.md",
+      "digest": "sha256:d6750d93bb78ee31b8488eb16bfd9bd0f79ececdfb580780af19f20c16183de0"
+    },
+    {
+      "name": "a2ui-mcp",
+      "description": "Connect an AI agent or host to the A2UI Atomic Catalog's MCP server for live, tool-based UI composition and rendering — Claude, ChatGPT, Gemini Enterprise, or a custom MCP client. Use when integrating",
+      "type": "skill-md",
+      "url": "https://raw.githubusercontent.com/a2uicatalog/a2ui/main/skills/a2ui-mcp/SKILL.md",
+      "digest": "sha256:5591b6065b5629813f63b609dba06d330a81a616db88082b39564d3c37683dc5"
+    }
+  ]
+}

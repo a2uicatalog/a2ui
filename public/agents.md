@@ -57,6 +57,7 @@ declared sources), or on hosts that cannot display HTML.
 |---|---|
 | Developer guide & API docs | https://a2uicatalog.ai/developers/ |
 | CLI / local MCP server (npm) | https://registry.npmjs.org/@a2uicatalog/mcp |
+| Agent Skills index | https://a2uicatalog.ai/.well-known/agent-skills/index.json |
 | OpenAPI specification | https://a2uicatalog.ai/openapi.json |
 | Full atom vocabulary | https://a2uicatalog.ai/spec.json |
 | Strict per-atom JSON Schema | https://a2uicatalog.ai/catalogue/atoms-json-schema.json |
