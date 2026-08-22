@@ -26,7 +26,7 @@
 # for writing negative guidance with reasons already exists in the schema —
 # `incompatible_on` does it for surfaces; this does it for selection.
 #
-# Scope: the 25 atoms an agent resolves for the maison domain (base + charts).
+# Scope: the atoms an agent resolves for the maison domain (base + charts).
 # tests/test_agentic_prose.py holds it honest against schema.yaml.
 
 version: 1
@@ -197,6 +197,19 @@ atoms:
       The trend needs its shape shown (chartjs_line). There is no prior period
       to compare against — a direction with no baseline is invented.
     answers: ["is it getting better or worse"]
+
+  confidence_bar:
+    use_when: >-
+      An automated prediction, classification, or retrieval result carries a
+      measured confidence score that the reader needs to weigh — diagnostic
+      certainty, match quality, or model estimation reliability.
+    not_when: >-
+      Completion against a known total (progress_bar). Direction over time
+      (trend_indicator). A single definitive measurement without uncertainty
+      (stat_card). The confidence is unmeasured or subjective — stating a
+      percentage for a pure guess is false precision; say so in a sentence (body).
+    answers: ["how sure are you", "is this estimate reliable", "how confident is the match"]
+
 
   # ── Framework ──────────────────────────────────────────────────────────────
   heading:
