@@ -746,12 +746,39 @@
     return { element: el, controller: createLiveCostTrendController(adapter) };
   }
 
+  // ─── token_budget_meter (compact variant of live_cost_trend) ───────────
+  // NOT a separate controller -- the brief's own §4a originally scoped
+  // token_budget_meter as its own "patch-mode, StateDelta ticking a live
+  // number" atom, but that's mechanically identical to what
+  // live_cost_trend already does with the SAME real state.points signal;
+  // building a second controller for it would just be the same logic
+  // twice. This is what the brief's own "compact/expanded/timeline
+  // variants of what's already working" scaling framing actually means
+  // in practice: the EXISTING, already-tested createLiveCostTrendController
+  // reused unchanged, with a minimal DOM adapter that renders only the
+  // current number -- no sparkline, no endpoint dot. A real demonstration
+  // of the scaling claim, not just an assertion of it.
+  function mountTokenBudgetMeter(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-token-budget-meter';
+    el.textContent = '$0.0000';
+    container.appendChild(el);
+    const adapter = {
+      setPoints(points) {
+        const last = points[points.length - 1];
+        el.textContent = last ? '$' + last.cumulativeCostUsd.toFixed(4) : '$0.0000';
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveCostTrendController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
     createAgentRunSketchController, createLiveCostTrendController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
-    mountAgentRunSketch, mountLiveCostTrend,
+    mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
