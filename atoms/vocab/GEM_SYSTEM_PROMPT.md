@@ -741,7 +741,7 @@ Types: str · int · bool · arr · obj · url · hex
 `inline_feedback_message` — inline success error or warning message for validation feedback or hints.
   fields: message:str type:str icon?:str
   surfaces: [GWM]
-`action_required_card` — prominent card prompting a required user action user attention, with a clear call to action.
+`action_required_card` — prominent card prompting a required user action or approval, with a clear call to action.
   fields: title:str description:str action_label:str action_url:url icon?:str
   surfaces: [GWMC]
 `entity_list` — named resource rows with avatar, status badge, and meta
