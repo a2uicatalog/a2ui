@@ -191,7 +191,7 @@ def _paths():
                                 "serves every accepted surface. pdf, email and google-chat are refused "
                                 "with 400: this endpoint emits HTML, and answering half-honestly about "
                                 "portability is worse than not answering. Omit for no policy."),
-            }],
+            }, {"$ref": "#/components/parameters/IdempotencyKey"}],
             "requestBody": {"required": True, "content": {"application/json": {
                 "schema": {"type": "object", "required": ["blocks"], "properties": {
                     "title": {"type": "string", "description": "Page title"},
@@ -222,7 +222,7 @@ def _paths():
                 "schema": {"type": "string",
                            "enum": ["web", "mcp-apps", "google-apps-script-web", "google-meet-stage"]},
                 "description": "One surface for the whole batch; applied to every payload.",
-            }],
+            }, {"$ref": "#/components/parameters/IdempotencyKey"}],
             "requestBody": {"required": True, "content": {"application/json": {
                 "schema": {"type": "object", "required": ["payloads"], "properties": {
                     "payloads": {"type": "array", "maxItems": 25, "items": {"type": "object"}}}},
@@ -250,6 +250,7 @@ def _paths():
             "description": ("Two-stage routing over atom embeddings returns candidate atom blocks "
                             "for a plain-English UI request. Rate limited to 20 requests per IP "
                             "per day (free-tier inference)."),
+            "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}],
             "requestBody": {"required": True, "content": {"application/json": {
                 "schema": {"type": "object", "required": ["prompt"], "properties": {
                     "prompt": {"type": "string", "description": "Plain-English description of the UI wanted"}}},
@@ -268,12 +269,30 @@ def _paths():
                             "per-source cache, rate and egress budgets. Only declared sources are "
                             "reachable — this is the single place network access is granted to "
                             "live atoms."),
-            "parameters": [{"name": "source", "in": "path", "required": True,
-                            "schema": {"type": "string"}, "description": "Declared source id"}],
+            "parameters": [
+                {"name": "source", "in": "path", "required": True,
+                 "schema": {"type": "string"}, "description": "Declared source id"},
+                {"name": "cursor", "in": "query", "required": False,
+                 "schema": {"type": "string"},
+                 "description": ("Opaque pagination cursor from a previous response's "
+                                 "next_cursor. Only meaningful for sources whose declared "
+                                 "shape is a list; omit for a single-object source.")},
+                {"name": "limit", "in": "query", "required": False,
+                 "schema": {"type": "integer", "minimum": 1, "maximum": 200},
+                 "description": "Max items to return, for list-shaped sources. Source-defined default."},
+            ],
             "responses": {
-                "200": {"description": "Source payload",
+                "200": {"description": ("Source payload, unpaginated by default (backward "
+                                        "compatible with every existing caller). Pass cursor "
+                                        "and/or limit on a source whose declared shape is a list "
+                                        "and the envelope additionally carries next_cursor "
+                                        "(string, absent/null when exhausted) and has_more "
+                                        "(boolean) alongside the sliced data — cursor-based, not "
+                                        "page-number-based."),
                         "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
-                        "content": {"application/json": {"schema": {"type": "object"}}}},
+                        "content": {"application/json": {"schema": {"type": "object", "properties": {
+                            "next_cursor": {"type": "string", "nullable": True},
+                            "has_more": {"type": "boolean"}}, "additionalProperties": True}}}},
                 "404": {"$ref": "#/components/responses/NotFound"},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
         "/ask": {
@@ -332,12 +351,39 @@ def _paths():
 
 def _components():
     return {
+        "parameters": {
+            "IdempotencyKey": {
+                "name": "Idempotency-Key", "in": "header", "required": False,
+                "schema": {"type": "string", "maxLength": 200},
+                "description": ("Client-generated opaque token (UUID recommended). Retrying the "
+                                "SAME key within a 10-minute window returns the cached first "
+                                "response instead of recomputing — safe to retry after a network "
+                                "failure without risk of acting twice on a duplicate. A new key "
+                                "always runs fresh. These operations don't persist state on this "
+                                "server (render is a pure function of the payload), so the "
+                                "practical benefit is avoiding duplicate compute/quota spend on a "
+                                "blind retry, not avoiding a duplicated side effect — but the "
+                                "contract is the same shape a mutating endpoint would use."),
+            },
+        },
         "headers": {
             "ApiVersion": {
                 "description": ("Wire-format version of this response, currently \"1\". The "
                                 "additive alternative to a /v1/ path prefix: bump only on a "
                                 "documented, intentional change to a response shape."),
-                "schema": {"type": "string", "example": "1"}}},
+                "schema": {"type": "string", "example": "1"}},
+            "Deprecation": {
+                "description": ("RFC 9745. Present only on a response the versioning policy has "
+                                "announced as deprecated; its value is the deprecation date. "
+                                "Paired with Sunset (the date the deprecated shape stops being "
+                                "served) with a minimum 90 days between them. Absent on every "
+                                "response not under an announced deprecation — see "
+                                "https://a2uicatalog.ai/versioning.md."),
+                "schema": {"type": "string", "format": "date", "example": "2026-09-01"}},
+            "Sunset": {
+                "description": ("RFC 8594. Present alongside Deprecation once a removal date is "
+                                "set — the last date this response shape is served."),
+                "schema": {"type": "string", "format": "date", "example": "2026-12-01"}}},
         "responses": {
             "RateLimited": {
                 "description": ("Rate limit reached. See the descriptor at GET /mcp "
@@ -361,9 +407,9 @@ def _components():
                 "type": "object",
                 "description": ("Shape of every non-2xx JSON response on the REST surface (the "
                                 "/mcp JSON-RPC endpoint uses JsonRpcResponse.error instead — see "
-                                "that schema — and a tools/call failure uses result.isError plus "
-                                "result._meta.errorCode, a stable machine-readable string such as "
-                                "UNKNOWN_TOOL or INVALID_PAYLOAD_SHAPE)."),
+                                "that schema — and a KNOWN tool failing during execution uses "
+                                "result.isError plus result._meta.errorCode, a stable "
+                                "machine-readable string such as INVALID_PAYLOAD_SHAPE)."),
                 "properties": {
                     "ok": {"type": "boolean", "const": False},
                     "error": {"type": "string", "description": "Human-readable error message."},
@@ -395,12 +441,18 @@ def _components():
                     "jsonrpc": {"type": "string", "const": "2.0"},
                     "id": {"oneOf": [{"type": "integer"}, {"type": "string"}, {"type": "null"}]},
                     "result": {"type": "object", "description": (
-                        "For tools/call, a failed tool run sets result.isError: true — see "
-                        "result._meta.errorCode below — rather than the top-level error field, "
-                        "which is reserved for JSON-RPC protocol errors (bad method, parse error).")},
-                    "error": {"type": "object", "description": "Protocol-level error (JSON-RPC 2.0 §5.1).",
+                        "For tools/call against a KNOWN tool that fails during execution (bad "
+                        "arguments, an unresolvable reference, a precondition not met), "
+                        "result.isError: true — see result._meta.errorCode below — rather than "
+                        "the top-level error field. An UNKNOWN tool NAME instead returns the "
+                        "top-level error field (code -32602): the client asked for a method that "
+                        "doesn't exist, which is a protocol-level problem, not a tool that ran "
+                        "and failed.")},
+                    "error": {"type": "object", "description": (
+                        "Protocol-level error (JSON-RPC 2.0 §5.1): bad method, parse error, or "
+                        "tools/call naming an unknown tool."),
                               "properties": {
-                        "code": {"type": "integer", "examples": [-32700, -32600, -32601, -32603]},
+                        "code": {"type": "integer", "examples": [-32700, -32600, -32601, -32602, -32603]},
                         "message": {"type": "string"}}}}},
             "AtomBlock": {
                 "type": "object",
@@ -464,6 +516,7 @@ LLMS_TXT = """# A2UI Atomic Catalog
 
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
+- [CLI / local MCP server (npm)](https://www.npmjs.com/package/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui).
 - [Developer documentation]({base}/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
 - [API documentation]({base}/docs/): REST API endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
 - [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).

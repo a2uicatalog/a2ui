@@ -275,6 +275,9 @@
               ]
             },
             "description": "Apply that surface's declared compatibility policy. Atoms marked degraded_on for it render and are named in X-A2UI-Degraded; atoms marked incompatible_on are replaced by a visible note and named in X-A2UI-Incompatible. Selects a POLICY, not a renderer — one renderer serves every accepted surface. pdf, email and google-chat are refused with 400: this endpoint emits HTML, and answering half-honestly about portability is worse than not answering. Omit for no policy."
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -386,6 +389,9 @@
               ]
             },
             "description": "One surface for the whole batch; applied to every payload."
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -520,6 +526,11 @@
         "operationId": "composeFromText",
         "summary": "Natural language to atom blocks",
         "description": "Two-stage routing over atom embeddings returns candidate atom blocks for a plain-English UI request. Rate limited to 20 requests per IP per day (free-tier inference).",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -589,11 +600,31 @@
               "type": "string"
             },
             "description": "Declared source id"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque pagination cursor from a previous response's next_cursor. Only meaningful for sources whose declared shape is a list; omit for a single-object source."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "description": "Max items to return, for list-shaped sources. Source-defined default."
           }
         ],
         "responses": {
           "200": {
-            "description": "Source payload",
+            "description": "Source payload, unpaginated by default (backward compatible with every existing caller). Pass cursor and/or limit on a source whose declared shape is a list and the envelope additionally carries next_cursor (string, absent/null when exhausted) and has_more (boolean) alongside the sliced data — cursor-based, not page-number-based.",
             "headers": {
               "X-API-Version": {
                 "$ref": "#/components/headers/ApiVersion"
@@ -602,7 +633,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "next_cursor": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "has_more": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": true
                 }
               }
             }
@@ -783,12 +824,40 @@
     }
   },
   "components": {
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "description": "Client-generated opaque token (UUID recommended). Retrying the SAME key within a 10-minute window returns the cached first response instead of recomputing — safe to retry after a network failure without risk of acting twice on a duplicate. A new key always runs fresh. These operations don't persist state on this server (render is a pure function of the payload), so the practical benefit is avoiding duplicate compute/quota spend on a blind retry, not avoiding a duplicated side effect — but the contract is the same shape a mutating endpoint would use."
+      }
+    },
     "headers": {
       "ApiVersion": {
         "description": "Wire-format version of this response, currently \"1\". The additive alternative to a /v1/ path prefix: bump only on a documented, intentional change to a response shape.",
         "schema": {
           "type": "string",
           "example": "1"
+        }
+      },
+      "Deprecation": {
+        "description": "RFC 9745. Present only on a response the versioning policy has announced as deprecated; its value is the deprecation date. Paired with Sunset (the date the deprecated shape stops being served) with a minimum 90 days between them. Absent on every response not under an announced deprecation — see https://a2uicatalog.ai/versioning.md.",
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "example": "2026-09-01"
+        }
+      },
+      "Sunset": {
+        "description": "RFC 8594. Present alongside Deprecation once a removal date is set — the last date this response shape is served.",
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "example": "2026-12-01"
         }
       }
     },
@@ -845,7 +914,7 @@
     "schemas": {
       "ErrorResponse": {
         "type": "object",
-        "description": "Shape of every non-2xx JSON response on the REST surface (the /mcp JSON-RPC endpoint uses JsonRpcResponse.error instead — see that schema — and a tools/call failure uses result.isError plus result._meta.errorCode, a stable machine-readable string such as UNKNOWN_TOOL or INVALID_PAYLOAD_SHAPE).",
+        "description": "Shape of every non-2xx JSON response on the REST surface (the /mcp JSON-RPC endpoint uses JsonRpcResponse.error instead — see that schema — and a KNOWN tool failing during execution uses result.isError plus result._meta.errorCode, a stable machine-readable string such as INVALID_PAYLOAD_SHAPE).",
         "properties": {
           "ok": {
             "type": "boolean",
@@ -983,11 +1052,11 @@
           },
           "result": {
             "type": "object",
-            "description": "For tools/call, a failed tool run sets result.isError: true — see result._meta.errorCode below — rather than the top-level error field, which is reserved for JSON-RPC protocol errors (bad method, parse error)."
+            "description": "For tools/call against a KNOWN tool that fails during execution (bad arguments, an unresolvable reference, a precondition not met), result.isError: true — see result._meta.errorCode below — rather than the top-level error field. An UNKNOWN tool NAME instead returns the top-level error field (code -32602): the client asked for a method that doesn't exist, which is a protocol-level problem, not a tool that ran and failed."
           },
           "error": {
             "type": "object",
-            "description": "Protocol-level error (JSON-RPC 2.0 §5.1).",
+            "description": "Protocol-level error (JSON-RPC 2.0 §5.1): bad method, parse error, or tools/call naming an unknown tool.",
             "properties": {
               "code": {
                 "type": "integer",
@@ -995,6 +1064,7 @@
                   -32700,
                   -32600,
                   -32601,
+                  -32602,
                   -32603
                 ]
               },

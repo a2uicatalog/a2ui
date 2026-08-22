@@ -23,3 +23,7 @@ Two additional auth paths exist for callers that need per-user attribution rathe
 
 - **HTTP Basic Auth** on `a2uicatalog.ai/mcp-auth` — same tools as `/mcp`, gated.
 - **OAuth 2.0** (`a2uicatalog.ai/mcp-oauth/authorize` + `/mcp-oauth/token`) — for platforms (e.g. Gemini Enterprise) whose integration model requires a real OAuth authorization server rather than a static token.
+
+## Web Bot Auth (RFC 9421 message signatures)
+
+Public signing key directory: [`/.well-known/http-message-signatures-directory`](https://a2uicatalog.ai/.well-known/http-message-signatures-directory) — one Ed25519 key (`kid: a2uicatalog-2026-08`). Published so a caller can verify a request signed with this domain's key came from us. Not yet required or checked on any inbound path — the public `/mcp` endpoint stays unauthenticated as described above regardless of whether a request is signed.

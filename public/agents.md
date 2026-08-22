@@ -26,6 +26,14 @@ Documentation MCP server (no auth, separate identity — `a2uicatalog-docs`):
 pricing, API surface, runbook catalog). Use the server above to take actions; use this one
 to answer doc questions.
 
+CLI / local MCP server (npm, no account needed):
+
+    npx -p @a2uicatalog/mcp a2ui render page.json
+
+Renders a payload to HTML with no MCP client at all. The same package also runs as a local
+MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys a `training.md` to
+your own Google Apps Script web app via `build_app`. https://www.npmjs.com/package/@a2uicatalog/mcp
+
 ## When to use this
 
 Use it when you need to SHOW something rather than describe it: a chart, a status board, a
@@ -48,6 +56,7 @@ declared sources), or on hosts that cannot display HTML.
 | Document | URL |
 |---|---|
 | Developer guide & API docs | https://a2uicatalog.ai/developers/ |
+| CLI / local MCP server (npm) | https://www.npmjs.com/package/@a2uicatalog/mcp |
 | OpenAPI specification | https://a2uicatalog.ai/openapi.json |
 | Full atom vocabulary | https://a2uicatalog.ai/spec.json |
 | Strict per-atom JSON Schema | https://a2uicatalog.ai/catalogue/atoms-json-schema.json |

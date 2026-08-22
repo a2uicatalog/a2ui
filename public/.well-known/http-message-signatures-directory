@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "kid": "a2uicatalog-2026-08",
+      "x": "W1QJhl3atKuKYpFqYpnyEPFCvhtLFc0Co8cIJ4PM3fY",
+      "nbf": 1787383969,
+      "exp": 1818919969
+    }
+  ]
+}

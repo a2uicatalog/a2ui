@@ -6,6 +6,7 @@
 
 - [MCP server](https://a2uicatalog.ai/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server](https://a2uicatalog.ai/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
+- [CLI / local MCP server (npm)](https://www.npmjs.com/package/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui).
 - [Developer documentation](https://a2uicatalog.ai/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
 - [API documentation](https://a2uicatalog.ai/docs/): REST API endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
 - [NLWeb search](https://a2uicatalog.ai/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
