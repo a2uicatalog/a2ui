@@ -6,7 +6,7 @@ const path = require('node:path');
 const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
-  createAgentRunSketchController,
+  createAgentRunSketchController, createLiveCostTrendController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -431,6 +431,62 @@ test('agent_run_sketch: the SAME real toolCallId only ever creates one node, not
   ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' } });
   ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' } });
   assert.equal(adapter.calls.graph.length, 1);
+});
+
+// ─── live_cost_trend ─────────────────────────────────────────────────────
+function fakeCostTrendAdapter() {
+  const calls = { points: null, status: null };
+  return {
+    calls,
+    setPoints(p) { calls.points = p; },
+    setStatus(s) { calls.status = s; },
+  };
+}
+
+test('live_cost_trend: renders points from the runtime-patched state doc', () => {
+  const adapter = fakeCostTrendAdapter();
+  const ctrl = createLiveCostTrendController(adapter);
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { points: [{ turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 }] },
+  });
+  assert.deepEqual(adapter.calls.points, [{ turn: 0, cumulativeTokens: 1000, cumulativeCostUsd: 0.01 }]);
+  assert.equal(adapter.calls.status, 'streaming');
+});
+
+test('live_cost_trend: missing/malformed points render an empty series, not a crash', () => {
+  const adapter = fakeCostTrendAdapter();
+  const ctrl = createLiveCostTrendController(adapter);
+  ctrl.onEvent({ type: 'RunStarted', lifecycle: 'idle' });
+  assert.deepEqual(adapter.calls.points, []);
+});
+
+test('live_cost_trend: a point missing a numeric field defaults to 0 rather than propagating undefined/NaN', () => {
+  const adapter = fakeCostTrendAdapter();
+  const ctrl = createLiveCostTrendController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { points: [{ turn: 3 }] },
+  });
+  assert.deepEqual(adapter.calls.points, [{ turn: 3, cumulativeTokens: 0, cumulativeCostUsd: 0 }]);
+});
+
+test('live_cost_trend: a later StateDelta append is reflected because the runtime already re-applied it into state', () => {
+  const adapter = fakeCostTrendAdapter();
+  const ctrl = createLiveCostTrendController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { points: [{ turn: 0, cumulativeTokens: 500, cumulativeCostUsd: 0.005 }] },
+  });
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { points: [
+      { turn: 0, cumulativeTokens: 500, cumulativeCostUsd: 0.005 },
+      { turn: 1, cumulativeTokens: 1200, cumulativeCostUsd: 0.014 },
+    ] },
+  });
+  assert.equal(adapter.calls.points.length, 2);
+  assert.equal(adapter.calls.points[1].cumulativeCostUsd, 0.014);
 });
 
 console.log('all a2ui-atoms-live tests defined');

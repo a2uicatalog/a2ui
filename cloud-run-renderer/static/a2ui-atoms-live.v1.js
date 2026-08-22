@@ -662,12 +662,96 @@
     return { element: wrap, controller: createAgentRunSketchController(adapter) };
   }
 
+  // ─── live_cost_trend controller ─────────────────────────────────────────
+  // Patch-mode, same shape as live_state_dashboard: the runtime already
+  // applies StateSnapshot/StateDelta and hands the patched doc through as
+  // `event.state` -- this controller renders whatever `event.state.points`
+  // currently holds, no patch logic of its own.
+  //
+  // The FIRST atom in this pack whose live signal is provable against a
+  // REAL production run today, not just synthetic events: daily_agent.py's
+  // own _run_loop already tracks cumulativeTokens/cumulativeCostUsd for
+  // its own real budget enforcement (see MAX_CUMULATIVE_TOKENS/
+  // run_budget_usd in that file) and now emits a real StateDelta per
+  // resolved turn appending {turn, cumulativeTokens, cumulativeCostUsd}
+  // to a `points` array (ag_ui_emitter.py's own state_delta, wired into
+  // _run_loop 2026-08-22). Watching real spend accrue during a real run,
+  // not a static end-of-run total buried in a trace file.
+  function createLiveCostTrendController(adapter) {
+    return {
+      onEvent(event) {
+        const state = event.state || {};
+        const points = Array.isArray(state.points) ? state.points : [];
+        adapter.setPoints(points.map((p) => ({
+          turn: p && typeof p.turn === 'number' ? p.turn : 0,
+          cumulativeTokens: p && typeof p.cumulativeTokens === 'number' ? p.cumulativeTokens : 0,
+          cumulativeCostUsd: p && typeof p.cumulativeCostUsd === 'number' ? p.cumulativeCostUsd : 0,
+        })));
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveCostTrend(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-cost-trend';
+    el.innerHTML =
+      '<div class="a2ui-cost-trend-value"></div>' +
+      '<svg class="a2ui-cost-trend-svg" viewBox="0 0 160 44" preserveAspectRatio="none"></svg>';
+    container.appendChild(el);
+    const valueEl = el.querySelector('.a2ui-cost-trend-value');
+    const svg = el.querySelector('.a2ui-cost-trend-svg');
+
+    const adapter = {
+      setPoints(points) {
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        if (points.length === 0) {
+          valueEl.textContent = '$0.0000';
+          return;
+        }
+        const last = points[points.length - 1];
+        valueEl.textContent = '$' + last.cumulativeCostUsd.toFixed(4)
+          + ' · ' + last.cumulativeTokens.toLocaleString() + ' tokens';
+
+        // Cost is monotonically non-decreasing over a real run -- the
+        // scale is simply [0, last value], no need to track a running
+        // max separately from "the most recent point."
+        const maxCost = Math.max(last.cumulativeCostUsd, 0.0001);
+        const w = 160;
+        const h = 44;
+        const stepX = points.length > 1 ? w / (points.length - 1) : 0;
+        const coords = points.map((p, i) => {
+          const x = points.length > 1 ? i * stepX : w;
+          const y = h - (p.cumulativeCostUsd / maxCost) * (h - 4) - 2;
+          return x + ',' + y;
+        });
+        const polyline = document.createElementNS(SVG_NS, 'polyline');
+        polyline.setAttribute('points', coords.join(' '));
+        polyline.setAttribute('class', 'a2ui-cost-trend-line');
+        svg.appendChild(polyline);
+
+        // Emphasize the endpoint -- the CURRENT spend, the number that
+        // actually matters while a run is still going.
+        const [lastX, lastY] = coords[coords.length - 1].split(',');
+        const dot = document.createElementNS(SVG_NS, 'circle');
+        dot.setAttribute('cx', lastX);
+        dot.setAttribute('cy', lastY);
+        dot.setAttribute('r', '3');
+        dot.setAttribute('class', 'a2ui-cost-trend-dot');
+        svg.appendChild(dot);
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveCostTrendController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
-    createAgentRunSketchController,
+    createAgentRunSketchController, createLiveCostTrendController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
-    mountAgentRunSketch,
+    mountAgentRunSketch, mountLiveCostTrend,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
