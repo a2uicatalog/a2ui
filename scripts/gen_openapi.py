@@ -465,6 +465,7 @@ LLMS_TXT = """# A2UI Atomic Catalog
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
 - [Developer documentation]({base}/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
+- [API documentation]({base}/docs/): REST API endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
 - [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
@@ -541,6 +542,7 @@ def build_api_catalog():
             ],
             "describes": [
                 item(f"{BASE}/developers/", "text/html", "Developer documentation and API guide"),
+                item(f"{BASE}/docs/", "text/html", "API documentation and endpoint reference"),
                 item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
                 item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
                 item(f"{BASE}/pricing.md", "text/markdown", "Pricing and rate limits"),
@@ -580,6 +582,8 @@ def build_agent_view(n_atoms, n_surfaces):
         },
         "documentation": {
             "openapi": f"{BASE}/openapi.json",
+            "developers": f"{BASE}/developers/",
+            "api_docs": f"{BASE}/docs/",
             "llms": f"{BASE}/llms.txt",
             "agents": f"{BASE}/agents.md",
             "auth": f"{BASE}/auth.md",

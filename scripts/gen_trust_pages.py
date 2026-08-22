@@ -118,6 +118,7 @@ server so it cannot go stale:</p>
 <h2>3. Reference</h2>
 <ul>
 <li><a href="/openapi.json">OpenAPI 3.1 specification</a> — every endpoint, request/response schemas, examples</li>
+<li><a href="/docs/">API Documentation</a> — REST endpoints, error models, and rate limits</li>
 <li><a href="/agents.md">agents.md</a> — agent-facing guide, served as <code>text/markdown</code></li>
 <li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
 <li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
@@ -140,6 +141,68 @@ access (e.g. Gemini Enterprise's BYO-MCP model).</p>
 
 <h2>Source</h2>
 <p>MIT licensed. Full source, issues and pull requests: <a href="{REPO}">{REPO.replace('https://','')}</a>.</p>"""),
+        "docs": dict(
+            title="API Documentation",
+            desc=(f"A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, "
+                  f"JSON schemas, MCP servers, and REST routes for AI agents."),
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "APIReference",
+                "url": f"{BASE}/docs/", "name": "API Documentation — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Developer and API documentation for the A2UI Atomic Catalog. All developer resources are free,
+unauthenticated, and machine-readable.</p>
+
+<h2>REST Endpoints</h2>
+<table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
+<tr><td style="padding:6px 10px 6px 0;"><code>POST /api/render</code></td><td>Render atom payload to standalone HTML page (50 req/day)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>POST /api/compose</code></td><td>Natural language prompt → typed atom blocks (20 req/day)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /ask?q=...</code></td><td>Natural-language search over the atom catalog (60 req/day)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /api/data/{{source}}</code></td><td>Declared data source proxy (data-sources.yaml)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /spec.json</code></td><td>Full atom vocabulary ({n} atoms) with all field contracts</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/atoms-json-schema.json</code></td><td>Strict JSON Schema for constrained agent decoding</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/index.json</code></td><td>Compact catalog selection menu</td></tr>
+</table>
+
+<h2>MCP Servers</h2>
+<ul>
+<li><strong>Product MCP Server</strong>: <code>https://a2uicatalog.ai/mcp</code> — tools for composing, rendering, and publishing UI atoms.</li>
+<li><strong>Documentation MCP Server</strong>: <code>https://a2uicatalog.ai/mcp-docs</code> — tools (<code>search_docs</code>, <code>list_docs</code>) for querying documentation.</li>
+</ul>
+
+<h2>Specifications &amp; Developer Resources</h2>
+<ul>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — complete machine-readable OpenAPI spec</li>
+<li><a href="/developers/">Developers Guide</a> — integration walkthrough and deployment guide</li>
+<li><a href="/llms.txt">llms.txt</a> and <a href="/docs/llms.txt">docs/llms.txt</a> — LLM-friendly context documents</li>
+<li><a href="/agents.md">agents.md</a> — agent guide with tool contracts and invocation examples</li>
+<li><a href="/auth.md">Authentication Guide</a> — auth requirements and OAuth metadata</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; Rate Limits</a> — real rate limits per tool and endpoint</li>
+<li><a href="/pricing.md">Pricing &amp; Limits</a> — free tier terms and self-hosting runbooks</li>
+<li><a href="/versioning.md">Versioning Policy</a> — API versioning (X-API-Version) and deprecation rules</li>
+<li><a href="/.well-known/api-catalog">RFC 9727 API Catalog</a> — linkset of all API surfaces</li>
+<li><a href="/.well-known/ai-catalog.json">ARD Discovery Catalog</a> — AI Resource Discovery index</li>
+</ul>"""),
+        "api-docs": dict(
+            title="API Docs & Reference",
+            desc=(f"A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, "
+                  f"MCP servers, and integration guides."),
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "APIReference",
+                "url": f"{BASE}/api-docs/", "name": "API Docs & Reference — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Predictable entry point for developer resources and API reference documents.</p>
+<ul>
+<li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
+<li><a href="/developers/">Developers Guide</a> — human integration guide</li>
+<li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
+<li><a href="/spec.json">spec.json</a> — {n} atom definitions and field contracts</li>
+<li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
+</ul>"""),
         "about": dict(
             title="About",
             desc=("What the A2UI Atomic Catalog is, who maintains it, and why a typed UI "

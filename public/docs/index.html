@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>API Documentation — A2UI Atomic Catalog</title>
+<meta name="description" content="A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, JSON schemas, MCP servers, and REST routes for AI agents.">
+<link rel="canonical" href="https://a2uicatalog.ai/docs/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="API Documentation — A2UI Atomic Catalog">
+<meta property="og:description" content="A2UI Atomic Catalog API documentation: endpoints, OpenAPI 3.1 specification, JSON schemas, MCP servers, and REST routes for AI agents.">
+<meta property="og:url" content="https://a2uicatalog.ai/docs/">
+<meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "APIReference",
+  "url": "https://a2uicatalog.ai/docs/",
+  "name": "API Documentation \u2014 A2UI Atomic Catalog",
+  "publisher": {
+    "@id": "https://a2uicatalog.ai/#org"
+  }
+}
+</script>
+<style>
+:root{color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
+ font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
+ box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}
+h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}
+h2{font-size:1.15rem;margin:2rem 0 .5rem}
+.k{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
+ font-weight:600;margin:0 0 26px}
+a{color:#00205B} code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}
+nav.top{max-width:720px;margin:0 auto 14px;font-size:.85rem}
+nav.top a{text-decoration:none;margin-right:14px}
+footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
+@media(prefers-color-scheme:dark){
+ body{background:#0e1116;color:#e6e9ef} .wrap{background:#161a22;box-shadow:none}
+ a{color:#8ab4ff} code{background:#1e2430}}
+</style>
+</head>
+<body>
+<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/docs/">Docs</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<div class="wrap">
+<h1>API Documentation</h1>
+<h2 class="k">A2UI Atomic Catalog</h2>
+
+<p>Developer and API documentation for the A2UI Atomic Catalog. All developer resources are free,
+unauthenticated, and machine-readable.</p>
+
+<h2>REST Endpoints</h2>
+<table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
+<tr><td style="padding:6px 10px 6px 0;"><code>POST /api/render</code></td><td>Render atom payload to standalone HTML page (50 req/day)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>POST /api/compose</code></td><td>Natural language prompt → typed atom blocks (20 req/day)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /ask?q=...</code></td><td>Natural-language search over the atom catalog (60 req/day)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /api/data/{source}</code></td><td>Declared data source proxy (data-sources.yaml)</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /spec.json</code></td><td>Full atom vocabulary (480 atoms) with all field contracts</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/atoms-json-schema.json</code></td><td>Strict JSON Schema for constrained agent decoding</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/index.json</code></td><td>Compact catalog selection menu</td></tr>
+</table>
+
+<h2>MCP Servers</h2>
+<ul>
+<li><strong>Product MCP Server</strong>: <code>https://a2uicatalog.ai/mcp</code> — tools for composing, rendering, and publishing UI atoms.</li>
+<li><strong>Documentation MCP Server</strong>: <code>https://a2uicatalog.ai/mcp-docs</code> — tools (<code>search_docs</code>, <code>list_docs</code>) for querying documentation.</li>
+</ul>
+
+<h2>Specifications &amp; Developer Resources</h2>
+<ul>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — complete machine-readable OpenAPI spec</li>
+<li><a href="/developers/">Developers Guide</a> — integration walkthrough and deployment guide</li>
+<li><a href="/llms.txt">llms.txt</a> and <a href="/docs/llms.txt">docs/llms.txt</a> — LLM-friendly context documents</li>
+<li><a href="/agents.md">agents.md</a> — agent guide with tool contracts and invocation examples</li>
+<li><a href="/auth.md">Authentication Guide</a> — auth requirements and OAuth metadata</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; Rate Limits</a> — real rate limits per tool and endpoint</li>
+<li><a href="/pricing.md">Pricing &amp; Limits</a> — free tier terms and self-hosting runbooks</li>
+<li><a href="/versioning.md">Versioning Policy</a> — API versioning (X-API-Version) and deprecation rules</li>
+<li><a href="/.well-known/api-catalog">RFC 9727 API Catalog</a> — linkset of all API surfaces</li>
+<li><a href="/.well-known/ai-catalog.json">ARD Discovery Catalog</a> — AI Resource Discovery index</li>
+</ul>
+</div>
+<footer>A2UI Atomic Catalog · Curtis Krygier · MIT Licensed · <a href="https://github.com/a2uicatalog/a2ui">GitHub</a> · <a href="https://www.linkedin.com/in/curtiskrygier">LinkedIn</a></footer>
+</body>
+</html>
