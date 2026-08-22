@@ -459,6 +459,31 @@ document.addEventListener('click',function(e){
   r.setAttribute('data-theme',t);
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
 });
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
 </script>"""
 
 
@@ -2663,7 +2688,8 @@ def render_try_page(atom_count):
   (embedding-based, no chat call) routes it against this catalog's {atom_count} atoms
   and shows you which ones matched — live, against the real deployed catalog.</p>
 
-  <form class="try-form" id="try-form">
+  <form class="try-form" id="try-form" toolname="route_ui_request"
+        tooldescription="Given a plain-English description of a UI need, return the A2UI atoms from this {atom_count}-atom catalog that best match it — embedding-based routing against the real deployed catalog, free tier 20 requests/day per IP.">
     <textarea id="try-prompt" placeholder="e.g. a status indicator badge" maxlength="500"></textarea>
     <div class="try-row">
       <button id="try-submit" type="submit">Route it →</button>
@@ -2951,7 +2977,8 @@ def render_frugal_ai_ops_page():
     <button class="frugal-tab" type="button" data-pane="file">Upload file</button>
   </div>
 
-  <form id="frugal-form">
+  <form id="frugal-form" toolname="generate_frugal_ops_curriculum"
+        tooldescription="Extract a URL, pasted text, or an uploaded document and compile it into a deterministic training.md curriculum via the Frugal AI Ops pipeline (grounding check, then a bom_emitter.mjs envelope).">
     <div class="frugal-pane active" data-pane="url">
       <input id="frugal-url" type="url" placeholder="https://example.com/some-article">
     </div>
