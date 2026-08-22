@@ -1,0 +1,13 @@
+{
+  "name": "a2ui-stream-runtime-tests",
+  "version": "1.0.0",
+  "description": "Node test-runner suite for cloud-run-renderer/static/a2ui-stream-runtime.v1.js — pure logic (SSE parsing, routing, JSON Patch, lifecycle, batching), no DOM/browser dependency. See cloud-run-renderer/static/streaming-harness.html for the real-browser end-to-end check.",
+  "main": "runtime.test.js",
+  "scripts": {
+    "test": "node --test runtime.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

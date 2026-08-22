@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>a2ui streaming runtime — harness</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 20px; color: #111; }
+  h1 { font-size: 1.3rem; }
+  p.note { color: #555; font-size: 0.9rem; }
+  button { font: inherit; padding: 8px 16px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+  button:hover { background: #f5f5f5; }
+  #stage { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .atom { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
+  .atom .key { font-weight: 700; font-family: monospace; }
+  .atom .lifecycle { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
+  .lifecycle.idle { background: #eee; color: #555; }
+  .lifecycle.streaming { background: #dbeafe; color: #1e40af; }
+  .lifecycle.complete { background: #dcfce7; color: #166534; }
+  .lifecycle.error { background: #fee2e2; color: #991b1b; }
+  .atom .body { margin-top: 6px; white-space: pre-wrap; font-family: monospace; font-size: 0.78rem; color: #333; }
+  #log { margin-top: 24px; font-family: monospace; font-size: 0.75rem; background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px; max-height: 220px; overflow-y: auto; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>a2ui-stream-runtime — Phase 1 harness</h1>
+<p class="note">
+  Manual, visual confirmation of the runtime core against a synthetic AG-UI
+  event sequence — parallel tool calls (container/slot mounting), a
+  streaming text message, a live state-delta dashboard, and a deliberate
+  mid-stream error. Real atom visuals are Phase 2/3; these are minimal
+  stub controllers that just show routing key / lifecycle / raw payload,
+  enough to confirm the RUNTIME mechanics work.
+</p>
+<button id="run">Run synthetic demo</button>
+<button id="run-error">Run demo that errors mid-stream</button>
+<div id="stage"></div>
+<div id="log"></div>
+
+<script src="/static/a2ui-stream-runtime.v1.js"></script>
+<script>
+const stage = document.getElementById('stage');
+const logEl = document.getElementById('log');
+function log(line) {
+  logEl.textContent += line + '\n';
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function stubAtom(family, key) {
+  const el = document.createElement('div');
+  el.className = 'atom';
+  el.innerHTML = '<span class="key"></span><span class="lifecycle idle">idle</span><div class="body"></div>';
+  stage.appendChild(el);
+  el.querySelector('.key').textContent = key;
+  return {
+    onEvent(event) {
+      const lc = el.querySelector('.lifecycle');
+      lc.className = 'lifecycle ' + event.lifecycle;
+      lc.textContent = event.lifecycle;
+      const bodyEl = el.querySelector('.body');
+      bodyEl.textContent = JSON.stringify({ type: event.type, payload: event.payload, state: event.state }, null, 0);
+      log(key + ' <- ' + event.type + ' [' + event.lifecycle + ']');
+    },
+    destroy() { el.remove(); },
+  };
+}
+
+function buildRuntime() {
+  stage.innerHTML = '';
+  logEl.textContent = '';
+  return A2UIStream.A2UIStreamRuntime({
+    container: stage,
+    mountAtom(family, key) { return stubAtom(family, key); },
+  });
+}
+
+function sse(event, data) {
+  return 'event: ' + event + '\ndata: ' + JSON.stringify(data) + '\n\n';
+}
+
+// A real, hand-authored synthetic AG-UI event sequence — not a live
+// backend (none exists yet), but shaped exactly like the real protocol
+// so this genuinely exercises the routing/mounting/lifecycle/patch logic.
+function syntheticChunks() {
+  return [
+    sse('RunStarted', { runId: 'run1' }),
+    sse('ToolCallStart', { toolCallId: 't1', toolName: 'search_docs' }),
+    sse('ToolCallStart', { toolCallId: 't2', toolName: 'fetch_url' }),
+    sse('ToolCallArgs', { toolCallId: 't1', delta: '{"query":"a2ui atoms"' }),
+    sse('ToolCallArgs', { toolCallId: 't2', delta: '{"url":"https://a2uic' }),
+    sse('TextMessageStart', { messageId: 'm1' }),
+    sse('TextMessageContent', { messageId: 'm1', delta: 'Found ' }),
+    sse('TextMessageContent', { messageId: 'm1', delta: '3 relevant atoms' }),
+    sse('StateSnapshot', { runId: 'run1', snapshot: { atoms_checked: 0, atoms_found: 0 } }),
+    sse('StateDelta', { runId: 'run1', delta: [{ op: 'replace', path: '/atoms_checked', value: 12 }] }),
+    sse('StateDelta', { runId: 'run1', delta: [{ op: 'replace', path: '/atoms_found', value: 3 }] }),
+    sse('ToolCallResult', { toolCallId: 't1', result: '3 matches' }),
+    sse('ToolCallResult', { toolCallId: 't2', result: 'fetched' }),
+    sse('TextMessageEnd', { messageId: 'm1' }),
+    sse('RunFinished', { runId: 'run1' }),
+  ];
+}
+
+document.getElementById('run').addEventListener('click', () => {
+  const runtime = buildRuntime();
+  for (const chunk of syntheticChunks()) runtime._ingestRawChunk(chunk);
+  log('--- synthetic sequence fed, waiting for next animation frame to paint ---');
+});
+
+document.getElementById('run-error').addEventListener('click', () => {
+  const runtime = buildRuntime();
+  const chunks = syntheticChunks().slice(0, 4); // partway through, then simulate a drop
+  for (const chunk of chunks) runtime._ingestRawChunk(chunk);
+  runtime._onConnectionError(new Error('simulated connection reset mid-stream'));
+  log('--- connection error injected after 4 events — every mounted atom above must show ERROR, none left spinning ---');
+});
+</script>
+</body>
+</html>
