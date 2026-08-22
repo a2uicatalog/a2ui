@@ -46,6 +46,15 @@
   .a2ui-reasoning-badge { font-size: 0.72rem; color: #92400e; font-weight: 600; }
   .a2ui-reasoning-body { margin-top: 8px; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; color: #374151; max-height: 200px; overflow-y: auto; }
   .a2ui-reasoning-locked-notice { margin-top: 6px; font-size: 0.78rem; color: #92400e; font-style: italic; }
+
+  .a2ui-state-dashboard { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin: 6px 0; }
+  .a2ui-state-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .a2ui-state-dashboard-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 0.8rem; }
+  .a2ui-state-dashboard-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; flex-shrink: 0; }
+  .a2ui-state-dashboard-item[data-status=online] .a2ui-state-dashboard-dot { background: #059669; }
+  .a2ui-state-dashboard-item[data-status=degraded] .a2ui-state-dashboard-dot { background: #f59e0b; }
+  .a2ui-state-dashboard-item[data-status=offline] .a2ui-state-dashboard-dot,
+  .a2ui-state-dashboard-item[data-status=error] .a2ui-state-dashboard-dot { background: #dc2626; }
 </style>
 </head>
 <body>
@@ -112,7 +121,10 @@ document.getElementById('connect').addEventListener('click', () => {
       if (family === 'reasoning') {
         return A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
       }
-      // Unknown family (state/text -- not built yet, or this
+      if (family === 'state') {
+        return A2UIAtomsLive.mountLiveStateDashboard(toolCallsContainer).controller;
+      }
+      // Unknown family (text -- not built yet, or this
       // demo's own real loop never emits them) -- a harmless stub so the
       // runtime doesn't throw, per its own fail-open-for-other-atoms
       // contract.

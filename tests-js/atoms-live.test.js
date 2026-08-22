@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
-  createReasoningTraceController,
+  createReasoningTraceController, createLiveStateDashboardController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -240,6 +240,68 @@ test('reasoning_trace: ReasoningStart with encrypted payload immediately enters 
   assert.equal(adapter.calls.title, 'Model Thought');
   assert.equal(adapter.calls.encrypted, true);
   assert.equal(adapter.calls.encryptedDetails, 'sig_abc');
+});
+
+// ─── live_state_dashboard ────────────────────────────────────────────────
+// Patch-mode: a2ui-stream-runtime.v1.js's own dispatch() already applies
+// StateSnapshot/StateDelta and hands the patched document through as
+// `event.state` -- these tests simulate exactly that hand-off (setting
+// `state` directly on the event), not payload.delta, matching what the
+// controller actually receives in the real runtime.
+function fakeStateDashboardAdapter() {
+  const calls = { items: null, status: null };
+  return {
+    calls,
+    setItems(items) { calls.items = items; },
+    setStatus(s) { calls.status = s; },
+  };
+}
+
+test('live_state_dashboard: renders items from the runtime-patched state doc', () => {
+  const adapter = fakeStateDashboardAdapter();
+  const ctrl = createLiveStateDashboardController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'streaming',
+    state: { items: [{ key: 'api', label: 'API', status: 'online' }] },
+  });
+  assert.deepEqual(adapter.calls.items, [{ key: 'api', label: 'API', status: 'online' }]);
+  assert.equal(adapter.calls.status, 'streaming');
+});
+
+test('live_state_dashboard: a later StateDelta patch is reflected because the runtime already re-applied it into state', () => {
+  const adapter = fakeStateDashboardAdapter();
+  const ctrl = createLiveStateDashboardController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { items: [{ key: 'api', label: 'API', status: 'online' }] },
+  });
+  // Simulates the runtime handing through the SAME doc object after
+  // applying a StateDelta that flipped api's status -- this controller
+  // does no patch logic of its own, it just re-renders whatever `state`
+  // currently holds on each dispatched event.
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { items: [{ key: 'api', label: 'API', status: 'degraded' }] },
+  });
+  assert.deepEqual(adapter.calls.items, [{ key: 'api', label: 'API', status: 'degraded' }]);
+});
+
+test('live_state_dashboard: missing state renders an empty grid, not a crash', () => {
+  const adapter = fakeStateDashboardAdapter();
+  const ctrl = createLiveStateDashboardController(adapter);
+  ctrl.onEvent({ type: 'RunStarted', lifecycle: 'idle' });
+  assert.deepEqual(adapter.calls.items, []);
+});
+
+test('live_state_dashboard: an item missing a label falls back to its key; missing status is "unknown"', () => {
+  const adapter = fakeStateDashboardAdapter();
+  const ctrl = createLiveStateDashboardController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { items: [{ key: 'db' }] },
+  });
+  assert.deepEqual(adapter.calls.items, [{ key: 'db', label: 'db', status: 'unknown' }]);
 });
 
 console.log('all a2ui-atoms-live tests defined');
