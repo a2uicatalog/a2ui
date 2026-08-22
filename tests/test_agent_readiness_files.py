@@ -113,3 +113,37 @@ def test_section_llms_txt_link_only_published_paths():
             local = os.path.join(PUBLIC, path.lstrip("/"))
             if os.path.splitext(path)[1]:
                 assert os.path.isfile(local), f"{section}/llms.txt links {path}, not published"
+
+
+def test_developer_resource_pages_exist_and_include_product_name():
+    """Developer resources must be discoverable at predictable URLs, with the product
+    name explicitly present in <title> and headings (ora.ai developer-resource-discoverability)."""
+    predictable_pages = [
+        ("docs", "index.html"),
+        ("api-docs", "index.html"),
+        ("developers", "index.html"),
+    ]
+    for parts in predictable_pages:
+        html = _load(*parts)
+        assert "<title>" in html and "A2UI Atomic Catalog" in html.split("<title>")[1].split("</title>")[0], \
+            f"{'/'.join(parts)} missing product name in <title>"
+        assert "A2UI Atomic Catalog" in html, f"{'/'.join(parts)} missing product name in page body"
+        # Must link to OpenAPI spec and MCP endpoint
+        assert "/openapi.json" in html, f"{'/'.join(parts)} does not link to OpenAPI spec"
+        assert "/mcp" in html, f"{'/'.join(parts)} does not link to MCP endpoint"
+
+
+def test_api_catalog_and_llms_advertise_developer_resources():
+    """RFC 9727 api-catalog and llms.txt must advertise docs, openapi, mcp, and auth."""
+    llms_txt = _load("llms.txt")
+    assert "/docs/" in llms_txt or "/developers/" in llms_txt
+    assert "/openapi.json" in llms_txt
+    assert "/mcp" in llms_txt
+
+    api_catalog = json.loads(_load(".well-known", "api-catalog"))
+    linkset = api_catalog["linkset"][0]
+    all_hrefs = [entry["href"] for group in ("describedby", "service-desc", "item", "describes")
+                 for entry in linkset.get(group, [])]
+    for required in ("https://a2uicatalog.ai/openapi.json", "https://a2uicatalog.ai/mcp", "https://a2uicatalog.ai/docs/"):
+        assert required in all_hrefs, f"api-catalog missing required developer resource link: {required}"
+

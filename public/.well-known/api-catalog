@@ -90,6 +90,11 @@
           "title": "Developer documentation and API guide"
         },
         {
+          "href": "https://a2uicatalog.ai/docs/",
+          "type": "text/html",
+          "title": "API documentation and endpoint reference"
+        },
+        {
           "href": "https://a2uicatalog.ai/versioning.md",
           "type": "text/markdown",
           "title": "Versioning and deprecation policy"
