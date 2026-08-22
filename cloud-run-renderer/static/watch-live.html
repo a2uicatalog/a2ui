@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watch a real AI agent work, live</title>
+<style>
+  :root {
+    --bg: #fafaf9; --panel: #ffffff; --border: #e5e5e0; --text: #18181b;
+    --muted: #6b6b64; --accent: #2563eb; --accent-soft: #eff6ff;
+    --ok: #059669; --err: #dc2626; --warn: #d97706;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text);
+    max-width: 980px; margin: 0 auto; padding: 32px 20px 80px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 1.5rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+  p.lede {
+    color: var(--muted); font-size: 0.98rem; max-width: 640px; margin: 0 0 20px;
+  }
+  details.how {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 24px; font-size: 0.88rem; color: var(--muted);
+  }
+  details.how summary { cursor: pointer; font-weight: 600; color: var(--text); }
+  details.how ol { margin: 10px 0 0; padding-left: 20px; }
+  details.how code { background: #f1f1ee; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+
+  #controls {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 20px;
+  }
+  #controls select, #controls input, #controls button {
+    font: inherit; padding: 7px 11px; border-radius: 7px; border: 1px solid var(--border);
+    background: #fff;
+  }
+  #controls button { cursor: pointer; background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  #controls button:hover { opacity: 0.92; }
+  #controls button:disabled { opacity: 0.5; cursor: default; }
+  #status-pill {
+    font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  #status-pill[data-state="idle"] { background: #f1f1ee; color: var(--muted); }
+  #status-pill[data-state="connecting"] { background: #fef3c7; color: var(--warn); }
+  #status-pill[data-state="live"] { background: #dcfce7; color: var(--ok); }
+  #status-pill[data-state="done"] { background: #f1f1ee; color: var(--muted); }
+  #status-pill[data-state="error"] { background: #fee2e2; color: var(--err); }
+
+  .grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+  .panel h2 { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0 0 10px; }
+  #tool-calls { display: flex; flex-direction: column; gap: 10px; }
+  .empty-note { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+  /* live_step_tracker */
+  .a2ui-step-tracker { }
+  .a2ui-run-status { font-weight: 700; margin-bottom: 8px; }
+  .a2ui-run-status[data-status=running] { color: var(--accent); }
+  .a2ui-run-status[data-status=done] { color: var(--ok); }
+  .a2ui-run-status[data-status=error] { color: var(--err); }
+  .a2ui-step-list { margin: 0; padding-left: 18px; font-size: 0.85rem; }
+  .a2ui-step-list li[data-status=running] { color: var(--accent); font-weight: 600; }
+  .a2ui-step-list li[data-status=done] { color: var(--ok); }
+  .a2ui-step-list li[data-status=error] { color: var(--err); font-weight: 600; }
+  .a2ui-step-list li[data-status=pending] { color: #b0b0a8; }
+
+  /* tool_call_card / live_diff_card */
+  .a2ui-tool-call-card, .a2ui-file-edit-card {
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem;
+  }
+  .a2ui-tool-call-card[data-lifecycle=streaming], .a2ui-file-edit-card[data-lifecycle=streaming] { border-color: #93c5fd; background: var(--accent-soft); }
+  .a2ui-tool-call-card[data-lifecycle=complete], .a2ui-file-edit-card[data-lifecycle=complete] { border-color: #86efac; }
+  .a2ui-tool-call-card[data-lifecycle=error], .a2ui-file-edit-card[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-tool-call-name, .a2ui-file-edit-name { font-weight: 700; font-family: ui-monospace, monospace; }
+  .a2ui-tool-call-args, .a2ui-tool-call-result { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; }
+  .a2ui-tool-call-result-wrap summary { cursor: pointer; font-size: 0.78rem; color: var(--muted); }
+  .a2ui-tool-call-result-wrap[data-error=true] summary { color: var(--err); font-weight: 600; }
+  .a2ui-file-edit-path { font-family: ui-monospace, monospace; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+  .a2ui-file-edit-newfile-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 1px 6px; border-radius: 8px; margin-bottom: 6px; }
+  .a2ui-file-edit-removed { background: #fef2f2; color: #991b1b; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; white-space: pre-wrap; }
+  .a2ui-file-edit-added { background: #f0fdf4; color: #166534; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; white-space: pre-wrap; }
+  .a2ui-file-edit-result { font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
+  .a2ui-file-edit-result[data-ok=true] { color: var(--ok); }
+  .a2ui-file-edit-result[data-ok=false] { color: var(--err); }
+
+  /* reasoning_trace (harmless hook -- real backend never emits this today) */
+  .a2ui-reasoning-trace { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; background: #fafafa; }
+  .a2ui-reasoning-summary { cursor: pointer; font-weight: 600; font-size: 0.85rem; color: #4b5563; display: flex; justify-content: space-between; }
+  .a2ui-reasoning-body { margin-top: 8px; font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; color: #374151; }
+
+  /* agent_run_sketch */
+  .a2ui-run-sketch { }
+  .a2ui-run-sketch-svg { width: 100%; display: block; }
+  .a2ui-run-sketch-edge { stroke: #c7c7c0; stroke-width: 1.5; fill: none; stroke-linecap: round; }
+  .a2ui-run-sketch-node { stroke: #fff; stroke-width: 1.5; }
+  .a2ui-run-sketch-node[data-status=running] { fill: #9ca3af; }
+  .a2ui-run-sketch-node[data-status=ok] { fill: var(--ok); }
+  .a2ui-run-sketch-node[data-status=error] { fill: var(--err); }
+
+  /* live_cost_trend */
+  .a2ui-cost-trend-value { font-size: 0.95rem; font-weight: 700; font-family: ui-monospace, monospace; color: var(--text); margin-bottom: 6px; }
+  .a2ui-cost-trend-svg { width: 100%; height: 44px; display: block; }
+  .a2ui-cost-trend-line { stroke: var(--accent); stroke-width: 1.6; fill: none; }
+  .a2ui-cost-trend-dot { fill: var(--accent); }
+
+  footer { margin-top: 30px; font-size: 0.78rem; color: var(--muted); text-align: center; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<h1>Watch a real AI agent work, live</h1>
+<p class="lede">
+  This page connects to a real, unattended coding agent
+  (<code style="font-family:ui-monospace,monospace;background:#f1f1ee;padding:1px 5px;border-radius:4px;">daily_agent.py</code>,
+  Gemini-powered) mid-run, against a real GitHub repository. Nothing here is
+  simulated or replayed for effect — every card below is a real tool call,
+  every number is real spend, as it happens.
+</p>
+
+<details class="how">
+  <summary>How this actually works</summary>
+  <ol>
+    <li>The agent runs unattended on a schedule (Cloud Run Job), picking one real gap in a repo and fixing it.</li>
+    <li>As it works, it emits standard <a href="https://docs.ag-ui.com" target="_blank" rel="noopener">AG-UI protocol</a> events (tool calls, step transitions, running cost) through a small, reusable Python adapter.</li>
+    <li>Those events land in Firestore, one document per event, under <code>agent_runs/&lt;run_id&gt;/events</code>.</li>
+    <li>A minimal, read-only proxy service watches Firestore server-side and re-emits the same events as a plain SSE stream — no database access from your browser at all.</li>
+    <li><em>This page</em> is just a client for that stream: the same event-driven UI components (streaming runtime + atom controllers) render whatever's actually happening, live.</li>
+  </ol>
+</details>
+
+<div id="controls">
+  <select id="run-select"><option value="">— choose a recent run —</option></select>
+  <span style="color:var(--muted);font-size:0.85rem;">or</span>
+  <input type="text" id="run-id-input" placeholder="paste a run_id" style="width:220px;">
+  <button id="connect">Watch</button>
+  <span id="status-pill" data-state="idle">idle</span>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="panel">
+      <h2>What it's doing right now</h2>
+      <div id="step-tracker-container"><p class="empty-note">Not connected yet.</p></div>
+    </div>
+    <div class="panel">
+      <h2>Tool calls &amp; edits</h2>
+      <div id="tool-calls"><p class="empty-note">Real tool calls will appear here as the agent makes them.</p></div>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <h2>Shape of this run</h2>
+      <div id="run-sketch-container"></div>
+      <p style="font-size:0.72rem;color:var(--muted);margin:8px 0 0;">Small dots: reading/searching. Large dots: an actual edit, test run, or step boundary.</p>
+    </div>
+    <div class="panel">
+      <h2>Running cost</h2>
+      <div id="cost-trend-container"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built on the <a href="https://docs.ag-ui.com" target="_blank" rel="noopener">AG-UI protocol</a>.
+  Source: <code>a2uicatalog/a2ui</code> and <code>curtiskrygier/repo-improvement-agent</code>.
+</footer>
+
+<script src="/static/a2ui-stream-runtime.v1.js"></script>
+<script src="/static/a2ui-atoms-live.v1.js"></script>
+<script>
+// The one thing that changes if this service is ever redeployed under a
+// different URL -- everything else in this page is generic AG-UI client
+// code with zero knowledge of daily_agent.py specifically.
+const VIEWER_SERVICE_URL = 'https://agent-run-viewer-ggbfj7axza-ew.a.run.app';
+
+const statusPill = document.getElementById('status-pill');
+const stepContainer = document.getElementById('step-tracker-container');
+const toolCallsContainer = document.getElementById('tool-calls');
+const sketchContainer = document.getElementById('run-sketch-container');
+const costTrendContainer = document.getElementById('cost-trend-container');
+const runSelect = document.getElementById('run-select');
+const runIdInput = document.getElementById('run-id-input');
+const connectBtn = document.getElementById('connect');
+
+let runtime = null;
+let sketchController = null;
+let costController = null;
+
+function setStatus(state, label) {
+  statusPill.dataset.state = state;
+  statusPill.textContent = label || state;
+}
+
+async function loadRecentRuns() {
+  try {
+    const resp = await fetch(VIEWER_SERVICE_URL + '/runs');
+    const body = await resp.json();
+    for (const run of (body.runs || [])) {
+      const opt = document.createElement('option');
+      opt.value = run.runId;
+      const when = run.startedAt ? new Date(run.startedAt * 1000).toLocaleString() : '';
+      opt.textContent = run.runId + (when ? '  (' + when + ')' : '');
+      runSelect.appendChild(opt);
+    }
+    if (body.runs && body.runs.length) {
+      runSelect.value = body.runs[0].runId;   // default to the most recent
+    }
+  } catch (e) {
+    // Non-fatal -- a visitor can still paste a run_id by hand.
+    console.warn('could not load recent runs', e);
+  }
+}
+
+function connectTo(runId, attempt) {
+  attempt = attempt || 0;
+  stepContainer.innerHTML = '';
+  toolCallsContainer.innerHTML = '';
+  sketchContainer.innerHTML = '';
+  costTrendContainer.innerHTML = '';
+  setStatus('connecting', attempt > 0 ? 'waiting for run to start…' : 'connecting…');
+
+  sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
+  costController = A2UIAtomsLive.mountLiveCostTrend(costTrendContainer).controller;
+  // A real bug found live testing this page, 2026-08-22 (also present,
+  // unnoticed, in agent-tail-demo.html): RunStarted routes on runId
+  // while StepStarted routes on stepId -- two DIFFERENT routing keys
+  // under the same 'lifecycle' family, so the runtime's own per-
+  // (family,key) mounting creates a SEPARATE step-tracker instance for
+  // each, rendering two contradictory "Run: …" rows instead of one.
+  // There is conceptually ONE step tracker per run -- track it here,
+  // outside the runtime's own per-key mounting, and reuse it for every
+  // lifecycle-family event regardless of which specific key triggered
+  // the mount.
+  let stepTrackerController = null;
+
+  runtime = A2UIStream.A2UIStreamRuntime({
+    container: toolCallsContainer,
+    mountAtom(family, key, event) {
+      let primary;
+      if (family === 'lifecycle') {
+        if (!stepTrackerController) {
+          stepTrackerController = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+        }
+        primary = stepTrackerController;
+      } else if (family === 'tool_call') {
+        if (toolCallsContainer.querySelector('.empty-note')) toolCallsContainer.innerHTML = '';
+        const toolName = (event && event.payload && event.payload.toolName) || '';
+        if (toolName === 'edit_file' || toolName === 'write_file') {
+          primary = A2UIAtomsLive.mountFileEditCard(toolCallsContainer).controller;
+        } else {
+          primary = A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
+        }
+      } else if (family === 'reasoning') {
+        primary = A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
+      } else if (family === 'state') {
+        // daily_agent.py's real loop emits exactly one real 'state'
+        // stream today: the cost trend -- see live_cost_trend's own
+        // controller docstring in a2ui-atoms-live.v1.js.
+        primary = costController;
+      } else {
+        primary = { onEvent() {}, destroy() {} };
+      }
+      if (family === 'lifecycle' || family === 'tool_call') {
+        return {
+          onEvent(e) {
+            primary.onEvent(e);
+            sketchController.onEvent(e);
+            // The service's own /stream deliberately keeps the SSE
+            // connection open after a run finishes (so a client can
+            // still catch a LATER run without reconnecting) -- "done"
+            // has to come from the event CONTENT (a real RunFinished/
+            // RunError), not from connect()'s own promise resolving,
+            // which may never happen while the connection stays open.
+            if (e.type === 'RunFinished') setStatus('done', 'run finished');
+            else if (e.type === 'RunError') setStatus('error', 'run errored');
+            else setStatus('live', 'live');
+          },
+          destroy() { primary.destroy(); },
+        };
+      }
+      return primary;
+    },
+  });
+
+  const streamUrl = VIEWER_SERVICE_URL + '/stream?run_id=' + encodeURIComponent(runId);
+
+  // A real existence check BEFORE the actual SSE connection -- found
+  // necessary live, 2026-08-22: a2ui-stream-runtime.v1.js's own
+  // connect() NEVER rejects its promise on an HTTP error status (fetch()
+  // itself only rejects on network-level failures; a 404's own empty
+  // body just makes connect()'s internal read loop end immediately,
+  // resolving normally) -- there is no way to detect "run not found
+  // yet, retry" from connect() alone. The server's own HEAD handler
+  // answers this with no side effects (no watcher/listener created) --
+  // see agent_run_viewer/server.py's own run_exists docstring.
+  fetch(streamUrl, { method: 'HEAD' })
+    .then((resp) => {
+      if (resp.status === 404) {
+        if (attempt < 6) {
+          setTimeout(() => connectTo(runId, attempt + 1), 2000);
+        } else {
+          setStatus('error', 'run not found — check the run_id');
+        }
+        return;
+      }
+      if (!resp.ok) {
+        setStatus('error', 'service error (' + resp.status + ')');
+        return;
+      }
+      runtime.connect(streamUrl)
+        // The connection closing on its own (server restart, network
+        // drop) is a DIFFERENT event from the run itself finishing --
+        // that's handled above, from the real RunFinished/RunError
+        // event content.
+        .then(() => setStatus('idle', 'connection closed'));
+    })
+    .catch((err) => {
+      // A genuine network-level failure (offline, DNS, CORS) -- the
+      // one case fetch() itself actually rejects for.
+      setStatus('error', 'could not reach the service');
+      console.error('watch-live: existence check failed', err);
+    });
+}
+
+connectBtn.addEventListener('click', () => {
+  const runId = (runIdInput.value || runSelect.value || '').trim();
+  if (!runId) { setStatus('error', 'enter or pick a run_id'); return; }
+  connectTo(runId);
+});
+
+// Deep-linkable: /watch-live.html?run_id=<id> connects immediately, so a
+// SPECIFIC run can be shared directly (the actual point of this page).
+const params = new URLSearchParams(location.search);
+const deepLinkRunId = params.get('run_id');
+loadRecentRuns().then(() => {
+  if (deepLinkRunId) {
+    runIdInput.value = deepLinkRunId;
+    connectTo(deepLinkRunId);
+  }
+});
+</script>
+</body>
+</html>

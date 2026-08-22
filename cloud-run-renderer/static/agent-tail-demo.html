@@ -144,28 +144,32 @@ document.getElementById('connect').addEventListener('click', () => {
   // docstring for the full reasoning).
   sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
 
+  // Real bug found live, 2026-08-22 (while building watch-live.html):
+  // RunStarted routes on runId, StepStarted routes on stepId -- two
+  // DIFFERENT routing keys under the same 'lifecycle' family (NOT the
+  // "shouldn't happen" case a previous version of this comment assumed),
+  // so the runtime's own per-(family,key) mounting genuinely creates a
+  // second step-tracker instance every single connection, not just in
+  // some edge case. There is conceptually ONE step tracker per run --
+  // tracked here, outside the runtime's own per-key mounting, reused for
+  // every lifecycle-family event regardless of which specific key
+  // triggered the mount.
+  let stepTrackerController = null;
+
   // Real container/slot mounting: one live_step_tracker for the whole
-  // run (routing key lifecycle:<runId>), one NEW tool_call_card per
-  // distinct toolCallId — exactly the mechanism Phase 1's own tests
-  // proved against synthetic parallel calls, now driven by whatever
-  // this specific real run's own sequential real tool calls actually
-  // produce.
+  // run, one NEW tool_call_card per distinct toolCallId — exactly the
+  // mechanism Phase 1's own tests proved against synthetic parallel
+  // calls, now driven by whatever this specific real run's own
+  // sequential real tool calls actually produce.
   runtime = A2UIStream.A2UIStreamRuntime({
     container: toolCallsContainer,
     mountAtom(family, key, event) {
       let primary;
       if (family === 'lifecycle') {
-        // The step tracker is a SINGLE instance for the whole run, not
-        // one per lifecycle event's own key — mount it once into its own
-        // container, reuse for every subsequent lifecycle-family event.
-        if (!stepContainer.firstChild) {
-          primary = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
-        } else {
-          // A second distinct lifecycle key (shouldn't happen in this
-          // demo's single-run shape) gets its own card too, rather than
-          // silently reusing the first one's controller for different data.
-          primary = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+        if (!stepTrackerController) {
+          stepTrackerController = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
         }
+        primary = stepTrackerController;
       } else if (family === 'tool_call') {
         // Real routing choice at mount time: the FIRST event for a given
         // toolCallId already carries the real tool name (ToolCallStart),
