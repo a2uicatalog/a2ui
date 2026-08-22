@@ -98,6 +98,28 @@ def main():
 
     entries = []
 
+    # Publisher identity, reused as both the host-level and the renderer
+    # entry's Trust Manifest `identity` (per ai-catalog.io's own example:
+    # trustManifest.identity is normally the SAME URI as the entry it's
+    # attached to). GitHub-org attestation only -- no signature (that needs
+    # real JWS key management, a separate follow-on) -- so this sits at the
+    # "publisher identity + provenance" trust layer, not the top "signed"
+    # one. Scoped to the host object and the one renderer entry that
+    # represents the whole capability, not all 480 individual atom entries:
+    # the SAME publisher claim repeated 480 times would bloat this already
+    # 369 KB file for no additional trust signal (agent-readiness audit,
+    # 2026-08-22: "No entry carries a trustManifest").
+    publisher_attestation = {
+        "type": "publisher-identity",
+        "uri": "https://github.com/a2uicatalog",
+        "description": ("GitHub organization publishing this catalog, its source "
+                        "(a2uicatalog/a2ui), and the @a2uicatalog/mcp CLI/SDK package."),
+    }
+    publisher_provenance = [{
+        "relation": "publishedFrom",
+        "sourceId": "https://github.com/a2uicatalog/a2ui",
+    }]
+
     # Top-level renderer capability entry
     entries.append({
         "identifier": f"urn:air:{domain}:renderer:a2ui",
@@ -117,6 +139,13 @@ def main():
             "display interactive components in an Apps Script web app",
             "create multi-surface UI from a single atom schema",
         ],
+        "trustManifest": {
+            "identity": f"urn:air:{domain}:renderer:a2ui",
+            "identityType": "dns",
+            "attestations": [publisher_attestation],
+            "provenance": publisher_provenance,
+            "privacyPolicyUrl": f"{base}/privacy/",
+        },
     })
 
     # One entry per unique atom
@@ -140,6 +169,13 @@ def main():
             "displayName": "A2UI Atomic Catalog",
             "identifier": f"did:web:{domain}",
             "documentationUrl": f"{base}/llms.txt",
+            "trustManifest": {
+                "identity": f"did:web:{domain}",
+                "identityType": "did",
+                "attestations": [publisher_attestation],
+                "provenance": publisher_provenance,
+                "privacyPolicyUrl": f"{base}/privacy/",
+            },
         },
         "entries": entries,
     }

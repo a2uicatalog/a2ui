@@ -3,7 +3,25 @@
   "host": {
     "displayName": "A2UI Atomic Catalog",
     "identifier": "did:web:a2uicatalog.ai",
-    "documentationUrl": "https://a2uicatalog.ai/llms.txt"
+    "documentationUrl": "https://a2uicatalog.ai/llms.txt",
+    "trustManifest": {
+      "identity": "did:web:a2uicatalog.ai",
+      "identityType": "did",
+      "attestations": [
+        {
+          "type": "publisher-identity",
+          "uri": "https://github.com/a2uicatalog",
+          "description": "GitHub organization publishing this catalog, its source (a2uicatalog/a2ui), and the @a2uicatalog/mcp CLI/SDK package."
+        }
+      ],
+      "provenance": [
+        {
+          "relation": "publishedFrom",
+          "sourceId": "https://github.com/a2uicatalog/a2ui"
+        }
+      ],
+      "privacyPolicyUrl": "https://a2uicatalog.ai/privacy/"
+    }
   },
   "entries": [
     {
@@ -26,7 +44,25 @@
         "build Google Chat cards from a data payload",
         "display interactive components in an Apps Script web app",
         "create multi-surface UI from a single atom schema"
-      ]
+      ],
+      "trustManifest": {
+        "identity": "urn:air:a2uicatalog.ai:renderer:a2ui",
+        "identityType": "dns",
+        "attestations": [
+          {
+            "type": "publisher-identity",
+            "uri": "https://github.com/a2uicatalog",
+            "description": "GitHub organization publishing this catalog, its source (a2uicatalog/a2ui), and the @a2uicatalog/mcp CLI/SDK package."
+          }
+        ],
+        "provenance": [
+          {
+            "relation": "publishedFrom",
+            "sourceId": "https://github.com/a2uicatalog/a2ui"
+          }
+        ],
+        "privacyPolicyUrl": "https://a2uicatalog.ai/privacy/"
+      }
     },
     {
       "identifier": "urn:air:a2uicatalog.ai:atom:intro",

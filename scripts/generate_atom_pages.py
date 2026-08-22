@@ -1518,6 +1518,7 @@ def generate_index(atoms):
         "url": "https://a2uicatalog.ai",
         "logo": "https://a2uicatalog.ai/brand/og-card.png",
         "description": "Independent, unofficial open-source catalog of typed UI atoms for AI agents.",
+        "address": {{ "@type": "PostalAddress", "addressCountry": "FR" }},
         "sameAs": [
           "https://github.com/a2uicatalog/a2ui",
           "https://www.linkedin.com/in/curtiskrygier"
@@ -1577,6 +1578,36 @@ def generate_index(atoms):
         "url": "https://a2uicatalog.ai/mcp",
         "description": "Free MCP server exposing the A2UI atom vocabulary and rendering tools to AI agents — no signup, no API key required.",
         "offers": {{ "@type": "Offer", "price": "0", "priceCurrency": "USD" }}
+      }},
+      {{
+        "@type": "FAQPage",
+        "@id": "https://a2uicatalog.ai/#faq",
+        "mainEntity": [
+          {{
+            "@type": "Question",
+            "name": "Is the A2UI Atomic Catalog free to use?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Yes. The MCP server, REST endpoints and catalogue documents are free with no signup, no API key and no card — see https://a2uicatalog.ai/pricing.md for the exact per-endpoint rate limits." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Do I need an API key or OAuth to connect?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "No. The primary MCP server at https://a2uicatalog.ai/mcp is public and unauthenticated — connect and call the tools directly. An optional OAuth/API-key/Basic-Auth path exists only for enterprise platforms whose connector model requires a credential; see https://a2uicatalog.ai/auth.md." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Is there a paid tier or enterprise plan?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "No. The vocabulary is MIT licensed and the renderers are in the public repository, so anything you hit a rate limit on, you can self-host and run without limits instead of upgrading." }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Can I self-host the renderer?",
+            "acceptedAnswer": {{ "@type": "Answer",
+              "text": "Yes — deploy your own Google Apps Script renderer in four commands (git clone, clasp login, clasp create, clasp push && clasp deploy), at no cost beyond a Google account, for unlimited unmetered rendering." }}
+          }}
+        ]
       }}
     ]
   }}
