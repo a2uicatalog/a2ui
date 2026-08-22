@@ -76,6 +76,12 @@
   .a2ui-run-sketch-node[data-status=running] { fill: #9ca3af; }
   .a2ui-run-sketch-node[data-status=ok] { fill: #059669; }
   .a2ui-run-sketch-node[data-status=error] { fill: #dc2626; }
+
+  .a2ui-cost-trend { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; width: 156px; }
+  .a2ui-cost-trend-value { font-size: 0.75rem; font-weight: 700; font-family: monospace; color: #374151; margin-bottom: 4px; }
+  .a2ui-cost-trend-svg { width: 100%; height: 44px; display: block; }
+  .a2ui-cost-trend-line { stroke: #2563eb; stroke-width: 1.5; fill: none; }
+  .a2ui-cost-trend-dot { fill: #2563eb; }
 </style>
 </head>
 <body>
@@ -102,6 +108,8 @@
   <div>
     <h2 style="font-size:1rem;">Run sketch</h2>
     <div id="run-sketch-container"></div>
+    <h2 style="font-size:1rem;">Cost trend</h2>
+    <div id="cost-trend-container"></div>
   </div>
 </div>
 
@@ -112,6 +120,7 @@ const statusEl = document.getElementById('conn-status');
 const stepContainer = document.getElementById('step-tracker-container');
 const toolCallsContainer = document.getElementById('tool-calls');
 const sketchContainer = document.getElementById('run-sketch-container');
+const costTrendContainer = document.getElementById('cost-trend-container');
 let runtime = null;
 let sketchController = null;
 
@@ -125,6 +134,7 @@ document.getElementById('connect').addEventListener('click', () => {
   stepContainer.innerHTML = '';
   toolCallsContainer.innerHTML = '';
   sketchContainer.innerHTML = '';
+  costTrendContainer.innerHTML = '';
 
   // agent_run_sketch wants the UNION of lifecycle + tool_call events
   // across every routing key in the run, not one controller per key like
@@ -173,7 +183,14 @@ document.getElementById('connect').addEventListener('click', () => {
       } else if (family === 'reasoning') {
         primary = A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
       } else if (family === 'state') {
-        primary = A2UIAtomsLive.mountLiveStateDashboard(toolCallsContainer).controller;
+        // Only ONE controller mounts per (family, key) -- daily_agent.py's
+        // own real loop emits exactly one real 'state' stream today (the
+        // cost trend, wired 2026-08-22), so that's what this demo page
+        // shows against a real backend. live_state_dashboard's own
+        // {items:[...]} shape was never wired to any real backend event
+        // either (still synthetic-harness-only, same as before this
+        // change) -- routing here doesn't regress anything real.
+        primary = A2UIAtomsLive.mountLiveCostTrend(costTrendContainer).controller;
       } else {
         // Unknown family (text -- not built yet, or this
         // demo's own real loop never emits them) -- a harmless stub so the
