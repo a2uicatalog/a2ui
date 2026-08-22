@@ -21,10 +21,19 @@
   .a2ui-run-status[data-status=done] { color: #166534; }
   .a2ui-run-status[data-status=error] { color: #991b1b; }
   .a2ui-step-list { margin: 0; padding-left: 20px; font-size: 0.85rem; }
-  .a2ui-step-list li[data-status=running] { color: #1e40af; font-weight: 600; }
+  .a2ui-step-list li[data-status=running] { color: #1e40af; font-weight: 600; position: relative; padding-left: 14px; }
   .a2ui-step-list li[data-status=done] { color: #166534; }
   .a2ui-step-list li[data-status=error] { color: #991b1b; font-weight: 600; }
   .a2ui-step-list li[data-status=pending] { color: #9ca3af; }
+  /* The one step actually happening right now, made visibly live -- same
+     "feels real time" treatment as live_cost_trend's own heartbeat. */
+  .a2ui-step-list li[data-status=running]::before {
+    content: ''; position: absolute; left: -2px; top: 7px; width: 6px; height: 6px;
+    border-radius: 50%; background: #1e40af; animation: a2ui-cost-heartbeat 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .a2ui-step-list li[data-status=running]::before { animation: none; }
+  }
 
   #tool-calls { display: flex; flex-direction: column; gap: 10px; }
   .a2ui-tool-call-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
