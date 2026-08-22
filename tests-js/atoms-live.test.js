@@ -7,6 +7,7 @@ const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
   createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
+  createLiveConfidenceBarController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -589,6 +590,83 @@ test('log_output: a connection error with no RunError yet still appends a visibl
 
   const lines = adapter.calls.log.trim().split('\n');
   assert.match(lines[lines.length - 1], /connection error/);
+});
+
+// ─── live_confidence_bar ─────────────────────────────────────────────────
+function fakeConfidenceAdapter() {
+  const calls = { items: null, status: null };
+  return {
+    calls,
+    setItems(items) { calls.items = items; },
+    setStatus(s) { calls.status = s; },
+  };
+}
+
+test('live_confidence_bar: single item format with automatic threshold colors', () => {
+  const adapter = fakeConfidenceAdapter();
+  const ctrl = createLiveConfidenceBarController(adapter);
+
+  // Score >= 70 should be green (#22c55e)
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { label: 'Relevance', value: 85 },
+  });
+  assert.deepEqual(adapter.calls.items, [{ label: 'Relevance', value: 85, color: '#22c55e' }]);
+  assert.equal(adapter.calls.status, 'streaming');
+
+  // Score >= 40 and < 70 should be amber (#f59e0b)
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { label: 'Relevance', value: 55 },
+  });
+  assert.deepEqual(adapter.calls.items, [{ label: 'Relevance', value: 55, color: '#f59e0b' }]);
+
+  // Score < 40 should be red (#ef4444)
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'complete',
+    state: { label: 'Relevance', value: 20 },
+  });
+  assert.deepEqual(adapter.calls.items, [{ label: 'Relevance', value: 20, color: '#ef4444' }]);
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('live_confidence_bar: normalizes fractional scores 0.0-1.0 to 0-100 percentage', () => {
+  const adapter = fakeConfidenceAdapter();
+  const ctrl = createLiveConfidenceBarController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { label: 'Grounding', value: 0.942 },
+  });
+  assert.deepEqual(adapter.calls.items, [{ label: 'Grounding', value: 94, color: '#22c55e' }]);
+});
+
+test('live_confidence_bar: handles multi-item format with custom color override', () => {
+  const adapter = fakeConfidenceAdapter();
+  const ctrl = createLiveConfidenceBarController(adapter);
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: {
+      color: '#3b82f6',
+      items: [
+        { label: 'Tone', value: 90 },
+        { label: 'Safety', value: 30, color: '#dc2626' },
+      ],
+    },
+  });
+  assert.deepEqual(adapter.calls.items, [
+    { label: 'Tone', value: 90, color: '#3b82f6' },
+    { label: 'Safety', value: 30, color: '#dc2626' },
+  ]);
+});
+
+test('live_confidence_bar: missing/malformed input defaults gracefully without crashing', () => {
+  const adapter = fakeConfidenceAdapter();
+  const ctrl = createLiveConfidenceBarController(adapter);
+  ctrl.onEvent({ type: 'StateSnapshot', lifecycle: 'streaming', state: {} });
+  assert.deepEqual(adapter.calls.items, []);
+
+  ctrl.onEvent({ type: 'StateDelta', lifecycle: 'streaming', state: { items: [null, { value: 'invalid' }] } });
+  assert.deepEqual(adapter.calls.items, [{ label: 'Confidence', value: 0, color: '#ef4444' }]);
 });
 
 console.log('all a2ui-atoms-live tests defined');
