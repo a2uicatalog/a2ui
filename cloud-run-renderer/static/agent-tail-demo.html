@@ -68,6 +68,14 @@
   .a2ui-file-edit-result { font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
   .a2ui-file-edit-result[data-ok=true] { color: #166534; }
   .a2ui-file-edit-result[data-ok=false] { color: #991b1b; }
+
+  .a2ui-run-sketch { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; width: 156px; }
+  .a2ui-run-sketch-svg { width: 100%; display: block; }
+  .a2ui-run-sketch-edge { stroke: #9ca3af; stroke-width: 1.5; fill: none; stroke-linecap: round; }
+  .a2ui-run-sketch-node { stroke: #fff; stroke-width: 1.5; }
+  .a2ui-run-sketch-node[data-status=running] { fill: #9ca3af; }
+  .a2ui-run-sketch-node[data-status=ok] { fill: #059669; }
+  .a2ui-run-sketch-node[data-status=error] { fill: #dc2626; }
 </style>
 </head>
 <body>
@@ -86,8 +94,16 @@
 </div>
 
 <div id="step-tracker-container"></div>
-<h2 style="font-size:1rem;">Tool calls</h2>
-<div id="tool-calls"></div>
+<div style="display:flex;gap:20px;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
+    <h2 style="font-size:1rem;">Tool calls</h2>
+    <div id="tool-calls"></div>
+  </div>
+  <div>
+    <h2 style="font-size:1rem;">Run sketch</h2>
+    <div id="run-sketch-container"></div>
+  </div>
+</div>
 
 <script src="/static/a2ui-stream-runtime.v1.js"></script>
 <script src="/static/a2ui-atoms-live.v1.js"></script>
@@ -95,7 +111,9 @@
 const statusEl = document.getElementById('conn-status');
 const stepContainer = document.getElementById('step-tracker-container');
 const toolCallsContainer = document.getElementById('tool-calls');
+const sketchContainer = document.getElementById('run-sketch-container');
 let runtime = null;
+let sketchController = null;
 
 function setConnected(connected) {
   statusEl.textContent = connected ? 'connected' : 'disconnected';
@@ -106,6 +124,15 @@ document.getElementById('connect').addEventListener('click', () => {
   const url = document.getElementById('stream-url').value;
   stepContainer.innerHTML = '';
   toolCallsContainer.innerHTML = '';
+  sketchContainer.innerHTML = '';
+
+  // agent_run_sketch wants the UNION of lifecycle + tool_call events
+  // across every routing key in the run, not one controller per key like
+  // everything else here -- ONE shared instance per connection, forwarded
+  // to below rather than mounted through the runtime's own per-key
+  // dispatch (see a2ui-atoms-live.v1.js's own createAgentRunSketchController
+  // docstring for the full reasoning).
+  sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
 
   // Real container/slot mounting: one live_step_tracker for the whole
   // run (routing key lifecycle:<runId>), one NEW tool_call_card per
@@ -116,19 +143,20 @@ document.getElementById('connect').addEventListener('click', () => {
   runtime = A2UIStream.A2UIStreamRuntime({
     container: toolCallsContainer,
     mountAtom(family, key, event) {
+      let primary;
       if (family === 'lifecycle') {
         // The step tracker is a SINGLE instance for the whole run, not
         // one per lifecycle event's own key — mount it once into its own
         // container, reuse for every subsequent lifecycle-family event.
         if (!stepContainer.firstChild) {
-          return A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+          primary = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+        } else {
+          // A second distinct lifecycle key (shouldn't happen in this
+          // demo's single-run shape) gets its own card too, rather than
+          // silently reusing the first one's controller for different data.
+          primary = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
         }
-        // A second distinct lifecycle key (shouldn't happen in this
-        // demo's single-run shape) gets its own card too, rather than
-        // silently reusing the first one's controller for different data.
-        return A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
-      }
-      if (family === 'tool_call') {
+      } else if (family === 'tool_call') {
         // Real routing choice at mount time: the FIRST event for a given
         // toolCallId already carries the real tool name (ToolCallStart),
         // so a file-editing call gets the specialized live_diff_card
@@ -138,21 +166,32 @@ document.getElementById('connect').addEventListener('click', () => {
         // edit_file/write_file on every real run that ships a fix).
         const toolName = (event && event.payload && event.payload.toolName) || '';
         if (toolName === 'edit_file' || toolName === 'write_file') {
-          return A2UIAtomsLive.mountFileEditCard(toolCallsContainer).controller;
+          primary = A2UIAtomsLive.mountFileEditCard(toolCallsContainer).controller;
+        } else {
+          primary = A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
         }
-        return A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
+      } else if (family === 'reasoning') {
+        primary = A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
+      } else if (family === 'state') {
+        primary = A2UIAtomsLive.mountLiveStateDashboard(toolCallsContainer).controller;
+      } else {
+        // Unknown family (text -- not built yet, or this
+        // demo's own real loop never emits them) -- a harmless stub so the
+        // runtime doesn't throw, per its own fail-open-for-other-atoms
+        // contract.
+        primary = { onEvent() {}, destroy() {} };
       }
-      if (family === 'reasoning') {
-        return A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
+      if (family === 'lifecycle' || family === 'tool_call') {
+        // Forward the SAME event to the shared sketch controller in
+        // addition to the primary per-key one -- the sketch's own
+        // internal id bookkeeping (toolCallId/node id) is what makes
+        // receiving a union across keys safe.
+        return {
+          onEvent(e) { primary.onEvent(e); sketchController.onEvent(e); },
+          destroy() { primary.destroy(); },
+        };
       }
-      if (family === 'state') {
-        return A2UIAtomsLive.mountLiveStateDashboard(toolCallsContainer).controller;
-      }
-      // Unknown family (text -- not built yet, or this
-      // demo's own real loop never emits them) -- a harmless stub so the
-      // runtime doesn't throw, per its own fail-open-for-other-atoms
-      // contract.
-      return { onEvent() {}, destroy() {} };
+      return primary;
     },
   });
 

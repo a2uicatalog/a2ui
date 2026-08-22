@@ -495,10 +495,179 @@
     return { element: el, controller: createLiveStateDashboardController(adapter) };
   }
 
+  // ─── agent_run_sketch controller ────────────────────────────────────────
+  // A hand-drawn-style live node graph of an agent's own run, not a bar or
+  // a list. Sketched in launch/agentic-realtime-streaming-brief.md (a2ui-
+  // private) §4b as the first "agentic-loopback" candidate: the FINAL
+  // static frame is strictly LESS informative than watching it get drawn
+  // (a settled bar communicates nothing about the shape of exploration
+  // that produced it; a settled graph still shows that shape).
+  //
+  // Consumes the UNION of RunStarted/Finished/Error and ToolCallStart/
+  // Result as ONE shared graph -- deliberately NOT one controller per
+  // routing key like every other atom above. a2ui-stream-runtime.v1.js's
+  // own dispatch() mounts one controller per (family, key) pair, which
+  // fits an atom that only cares about ITS OWN key; this atom wants the
+  // union across every key in the run. The real fix lives at the PAGE
+  // level (see agent-tail-demo.html's own mountAtom): a single shared
+  // controller instance is created once per connection and every
+  // lifecycle/tool_call event is forwarded to it in ADDITION to whatever
+  // per-key controller the page already mounts for that family -- this
+  // controller does its own internal per-id bookkeeping (toolCallId/
+  // node id), so it doesn't need the runtime's per-key isolation, it
+  // wants the union the runtime's own model doesn't provide.
+  //
+  // Node "weight": a tool call classified as read-only (a fixed, honestly
+  // non-exhaustive set -- read_file/search_files/list_files/list_atoms/
+  // get_atom_detail/check_agent_readiness) draws as a small satellite
+  // dot; anything else (edit_file/write_file/run_tests/finish/unknown)
+  // draws as a larger node. This is a rendering heuristic only, not a
+  // protocol concept -- its entire point is making the real, already-
+  // observed failure mode (a run exploring for 60 turns and never
+  // calling write_file, named in daily_agent.py's own system prompt)
+  // visible as a long chain of small dots with no large one, at a glance.
+  const AGENT_RUN_SKETCH_READ_ONLY_TOOLS = new Set([
+    'read_file', 'search_files', 'list_files', 'list_atoms',
+    'get_atom_detail', 'check_agent_readiness',
+  ]);
+
+  function createAgentRunSketchController(adapter) {
+    const nodes = [];             // [{id, label, status, weight}]
+    const nodeIndexById = new Map();
+    let runStatus = 'idle';
+
+    function upsertNode(id, label, weight) {
+      if (!nodeIndexById.has(id)) {
+        nodeIndexById.set(id, nodes.length);
+        nodes.push({ id, label, status: 'running', weight });
+      }
+      return nodes[nodeIndexById.get(id)];
+    }
+
+    function render() {
+      // A fresh array/objects each render -- the DOM adapter (or a test's
+      // fake one) must never be handed this controller's own live
+      // internal node objects to mutate.
+      adapter.setGraph(nodes.map((n) => Object.assign({}, n)), runStatus);
+    }
+
+    return {
+      onEvent(event) {
+        const p = event.payload || {};
+        if (event.type === 'RunStarted') {
+          runStatus = 'running';
+          upsertNode('run-start', 'start', 'major').status = 'ok';
+        } else if (event.type === 'ToolCallStart') {
+          const id = p.toolCallId || ('call-' + nodes.length);
+          const name = p.toolName || 'call';
+          const weight = AGENT_RUN_SKETCH_READ_ONLY_TOOLS.has(name) ? 'minor' : 'major';
+          upsertNode(id, name, weight);
+        } else if (event.type === 'ToolCallResult') {
+          const id = p.toolCallId;
+          if (id && nodeIndexById.has(id)) {
+            nodes[nodeIndexById.get(id)].status = p.isError ? 'error' : 'ok';
+          }
+        } else if (event.type === 'RunFinished') {
+          runStatus = 'done';
+          upsertNode('run-end', 'finished', 'major').status = 'ok';
+        } else if (event.type === 'RunError') {
+          runStatus = 'error';
+          upsertNode('run-end', 'error', 'major').status = 'error';
+        }
+        // A connection error with no ToolCallResult yet -- same honesty
+        // rule tool_call_card/live_diff_card already apply: a call left
+        // hanging mid-stream must show as failed, not silently "running"
+        // forever.
+        if (event.lifecycle === 'error' && event.type !== 'RunError') {
+          const last = nodes[nodes.length - 1];
+          if (last && last.status === 'running') last.status = 'error';
+        }
+        render();
+      },
+      destroy() {},
+    };
+  }
+
+  // Deterministic string->[0,1) hash (FNV-1a) -- the "sketch" jitter must
+  // be stable across re-renders of the SAME node id, or the drawing
+  // visibly jumps every time a new node is added and the whole graph
+  // re-paints. No RNG, no seed state to manage.
+  function agentRunSketchHash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0) / 4294967295;
+  }
+
+  function agentRunSketchWobblyPath(x1, y1, x2, y2, seed) {
+    const midX = (x1 + x2) / 2 + (seed - 0.5) * 16;
+    const midY = (y1 + y2) / 2 + (seed - 0.5) * 8;
+    return 'M ' + x1 + ' ' + y1 + ' Q ' + midX + ' ' + midY + ' ' + x2 + ' ' + y2;
+  }
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function mountAgentRunSketch(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'a2ui-run-sketch';
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'a2ui-run-sketch-svg');
+    wrap.appendChild(svg);
+    container.appendChild(wrap);
+
+    const STEP_Y = 40;
+    const JITTER_X = 10;
+    const CENTER_X = 70;
+
+    const adapter = {
+      setGraph(nodes, runStatus) {
+        wrap.dataset.runStatus = runStatus;
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        const positions = nodes.map((n, i) => {
+          const seed = agentRunSketchHash(n.id);
+          return { x: CENTER_X + (seed - 0.5) * 2 * JITTER_X, y: 20 + i * STEP_Y, seed };
+        });
+        const height = Math.max(48, 40 + nodes.length * STEP_Y);
+        svg.setAttribute('viewBox', '0 0 140 ' + height);
+        svg.setAttribute('height', String(height));
+
+        for (let i = 1; i < nodes.length; i++) {
+          const a = positions[i - 1];
+          const b = positions[i];
+          const path = document.createElementNS(SVG_NS, 'path');
+          path.setAttribute('d', agentRunSketchWobblyPath(a.x, a.y, b.x, b.y, a.seed));
+          path.setAttribute('class', 'a2ui-run-sketch-edge');
+          svg.appendChild(path);
+        }
+
+        nodes.forEach((n, i) => {
+          const pos = positions[i];
+          const circle = document.createElementNS(SVG_NS, 'circle');
+          circle.setAttribute('cx', String(pos.x));
+          circle.setAttribute('cy', String(pos.y));
+          circle.setAttribute('r', String(n.weight === 'major' ? 7 : 4));
+          circle.setAttribute('class', 'a2ui-run-sketch-node');
+          circle.dataset.status = n.status;
+          circle.dataset.weight = n.weight;
+          const title = document.createElementNS(SVG_NS, 'title');
+          title.textContent = n.label + ' (' + n.status + ')';
+          circle.appendChild(title);
+          svg.appendChild(circle);
+        });
+      },
+    };
+    return { element: wrap, controller: createAgentRunSketchController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
+    createAgentRunSketchController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
+    mountAgentRunSketch,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;

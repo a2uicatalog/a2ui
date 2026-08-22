@@ -6,6 +6,7 @@ const path = require('node:path');
 const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
+  createAgentRunSketchController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -359,6 +360,77 @@ test('live_diff_card: a connection error with no result yet still reports failur
   ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' }, lifecycle: 'error' });
   assert.equal(adapter.calls.result, false);
   assert.equal(adapter.calls.resultError, true);
+});
+
+// ─── agent_run_sketch ────────────────────────────────────────────────────
+// Controller logic only -- node bookkeeping and classification, not SVG
+// geometry (that's real-browser-verified, same split reasoning every
+// other DOM-adapter controller above already uses).
+function fakeSketchAdapter() {
+  const calls = { graph: null, runStatus: null };
+  return {
+    calls,
+    setGraph(nodes, runStatus) { calls.graph = nodes; calls.runStatus = runStatus; },
+  };
+}
+
+test('agent_run_sketch: RunStarted creates a major "start" node and sets run status', () => {
+  const adapter = fakeSketchAdapter();
+  const ctrl = createAgentRunSketchController(adapter);
+  ctrl.onEvent({ type: 'RunStarted', payload: { runId: 'r1' } });
+  assert.equal(adapter.calls.runStatus, 'running');
+  assert.deepEqual(adapter.calls.graph, [{ id: 'run-start', label: 'start', status: 'ok', weight: 'major' }]);
+});
+
+test('agent_run_sketch: a read-only tool call is classified "minor", an editing call is "major"', () => {
+  const adapter = fakeSketchAdapter();
+  const ctrl = createAgentRunSketchController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'read_file' } });
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't2', toolName: 'edit_file' } });
+  const byId = Object.fromEntries(adapter.calls.graph.map((n) => [n.id, n]));
+  assert.equal(byId.t1.weight, 'minor');
+  assert.equal(byId.t2.weight, 'major');
+});
+
+test('agent_run_sketch: ToolCallResult updates the matching node to ok or error', () => {
+  const adapter = fakeSketchAdapter();
+  const ctrl = createAgentRunSketchController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' } });
+  ctrl.onEvent({ type: 'ToolCallResult', payload: { toolCallId: 't1', isError: false } });
+  assert.equal(adapter.calls.graph.find((n) => n.id === 't1').status, 'ok');
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't2', toolName: 'run_tests' } });
+  ctrl.onEvent({ type: 'ToolCallResult', payload: { toolCallId: 't2', isError: true } });
+  assert.equal(adapter.calls.graph.find((n) => n.id === 't2').status, 'error');
+});
+
+test('agent_run_sketch: RunFinished/RunError append a distinct terminal node and set run status', () => {
+  const okAdapter = fakeSketchAdapter();
+  const okCtrl = createAgentRunSketchController(okAdapter);
+  okCtrl.onEvent({ type: 'RunFinished', payload: {} });
+  assert.equal(okAdapter.calls.runStatus, 'done');
+  assert.equal(okAdapter.calls.graph[0].status, 'ok');
+
+  const errAdapter = fakeSketchAdapter();
+  const errCtrl = createAgentRunSketchController(errAdapter);
+  errCtrl.onEvent({ type: 'RunError', payload: {} });
+  assert.equal(errAdapter.calls.runStatus, 'error');
+  assert.equal(errAdapter.calls.graph[0].status, 'error');
+});
+
+test('agent_run_sketch: a connection error with no ToolCallResult yet marks the last node failed, not stuck running', () => {
+  const adapter = fakeSketchAdapter();
+  const ctrl = createAgentRunSketchController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' } });
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' }, lifecycle: 'error' });
+  assert.equal(adapter.calls.graph.find((n) => n.id === 't1').status, 'error');
+});
+
+test('agent_run_sketch: the SAME real toolCallId only ever creates one node, not a duplicate on re-arrival', () => {
+  const adapter = fakeSketchAdapter();
+  const ctrl = createAgentRunSketchController(adapter);
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' } });
+  ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'edit_file' } });
+  assert.equal(adapter.calls.graph.length, 1);
 });
 
 console.log('all a2ui-atoms-live tests defined');
