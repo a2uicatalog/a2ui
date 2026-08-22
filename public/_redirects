@@ -8,12 +8,21 @@
 /console /developers/ 301
 /dashboard /developers/ 301
 
-# Same reasoning for conventional API-docs paths: no literal /api or
-# /api-reference page exists (the real reference is openapi.json, linked
-# prominently from /developers/), so send probes there instead of a bare 404.
+# Predictable documentation, API reference, OpenAPI, auth, and webhook paths
+# mapped directly to their published destinations.
 /api /developers/ 301
-/api-docs /developers/ 301
-/api-reference /developers/ 301
-/docs /developers/ 301
-/docs/api /developers/ 301
-/documentation /developers/ 301
+/api-docs /api-docs/ 301
+/api-reference /api-docs/ 301
+/docs /docs/ 301
+/docs/api /docs/ 301
+/documentation /docs/ 301
+/swagger /docs/ 301
+/swagger-ui /docs/ 301
+/swagger.json /openapi.json 301
+/openapi.yaml /openapi.json 301
+/api/openapi.json /openapi.json 301
+/api/swagger.json /openapi.json 301
+/auth /auth/ 301
+/authentication /auth/ 301
+/webhooks /webhooks/ 301
+/docs/webhooks /webhooks/ 301
