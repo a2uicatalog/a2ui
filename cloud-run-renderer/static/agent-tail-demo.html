@@ -36,6 +36,16 @@
   .a2ui-tool-call-result-wrap summary { cursor: pointer; font-size: 0.78rem; color: #666; }
   .a2ui-tool-call-result-wrap[data-error=true] summary { color: #991b1b; font-weight: 600; }
   .a2ui-tool-call-result { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 160px; overflow: auto; }
+
+  .a2ui-reasoning-trace { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin: 6px 0; background: #fafafa; }
+  .a2ui-reasoning-trace[data-lifecycle=streaming] { border-color: #c4b5fd; background: #f5f3ff; }
+  .a2ui-reasoning-trace[data-lifecycle=complete] { border-color: #e5e7eb; }
+  .a2ui-reasoning-trace[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-reasoning-trace[data-encrypted=true] { border-color: #fde68a; background: #fffbeb; }
+  .a2ui-reasoning-summary { cursor: pointer; font-weight: 600; font-size: 0.85rem; color: #4b5563; display: flex; align-items: center; justify-content: space-between; }
+  .a2ui-reasoning-badge { font-size: 0.72rem; color: #92400e; font-weight: 600; }
+  .a2ui-reasoning-body { margin-top: 8px; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; color: #374151; max-height: 200px; overflow-y: auto; }
+  .a2ui-reasoning-locked-notice { margin-top: 6px; font-size: 0.78rem; color: #92400e; font-style: italic; }
 </style>
 </head>
 <body>
@@ -99,7 +109,10 @@ document.getElementById('connect').addEventListener('click', () => {
       if (family === 'tool_call') {
         return A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
       }
-      // Unknown family (state/reasoning/text -- not built yet, or this
+      if (family === 'reasoning') {
+        return A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
+      }
+      // Unknown family (state/text -- not built yet, or this
       // demo's own real loop never emits them) -- a harmless stub so the
       // runtime doesn't throw, per its own fail-open-for-other-atoms
       // contract.

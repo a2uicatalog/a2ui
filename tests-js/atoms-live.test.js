@@ -5,6 +5,7 @@ const path = require('node:path');
 
 const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
+  createReasoningTraceController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -185,6 +186,60 @@ test('tool_call_card: a connection error with NO result yet still shows a real, 
   ctrl.onEvent({ type: 'ToolCallStart', payload: { toolCallId: 't1', toolName: 'write_file' }, lifecycle: 'error' });
   assert.equal(adapter.calls.isError, true);
   assert.match(adapter.calls.result, /no result/);
+});
+
+// ─── reasoning_trace ───────────────────────────────────────────────────
+function fakeReasoningAdapter() {
+  const calls = { title: null, text: null, status: null, encrypted: null, encryptedDetails: null };
+  return {
+    calls,
+    setTitle(t) { calls.title = t; },
+    setText(t) { calls.text = t; },
+    setStatus(s) { calls.status = s; },
+    setEncrypted(enc, details) { calls.encrypted = enc; calls.encryptedDetails = details; },
+  };
+}
+
+test('reasoning_trace: streams text deltas safely through markdown-safe buffer', () => {
+  const adapter = fakeReasoningAdapter();
+  const ctrl = createReasoningTraceController(adapter);
+  ctrl.onEvent({ type: 'ReasoningStart', payload: { title: 'Analyzing context' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.title, 'Analyzing context');
+  ctrl.onEvent({ type: 'ReasoningMessageContent', payload: { delta: 'Evaluating **step 1' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.text, 'Evaluating ', 'must not flush incomplete markdown delimiter');
+  ctrl.onEvent({ type: 'ReasoningMessageContent', payload: { delta: ' logic** for correctness.' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.text, 'Evaluating **step 1 logic** for correctness.');
+  ctrl.onEvent({ type: 'ReasoningEnd', payload: {}, lifecycle: 'complete' });
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('reasoning_trace: force-flushes text buffer on ReasoningEnd', () => {
+  const adapter = fakeReasoningAdapter();
+  const ctrl = createReasoningTraceController(adapter);
+  ctrl.onEvent({ type: 'ReasoningStart', payload: {}, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.title, 'Thinking...');
+  ctrl.onEvent({ type: 'ReasoningMessageContent', payload: { delta: 'Unclosed **marker' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.text, 'Unclosed ');
+  ctrl.onEvent({ type: 'ReasoningEnd', payload: {}, lifecycle: 'complete' });
+  assert.equal(adapter.calls.text, 'Unclosed **marker');
+});
+
+test('reasoning_trace: ReasoningEncryptedValue locks and marks redacted content', () => {
+  const adapter = fakeReasoningAdapter();
+  const ctrl = createReasoningTraceController(adapter);
+  ctrl.onEvent({ type: 'ReasoningStart', payload: { title: 'Thinking' }, lifecycle: 'streaming' });
+  ctrl.onEvent({ type: 'ReasoningEncryptedValue', payload: { encryptedValue: 'enc_sig_12345' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.encrypted, true);
+  assert.equal(adapter.calls.encryptedDetails, 'enc_sig_12345');
+});
+
+test('reasoning_trace: ReasoningStart with encrypted payload immediately enters locked state', () => {
+  const adapter = fakeReasoningAdapter();
+  const ctrl = createReasoningTraceController(adapter);
+  ctrl.onEvent({ type: 'ReasoningStart', payload: { title: 'Model Thought', encrypted: true, encryptedValue: 'sig_abc' }, lifecycle: 'streaming' });
+  assert.equal(adapter.calls.title, 'Model Thought');
+  assert.equal(adapter.calls.encrypted, true);
+  assert.equal(adapter.calls.encryptedDetails, 'sig_abc');
 });
 
 console.log('all a2ui-atoms-live tests defined');
