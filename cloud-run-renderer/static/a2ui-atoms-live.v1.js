@@ -677,16 +677,47 @@
   // to a `points` array (ag_ui_emitter.py's own state_delta, wired into
   // _run_loop 2026-08-22). Watching real spend accrue during a real run,
   // not a static end-of-run total buried in a trace file.
-  function createLiveCostTrendController(adapter) {
+  // `now` is injectable (defaults to Date.now) so the rate calculation
+  // below is deterministically testable, matching this file's own
+  // existing pattern for injectable time/frame sources elsewhere.
+  function createLiveCostTrendController(adapter, now) {
+    now = now || Date.now;
+    let firstReceivedAtMs = null;
+    let firstCostUsd = null;
+
     return {
       onEvent(event) {
         const state = event.state || {};
         const points = Array.isArray(state.points) ? state.points : [];
-        adapter.setPoints(points.map((p) => ({
+        const cleaned = points.map((p) => ({
           turn: p && typeof p.turn === 'number' ? p.turn : 0,
           cumulativeTokens: p && typeof p.cumulativeTokens === 'number' ? p.cumulativeTokens : 0,
           cumulativeCostUsd: p && typeof p.cumulativeCostUsd === 'number' ? p.cumulativeCostUsd : 0,
-        })));
+        }));
+
+        // A live spend RATE, not just the running total -- real feedback,
+        // 2026-08-22: "make it human relatable and feel real time."
+        // Honestly a CLIENT-observed rate: the wire format carries no
+        // server-side timestamp (ag_ui_emitter.py's own _emit drops it
+        // before the event ever reaches a client -- see live_diff_card's
+        // own docstring for the same limitation applied elsewhere), so
+        // this measures wall-clock time on THIS machine since the first
+        // point arrived, not exact server-side elapsed time.
+        let ratePerMin = null;
+        if (cleaned.length > 0) {
+          const nowMs = now();
+          if (firstReceivedAtMs === null) {
+            firstReceivedAtMs = nowMs;
+            firstCostUsd = cleaned[0].cumulativeCostUsd;
+          }
+          const elapsedMin = (nowMs - firstReceivedAtMs) / 60000;
+          if (elapsedMin > 1 / 60) {   // at least ~1s elapsed -- avoid a wild divide-by-near-zero estimate
+            const last = cleaned[cleaned.length - 1];
+            ratePerMin = (last.cumulativeCostUsd - firstCostUsd) / elapsedMin;
+          }
+        }
+
+        adapter.setPoints(cleaned, ratePerMin);
         adapter.setStatus(event.lifecycle);
       },
       destroy() {},
@@ -697,22 +728,45 @@
     const el = document.createElement('div');
     el.className = 'a2ui-cost-trend';
     el.innerHTML =
-      '<div class="a2ui-cost-trend-value"></div>' +
+      '<div class="a2ui-cost-trend-header">' +
+        '<span class="a2ui-cost-trend-live-dot"></span>' +
+        '<span class="a2ui-cost-trend-value"></span>' +
+      '</div>' +
+      '<div class="a2ui-cost-trend-rate"></div>' +
       '<svg class="a2ui-cost-trend-svg" viewBox="0 0 160 44" preserveAspectRatio="none"></svg>';
     container.appendChild(el);
     const valueEl = el.querySelector('.a2ui-cost-trend-value');
+    const rateEl = el.querySelector('.a2ui-cost-trend-rate');
     const svg = el.querySelector('.a2ui-cost-trend-svg');
+    let lastRenderedCost = null;
 
     const adapter = {
-      setPoints(points) {
+      setPoints(points, ratePerMin) {
         while (svg.firstChild) svg.removeChild(svg.firstChild);
         if (points.length === 0) {
           valueEl.textContent = '$0.0000';
+          rateEl.textContent = '';
           return;
         }
         const last = points[points.length - 1];
         valueEl.textContent = '$' + last.cumulativeCostUsd.toFixed(4)
           + ' · ' + last.cumulativeTokens.toLocaleString() + ' tokens';
+        rateEl.textContent = ratePerMin !== null && ratePerMin > 0
+          ? '≈ $' + ratePerMin.toFixed(4) + ' / min right now'
+          : '';
+
+        // Flash on a genuinely NEW value, not every render -- real
+        // feedback, 2026-08-22: "make it feel real time... maybe
+        // flashing in between updates." Re-triggering a CSS animation
+        // needs a real reflow between removing and re-adding the class,
+        // or a second update in quick succession would silently not
+        // replay it.
+        if (lastRenderedCost !== null && last.cumulativeCostUsd !== lastRenderedCost) {
+          valueEl.classList.remove('a2ui-cost-trend-pulse');
+          void valueEl.offsetWidth;
+          valueEl.classList.add('a2ui-cost-trend-pulse');
+        }
+        lastRenderedCost = last.cumulativeCostUsd;
 
         // Cost is monotonically non-decreasing over a real run -- the
         // scale is simply [0, last value], no need to track a running
@@ -732,8 +786,17 @@
         svg.appendChild(polyline);
 
         // Emphasize the endpoint -- the CURRENT spend, the number that
-        // actually matters while a run is still going.
+        // actually matters while a run is still going. A soft expanding
+        // "ping" ring behind the solid dot, CSS-animated (see the
+        // matching .a2ui-cost-trend-ping keyframes), reinforces "this is
+        // live" even in the quiet seconds between real updates.
         const [lastX, lastY] = coords[coords.length - 1].split(',');
+        const ping = document.createElementNS(SVG_NS, 'circle');
+        ping.setAttribute('cx', lastX);
+        ping.setAttribute('cy', lastY);
+        ping.setAttribute('r', '3');
+        ping.setAttribute('class', 'a2ui-cost-trend-ping');
+        svg.appendChild(ping);
         const dot = document.createElementNS(SVG_NS, 'circle');
         dot.setAttribute('cx', lastX);
         dot.setAttribute('cy', lastY);
@@ -773,12 +836,76 @@
     return { element: el, controller: createLiveCostTrendController(adapter) };
   }
 
+  // ─── log_output controller (live variant) ───────────────────────────────
+  // Append-mode: extends the static log_output atom (a dark terminal-style
+  // box, renderers/web_article.py's own _render_log_output) with a live
+  // transcript of the SAME real lifecycle/tool_call events every other
+  // atom in this pack already consumes -- one formatted line per real
+  // event, not raw stdout (daily_agent.py's own tool calls don't emit
+  // free-form log lines; ToolCallResult's real shape is a structured
+  // dict). Honest about what it actually shows: an observer's own
+  // running commentary of the real event stream, client-timestamped
+  // (AG-UI's own wire format drops the server-side timestamp -- see
+  // ag_ui_emitter.py's _emit and this runtime's own SSE parser, neither
+  // forwards it), not a claim of exact server-side event time.
+  function createLogOutputController(adapter) {
+    // NOT createSafeTextBuffer -- that buffer exists to hold back an
+    // INCOMPLETE markdown delimiter mid-stream (a partial ```` ``` ````
+    // or unclosed `**bold`). Every line here arrives already complete
+    // (one real event = one whole formatted line), so there's nothing
+    // partial to guard against -- plain string accumulation is the
+    // honest tool for this job, not a mismatched reuse of the other one.
+    let text = '';
+    let ended = false;
+
+    function line(msg) {
+      const stamp = new Date().toLocaleTimeString();
+      text += '[' + stamp + '] ' + msg + '\n';
+      adapter.setLog(text);
+    }
+
+    return {
+      onEvent(event) {
+        const p = event.payload || {};
+        if (event.type === 'RunStarted') line('▶ run started');
+        else if (event.type === 'StepStarted') line('· ' + (p.title || 'step started'));
+        else if (event.type === 'ToolCallStart') line('→ ' + (p.toolName || 'tool_call'));
+        else if (event.type === 'ToolCallResult') {
+          line(p.isError ? '  ✗ error' : '  ✓ ok');
+        } else if (event.type === 'RunFinished') { line('■ run finished'); ended = true; }
+        else if (event.type === 'RunError') { line('✗ run error: ' + (p.message || '')); ended = true; }
+        if (event.lifecycle === 'error' && !ended && event.type !== 'RunError') {
+          line('✗ connection error');
+          ended = true;
+        }
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLogOutput(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-log-output';
+    el.innerHTML = '<pre class="a2ui-log-output-pre"></pre>';
+    container.appendChild(el);
+    const preEl = el.querySelector('.a2ui-log-output-pre');
+    const adapter = {
+      setLog(text) {
+        preEl.textContent = text;
+        preEl.scrollTop = preEl.scrollHeight;   // auto-follow the tail, like a real terminal
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLogOutputController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
-    createAgentRunSketchController, createLiveCostTrendController,
+    createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
-    mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter,
+    mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
