@@ -348,7 +348,7 @@ CLI / local MCP server (npm, no account needed):
 
 Renders a payload to HTML with no MCP client at all. The same package also runs as a local
 MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys a `training.md` to
-your own Google Apps Script web app via `build_app`. https://www.npmjs.com/package/@a2uicatalog/mcp
+your own Google Apps Script web app via `build_app`. https://registry.npmjs.org/@a2uicatalog/mcp
 
 ## When to use this
 
@@ -372,7 +372,7 @@ declared sources), or on hosts that cannot display HTML.
 | Document | URL |
 |---|---|
 | Developer guide & API docs | https://a2uicatalog.ai/developers/ |
-| CLI / local MCP server (npm) | https://www.npmjs.com/package/@a2uicatalog/mcp |
+| CLI / local MCP server (npm) | https://registry.npmjs.org/@a2uicatalog/mcp |
 | OpenAPI specification | https://a2uicatalog.ai/openapi.json |
 | Full atom vocabulary | https://a2uicatalog.ai/spec.json |
 | Strict per-atom JSON Schema | https://a2uicatalog.ai/catalogue/atoms-json-schema.json |
@@ -412,7 +412,7 @@ DEVELOPERS_LLMS_TXT = """# A2UI Atomic Catalog — Developers
   (strict per-atom JSON Schema for constrained decoding), `POST /api/compose` (natural
   language to atom blocks).
 - CLI (npm, no account): `npx -p @a2uicatalog/mcp a2ui render page.json` — same package also
-  runs as a local MCP server for Claude Desktop/Cursor. https://www.npmjs.com/package/@a2uicatalog/mcp
+  runs as a local MCP server for Claude Desktop/Cursor. https://registry.npmjs.org/@a2uicatalog/mcp
 
 ## Reference
 

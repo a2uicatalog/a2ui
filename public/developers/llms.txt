@@ -15,7 +15,7 @@
   (strict per-atom JSON Schema for constrained decoding), `POST /api/compose` (natural
   language to atom blocks).
 - CLI (npm, no account): `npx -p @a2uicatalog/mcp a2ui render page.json` — same package also
-  runs as a local MCP server for Claude Desktop/Cursor. https://www.npmjs.com/package/@a2uicatalog/mcp
+  runs as a local MCP server for Claude Desktop/Cursor. https://registry.npmjs.org/@a2uicatalog/mcp
 
 ## Reference
 
