@@ -95,6 +95,67 @@
     };
   }
 
+  // ─── tool_call_card controller (Phase 3) ───────────────────────────────
+  // ToolCallStart/Args/End/Result. The a2ui-stream-runtime.v1.js runtime
+  // itself already handles the container/slot mechanism at the ROUTING
+  // level (two different toolCallIds mount two DISTINCT controller
+  // instances -- proven in Phase 1's own tests) -- this controller only
+  // has to be correct for ONE tool call's own lifecycle, not coordinate
+  // with siblings itself.
+  //
+  // ToolCallArgs is handled for BOTH real shapes this codebase's own AG-
+  // UI events can carry: a whole `args` object in one event (what
+  // daily_agent.py's own real emitter sends today -- see ag_ui_emitter.py,
+  // its own turn loop never streams args token-by-token) AND a `delta`
+  // string chunk (append-mode, for a future backend that DOES stream
+  // args incrementally) -- through the SAME markdown-safe-adjacent text
+  // buffer streaming_text already uses, so a future streaming-args
+  // backend doesn't need a second buffering implementation written for it.
+  function createToolCallController(adapter) {
+    const argsBuf = createSafeTextBuffer();
+    let name = '';
+    let ended = false;
+    let hasResult = false;
+
+    function renderArgs(force) {
+      adapter.setArgs(argsBuf.flush(force));
+    }
+
+    return {
+      onEvent(event) {
+        if (event.type === 'ToolCallStart') {
+          name = (event.payload && event.payload.toolName) || '';
+          adapter.setName(name);
+        } else if (event.type === 'ToolCallArgs') {
+          const p = event.payload || {};
+          if (typeof p.delta === 'string') {
+            argsBuf.append(p.delta);
+            renderArgs(false);
+          } else if (p.args !== undefined) {
+            // Whole-object shape -- pretty-print directly, no buffering
+            // needed since it arrived complete in one event.
+            adapter.setArgs(JSON.stringify(p.args, null, 2));
+          }
+        } else if (event.type === 'ToolCallResult') {
+          hasResult = true;
+          const p = event.payload || {};
+          adapter.setResult(
+            typeof p.result === 'string' ? p.result : JSON.stringify(p.result, null, 2),
+            !!p.isError);
+        }
+        if (event.type === 'ToolCallEnd' || event.lifecycle === 'error') {
+          ended = true;
+          renderArgs(true);   // force-flush any still-buffered arg delta, same reasoning streaming_text uses
+          if (!hasResult && event.lifecycle === 'error') {
+            adapter.setResult('(no result — the run ended before this call completed)', true);
+          }
+        }
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
   // ─── Reference DOM adapters (real page wiring, not unit-tested here — ──
   // the LOGIC above is; this is thin, deliberately dumb glue) ─────────────
   function mountStreamingText(container) {
@@ -134,8 +195,40 @@
     return { element: el, controller: createStepTrackerController(adapter) };
   }
 
+  function mountToolCallCard(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-tool-call-card';
+    el.innerHTML =
+      '<div class="a2ui-tool-call-name"></div>' +
+      '<pre class="a2ui-tool-call-args"></pre>' +
+      '<details class="a2ui-tool-call-result-wrap"><summary>Result</summary>' +
+      '<pre class="a2ui-tool-call-result"></pre></details>';
+    container.appendChild(el);
+    const nameEl = el.querySelector('.a2ui-tool-call-name');
+    const argsEl = el.querySelector('.a2ui-tool-call-args');
+    const resultWrapEl = el.querySelector('.a2ui-tool-call-result-wrap');
+    const resultEl = el.querySelector('.a2ui-tool-call-result');
+    const adapter = {
+      setName(name) { nameEl.textContent = name; },
+      setArgs(text) { argsEl.textContent = text; },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+      setResult(text, isError) {
+        resultEl.textContent = text;
+        resultWrapEl.dataset.error = isError ? 'true' : 'false';
+        // Errors auto-expand -- a human shouldn't have to click to find
+        // out a real tool call failed; a clean success stays collapsed
+        // by default, same "don't force-open something unremarkable"
+        // reasoning a <details> element's own native semantics already
+        // encode.
+        if (isError) resultWrapEl.open = true;
+      },
+    };
+    return { element: el, controller: createToolCallController(adapter) };
+  }
+
   const exportsObj = {
-    createStreamingTextController, createStepTrackerController,
+    createStreamingTextController, createStepTrackerController, createToolCallController,
+    mountToolCallCard,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;

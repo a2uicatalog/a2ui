@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>a2ui-agent-tail</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 820px; margin: 40px auto; padding: 0 20px; color: #111; }
+  h1 { font-size: 1.3rem; }
+  p.note { color: #555; font-size: 0.9rem; }
+  #controls { display: flex; gap: 10px; align-items: center; margin: 16px 0; }
+  input[type=text] { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font: inherit; }
+  button { font: inherit; padding: 8px 16px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+  button:hover { background: #f5f5f5; }
+  #conn-status { font-size: 0.8rem; padding: 2px 10px; border-radius: 10px; font-weight: 600; }
+  #conn-status.connected { background: #dcfce7; color: #166534; }
+  #conn-status.disconnected { background: #fee2e2; color: #991b1b; }
+
+  .a2ui-step-tracker { margin: 16px 0; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 8px; }
+  .a2ui-run-status { font-weight: 700; margin-bottom: 8px; }
+  .a2ui-run-status[data-status=running] { color: #1e40af; }
+  .a2ui-run-status[data-status=done] { color: #166534; }
+  .a2ui-run-status[data-status=error] { color: #991b1b; }
+  .a2ui-step-list { margin: 0; padding-left: 20px; font-size: 0.85rem; }
+  .a2ui-step-list li[data-status=running] { color: #1e40af; font-weight: 600; }
+  .a2ui-step-list li[data-status=done] { color: #166534; }
+  .a2ui-step-list li[data-status=error] { color: #991b1b; font-weight: 600; }
+  .a2ui-step-list li[data-status=pending] { color: #9ca3af; }
+
+  #tool-calls { display: flex; flex-direction: column; gap: 10px; }
+  .a2ui-tool-call-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
+  .a2ui-tool-call-card[data-lifecycle=streaming] { border-color: #93c5fd; background: #eff6ff; }
+  .a2ui-tool-call-card[data-lifecycle=complete] { border-color: #86efac; }
+  .a2ui-tool-call-card[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-tool-call-name { font-weight: 700; font-family: monospace; margin-bottom: 4px; }
+  .a2ui-tool-call-args { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 120px; overflow: auto; margin: 4px 0; }
+  .a2ui-tool-call-result-wrap summary { cursor: pointer; font-size: 0.78rem; color: #666; }
+  .a2ui-tool-call-result-wrap[data-error=true] summary { color: #991b1b; font-weight: 600; }
+  .a2ui-tool-call-result { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 160px; overflow: auto; }
+</style>
+</head>
+<body>
+<h1>a2ui-agent-tail</h1>
+<p class="note">
+  Watches a REAL daily_agent._run_loop live — real Gemini tool-calling
+  turns against a real checkout, driving <code>live_step_tracker</code>
+  and <code>tool_call_card</code> via real AG-UI events. Run
+  <code>scripts/demo_agent_tail.py</code> in repo-improvement-agent
+  first (see its own docstring), then point this page at it.
+</p>
+<div id="controls">
+  <input type="text" id="stream-url" value="http://localhost:8765/stream">
+  <button id="connect">Connect</button>
+  <span id="conn-status" class="disconnected">disconnected</span>
+</div>
+
+<div id="step-tracker-container"></div>
+<h2 style="font-size:1rem;">Tool calls</h2>
+<div id="tool-calls"></div>
+
+<script src="/static/a2ui-stream-runtime.v1.js"></script>
+<script src="/static/a2ui-atoms-live.v1.js"></script>
+<script>
+const statusEl = document.getElementById('conn-status');
+const stepContainer = document.getElementById('step-tracker-container');
+const toolCallsContainer = document.getElementById('tool-calls');
+let runtime = null;
+
+function setConnected(connected) {
+  statusEl.textContent = connected ? 'connected' : 'disconnected';
+  statusEl.className = connected ? 'connected' : 'disconnected';
+}
+
+document.getElementById('connect').addEventListener('click', () => {
+  const url = document.getElementById('stream-url').value;
+  stepContainer.innerHTML = '';
+  toolCallsContainer.innerHTML = '';
+
+  // Real container/slot mounting: one live_step_tracker for the whole
+  // run (routing key lifecycle:<runId>), one NEW tool_call_card per
+  // distinct toolCallId — exactly the mechanism Phase 1's own tests
+  // proved against synthetic parallel calls, now driven by whatever
+  // this specific real run's own sequential real tool calls actually
+  // produce.
+  runtime = A2UIStream.A2UIStreamRuntime({
+    container: toolCallsContainer,
+    mountAtom(family, key) {
+      if (family === 'lifecycle') {
+        // The step tracker is a SINGLE instance for the whole run, not
+        // one per lifecycle event's own key — mount it once into its own
+        // container, reuse for every subsequent lifecycle-family event.
+        if (!stepContainer.firstChild) {
+          return A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+        }
+        // A second distinct lifecycle key (shouldn't happen in this
+        // demo's single-run shape) gets its own card too, rather than
+        // silently reusing the first one's controller for different data.
+        return A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+      }
+      if (family === 'tool_call') {
+        return A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
+      }
+      // Unknown family (state/reasoning/text -- not built yet, or this
+      // demo's own real loop never emits them) -- a harmless stub so the
+      // runtime doesn't throw, per its own fail-open-for-other-atoms
+      // contract.
+      return { onEvent() {}, destroy() {} };
+    },
+  });
+
+  // The runtime's own connect() -- already covers the exact SSE-over-
+  // fetch()+ReadableStream path, tested tonight (including the real
+  // connection-error/dangling-controller fix) -- reused here rather
+  // than a second, untested reimplementation of the same read loop.
+  setConnected(true);
+  runtime.connect(url).finally(() => setConnected(false));
+});
+</script>
+</body>
+</html>
