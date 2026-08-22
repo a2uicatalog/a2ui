@@ -645,7 +645,7 @@
       "atoms": [
         {
           "type": "action_required_card",
-          "description": "prominent card prompting a required user action user attention,"
+          "description": "prominent card prompting a required user action or approval"
         },
         {
           "type": "annotated_code",
