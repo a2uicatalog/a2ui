@@ -226,6 +226,108 @@
     return { element: el, controller: createToolCallController(adapter) };
   }
 
+  // ─── live_diff_card controller ──────────────────────────────────────────
+  // A SPECIALIZATION of the tool_call family for file-editing calls, not a
+  // new event family -- it consumes the exact same ToolCallStart/Args/End/
+  // Result sequence tool_call_card does, mounted instead of the generic
+  // card at ROUTING time (see the demo page's own mountAtom: it inspects
+  // the first event's toolName and picks this controller for edit_file/
+  // write_file, the generic one for everything else). The point: watching
+  // an agent's real code edits render as an actual diff, not a raw JSON
+  // args dump -- genuinely new agentic-loopback utility, and provable
+  // against a REAL backend today (unlike reasoning_trace/live_state_
+  // dashboard) because daily_agent.py's own real tool-calling loop already
+  // calls edit_file/write_file on every real run that ships a fix.
+  //
+  // NOT a general-purpose diff algorithm (no LCS, nothing from a diff
+  // library) -- deliberately matches what these two REAL tools actually
+  // do: edit_file is an exact old_string -> new_string replacement
+  // (daily_agent_tools.py's own Workspace.edit_file contract), so showing
+  // old_string as removed and new_string as added IS the real, complete
+  // diff, not an approximation of one. write_file is for brand-new files
+  // only (same module's own docstring) -- its content is shown entirely
+  // as added, no removed side.
+  function createFileEditCardController(adapter) {
+    let name = '';
+    let ended = false;
+    let hasResult = false;
+
+    return {
+      onEvent(event) {
+        const p = event.payload || {};
+        if (event.type === 'ToolCallStart') {
+          name = p.toolName || '';
+          adapter.setName(name);
+        } else if (event.type === 'ToolCallArgs' && p.args !== undefined) {
+          const args = p.args || {};
+          adapter.setPath(args.path || '');
+          if (name === 'write_file') {
+            adapter.setDiff({ removed: null, added: args.content || '', isNewFile: true });
+          } else {
+            // edit_file (or anything else routed here, defensively treated
+            // the same way -- old_string/new_string absent just renders
+            // as empty removed/added blocks, not a crash).
+            adapter.setDiff({ removed: args.old_string || '', added: args.new_string || '', isNewFile: false });
+          }
+        } else if (event.type === 'ToolCallResult') {
+          hasResult = true;
+          const ok = p.result && typeof p.result === 'object' && 'ok' in p.result
+            ? !!p.result.ok : !p.isError;
+          adapter.setResult(ok, !!p.isError);
+        }
+        if (event.type === 'ToolCallEnd' || event.lifecycle === 'error') {
+          ended = true;
+          if (!hasResult && event.lifecycle === 'error') adapter.setResult(false, true);
+        }
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
+  function mountFileEditCard(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-file-edit-card';
+    el.innerHTML =
+      '<div class="a2ui-file-edit-name"></div>' +
+      '<div class="a2ui-file-edit-path"></div>' +
+      '<div class="a2ui-file-edit-newfile-badge" style="display:none;">NEW FILE</div>' +
+      '<pre class="a2ui-file-edit-removed"></pre>' +
+      '<pre class="a2ui-file-edit-added"></pre>' +
+      '<div class="a2ui-file-edit-result"></div>';
+    container.appendChild(el);
+    const nameEl = el.querySelector('.a2ui-file-edit-name');
+    const pathEl = el.querySelector('.a2ui-file-edit-path');
+    const badgeEl = el.querySelector('.a2ui-file-edit-newfile-badge');
+    const removedEl = el.querySelector('.a2ui-file-edit-removed');
+    const addedEl = el.querySelector('.a2ui-file-edit-added');
+    const resultEl = el.querySelector('.a2ui-file-edit-result');
+
+    function toDiffLines(text, prefix) {
+      // Plain text content, rendered via textContent per-line (never
+      // innerHTML) -- real file content streamed from a live agent run
+      // is untrusted input and must never be interpreted as markup.
+      return String(text).split('\n').map((line) => prefix + line).join('\n');
+    }
+
+    const adapter = {
+      setName(n) { nameEl.textContent = n; },
+      setPath(path) { pathEl.textContent = path; },
+      setDiff(diff) {
+        badgeEl.style.display = diff.isNewFile ? 'block' : 'none';
+        removedEl.style.display = diff.removed ? 'block' : 'none';
+        removedEl.textContent = diff.removed ? toDiffLines(diff.removed, '- ') : '';
+        addedEl.textContent = diff.added ? toDiffLines(diff.added, '+ ') : '';
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+      setResult(ok, isError) {
+        resultEl.textContent = isError ? 'failed' : (ok ? 'ok' : 'failed');
+        resultEl.dataset.ok = (!isError && ok) ? 'true' : 'false';
+      },
+    };
+    return { element: el, controller: createFileEditCardController(adapter) };
+  }
+
   // ─── reasoning_trace controller ─────────────────────────────────────────
   // ReasoningStart/MessageContent/End, ReasoningEncryptedValue.
   // Visualizes the model's internal thought process / reasoning trace.
@@ -395,8 +497,8 @@
 
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
-    createReasoningTraceController, createLiveStateDashboardController,
-    mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard,
+    createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
+    mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
