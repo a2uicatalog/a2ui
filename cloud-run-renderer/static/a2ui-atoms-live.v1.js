@@ -773,12 +773,134 @@
     return { element: el, controller: createLiveCostTrendController(adapter) };
   }
 
+  // ─── live_confidence_bar controller ─────────────────────────────────────
+  // Patch-mode and event-driven probability/confidence bar controller.
+  // Extends the static confidence_bar atom (renderers/web_article.py)
+  // for live streaming agent evaluations and classifier scoring.
+  // Handles single-item ({label, value}) and multi-item ({items: [...]})
+  // state shapes, normalizes scores (0-100), and calculates standard
+  // threshold colors (>=70 green, >=40 amber, <40 red) unless overridden.
+  function createLiveConfidenceBarController(adapter) {
+    function computeColor(pct, override) {
+      if (override) return override;
+      if (pct >= 70) return '#22c55e';
+      if (pct >= 40) return '#f59e0b';
+      return '#ef4444';
+    }
+
+    function normalizeItem(raw, globalColor) {
+      if (!raw || typeof raw !== 'object') return null;
+      let val = Number(raw.value);
+      if (isNaN(val)) val = 0;
+      // If provided as a fraction 0.0 - 1.0 (and > 0), scale to 0-100
+      if (val > 0 && val <= 1 && !raw.isPercent) {
+        val = val * 100;
+      }
+      val = Math.max(0, Math.min(100, Math.round(val)));
+      const label = raw.label != null ? String(raw.label) : 'Confidence';
+      const color = computeColor(val, raw.color || globalColor);
+      return { label, value: val, color };
+    }
+
+    return {
+      onEvent(event) {
+        const src = event.state || event.payload || {};
+        const globalColor = src.color || '';
+        let items = [];
+
+        if (Array.isArray(src.items)) {
+          for (const raw of src.items) {
+            const item = normalizeItem(raw, globalColor);
+            if (item) items.push(item);
+          }
+        } else if (src.value !== undefined || src.label !== undefined) {
+          const item = normalizeItem(src, globalColor);
+          if (item) items.push(item);
+        }
+
+        adapter.setItems(items);
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveConfidenceBar(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-confidence-bar';
+    container.appendChild(el);
+
+    const adapter = {
+      setItems(items) {
+        el.innerHTML = '';
+        for (const it of items) {
+          const row = document.createElement('div');
+          row.className = 'a2ui-confidence-row';
+          row.style.marginBottom = '8px';
+
+          const header = document.createElement('div');
+          header.className = 'a2ui-confidence-header';
+          header.style.cssText = 'display:flex;justify-content:space-between;font-size:0.78rem;color:#374151;margin-bottom:3px;';
+
+          const lbl = document.createElement('span');
+          lbl.textContent = it.label;
+          const pct = document.createElement('span');
+          pct.style.fontWeight = '700';
+          pct.style.color = it.color;
+          pct.textContent = it.value + '%';
+
+          header.appendChild(lbl);
+          header.appendChild(pct);
+
+          const track = document.createElement('div');
+          track.className = 'a2ui-confidence-track';
+          track.style.cssText = 'background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;';
+
+          const fill = document.createElement('div');
+          fill.className = 'a2ui-confidence-fill';
+          fill.style.cssText = 'width:' + it.value + '%;height:100%;background:' + it.color + ';border-radius:4px;transition:width .4s;';
+
+          track.appendChild(fill);
+          row.appendChild(header);
+          row.appendChild(track);
+          el.appendChild(row);
+        }
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveConfidenceBarController(adapter) };
+  }
+
+  function mountCompactConfidenceBar(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-confidence-compact';
+    el.style.cssText = 'display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;padding:2px 8px;border-radius:12px;background:#f3f4f6;font-family:ui-monospace,monospace;';
+    container.appendChild(el);
+
+    const adapter = {
+      setItems(items) {
+        if (!items || items.length === 0) {
+          el.textContent = '--%';
+          el.style.color = '#6b7280';
+          return;
+        }
+        const first = items[0];
+        el.textContent = (items.length === 1 ? first.label + ': ' : '') + first.value + '%';
+        el.style.color = first.color;
+        el.style.fontWeight = '700';
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveConfidenceBarController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
-    createAgentRunSketchController, createLiveCostTrendController,
+    createAgentRunSketchController, createLiveCostTrendController, createLiveConfidenceBarController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter,
+    mountLiveConfidenceBar, mountCompactConfidenceBar,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
