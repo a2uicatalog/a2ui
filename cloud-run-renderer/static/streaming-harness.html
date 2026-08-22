@@ -83,6 +83,10 @@ function sse(event, data) {
 function syntheticChunks() {
   return [
     sse('RunStarted', { runId: 'run1' }),
+    sse('ReasoningStart', { messageId: 'r1', title: 'Planning next action' }),
+    sse('ReasoningMessageContent', { messageId: 'r1', delta: 'Need to search docs and ' }),
+    sse('ReasoningMessageContent', { messageId: 'r1', delta: 'fetch the catalogue URL.' }),
+    sse('ReasoningEnd', { messageId: 'r1' }),
     sse('ToolCallStart', { toolCallId: 't1', toolName: 'search_docs' }),
     sse('ToolCallStart', { toolCallId: 't2', toolName: 'fetch_url' }),
     sse('ToolCallArgs', { toolCallId: 't1', delta: '{"query":"a2ui atoms"' }),

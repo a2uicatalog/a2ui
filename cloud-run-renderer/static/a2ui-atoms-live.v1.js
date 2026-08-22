@@ -226,9 +226,116 @@
     return { element: el, controller: createToolCallController(adapter) };
   }
 
+  // ─── reasoning_trace controller ─────────────────────────────────────────
+  // ReasoningStart/MessageContent/End, ReasoningEncryptedValue.
+  // Visualizes the model's internal thought process / reasoning trace.
+  // Buffers incoming markdown chunks safely.
+  // Supports ReasoningEncryptedValue: a locked/non-expandable visual state
+  // for redacted or encrypted reasoning content (as emitted by commercial
+  // LLM providers).
+  function createReasoningTraceController(adapter) {
+    const textBuf = createSafeTextBuffer();
+    let isEncrypted = false;
+    let ended = false;
+
+    function renderText(force) {
+      if (!isEncrypted) {
+        adapter.setText(textBuf.flush(force));
+      }
+    }
+
+    return {
+      onEvent(event) {
+        const p = event.payload || {};
+        if (event.type === 'ReasoningStart' || event.type === 'ReasoningMessageStart') {
+          const title = p.title || 'Thinking...';
+          adapter.setTitle(title);
+          if (p.encrypted || p.isEncrypted || p.redacted || p.isRedacted || p.encryptedValue) {
+            isEncrypted = true;
+            adapter.setEncrypted(true, p.encryptedValue || p.signature || '');
+          }
+        } else if (event.type === 'ReasoningContent' || event.type === 'ReasoningMessageContent' || event.type === 'TextMessageContent') {
+          if (typeof p.delta === 'string') {
+            textBuf.append(p.delta);
+            renderText(false);
+          } else if (typeof p.text === 'string') {
+            textBuf.append(p.text);
+            renderText(false);
+          }
+        } else if (event.type === 'ReasoningEncryptedValue') {
+          isEncrypted = true;
+          const val = p.encryptedValue || p.value || p.signature || '';
+          adapter.setEncrypted(true, val);
+        }
+
+        const isEnd = event.type === 'ReasoningEnd' || event.type === 'ReasoningMessageEnd' || event.lifecycle === 'error';
+        if (isEnd) {
+          ended = true;
+          renderText(true);
+        }
+        adapter.setStatus(event.lifecycle);
+      },
+      destroy() {},
+    };
+  }
+
+  function mountReasoningTrace(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-reasoning-trace';
+    el.innerHTML =
+      '<details class="a2ui-reasoning-wrap" open>' +
+        '<summary class="a2ui-reasoning-summary">' +
+          '<span class="a2ui-reasoning-title">Thinking...</span>' +
+          '<span class="a2ui-reasoning-badge"></span>' +
+        '</summary>' +
+        '<div class="a2ui-reasoning-body"></div>' +
+      '</details>' +
+      '<div class="a2ui-reasoning-locked-notice" style="display:none;">🔒 Thought process redacted by provider</div>';
+    container.appendChild(el);
+
+    const wrapEl = el.querySelector('.a2ui-reasoning-wrap');
+    const summaryEl = el.querySelector('.a2ui-reasoning-summary');
+    const titleEl = el.querySelector('.a2ui-reasoning-title');
+    const badgeEl = el.querySelector('.a2ui-reasoning-badge');
+    const bodyEl = el.querySelector('.a2ui-reasoning-body');
+    const lockedNoticeEl = el.querySelector('.a2ui-reasoning-locked-notice');
+
+    let locked = false;
+    summaryEl.addEventListener('click', (e) => {
+      if (locked) {
+        e.preventDefault();
+      }
+    });
+
+    const adapter = {
+      setTitle(title) { titleEl.textContent = title; },
+      setText(text) { bodyEl.textContent = text; },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+      setEncrypted(isEncrypted, details) {
+        locked = !!isEncrypted;
+        el.dataset.encrypted = locked ? 'true' : 'false';
+        if (locked) {
+          wrapEl.open = false;
+          wrapEl.classList.add('a2ui-reasoning-locked');
+          badgeEl.textContent = '🔒 Redacted';
+          lockedNoticeEl.style.display = 'block';
+          if (details) {
+            lockedNoticeEl.title = String(details);
+          }
+        } else {
+          wrapEl.classList.remove('a2ui-reasoning-locked');
+          badgeEl.textContent = '';
+          lockedNoticeEl.style.display = 'none';
+        }
+      },
+    };
+    return { element: el, controller: createReasoningTraceController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
-    mountToolCallCard,
+    createReasoningTraceController,
+    mountToolCallCard, mountReasoningTrace,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
