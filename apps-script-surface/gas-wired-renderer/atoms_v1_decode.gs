@@ -105,6 +105,17 @@ function _rehydrateV1Surface(surface) {
     var ch = src.children;
     if (Array.isArray(ch) && ch.every(function(x) { return typeof x === 'string'; })) {
       node.blocks = ch.map(function(cid) { return resolveNode(cid, childSeen, scope); }).filter(Boolean);
+    } else if (src.component === 'Card' && typeof src.child === 'string') {
+      // 2026-08-24: real basic-catalog Card takes ONE `child` id, not a
+      // `children` list (renderers/a2ui_v1.py's own fix, same date).
+      // Card-SPECIFIC, not a generic `child`->blocks rule: Button also has
+      // a `child` field (its label Text component) but wants it left as a
+      // single resolved object on node.child, not wrapped into blocks --
+      // the generic componentId-typed-property loop below already handles
+      // that case correctly on its own. Only Card needs this translation,
+      // because only Card's RENDERER (atoms_v1_standard.gs) expects
+      // b.blocks to recurse through, matching every other container here.
+      node.blocks = [resolveNode(src.child, childSeen, scope)].filter(Boolean);
     } else if (ch && typeof ch === 'object' && !Array.isArray(ch) &&
                typeof ch.componentId === 'string' && typeof ch.path === 'string') {
       // TEMPLATE variant: iterate the data-model array at path, one Child
@@ -143,7 +154,18 @@ function _rehydrateV1Surface(surface) {
   var root = byId['root'];
   var rootNode = root ? resolveNode('root', {}, null) : null;
   var rootChildren = (rootNode && rootNode.blocks) ? rootNode.blocks : [];
-  var props = surface.surfaceProperties || {};
+  // 2026-08-24: real v1.0 has no `surfaceProperties` field at all --
+  // renderers/a2ui_v1.py's own fix moved title/theme/catalogs to
+  // metadata.extensions.a2uicatalog_surface, the real spec's own
+  // sanctioned extension point. surfaceProperties kept as a fallback
+  // read, not because Python still emits it, but because a stale,
+  // already-deployed bundle could be decoding a payload from a NEWER
+  // Python build during rollout -- "deployed != reachable" is this
+  // repo's own documented failure mode; this is the reverse direction
+  // of that same risk.
+  var ext = surface.metadata && surface.metadata.extensions &&
+    surface.metadata.extensions.a2uicatalog_surface;
+  var props = ext || surface.surfaceProperties || {};
   // hub_slug carried through (nav-budget-pagination-v0.1.md) — see Code.gs
   // _renderFromPayload seeding trigger.
   var out = { title: props.title, theme: props.theme, blocks: rootChildren };

@@ -17,7 +17,12 @@ _RENDERERS['Text'] = function(b) {
 };
 
 _RENDERERS['Image'] = function(b) {
-  var alt = b.alt ? ' alt="' + _esc(b.alt) + '"' : '';
+  // 2026-08-24: real basic-catalog Image field is `description`, not
+  // `alt` -- renderers/a2ui_v1.py's own fix, same date. `b.alt` kept as
+  // fallback for a stale-bundle rollout window, same reasoning as
+  // atoms_v1_decode.gs's surfaceProperties fallback.
+  var altText = b.description || b.alt || '';
+  var alt = altText ? ' alt="' + _esc(altText) + '"' : '';
   return '<div style="margin:16px 0;text-align:center;">' +
          '<img src="' + _esc(b.url) + '"' + alt + ' style="max-width:100%;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">' +
          '</div>';
@@ -25,8 +30,16 @@ _RENDERERS['Image'] = function(b) {
 
 _RENDERERS['Button'] = function(b) {
   var url = (b.action && b.action.event && b.action.event.context && b.action.event.context.url) || '#';
+  // 2026-08-24: real basic-catalog Button has no `label` field -- it
+  // takes a `child` id (renderers/a2ui_v1.py now synthesizes a Text
+  // component and points `child` at it). The generic componentId
+  // resolution in atoms_v1_decode.gs already resolves `child` into a
+  // full node object (see that file's own resolveNode loop) -- b.child
+  // is that resolved node, .text is its rendered string. b.label kept
+  // as fallback for a stale-bundle rollout window.
+  var label = (b.child && b.child.text) || b.label || 'Button';
   return '<a class="asw-button" href="' + _safeUrl(url) + '" style="display:inline-block;padding:10px 20px;border-radius:8px;background:var(--a2ui-accent,#6366f1);color:#fff;text-decoration:none;margin:8px 0;">' +
-         _esc(b.label || 'Button') + '</a>';
+         _esc(label) + '</a>';
 };
 
 _RENDERERS['Divider'] = function(b) {
@@ -80,7 +93,10 @@ _RENDERERS['Tabs'] = function(b) {
            'onclick="var p=this.closest(\'.asw-v1-tabs\');p.querySelectorAll(\'.asw-v1-tab-btn\').forEach(function(x){x.classList.remove(\'active\')});' +
            'p.querySelectorAll(\'.asw-v1-tab-panel\').forEach(function(x){x.style.display=\'none\'});' +
            'this.classList.add(\'active\');p.querySelector(\'#tab-' + uid + '-' + i + '\').style.display=\'block\';">' +
-           _esc(t.label || ('Tab ' + (i + 1))) + '</button>';
+           // 2026-08-24: real Tabs entries key on `title`, not `label`
+           // (renderers/a2ui_v1.py's own fix, same date). t.label kept
+           // as fallback for a stale-bundle rollout window.
+           _esc(t.title || t.label || ('Tab ' + (i + 1))) + '</button>';
   }).join('');
   var panels = tabs.map(function(t, i) {
     return '<div class="asw-v1-tab-panel" id="tab-' + uid + '-' + i + '" style="display:' + (i === 0 ? 'block' : 'none') + ';">' +

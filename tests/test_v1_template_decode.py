@@ -20,6 +20,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import gen_mcp_apps_bundle as gen  # noqa: E402
+from renderers.a2ui_v1 import emit_surface  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -232,3 +233,47 @@ def test_americano_acceptance_renders_catalogue_atoms(core_js):
     for needle in ("Club Night", "Ana", "Caro", "Round 2",
                    "Ana &amp; Ben vs Caro &amp; Dan"):
         assert needle in r["html"], f"missing from rendered HTML: {needle}"
+
+
+def test_real_emitter_output_decodes_and_renders_real_content(core_js):
+    """2026-08-24 parity gap, closed: renderers/a2ui_v1.py's emit_surface()
+    was fixed to match the real v1.0 spec (surfaceProperties removed,
+    Image.alt->description, Card child->children, Tabs label->title,
+    Button child+action) -- this repo's own spec/a2ui-v1-parity-map.md
+    flagged this exact row as having NO automated guard, confirmed by
+    test_a2ui_v1.py's own prior docstring ("no automated GAS render-output
+    harness exists yet"). This test is that guard: it calls the REAL
+    emitter (not a hand-authored fixture, unlike every test above), feeds
+    its real output through the REAL decode+render path, and asserts the
+    REAL content survived -- not the fallback strings ("Button", "Tab N")
+    that would print if atoms_v1_decode.gs/atoms_v1_standard.gs had gone
+    stale, which they had (confirmed by running this exact payload through
+    the code as it stood BEFORE the fix in this same commit: it printed
+    "Button" and "Tab 1"/"Tab 2" literally, with no card content at all)."""
+    payload = {
+        "title": "Parity Check", "theme": "dark", "blocks": [
+            {"type": "image", "url": "https://example.com/pic.png",
+             "alt": "A real accessibility description"},
+            {"type": "info_card", "title": "Card Title",
+             "blocks": [{"type": "body", "text": "Real card body content"}]},
+            {"type": "ripple_button", "label": "Real Button Label",
+             "url": "https://example.com"},
+            {"type": "content_tabs", "tabs": [
+                {"label": "Real Tab One", "blocks": [{"type": "body", "text": "pane one"}]},
+                {"label": "Real Tab Two", "blocks": [{"type": "body", "text": "pane two"}]},
+            ]},
+        ],
+    }
+    surface = emit_surface(payload)["createSurface"]
+    r = _decode(core_js, surface, also_render=True)
+
+    for needle in ("A real accessibility description", "Card Title",
+                   "Real card body content", "Real Button Label",
+                   "Real Tab One", "Real Tab Two", "pane one", "pane two"):
+        assert needle in r["html"], f"missing from rendered HTML: {needle}"
+
+    # The exact regression this closes: these fallback strings must NOT
+    # appear where real content was available.
+    assert ">Button<" not in r["html"], "Button fell back to the literal label -- child not resolved"
+    assert "Tab 1<" not in r["html"] and "Tab 2<" not in r["html"], \
+        "Tabs fell back to positional labels -- title not read"
