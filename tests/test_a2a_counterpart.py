@@ -11,6 +11,14 @@ capability this phase exists to prove, per the plan at
 ~/.claude/plans/encapsulated-cuddling-kay.md ("a derived state which can
 be followed by A2A", Curtis's own framing).
 
+Phase 2 (same day) adds the getSurfaceState/surfaceStateResult query tests
+below -- a way to read that derived state back OVER A2A, not just via
+direct Python object access. test_multiple_agents_compose_one_shared_surface_via_a2a
+is the concrete proof of the ideated use case (Gemini, 2026-08-24):
+several agents, each owning a different zone of ONE shared surface, write
+independently and an orchestrator that wrote nothing itself reads the
+composed result -- A2A as a UI gateway across a multi-agent collection.
+
 Proves the whole chain: real renderers/a2ui_v1.py emit_surface() output ->
 real renderers/a2a_extension.py wrap_messages_for_sdk() -> real
 a2a.types.DataPart -> real a2a-sdk client send_message() -> real
@@ -194,3 +202,81 @@ def test_state_is_isolated_per_context_not_shared_globally():
     assert state_a != state_b
     assert state_a == surface_state_from_create(create_a)
     assert state_b == surface_state_from_create(create_b)
+
+
+def test_query_returns_current_derived_state():
+    """getSurfaceState (this counterpart's own extension, not a real A2UI
+    message type -- see a2a_counterpart/main.py's module docstring) reads
+    the SAME state Phase 1 proved gets derived correctly, over A2A itself
+    this time instead of direct Python object access."""
+    import uuid
+    context_id = f"query-{uuid.uuid4().hex[:8]}"
+    surface_id = "query-surface"
+
+    create_msg = emit_surface(
+        {"title": "Queryable", "blocks": [{"type": "body", "text": "v1"}]},
+        surface_id=surface_id)
+    asyncio.run(_round_trip([create_msg], context_id=context_id, message_id="q-1"))
+
+    query = {"getSurfaceState": {"surfaceId": surface_id}}
+    reply = asyncio.run(_round_trip([query], context_id=context_id, message_id="q-2"))
+
+    assert len(reply) == 1
+    result = reply[0]["surfaceStateResult"]
+    assert result["surfaceId"] == surface_id
+    assert result["found"] is True
+    assert result["state"] == surface_state_from_create(create_msg)
+
+
+def test_query_for_unknown_surface_is_honest_not_a_crash():
+    import uuid
+    context_id = f"query-unknown-{uuid.uuid4().hex[:8]}"
+    query = {"getSurfaceState": {"surfaceId": "never-created"}}
+    reply = asyncio.run(_round_trip([query], context_id=context_id, message_id="q-unknown"))
+
+    assert len(reply) == 1
+    result = reply[0]["surfaceStateResult"]
+    assert result["found"] is False
+    assert result["state"] is None
+
+
+def test_multiple_agents_compose_one_shared_surface_via_a2a():
+    """The actual ideated use case, proven in code: an ORCHESTRATOR agent
+    creates a surface with a placeholder; two SPECIALIST agents, each in
+    its own separate A2A call, populate a DIFFERENT component -- no
+    coordination beyond the shared context_id and the component ids they
+    were each told to own (spatial partitioning, per Gemini's ideation:
+    no conflict, so no locking/ownership model is needed at this stage). A
+    fourth call (the orchestrator/observer) queries and sees BOTH
+    contributions composed into one state -- A2A carrying a shared,
+    followable UI across more than one writer, not just one agent talking
+    to one renderer."""
+    import uuid
+    context_id = f"compose-{uuid.uuid4().hex[:8]}"
+    surface_id = "shared-dashboard"
+
+    orchestrator_create = emit_surface({
+        "title": "Shared Dashboard",
+        "blocks": [{"type": "body", "text": "waiting for specialists..."}],
+    }, surface_id=surface_id)
+    asyncio.run(_round_trip([orchestrator_create], context_id=context_id, message_id="orch-1"))
+
+    flights_update = update_components(surface_id, [
+        {"id": "flights_card", "component": "Text", "text": "Flight AA123 - on time"}])
+    asyncio.run(_round_trip([flights_update], context_id=context_id, message_id="specialist-flights"))
+
+    weather_update = update_components(surface_id, [
+        {"id": "weather_card", "component": "Text", "text": "Sunny, 22C"}])
+    asyncio.run(_round_trip([weather_update], context_id=context_id, message_id="specialist-weather"))
+
+    query = {"getSurfaceState": {"surfaceId": surface_id}}
+    reply = asyncio.run(_round_trip([query], context_id=context_id, message_id="orch-2"))
+    composed = reply[0]["surfaceStateResult"]["state"]
+
+    assert composed["components"]["flights_card"]["text"] == "Flight AA123 - on time"
+    assert composed["components"]["weather_card"]["text"] == "Sunny, 22C"
+
+    expected = surface_state_from_create(orchestrator_create)
+    apply_update(expected, flights_update)
+    apply_update(expected, weather_update)
+    assert composed == expected

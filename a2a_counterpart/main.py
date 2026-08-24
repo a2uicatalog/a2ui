@@ -7,13 +7,31 @@ ones A2uiUpdates.html ports faithfully to JS. Nothing here reimplements
 that logic; StatefulSurfaceExecutor only threads real A2A message batches
 into it.
 
-Reply behavior is UNCHANGED from Topic B on purpose: still echoes the same
-messages back (proven, tested, and what tests/test_a2a_counterpart.py's
-existing round-trip tests assert on) -- Phase 1's new capability is purely
-the internal state tracking, inspectable directly via the module-level
-`executor` object in tests. Phase 2 (not built yet) adds a way to read
-derived state back over A2A itself, for a real agent consumer rather than
-a test's direct object access.
+Reply behavior for real A2UI messages is UNCHANGED from Topic B on purpose:
+still echoes them back (proven, tested, and what
+tests/test_a2a_counterpart.py's existing round-trip tests assert on).
+
+Phase 2 (2026-08-24) adds a way to read derived state back over A2A
+itself, for a real agent consumer rather than a test's direct object
+access -- `getSurfaceState`/`surfaceStateResult`. THESE ARE NOT REAL A2UI
+v1.0 MESSAGE TYPES -- the real spec (renderers/a2a_extension.py's own
+vendored reference) has no query message at all; this is this
+COUNTERPART's own extension for exercising the multi-agent-composition use
+case (see a2uithoughts.md's 2026-08-24 ideation entry), kept deliberately
+out of renderers/a2a_extension.py so that module stays a faithful mirror
+of the real spec, not a place where invented message types could get
+confused with real ones.
+
+Ideation basis (Gemini, 2026-08-24): the most load-bearing use case for
+this whole direction is ORCHESTRATOR/SPECIALIST UI COMPOSITION -- several
+agents, each owning a different zone of one shared surface (e.g. different
+component ids), write independently via ordinary updateComponents/
+updateDataModel (no new message type needed for WRITES); an
+orchestrator/observer agent that wrote nothing itself uses
+getSurfaceState to read the composed result. Last-write-wins (what
+apply_update() already does) is sufficient because compelling use cases
+are spatially partitioned -- no two writers touch the same component id --
+so no locking/ownership model is needed at this stage.
 
 Modeled directly on the live `a2ui-ge-agent/main.py` (same
 AgentCard/A2AStarletteApplication/DefaultRequestHandler shape, same
@@ -59,6 +77,12 @@ def _surface_id_of(msg: dict) -> str | None:
     return None
 
 
+def _is_query(msg: dict) -> bool:
+    """getSurfaceState is THIS COUNTERPART's own extension, not a real
+    A2UI v1.0 message type -- see module docstring."""
+    return isinstance(msg, dict) and "getSurfaceState" in msg
+
+
 class StatefulSurfaceExecutor(AgentExecutor):
     """Reflects the incoming A2UI v1.0 DataPart back unchanged (same proven
     behavior as Topic B's EchoExecutor), AND maintains one derived surface
@@ -97,6 +121,23 @@ class StatefulSurfaceExecutor(AgentExecutor):
             except Exception:
                 self.skipped_updates_count += 1
 
+    def _answer_queries(self, context_id: str, messages: list[dict]) -> list[dict]:
+        """getSurfaceState -> surfaceStateResult (our own extension, see
+        module docstring). Honest about a surface it's never seen: `found:
+        False, state: None`, not a KeyError and not a silently empty dict —
+        an orchestrator querying too early needs to tell "not created yet"
+        apart from "created but empty"."""
+        results = []
+        for msg in messages:
+            if not _is_query(msg):
+                continue
+            surface_id = msg["getSurfaceState"].get("surfaceId")
+            state = self.state.get((context_id, surface_id))
+            results.append({"surfaceStateResult": {
+                "surfaceId": surface_id, "found": state is not None,
+                "state": state}})
+        return results
+
     async def execute(self, context: RequestContext, event_queue: EventQueue):
         context.add_activated_extension(A2A_EXTENSION_URI)
 
@@ -121,8 +162,16 @@ class StatefulSurfaceExecutor(AgentExecutor):
             return
 
         self._apply_batch(context.context_id, messages)
+        query_results = self._answer_queries(context.context_id, messages)
 
-        echoed = Part(root=DataPart(**wrap_messages_for_sdk(messages)))
+        # Real A2UI messages still echo back unchanged (Phase 1/Topic B
+        # contract, unaffected); query messages are answered instead of
+        # echoed -- mirroring a getSurfaceState back verbatim would be
+        # useless to the caller.
+        non_query_messages = [m for m in messages if not _is_query(m)]
+        reply_messages = non_query_messages + query_results
+
+        echoed = Part(root=DataPart(**wrap_messages_for_sdk(reply_messages)))
         await event_queue.enqueue_event(new_agent_parts_message(
             [echoed], context.context_id, context.task_id))
 
