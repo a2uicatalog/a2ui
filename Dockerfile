@@ -22,6 +22,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY renderers/ /app/renderers/
 COPY cloud-run-renderer/server.py .
 COPY cloud-run-renderer/chat_data.py .
+# Real, structural gap found live, 2026-08-22: this image never copied
+# cloud-run-renderer/static/ at all -- every static asset ever shipped
+# there (the whole streaming runtime, every atom controller, every demo
+# page including watch-live.html) has been genuinely unreachable in
+# production since Phase 1, not a deploy-lag or caching issue. Flask's
+# own default static_folder resolves to <app root>/static -- matches
+# WORKDIR /app, so this needs no server.py change, just the missing COPY.
+COPY cloud-run-renderer/static/ /app/static/
 
 ENV PORT=8080
 EXPOSE 8080

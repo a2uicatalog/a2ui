@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>a2ui-agent-tail</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 820px; margin: 40px auto; padding: 0 20px; color: #111; }
+  h1 { font-size: 1.3rem; }
+  p.note { color: #555; font-size: 0.9rem; }
+  #controls { display: flex; gap: 10px; align-items: center; margin: 16px 0; }
+  input[type=text] { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font: inherit; }
+  button { font: inherit; padding: 8px 16px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+  button:hover { background: #f5f5f5; }
+  #conn-status { font-size: 0.8rem; padding: 2px 10px; border-radius: 10px; font-weight: 600; }
+  #conn-status.connected { background: #dcfce7; color: #166534; }
+  #conn-status.disconnected { background: #fee2e2; color: #991b1b; }
+
+  .a2ui-step-tracker { margin: 16px 0; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 8px; }
+  .a2ui-run-status { font-weight: 700; margin-bottom: 8px; }
+  .a2ui-run-status[data-status=running] { color: #1e40af; }
+  .a2ui-run-status[data-status=done] { color: #166534; }
+  .a2ui-run-status[data-status=error] { color: #991b1b; }
+  .a2ui-step-list { margin: 0; padding-left: 20px; font-size: 0.85rem; }
+  .a2ui-step-list li[data-status=running] { color: #1e40af; font-weight: 600; position: relative; padding-left: 14px; }
+  .a2ui-step-list li[data-status=done] { color: #166534; }
+  .a2ui-step-list li[data-status=error] { color: #991b1b; font-weight: 600; }
+  .a2ui-step-list li[data-status=pending] { color: #9ca3af; }
+  /* The one step actually happening right now, made visibly live -- same
+     "feels real time" treatment as live_cost_trend's own heartbeat. */
+  .a2ui-step-list li[data-status=running]::before {
+    content: ''; position: absolute; left: -2px; top: 7px; width: 6px; height: 6px;
+    border-radius: 50%; background: #1e40af; animation: a2ui-cost-heartbeat 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .a2ui-step-list li[data-status=running]::before { animation: none; }
+  }
+
+  #tool-calls { display: flex; flex-direction: column; gap: 10px; }
+  .a2ui-tool-call-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
+  .a2ui-tool-call-card[data-lifecycle=streaming] { border-color: #93c5fd; background: #eff6ff; }
+  .a2ui-tool-call-card[data-lifecycle=complete] { border-color: #86efac; }
+  .a2ui-tool-call-card[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-tool-call-name { font-weight: 700; font-family: monospace; margin-bottom: 4px; }
+  .a2ui-tool-call-args { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 120px; overflow: auto; margin: 4px 0; }
+  .a2ui-tool-call-result-wrap summary { cursor: pointer; font-size: 0.78rem; color: #666; }
+  .a2ui-tool-call-result-wrap[data-error=true] summary { color: #991b1b; font-weight: 600; }
+  .a2ui-tool-call-result { background: #f8fafc; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 160px; overflow: auto; }
+
+  .a2ui-reasoning-trace { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin: 6px 0; background: #fafafa; }
+  .a2ui-reasoning-trace[data-lifecycle=streaming] { border-color: #c4b5fd; background: #f5f3ff; }
+  .a2ui-reasoning-trace[data-lifecycle=complete] { border-color: #e5e7eb; }
+  .a2ui-reasoning-trace[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-reasoning-trace[data-encrypted=true] { border-color: #fde68a; background: #fffbeb; }
+  .a2ui-reasoning-summary { cursor: pointer; font-weight: 600; font-size: 0.85rem; color: #4b5563; display: flex; align-items: center; justify-content: space-between; }
+  .a2ui-reasoning-badge { font-size: 0.72rem; color: #92400e; font-weight: 600; }
+  .a2ui-reasoning-body { margin-top: 8px; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; color: #374151; max-height: 200px; overflow-y: auto; }
+  .a2ui-reasoning-locked-notice { margin-top: 6px; font-size: 0.78rem; color: #92400e; font-style: italic; }
+
+  .a2ui-state-dashboard { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin: 6px 0; }
+  .a2ui-state-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .a2ui-state-dashboard-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 0.8rem; }
+  .a2ui-state-dashboard-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; flex-shrink: 0; }
+  .a2ui-state-dashboard-item[data-status=online] .a2ui-state-dashboard-dot { background: #059669; }
+  .a2ui-state-dashboard-item[data-status=degraded] .a2ui-state-dashboard-dot { background: #f59e0b; }
+  .a2ui-state-dashboard-item[data-status=offline] .a2ui-state-dashboard-dot,
+  .a2ui-state-dashboard-item[data-status=error] .a2ui-state-dashboard-dot { background: #dc2626; }
+
+  .a2ui-file-edit-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; }
+  .a2ui-file-edit-card[data-lifecycle=streaming] { border-color: #93c5fd; background: #eff6ff; }
+  .a2ui-file-edit-card[data-lifecycle=complete] { border-color: #86efac; }
+  .a2ui-file-edit-card[data-lifecycle=error] { border-color: #fca5a5; background: #fef2f2; }
+  .a2ui-file-edit-name { font-weight: 700; font-family: monospace; }
+  .a2ui-file-edit-path { font-family: monospace; font-size: 0.78rem; color: #6b7280; margin-bottom: 6px; }
+  .a2ui-file-edit-newfile-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; color: #1e40af; background: #dbeafe; padding: 1px 6px; border-radius: 8px; margin-bottom: 6px; }
+  .a2ui-file-edit-removed { background: #fef2f2; color: #991b1b; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; white-space: pre-wrap; }
+  .a2ui-file-edit-added { background: #f0fdf4; color: #166534; padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; max-height: 140px; overflow: auto; margin: 4px 0; white-space: pre-wrap; }
+  .a2ui-file-edit-result { font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
+  .a2ui-file-edit-result[data-ok=true] { color: #166534; }
+  .a2ui-file-edit-result[data-ok=false] { color: #991b1b; }
+
+  .a2ui-run-sketch { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; width: 156px; }
+  .a2ui-run-sketch-svg { width: 100%; display: block; }
+  .a2ui-run-sketch-edge { stroke: #9ca3af; stroke-width: 1.5; fill: none; stroke-linecap: round; }
+  .a2ui-run-sketch-node { stroke: #fff; stroke-width: 1.5; }
+  .a2ui-run-sketch-node[data-status=running] { fill: #9ca3af; }
+  .a2ui-run-sketch-node[data-status=ok] { fill: #059669; }
+  .a2ui-run-sketch-node[data-status=error] { fill: #dc2626; }
+
+  .a2ui-cost-trend { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; width: 156px; }
+  .a2ui-cost-trend-header { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+  .a2ui-cost-trend-value { font-size: 0.75rem; font-weight: 700; font-family: monospace; color: #374151; border-radius: 4px; padding: 1px 3px; margin: -1px -3px; }
+  .a2ui-cost-trend-rate { font-size: 0.68rem; color: #6b7280; margin-bottom: 4px; min-height: 1em; }
+  .a2ui-cost-trend-svg { width: 100%; height: 44px; display: block; }
+  .a2ui-cost-trend-line { stroke: #2563eb; stroke-width: 1.5; fill: none; }
+  .a2ui-cost-trend-dot { fill: #2563eb; }
+
+  /* A live "this is happening right now" heartbeat, and a real flash on
+     each genuine update -- real feedback, 2026-08-22: "make it human
+     relatable and feel real time... maybe flashing in between updates." */
+  .a2ui-cost-trend-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; flex-shrink: 0; }
+  .a2ui-cost-trend[data-lifecycle=streaming] .a2ui-cost-trend-live-dot {
+    background: #2563eb; animation: a2ui-cost-heartbeat 1.6s ease-in-out infinite;
+  }
+  .a2ui-cost-trend-pulse { animation: a2ui-cost-flash 900ms ease-out; }
+  .a2ui-cost-trend-ping { fill: none; stroke: #2563eb; stroke-width: 1.5; opacity: 0; }
+  .a2ui-cost-trend[data-lifecycle=streaming] .a2ui-cost-trend-ping {
+    animation: a2ui-cost-ping 1.8s ease-out infinite;
+  }
+  @keyframes a2ui-cost-heartbeat {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  @keyframes a2ui-cost-flash {
+    0% { background: #bfdbfe; }
+    100% { background: transparent; }
+  }
+  @keyframes a2ui-cost-ping {
+    0% { r: 3; opacity: 0.7; }
+    100% { r: 9; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .a2ui-cost-trend-live-dot, .a2ui-cost-trend-pulse, .a2ui-cost-trend-ping { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<h1>a2ui-agent-tail</h1>
+<p class="note">
+  Watches a REAL daily_agent._run_loop live — real Gemini tool-calling
+  turns against a real checkout, driving <code>live_step_tracker</code>
+  and <code>tool_call_card</code> via real AG-UI events. Run
+  <code>scripts/demo_agent_tail.py</code> in repo-improvement-agent
+  first (see its own docstring), then point this page at it.
+</p>
+<div id="controls">
+  <input type="text" id="stream-url" value="http://localhost:8765/stream">
+  <button id="connect">Connect</button>
+  <span id="conn-status" class="disconnected">disconnected</span>
+</div>
+
+<div id="step-tracker-container"></div>
+<div style="display:flex;gap:20px;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
+    <h2 style="font-size:1rem;">Tool calls</h2>
+    <div id="tool-calls"></div>
+    <h2 style="font-size:1rem;">Log</h2>
+    <div id="log-output-container"></div>
+  </div>
+  <div>
+    <h2 style="font-size:1rem;">Run sketch</h2>
+    <div id="run-sketch-container"></div>
+    <h2 style="font-size:1rem;">Cost trend</h2>
+    <div id="cost-trend-container"></div>
+  </div>
+</div>
+
+<script src="/static/a2ui-stream-runtime.v1.js"></script>
+<script src="/static/a2ui-atoms-live.v1.js"></script>
+<script>
+const statusEl = document.getElementById('conn-status');
+const stepContainer = document.getElementById('step-tracker-container');
+const toolCallsContainer = document.getElementById('tool-calls');
+const sketchContainer = document.getElementById('run-sketch-container');
+const costTrendContainer = document.getElementById('cost-trend-container');
+const logOutputContainer = document.getElementById('log-output-container');
+let runtime = null;
+let sketchController = null;
+let logController = null;
+
+function setConnected(connected) {
+  statusEl.textContent = connected ? 'connected' : 'disconnected';
+  statusEl.className = connected ? 'connected' : 'disconnected';
+}
+
+document.getElementById('connect').addEventListener('click', () => {
+  const url = document.getElementById('stream-url').value;
+  stepContainer.innerHTML = '';
+  toolCallsContainer.innerHTML = '';
+  sketchContainer.innerHTML = '';
+  costTrendContainer.innerHTML = '';
+  logOutputContainer.innerHTML = '';
+
+  // agent_run_sketch wants the UNION of lifecycle + tool_call events
+  // across every routing key in the run, not one controller per key like
+  // everything else here -- ONE shared instance per connection, forwarded
+  // to below rather than mounted through the runtime's own per-key
+  // dispatch (see a2ui-atoms-live.v1.js's own createAgentRunSketchController
+  // docstring for the full reasoning).
+  sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
+  logController = A2UIAtomsLive.mountLogOutput(logOutputContainer).controller;
+
+  // Real bug found live, 2026-08-22 (while building watch-live.html):
+  // RunStarted routes on runId, StepStarted routes on stepId -- two
+  // DIFFERENT routing keys under the same 'lifecycle' family (NOT the
+  // "shouldn't happen" case a previous version of this comment assumed),
+  // so the runtime's own per-(family,key) mounting genuinely creates a
+  // second step-tracker instance every single connection, not just in
+  // some edge case. There is conceptually ONE step tracker per run --
+  // tracked here, outside the runtime's own per-key mounting, reused for
+  // every lifecycle-family event regardless of which specific key
+  // triggered the mount.
+  let stepTrackerController = null;
+
+  // Real container/slot mounting: one live_step_tracker for the whole
+  // run, one NEW tool_call_card per distinct toolCallId — exactly the
+  // mechanism Phase 1's own tests proved against synthetic parallel
+  // calls, now driven by whatever this specific real run's own
+  // sequential real tool calls actually produce.
+  runtime = A2UIStream.A2UIStreamRuntime({
+    container: toolCallsContainer,
+    mountAtom(family, key, event) {
+      let primary;
+      if (family === 'lifecycle') {
+        if (!stepTrackerController) {
+          stepTrackerController = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+        }
+        primary = stepTrackerController;
+      } else if (family === 'tool_call') {
+        // Real routing choice at mount time: the FIRST event for a given
+        // toolCallId already carries the real tool name (ToolCallStart),
+        // so a file-editing call gets the specialized live_diff_card
+        // instead of the generic JSON-args card -- same container, same
+        // family, same lifecycle machinery, just a different real view
+        // for a real, common case (daily_agent.py's own runs call
+        // edit_file/write_file on every real run that ships a fix).
+        const toolName = (event && event.payload && event.payload.toolName) || '';
+        if (toolName === 'edit_file' || toolName === 'write_file') {
+          primary = A2UIAtomsLive.mountFileEditCard(toolCallsContainer).controller;
+        } else {
+          primary = A2UIAtomsLive.mountToolCallCard(toolCallsContainer).controller;
+        }
+      } else if (family === 'reasoning') {
+        primary = A2UIAtomsLive.mountReasoningTrace(toolCallsContainer).controller;
+      } else if (family === 'state') {
+        // Only ONE controller mounts per (family, key) -- daily_agent.py's
+        // own real loop emits exactly one real 'state' stream today (the
+        // cost trend, wired 2026-08-22), so that's what this demo page
+        // shows against a real backend. live_state_dashboard's own
+        // {items:[...]} shape was never wired to any real backend event
+        // either (still synthetic-harness-only, same as before this
+        // change) -- routing here doesn't regress anything real.
+        primary = A2UIAtomsLive.mountLiveCostTrend(costTrendContainer).controller;
+      } else {
+        // Unknown family (text -- not built yet, or this
+        // demo's own real loop never emits them) -- a harmless stub so the
+        // runtime doesn't throw, per its own fail-open-for-other-atoms
+        // contract.
+        primary = { onEvent() {}, destroy() {} };
+      }
+      if (family === 'lifecycle' || family === 'tool_call') {
+        // Forward the SAME event to the shared sketch controller in
+        // addition to the primary per-key one -- the sketch's own
+        // internal id bookkeeping (toolCallId/node id) is what makes
+        // receiving a union across keys safe.
+        return {
+          onEvent(e) { primary.onEvent(e); sketchController.onEvent(e); logController.onEvent(e); },
+          destroy() { primary.destroy(); },
+        };
+      }
+      return primary;
+    },
+  });
+
+  // The runtime's own connect() -- already covers the exact SSE-over-
+  // fetch()+ReadableStream path, tested tonight (including the real
+  // connection-error/dangling-controller fix) -- reused here rather
+  // than a second, untested reimplementation of the same read loop.
+  setConnected(true);
+  runtime.connect(url).finally(() => setConnected(false));
+});
+</script>
+</body>
+</html>
