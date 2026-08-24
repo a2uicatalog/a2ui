@@ -280,3 +280,47 @@ def test_multiple_agents_compose_one_shared_surface_via_a2a():
     apply_update(expected, flights_update)
     apply_update(expected, weather_update)
     assert composed == expected
+
+
+def test_update_to_a_real_placeholder_child_does_not_warn_orphaned():
+    """flights_card/weather_card are real children of root (declared in
+    the createSurface fixture above) -- updating them must NOT trigger
+    the orphaned-component warning."""
+    import uuid
+    context_id = f"no-orphan-{uuid.uuid4().hex[:8]}"
+    surface_id = "no-orphan-surface"
+    before = len(counterpart_executor.orphaned_component_warnings)
+
+    create_msg = emit_surface({
+        "title": "T", "blocks": [
+            {"type": "body", "text": "placeholder", "id": "real_child"}]},
+        surface_id=surface_id)
+    asyncio.run(_round_trip([create_msg], context_id=context_id, message_id="no-orphan-1"))
+
+    update_msg = update_components(surface_id, [
+        {"id": "real_child", "component": "Text", "text": "updated"}])
+    asyncio.run(_round_trip([update_msg], context_id=context_id, message_id="no-orphan-2"))
+
+    assert len(counterpart_executor.orphaned_component_warnings) == before
+
+
+def test_update_to_a_never_declared_component_warns_orphaned():
+    """A component id updated without ever being wired as a child of
+    root -- the exact real bug found building scripts/a2a_demo_sketch.py."""
+    import uuid
+    context_id = f"orphan-{uuid.uuid4().hex[:8]}"
+    surface_id = "orphan-surface"
+    before = len(counterpart_executor.orphaned_component_warnings)
+
+    create_msg = emit_surface({
+        "title": "T", "blocks": [{"type": "body", "text": "hi", "id": "real_child"}]},
+        surface_id=surface_id)
+    asyncio.run(_round_trip([create_msg], context_id=context_id, message_id="orphan-1"))
+
+    update_msg = update_components(surface_id, [
+        {"id": "never_declared", "component": "Text", "text": "ghost"}])
+    asyncio.run(_round_trip([update_msg], context_id=context_id, message_id="orphan-2"))
+
+    warnings = counterpart_executor.orphaned_component_warnings[before:]
+    assert len(warnings) == 1
+    assert "never_declared" in warnings[0]

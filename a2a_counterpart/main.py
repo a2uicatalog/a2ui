@@ -117,6 +117,22 @@ class StatefulSurfaceExecutor(AgentExecutor):
         # and sees no effect needs SOME internal signal that they were
         # tolerated-skipped, not silently mis-applied.
         self.skipped_updates_count = 0
+        # Gemini post-impl review, 2026-08-24 (agent_sketchpad): a real,
+        # empirically-hit gap -- updateComponents upserts into the flat
+        # `components` dict unconditionally (renderers/a2ui_v1_updates.py's
+        # own apply_update()), with NO check that the id is actually
+        # reachable from `root`. An agent that forgets to declare a real
+        # placeholder in its createSurface gets a silent no-op: state
+        # updates correctly, nothing ever renders. Same verdict as
+        # skipped_updates_count above: not a protocol bug to fix (every
+        # real UI framework requires a mount point before you can patch
+        # it), but worth a real, inspectable signal. Heuristic, not a full
+        # tree walk (would need to replicate every child-reference shape
+        # atoms_v1_decode.gs's own generic componentId-property loop
+        # handles) -- "is this id referenced by ANY field on ANY other
+        # component" catches the common case (a wholly unreferenced id)
+        # without reimplementing that whole resolution engine here.
+        self.orphaned_component_warnings: list[str] = []
         # Phase 4: per-(context_id, surfaceId) AG-UI event subscribers (SSE
         # listeners). Empty subs list is the overwhelmingly common case
         # (every Phase 1-3 test, and any real caller not watching a demo
@@ -154,6 +170,31 @@ class StatefulSurfaceExecutor(AgentExecutor):
             for q in subs:
                 q.put_nowait(event)
 
+    def _warn_if_orphaned(self, key: tuple, component_id: str) -> None:
+        """See orphaned_component_warnings' own docstring above. Called
+        AFTER the upsert, so `components` already includes the just-
+        updated one -- excluded from its own reference search."""
+        components = self.state[key].get("components") or {}
+        if component_id == "root":
+            return
+        referenced = False
+        for other_id, other in components.items():
+            if other_id == component_id:
+                continue
+            for v in other.values():
+                if v == component_id or (isinstance(v, list) and component_id in v):
+                    referenced = True
+                    break
+            if referenced:
+                break
+        if not referenced:
+            msg = (f"orphaned component update: {key[1]!r} id={component_id!r} "
+                   f"was updated but is not referenced by any other component in "
+                   f"the tree (context={key[0]!r}) -- did the initial createSurface "
+                   f"declare a real placeholder for it?")
+            self.orphaned_component_warnings.append(msg)
+            print(f"WARNING: {msg}", flush=True)
+
     def _apply_batch(self, context_id: str, messages: list[dict]) -> None:
         for msg in messages:
             sid = _surface_id_of(msg)
@@ -176,6 +217,11 @@ class StatefulSurfaceExecutor(AgentExecutor):
             except Exception:
                 self.skipped_updates_count += 1
                 continue
+            if "updateComponents" in msg:
+                for comp in msg["updateComponents"].get("components", []):
+                    cid = comp.get("id")
+                    if cid is not None:
+                        self._warn_if_orphaned(key, cid)
             self._publish_agui(context_id, sid, msg, already_started)
 
     def _answer_queries(self, context_id: str, messages: list[dict]) -> list[dict]:

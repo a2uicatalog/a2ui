@@ -149,6 +149,19 @@ already proves works (mirrored in `static/demo.html`):
 </script>
 ```
 
+## A real pitfall: orphaned component updates
+
+`updateComponents` upserts into a flat `components` dict — nothing checks
+that the id is actually reachable from `root`. If your `createSurface`
+doesn't declare a real placeholder for a component before you `update`
+it, the state updates correctly and **nothing ever renders** — a silent
+no-op (the exact bug hit building `scripts/a2a_demo_sketch.py`). This
+isn't a protocol bug to fix; every real UI framework requires a mount
+point before you can patch it. `StatefulSurfaceExecutor.orphaned_component_warnings`
+(and a `WARNING:` line in server logs) flags it — a heuristic ("is this
+id referenced by any field on any other component"), not a full tree
+walk, but it catches the common case.
+
 ## Files
 
 - `main.py` — the A2A server: `StatefulSurfaceExecutor` (derived state +
