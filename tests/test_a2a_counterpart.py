@@ -1,8 +1,15 @@
 """Real A2A interop test: a real `a2a-sdk` CLIENT talking to a real
-`a2a-sdk` SERVER (a2a_counterpart/main.py's EchoExecutor), in-process via
-httpx.ASGITransport -- no network, no deployed service needed, fast enough
-for CI, but every object on both sides is the genuine SDK type, not a
-mock or a hand-rolled JSON-RPC call.
+`a2a-sdk` SERVER (a2a_counterpart/main.py's StatefulSurfaceExecutor), in-
+process via httpx.ASGITransport -- no network, no deployed service needed,
+fast enough for CI, but every object on both sides is the genuine SDK
+type, not a mock or a hand-rolled JSON-RPC call.
+
+Topic C, Phase 1 (2026-08-24) adds test_multi_turn_state_follows_a_real_a2a_conversation:
+proves the executor's INTERNAL derived state (not just its echo reply)
+correctly tracks a real, multi-call A2A conversation -- the actual
+capability this phase exists to prove, per the plan at
+~/.claude/plans/encapsulated-cuddling-kay.md ("a derived state which can
+be followed by A2A", Curtis's own framing).
 
 Proves the whole chain: real renderers/a2ui_v1.py emit_surface() output ->
 real renderers/a2a_extension.py wrap_messages_for_sdk() -> real
@@ -33,24 +40,30 @@ from a2a.client import A2ACardResolver, ClientConfig, ClientFactory
 from a2a.types import DataPart, Message, Part, Role
 
 from a2a_counterpart.main import app as counterpart_app
+from a2a_counterpart.main import executor as counterpart_executor
 from renderers.a2a_extension import (
     A2A_EXTENSION_URI, unwrap_sdk_data_part, wrap_messages_for_sdk,
 )
 from renderers.a2ui_v1 import emit_surface
-from renderers.a2ui_v1_updates import update_data_model
+from renderers.a2ui_v1_updates import (
+    apply_update, surface_state_from_create, update_components, update_data_model,
+)
 from tests.test_a2a_extension import AGENT_TO_RENDERER_LIST
 
 
-async def _round_trip(messages: list[dict]) -> list[dict]:
+async def _round_trip(messages: list[dict], context_id: str | None = None,
+                      message_id: str = "probe-1") -> list[dict]:
     """Sends `messages` to the real in-process counterpart, returns what it
-    echoed back (already unwrapped)."""
+    echoed back (already unwrapped). Passing the SAME context_id across
+    separate calls simulates one A2A conversation -- see
+    test_multi_turn_state_follows_a_real_a2a_conversation below."""
     transport = httpx.ASGITransport(app=counterpart_app)
     async with httpx.AsyncClient(transport=transport, base_url="http://counterpart.local") as hc:
         card = await A2ACardResolver(hc, "http://counterpart.local").get_agent_card()
         client = ClientFactory(ClientConfig(httpx_client=hc, streaming=False)).create(
             card, extensions=[A2A_EXTENSION_URI])
 
-        msg = Message(role=Role.user, message_id="probe-1",
+        msg = Message(role=Role.user, message_id=message_id, context_id=context_id,
                       parts=[Part(root=DataPart(**wrap_messages_for_sdk(messages)))])
 
         got = None
@@ -121,3 +134,63 @@ def test_non_a2ui_data_part_is_rejected_not_silently_dropped():
     text_parts = [getattr(p, "root", p).text for p in got.parts
                   if hasattr(getattr(p, "root", p), "text")]
     assert any("No DataPart" in t for t in text_parts)
+
+
+def test_multi_turn_state_follows_a_real_a2a_conversation():
+    """Topic C, Phase 1's actual deliverable: the counterpart's INTERNAL
+    derived state -- not just its echo reply -- correctly reflects a real,
+    multi-call A2A conversation (createSurface, then updateComponents,
+    then updateDataModel, each a SEPARATE send_message() call sharing one
+    context_id). Cross-checked against calling apply_update() directly,
+    step by step, with no A2A involved at all -- proves the executor's
+    A2A-mediated derivation matches the reference semantics bit-for-bit,
+    the same semantics the deployed GAS surface's poll loop already uses
+    (renderers/a2ui_v1_updates.py's own docstring)."""
+    import uuid
+    context_id = f"multiturn-{uuid.uuid4().hex[:8]}"
+    surface_id = "mt-surface"
+
+    create_msg = emit_surface(
+        {"title": "Multi-turn", "blocks": [{"type": "heading", "text": "v1"}]},
+        surface_id=surface_id)
+    update_msg = update_components(surface_id, [
+        {"id": "extra", "component": "Text", "text": "added later"}])
+    dmu_msg = update_data_model(surface_id, value=1, path="/count")
+
+    asyncio.run(_round_trip([create_msg], context_id=context_id, message_id="turn-1"))
+    asyncio.run(_round_trip([update_msg], context_id=context_id, message_id="turn-2"))
+    asyncio.run(_round_trip([dmu_msg], context_id=context_id, message_id="turn-3"))
+
+    expected = surface_state_from_create(create_msg)
+    apply_update(expected, update_msg)
+    apply_update(expected, dmu_msg)
+
+    actual = counterpart_executor.state[(context_id, surface_id)]
+    assert actual == expected
+    # And specifically, the part a human would recognize as "it followed":
+    assert "extra" in actual["components"]
+    assert actual["dataModel"]["count"] == 1
+
+
+def test_state_is_isolated_per_context_not_shared_globally():
+    """A second, unrelated conversation using the SAME surfaceId must not
+    see or corrupt the first conversation's state -- state is keyed on
+    (context_id, surfaceId), not surfaceId alone."""
+    import uuid
+    ctx_a = f"iso-a-{uuid.uuid4().hex[:8]}"
+    ctx_b = f"iso-b-{uuid.uuid4().hex[:8]}"
+    surface_id = "shared-name-surface"
+
+    create_a = emit_surface({"title": "A", "blocks": [{"type": "body", "text": "from A"}]},
+                            surface_id=surface_id)
+    create_b = emit_surface({"title": "B", "blocks": [{"type": "body", "text": "from B"}]},
+                            surface_id=surface_id)
+
+    asyncio.run(_round_trip([create_a], context_id=ctx_a, message_id="iso-1"))
+    asyncio.run(_round_trip([create_b], context_id=ctx_b, message_id="iso-2"))
+
+    state_a = counterpart_executor.state[(ctx_a, surface_id)]
+    state_b = counterpart_executor.state[(ctx_b, surface_id)]
+    assert state_a != state_b
+    assert state_a == surface_state_from_create(create_a)
+    assert state_b == surface_state_from_create(create_b)
