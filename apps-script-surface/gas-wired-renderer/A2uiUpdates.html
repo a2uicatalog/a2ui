@@ -59,8 +59,13 @@
     } else if (msg.updateDataModel) {
       var ud = msg.updateDataModel; guard(state, ud);
       var path = ud.path || '/';
-      if ('value' in ud) state.dataModel = pointerSet(state.dataModel, path, ud.value);
-      else state.dataModel = pointerRemove(state.dataModel, path);
+      // 2026-08-24: `value` is REQUIRED on the real schema and the real
+      // delete signal is an EXPLICIT null, not the key being absent
+      // (confirmed by reading json/agent_to_renderer.json's
+      // UpdateDataModelMessage directly -- same fix as the Python
+      // reference this file is ported from, renderers/a2ui_v1_updates.py).
+      if (ud.value == null) state.dataModel = pointerRemove(state.dataModel, path);
+      else state.dataModel = pointerSet(state.dataModel, path, ud.value);
     } else if (msg.deleteSurface) {
       guard(state, msg.deleteSurface);
       state.deleted = true; state.components = {}; state.dataModel = {};

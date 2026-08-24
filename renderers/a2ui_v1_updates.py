@@ -22,8 +22,6 @@ from typing import Any, Dict, List, Optional, Callable
 
 from renderers.a2ui_v1 import A2UI_VERSION
 
-_OMITTED = object()   # sentinel: distinguishes "no value" (delete at path) from value=None
-
 
 # ── emit: the three incremental messages ───────────────────────────────────────
 def update_components(surface_id: str, components: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -32,13 +30,22 @@ def update_components(surface_id: str, components: List[Dict[str, Any]]) -> Dict
             "updateComponents": {"surfaceId": surface_id, "components": components}}
 
 
-def update_data_model(surface_id: str, value: Any = _OMITTED, path: str = "/") -> Dict[str, Any]:
-    """v1.0 updateDataModel — replace the value at `path` (JSON Pointer). path='/'
-    replaces the whole data model; omitting `value` REMOVES the key at `path`."""
-    inner: Dict[str, Any] = {"surfaceId": surface_id, "path": path}
-    if value is not _OMITTED:
-        inner["value"] = value
-    return {"version": A2UI_VERSION, "updateDataModel": inner}
+def update_data_model(surface_id: str, value: Any = None, path: str = "/") -> Dict[str, Any]:
+    """v1.0 updateDataModel — replace the value at `path` (JSON Pointer).
+    path='/' replaces the whole data model.
+
+    2026-08-24: `value` is a REQUIRED field on the real schema (confirmed
+    by reading json/agent_to_renderer.json's UpdateDataModelMessage
+    directly — required: [surfaceId, value]) — there is no valid "omit it"
+    message at all, so this can no longer default to an omittable
+    sentinel. `value=None` (Python's None -> JSON null) IS the real
+    deletion signal per the spec's own words ("To delete the key/value at
+    'path', set 'value' explicitly to null") — not a proxy for "unset",
+    the actual wire value. Any real, non-deleting call must pass an
+    explicit value; there is no other way to represent "don't include a
+    value" any more, because the real protocol never had one."""
+    return {"version": A2UI_VERSION,
+            "updateDataModel": {"surfaceId": surface_id, "path": path, "value": value}}
 
 
 def delete_surface(surface_id: str) -> Dict[str, Any]:
@@ -123,10 +130,18 @@ def apply_update(state: Dict[str, Any], msg: Dict[str, Any]) -> Dict[str, Any]:
         ud = msg["updateDataModel"]
         _guard(state, ud)
         path = ud.get("path", "/")
-        if "value" in ud:
-            state["dataModel"] = _pointer_set(state["dataModel"], path, ud["value"])
-        else:
+        # 2026-08-24: `value` is REQUIRED on the real message (see
+        # update_data_model()'s own docstring) -- a well-formed message
+        # always carries it. The real delete signal is `value` being
+        # explicitly null, not the key being absent (which per the current
+        # schema can't happen at all in a conformant message, but is
+        # tolerated here the same way as null -- a stricter receiver could
+        # reject it as malformed instead; this one stays permissive on the
+        # receive side, same spirit as the rest of this module).
+        if ud.get("value", None) is None:
             state["dataModel"] = _pointer_remove(state["dataModel"], path)
+        else:
+            state["dataModel"] = _pointer_set(state["dataModel"], path, ud["value"])
     elif "deleteSurface" in msg:
         _guard(state, msg["deleteSurface"])
         state["deleted"] = True

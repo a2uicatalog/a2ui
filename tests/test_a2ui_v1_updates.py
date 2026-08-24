@@ -12,6 +12,7 @@ from renderers.a2ui_v1_updates import (
     PollChannel, FirestorePushChannel, Channel,
 )
 from renderers.a2ui_v1 import A2UI_VERSION
+from tests.a2ui_v1_conformance import AGENT_TO_RENDERER, assert_conforms
 
 
 def _one_key(msg, key):
@@ -24,10 +25,21 @@ def test_emit_shapes():
     _one_key(update_components("s1", [{"id": "a", "component": "Text", "text": "hi"}]), "updateComponents")
     _one_key(update_data_model("s1", value=5, path="/count"), "updateDataModel")
     _one_key(delete_surface("s1"), "deleteSurface")
-    # updateDataModel: value present -> included; omitted -> absent (means remove)
+    # 2026-08-24: `value` is REQUIRED on the real schema (confirmed by
+    # reading agent_to_renderer.json's UpdateDataModelMessage directly) --
+    # it is ALWAYS present now, never omitted. `value=None` (JSON null) IS
+    # the real deletion signal, not a proxy for "no value sent."
     assert update_data_model("s1", value=5, path="/x")["updateDataModel"] == {"surfaceId": "s1", "path": "/x", "value": 5}
-    assert "value" not in update_data_model("s1", path="/x")["updateDataModel"]
+    assert update_data_model("s1", path="/x")["updateDataModel"] == {"surfaceId": "s1", "path": "/x", "value": None}
     assert update_data_model("s1")["updateDataModel"]["path"] == "/"     # default whole-model
+
+
+def test_update_data_model_conforms_including_the_deletion_case():
+    """Real jsonschema validation (tests/a2ui_v1_conformance.py) -- both a
+    normal update AND the null-deletion case must validate against the
+    real spec, not just match what this module's own tests expect."""
+    assert_conforms(update_data_model("s1", value=5, path="/count"), AGENT_TO_RENDERER)
+    assert_conforms(update_data_model("s1", path="/count"), AGENT_TO_RENDERER)  # value=None
 
 
 BASE = {
@@ -67,7 +79,10 @@ def test_update_data_model_whole_replace_and_remove():
     apply_update(st, update_data_model("s1", value={"fresh": True}, path="/"))
     assert st["dataModel"] == {"fresh": True}                # path '/' replaces all
     st2 = surface_state_from_create(BASE)
-    apply_update(st2, update_data_model("s1", path="/count"))  # value omitted -> remove
+    # 2026-08-24: value=None (JSON null) is the real deletion signal, not
+    # an omitted key -- update_data_model()'s own default now emits it
+    # explicitly.
+    apply_update(st2, update_data_model("s1", path="/count"))  # value=None -> remove
     assert "count" not in st2["dataModel"]
     assert "user" in st2["dataModel"]
 

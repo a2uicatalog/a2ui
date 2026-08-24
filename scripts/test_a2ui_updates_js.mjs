@@ -42,13 +42,15 @@ eq("sibling untouched", st.dataModel.count, 1);
 applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/a/b/c", value: 9 } });
 eq("auto-vivify deep path", st.dataModel.a.b.c, 9);
 
-// whole-model replace (path '/') + remove (value omitted)
+// whole-model replace (path '/') + remove (2026-08-24: real delete signal
+// is an EXPLICIT null, not an omitted value -- value is REQUIRED on the
+// real schema; matches the same fix in renderers/a2ui_v1_updates.py)
 st = stateFromCreate(CREATE);
 applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/", value: { fresh: true } } });
 eq("path '/' replaces all", st.dataModel, { fresh: true });
 st = stateFromCreate(CREATE);
-applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/count" } });
-eq("omitted value removes key", st.dataModel.hasOwnProperty("count"), false);
+applyUpdate(st, { version: "v1.0", updateDataModel: { surfaceId: "s1", path: "/count", value: null } });
+eq("explicit null removes key", st.dataModel.hasOwnProperty("count"), false);
 eq("remove leaves siblings", st.dataModel.user.name, "A");
 
 // deleteSurface tears down
