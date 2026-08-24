@@ -42,9 +42,20 @@
 </p>
 
 <div id="step-tracker-container"></div>
-<div>
-  <h2 style="font-size:1rem;">Run sketch (agent_run_sketch — one node per real A2A contribution)</h2>
-  <div id="run-sketch-container"></div>
+<div style="display:flex;gap:20px;align-items:flex-start;">
+  <div>
+    <h2 style="font-size:1rem;">Run sketch (agent_run_sketch — one node per real A2A contribution)</h2>
+    <div id="run-sketch-container"></div>
+  </div>
+  <div>
+    <h2 style="font-size:1rem;">⚠️ Illustrative Cost Trend (Demo Data — Not a Real LLM Call)</h2>
+    <p class="note" style="margin:0 0 6px;">Perfectly linear numbers on
+      purpose — real spend is never this smooth. Wiring of
+      mountTokenBudgetMeter, unmodified, demonstrating "an agent could
+      report its own running cost through this exact same
+      updateDataModel → StateDelta path," nothing more.</p>
+    <div id="token-meter-container"></div>
+  </div>
 </div>
 
 <script src="/static/a2ui-stream-runtime.v1.js"></script>
@@ -53,6 +64,7 @@
 const statusEl = document.getElementById('conn-status');
 const stepContainer = document.getElementById('step-tracker-container');
 const sketchContainer = document.getElementById('run-sketch-container');
+const tokenMeterContainer = document.getElementById('token-meter-container');
 
 function setConnected(connected) {
   statusEl.textContent = connected ? 'connected' : 'disconnected';
@@ -64,6 +76,7 @@ function setConnected(connected) {
 // mounted ONCE, forwarded to in addition to the per-key primary
 // controller, per its own "wants the union across every key" contract.
 let stepTrackerController = null;
+let tokenMeterController = null;
 const sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
 
 const runtime = A2UIStream.A2UIStreamRuntime({
@@ -75,6 +88,15 @@ const runtime = A2UIStream.A2UIStreamRuntime({
         stepTrackerController = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
       }
       primary = stepTrackerController;
+    } else if (family === 'state') {
+      // Phase 5: updateDataModel -> StateDelta, consumed here exactly
+      // like live_cost_trend/mountTokenBudgetMeter already consume a
+      // real StateDelta stream elsewhere in this repo -- same atom, same
+      // controller code, unmodified.
+      if (!tokenMeterController) {
+        tokenMeterController = A2UIAtomsLive.mountTokenBudgetMeter(tokenMeterContainer).controller;
+      }
+      primary = tokenMeterController;
     } else {
       primary = { onEvent() {}, destroy() {} };
     }

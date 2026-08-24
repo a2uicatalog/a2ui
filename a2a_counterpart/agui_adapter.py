@@ -26,11 +26,21 @@ Mapping (each justified on its own):
     populating one card in the orchestrator/specialist composition use
     case, see tests/test_a2a_counterpart.py).
   - deleteSurface -> RunFinished.
-  - updateDataModel -> INTENTIONALLY UNMAPPED. Neither live_step_tracker
-    nor agent_run_sketch has any visual concept of a data-only patch;
-    StateDelta would be the semantically honest AG-UI event (the runtime
-    already has real JSON-Patch-apply support for it), but wiring a
-    consumer for it is out of scope for this phase's two chosen atoms.
+  - updateDataModel -> StateDelta (Phase 5, 2026-08-24). Real, verified
+    mechanism: a2ui-stream-runtime.v1.js's dispatch() already applies
+    StateDelta via a real RFC 6902 JSON Patch (jsonPatchApply, confirmed
+    by reading it -- add/replace/remove/move/copy/test), and
+    live_cost_trend/mountTokenBudgetMeter already consume the resulting
+    patched doc via event.state -- not an invented event type, unlike an
+    earlier "ContentDelta" idea for progressive drawing that turned out
+    not to exist anywhere in the real runtime (grepped, confirmed absent,
+    corrected before building). updateDataModel's own {path, value} shape
+    maps directly onto ONE JSON Patch op -- no diffing needed, the real
+    wire message already IS a patch: value is None -> "remove" op,
+    otherwise "replace". This makes NO claim about what the data model
+    CONTAINS -- an agent could put step counts, token/cost tracking,
+    anything -- the adapter stays a generic, content-agnostic translator;
+    it's the agent author's choice what winds up on screen.
 
 Pure, synchronous function -- no sleeping, no I/O. The deliberate
 ToolCallStart/ToolCallResult visual pacing (so a viewer actually sees the
@@ -87,6 +97,15 @@ def adapt_to_agui_events(context_id: str, surface_id: str,
         events.append({"type": "RunFinished", "payload": {"runId": context_id}})
         return events
 
-    # updateDataModel and anything else: intentionally unmapped, see
-    # module docstring.
+    if "updateDataModel" in a2ui_message:
+        ud = a2ui_message["updateDataModel"]
+        path = ud.get("path", "/")
+        value = ud.get("value")
+        patch_op = {"op": "remove", "path": path} if value is None else \
+                   {"op": "replace", "path": path, "value": value}
+        events.append({"type": "StateDelta",
+                       "payload": {"runId": context_id, "delta": [patch_op]}})
+        return events
+
+    # Anything else: intentionally unmapped, see module docstring.
     return events

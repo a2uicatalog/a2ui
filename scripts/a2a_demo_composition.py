@@ -42,7 +42,7 @@ from a2a.types import DataPart, Message, Part, Role
 
 from renderers.a2a_extension import A2A_EXTENSION_URI, wrap_messages_for_sdk
 from renderers.a2ui_v1 import emit_surface
-from renderers.a2ui_v1_updates import update_components
+from renderers.a2ui_v1_updates import update_components, update_data_model
 
 
 async def _send(client, url_note, context_id, message_id, messages):
@@ -89,17 +89,34 @@ async def run(url: str, wait_for_open) -> str:
         await _send(client, "orchestrator: createSurface", context_id, "orch-1",
                     [orchestrator_create])
 
+        # Phase 5: illustrative token/cost tracking, riding the SAME
+        # updateDataModel -> StateDelta path any real A2A agent could use
+        # to report its own running cost -- this demo makes no real LLM
+        # calls. Numbers are DELIBERATELY, exactly linear (+500
+        # tokens/+$0.001 per turn) -- Gemini design review, 2026-08-24:
+        # real spend is never this smooth, so the artificiality itself
+        # signals "demo data" even to someone who skips the on-page
+        # caption in static/demo.html. Shape matches live_cost_trend's
+        # own real, verified field names
+        # (turn/cumulativeTokens/cumulativeCostUsd) exactly.
+        points = []
+
+        def _bump(turn):
+            points.append({"turn": turn, "cumulativeTokens": turn * 500,
+                           "cumulativeCostUsd": round(turn * 0.001, 4)})
+            return update_data_model(surface_id, value=list(points), path="/points")
+
         flights_update = update_components(surface_id, [
             {"id": "flights_card", "component": "Text",
              "text": "Flight AA123 to SFO — on time, gate B14"}])
         await _send(client, "specialist A (flights)", context_id, "specialist-flights",
-                    [flights_update])
+                    [flights_update, _bump(1)])
 
         weather_update = update_components(surface_id, [
             {"id": "weather_card", "component": "Text",
              "text": "San Francisco: sunny, 22C, light wind"}])
         await _send(client, "specialist B (weather)", context_id, "specialist-weather",
-                    [weather_update])
+                    [weather_update, _bump(2)])
 
     return render_url
 

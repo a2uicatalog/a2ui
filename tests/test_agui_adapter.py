@@ -65,10 +65,28 @@ def test_delete_surface_emits_run_finished():
     assert events == [{"type": "RunFinished", "payload": {"runId": "ctx1"}}]
 
 
-def test_update_data_model_is_intentionally_unmapped():
+def test_update_data_model_emits_state_delta_replace():
     msg = update_data_model("s1", value=1, path="/count")
     events = adapt_to_agui_events("ctx1", "s1", msg, surface_already_started=True)
-    assert events == []
+    assert events == [{"type": "StateDelta", "payload": {
+        "runId": "ctx1", "delta": [{"op": "replace", "path": "/count", "value": 1}]}}]
+
+
+def test_update_data_model_with_null_value_emits_state_delta_remove():
+    msg = update_data_model("s1", value=None, path="/count")
+    events = adapt_to_agui_events("ctx1", "s1", msg, surface_already_started=True)
+    assert events == [{"type": "StateDelta", "payload": {
+        "runId": "ctx1", "delta": [{"op": "remove", "path": "/count"}]}}]
+
+
+def test_update_data_model_can_carry_an_arbitrary_object_value():
+    """The adapter makes no claim about CONTENT -- an agent can put
+    anything in the data model (e.g. live_cost_trend's own real
+    {turn, cumulativeTokens, cumulativeCostUsd} points shape)."""
+    point = {"turn": 1, "cumulativeTokens": 120, "cumulativeCostUsd": 0.002}
+    msg = update_data_model("s1", value=[point], path="/points")
+    events = adapt_to_agui_events("ctx1", "s1", msg, surface_already_started=True)
+    assert events[0]["payload"]["delta"][0]["value"] == [point]
 
 
 def test_the_full_composition_scenario_produces_a_coherent_agui_sequence():
