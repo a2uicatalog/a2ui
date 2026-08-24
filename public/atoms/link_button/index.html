@@ -193,7 +193,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>url</td><td>string</td><td>required</td></tr><tr><td>label</td><td>string</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>url</td><td>string</td><td>required</td></tr><tr><td>label</td><td>string</td><td>required</td></tr><tr><td>same_tab</td><td>boolean. Default false (opens in a NEW tab) — right for the common case, an outbound link to somewhere that is not this app. Same opt-in chip_group already has: set true for an in-app "go to this page" link, which should behave like ordinary navigation rather than leaving a tab behind. Flipped from always-same-tab to this default 2026-08-15 after an outbound product-vendor link replaced the whole app instead of opening alongside it.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
@@ -255,6 +255,31 @@ document.addEventListener('click',function(e){
   r.setAttribute('data-theme',t);
   try{localStorage.setItem('a2ui-theme',t)}catch(err){}
 });
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
 </script>
 <script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
 </body>

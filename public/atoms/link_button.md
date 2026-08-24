@@ -12,6 +12,7 @@ web, google-apps-script-web, mcp-apps
 |---|---|
 | url | string |
 | label | string |
+| same_tab | boolean (optional). Default false (opens in a NEW tab) — right for the common case, an outbound link to somewhere that is not this app. Same opt-in chip_group already has: set true for an in-app "go to this page" link, which should behave like ordinary navigation rather than leaving a tab behind. Flipped from always-same-tab to this default 2026-08-15 after an outbound product-vendor link replaced the whole app instead of opening alongside it. |
 
 ## Example payload
 
