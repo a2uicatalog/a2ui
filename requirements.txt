@@ -9,3 +9,13 @@
 pytest
 pyyaml
 markdown
+# Added 2026-08-24 for tests/a2ui_v1_conformance.py -- real jsonschema
+# validation of emitted A2UI v1.0 messages against the vendored spec
+# (tests/fixtures/a2ui_v1_0_spec/), replacing eyeballed field-name matching.
+# MUST also be added to .github/workflows/deploy.yml's install step -- that
+# workflow hardcodes its pip install list rather than reading this file (see
+# this file's own header comment); a dependency added only here and not
+# there is exactly the class of drift this estate hit twice on 2026-08-23
+# (a deploy script's declared secrets silently diverging from what it
+# actually installed/mounted).
+jsonschema
