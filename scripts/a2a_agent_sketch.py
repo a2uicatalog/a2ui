@@ -40,11 +40,10 @@ STROKE_SCHEMA = {
             "items": {
                 "type": "OBJECT",
                 "properties": {
-                    "path": {"type": "STRING"},
-                    "color": {"type": "STRING"},
-                    "width": {"type": "NUMBER"},
+                    "element": {"type": "STRING"},
+                    "label": {"type": "STRING"},
                 },
-                "required": ["path"],
+                "required": ["element"],
             },
         },
     },
@@ -60,25 +59,28 @@ all coordinates within roughly x: 20-380, y: 10-190, and keep the drawing \
 centered and reasonably balanced in the frame.
 
 Each stroke:
-  - "path": a valid SVG path "d" attribute string. Use only M, L, Q, C, A, Z \
-commands with ABSOLUTE coordinates (no lowercase/relative commands). No fill \
--- these are ALWAYS open outline strokes on a WHITE background, NEVER closed \
-shapes meant to be filled. Never model a part as "a white filled shape" (e.g. \
-a sail, a cloud, a snowman) -- an outline in white is INVISIBLE on the white \
-canvas. If a real object is conventionally white or very pale, either outline \
-it in a DARK or saturated color instead (its silhouette, not its fill color), \
-or omit that part rather than draw an invisible stroke.
-  - "color": a hex color or a common CSS/X11 color name. NEVER use white, \
-ivory, snow, or any near-white color (e.g. #fff, #f8f8f8, ghostwhite) -- \
-always pick a color with real contrast against a white page.
-  - "width": stroke width in px, 1 to 6.
+  - "element": exactly ONE raw SVG element, e.g. \
+'<circle cx="200" cy="80" r="30" fill="#f4d35e"/>' or \
+'<path d="M 20 60 L 80 60" stroke="#1f2937" stroke-width="3" fill="none"/>'. \
+Allowed tags: circle, ellipse, rect, line, polyline, polygon, path, g (g may \
+group several of the others). Allowed attributes: cx, cy, r, rx, ry, x, y, \
+width, height, x1, y1, x2, y2, points, d, fill, stroke, stroke-width, \
+opacity, fill-opacity, stroke-opacity, stroke-linecap, stroke-linejoin, \
+transform. No other tags/attributes -- an element using anything else is \
+rejected by the renderer and simply won't appear. NEVER use white, ivory, \
+snow, or any near-white fill/stroke color (e.g. #fff, #f8f8f8, ghostwhite) \
+on a part that needs to be visible -- the canvas background is white, so a \
+white-on-white shape is invisible. If a real object is conventionally white \
+or very pale, use its outline in a DARK or saturated color instead.
+  - "label": a short phrase (3-6 words) describing what this element depicts, \
+e.g. "the lighthouse tower".
 
-Keep adjacent strokes' endpoints touching or overlapping where they should \
+Keep adjacent elements' edges touching or overlapping where they should \
 visually connect (e.g. a mast's base should meet the hull it stands on, a \
 sail's corner should meet the mast) -- do not leave small unintentional gaps \
 between parts that belong together.
 
-Order strokes from broad/major shapes FIRST to fine details LAST, as if a \
+Order elements from broad/major shapes FIRST to fine details LAST, as if a \
 human were sketching progressively -- the strokes will be revealed one at a \
 time, in the order you return them, so the ordering matters for how the \
 drawing appears to build up.
@@ -92,8 +94,11 @@ def _extract_strokes_response(resp: dict) -> list[dict]:
     (1) Gemini can split one JSON response across MULTIPLE text parts in
     the same candidate (found live) -- concatenate every part, not just
     parts[0]; (2) validate/clean each stroke defensively before it can
-    reach a real A2A message, matching the renderer's own guardrails
-    (agui_adapter.py / atoms_charts.gs)."""
+    reach a real A2A message. The real safety check (tag/attribute
+    allowlist) lives in the renderer (renderers/web_article.py's
+    _validate_sketchpad_element / atoms_charts.gs's
+    _validateSketchpadElement) -- this only drops elements too malformed
+    to be worth sending at all (empty, absurdly long, not a string)."""
     try:
         parts = resp["candidates"][0]["content"]["parts"]
     except (KeyError, IndexError):
@@ -107,15 +112,11 @@ def _extract_strokes_response(resp: dict) -> list[dict]:
     strokes = data.get("strokes") or []
     valid = []
     for s in strokes:
-        path = s.get("path")
-        if not isinstance(path, str) or not path.strip() or len(path) > 4096:
+        element = s.get("element")
+        if not isinstance(element, str) or not element.strip() or len(element) > 4096:
             print(f"[a2a_agent_sketch] skipping malformed stroke: {s!r}")
             continue
-        valid.append({
-            "path": path.strip(),
-            "color": s.get("color") or "#1f2937",
-            "width": s.get("width") or 2,
-        })
+        valid.append({"element": element.strip(), "label": s.get("label") or ""})
     if not valid:
         raise RuntimeError("Gemini returned no usable strokes -- try a different subject/model")
     return valid

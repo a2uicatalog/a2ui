@@ -2089,46 +2089,140 @@ _RENDERERS['svg_path_draw'] = function(b) {
     + '</svg></div>';
 };
 
-// 2026-08-24: agent_sketchpad -- a composite multi-stroke canvas, for an
-// agent to build ONE coherent picture across multiple real updates
-// (designed for a2a_counterpart/agui_adapter.py's real streaming use
-// case, but a generic real atom, not specific to A2A). Every re-render
-// (this catalogue's model is always full re-render, never incremental
-// DOM patching) draws all strokes except the LAST as already-complete
-// (dashoffset 0, no animation); only the newest stroke gets the real
-// draw-in animation -- a stateless rule, no memory of prior renders
-// needed. Guardrails (250 strokes, 4096 chars/path) are DEFENSIVE only
-// -- schema.yaml's own field docs state them, but this repo's schema
-// format is documentation, not an enforced JSON Schema (confirmed: every
-// other atom's `fields` entries are plain description strings) -- a
-// malformed/oversized stroke is skipped with a console warning, never a
-// crash, matching the pattern below of degrading one bad stroke rather
-// than the whole canvas.
+// 2026-08-24, redesigned 2026-08-24: agent_sketchpad -- a composite
+// multi-shape canvas, for an agent to build ONE coherent picture across
+// multiple real updates (designed for a2a_counterpart/agui_adapter.py's
+// real streaming use case, but a generic real atom, not specific to
+// A2A). Every re-render (this catalogue's model is always full
+// re-render, never incremental DOM patching) draws all elements except
+// the LAST as already-complete (dashoffset 0, no animation); only the
+// newest element gets the real draw-in animation -- a stateless rule,
+// no memory of prior renders needed. Redesigned from path-only strokes
+// to general SVG primitives (with fill) to match what a real freeform
+// tool-calling loop actually produces (streaming-testbench's demos/
+// sketch/sketch_agent.py) -- see _validateSketchpadElement below, a
+// direct port of that module's own validate_svg_fragment (same
+// allowlist, mirrored in renderers/web_article.py's Python renderer too
+// -- see that file for the GAS/Python parity test).
+var _SKETCHPAD_ALLOWED_TAGS = {
+  circle: true, ellipse: true, rect: true, line: true,
+  polyline: true, polygon: true, path: true, g: true,
+};
+var _SKETCHPAD_ALLOWED_ATTRS = {
+  cx: true, cy: true, r: true, rx: true, ry: true, x: true, y: true,
+  width: true, height: true, x1: true, y1: true, x2: true, y2: true,
+  points: true, d: true, fill: true, stroke: true, 'stroke-width': true,
+  opacity: true, 'fill-opacity': true, 'stroke-opacity': true,
+  'stroke-linecap': true, 'stroke-linejoin': true, transform: true,
+};
+var _SKETCHPAD_SAFE_VALUE = /^[A-Za-z0-9#.,\-\s()%]*$/;
+
+// Hand-rolled, dependency-free tag/attribute parser -- GAS's own
+// XmlService (and any real DOM/XML parser) is unavailable in the plain-
+// JS contexts this renderer ALSO runs in unmodified: the MCP Apps
+// bundle, and this repo's own Node test harness (see
+// tests/test_agent_sketchpad.py's own "global.window = global" driver).
+// Deliberately rejects any real text content (SVG shape elements never
+// need it here) and any trailing unparsed characters -- both are just
+// more injection surface for no real benefit to this atom.
+function _sketchpadParseTag(s, pos) {
+  while (pos < s.length && /\s/.test(s[pos])) pos++;
+  var m = /^<([a-zA-Z][a-zA-Z0-9]*)/.exec(s.slice(pos));
+  if (!m) return null;
+  var tag = m[1];
+  pos += m[0].length;
+  var attrs = {};
+  while (true) {
+    while (pos < s.length && /\s/.test(s[pos])) pos++;
+    if (s.slice(pos, pos + 2) === '/>') return { tag: tag, attrs: attrs, children: [], pos: pos + 2 };
+    if (s[pos] === '>') { pos++; break; }
+    var am = /^([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*"([^"]*)"|^([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*'([^']*)'/.exec(s.slice(pos));
+    if (!am) return null; // stray/unquoted/malformed attribute text -- reject
+    var name = (am[1] || am[3]).toLowerCase();
+    var value = am[2] !== undefined ? am[2] : am[4];
+    attrs[name] = value;
+    pos += am[0].length;
+  }
+  var closeTag = '</' + tag + '>';
+  var children = [];
+  while (true) {
+    while (pos < s.length && /\s/.test(s[pos])) pos++;
+    if (s.slice(pos, pos + closeTag.length) === closeTag) {
+      return { tag: tag, attrs: attrs, children: children, pos: pos + closeTag.length };
+    }
+    if (s[pos] !== '<') return null; // real text content is never valid here
+    var child = _sketchpadParseTag(s, pos);
+    if (!child) return null;
+    children.push(child);
+    pos = child.pos;
+  }
+}
+
+function _validateSketchpadSubtree(el) {
+  if (!_SKETCHPAD_ALLOWED_TAGS[el.tag]) return false;
+  for (var name in el.attrs) {
+    if (!_SKETCHPAD_ALLOWED_ATTRS[name] || !_SKETCHPAD_SAFE_VALUE.test(el.attrs[name])) return false;
+  }
+  for (var i = 0; i < el.children.length; i++) {
+    if (!_validateSketchpadSubtree(el.children[i])) return false;
+  }
+  return true;
+}
+
+function _sketchpadSerialize(el) {
+  var out = '<' + el.tag;
+  for (var name in el.attrs) out += ' ' + name + '="' + _esc(el.attrs[name]) + '"';
+  if (el.children.length === 0) return out + '/>';
+  out += '>';
+  for (var i = 0; i < el.children.length; i++) out += _sketchpadSerialize(el.children[i]);
+  return out + '</' + el.tag + '>';
+}
+
+// Real, defensive validation -- never trusts `element` as pre-cleaned
+// just because the calling agent already validates its own output
+// (streaming-testbench's sketch_agent.py); this atom is a generic
+// a2uicatalog atom, reachable from any caller. Mirrors the same
+// allowlist as renderers/web_article.py's Python renderer (see that
+// file's GAS/Python parity test) and the origin implementation
+// (sketch_agent.py's own validate_svg_fragment). Returns the parsed
+// element (a plain {tag, attrs, children} tree, not yet serialized --
+// the caller may still set draw-in-animation attrs on it) if `fragment`
+// is exactly ONE element (nesting allowed under <g>) built entirely
+// from the allowlist, with no trailing content, else null.
+function _validateSketchpadElement(fragment) {
+  if (fragment.length > 4096) return null; // resource-exhaustion defense, checked before parsing -- see the Python renderer's own note
+  var parsed = _sketchpadParseTag(fragment, 0);
+  if (!parsed) return null;
+  if (/\S/.test(fragment.slice(parsed.pos))) return null; // trailing content after the one element
+  if (!_validateSketchpadSubtree(parsed)) return null;
+  return parsed;
+}
+
 _RENDERERS['agent_sketchpad'] = function(b) {
   var strokes = Array.isArray(b.strokes) ? b.strokes : [];
   var viewBox = b.viewBox || '0 0 400 200';
   var label = b.label || '';
   var uid = Math.random().toString(36).substr(2, 6);
   var lastIdx = strokes.length - 1;
-  var paths = '';
+  var elements = '';
   for (var i = 0; i < strokes.length; i++) {
+    if (i >= 250) { elements += '<!-- agent_sketchpad: element ' + i + ' skipped, over the 250-element cap -->'; break; }
     var s = strokes[i];
-    if (i >= 250) { paths += '<!-- agent_sketchpad: stroke ' + i + ' skipped, over the 250-stroke cap -->'; break; }
-    var d = (s && typeof s.path === 'string') ? s.path : '';
-    if (!d || d.length > 4096) { paths += '<!-- agent_sketchpad: stroke ' + i + ' skipped, empty or over 4096 chars -->'; continue; }
-    var color = (s.color) || 'currentColor';
-    var width = (s.width) || 2;
-    var isNewest = (i === lastIdx);
-    var animStyle = isNewest
-      ? ' stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:sketch-draw-' + uid + ' 1.2s ease-out forwards;"'
-      : '';
-    paths += '<path d="' + _esc(d) + '" stroke="' + _esc(String(color)) + '" stroke-width="' + _esc(String(width)) + '" fill="none" stroke-linecap="round" stroke-linejoin="round"' + animStyle + '/>';
+    var raw = (s && typeof s.element === 'string') ? s.element : '';
+    var el = raw ? _validateSketchpadElement(raw) : null;
+    if (!el) { elements += '<!-- agent_sketchpad: element ' + i + ' skipped, failed validation -->'; continue; }
+    if (i === lastIdx) {
+      el.attrs['stroke-dasharray'] = '1000';
+      el.attrs['stroke-dashoffset'] = '1000';
+      el.attrs.style = 'animation:sketch-draw-' + uid + ' 1.2s ease-out forwards;';
+    }
+    elements += _sketchpadSerialize(el);
   }
   return '<div style="margin:1rem 0;">'
     + '<style>@keyframes sketch-draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
     + (label ? '<div style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">' + _esc(label) + '</div>' : '')
     + '<svg viewBox="' + _esc(viewBox) + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
-    + paths
+    + elements
     + '</svg></div>';
 };
 

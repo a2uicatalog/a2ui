@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (481 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (480 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -11305,46 +11305,6 @@
      },
      "required": [
       "component"
-     ]
-    }
-   ],
-   "unevaluatedProperties": false,
-   "x-surfaces": [
-    "web",
-    "google-meet-stage",
-    "google-apps-script-web",
-    "mcp-apps"
-   ]
-  },
-  "agent_sketchpad": {
-   "type": "object",
-   "description": "A single composite SVG canvas built from an ORDERED list of path strokes, for an agent to progressively draw one coherent picture across multiple real updates (e.g. one A2A message per stroke) rather than svg_path_draw's one-shot single shape. Every re-render draws all strokes except the last as already-complete (no animation); only the LAST stroke in the list gets the real stroke-dasharray/stroke-dashoffset draw-in animation -- a stateless rule that works under this catalogue's full-rerender model without any incremental DOM patching. Designed 2026-08-24 for real streaming multi-step drawing over A2A (see a2a_counterpart/agui_adapter.py); works anywhere svg_path_draw does.",
-   "allOf": [
-    {
-     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
-    },
-    {
-     "type": "object",
-     "properties": {
-      "component": {
-       "const": "agent_sketchpad"
-      },
-      "strokes": {
-       "description": "array of {path, color?, width?} (required). ORDERED -- path is a raw SVG path \"d\" string (real creative freedom, not a fixed shape enum). color/width optional per-stroke, default \"currentColor\"/2. Resend the FULL, growing array on every update (A2UI messages carry full values, not deltas) -- only the LAST item in the array animates; everything before it renders as already-drawn. Capped defensively at 250 strokes and 4096 chars per path by the renderer (malformed/ oversized path data is skipped with a console warning, not a crash).",
-       "type": "array"
-      },
-      "viewBox": {
-       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). SVG viewBox, e.g. \"0 0 400 200\". Default \"0 0 400 200\" -- pick a canvas shape that fits what's being drawn, unlike svg_path_draw's fixed 400x80 box."
-      },
-      "label": {
-       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). Caption below the canvas."
-      }
-     },
-     "required": [
-      "component",
-      "strokes"
      ]
     }
    ],

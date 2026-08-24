@@ -9269,50 +9269,6 @@
         "properties": {
           "type": {
             "type": "string",
-            "const": "agent_sketchpad"
-          },
-          "strokes": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "path": {
-                  "type": "string"
-                },
-                "color": {
-                  "type": "string"
-                },
-                "width": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "path"
-              ]
-            }
-          },
-          "viewBox": {
-            "type": "string",
-            "enum": [
-              "pickacanvasshapethatfitswhat'sbeingdrawn",
-              "unlikesvg_path_draw'sfixed400x80box"
-            ]
-          },
-          "label": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "additionalProperties": false
-      },
-      {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
             "const": "parallax_card"
           },
           "title": {

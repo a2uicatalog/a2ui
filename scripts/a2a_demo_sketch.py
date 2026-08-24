@@ -39,12 +39,12 @@ from renderers.a2ui_v1_updates import update_components
 # Each stage is ONE ADDITIONAL stroke; the cumulative list is resent in
 # full each time (agent_sketchpad's own real contract).
 SKETCH_STAGES = [
-    ("horizon", "M 0 170 L 400 170", "#94a3b8", 2),
-    ("sun", "M 200,60 m -35,0 a 35,35 0 1,0 70,0 a 35,35 0 1,0 -70,0", "#f59e0b", 3),
-    ("left mountain", "M 30 170 L 110 60 L 190 170", "#475569", 3),
-    ("right mountain", "M 170 170 L 260 90 L 350 170", "#334155", 3),
-    ("birds", "M 60 40 Q 70 30 80 40 Q 90 30 100 40 M 120 25 Q 130 15 140 25 Q 150 15 160 25",
-     "#1e293b", 2),
+    ("horizon", '<path d="M 0 170 L 400 170" stroke="#94a3b8" stroke-width="2" fill="none"/>'),
+    ("sun", '<circle cx="200" cy="60" r="35" fill="#f59e0b"/>'),
+    ("left mountain", '<path d="M 30 170 L 110 60 L 190 170" stroke="#475569" stroke-width="3" fill="none"/>'),
+    ("right mountain", '<path d="M 170 170 L 260 90 L 350 170" stroke="#334155" stroke-width="3" fill="none"/>'),
+    ("birds", '<path d="M 60 40 Q 70 30 80 40 Q 90 30 100 40 M 120 25 Q 130 15 140 25 Q 150 15 160 25" '
+              'stroke="#1e293b" stroke-width="2" fill="none"/>'),
 ]
 
 
@@ -89,8 +89,8 @@ async def run(url: str, wait_for_open, pace_seconds: float) -> str:
         await _send(client, context_id, "sketch-orch", [create_msg])
 
         strokes = []
-        for i, (name, path, color, width) in enumerate(SKETCH_STAGES):
-            strokes.append({"path": path, "color": color, "width": width})
+        for i, (name, element) in enumerate(SKETCH_STAGES):
+            strokes.append({"element": element, "label": name})
             upd = update_components(surface_id, [
                 {"id": "sketch", "component": "agent_sketchpad",
                  "viewBox": "0 0 400 200", "strokes": list(strokes)}])

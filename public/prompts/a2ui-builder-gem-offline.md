@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 481 atoms.** One line each:
+1. **Compact index — all 480 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 481 atoms)
+### Compact index (all 480 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -658,7 +658,6 @@ does not exist.
 - `reveal_on_scroll` — IntersectionObserver scroll-triggered fade+slide reveal
 - `word_scramble` — CSS steps() left-to-right character scramble-to-reveal
 - `svg_path_draw` — SVG stroke-dashoffset self-drawing path animation
-- `agent_sketchpad` — composite multi-stroke SVG canvas, newest stroke draws itself in
 - `parallax_card` — 3D CSS perspective tilt card with mousemove parallax depth
 - `quiz_question` — MCQ or true/false question with CSS-only correct/wrong feedback
 - `fill_in_blank` — cloze-test sentence with inline inputs and correct/wrong highlight on submit

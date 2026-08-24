@@ -9525,14 +9525,65 @@ def _render_svg_path_draw(b: dict) -> str:
     )
 
 
+_SKETCHPAD_ALLOWED_TAGS = {"circle", "ellipse", "rect", "line", "polyline", "polygon", "path", "g"}
+_SKETCHPAD_ALLOWED_ATTRS = {
+    "cx", "cy", "r", "rx", "ry", "x", "y", "width", "height",
+    "x1", "y1", "x2", "y2", "points", "d",
+    "fill", "stroke", "stroke-width", "opacity", "fill-opacity",
+    "stroke-opacity", "stroke-linecap", "stroke-linejoin", "transform",
+}
+_SKETCHPAD_SAFE_VALUE = __import__("re").compile(r"^[A-Za-z0-9#.,\-\s()%]*$")
+
+
+def _validate_sketchpad_element(fragment: str):
+    """Real, defensive validation -- never trust `element` as pre-cleaned
+    just because the agent that sent it (streaming-testbench's
+    sketch_agent.py) already validates its own output before emitting;
+    this atom is a generic a2uicatalog atom, reachable from any caller.
+    Ported from sketch_agent.py's own validate_svg_fragment (same
+    allowlist, same real XML parser rather than a regex over raw markup --
+    a crafted fragment can bypass a regex via parser-differential tricks,
+    matching that module's own docstring reasoning). Returns the parsed
+    ET.Element (not yet re-serialized -- the caller may still need to set
+    the draw-in-animation attributes on it) if `fragment` is exactly ONE
+    element (nesting allowed under <g>) built entirely from the allowlist,
+    else None. The 4096-char raw-length cap (checked BEFORE parsing) is
+    resource-exhaustion defense, not a correctness rule -- a real element
+    is never anywhere near this long; it just stops a pathologically huge
+    string from being handed to the XML parser at all."""
+    if len(fragment) > 4096:
+        return None
+    import xml.etree.ElementTree as ET
+    try:
+        root = ET.fromstring("<g>" + fragment + "</g>")
+    except ET.ParseError:
+        return None
+    children = list(root)
+    if len(children) != 1:
+        return None
+    if not _validate_sketchpad_subtree(children[0]):
+        return None
+    return children[0]
+
+
+def _validate_sketchpad_subtree(el) -> bool:
+    tag = el.tag.split("}")[-1]
+    if tag not in _SKETCHPAD_ALLOWED_TAGS:
+        return False
+    for key, value in el.attrib.items():
+        if key not in _SKETCHPAD_ALLOWED_ATTRS or not _SKETCHPAD_SAFE_VALUE.match(value):
+            return False
+    return all(_validate_sketchpad_subtree(child) for child in el)
+
+
 def _render_agent_sketchpad(b: dict) -> str:
-    """2026-08-24: a composite multi-stroke canvas -- see the .gs renderer
-    (apps-script-surface/gas-wired-renderer/atoms_charts.gs) for the full
-    design rationale, ported here 1:1 since works_on:web requires a real
-    renderer in THIS file (tests/test_schema.py enforces it). Every
-    re-render draws all strokes except the LAST as already-complete; only
-    the newest stroke gets the real draw-in animation -- stateless, no
-    memory of prior renders needed."""
+    """2026-08-24, redesigned 2026-08-24: a composite multi-shape canvas --
+    see the .gs renderer (apps-script-surface/gas-wired-renderer/
+    atoms_charts.gs) for the full design rationale, ported here 1:1 since
+    works_on:web requires a real renderer in THIS file (tests/
+    test_schema.py enforces it). Every re-render draws all elements except
+    the LAST as already-complete; only the newest element gets the real
+    draw-in animation -- stateless, no memory of prior renders needed."""
     import hashlib
     import html as _html
     strokes = b.get("strokes") if isinstance(b.get("strokes"), list) else []
@@ -9543,31 +9594,28 @@ def _render_agent_sketchpad(b: dict) -> str:
         f'<div style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">{_html.escape(label)}</div>'
         if label else ""
     )
+    import xml.etree.ElementTree as ET
     last_idx = len(strokes) - 1
-    paths = []
+    elements = []
     for i, s in enumerate(strokes):
         if i >= 250:
             break
-        d = s.get("path") if isinstance(s, dict) else None
-        if not isinstance(d, str) or not d or len(d) > 4096:
+        raw = s.get("element") if isinstance(s, dict) else None
+        el = _validate_sketchpad_element(raw) if isinstance(raw, str) and raw else None
+        if el is None:
             continue
-        color = _html.escape(str(s.get("color") or "currentColor"))
-        width = _html.escape(str(s.get("width") or 2))
-        anim = ""
         if i == last_idx:
-            anim = (f' stroke-dasharray="1000" stroke-dashoffset="1000" '
-                    f'style="animation:sketch-draw-{uid} 1.2s ease-out forwards;"')
-        paths.append(
-            f'<path d="{_html.escape(d)}" stroke="{color}" stroke-width="{width}" '
-            f'fill="none" stroke-linecap="round" stroke-linejoin="round"{anim}/>'
-        )
+            el.set("stroke-dasharray", "1000")
+            el.set("stroke-dashoffset", "1000")
+            el.set("style", f"animation:sketch-draw-{uid} 1.2s ease-out forwards;")
+        elements.append(ET.tostring(el, encoding="unicode"))
     return (
         f'<div style="margin:1rem 0;">'
         f'<style>@keyframes sketch-draw-{uid}{{to{{stroke-dashoffset:0;}}}}</style>'
         f'{label_html}'
         f'<svg viewBox="{_html.escape(view_box)}" style="width:100%;height:auto;'
         f'border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
-        + "".join(paths) +
+        + "".join(elements) +
         f'</svg></div>'
     )
 

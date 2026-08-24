@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 481 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 480 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -5114,24 +5114,6 @@
         "show a SVG stroke-dashoffset self-drawing path animation",
         "an svg path that animates drawing itself from start to end using the stroke-dasharray / stroke-dashoffset css",
         "render a svg path draw"
-      ]
-    },
-    {
-      "identifier": "urn:air:a2uicatalog.ai:atom:agent_sketchpad",
-      "displayName": "Agent Sketchpad",
-      "type": "application/vnd.a2ui.atom+json",
-      "url": "https://a2uicatalog.ai/atoms/agent_sketchpad",
-      "capabilities": [
-        "web",
-        "google-meet-stage",
-        "google-apps-script-web",
-        "mcp-apps"
-      ],
-      "description": "A single composite SVG canvas built from an ORDERED list of path strokes, for an agent to progressively draw one coherent picture across multiple real updates (e.g. one A2A message per stroke) rather than svg_path_draw's one-shot single shape. Every re-render draws all strokes except the last as already-complete (no animation); only the LAST stroke in the list gets the real stroke-dasharray/stroke-dashoffset draw-in animation -- a stateless rule that works under this catalogue's full-rerender model without any incremental DOM patching. Designed 2026-08-24 for real streaming multi-step drawing over A2A (see a2a_counterpart/agui_adapter.py); works anywhere svg_path_draw does.",
-      "representativeQueries": [
-        "show a composite multi-stroke SVG canvas, newest stroke draws itself in",
-        "a single composite svg canvas built from an ordered list of path strokes, for an agent to progressively draw one",
-        "render a agent sketchpad"
       ]
     },
     {

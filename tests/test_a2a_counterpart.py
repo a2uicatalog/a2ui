@@ -402,7 +402,7 @@ def test_render_fragment_reflects_real_derived_state():
     create_msg = emit_surface({
         "title": "T", "blocks": [
             {"type": "agent_sketchpad", "id": "sketch", "viewBox": "0 0 400 200",
-             "strokes": [{"path": "M 0 0 L 10 10", "color": "red", "width": 2}]}]},
+             "strokes": [{"element": '<path d="M 0 0 L 10 10" stroke="red"/>'}]}]},
         surface_id=surface_id)
     asyncio.run(_round_trip([create_msg], context_id=context_id, message_id="frag-1"))
 

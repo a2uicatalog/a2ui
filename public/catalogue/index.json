@@ -1080,12 +1080,8 @@
       "title": "Motion & decorative",
       "alwaysResolved": false,
       "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text. Presentation polish, not data.",
-      "atomCount": 87,
+      "atomCount": 86,
       "atoms": [
-        {
-          "type": "agent_sketchpad",
-          "description": "composite multi-stroke SVG canvas, newest stroke draws itself in"
-        },
         {
           "type": "ambient_gradient",
           "description": "animated aurora/ambient gradient background"
