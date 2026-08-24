@@ -1,0 +1,9 @@
+# Explicit --file build, repo root as context — see Dockerfile's own
+# comment for why gcloud's auto-detected single root Dockerfile (already
+# claimed by cloud-run-renderer/'s deploy) can't serve this second
+# containerized service too.
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'a2a_counterpart/Dockerfile', '-t', '${_IMAGE}', '.']
+images:
+  - '${_IMAGE}'

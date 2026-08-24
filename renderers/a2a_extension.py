@@ -79,6 +79,64 @@ def unwrap_data_part(data_part: Dict[str, Any]) -> List[Dict[str, Any]]:
     return data
 
 
+def wrap_messages_for_sdk(messages: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Sibling of wrap_messages(), for constructing a REAL `a2a-sdk`
+    `a2a.types.DataPart` Python object rather than validating raw wire JSON.
+
+    Real, confirmed incompatibility (found 2026-08-24 building the actual
+    interop counterpart, not assumed): the extension spec's own worked
+    example shows `DataPart.data` as a bare JSON array (see wrap_messages()
+    above, and the spec doc's own words: "It MUST be an array of
+    messages") -- but the base A2A protocol's DataPart mirrors
+    `google.protobuf.Struct` (a `map<string, Value>`), which cannot
+    represent a top-level array in ANY real A2A transport, not just this
+    SDK's typing choice. The installed `a2a-sdk` package's own
+    `DataPart.data` field is `dict[str, Any]`; `DataPart(data=[...])`
+    raises a Pydantic ValidationError immediately, confirmed live.
+
+    This is our own deviation for talking to a REAL a2a-sdk DataPart, not
+    an upstream-sanctioned shape -- wraps the same message list under an
+    `a2uiMessages` key instead of a bare array (namespaced, not a generic
+    `messages`/`data` key, per Gemini design review 2026-08-24: avoids
+    collision if another extension also wants a DataPart.data key).
+    wrap_messages() above is left untouched (still literally spec-shaped)
+    because it is what tests/test_a2a_extension.py validates against the
+    real vendored agent_to_renderer_list.json/renderer_to_agent_list.json
+    schemas, which describe the array shape -- that conformance check is
+    still true and valuable independent of any one SDK's Python type
+    constraints.
+
+    Already filed upstream: a2ui-project/a2ui#645 (closed) -- a maintainer
+    confirmed the spec's array example is real but only valid under A2A
+    1.0 semantics; the currently-pinned a2a-sdk 0.3.x implements A2A 0.3,
+    whose DataPart.data is genuinely google.protobuf.Struct (dict-only,
+    confirmed against the real a2a.proto). The fix ships in a2a-sdk 1.x,
+    which is a breaking rewrite (DataPart itself is restructured) -- an
+    estate-wide SDK major-version migration, deliberately out of scope
+    here. This wrapper is the correct fix for the SDK version every other
+    live A2A server in this estate is pinned to today."""
+    wrapped = wrap_messages(messages)
+    wrapped["data"] = {"a2uiMessages": messages}
+    return wrapped
+
+
+def unwrap_sdk_data_part(data_part: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Reverse of wrap_messages_for_sdk() -- see its docstring for why this
+    differs from unwrap_data_part() above."""
+    metadata = data_part.get("metadata") or {}
+    if metadata.get("mimeType") != A2UI_MIME_TYPE:
+        raise NotAnA2uiDataPart(
+            f"DataPart.metadata.mimeType is {metadata.get('mimeType')!r}, "
+            f"expected {A2UI_MIME_TYPE!r} -- this DataPart is not A2UI data.")
+    data = data_part.get("data")
+    if not isinstance(data, dict) or not isinstance(data.get("a2uiMessages"), list):
+        raise NotAnA2uiDataPart(
+            "DataPart.data must be {'a2uiMessages': [...]} for real a2a-sdk "
+            f"DataPart construction (see wrap_messages_for_sdk()), got "
+            f"{data!r}.")
+    return data["a2uiMessages"]
+
+
 def agent_card_extension(supported_catalog_ids: List[str],
                          accepts_inline_catalogs: bool = False,
                          required: bool = False,

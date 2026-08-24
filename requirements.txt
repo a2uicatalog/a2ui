@@ -33,3 +33,14 @@ regex
 # two-places-must-match discipline as jsonschema/regex above --
 # MUST also be added to .github/workflows/deploy.yml's install step.
 defusedxml
+# Added 2026-08-24 for tests/test_a2a_counterpart.py -- the real A2A
+# interop test spins up the real a2a_counterpart/main.py service in-process
+# (httpx.ASGITransport, no network) and drives it with a real a2a-sdk
+# client, proving renderers/a2a_extension.py against a real a2a-sdk server,
+# not just a unit test of the wrap/unwrap functions alone. Same
+# two-places-must-match discipline as above -- also update
+# .github/workflows/deploy.yml's install step.
+a2a-sdk[http-server]>=0.3.25,<0.4.0
+httpx
+uvicorn
+starlette
