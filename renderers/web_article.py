@@ -9525,6 +9525,53 @@ def _render_svg_path_draw(b: dict) -> str:
     )
 
 
+def _render_agent_sketchpad(b: dict) -> str:
+    """2026-08-24: a composite multi-stroke canvas -- see the .gs renderer
+    (apps-script-surface/gas-wired-renderer/atoms_charts.gs) for the full
+    design rationale, ported here 1:1 since works_on:web requires a real
+    renderer in THIS file (tests/test_schema.py enforces it). Every
+    re-render draws all strokes except the LAST as already-complete; only
+    the newest stroke gets the real draw-in animation -- stateless, no
+    memory of prior renders needed."""
+    import hashlib
+    import html as _html
+    strokes = b.get("strokes") if isinstance(b.get("strokes"), list) else []
+    view_box = b.get("viewBox", "0 0 400 200")
+    label = b.get("label", "")
+    uid = hashlib.md5(str(b).encode()).hexdigest()[:6]
+    label_html = (
+        f'<div style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">{_html.escape(label)}</div>'
+        if label else ""
+    )
+    last_idx = len(strokes) - 1
+    paths = []
+    for i, s in enumerate(strokes):
+        if i >= 250:
+            break
+        d = s.get("path") if isinstance(s, dict) else None
+        if not isinstance(d, str) or not d or len(d) > 4096:
+            continue
+        color = _html.escape(str(s.get("color") or "currentColor"))
+        width = _html.escape(str(s.get("width") or 2))
+        anim = ""
+        if i == last_idx:
+            anim = (f' stroke-dasharray="1000" stroke-dashoffset="1000" '
+                    f'style="animation:sketch-draw-{uid} 1.2s ease-out forwards;"')
+        paths.append(
+            f'<path d="{_html.escape(d)}" stroke="{color}" stroke-width="{width}" '
+            f'fill="none" stroke-linecap="round" stroke-linejoin="round"{anim}/>'
+        )
+    return (
+        f'<div style="margin:1rem 0;">'
+        f'<style>@keyframes sketch-draw-{uid}{{to{{stroke-dashoffset:0;}}}}</style>'
+        f'{label_html}'
+        f'<svg viewBox="{_html.escape(view_box)}" style="width:100%;height:auto;'
+        f'border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
+        + "".join(paths) +
+        f'</svg></div>'
+    )
+
+
 def _render_toast_notification(b: dict) -> str:
     import hashlib
     uid     = hashlib.md5(str(b).encode()).hexdigest()[:6]
@@ -9701,6 +9748,7 @@ _RENDERERS.update({
     "reveal_on_scroll":     _render_reveal_on_scroll,
     "word_scramble":        _render_word_scramble,
     "svg_path_draw":        _render_svg_path_draw,
+    "agent_sketchpad":      _render_agent_sketchpad,
     "toast_notification":   _render_toast_notification,
     "parallax_card":        _render_parallax_card,
     # Learning atoms

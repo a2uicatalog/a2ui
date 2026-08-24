@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 480,
+ "atomCount": 481,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -2840,6 +2840,16 @@
   {
    "type": "svg_path_draw",
    "compact": "SVG stroke-dashoffset self-drawing path animation",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "agent_sketchpad",
+   "compact": "composite multi-stroke SVG canvas, newest stroke draws itself in",
    "surfaces": [
     "web",
     "google-meet-stage",

@@ -381,6 +381,7 @@ a2ui-effects-v1:
 - stripe_background
 - surface_unlocked
 - svg_path_draw
+- agent_sketchpad
 - terminal_boot
 - text_reveal_mask
 - tilt_card

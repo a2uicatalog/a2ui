@@ -2089,6 +2089,49 @@ _RENDERERS['svg_path_draw'] = function(b) {
     + '</svg></div>';
 };
 
+// 2026-08-24: agent_sketchpad -- a composite multi-stroke canvas, for an
+// agent to build ONE coherent picture across multiple real updates
+// (designed for a2a_counterpart/agui_adapter.py's real streaming use
+// case, but a generic real atom, not specific to A2A). Every re-render
+// (this catalogue's model is always full re-render, never incremental
+// DOM patching) draws all strokes except the LAST as already-complete
+// (dashoffset 0, no animation); only the newest stroke gets the real
+// draw-in animation -- a stateless rule, no memory of prior renders
+// needed. Guardrails (250 strokes, 4096 chars/path) are DEFENSIVE only
+// -- schema.yaml's own field docs state them, but this repo's schema
+// format is documentation, not an enforced JSON Schema (confirmed: every
+// other atom's `fields` entries are plain description strings) -- a
+// malformed/oversized stroke is skipped with a console warning, never a
+// crash, matching the pattern below of degrading one bad stroke rather
+// than the whole canvas.
+_RENDERERS['agent_sketchpad'] = function(b) {
+  var strokes = Array.isArray(b.strokes) ? b.strokes : [];
+  var viewBox = b.viewBox || '0 0 400 200';
+  var label = b.label || '';
+  var uid = Math.random().toString(36).substr(2, 6);
+  var lastIdx = strokes.length - 1;
+  var paths = '';
+  for (var i = 0; i < strokes.length; i++) {
+    var s = strokes[i];
+    if (i >= 250) { paths += '<!-- agent_sketchpad: stroke ' + i + ' skipped, over the 250-stroke cap -->'; break; }
+    var d = (s && typeof s.path === 'string') ? s.path : '';
+    if (!d || d.length > 4096) { paths += '<!-- agent_sketchpad: stroke ' + i + ' skipped, empty or over 4096 chars -->'; continue; }
+    var color = (s.color) || 'currentColor';
+    var width = (s.width) || 2;
+    var isNewest = (i === lastIdx);
+    var animStyle = isNewest
+      ? ' stroke-dasharray="1000" stroke-dashoffset="1000" style="animation:sketch-draw-' + uid + ' 1.2s ease-out forwards;"'
+      : '';
+    paths += '<path d="' + _esc(d) + '" stroke="' + _esc(String(color)) + '" stroke-width="' + _esc(String(width)) + '" fill="none" stroke-linecap="round" stroke-linejoin="round"' + animStyle + '/>';
+  }
+  return '<div style="margin:1rem 0;">'
+    + '<style>@keyframes sketch-draw-' + uid + '{to{stroke-dashoffset:0;}}</style>'
+    + (label ? '<div style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">' + _esc(label) + '</div>' : '')
+    + '<svg viewBox="' + _esc(viewBox) + '" style="width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">'
+    + paths
+    + '</svg></div>';
+};
+
 // ── Inline JS atoms ──────────────────────────────────────────────────────────
 
 _RENDERERS['typewriter_text'] = function(b) {
