@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>a2a_counterpart — live AG-UI-shaped view of a real A2A conversation</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #111; }
+  h1 { font-size: 1.3rem; }
+  p.note { color: #555; font-size: 0.9rem; }
+  #conn-status { font-size: 0.8rem; padding: 2px 10px; border-radius: 10px; font-weight: 600; }
+  #conn-status.connected { background: #dcfce7; color: #166534; }
+  #conn-status.disconnected { background: #fee2e2; color: #991b1b; }
+
+  .a2ui-step-tracker { margin: 16px 0; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 8px; }
+  .a2ui-run-status { font-weight: 700; margin-bottom: 8px; }
+  .a2ui-run-status[data-status=running] { color: #1e40af; }
+  .a2ui-run-status[data-status=done] { color: #166534; }
+  .a2ui-run-status[data-status=error] { color: #991b1b; }
+  .a2ui-step-list { margin: 0; padding-left: 20px; font-size: 0.85rem; }
+  .a2ui-step-list li[data-status=running] { color: #1e40af; font-weight: 600; position: relative; padding-left: 14px; }
+  .a2ui-step-list li[data-status=done] { color: #166534; }
+  .a2ui-step-list li[data-status=error] { color: #991b1b; font-weight: 600; }
+  .a2ui-step-list li[data-status=pending] { color: #9ca3af; }
+  .a2ui-step-list li[data-status=running]::before {
+    content: ''; position: absolute; left: -2px; top: 7px; width: 6px; height: 6px;
+    border-radius: 50%; background: #1e40af; animation: a2ui-heartbeat 1.6s ease-in-out infinite;
+  }
+  @keyframes a2ui-heartbeat { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @media (prefers-reduced-motion: reduce) { .a2ui-step-list li[data-status=running]::before { animation: none; } }
+</style>
+</head>
+<body>
+
+<h1>a2a_counterpart — Topic C, Phase 4</h1>
+<p class="note">
+  <span id="conn-status" class="disconnected">disconnected</span>
+  &nbsp;This page loads the REAL, unmodified AG-UI live-atoms runtime
+  (<code>a2ui-stream-runtime.v1.js</code> + <code>a2ui-atoms-live.v1.js</code>,
+  a separate workstream this session did not build) and drives it from a
+  REAL A2A conversation via <code>agui_adapter.py</code>'s translation —
+  near-parity demonstration, not a claim of full AG-UI fidelity.
+</p>
+
+<div id="step-tracker-container"></div>
+<div>
+  <h2 style="font-size:1rem;">Run sketch (agent_run_sketch — one node per real A2A contribution)</h2>
+  <div id="run-sketch-container"></div>
+</div>
+
+<script src="/static/a2ui-stream-runtime.v1.js"></script>
+<script src="/static/a2ui-atoms-live.v1.js"></script>
+<script>
+const statusEl = document.getElementById('conn-status');
+const stepContainer = document.getElementById('step-tracker-container');
+const sketchContainer = document.getElementById('run-sketch-container');
+
+function setConnected(connected) {
+  statusEl.textContent = connected ? 'connected' : 'disconnected';
+  statusEl.className = connected ? 'connected' : 'disconnected';
+}
+
+// Same pattern as cloud-run-renderer/static/agent-tail-demo.html's own
+// wiring (the real, already-proven mountAtom shape) -- agent_run_sketch
+// mounted ONCE, forwarded to in addition to the per-key primary
+// controller, per its own "wants the union across every key" contract.
+let stepTrackerController = null;
+const sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
+
+const runtime = A2UIStream.A2UIStreamRuntime({
+  container: stepContainer,
+  mountAtom(family, key, event) {
+    let primary;
+    if (family === 'lifecycle') {
+      if (!stepTrackerController) {
+        stepTrackerController = A2UIAtomsLive.mountLiveStepTracker(stepContainer).controller;
+      }
+      primary = stepTrackerController;
+    } else {
+      primary = { onEvent() {}, destroy() {} };
+    }
+    return {
+      onEvent(e) { primary.onEvent(e); sketchController.onEvent(e); },
+      destroy() { primary.destroy(); },
+    };
+  },
+});
+
+setConnected(true);
+runtime.connect("__A2A_AGUI_STREAM_URL__").finally(() => setConnected(false));
+</script>
+</body>
+</html>
