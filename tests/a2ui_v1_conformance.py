@@ -28,6 +28,17 @@ import json
 import pathlib
 from typing import Any, Dict
 
+# Gemini review, 2026-08-24 (PR 3 post-implementation pass): flagged that
+# patching jsonschema's Unicode-regex limitation in three separate places
+# is fragile against future jsonschema internals changes -- true, and
+# unavoidable short of an upstream fix (worth filing on python-jsonschema
+# at some point: no supported extension point exists for the regex engine
+# today). Mitigation taken: all three patches already live in exactly this
+# one module, applied once at import time -- if jsonschema's internals
+# ever shift, this file is the one place to fix, not scattered across
+# every test file that happens to validate a message with
+# metadata.extensions. Do not add a fourth patch site elsewhere; extend
+# the three below if a new internal `re` user is found instead.
 import regex  # stdlib `re` cannot compile \p{...} Unicode-property syntax —
 # real spec requirement, not avoidable: common_types.json#/$defs/Extensions
 # uses exactly this in its patternProperties key
@@ -79,6 +90,24 @@ _RegexAwareValidator = extend(
 # `sys.modules["re"]` replacement.
 import jsonschema._utils as _js_utils  # noqa: E402
 _js_utils.re = regex
+
+# A THIRD place, found 2026-08-24 while validating a LIST schema
+# (agent_to_renderer_list.json: {type: array, items: {$ref: ...}}):
+# resolving a $ref that crosses into a different registered schema
+# document does not consistently preserve this custom validator class
+# through jsonschema's own internal descend/ref machinery -- it can fall
+# back to calling jsonschema._keywords's OWN module-level `pattern`/
+# `patternProperties` functions directly, which import `re` at that
+# module's own top level, independent of both the VALIDATORS-dict
+# override above AND the _utils patch. Confirmed by reading the actual
+# traceback (jsonschema/_keywords.py:22: in patternProperties) after the
+# first two fixes still failed on the identical \p{...} pattern, only when
+# validating an array-of-messages schema specifically -- validating a
+# single message directly (this module's own _validator_for()) never hit
+# this third path. Same scoped-patch approach, same module-level `re`
+# name, not a global replacement.
+import jsonschema._keywords as _js_keywords  # noqa: E402
+_js_keywords.re = regex
 
 _BARE_CATALOG_ALIAS = "https://a2ui.org/specification/v1_0/catalog.json"
 
