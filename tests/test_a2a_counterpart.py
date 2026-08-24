@@ -324,3 +324,94 @@ def test_update_to_a_never_declared_component_warns_orphaned():
     warnings = counterpart_executor.orphaned_component_warnings[before:]
     assert len(warnings) == 1
     assert "never_declared" in warnings[0]
+
+
+def test_sketch_form_page_serves():
+    """GET /sketch -- the real prompt-to-drawing web demo page. No live
+    Gemini call involved, just confirms the route + form render."""
+    async def _get():
+        transport = httpx.ASGITransport(app=counterpart_app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://counterpart.local") as hc:
+            return await hc.get("/sketch")
+    resp = asyncio.run(_get())
+    assert resp.status_code == 200
+    assert "form" in resp.text and 'name="subject"' in resp.text
+
+
+def test_sketch_submit_without_subject_is_a_clean_400():
+    """POST /sketch with no subject -- must fail cleanly, not 500. This is
+    also the real regression test for the python-multipart dependency gap
+    found live (request.form() 500'd with it missing, even for a plain
+    application/x-www-form-urlencoded body)."""
+    async def _post():
+        transport = httpx.ASGITransport(app=counterpart_app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://counterpart.local") as hc:
+            return await hc.post("/sketch", data={"subject": ""})
+    resp = asyncio.run(_post())
+    assert resp.status_code == 400
+
+
+def test_sketch_submit_creates_a_real_wired_placeholder_surface():
+    """POST /sketch must create the surface SYNCHRONOUSLY (before
+    redirecting) with the sketch component already a real child of root --
+    same orphaned-component lesson as scripts/a2a_demo_sketch.py, tested
+    here directly against the executor's own derived state rather than
+    waiting for the (real-Gemini-dependent) background task to run."""
+    async def _post():
+        transport = httpx.ASGITransport(app=counterpart_app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://counterpart.local",
+                                     follow_redirects=False) as hc:
+            return await hc.post("/sketch", data={"subject": "a test subject"})
+    resp = asyncio.run(_post())
+    assert resp.status_code == 303
+    location = resp.headers["location"]
+    assert location.startswith("/demo/web-sketch-")
+    context_id = location.split("/")[2]
+    state = counterpart_executor.state.get((context_id, "web-sketch-surface"))
+    assert state is not None
+    assert "sketch" in state["components"]
+    # Reachable from root, not orphaned -- confirms the placeholder is a
+    # real child, matching the fix already proven in test_a2a_counterpart.py's
+    # orphaned-component tests above.
+    root = state["components"]["root"]
+    assert "sketch" in root.get("children", [])
+
+
+def test_render_fragment_is_empty_for_unknown_surface_not_404():
+    """/demo pulls this into the page on every ToolCallResult -- an
+    empty-but-200 response for "not created yet" lets the page's own
+    fetch loop just skip the update, rather than treating it as an error
+    each time (real difference from /render, which 404s intentionally for
+    a human following a stale link)."""
+    async def _get():
+        transport = httpx.ASGITransport(app=counterpart_app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://counterpart.local") as hc:
+            return await hc.get("/render-fragment/never-created-ctx/never-created-surface")
+    resp = asyncio.run(_get())
+    assert resp.status_code == 200
+    assert resp.text == ""
+
+
+def test_render_fragment_reflects_real_derived_state():
+    """The actual thing Curtis asked for, 2026-08-24: the live drawing
+    pulled into the SAME page as the AG-UI panels, not a separate /render
+    URL -- this is the fragment /demo's own JS fetches and injects."""
+    import uuid
+    context_id = f"fragment-{uuid.uuid4().hex[:8]}"
+    surface_id = "fragment-surface"
+    create_msg = emit_surface({
+        "title": "T", "blocks": [
+            {"type": "agent_sketchpad", "id": "sketch", "viewBox": "0 0 400 200",
+             "strokes": [{"path": "M 0 0 L 10 10", "color": "red", "width": 2}]}]},
+        surface_id=surface_id)
+    asyncio.run(_round_trip([create_msg], context_id=context_id, message_id="frag-1"))
+
+    async def _get():
+        transport = httpx.ASGITransport(app=counterpart_app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://counterpart.local") as hc:
+            return await hc.get(f"/render-fragment/{context_id}/{surface_id}")
+    resp = asyncio.run(_get())
+    assert resp.status_code == 200
+    assert "<svg" in resp.text and 'd="M 0 0 L 10 10"' in resp.text
+    # A fragment, not a full page -- /demo injects this straight into a div.
+    assert "<html" not in resp.text.lower()

@@ -54,19 +54,23 @@ the render URL to open in a browser.
 """
 import json
 import os
+import uuid
 from pathlib import Path
 
 import uvicorn
+from a2a.client import A2ACardResolver, ClientConfig, ClientFactory
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.events import EventQueue
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from starlette.responses import FileResponse, HTMLResponse, StreamingResponse
+from starlette.responses import (
+    FileResponse, HTMLResponse, RedirectResponse, StreamingResponse,
+)
 from starlette.routing import Route
 from a2a.types import (
     AgentCapabilities, AgentCard, AgentExtension, AgentSkill,
-    DataPart, Part, TextPart,
+    DataPart, Message, Part, Role, TextPart,
 )
 from a2a.utils import new_agent_parts_message
 
@@ -74,8 +78,10 @@ from renderers.a2a_extension import (
     A2A_EXTENSION_URI, agent_card_extension, unwrap_sdk_data_part,
     wrap_messages_for_sdk,
 )
-from renderers.a2ui_v1 import DEFAULT_CATALOG_ID
-from renderers.a2ui_v1_updates import apply_update, surface_state_from_create
+from renderers.a2ui_v1 import DEFAULT_CATALOG_ID, emit_surface
+from renderers.a2ui_v1_updates import (
+    apply_update, surface_state_from_create, update_components,
+)
 
 from a2a_counterpart.agui_adapter import adapt_to_agui_events
 from a2a_counterpart.render import PAGE_TEMPLATE, RenderError, render_state_to_html
@@ -331,6 +337,26 @@ async def render_surface(request):
         context_id=context_id, surface_id=surface_id, html=html))
 
 
+async def render_fragment(request):
+    """GET /render-fragment/{context_id}/{surface_id} -- same real render
+    as /render, but the BARE fragment (no page chrome), so /demo can pull
+    it into the SAME live page instead of linking out to a separate URL
+    (Curtis's own explicit ask, 2026-08-24: "align it exactly with the UI
+    of the agui demo -- I expect the render to be in the same page").
+    Returns an empty string (200, not 404) for a surface that doesn't
+    exist yet -- the poller on /demo treats that as "nothing to show yet"
+    and keeps polling, not an error state."""
+    context_id = request.path_params["context_id"]
+    surface_id = request.path_params["surface_id"]
+    state = executor.state.get((context_id, surface_id))
+    if state is None:
+        return HTMLResponse("")
+    try:
+        return HTMLResponse(render_state_to_html(state))
+    except RenderError:
+        return HTMLResponse("")
+
+
 # The real, unmodified AG-UI live-atoms runtime this Phase 4 work drives --
 # served from ITS canonical location (cloud-run-renderer/static/), not a
 # duplicated copy, same "single source of truth" discipline as
@@ -358,8 +384,8 @@ async def demo_page(request):
     context_id = request.path_params["context_id"]
     surface_id = request.path_params["surface_id"]
     html = (Path(__file__).parent / "static" / "demo.html").read_text()
-    stream_url = f"/agui-stream/{context_id}/{surface_id}"
-    html = html.replace("__A2A_AGUI_STREAM_URL__", stream_url)
+    html = html.replace("__A2A_AGUI_STREAM_URL__", f"/agui-stream/{context_id}/{surface_id}")
+    html = html.replace("__A2A_RENDER_FRAGMENT_URL__", f"/render-fragment/{context_id}/{surface_id}")
     return HTMLResponse(html)
 
 
@@ -411,15 +437,143 @@ async def agui_stream(request):
                              media_type="text/event-stream")
 
 
+SKETCH_FORM_HTML = """<!doctype html>
+<html><head><meta charset="utf-8"><title>Agent Sketchpad</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 480px; margin: 80px auto; padding: 0 20px; color: #111; }
+  h1 { font-size: 1.4rem; }
+  input[type=text] { width: 100%; padding: 10px 12px; font: inherit; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin: 12px 0; }
+  button { font: inherit; padding: 10px 20px; border-radius: 6px; border: none; background: #6366f1; color: #fff; cursor: pointer; }
+  button:hover { background: #4f46e5; }
+  p.note { color: #666; font-size: 0.85rem; }
+</style></head>
+<body>
+<h1>Agent Sketchpad — free prompt to drawing</h1>
+<p class="note">Type anything. A real Gemini call plans a stroke-by-stroke line
+drawing, renders and critiques its own attempt once, then draws it live over
+real A2A calls to the real agent_sketchpad catalogue atom — modeled on the
+original AG-UI sketch demo for parity, this time entirely over A2A. The next
+page opens already watching, before anything is drawn.</p>
+<form method="POST" action="/sketch">
+  <input type="text" name="subject" placeholder="a lighthouse on a cliff" required autofocus>
+  <button type="submit">Draw it</button>
+</form>
+</body></html>"""
+
+
+async def sketch_form(request):
+    """GET /sketch -- the actual "free prompt to drawing" demo page,
+    modeled on the original AG-UI sketch demo for parity (Curtis's own
+    framing): a text box, one submit, watch it build."""
+    return HTMLResponse(SKETCH_FORM_HTML)
+
+
+async def sketch_submit(request):
+    """POST /sketch -- creates the surface (with a real placeholder, see
+    agent_sketchpad's own README pitfall note) SYNCHRONOUSLY, before
+    redirecting, so the /demo page is guaranteed something to query the
+    instant it connects; the actual Gemini planning + critique + drawing
+    runs as a background task AFTER the redirect, giving the browser real
+    time to load and subscribe before the first stroke is sent (live-
+    stream semantics: a late subscriber sees nothing retroactively,
+    proven in tests/test_agui_stream_endpoint.py) -- no artificial delay
+    needed, Gemini's own real latency is the buffer."""
+    form = await request.form()
+    subject = (form.get("subject") or "").strip()
+    if not subject:
+        return HTMLResponse("<p>subject required</p>", status_code=400)
+
+    context_id = f"web-sketch-{uuid.uuid4().hex[:8]}"
+    surface_id = "web-sketch-surface"
+
+    create_msg = emit_surface({
+        "title": f"Agent Sketchpad — {subject}",
+        "blocks": [
+            {"type": "body", "text": f"Planning a drawing of: {subject} ...",
+             "id": "status_line"},
+            {"type": "agent_sketchpad", "id": "sketch",
+             "viewBox": "0 0 400 200", "strokes": []},
+        ],
+    }, surface_id=surface_id)
+    executor._apply_batch(context_id, [create_msg])
+
+    base_url = str(request.base_url).rstrip("/")
+    asyncio.create_task(_run_web_sketch(context_id, surface_id, subject, base_url))
+
+    return RedirectResponse(f"/demo/{context_id}/{surface_id}", status_code=303)
+
+
+async def _run_web_sketch(context_id: str, surface_id: str, subject: str, base_url: str) -> None:
+    """Runs scripts/a2a_agent_sketch.py's own real planning function
+    (imported, not duplicated), then delivers each stroke as its own real
+    A2A call -- self-referential (this server calling itself as a real
+    A2A client over real HTTP) rather than calling
+    executor._apply_batch() directly, so the web-triggered path proves
+    the exact same real transport the CLI script and every other demo in
+    this repo already do, not a shortcut.
+
+    Skips the critique/refine pass by default (Curtis's own call,
+    2026-08-24): it doubles real Gemini latency for a marginal quality
+    gain now that the SYSTEM_PROMPT itself already forbids the worst
+    failure mode found live (invisible white-on-white strokes) and asks
+    for connected endpoints -- and it's a real extra failure point (hit a
+    genuine 429 rate-limit live). --refine-passes on the CLI script still
+    exists for whoever wants the extra pass.
+
+    Real failure found live, 2026-08-24: a real Gemini timeout on a real
+    prompt left the browser watching nothing forever, with the only
+    signal a server-side log line nobody watching the page could see. A
+    total planning failure now updates the real status_line component via
+    a real A2A call, so the failure is VISIBLE on the page that's already
+    open, not silent."""
+    from a2a_agent_sketch import _plan_strokes
+
+    import httpx
+    async with httpx.AsyncClient(base_url=base_url, timeout=30) as hc:
+        card = await A2ACardResolver(hc, base_url).get_agent_card()
+        client = ClientFactory(ClientConfig(httpx_client=hc, streaming=False)).create(
+            card, extensions=[A2A_EXTENSION_URI])
+
+        async def _send(messages):
+            msg = Message(role=Role.user, message_id=f"web-sketch-{uuid.uuid4().hex[:8]}",
+                         context_id=context_id,
+                         parts=[Part(root=DataPart(**wrap_messages_for_sdk(messages)))])
+            async for _ in client.send_message(msg, extensions=[A2A_EXTENSION_URI]):
+                pass
+
+        try:
+            strokes = await asyncio.to_thread(_plan_strokes, subject, "gemini-3.7-flash")
+        except Exception as e:
+            print(f"WARNING: web sketch planning failed for {subject!r}: {e}", flush=True)
+            await _send([update_components(surface_id, [
+                {"id": "status_line", "component": "Text",
+                 "text": f"Planning failed: {e} -- try again, maybe a shorter prompt."}])])
+            return
+
+        await _send([update_components(surface_id, [
+            {"id": "status_line", "component": "Text", "text": f"Drawing: {subject}"}])])
+
+        drawn = []
+        for i, stroke in enumerate(strokes):
+            drawn.append(stroke)
+            await _send([update_components(surface_id, [
+                {"id": "sketch", "component": "agent_sketchpad",
+                 "viewBox": "0 0 400 200", "strokes": list(drawn)}])])
+            await asyncio.sleep(1.5)
+
+
 app = A2AStarletteApplication(
     agent_card=agent_card,
     http_handler=DefaultRequestHandler(
         agent_executor=executor, task_store=InMemoryTaskStore()),
 ).build()
 app.routes.append(Route("/render/{context_id}/{surface_id}", render_surface, methods=["GET"]))
+app.routes.append(Route("/render-fragment/{context_id}/{surface_id}", render_fragment, methods=["GET"]))
 app.routes.append(Route("/agui-stream/{context_id}/{surface_id}", agui_stream, methods=["GET"]))
 app.routes.append(Route("/demo/{context_id}/{surface_id}", demo_page, methods=["GET"]))
 app.routes.append(Route("/static/{filename}", serve_live_atoms_js, methods=["GET"]))
+app.routes.append(Route("/sketch", sketch_form, methods=["GET"]))
+app.routes.append(Route("/sketch", sketch_submit, methods=["POST"]))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8080")))

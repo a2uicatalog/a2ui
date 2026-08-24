@@ -6,6 +6,7 @@
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #111; }
   h1 { font-size: 1.3rem; }
+  h2 { font-size: 1rem; }
   p.note { color: #555; font-size: 0.9rem; }
   #conn-status { font-size: 0.8rem; padding: 2px 10px; border-radius: 10px; font-weight: 600; }
   #conn-status.connected { background: #dcfce7; color: #166534; }
@@ -31,32 +32,46 @@
   .a2ui-streaming-text { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 12px; margin: 6px 0; font-size: 0.85rem; }
   .a2ui-streaming-cursor { animation: a2ui-heartbeat 0.9s ease-in-out infinite; }
   @media (prefers-reduced-motion: reduce) { .a2ui-streaming-cursor { animation: none; } }
+
+  #live-drawing { border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px; margin: 16px 0; min-height: 90px; }
+  #live-drawing svg { display: block; }
+  #live-drawing:empty::before { content: 'waiting for the first stroke...'; color: #9ca3af; font-size: 0.85rem; }
+
+  /* renderers/web_article.py's own _render_log_output styling -- the
+     live variant (mountLogOutput) has no dedicated CSS anywhere in this
+     repo (agent-tail-demo.html mounts it with none either), so this
+     matches the real static atom's own dark-terminal look for
+     consistency rather than inventing a new one. */
+  .a2ui-log-output { background: #0d1117; border-radius: 8px; padding: 14px 18px; margin: 6px 0; max-height: 260px; overflow-y: auto; }
+  .a2ui-log-output-pre { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.78rem; color: #9ca3af; white-space: pre-wrap; word-break: break-all; }
 </style>
 </head>
 <body>
 
-<h1>a2a_counterpart — Topic C, Phase 4</h1>
+<h1>a2a_counterpart — free prompt to drawing, over real A2A</h1>
 <p class="note">
   <span id="conn-status" class="disconnected">disconnected</span>
   &nbsp;This page loads the REAL, unmodified AG-UI live-atoms runtime
   (<code>a2ui-stream-runtime.v1.js</code> + <code>a2ui-atoms-live.v1.js</code>,
   a separate workstream this session did not build) and drives it from a
   REAL A2A conversation via <code>agui_adapter.py</code>'s translation —
-  near-parity demonstration, not a claim of full AG-UI fidelity.
+  near-parity demonstration, not a claim of full AG-UI fidelity. The
+  drawing below is the real <code>agent_sketchpad</code> catalogue atom,
+  server-rendered on this same page every time a stroke lands.
 </p>
 
 <div id="step-tracker-container"></div>
-<div>
-  <h2 style="font-size:1rem;">Live text (streaming_text — one card per real component update)</h2>
-  <div id="streaming-text-container"></div>
-</div>
+
+<h2>Live drawing (agent_sketchpad, real catalogue atom, this page)</h2>
+<div id="live-drawing"></div>
+
 <div style="display:flex;gap:20px;align-items:flex-start;">
   <div>
-    <h2 style="font-size:1rem;">Run sketch (agent_run_sketch — one node per real A2A contribution)</h2>
+    <h2>Run sketch (agent_run_sketch — one node per real A2A contribution)</h2>
     <div id="run-sketch-container"></div>
   </div>
   <div>
-    <h2 style="font-size:1rem;">⚠️ Illustrative Cost Trend (Demo Data — Not a Real LLM Call)</h2>
+    <h2>⚠️ Illustrative Cost Trend (Demo Data — Not a Real LLM Call)</h2>
     <p class="note" style="margin:0 0 6px;">Perfectly linear numbers on
       purpose — real spend is never this smooth. Wiring of
       mountTokenBudgetMeter, unmodified, demonstrating "an agent could
@@ -66,6 +81,12 @@
   </div>
 </div>
 
+<h2>Live text (streaming_text — one card per real component update)</h2>
+<div id="streaming-text-container"></div>
+
+<h2>Log (log_output — one line per real event, same format as agent-tail-demo.html)</h2>
+<div id="log-output-container"></div>
+
 <script src="/static/a2ui-stream-runtime.v1.js"></script>
 <script src="/static/a2ui-atoms-live.v1.js"></script>
 <script>
@@ -74,10 +95,37 @@ const stepContainer = document.getElementById('step-tracker-container');
 const sketchContainer = document.getElementById('run-sketch-container');
 const tokenMeterContainer = document.getElementById('token-meter-container');
 const streamingTextContainer = document.getElementById('streaming-text-container');
+const logOutputContainer = document.getElementById('log-output-container');
+const liveDrawing = document.getElementById('live-drawing');
 
 function setConnected(connected) {
   statusEl.textContent = connected ? 'connected' : 'disconnected';
   statusEl.className = connected ? 'connected' : 'disconnected';
+}
+
+// Pulled into THIS page (Curtis's own explicit ask, 2026-08-24: "I expect
+// the render to be in the same page if possible") rather than linking out
+// to /render's own separate URL. agent_sketchpad is a real a2uicatalog
+// atom, not an AG-UI live-atom -- it has no client-side streaming
+// controller of its own (checked: a2ui-atoms-live.v1.js has none), so
+// there's no event-driven push available. Re-fetches the real
+// server-rendered fragment (same renderers/web_article.py output every
+// other surface in this repo uses) on every ToolCallResult -- "a stroke
+// just landed" is exactly the signal that a new render is worth fetching,
+// avoiding constant blind polling.
+let fragmentFetchInFlight = false;
+async function refreshLiveDrawing() {
+  if (fragmentFetchInFlight) return;
+  fragmentFetchInFlight = true;
+  try {
+    const resp = await fetch("__A2A_RENDER_FRAGMENT_URL__");
+    const html = await resp.text();
+    if (html.trim()) liveDrawing.innerHTML = html;
+  } catch (e) {
+    // A transient fetch failure must not break the rest of the live page.
+  } finally {
+    fragmentFetchInFlight = false;
+  }
 }
 
 // Same pattern as cloud-run-renderer/static/agent-tail-demo.html's own
@@ -87,6 +135,10 @@ function setConnected(connected) {
 let stepTrackerController = null;
 let tokenMeterController = null;
 const sketchController = A2UIAtomsLive.mountAgentRunSketch(sketchContainer).controller;
+// log_output wants the union across every key too (one running transcript
+// of the whole conversation, not one log per component) -- same shared-
+// controller treatment as agent_run_sketch.
+const logController = A2UIAtomsLive.mountLogOutput(logOutputContainer).controller;
 
 const runtime = A2UIStream.A2UIStreamRuntime({
   container: stepContainer,
@@ -117,7 +169,12 @@ const runtime = A2UIStream.A2UIStreamRuntime({
       primary = { onEvent() {}, destroy() {} };
     }
     return {
-      onEvent(e) { primary.onEvent(e); sketchController.onEvent(e); },
+      onEvent(e) {
+        primary.onEvent(e);
+        sketchController.onEvent(e);
+        logController.onEvent(e);
+        if (e.type === 'ToolCallResult') refreshLiveDrawing();
+      },
       destroy() { primary.destroy(); },
     };
   },

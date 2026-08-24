@@ -41,7 +41,7 @@ jobs:
         # Kept in step with requirements.txt by hand (this workflow doesn't
         # read that file) -- see requirements.txt's own 2026-08-24 comment
         # on jsonschema for why that matters.
-        run: pip install pyyaml markdown pytest jsonschema regex defusedxml "a2a-sdk[http-server]>=0.3.25,<0.4.0" httpx uvicorn starlette
+        run: pip install pyyaml markdown pytest jsonschema regex defusedxml "a2a-sdk[http-server]>=0.3.25,<0.4.0" httpx uvicorn starlette python-multipart
 
       - name: Build atom pages
         run: python3 scripts/generate_atom_pages.py

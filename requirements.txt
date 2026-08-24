@@ -44,3 +44,8 @@ a2a-sdk[http-server]>=0.3.25,<0.4.0
 httpx
 uvicorn
 starlette
+# Added 2026-08-24: GET/POST /sketch (a2a_counterpart/main.py) uses
+# Starlette's request.form() for the real prompt-to-drawing web demo --
+# found live, a real 500 on first submit, that Starlette needs this even
+# for plain application/x-www-form-urlencoded bodies, not just multipart.
+python-multipart

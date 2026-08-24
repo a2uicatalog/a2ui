@@ -115,11 +115,18 @@ invented `ContentDelta` event was checked against the real runtime source
 and dropped — no such event or consumer exists anywhere in
 `a2ui-atoms-live.v1.js` today. The real progressive-content mechanism
 that DOES exist is `TextMessageStart`/`TextMessageContent`(`delta`
-string)/`TextMessageEnd`, consumed by `streaming_text` — a future
-increment could route qualifying `updateComponents` calls there for text
-content, but "watch an actual picture build stroke by stroke" has no
-existing live-atom consumer yet and would need real new work, not just a
-mapping addition.
+string)/`TextMessageEnd`, consumed by `streaming_text`.
+
+"Watch an actual picture build stroke by stroke" was later built anyway
+(see **Free-prompt sketch demo** below) — not by inventing a new AG-UI
+event, but by having the SAME `ToolCallResult` that already drives
+`agent_run_sketch`/`live_step_tracker` also trigger a fetch of the real,
+server-rendered `agent_sketchpad` fragment. `agent_sketchpad` is a real
+a2uicatalog catalogue atom (`atoms/schema.yaml`), not an AG-UI live-atom
+— it has no client-side streaming controller, so there's nothing to add
+to `a2ui-atoms-live.v1.js`. This keeps the adapter itself unchanged: it's
+still a generic `A2UI message -> AG-UI event` translator that knows
+nothing about drawing.
 
 ### Wiring it into your own A2A executor
 
@@ -149,6 +156,46 @@ already proves works (mirrored in `static/demo.html`):
 </script>
 ```
 
+## Free-prompt sketch demo
+
+`GET /sketch` serves a one-field form; `POST /sketch` (subject=...)
+creates a surface SYNCHRONOUSLY with real wired placeholders (`status_line`,
+`sketch`) via a direct `executor._apply_batch()` call, then 303-redirects
+to `/demo/{context_id}/{surface_id}` **before** the slow Gemini work
+starts — the redirect target is already renderable the instant the
+browser lands on it. A background `asyncio.create_task()` then plans the
+drawing (`scripts/a2a_agent_sketch.py`'s `_plan_strokes()`, real Gemini
+call against `gemini-3.7-flash` via Vertex Express Mode — see that
+script's own `--model` help for why plain IAM/ADC 404s on this model) and
+delivers each stroke as its own real A2A message, paced 1.5s apart, over
+a real self-referential A2A client (the server calling itself over real
+HTTP — same transport as every other demo script here).
+
+The critique/revise pass (`critique_and_revise()` in
+`a2a_agent_sketch.py`, a real multimodal self-critique loop: render to
+PNG, send back to Gemini alongside the original strokes, ask for a
+revision) exists and is unit-exercised, but the WEB path
+(`main.py`'s `_run_web_sketch`) deliberately skips it — Curtis's own call
+after live testing: it roughly doubled latency to first-stroke for a
+quality gain that didn't clearly justify it on a live demo page. The CLI
+script still defaults `--refine-passes` to 0 for the same reason but can
+opt back in per-run.
+
+**Rendering happens in the same page**, not a separate `/render` tab —
+`GET /render-fragment/{context_id}/{surface_id}` returns the bare
+server-rendered HTML fragment (empty string + 200, not 404, if the
+surface doesn't exist yet, so client polling-on-event can treat "not
+created yet" as "keep trying"). `static/demo.html`'s `refreshLiveDrawing()`
+fetches it every time a `ToolCallResult` event arrives over the AG-UI
+stream — reusing the real `renderers/web_article.py` renderer server-side
+rather than duplicating SVG-generation logic in the browser.
+
+The same page also mounts `log_output` (the real static atom's live
+controller, `mountLogOutput`) as a shared controller forwarded every
+event regardless of routing key, matching
+`cloud-run-renderer/static/agent-tail-demo.html`'s own format — one
+formatted transcript line per real event.
+
 ## A real pitfall: orphaned component updates
 
 `updateComponents` upserts into a flat `components` dict — nothing checks
@@ -165,12 +212,18 @@ walk, but it catches the common case.
 ## Files
 
 - `main.py` — the A2A server: `StatefulSurfaceExecutor` (derived state +
-  AG-UI publish), `/render`, `/agui-stream`, `/demo`, static JS proxies.
+  AG-UI publish), `/render`, `/render-fragment`, `/agui-stream`, `/demo`,
+  `/sketch`, static JS proxies.
 - `agui_adapter.py` — the reusable translation layer (this doc's focus).
 - `render.py` — renders derived state to real HTML via a2uicatalog's own
   decode+render pipeline (unrelated to the AG-UI adapter; a separate,
   earlier capability — see module docstring).
-- `static/demo.html` — the live-atoms consumer page.
+- `static/demo.html` — the live-atoms consumer page (step tracker, live
+  drawing, run sketch, cost trend, streaming text, log output).
+- `../scripts/a2a_agent_sketch.py` — free-prompt-to-drawing CLI: plans
+  strokes via Gemini, optionally critiques/revises, sends over real A2A.
+- `../scripts/vertex_gemini.py` — vendored REST client for Vertex AI
+  Gemini calls (plain IAM/ADC and Express Mode auth paths).
 
 ## Testing
 
