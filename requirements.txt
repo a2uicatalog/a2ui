@@ -19,3 +19,8 @@ markdown
 # (a deploy script's declared secrets silently diverging from what it
 # actually installed/mounted).
 jsonschema
+# Added same day: stdlib `re` can't compile the \p{...} Unicode-property
+# syntax the real spec's Extensions schema uses -- see
+# tests/a2ui_v1_conformance.py's own top-of-file comment for exactly where
+# this bit. Same two-places-must-match discipline as jsonschema above.
+regex

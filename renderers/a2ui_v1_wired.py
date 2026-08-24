@@ -44,8 +44,22 @@ CONFORMANT SUBSET (emitted as bare A2UI v1.0)
     onSuccess: [reloadAction] → responsePath = "/<reloadAction>/result" — the
     server answers the submit with the refreshed array (actionResponse.value
     lands at responsePath; the List re-renders). That IS the submit+reload loop.
-  - the catalogue action envelope {ok,data,total,error} → actionResponse
-    {value | error} via a2ui_v1.action_response (re-exported).
+  - the catalogue action envelope {ok,data,total,error} → the result value
+    lands at responsePath in a real v1.0 updateDataModel call (a2ui_v1.py's
+    action_response() — which this used to re-export here — was removed
+    2026-08-24: the real spec has no "actionResponse" message type at all.
+    responsePath already anticipated the actual resolution: the agent's
+    real "response" to an action is just pushing the result to a known
+    dataModel path via update_data_model(), no special reply envelope.
+
+    KNOWN, NOT YET FIXED (flagged 2026-08-24, separate follow-up from the
+    a2ui_v1.py fix this comment references): this module's OWN `action`
+    event shape below — wantResponse/responsePath/actionId — are not real
+    field names on the real v1.0 `action` message either (confirmed: real
+    shape is {name, userMessage?, surfaceId, sourceComponentId, timestamp,
+    context, metadata?}). This module's "CONFORMANT SUBSET" claim above
+    needs the same re-verification a2ui_v1.py just got, not assumed still
+    true because a2ui_v1.py's fix landed.
 
 DEGRADED-BUT-RENDERABLE (documented in surfaceProperties.extensions.notes)
   - a read of `#arrayFilter.output` is traced ONE conformant hop to the filter's
@@ -76,16 +90,14 @@ import re
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 try:  # package import (tests: `from renderers.a2ui_v1_wired import ...`)
-    from .a2ui_v1 import (A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify,
-                          action_response)
+    from .a2ui_v1 import A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify
 except ImportError:  # direct CLI run from repo root or renderers/
     import os as _os
     import sys as _sys
     _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
-    from a2ui_v1 import (A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify,  # noqa: F401
-                         action_response)
+    from a2ui_v1 import A2UI_VERSION, STANDARD_MAP, _IdGen, _slugify  # noqa: F401
 
-__all__ = ["emit_wired_surface", "action_response", "A2UI_VERSION",
+__all__ = ["emit_wired_surface", "A2UI_VERSION",
            "DEFAULT_CATALOG_ID", "DEFAULT_STATE_CATALOG_ID"]
 
 # resolvable URIs, not bare tokens — see renderers/a2ui_v1.py
@@ -237,8 +249,11 @@ class _WiredContext:
                 "responsePath": f"/{target}/result",
             },
             # deterministic correlation id so this emitter's server side can
-            # answer with action_response(envelope, actionId) (hosts may mint
-            # their own per-fire ids; this one makes the round trip testable).
+            # answer via update_data_model(surface_id, value=envelope, path=
+            # responsePath) — see this module's own top docstring, updated
+            # 2026-08-24, for why there is no special reply envelope to
+            # build here any more (hosts may mint their own per-fire ids;
+            # this one makes the round trip testable).
             "actionId": action_id,
         }
 

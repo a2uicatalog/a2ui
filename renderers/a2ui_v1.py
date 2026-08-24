@@ -97,7 +97,11 @@ def _map_quote(b):
     return {"component": "Text", "text": body}
 
 def _map_image(b):
-    return {"component": "Image", "url": b.get("url", ""), "alt": b.get("alt", b.get("caption", ""))}
+    # 2026-08-24: real basic-catalog Image has no `alt` field at all --
+    # confirmed by reading catalogs/basic/catalog.json directly. The real
+    # accessibility-text field is `description`.
+    return {"component": "Image", "url": b.get("url", ""),
+            "description": b.get("alt", b.get("caption", ""))}
 
 def _map_divider(b):
     return {"component": "Divider"}
@@ -122,13 +126,20 @@ def _list(marker: str):
         return {"component": "Text", "text": "\n".join(lines)}
     return m
 
-def _map_button(b):
-    label = b.get("label", b.get("text", "Button"))
-    out = {"component": "Button", "label": label}
-    url = b.get("url") or b.get("href")
-    if url:
-        out["action"] = {"event": {"name": "openUrl", "context": {"url": url}}}
-    return out
+# 2026-08-24: real basic-catalog Button needs `child` (a component id --
+# typically pointing at a Text) and REQUIRES `action`, confirmed by reading
+# catalogs/basic/catalog.json directly -- no `label` field exists at all.
+# Handled as a special case in _emit_block (needs to emit a synthetic Text
+# child, which a flat STANDARD_MAP mapper can't do), not a STANDARD_MAP
+# entry -- see _BUTTON_TYPES + the Button branch there. Real Action.event
+# shape ({event: {name, context}}) was already correct; only `label`/no-
+# action were the bugs.
+_BUTTON_TYPES = {"ripple_button", "cta_button", "link_button", "glow_button"}
+
+
+def _map_button_url(b) -> Optional[str]:
+    return b.get("url") or b.get("href")
+
 
 # atom -> mapper. Only clean, lossless-ish maps live here; styling-only variants
 # collapse onto the same standard component (their flourish is catalog-scoped).
@@ -142,8 +153,6 @@ STANDARD_MAP = {
     "audio_player": _map_audio,
     "google_icon": _map_icon,
     "bullet_list": _list("-"), "numbered_list": _list("1."),
-    "ripple_button": _map_button, "cta_button": _map_button,
-    "link_button": _map_button, "glow_button": _map_button,
 }
 
 
@@ -211,6 +220,13 @@ def _child_blocklists(b: Dict[str, Any]) -> Optional[Tuple[str, List[Dict[str, A
             lead.append({"type": "heading", "text": b["title"]})
         if b.get("text"):
             lead.append({"type": "body", "text": b["text"]})
+        # Real basic-catalog Card takes ONE `child` id, not a `children` list
+        # (confirmed 2026-08-24 by reading catalogs/basic/catalog.json
+        # directly) — wrap multiple items in a synthetic Column first, same
+        # pattern _column_item/_split_pane_side already use for "need an
+        # intermediate wrapper" cases elsewhere in this file. Handled by
+        # _emit_block's Card special-case below, not the generic
+        # children-list path every other container here uses.
         return ("Card", lead + kids)
     if t == "tabs":
         # each tab's content flattened under a Column; Tabs holds the columns
@@ -267,10 +283,10 @@ def _emit_hub(b: Dict[str, Any], cid: str, components: List[Dict[str, Any]], ids
             slide_children = [_emit_block(sb, components, ids) for sb in slide_blocks]
             col_id = ids.take({"type": "hub_slide"})
             components.append({"id": col_id, "component": "Column", "children": slide_children})
-            inner_tabs.append({"label": slide.get("label", ""), "child": col_id})
+            inner_tabs.append({"title": slide.get("label", ""), "child": col_id})
         inner_id = ids.take({"type": "hub_subject"})
         components.append({"id": inner_id, "component": "Tabs", "tabs": inner_tabs})
-        outer_tabs.append({"label": subj.get("label", ""), "child": inner_id})
+        outer_tabs.append({"title": subj.get("label", ""), "child": inner_id})
     components.append({"id": cid, "component": "Tabs", "tabs": outer_tabs})
     return cid
 
@@ -288,7 +304,7 @@ def _emit_content_tabs(b: Dict[str, Any], cid: str, components: List[Dict[str, A
         children = [_emit_block(sb, components, ids) for sb in pane_blocks]
         col_id = ids.take({"type": "content_tab_pane"})
         components.append({"id": col_id, "component": "Column", "children": children})
-        out_tabs.append({"label": tab.get("label", ""), "child": col_id})
+        out_tabs.append({"title": tab.get("label", ""), "child": col_id})
     components.append({"id": cid, "component": "Tabs", "tabs": out_tabs})
     return cid
 
@@ -421,19 +437,64 @@ def _emit_block(b: Dict[str, Any], components: List[Dict[str, Any]], ids: _IdGen
         comp_type, child_blocks = container
         child_blocks = _bracket_rows(child_blocks)          # B1: resolve row_open/row_close first
         child_ids = [_emit_block(cb, components, ids) for cb in child_blocks]
+
+        if comp_type == "Card":
+            # Real basic-catalog Card.child is ONE id, not a list (confirmed
+            # 2026-08-24) -- wrap >1 items in a synthetic Column so Card
+            # still gets a single, valid child ref; pass a lone item straight
+            # through with no extra wrapper (matches this file's own "don't
+            # add a node the shape didn't need" instinct elsewhere).
+            if len(child_ids) == 1:
+                single_child = child_ids[0]
+            elif not child_ids:
+                # child is REQUIRED on real Card -- an info_card with no
+                # title/text/blocks at all is empty content, not an
+                # invalid message; give it a real, empty, valid child
+                # rather than crash on child_ids[0] or omit a required field.
+                empty_id = ids.take({"type": "card_empty"})
+                components.append({"id": empty_id, "component": "Text", "text": ""})
+                single_child = empty_id
+            else:
+                wrap_id = ids.take({"type": "card_content"})
+                components.append({"id": wrap_id, "component": "Column", "children": child_ids})
+                single_child = wrap_id
+            node = {"id": cid, "component": "Card", "child": single_child}
+            components.append(node)
+            return cid
+
         node = {"id": cid, "component": comp_type, "children": child_ids}
         # carry a light label/flourish where present (Card/Tabs/Modal titles;
-        # split_pane side backgrounds; row_bracket gap/align/style)
+        # row_bracket align). 2026-08-24: confirmed against the real basic
+        # catalog that Row/Column have NO `gap`, `style`, or `background`
+        # field at all -- `align` is the only one of these that's real.
+        # split_pane side backgrounds and row_bracket gap/style are dropped
+        # (real, checked loss, not an oversight -- same "no basic-catalog
+        # equivalent" pattern this file's own hub docstring already
+        # documents for subject/slide color and hub-level background).
         if b.get("title") and comp_type in ("Modal",):
             node["title"] = b["title"]
-        if b.get("type") == "_split_pane_side" and b.get("background"):
-            node["background"] = b["background"]
-        if b.get("type") == "row_bracket":
-            for k in ("gap", "align", "style"):
-                if b.get(k) is not None:
-                    node[k] = b[k]
+        if b.get("type") == "row_bracket" and b.get("align") is not None:
+            node["align"] = b["align"]
         components.append(node)
         return cid
+
+    if b.get("type") in _BUTTON_TYPES:
+        url = _map_button_url(b)
+        if url is not None:
+            # Only map to real Button when there's a genuine action to give
+            # it -- action is REQUIRED on the real schema, and fabricating
+            # a fake agent event for a button with no defined behaviour
+            # (confirmed real, e.g. a decorative demo button) would be
+            # dishonest. No url -> falls through to pass-through below,
+            # same "a host without the catalog simply skips it" contract
+            # every other unmapped extension gets.
+            label = b.get("label", b.get("text", "Button"))
+            label_id = ids.take({"type": "button_label"})
+            components.append({"id": label_id, "component": "Text", "text": label})
+            node = {"id": cid, "component": "Button", "child": label_id,
+                   "action": {"event": {"name": "openUrl", "context": {"url": url}}}}
+            components.append(node)
+            return cid
 
     mapper = STANDARD_MAP.get(b.get("type"))
     if mapper is not None:
@@ -472,85 +533,120 @@ def emit_surface(payload: Dict[str, Any], surface_id: Optional[str] = None,
     root_children = [_emit_block(b, components, ids) for b in blocks]
     components.append({"id": "root", "component": "Column", "children": root_children})
 
-    surface_props: Dict[str, Any] = {}
+    # 2026-08-24: `surfaceProperties` is NOT a real v1.0 field (confirmed
+    # against the live spec — CreateSurfaceMessage.createSurface has
+    # surfaceId/catalogId/sendDataModel/components/dataModel/metadata, no
+    # such key). title/theme/catalogs are a2uicatalog's OWN metadata, not
+    # part of core A2UI, so they ride in the real spec's own sanctioned
+    # extension point: metadata.extensions, namespaced under a prefix that
+    # ISN'T `a2ui_` (common_types.json#/$defs/Extensions reserves that
+    # prefix for OFFICIAL extensions only). Rejected alternative: stuffing
+    # these into `dataModel` — that field is meant to be pure application
+    # state a renderer binds UI to, not envelope metadata about the surface
+    # itself.
+    surface_ext: Dict[str, Any] = {}
     if payload.get("title"):
-        surface_props["title"] = payload["title"]
+        surface_ext["title"] = payload["title"]
     if payload.get("theme"):
-        surface_props["theme"] = payload["theme"]      # theme -> surfaceProperties (0.9->1.0 rename)
+        surface_ext["theme"] = payload["theme"]
 
     # Auto-declare the catalogs this surface draws from — DETERMINISTIC, derived from the
     # payload's atoms (renderers.catalog_map), never hand-picked. catalogId stays the base
-    # (required, singular); surfaceProperties.catalogs states the full resolvable set so a
-    # host knows exactly what to load and the agent never chooses catalogs itself.
+    # (required, singular); this states the full resolvable set so a host knows exactly
+    # what to load and the agent never chooses catalogs itself.
     try:
         from renderers.catalog_map import required_catalogs
     except ImportError:                                # allow direct-script/relative import
         from catalog_map import required_catalogs
-    surface_props["catalogs"] = required_catalogs(payload.get("blocks", []))
+    surface_ext["catalogs"] = required_catalogs(payload.get("blocks", []))
 
     surface: Dict[str, Any] = {
         "surfaceId": surface_id or _slugify(payload.get("title", "surface")),
         "catalogId": catalog_id,
         "components": components,
     }
-    if surface_props:
-        surface["surfaceProperties"] = surface_props
+    if surface_ext:
+        surface["metadata"] = {"extensions": {"a2uicatalog_surface": surface_ext}}
 
     return {"version": A2UI_VERSION, "createSurface": surface}
 
 
-def action_response(envelope: Dict[str, Any], action_id: str) -> Dict[str, Any]:
-    """Adapt the catalogue action contract {ok,data,total,error} to A2UI v1.0
-    `actionResponse {value | error}` (exactly one of value/error)."""
-    if envelope.get("ok"):
-        value = envelope.get("data")
-        if envelope.get("total") is not None and isinstance(value, list):
-            value = {"items": value, "total": envelope["total"]}
-        return {"version": A2UI_VERSION, "actionId": action_id, "actionResponse": {"value": value}}
-    return {"version": A2UI_VERSION, "actionId": action_id,
-            "actionResponse": {"error": {"code": "action_failed", "message": envelope.get("error", "error")}}}
+# 2026-08-24: action_response() removed. The real spec has NO "actionResponse"
+# message type at all (confirmed against renderer_to_agent.json's real oneOf:
+# action/callAgentFunction/rendererFunctionResponse/error — no response
+# concept for `action`). `action` is one-way: the renderer reports what a
+# user did; the agent's actual reaction IS whatever createSurface/
+# updateComponents/updateDataModel it sends next, not a special reply
+# envelope. This had zero callers (confirmed) so nothing else changes.
+#
+# The correlation question this raised (how does code that receives an
+# `action` know which later updateDataModel call is its response?) turns
+# out not to need new machinery: the code that DISPATCHES an action already
+# knows the surfaceId/path the result belongs at, because it's the one that
+# looked up what the action means. That's exactly what
+# update_data_model()'s existing signature already takes as arguments — the
+# correlation lives in ordinary application code deciding where to push a
+# result, not in a wire-level id the protocol was ever going to carry.
 
 
-# ── C1: callFunction / functionResponse RPC ─────────────────────────────────────
-# Per spec (https://a2ui.org/specification/v1.0-a2ui/): `callFunction` flows
-# SERVER -> CLIENT (request the client run a function it has registered);
-# `functionResponse` flows CLIENT -> SERVER and carries ONLY a success value —
-# a failed call is reported via the separate top-level `error` envelope
-# (keyed by functionCallId), not an error field on functionResponse itself.
-def call_function(name: str, args: Optional[Dict[str, Any]] = None,
-                   function_call_id: Optional[str] = None,
-                   want_response: bool = True) -> Dict[str, Any]:
-    """Build a v1.0 `callFunction` message: ask the client to execute `name`
-    (a function it has registered) with `args`. Auto-mints a functionCallId
-    if the caller doesn't supply one (so call sites that don't care about
-    correlating the reply can omit it)."""
-    fid = function_call_id or f"{name}-{uuid.uuid4().hex[:8]}"
+# ── C1: callRendererFunction / rendererFunctionResponse, and the reverse pair ───
+# Real spec, confirmed by reading agent_to_renderer.json and
+# renderer_to_agent.json directly: TWO structurally different, direction-
+# specific pairs, not one bidirectional callFunction/functionResponse (the
+# old code's shape, which doesn't exist in the real protocol at all).
+#   agent -> renderer: `callRendererFunction` (this module emits it, asking
+#     the renderer to run one of ITS registered functions) ... the renderer
+#     replies `rendererFunctionResponse` (renderer -> agent) — RECEIVING and
+#     parsing that reply is a transport/dispatch concern, out of scope for
+#     this emitter module (same as this module never parses `action` either).
+#   renderer -> agent: `callAgentFunction` (the renderer asks THIS module,
+#     acting as agent, to run something) ... this module answers with
+#     `agentFunctionResponse` (agent -> renderer) — the RECEIVE side of
+#     callAgentFunction is a transport/dispatch concern too; this module
+#     only builds the emitted reply once dispatch elsewhere decides one is
+#     needed.
+# Both response messages wrap the SAME common_types.json#/$defs/FunctionResponse
+# shape ({functionCallId, value|error} — no `call` field at all, confirmed;
+# the old function_response()'s assumption of one was never real either).
+def call_renderer_function(catalog_id: str, call: str, args: Optional[Dict[str, Any]] = None,
+                           function_call_id: Optional[str] = None) -> Dict[str, Any]:
+    """Build a v1.0 `callRendererFunction` message: ask the renderer to
+    execute `call` (a function registered under `catalog_id`) with `args`.
+    catalogId is REQUIRED on the real schema — unlike everything else in
+    this module, there is no sensible default; the caller must know which
+    catalog the function it's calling belongs to. Auto-mints a
+    functionCallId if the caller doesn't supply one."""
+    fid = function_call_id or f"{call}-{uuid.uuid4().hex[:8]}"
     return {
         "version": A2UI_VERSION,
-        "functionCallId": fid,
-        "wantResponse": want_response,
-        "callFunction": {"call": name, "args": args or {}},
+        "callRendererFunction": {
+            "functionCallId": fid,
+            "callFunction": {"catalogId": catalog_id, "call": call, "args": args or {}},
+        },
     }
 
 
-def function_response(envelope: Dict[str, Any], function_call_id: str, call: str) -> Dict[str, Any]:
-    """Adapt the catalogue action contract {ok,data,total,error} into the
-    client's reply for a prior call_function() — mirrors action_response()'s
-    envelope handling, but for the callFunction/functionResponse RPC pair and
-    keyed by functionCallId instead of actionId.
-
-    envelope.ok=True  -> `functionResponse` {functionCallId, call, value}.
-    envelope.ok=False -> the separate `error` envelope {code, message,
-    functionCallId} (functionResponse itself carries no error field per spec)."""
+def _function_response_body(envelope: Dict[str, Any], function_call_id: str) -> Dict[str, Any]:
+    """The real, shared FunctionResponse shape both response messages wrap —
+    {functionCallId, value} on success, {functionCallId, error: {code,
+    message}} on failure (oneOf, exactly one of value/error — confirmed by
+    reading common_types.json#/$defs/FunctionResponse directly)."""
     if envelope.get("ok"):
         value = envelope.get("data")
         if envelope.get("total") is not None and isinstance(value, list):
             value = {"items": value, "total": envelope["total"]}
-        return {"version": A2UI_VERSION,
-                "functionResponse": {"functionCallId": function_call_id, "call": call, "value": value}}
+        return {"functionCallId": function_call_id, "value": value}
+    return {"functionCallId": function_call_id,
+            "error": {"code": "function_call_failed", "message": envelope.get("error", "error")}}
+
+
+def agent_function_response(envelope: Dict[str, Any], function_call_id: str) -> Dict[str, Any]:
+    """Build a v1.0 `agentFunctionResponse` (agent -> renderer): this
+    module's reply to a `callAgentFunction` it received from the renderer.
+    Adapts the catalogue's own {ok,data,total,error} action-contract
+    envelope into the real FunctionResponse shape."""
     return {"version": A2UI_VERSION,
-            "error": {"code": "function_call_failed", "message": envelope.get("error", "error"),
-                      "functionCallId": function_call_id}}
+            "agentFunctionResponse": _function_response_body(envelope, function_call_id)}
 
 
 def _slugify(s: str) -> str:

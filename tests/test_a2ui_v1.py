@@ -10,13 +10,21 @@ import os
 import pytest
 
 from renderers.a2ui_v1 import (
-    emit_surface, action_response, call_function, function_response, A2UI_VERSION,
+    emit_surface, call_renderer_function, agent_function_response, A2UI_VERSION,
 )
+from tests.a2ui_v1_conformance import AGENT_TO_RENDERER, assert_conforms
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
 
 
 def _assert_valid_surface(msg):
+    # Real jsonschema validation against the live spec (tests/
+    # a2ui_v1_conformance.py, PR 1, 2026-08-24) -- added here so every
+    # existing test using this helper gets it, not only the ones touched
+    # directly while fixing emit_surface(). Complementary to the checks
+    # below, not a replacement: jsonschema can't catch a dangling child
+    # ref (a cross-reference semantic, not a structural schema rule).
+    assert_conforms(msg, AGENT_TO_RENDERER)
     assert msg["version"] == A2UI_VERSION
     cs = msg["createSurface"]
     assert cs["surfaceId"] and isinstance(cs["surfaceId"], str)
@@ -65,12 +73,15 @@ SAMPLE = {
 
 
 def test_envelope_and_metadata():
+    """2026-08-24: surfaceProperties was removed (not a real v1.0 field) --
+    title/theme/catalogs now ride in metadata.extensions.a2uicatalog_surface,
+    the real spec's own sanctioned extension point."""
     msg = emit_surface(SAMPLE, catalog_id="a2ui-atoms-v1")
     cs, by_id = _assert_valid_surface(msg)
-    props = cs["surfaceProperties"]
+    props = cs["metadata"]["extensions"]["a2uicatalog_surface"]
     assert props["title"] == "Demo Surface" and props["theme"] == "dark"
     assert cs["catalogId"] == "a2ui-atoms-v1"
-    # surfaceProperties.catalogs is auto-declared, DETERMINISTIC from the payload's atoms:
+    # catalogs is auto-declared, DETERMINISTIC from the payload's atoms:
     # base always present; the glowing_stat extension pulls in a2ui-effects-v1.
     cats = props["catalogs"]
     assert cats[0].endswith("a2ui-atoms-v1.json")                    # base first, always
@@ -82,7 +93,7 @@ def test_catalog_discovery_reaches_atoms_nested_via_declared_children():
     """Regression guard: before Phase 0 (spec/childlist-migration-v0.1.md), catalog_map's
     collect_types() walked a flat, hand-maintained key-name list that never included
     chat_thread's `messages[].block` — so an atom needing a non-base catalog, buried inside
-    a chat_thread message, was silently missing from surfaceProperties.catalogs. A host
+    a chat_thread message, was silently missing from the declared catalogs list. A host
     that only resolved the declared catalogs would then fail to render it. Now driven by
     schema.yaml's `children:` declarations, so this can't go invisible by field-name
     coincidence again."""
@@ -94,7 +105,7 @@ def test_catalog_discovery_reaches_atoms_nested_via_declared_children():
         ],
     }
     msg = emit_surface(payload)
-    cats = msg["createSurface"]["surfaceProperties"]["catalogs"]
+    cats = msg["createSurface"]["metadata"]["extensions"]["a2uicatalog_surface"]["catalogs"]
     assert any(c.endswith("a2ui-charts-v1.json") for c in cats), \
         f"chartjs_bar nested in chat_thread.messages[].block did not surface its catalog: {cats}"
 
@@ -117,8 +128,12 @@ def test_container_inversion():
     assert rows and len(rows[0]["children"]) == 2
     cards = [c for c in by_id.values() if c["component"] == "Card"]      # info_card -> Card
     assert cards
-    # card's title/text became leading Text children + the nested block
-    card_kids = [by_id[k] for k in cards[0]["children"]]
+    # Real basic-catalog Card takes ONE `child` id (2026-08-24 fix) --
+    # multiple items (title/text/nested block) get wrapped in a synthetic
+    # Column, resolve through it to find the real leaf content.
+    card_child = by_id[cards[0]["child"]]
+    assert card_child["component"] == "Column"
+    card_kids = [by_id[k] for k in card_child["children"]]
     assert any(k["component"] == "Text" and "Card" in k.get("text", "") for k in card_kids)
     assert any(k.get("text") == "inside" for k in card_kids)
 
@@ -130,14 +145,13 @@ def test_extension_passthrough():
     assert ext[0]["value"] == "42" and ext[0]["label"] == "answer"     # props preserved inline
 
 
-def test_action_contract_adapter():
-    ok = action_response({"ok": True, "data": [1, 2], "total": 2}, "a1")
-    assert ok["actionResponse"]["value"] == {"items": [1, 2], "total": 2}
-    assert "error" not in ok["actionResponse"]
-    bad = action_response({"ok": False, "error": "nope"}, "a2")
-    assert bad["actionResponse"]["error"]["message"] == "nope"
-    assert "value" not in bad["actionResponse"]
-    assert ok["actionId"] == "a1" and bad["version"] == A2UI_VERSION
+def test_action_response_was_removed_not_just_broken():
+    """2026-08-24: the real spec has no 'actionResponse' message type at
+    all -- confirmed by reading renderer_to_agent.json directly. This isn't
+    a regression test for behavior that should still exist; it's a lock
+    against the function quietly coming back."""
+    import renderers.a2ui_v1 as a2ui_v1
+    assert not hasattr(a2ui_v1, "action_response")
 
 
 def test_split_pane_to_row_of_columns():
@@ -154,7 +168,11 @@ def test_split_pane_to_row_of_columns():
     assert len(rows) == 1 and len(rows[0]["children"]) == 2
     cols = [by_id[k] for k in rows[0]["children"]]
     assert all(c["component"] == "Column" for c in cols)
-    assert cols[0]["background"] == "#f8fafc" and cols[1]["background"] == "#fff"
+    # 2026-08-24: per-side `background` is real, confirmed loss -- Column
+    # has no such field in the real basic catalog at all (checked
+    # directly). No basic-catalog equivalent exists, same class as hub's
+    # own documented color/background drops.
+    assert "background" not in cols[0] and "background" not in cols[1]
     texts = [by_id[cid] for c in cols for cid in c["children"]]
     joined = "\n".join(t.get("text", "") for t in texts)
     assert "left side" in joined and "right side" in joined
@@ -163,7 +181,10 @@ def test_split_pane_to_row_of_columns():
 def test_row_open_close_brackets_to_row():
     """B1: a row_open/row_close bracketed run in a flat block list -> a Row
     wrapping just the bracketed blocks; blocks outside the bracket stay
-    top-level siblings, and gap/align flourish is carried onto the Row."""
+    top-level siblings, and align flourish is carried onto the Row.
+    2026-08-24: `gap` is a confirmed, real drop -- no such field exists on
+    the real basic-catalog Row at all (checked directly); `align` IS real
+    and is still carried through."""
     payload = {
         "title": "Bracketed", "blocks": [
             {"type": "heading", "text": "Before"},
@@ -178,7 +199,7 @@ def test_row_open_close_brackets_to_row():
     rows = [c for c in by_id.values() if c["component"] == "Row"]
     assert len(rows) == 1
     row = rows[0]
-    assert row["gap"] == "12px" and row["align"] == "center"
+    assert row["align"] == "center" and "gap" not in row
     kids = [by_id[k] for k in row["children"]]
     assert len(kids) == 2
     joined = "\n".join(k.get("text", "") for k in kids)
@@ -213,46 +234,64 @@ def test_hub_to_nested_tabs():
     # outer (1) + one inner Tabs per subject (2) = 3
     assert len(all_tabs) == 3
 
-    outer = [t for t in all_tabs if {e["label"] for e in t["tabs"]} == {"Subject One", "Subject Two"}]
+    # 2026-08-24: real Tabs entries key on `title`, not `label` (confirmed
+    # against catalogs/basic/catalog.json directly) -- the SOURCE payload
+    # above still uses `label` (this dialect's own input field name); only
+    # the emitted wire-format key changed.
+    outer = [t for t in all_tabs if {e["title"] for e in t["tabs"]} == {"Subject One", "Subject Two"}]
     assert len(outer) == 1
     outer = outer[0]
     assert len(outer["tabs"]) == 2
 
-    subj_one_inner = by_id[[e["child"] for e in outer["tabs"] if e["label"] == "Subject One"][0]]
+    subj_one_inner = by_id[[e["child"] for e in outer["tabs"] if e["title"] == "Subject One"][0]]
     assert subj_one_inner["component"] == "Tabs"
-    slide_labels = {e["label"] for e in subj_one_inner["tabs"]}
-    assert slide_labels == {"Slide A", "Slide B"}
+    slide_titles = {e["title"] for e in subj_one_inner["tabs"]}
+    assert slide_titles == {"Slide A", "Slide B"}
 
-    slide_a_col = by_id[[e["child"] for e in subj_one_inner["tabs"] if e["label"] == "Slide A"][0]]
+    slide_a_col = by_id[[e["child"] for e in subj_one_inner["tabs"] if e["title"] == "Slide A"][0]]
     assert slide_a_col["component"] == "Column"
     slide_a_texts = [by_id[k].get("text", "") for k in slide_a_col["children"]]
     assert any("slide a body" in t for t in slide_a_texts)
 
-    subj_two_inner = by_id[[e["child"] for e in outer["tabs"] if e["label"] == "Subject Two"][0]]
-    assert {e["label"] for e in subj_two_inner["tabs"]} == {"Slide C"}
+    subj_two_inner = by_id[[e["child"] for e in outer["tabs"] if e["title"] == "Subject Two"][0]]
+    assert {e["title"] for e in subj_two_inner["tabs"]} == {"Slide C"}
 
 
-def test_call_function_and_function_response():
-    call_msg = call_function("getScreenResolution", args={"screenIndex": 0}, function_call_id="fc-1")
+def test_call_renderer_function_and_agent_function_response():
+    """2026-08-24: replaces the old call_function()/function_response() —
+    confirmed via the real schema that v1.0 has two direction-specific
+    pairs, not one bidirectional callFunction/functionResponse (which
+    never existed in the real protocol at all). Both messages here are
+    validated against the REAL schema (assert_conforms), not just checked
+    for the shape this test expects -- that's what would have caught the
+    original drift in the first place."""
+    # openUrl: a real basic-catalog function (confirmed against
+    # catalogs/basic/catalog.json's own anyFunction list) -- an invented
+    # name fails validation for a DIFFERENT reason than what's under test.
+    call_msg = call_renderer_function(
+        "https://a2ui.org/specification/v1_0/catalog.json",
+        "openUrl", args={"url": "https://example.com"}, function_call_id="fc-1")
     assert call_msg["version"] == A2UI_VERSION
-    assert call_msg["functionCallId"] == "fc-1"
-    assert call_msg["wantResponse"] is True
-    assert call_msg["callFunction"] == {"call": "getScreenResolution", "args": {"screenIndex": 0}}
+    assert call_msg["callRendererFunction"]["functionCallId"] == "fc-1"
+    assert call_msg["callRendererFunction"]["callFunction"] == {
+        "catalogId": "https://a2ui.org/specification/v1_0/catalog.json",
+        "call": "openUrl", "args": {"url": "https://example.com"}}
+    assert "wantResponse" not in call_msg   # not a real field, confirmed 2026-08-24
+    assert_conforms(call_msg, AGENT_TO_RENDERER)
 
     # auto-minted functionCallId when omitted
-    auto = call_function("ping")
-    assert auto["functionCallId"].startswith("ping-")
+    auto = call_renderer_function("https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json", "ping")
+    assert auto["callRendererFunction"]["functionCallId"].startswith("ping-")
 
-    ok = function_response({"ok": True, "data": [1920, 1080]}, "fc-1", "getScreenResolution")
+    ok = agent_function_response({"ok": True, "data": [1920, 1080]}, "fc-1")
     assert ok["version"] == A2UI_VERSION
-    assert ok["functionResponse"] == {
-        "functionCallId": "fc-1", "call": "getScreenResolution", "value": [1920, 1080],
-    }
-    assert "error" not in ok
+    assert ok["agentFunctionResponse"] == {"functionCallId": "fc-1", "value": [1920, 1080]}
+    assert_conforms(ok, AGENT_TO_RENDERER)
 
-    bad = function_response({"ok": False, "error": "denied"}, "fc-2", "getScreenResolution")
-    assert "functionResponse" not in bad
-    assert bad["error"] == {"code": "function_call_failed", "message": "denied", "functionCallId": "fc-2"}
+    bad = agent_function_response({"ok": False, "error": "denied"}, "fc-2")
+    assert bad["agentFunctionResponse"] == {
+        "functionCallId": "fc-2", "error": {"code": "function_call_failed", "message": "denied"}}
+    assert_conforms(bad, AGENT_TO_RENDERER)
 
 
 def test_all_declared_children_atoms_are_flattened():

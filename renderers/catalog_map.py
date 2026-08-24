@@ -6,8 +6,10 @@ atom (recursively through nested blocks), maps each to its catalog via atoms/ato
 and returns the sorted set of resolvable catalog URIs (base `a2ui-atoms-v1` always included).
 
 Two consumers:
-  - the emitters call it to AUTO-DECLARE surfaceProperties.catalogs — so the agent never
-    hand-picks catalogs; the emitted surface states exactly what a host must resolve.
+  - the emitters call it to AUTO-DECLARE the surface's required catalogs (carried in
+    metadata.extensions.a2uicatalog_surface.catalogs since 2026-08-24 — surfaceProperties
+    was never a real v1.0 field) — so the agent never hand-picks catalogs; the emitted
+    surface states exactly what a host must resolve.
   - an agent/tool calls it directly (CLI below) to know, deterministically, which extension
     catalogs a payload draws from before/without emitting.
 

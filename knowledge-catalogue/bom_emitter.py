@@ -456,8 +456,14 @@ def emit(bom_path, curriculum_paths):
         "createSurface": {
             "surfaceId": bom.get("id", "bom-surface"),
             "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
-            "surfaceProperties": {"title": bom.get("name", "Knowledge Surface"),
-                                  "theme": "dark"},
+            # 2026-08-24: surfaceProperties isn't a real v1.0 field (same
+            # finding, fixed the same day, in renderers/a2ui_v1.py's own
+            # emit_surface()) -- this emitter built its createSurface by
+            # hand rather than calling that one, so it had the identical
+            # bug independently. Same fix: the real spec's own extension
+            # point.
+            "metadata": {"extensions": {"a2uicatalog_surface": {
+                "title": bom.get("name", "Knowledge Surface"), "theme": "dark"}}},
             "dataModel": {"subjects": data_subjects},
             "components": components,
         },

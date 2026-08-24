@@ -3155,7 +3155,10 @@ def render_frugal_ai_ops_page():
     lastEnvelope = env;
     renderBtn.disabled = false;
     var parts = [];
-    var title = (env && env.createSurface && env.createSurface.surfaceProperties && env.createSurface.surfaceProperties.title)
+    var title = (env && env.createSurface && env.createSurface.metadata && env.createSurface.metadata.extensions
+                 && env.createSurface.metadata.extensions.a2uicatalog_surface
+                 && env.createSurface.metadata.extensions.a2uicatalog_surface.title)
+             || (env && env.createSurface && env.createSurface.surfaceProperties && env.createSurface.surfaceProperties.title)
              || (env && env.title) || 'Parsed result';
     parts.push('<p class="frugal-status">parsed: ' + esc(title) + '</p>');
     if (env && env._truncated) {{
