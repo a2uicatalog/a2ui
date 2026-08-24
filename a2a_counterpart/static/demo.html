@@ -27,6 +27,10 @@
   }
   @keyframes a2ui-heartbeat { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
   @media (prefers-reduced-motion: reduce) { .a2ui-step-list li[data-status=running]::before { animation: none; } }
+
+  .a2ui-streaming-text { border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 12px; margin: 6px 0; font-size: 0.85rem; }
+  .a2ui-streaming-cursor { animation: a2ui-heartbeat 0.9s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .a2ui-streaming-cursor { animation: none; } }
 </style>
 </head>
 <body>
@@ -42,6 +46,10 @@
 </p>
 
 <div id="step-tracker-container"></div>
+<div>
+  <h2 style="font-size:1rem;">Live text (streaming_text — one card per real component update)</h2>
+  <div id="streaming-text-container"></div>
+</div>
 <div style="display:flex;gap:20px;align-items:flex-start;">
   <div>
     <h2 style="font-size:1rem;">Run sketch (agent_run_sketch — one node per real A2A contribution)</h2>
@@ -65,6 +73,7 @@ const statusEl = document.getElementById('conn-status');
 const stepContainer = document.getElementById('step-tracker-container');
 const sketchContainer = document.getElementById('run-sketch-container');
 const tokenMeterContainer = document.getElementById('token-meter-container');
+const streamingTextContainer = document.getElementById('streaming-text-container');
 
 function setConnected(connected) {
   statusEl.textContent = connected ? 'connected' : 'disconnected';
@@ -89,7 +98,7 @@ const runtime = A2UIStream.A2UIStreamRuntime({
       }
       primary = stepTrackerController;
     } else if (family === 'state') {
-      // Phase 5: updateDataModel -> StateDelta, consumed here exactly
+      // Phase 5.2: updateDataModel -> StateDelta, consumed here exactly
       // like live_cost_trend/mountTokenBudgetMeter already consume a
       // real StateDelta stream elsewhere in this repo -- same atom, same
       // controller code, unmodified.
@@ -97,6 +106,13 @@ const runtime = A2UIStream.A2UIStreamRuntime({
         tokenMeterController = A2UIAtomsLive.mountTokenBudgetMeter(tokenMeterContainer).controller;
       }
       primary = tokenMeterController;
+    } else if (family === 'text') {
+      // Phase 5.3: one NEW streaming_text card per distinct messageId (=
+      // one per real component update, since agui_adapter.py mints a
+      // fresh messageId per updateComponents burst) -- same per-key
+      // mounting pattern agent-tail-demo.html already uses for
+      // tool_call_card.
+      primary = A2UIAtomsLive.mountStreamingText(streamingTextContainer).controller;
     } else {
       primary = { onEvent() {}, destroy() {} };
     }

@@ -84,8 +84,23 @@ whatever executor/transport you're already using.
 |---|---|---|
 | `createSurface` (first time per surface) | `RunStarted` + `StepStarted` | `live_step_tracker` |
 | `updateComponents` | `ToolCallStart` + `ToolCallResult` per touched component id | `live_step_tracker`, `agent_run_sketch` |
+| `updateComponents` with a string `text` field | ALSO `TextMessageStart` + `TextMessageContent` + `TextMessageEnd` (one self-contained "typing burst" per update — see below) | `streaming_text` |
 | `deleteSurface` | `RunFinished` | `live_step_tracker`, `agent_run_sketch` |
 | `updateDataModel` | `StateDelta` (one real RFC 6902 JSON Patch op — `remove` if `value` is `None`, else `replace`) | `live_cost_trend`, `mountTokenBudgetMeter` |
+
+**On the text mapping (Phase 5.3)**: this is deliberately NOT true
+character-by-character LLM streaming. Each real A2A `updateComponents`
+call becomes its own self-contained burst — one message, one full-text
+delta, immediately started and ended. Considered and rejected: computing
+an incremental delta by diffing against a component's previous text (so
+repeated updates to the same component would read as one continuous
+stream) — `TextMessageEnd` must fire exactly once, on the true last
+chunk, and the adapter has no honest way to know which update is "last"
+without new state tracking or an invented wire convention. The
+self-contained-burst design sidesteps that: every burst has a real,
+unambiguous start and end, at the cost of not showing token-by-token
+typing. Good enough for "watch real text arrive live," not a claim of
+more than that.
 
 The adapter makes no claim about what the data model *contains* — an
 agent can put step counts, token/cost tracking, anything at all. It's a

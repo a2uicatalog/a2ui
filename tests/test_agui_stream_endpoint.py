@@ -74,7 +74,7 @@ def test_real_composition_scenario_streams_in_order():
         ready = asyncio.Event()
 
         collector = asyncio.ensure_future(
-            _collect_n_records(context_id, surface_id, count=6, ready=ready))
+            _collect_n_records(context_id, surface_id, count=12, ready=ready))
         await ready.wait()  # subscriber must be registered before sending, or events are missed
 
         create_msg = emit_surface(
@@ -97,10 +97,14 @@ def test_real_composition_scenario_streams_in_order():
     assert types == [
         "RunStarted", "StepStarted",
         "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
         "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
     ]
     assert records[2]["payload"]["toolName"] == "flights_card"
-    assert records[4]["payload"]["toolName"] == "weather_card"
+    assert records[5]["payload"]["delta"] == "on time"
+    assert records[7]["payload"]["toolName"] == "weather_card"
+    assert records[10]["payload"]["delta"] == "sunny"
 
 
 def test_a_message_sent_before_subscribing_is_not_retroactively_delivered():
@@ -119,7 +123,7 @@ def test_a_message_sent_before_subscribing_is_not_retroactively_delivered():
 
         ready = asyncio.Event()
         collector = asyncio.ensure_future(
-            _collect_n_records(context_id, surface_id, count=2, ready=ready))
+            _collect_n_records(context_id, surface_id, count=5, ready=ready))
         await ready.wait()
 
         second_update = update_components(surface_id, [
@@ -129,4 +133,7 @@ def test_a_message_sent_before_subscribing_is_not_retroactively_delivered():
         return await asyncio.wait_for(collector, timeout=10)
 
     records = asyncio.run(scenario())
-    assert [r["type"] for r in records] == ["ToolCallStart", "ToolCallResult"]
+    assert [r["type"] for r in records] == [
+        "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
+    ]

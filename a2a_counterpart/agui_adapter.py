@@ -25,6 +25,26 @@ Mapping (each justified on its own):
     agent_run_sketch draw one node per contribution (e.g. one specialist
     populating one card in the orchestrator/specialist composition use
     case, see tests/test_a2a_counterpart.py).
+  - ADDITIONALLY, if a touched component carries a string `text` field:
+    TextMessageStart + TextMessageContent(delta=the full text) +
+    TextMessageEnd, all three, immediately (Phase 5.3, 2026-08-24). This
+    is a deliberately SIMPLER design than true incremental token
+    streaming: each real A2A updateComponents call becomes its own
+    self-contained "typing burst" (one message = one full-text delta),
+    not a continuously-growing stream stitched across multiple calls.
+    Considered and rejected: computing an incremental delta by diffing
+    against the component's PREVIOUS text (so repeated updates to the
+    SAME component would read as one continuous stream) -- real problem
+    found working through this: TextMessageEnd must fire exactly once,
+    on the LAST chunk, but the adapter (a pure, per-message function) has
+    no way to know which update is "last" for an agent-defined text
+    stream without new state tracking or an invented "is this the final
+    chunk" signal on the wire -- exactly the kind of undocumented
+    convention this module has otherwise avoided. The self-contained-
+    burst design sidesteps that honestly: every burst has a real,
+    unambiguous start and end, at the cost of not showing true character-
+    by-character LLM-style streaming. Good enough for "watch text arrive
+    live, not just structural status" without inventing anything.
   - deleteSurface -> RunFinished.
   - updateDataModel -> StateDelta (Phase 5, 2026-08-24). Real, verified
     mechanism: a2ui-stream-runtime.v1.js's dispatch() already applies
@@ -91,6 +111,16 @@ def adapt_to_agui_events(context_id: str, surface_id: str,
             events.append({"type": "ToolCallResult", "payload": {
                 "runId": context_id, "toolCallId": tool_call_id,
                 "result": {"componentType": comp.get("component")}}})
+
+            text = comp.get("text")
+            if isinstance(text, str) and text:
+                message_id = f"{tool_call_id}-msg"
+                events.append({"type": "TextMessageStart",
+                               "payload": {"runId": context_id, "messageId": message_id}})
+                events.append({"type": "TextMessageContent", "payload": {
+                    "runId": context_id, "messageId": message_id, "delta": text}})
+                events.append({"type": "TextMessageEnd",
+                               "payload": {"runId": context_id, "messageId": message_id}})
         return events
 
     if "deleteSurface" in a2ui_message:

@@ -31,21 +31,43 @@ def test_create_surface_is_a_noop_when_already_started():
     assert events == []
 
 
-def test_update_components_emits_tool_call_pair_per_component():
+def test_update_components_emits_tool_call_and_text_message_per_component():
     msg = update_components("s1", [
         {"id": "flights_card", "component": "Text", "text": "on time"},
         {"id": "weather_card", "component": "Text", "text": "sunny"},
     ])
     events = adapt_to_agui_events("ctx1", "s1", msg, surface_already_started=True)
 
-    assert len(events) == 4
+    # Per component: ToolCallStart, ToolCallResult, TextMessageStart,
+    # TextMessageContent, TextMessageEnd -- 5 events x 2 components.
+    assert len(events) == 10
     assert [e["type"] for e in events] == [
-        "ToolCallStart", "ToolCallResult", "ToolCallStart", "ToolCallResult"]
+        "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
+        "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
+    ]
     assert events[0]["payload"]["toolName"] == "flights_card"
-    assert events[2]["payload"]["toolName"] == "weather_card"
-    # Same component -> same toolCallId, across the pair.
+    assert events[5]["payload"]["toolName"] == "weather_card"
+    # Same component -> same toolCallId, across the ToolCall pair.
     assert events[0]["payload"]["toolCallId"] == events[1]["payload"]["toolCallId"]
-    assert events[0]["payload"]["toolCallId"] != events[2]["payload"]["toolCallId"]
+    assert events[0]["payload"]["toolCallId"] != events[5]["payload"]["toolCallId"]
+    # TextMessage events for the SAME component share one messageId.
+    assert events[2]["payload"]["messageId"] == events[3]["payload"]["messageId"] \
+        == events[4]["payload"]["messageId"]
+    assert events[3]["payload"]["delta"] == "on time"
+
+
+def test_update_components_with_no_text_field_emits_no_text_message():
+    msg = update_components("s1", [{"id": "flights_card", "component": "Divider"}])
+    events = adapt_to_agui_events("ctx1", "s1", msg, surface_already_started=True)
+    assert [e["type"] for e in events] == ["ToolCallStart", "ToolCallResult"]
+
+
+def test_update_components_with_empty_text_emits_no_text_message():
+    msg = update_components("s1", [{"id": "flights_card", "component": "Text", "text": ""}])
+    events = adapt_to_agui_events("ctx1", "s1", msg, surface_already_started=True)
+    assert [e["type"] for e in events] == ["ToolCallStart", "ToolCallResult"]
 
 
 def test_update_components_toolcallid_is_stable_across_separate_calls():
@@ -114,5 +136,7 @@ def test_the_full_composition_scenario_produces_a_coherent_agui_sequence():
     assert types == [
         "RunStarted", "StepStarted",
         "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
         "ToolCallStart", "ToolCallResult",
+        "TextMessageStart", "TextMessageContent", "TextMessageEnd",
     ]
