@@ -13500,11 +13500,12 @@ blocks:
     works_on:
     - web
     - google-apps-script-web
+    - mcp-apps
   fields:
     summary: 'string (required). Plain-text description of the diagram, used as the accessibility label and as the full content on text-only surfaces.'
     justification: 'string (required, minimum 20 characters). Why no existing catalog atom covers this content — reviewed and, if unconvincing, rejected at render time.'
     viewbox: 'string (optional, default "0 0 800 500"). SVG viewBox for coordinate scaling.'
     background: 'string (optional). Canvas background fill (hex or CSS color token).'
-    elements: 'array of element objects (exactly one of elements/svg required). Each element is {tag, ...attributes, children?}. Container tags (g, defs, clipPath, mask, linearGradient, radialGradient, marker, pattern) may nest further element objects via children. Validated against a strict tag/attribute allowlist — see renderers/web_article.py:validate_freeform_canvas.'
+    elements: 'array of element objects (exactly one of elements/svg required). Each element is {tag, ...attributes, children?}. Container tags (g, defs, clipPath, mask, linearGradient, radialGradient, marker, pattern) may nest further element objects via children. Validated against a strict tag/attribute allowlist — see renderers/web_article.py:validate_freeform_canvas (Python/web/GAS) and apps-script-surface/gas-wired-renderer/atoms_freeform.gs (mcp-apps).'
     svg: 'string (exactly one of elements/svg required). Raw SVG markup, an alternative authoring form to elements with identical capability. Parsed and validated against the same allowlist, then re-rendered from the validated tree — never echoed verbatim.'
   source: *id001
