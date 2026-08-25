@@ -1,6 +1,6 @@
 # Action Required Card
 
-A card highlighting an important status or issue that requires immediate
+A card highlighting an important status or issue that requires immediate user attention or approval before proceeding.
 
 ## Surfaces
 

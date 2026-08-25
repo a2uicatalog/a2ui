@@ -2675,8 +2675,8 @@
   },
   {
    "type": "action_required_card",
-   "description": "A card highlighting an important status or issue that requires immediate",
-   "compact_description": "prominent card prompting a required user action user attention,",
+   "description": "A card highlighting an important status or issue that requires immediate user attention or approval before proceeding.",
+   "compact_description": "prominent card prompting a required user action or approval",
    "surfaces": {
     "works_on": [
      "web",

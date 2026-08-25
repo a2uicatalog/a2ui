@@ -820,7 +820,7 @@
   },
   {
    "type": "action_required_card",
-   "compact": "prominent card prompting a required user action user attention,",
+   "compact": "prominent card prompting a required user action or approval",
    "surfaces": [
     "web",
     "google-meet-stage",
