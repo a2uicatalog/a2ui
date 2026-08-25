@@ -13462,3 +13462,24 @@ blocks:
     url: url (required). The destination.
     note: string (optional). One short line of context after the link.
   source: *id001
+- type: tool_call_card
+  stage: preview
+  description: 'A structured card displaying an AI agent tool invocation —
+    in-flight, completed, or failed. Shows the tool name, execution status badge
+    (running, success, error, pending), elapsed latency, formatted input
+    arguments, and returned result or error message. Essential for agentic
+    run narration, live tool traces, and human inspection of autonomous actions.'
+  compact_description: structured agent tool call card with status, inputs, result, and latency
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    tool_name: 'string (required). The name of the invoked tool, e.g. "search_database" or "execute_code".'
+    status: 'string (optional, default "running"). Status of the tool execution ("running", "success", "error", or "pending").'
+    args: 'string (optional). The input arguments passed to the tool, formatted as JSON string or key-value summary.'
+    result: 'string (optional). The output data or response returned by the tool.'
+    latency_ms: 'number (optional). Execution duration in milliseconds.'
+    error: 'string (optional). Error details or exception message if status is "error".'
+  source: *id001
