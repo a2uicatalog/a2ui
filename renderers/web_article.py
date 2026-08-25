@@ -23027,15 +23027,34 @@ _FREEFORM_TAG_EXTRA_ATTRS = {
     'defs':      {},
     'clipPath':  {'clip_path_units': 'clipPathUnits'},
     'mask':      {'mask_units': 'maskUnits'},
+    # linearGradient/radialGradient/marker/pattern were originally scoped to
+    # geometry + unit attrs only, missing each one's own standard transform/
+    # focal-point attributes entirely -- found live, 2026-08-25:
+    # patternTransform rejected on a real Gemini-authored diagram (a wall
+    # elevation drawing needing a repeating brick pattern). Third live
+    # allowlist gap in a row for these reference-definition tags
+    # specifically -- not one more reactive patch, the real fix is
+    # completing this whole group properly: gradientTransform/
+    # patternTransform (siblings of the plain `transform` already allowed
+    # elsewhere, same value shape -- a transform-list string, no URL),
+    # spreadMethod (pad/reflect/repeat, closed enum), fx/fy/fr (radial
+    # gradients' real focal-point attrs, plain numbers, same shape as
+    # cx/cy/r already allowed), markerUnits (strokeWidth/userSpaceOnUse,
+    # closed enum).
     'linearGradient': {'x1': 'x1', 'y1': 'y1', 'x2': 'x2', 'y2': 'y2',
-                        'gradient_units': 'gradientUnits', 'href': 'href'},
+                        'gradient_units': 'gradientUnits', 'href': 'href',
+                        'gradient_transform': 'gradientTransform', 'spread_method': 'spreadMethod'},
     'radialGradient': {'cx': 'cx', 'cy': 'cy', 'r': 'r',
-                        'gradient_units': 'gradientUnits', 'href': 'href'},
+                        'gradient_units': 'gradientUnits', 'href': 'href',
+                        'gradient_transform': 'gradientTransform', 'spread_method': 'spreadMethod',
+                        'fx': 'fx', 'fy': 'fy', 'fr': 'fr'},
     'stop':      {'offset': 'offset', 'stop_color': 'stop-color', 'stop_opacity': 'stop-opacity'},
     'marker':    {'marker_width': 'markerWidth', 'marker_height': 'markerHeight',
-                  'ref_x': 'refX', 'ref_y': 'refY', 'orient': 'orient', 'viewbox': 'viewBox'},
+                  'ref_x': 'refX', 'ref_y': 'refY', 'orient': 'orient', 'viewbox': 'viewBox',
+                  'marker_units': 'markerUnits'},
     'pattern':   {'x': 'x', 'y': 'y', 'width': 'width', 'height': 'height',
-                  'pattern_units': 'patternUnits', 'viewbox': 'viewBox'},
+                  'pattern_units': 'patternUnits', 'viewbox': 'viewBox',
+                  'pattern_transform': 'patternTransform'},
 }
 
 _FREEFORM_CONTAINER_TAGS = {'g', 'defs', 'clipPath', 'mask', 'linearGradient',

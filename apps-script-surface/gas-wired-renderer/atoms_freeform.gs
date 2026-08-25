@@ -68,15 +68,23 @@ var _FREEFORM_TAG_EXTRA_ATTRS = {
   defs:      {},
   clipPath:  {clip_path_units: 'clipPathUnits'},
   mask:      {mask_units: 'maskUnits'},
+  // Mirrors the identical completeness fix in the Python reference --
+  // gradientTransform/patternTransform/spreadMethod/fx/fy/fr/markerUnits.
+  // See that file for the full story.
   linearGradient: {x1: 'x1', y1: 'y1', x2: 'x2', y2: 'y2',
-                    gradient_units: 'gradientUnits', href: 'href'},
+                    gradient_units: 'gradientUnits', href: 'href',
+                    gradient_transform: 'gradientTransform', spread_method: 'spreadMethod'},
   radialGradient: {cx: 'cx', cy: 'cy', r: 'r',
-                    gradient_units: 'gradientUnits', href: 'href'},
+                    gradient_units: 'gradientUnits', href: 'href',
+                    gradient_transform: 'gradientTransform', spread_method: 'spreadMethod',
+                    fx: 'fx', fy: 'fy', fr: 'fr'},
   stop:      {offset: 'offset', stop_color: 'stop-color', stop_opacity: 'stop-opacity'},
   marker:    {marker_width: 'markerWidth', marker_height: 'markerHeight',
-              ref_x: 'refX', ref_y: 'refY', orient: 'orient', viewbox: 'viewBox'},
+              ref_x: 'refX', ref_y: 'refY', orient: 'orient', viewbox: 'viewBox',
+              marker_units: 'markerUnits'},
   pattern:   {x: 'x', y: 'y', width: 'width', height: 'height',
-              pattern_units: 'patternUnits', viewbox: 'viewBox'}
+              pattern_units: 'patternUnits', viewbox: 'viewBox',
+              pattern_transform: 'patternTransform'}
 };
 
 var _FREEFORM_CONTAINER_TAGS = {g:1, defs:1, clipPath:1, mask:1, linearGradient:1,
