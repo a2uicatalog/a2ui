@@ -22972,6 +22972,34 @@ _FREEFORM_COMMON_ATTRS = {
     'transform': 'transform', 'id': 'id',
     'stroke_width': 'stroke-width', 'stroke_dasharray': 'stroke-dasharray',
     'clip_path': 'clip-path', 'mask': 'mask',
+    # A completeness pass, 2026-08-25 -- NOT one more one-off patch. The
+    # original spec was missing stroke-opacity, then letter-spacing, both
+    # found live via real Gemini-authored diagrams (freeform_canvas
+    # testbench, streaming-testbench) reaching for completely ordinary SVG
+    # presentation attributes and getting rejected for allowlist gaps, not
+    # anything the validator is actually meant to guard against. Two
+    # unrelated gaps in a row is a signal the ORIGINAL list was never
+    # checked against a real, complete reference -- so this is every
+    # standard SVG presentation attribute realistically relevant to
+    # diagram content, added once, not trickled in as each one gets hit.
+    # Every value here is either a plain number, a percentage, or a closed
+    # keyword enum (butt/round/square, miter/round/bevel, nonzero/evenodd,
+    # visible/hidden/collapse, inline/none) -- none of them accept a URL or
+    # any value shape different from what's already allowed, so this is a
+    # mechanical expansion, not a change to the security model. Still
+    # passes through _freeform_check_value_safety like every other
+    # attribute value.
+    'fill_opacity': 'fill-opacity', 'stroke_opacity': 'stroke-opacity',
+    'stroke_linecap': 'stroke-linecap', 'stroke_linejoin': 'stroke-linejoin',
+    'stroke_miterlimit': 'stroke-miterlimit', 'stroke_dashoffset': 'stroke-dashoffset',
+    'fill_rule': 'fill-rule', 'visibility': 'visibility', 'display': 'display',
+    # Arrowheads -- Gemini's own review of this completeness pass flagged
+    # these as the one genuinely common remaining gap (diagrams are
+    # exactly where arrows show up constantly). Same url(#fragment)-only
+    # value shape as fill/stroke/clip_path/mask -- added to
+    # _FREEFORM_URL_ATTR_CANONICALS below so they get the identical
+    # validation, not a weaker one.
+    'marker_start': 'marker-start', 'marker_mid': 'marker-mid', 'marker_end': 'marker-end',
 }
 
 # Per-tag geometry/behaviour attrs, canonical -> real SVG attribute name.
@@ -22986,9 +23014,15 @@ _FREEFORM_TAG_EXTRA_ATTRS = {
     'path':      {'d': 'd'},
     'g':         {},
     'text':      {'x': 'x', 'y': 'y', 'font_size': 'font-size', 'font_weight': 'font-weight',
-                  'font_family': 'font-family', 'text_anchor': 'text-anchor'},
+                  'font_family': 'font-family', 'text_anchor': 'text-anchor',
+                  'font_style': 'font-style', 'letter_spacing': 'letter-spacing',
+                  'word_spacing': 'word-spacing', 'text_decoration': 'text-decoration',
+                  'dominant_baseline': 'dominant-baseline'},
     'tspan':     {'x': 'x', 'y': 'y', 'font_size': 'font-size', 'font_weight': 'font-weight',
-                  'font_family': 'font-family', 'text_anchor': 'text-anchor'},
+                  'font_family': 'font-family', 'text_anchor': 'text-anchor',
+                  'font_style': 'font-style', 'letter_spacing': 'letter-spacing',
+                  'word_spacing': 'word-spacing', 'text_decoration': 'text-decoration',
+                  'dominant_baseline': 'dominant-baseline'},
     'use':       {'x': 'x', 'y': 'y', 'width': 'width', 'height': 'height', 'href': 'href'},
     'defs':      {},
     'clipPath':  {'clip_path_units': 'clipPathUnits'},
@@ -23022,7 +23056,8 @@ _FREEFORM_TAG_ATTRS = {
 # Attribute values that may legitimately be a url(#fragment) reference --
 # checked against _FREEFORM_LOCAL_URL_RE; any OTHER url(...) form (external
 # http(s), data:, javascript:) is rejected outright.
-_FREEFORM_URL_ATTR_CANONICALS = {'fill', 'stroke', 'clip_path', 'mask'}
+_FREEFORM_URL_ATTR_CANONICALS = {'fill', 'stroke', 'clip_path', 'mask',
+                                  'marker_start', 'marker_mid', 'marker_end'}
 _FREEFORM_LOCAL_URL_RE = _wa_freeform_re.compile(r'^url\(\s*#([\w-]+)\s*\)$')
 
 
@@ -23197,7 +23232,8 @@ def _freeform_namespace_element(el, prefix):
     attrs = dict(el['attrs'])
     if 'id' in attrs:
         attrs['id'] = f'{prefix}-{attrs["id"]}'
-    for k in ('clip_path', 'mask', 'fill', 'stroke'):
+    for k in ('clip_path', 'mask', 'fill', 'stroke',
+              'marker_start', 'marker_mid', 'marker_end'):
         v = attrs.get(k)
         if v:
             m = _FREEFORM_LOCAL_URL_RE.match(v)

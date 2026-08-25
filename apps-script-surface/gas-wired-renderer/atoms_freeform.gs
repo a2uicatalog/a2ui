@@ -30,7 +30,19 @@ var _FREEFORM_COMMON_ATTRS = {
   fill: 'fill', stroke: 'stroke', opacity: 'opacity',
   transform: 'transform', id: 'id',
   stroke_width: 'stroke-width', stroke_dasharray: 'stroke-dasharray',
-  clip_path: 'clip-path', mask: 'mask'
+  clip_path: 'clip-path', mask: 'mask',
+  // A completeness pass, 2026-08-25 -- mirrors the identical fix in the
+  // Python reference (renderers/web_article.py); see that file for the
+  // full story. Every value here is a plain number, percentage, or closed
+  // keyword enum, same as opacity/stroke-width already allowed -- a
+  // mechanical expansion, not a change to the security model.
+  fill_opacity: 'fill-opacity', stroke_opacity: 'stroke-opacity',
+  stroke_linecap: 'stroke-linecap', stroke_linejoin: 'stroke-linejoin',
+  stroke_miterlimit: 'stroke-miterlimit', stroke_dashoffset: 'stroke-dashoffset',
+  fill_rule: 'fill-rule', visibility: 'visibility', display: 'display',
+  // Arrowheads -- same url(#fragment)-only value shape as fill/stroke/
+  // clip_path/mask, added to _FREEFORM_URL_ATTR_CANONICALS below.
+  marker_start: 'marker-start', marker_mid: 'marker-mid', marker_end: 'marker-end'
 };
 
 var _FREEFORM_TAG_EXTRA_ATTRS = {
@@ -43,9 +55,15 @@ var _FREEFORM_TAG_EXTRA_ATTRS = {
   path:      {d: 'd'},
   g:         {},
   text:      {x: 'x', y: 'y', font_size: 'font-size', font_weight: 'font-weight',
-              font_family: 'font-family', text_anchor: 'text-anchor'},
+              font_family: 'font-family', text_anchor: 'text-anchor',
+              font_style: 'font-style', letter_spacing: 'letter-spacing',
+              word_spacing: 'word-spacing', text_decoration: 'text-decoration',
+              dominant_baseline: 'dominant-baseline'},
   tspan:     {x: 'x', y: 'y', font_size: 'font-size', font_weight: 'font-weight',
-              font_family: 'font-family', text_anchor: 'text-anchor'},
+              font_family: 'font-family', text_anchor: 'text-anchor',
+              font_style: 'font-style', letter_spacing: 'letter-spacing',
+              word_spacing: 'word-spacing', text_decoration: 'text-decoration',
+              dominant_baseline: 'dominant-baseline'},
   use:       {x: 'x', y: 'y', width: 'width', height: 'height', href: 'href'},
   defs:      {},
   clipPath:  {clip_path_units: 'clipPathUnits'},
@@ -78,7 +96,8 @@ var _FREEFORM_TAG_ATTRS = (function() {
   return out;
 })();
 
-var _FREEFORM_URL_ATTR_CANONICALS = {fill:1, stroke:1, clip_path:1, mask:1};
+var _FREEFORM_URL_ATTR_CANONICALS = {fill:1, stroke:1, clip_path:1, mask:1,
+  marker_start:1, marker_mid:1, marker_end:1};
 var _FREEFORM_LOCAL_URL_RE = /^url\(\s*#([\w-]+)\s*\)$/;
 
 // real SVG attr name -> canonical snake_case, inverse of _FREEFORM_TAG_ATTRS
@@ -423,7 +442,8 @@ function _freeformNamespaceElement(el, prefix) {
   var attrs = {};
   for (var k in el.attrs) attrs[k] = el.attrs[k];
   if ('id' in attrs) attrs.id = prefix + '-' + attrs.id;
-  var refAttrs = ['clip_path', 'mask', 'fill', 'stroke'];
+  var refAttrs = ['clip_path', 'mask', 'fill', 'stroke',
+                  'marker_start', 'marker_mid', 'marker_end'];
   for (var j = 0; j < refAttrs.length; j++) {
     var rk = refAttrs[j];
     var v = attrs[rk];
