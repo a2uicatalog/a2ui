@@ -24,3 +24,12 @@ jsonschema
 # tests/a2ui_v1_conformance.py's own top-of-file comment for exactly where
 # this bit. Same two-places-must-match discipline as jsonschema above.
 regex
+# Added 2026-08-25 for freeform_canvas's raw-svg authoring path
+# (renderers/web_article.py's _parse_freeform_svg) -- freeform_canvas
+# parses AGENT-AUTHORED, untrusted XML strings, and stdlib
+# xml.etree.ElementTree has no protection against XXE/billion-laughs
+# entity-expansion attacks on untrusted input. defusedxml wraps the same
+# ElementTree API with entity expansion disabled by default. Same
+# two-places-must-match discipline as jsonschema/regex above --
+# MUST also be added to .github/workflows/deploy.yml's install step.
+defusedxml
