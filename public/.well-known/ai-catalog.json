@@ -1489,10 +1489,10 @@
         "google-apps-script-web",
         "mcp-apps"
       ],
-      "description": "A card highlighting an important status or issue that requires immediate",
+      "description": "A card highlighting an important status or issue that requires immediate user attention or approval before proceeding.",
       "representativeQueries": [
-        "show a prominent card prompting a required user action user attention,",
-        "a card highlighting an important status or issue that requires immediate",
+        "show a prominent card prompting a required user action or approval",
+        "a card highlighting an important status or issue that requires immediate user attention or approval before proceeding",
         "render a action required card"
       ]
     },

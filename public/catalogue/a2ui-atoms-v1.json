@@ -3060,7 +3060,7 @@
   },
   "action_required_card": {
    "type": "object",
-   "description": "A card highlighting an important status or issue that requires immediate",
+   "description": "A card highlighting an important status or issue that requires immediate user attention or approval before proceeding.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"

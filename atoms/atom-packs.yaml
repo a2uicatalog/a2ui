@@ -57,6 +57,7 @@ a2ui-atoms-v1:
 - form_slider
 - form_switch_group
 - form_textarea
+- freeform_canvas
 - google_icon
 - heading
 - highlight_box
@@ -129,6 +130,7 @@ a2ui-atoms-v1:
 - tool_tile
 - tooltip
 - tree_view
+- wall_elevation
 a2ui-aviation-v1:
 - adsb_feed
 - airspace_command_deck
@@ -532,6 +534,7 @@ a2ui-meta-v1:
 - schema_qr
 - surface_map
 - token_budget_meter
+- tool_call_card
 - url_anatomy
 a2ui-ops-v1:
 - api_param_table

@@ -456,7 +456,7 @@ does not exist.
 - `inline_feedback_message` — inline success error or warning message for validation feedback or hints.
 - `rating_stars` — star rating display stars, or displaying a static rating.
 - `progress_circle` — CSS stroke-dashoffset animated SVG progress arc with centre percentage
-- `action_required_card` — prominent card prompting a required user action user attention,
+- `action_required_card` — prominent card prompting a required user action or approval
 - `feature_matrix` — features versus plans comparison matrix
 - `pricing_tier_card` — single pricing plan card with features list an optional call to action.
 - `pricing_tier_group` — side-by-side pricing plan comparison different subscription plans.
