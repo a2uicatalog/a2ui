@@ -520,10 +520,13 @@ LLMS_TXT = """# A2UI Atomic Catalog
 - [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
 - [Developer documentation]({base}/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
 - [API documentation]({base}/docs/): REST API endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
+- [API docs and reference]({base}/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
 - [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
+- [Auth documentation]({base}/auth/): Authentication guide, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
+- [Webhooks & events]({base}/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
 - [Pricing and rate limits]({base}/pricing.md): Free tier limits and self-hosting options.
 - [Versioning & deprecation policy]({base}/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
@@ -597,6 +600,9 @@ def build_api_catalog():
             "describes": [
                 item(f"{BASE}/developers/", "text/html", "Developer documentation and API guide"),
                 item(f"{BASE}/docs/", "text/html", "API documentation and endpoint reference"),
+                item(f"{BASE}/api-docs/", "text/html", "API docs and reference directory"),
+                item(f"{BASE}/auth/", "text/html", "Authentication and security documentation"),
+                item(f"{BASE}/webhooks/", "text/html", "Webhooks and event delivery documentation"),
                 item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
                 item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
                 item(f"{BASE}/pricing.md", "text/markdown", "Pricing and rate limits"),
@@ -638,6 +644,9 @@ def build_agent_view(n_atoms, n_surfaces):
             "openapi": f"{BASE}/openapi.json",
             "developers": f"{BASE}/developers/",
             "api_docs": f"{BASE}/docs/",
+            "api_reference": f"{BASE}/api-docs/",
+            "auth_docs": f"{BASE}/auth/",
+            "webhooks": f"{BASE}/webhooks/",
             "llms": f"{BASE}/llms.txt",
             "agents": f"{BASE}/agents.md",
             "auth": f"{BASE}/auth.md",

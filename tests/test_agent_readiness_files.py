@@ -17,7 +17,12 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 PUBLIC = os.path.join(ROOT, "public")
 
 sys.path.insert(0, str(Path(ROOT) / "scripts"))
+import gen_openapi  # noqa: E402
 import gen_server_card  # noqa: E402
+import gen_trust_pages  # noqa: E402
+
+gen_openapi.main()
+gen_trust_pages.main()
 
 
 def _load(*parts):
@@ -122,6 +127,8 @@ def test_developer_resource_pages_exist_and_include_product_name():
         ("docs", "index.html"),
         ("api-docs", "index.html"),
         ("developers", "index.html"),
+        ("auth", "index.html"),
+        ("webhooks", "index.html"),
     ]
     for parts in predictable_pages:
         html = _load(*parts)
@@ -133,17 +140,39 @@ def test_developer_resource_pages_exist_and_include_product_name():
         assert "/mcp" in html, f"{'/'.join(parts)} does not link to MCP endpoint"
 
 
+def test_predictable_redirects_route_correctly():
+    """Predictable aliases must redirect to canonical doc pages, not bare generic 404/developers."""
+    redirects_content = _load("_redirects")
+    lines = [l.strip() for l in redirects_content.splitlines() if l.strip() and not l.startswith("#")]
+    redirect_map = dict(l.split()[:2] for l in lines)
+
+    assert redirect_map.get("/api-docs") == "/api-docs/"
+    assert redirect_map.get("/docs") == "/docs/"
+    assert redirect_map.get("/swagger.json") == "/openapi.json"
+    assert redirect_map.get("/openapi.yaml") == "/openapi.json"
+    assert redirect_map.get("/auth") == "/auth/"
+    assert redirect_map.get("/webhooks") == "/webhooks/"
+
+
 def test_api_catalog_and_llms_advertise_developer_resources():
     """RFC 9727 api-catalog and llms.txt must advertise docs, openapi, mcp, and auth."""
     llms_txt = _load("llms.txt")
     assert "/docs/" in llms_txt or "/developers/" in llms_txt
     assert "/openapi.json" in llms_txt
     assert "/mcp" in llms_txt
+    assert "/auth/" in llms_txt or "/auth.md" in llms_txt
+    assert "/webhooks/" in llms_txt
 
     api_catalog = json.loads(_load(".well-known", "api-catalog"))
     linkset = api_catalog["linkset"][0]
     all_hrefs = [entry["href"] for group in ("describedby", "service-desc", "item", "describes")
                  for entry in linkset.get(group, [])]
-    for required in ("https://a2uicatalog.ai/openapi.json", "https://a2uicatalog.ai/mcp", "https://a2uicatalog.ai/docs/"):
+    for required in (
+        "https://a2uicatalog.ai/openapi.json",
+        "https://a2uicatalog.ai/mcp",
+        "https://a2uicatalog.ai/docs/",
+        "https://a2uicatalog.ai/auth/",
+        "https://a2uicatalog.ai/webhooks/",
+    ):
         assert required in all_hrefs, f"api-catalog missing required developer resource link: {required}"
 
