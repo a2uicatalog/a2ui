@@ -22854,3 +22854,78 @@ def _render_resource_link_row(b: dict) -> str:
 
 
 _RENDERERS['resource_link_row'] = _render_resource_link_row
+
+
+def _render_tool_call_card(b: dict) -> str:
+    import json
+    tool_name = _esc(b.get('tool_name', 'tool'))
+    status = str(b.get('status') or 'running').lower()
+    latency_ms = b.get('latency_ms')
+    latency_str = f"{latency_ms}ms" if latency_ms is not None else ""
+
+    if status == 'success':
+        status_bg = '#e6f4ea'
+        status_fg = '#137333'
+        status_label = '✓ success'
+    elif status == 'error':
+        status_bg = '#fce8e6'
+        status_fg = '#c5221f'
+        status_label = '✕ error'
+    elif status == 'running':
+        status_bg = '#e8f0fe'
+        status_fg = '#1a73e8'
+        status_label = '● running'
+    else:
+        status_bg = '#f1f3f4'
+        status_fg = '#5f6368'
+        status_label = status
+
+    badge_html = f'<span style="background:{status_bg};color:{status_fg};font-size:0.75rem;font-weight:600;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:0.03em;">{_esc(status_label)}</span>'
+    latency_html = f'<span style="color:#5f6368;font-size:0.78rem;margin-left:auto;">{_esc(latency_str)}</span>' if latency_str else ''
+
+    args = b.get('args')
+    args_html = ''
+    if args is not None:
+        if isinstance(args, (dict, list)):
+            args_str = json.dumps(args, indent=2)
+        else:
+            args_str = str(args)
+        args_html = (
+            f'<div style="margin-top:8px;">'
+            f'<div style="font-size:0.75rem;font-weight:600;color:#5f6368;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Arguments</div>'
+            f'<pre style="margin:0;background:#f8f9fa;border:1px solid #e8eaed;color:#202124;padding:8px 10px;border-radius:6px;font-family:ui-monospace,\'SF Mono\',Consolas,monospace;font-size:0.8rem;overflow-x:auto;">{_esc(args_str)}</pre>'
+            f'</div>'
+        )
+
+    err = b.get('error')
+    res = b.get('result')
+    res_html = ''
+    if err:
+        res_html = (
+            f'<div style="margin-top:8px;">'
+            f'<div style="font-size:0.75rem;font-weight:600;color:#c5221f;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Error</div>'
+            f'<div style="background:#fce8e6;border:1px solid #fad2cf;color:#c5221f;padding:8px 10px;border-radius:6px;font-family:ui-monospace,\'SF Mono\',Consolas,monospace;font-size:0.8rem;overflow-x:auto;">{_esc(str(err))}</div>'
+            f'</div>'
+        )
+    elif res is not None:
+        if isinstance(res, (dict, list)):
+            res_str = json.dumps(res, indent=2)
+        else:
+            res_str = str(res)
+        res_html = (
+            f'<div style="margin-top:8px;">'
+            f'<div style="font-size:0.75rem;font-weight:600;color:#5f6368;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Result</div>'
+            f'<pre style="margin:0;background:#f8f9fa;border:1px solid #e8eaed;color:#202124;padding:8px 10px;border-radius:6px;font-family:ui-monospace,\'SF Mono\',Consolas,monospace;font-size:0.8rem;overflow-x:auto;">{_esc(res_str)}</pre>'
+            f'</div>'
+        )
+
+    return (
+        f'<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;border-radius:8px;background:#ffffff;">'
+        f'<div style="display:flex;align-items:center;gap:8px;">'
+        f'<span style="font-family:ui-monospace,\'SF Mono\',Consolas,monospace;font-weight:700;color:#1a73e8;font-size:0.95rem;">{tool_name}</span>'
+        f'{badge_html}{latency_html}</div>'
+        f'{args_html}{res_html}</div>'
+    )
+
+
+_RENDERERS['tool_call_card'] = _render_tool_call_card

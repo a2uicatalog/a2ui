@@ -1064,3 +1064,43 @@ def test_code_diff_old_text_alias(renderer):
 
 def test_code_diff_gas_sidebar_surface(atoms):
     assert "google-apps-script-side-panel" in atoms["code_diff"]["surfaces"]["works_on"]
+
+
+def test_tool_call_card_renderer(renderer):
+    # Test running tool call
+    html_running = r(renderer, {
+        "component": "tool_call_card",
+        "tool_name": "search_docs",
+        "status": "running",
+        "args": {"query": "authentication flow"}
+    })
+    assert "search_docs" in html_running
+    assert "running" in html_running
+    assert "authentication flow" in html_running
+
+    # Test completed tool call with result & latency
+    html_success = r(renderer, {
+        "component": "tool_call_card",
+        "tool_name": "fetch_user",
+        "status": "success",
+        "args": "id=123",
+        "result": {"username": "curtis", "role": "admin"},
+        "latency_ms": 142
+    })
+    assert "fetch_user" in html_success
+    assert "success" in html_success
+    assert "142ms" in html_success
+    assert "curtis" in html_success
+
+    # Test error tool call
+    html_error = r(renderer, {
+        "component": "tool_call_card",
+        "tool_name": "execute_query",
+        "status": "error",
+        "args": "SELECT * FROM secrets",
+        "error": "PermissionDenied: Access table secrets restricted"
+    })
+    assert "execute_query" in html_error
+    assert "error" in html_error
+    assert "PermissionDenied" in html_error
+

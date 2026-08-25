@@ -64,7 +64,7 @@ SCHEMA_ONLY = {
     "problem_chapter", "resource_link_row", "service_status_board",
     "stat_inline_badge", "stat_pulse", "trace_step", "verdict_checklist",
     "weather_now", "weather_outlook", "wishlist_panel", "wrong_vs_right",
-    "promo_carousel_card",
+    "promo_carousel_card", "tool_call_card",
 }
 
 
