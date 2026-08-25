@@ -13509,3 +13509,28 @@ blocks:
     elements: 'array of element objects (exactly one of elements/svg required). Each element is {tag, ...attributes, children?}. Container tags (g, defs, clipPath, mask, linearGradient, radialGradient, marker, pattern) may nest further element objects via children. Validated against a strict tag/attribute allowlist — see renderers/web_article.py:validate_freeform_canvas (Python/web/GAS) and apps-script-surface/gas-wired-renderer/atoms_freeform.gs (mcp-apps).'
     svg: 'string (exactly one of elements/svg required). Raw SVG markup, an alternative authoring form to elements with identical capability. Parsed and validated against the same allowlist, then re-rendered from the validated tree — never echoed verbatim.'
   source: *id001
+- type: wall_elevation
+  stage: preview
+  description: 'A deterministic, to-scale masonry wall elevation diagram —
+    course count, running or stack bond, material weight/cost, and a
+    builder-count-driven build-time estimate. Unlike freeform_canvas, this
+    is entirely code-computed: no free-form authoring, no LLM in the render
+    path at all — real construction math (course/unit counts from block
+    dimensions, diminishing-returns build-day curve) drives a fixed layout
+    algorithm, so the same inputs always produce the same diagram. Ported
+    from a real prior Gemini Enterprise demo agent (wall-builder-agent).'
+  compact_description: deterministic to-scale masonry wall elevation with courses, bond pattern, and build estimates
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+  fields:
+    height_m: 'number (required). Wall height in metres, snapped to 0.2m increments and clamped to 0.2–20.0m.'
+    width_m: 'number (required). Wall width in metres, snapped to 0.2m increments and clamped to 0.2–20.0m.'
+    block_id: 'string (optional, default "parpaing200"). One of "parpaing200", "parpaing150", "brique" — each with real dimensions, weight, and price.'
+    pattern: 'string (optional, default "running"). "running" (alternate courses offset by half a unit) or "stack" (unoffset).'
+    load_bearing: 'boolean (optional, default false). Surfaces an advisory when true and the selected block is below the load-bearing weight threshold.'
+    include_dpc: 'boolean (optional, default false). Adds a damp-proof-course line item spanning the wall width.'
+    builders: 'integer (optional, default 2, clamped 1–6). Selects one point on the computed build-days-vs-builders curve.'
+  source: *id001

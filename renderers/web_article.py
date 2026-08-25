@@ -23363,3 +23363,197 @@ def _render_freeform_canvas(b):
 
 
 _RENDERERS['freeform_canvas'] = _render_freeform_canvas
+
+
+# ── wall_elevation ───────────────────────────────────────────────────────────
+# A deterministic, AI-free masonry wall elevation diagram: courses, bond
+# pattern, and cost/weight/build-time estimates computed entirely by real
+# formulas -- no LLM anywhere in this render path. Ported faithfully from
+# wall-builder-agent (a real Gemini Enterprise A2A demo, found in
+# static-hangout-500821-d3's Cloud Run sources) -- the math/constants/SVG
+# algorithm below are that agent's own tested logic, not reinvented here.
+# The original also carried a `country` field purely for a cosmetic
+# France/UK label in a two-country demo; dropped here, it doesn't affect
+# geometry and doesn't belong in a general catalog atom.
+import math as _wall_math
+
+WALL_BLOCKS = {
+    'parpaing200': {'label': 'Parpaing 500×200×200', 'unit_l': 510, 'course_h': 210, 'weight': 18.0, 'colour': '#8d9499', 'price': 1.80},
+    'parpaing150': {'label': 'Parpaing 500×200×150', 'unit_l': 510, 'course_h': 210, 'weight': 13.5, 'colour': '#9aa0a6', 'price': 1.40},
+    'brique':      {'label': 'Brique 220×105×55',    'unit_l': 230, 'course_h': 65,  'weight': 2.3,  'colour': '#c1440e', 'price': 0.45},
+}
+WALL_PATTERN_LABEL = {'running': 'Running bond', 'stack': 'Stack bond'}
+WALL_DIM_MIN_M, WALL_DIM_MAX_M, WALL_DIM_STEP_M = 0.2, 20.0, 0.2
+# Illustrative-only threshold, not a researched/verified planning-permission
+# figure for any jurisdiction -- same discipline as WALL_BLOCKS' own pricing.
+WALL_ADVISORY_HEIGHT_M = 2.0
+# Below this weight class, a load-bearing selection gets an advisory note
+# rather than being silently swapped to a different block.
+WALL_LOAD_BEARING_MIN_WEIGHT_KG = 10.0
+WALL_BUILDERS_MIN, WALL_BUILDERS_MAX = 1, 6
+# Illustrative laying rate and working day, not researched trade figures --
+# the point is a real diminishing-returns curve driven by the user's own
+# inputs, not an asserted-accurate estimate.
+WALL_BLOCKS_PER_BUILDER_HOUR = 12
+WALL_HOURS_PER_DAY = 6
+
+
+def _wall_snap(value_m):
+    """Dimension snapping to WALL_DIM_STEP_M increments, clamped to
+    [WALL_DIM_MIN_M, WALL_DIM_MAX_M]."""
+    snapped = round(value_m / WALL_DIM_STEP_M) * WALL_DIM_STEP_M
+    return max(WALL_DIM_MIN_M, min(WALL_DIM_MAX_M, round(snapped, 1)))
+
+
+def _wall_snap_builders(value):
+    try:
+        n = round(float(value))
+    except (TypeError, ValueError):
+        n = 2
+    return max(WALL_BUILDERS_MIN, min(WALL_BUILDERS_MAX, n))
+
+
+def _wall_build_days_curve(total_units):
+    """Deterministic days-to-build for builder counts
+    WALL_BUILDERS_MIN..WALL_BUILDERS_MAX. Index 0 = WALL_BUILDERS_MIN
+    builders, etc."""
+    return [round(total_units / (WALL_BLOCKS_PER_BUILDER_HOUR * n) / WALL_HOURS_PER_DAY, 1)
+            for n in range(WALL_BUILDERS_MIN, WALL_BUILDERS_MAX + 1)]
+
+
+def _wall_calc(block_id, height_m, width_m, pattern,
+                load_bearing=False, include_dpc=False, builders=2):
+    b = WALL_BLOCKS.get(block_id, WALL_BLOCKS['parpaing200'])
+    height_m, width_m = _wall_snap(height_m), _wall_snap(width_m)
+    height_mm, width_mm = int(round(height_m * 1000)), int(round(width_m * 1000))
+    courses = max(1, _wall_math.ceil(height_mm / b['course_h']))
+    per_course = max(1, _wall_math.ceil(width_mm / b['unit_l']))
+    total = courses * per_course
+    # DPC is a membrane strip along the base, not a masonry course of the
+    # same block -- measured in linear metres (one width-length run), not
+    # units, so it doesn't distort the block count/geometry above.
+    dpc_length_m = width_m if include_dpc else 0.0
+    # Rough, explicitly-illustrative mortar estimate -- a single blended
+    # rate across block types, not a precise per-material calculation.
+    mortar_bags = max(1, _wall_math.ceil(total / 30))
+    load_bearing_advisory = load_bearing and b['weight'] < WALL_LOAD_BEARING_MIN_WEIGHT_KG
+    height_advisory = height_m > WALL_ADVISORY_HEIGHT_M
+    builders = _wall_snap_builders(builders)
+    build_days_curve = _wall_build_days_curve(total)
+    return {'block': b, 'block_id': block_id, 'pattern': pattern,
+            'height_m': height_m, 'width_m': width_m,
+            'height_mm': height_mm, 'width_mm': width_mm,
+            'courses': courses, 'per_course': per_course, 'total_units': total,
+            'total_weight_kg': round(total * b['weight'], 1),
+            'total_cost': round(total * b['price'], 2),
+            'actual_h_mm': courses * b['course_h'], 'actual_w_mm': per_course * b['unit_l'],
+            'load_bearing': load_bearing, 'include_dpc': include_dpc,
+            'dpc_length_m': dpc_length_m, 'mortar_bags': mortar_bags,
+            'load_bearing_advisory': load_bearing_advisory, 'height_advisory': height_advisory,
+            'builders': builders, 'build_days_curve': build_days_curve,
+            'build_days_selected': build_days_curve[builders - WALL_BUILDERS_MIN]}
+
+
+def _wall_svg(calc):
+    """Deterministic elevation to scale; running vs stack bond honoured."""
+    W, H = 660, 400
+    mx, top, bottom = 40, 52, 344
+    draw_w, draw_h = W - 2 * mx, bottom - top
+    scale = min(draw_w / calc['actual_w_mm'], draw_h / calc['actual_h_mm'])
+    unit_px = calc['block']['unit_l'] * scale
+    course_px = calc['block']['course_h'] * scale
+    wall_w = calc['actual_w_mm'] * scale
+    x0 = mx + (draw_w - wall_w) / 2
+    gap = max(1.0, min(2.5, course_px * 0.08))
+    colour = calc['block']['colour']
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
+        f'<rect width="{W}" height="{H}" fill="#f5f6f8"/>',
+        f'<rect x="{x0:.1f}" y="{bottom - calc["courses"]*course_px:.1f}" '
+        f'width="{wall_w:.1f}" height="{calc["courses"]*course_px:.1f}" fill="#d9dbe0"/>',
+    ]
+    for c in range(calc['courses']):
+        y = bottom - (c + 1) * course_px
+        offset = (unit_px / 2) if (calc['pattern'] == 'running' and c % 2) else 0.0
+        x = x0 - offset
+        while x < x0 + wall_w - 0.5:
+            bx = max(x, x0)
+            bw = min(x + unit_px, x0 + wall_w) - bx - gap
+            if bw > 1:
+                parts.append(f'<rect x="{bx:.1f}" y="{y+gap:.1f}" width="{bw:.1f}" '
+                             f'height="{course_px-gap:.1f}" rx="1.5" fill="{colour}"/>')
+            x += unit_px
+    parts.append(f'<line x1="{x0-8:.1f}" y1="{bottom:.1f}" x2="{x0+wall_w+8:.1f}" '
+                 f'y2="{bottom:.1f}" stroke="#3c4043" stroke-width="2"/>')
+    parts.append(f'<text x="{W/2:.0f}" y="30" text-anchor="middle" '
+                 f'font-family="Roboto,Arial,sans-serif" font-size="17" font-weight="700" '
+                 f'fill="#202124">{_esc(calc["block"]["label"])} &#183; {_esc(WALL_PATTERN_LABEL[calc["pattern"]])}</text>')
+    parts.append(f'<text x="{W/2:.0f}" y="{bottom+30:.0f}" text-anchor="middle" '
+                 f'font-family="Roboto,Arial,sans-serif" font-size="15" fill="#3c4043">'
+                 f'{calc["actual_w_mm"]/1000:.2f} m &#215; {calc["actual_h_mm"]/1000:.2f} m '
+                 f'&#183; {calc["total_units"]} units &#183; {calc["total_weight_kg"]:.0f} kg</text>')
+    parts.append('</svg>')
+    return ''.join(parts)
+
+
+def _render_wall_elevation(b: dict) -> str:
+    block_id = b.get('block_id') or 'parpaing200'
+    if block_id not in WALL_BLOCKS:
+        block_id = 'parpaing200'
+    pattern = b.get('pattern') or 'running'
+    if pattern not in WALL_PATTERN_LABEL:
+        pattern = 'running'
+    height_m = float(b.get('height_m', 2.0))
+    width_m = float(b.get('width_m', 3.0))
+    load_bearing = bool(b.get('load_bearing', False))
+    include_dpc = bool(b.get('include_dpc', False))
+    builders = b.get('builders', 2)
+
+    calc = _wall_calc(block_id, height_m, width_m, pattern,
+                       load_bearing=load_bearing, include_dpc=include_dpc, builders=builders)
+    svg = _wall_svg(calc)
+
+    advisories = ''
+    if calc['load_bearing_advisory']:
+        advisories += (
+            '<div style="margin-top:8px;padding:8px 10px;background:#fef7e0;border:1px solid #f9dfa2;'
+            'border-radius:6px;color:#7a5c00;font-size:0.82rem;">'
+            'Load-bearing was selected, but this block\'s weight class is lighter than typically '
+            'used for load-bearing walls -- worth checking with a structural reference before building.</div>'
+        )
+    if calc['height_advisory']:
+        advisories += (
+            '<div style="margin-top:8px;padding:8px 10px;background:#fef7e0;border:1px solid #f9dfa2;'
+            'border-radius:6px;color:#7a5c00;font-size:0.82rem;">'
+            f'At {calc["height_m"]:.1f} m, this wall exceeds a common planning-permission threshold '
+            'in some jurisdictions -- worth checking locally.</div>'
+        )
+
+    dpc_row = (
+        f'<div>DPC: <strong>{calc["dpc_length_m"]:.2f} m</strong></div>'
+        if calc['include_dpc'] else ''
+    )
+    summary_rows = (
+        f'<div>Courses: <strong>{calc["courses"]}</strong> &#215; {calc["per_course"]} units/course</div>'
+        f'<div>Total units: <strong>{calc["total_units"]}</strong></div>'
+        f'<div>Weight: <strong>{calc["total_weight_kg"]:.0f} kg</strong></div>'
+        f'<div>Cost: &euro;<strong>{calc["total_cost"]:.2f}</strong></div>'
+    )
+
+    return (
+        '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;border-radius:8px;background:#ffffff;">'
+        f'{svg}'
+        '<div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));'
+        'gap:6px 16px;font-size:0.85rem;color:#3c4043;">'
+        f'{summary_rows}'
+        f'<div>Mortar: <strong>{calc["mortar_bags"]}</strong> bags</div>'
+        f'{dpc_row}'
+        f'<div>Build time ({calc["builders"]} builder{"s" if calc["builders"] != 1 else ""}): '
+        f'<strong>{calc["build_days_selected"]:.1f}</strong> days</div>'
+        '</div>'
+        f'{advisories}'
+        '</div>'
+    )
+
+
+_RENDERERS['wall_elevation'] = _render_wall_elevation
