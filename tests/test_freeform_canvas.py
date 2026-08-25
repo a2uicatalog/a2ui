@@ -235,6 +235,72 @@ def test_local_fragment_url_in_fill_is_allowed():
     assert re.search(r'fill="url\(#[0-9a-f]{8}-validGradient\)"', out)
 
 
+def test_completeness_pass_common_presentation_attrs_are_allowed():
+    """Found live, 2026-08-25: a real Gemini-authored diagram reached for
+    stroke-opacity on a <path>, then letter-spacing on a <text> -- both
+    completely ordinary SVG presentation attributes, same shape as
+    opacity/font-size (already allowed) -- and got rejected for gaps in
+    the allowlist, not anything the validator is supposed to guard
+    against. Two unrelated gaps in a row -> a completeness pass, not
+    another one-off patch: every standard presentation attribute
+    realistically relevant to diagram content, added once."""
+    out = _render_freeform_canvas({**_base(
+        elements=[{"tag": "path", "d": "M0 0 L1 1", "stroke": "#000",
+                   "stroke_opacity": 0.5, "fill_opacity": 0.8,
+                   "stroke_linecap": "round", "stroke_linejoin": "round",
+                   "stroke_miterlimit": 4, "stroke_dashoffset": 2,
+                   "fill_rule": "evenodd", "visibility": "visible",
+                   "display": "inline"}])})
+    assert REJECTED not in out
+    for frag in ('stroke-opacity="0.5"', 'fill-opacity="0.8"',
+                 'stroke-linecap="round"', 'stroke-linejoin="round"',
+                 'stroke-miterlimit="4"', 'stroke-dashoffset="2"',
+                 'fill-rule="evenodd"', 'visibility="visible"', 'display="inline"'):
+        assert frag in out, frag
+
+
+def test_completeness_pass_text_presentation_attrs_are_allowed():
+    out = _render_freeform_canvas({**_base(
+        elements=[{"tag": "text", "x": 0, "y": 0, "text": "hi",
+                   "font_style": "italic", "letter_spacing": "0.05em",
+                   "word_spacing": "0.1em", "text_decoration": "underline",
+                   "dominant_baseline": "middle"}])})
+    assert REJECTED not in out
+    for frag in ('font-style="italic"', 'letter-spacing="0.05em"',
+                 'word-spacing="0.1em"', 'text-decoration="underline"',
+                 'dominant-baseline="middle"'):
+        assert frag in out, frag
+
+
+def test_marker_start_mid_end_allowed_and_id_namespaced():
+    """Gemini's own review of the completeness pass flagged arrowheads as
+    the one genuinely common remaining gap. Same url(#fragment)-only
+    value shape and id-namespacing treatment as fill/stroke already get --
+    proven here, not just declared."""
+    elements = [
+        {"tag": "defs", "children": [
+            {"tag": "marker", "id": "arrow", "marker_width": 6, "marker_height": 6,
+             "ref_x": 3, "ref_y": 3, "orient": "auto",
+             "children": [{"tag": "path", "d": "M0 0 L6 3 L0 6 Z"}]},
+        ]},
+        {"tag": "line", "x1": 0, "y1": 0, "x2": 10, "y2": 10,
+         "stroke": "#000", "marker_end": "url(#arrow)"},
+    ]
+    out = _render_freeform_canvas({**_base(elements=elements)})
+    assert REJECTED not in out
+    m = re.search(r'id="([0-9a-f]{8}-arrow)"', out)
+    assert m
+    assert f'marker-end="url(#{m.group(1)})"' in out
+    assert 'marker-end="url(#arrow)"' not in out
+
+
+def test_marker_start_external_url_rejected():
+    out = _render_freeform_canvas({**_base(
+        elements=[{"tag": "line", "x1": 0, "y1": 0, "x2": 1, "y2": 1,
+                   "marker_start": "url(http://evil.example/arrow.svg)"}])})
+    assert REJECTED in out
+
+
 def test_unknown_tag_rejected():
     out = _render_freeform_canvas({**_base(elements=[{"tag": "div"}])})
     assert REJECTED in out
