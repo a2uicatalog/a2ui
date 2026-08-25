@@ -224,3 +224,70 @@ def test_two_instances_on_same_page_get_non_colliding_ids(core_js):
     assert id_a != id_b
     assert f"url(#{id_a})" in out["a"] and f"url(#{id_b})" in out["b"]
     assert "url(#grad1)" not in out["a"] and "url(#grad1)" not in out["b"]
+
+
+def test_proto_key_rejected_and_does_not_pollute(core_js):
+    """`k in allowedAttrs` walks the whole prototype chain, not just own
+    keys -- so '__proto__' reads as "present" on ANY plain JS object even
+    though no allowlist ever defines it, and a naive `cleanAttrs[k] = v`
+    with an object-typed v reassigns cleanAttrs's actual prototype (a real
+    prototype-pollution primitive, confirmed with a live repro). This is a
+    JS-specific gap with no equivalent on the Python sibling.
+
+    Delivery matters here: a JS object-LITERAL with a `__proto__: value`
+    property is spec-special-cased to set the prototype AT CONSTRUCTION
+    rather than create an own key, so embedding the payload directly as JS
+    source (this file's normal _render_all helper) would not reproduce the
+    real bug -- production payloads arrive as a JSON STRING that gets
+    JSON.parse'd, and JSON.parse gives '__proto__' a genuine OWN enumerable
+    key (confirmed with a live repro: Object.keys includes it, and it's
+    what the vulnerable `cleanAttrs[k] = v` bracket-assignment actually
+    sees). This test parses the payload through JSON.parse at runtime,
+    same as production, to exercise the real path.
+
+    Two things proven: (1) the element is rejected, not silently accepted
+    with a mangled attribute; (2) rendering a SECOND, unrelated diagram
+    afterward still produces clean output -- proving the (scoped, local)
+    prototype was never actually reassigned, not just that this one
+    render's output happened to look fine."""
+    payload = _base(elements=[
+        {"tag": "rect", "x": 0, "y": 0, "width": 1, "height": 1,
+         "__proto__": {"polluted": True}},
+    ])
+    innocent = _base(
+        summary="An unrelated diagram rendered after the attempt.",
+        elements=[{"tag": "circle", "cx": 1, "cy": 1, "r": 1, "fill": "#000"}])
+    with tempfile.TemporaryDirectory() as td:
+        driver = Path(td) / "driver.js"
+        driver.write_text(
+            "global.window = global;\n" + core_js +
+            "\nvar malicious = JSON.parse(" + json.dumps(json.dumps({**payload, "component": "freeform_canvas"})) + ");\n"
+            "var innocent = JSON.parse(" + json.dumps(json.dumps({**innocent, "component": "freeform_canvas"})) + ");\n"
+            "var out = {};\n"
+            "try { out.malicious = renderAtoms([malicious], {theme: 'light'}); }\n"
+            "catch (e) { out.malicious = 'THREW: ' + e.message; }\n"
+            "try { out.innocent = renderAtoms([innocent], {theme: 'light'}); }\n"
+            "catch (e) { out.innocent = 'THREW: ' + e.message; }\n"
+            "console.log(JSON.stringify(out));\n"
+        )
+        proc = subprocess.run(["node", str(driver)], capture_output=True, text=True, timeout=60)
+        assert proc.returncode == 0, proc.stderr[-2000:]
+        out = json.loads(proc.stdout)
+    assert REJECTED in out["malicious"]
+    assert "polluted" not in out["malicious"]
+    assert REJECTED not in out["innocent"]
+    assert "polluted" not in out["innocent"]
+
+
+def test_proto_attribute_name_in_raw_svg_is_rejected(core_js):
+    """The raw-svg authoring form goes through a SEPARATE code path
+    (_freeformParseXml's parseAttrs) before ever reaching
+    _freeformValidateElement's __proto__ check -- Gemini security review
+    follow-up, 2026-08-25. Verified this specific spot wasn't actually
+    exploitable (attrs['__proto__'] = <string> silently no-ops, so the key
+    never even reached the validator), but it's rejected explicitly at the
+    tokenizer level anyway rather than relying on that as the only safety
+    net. This proves the explicit reject, not just the incidental one."""
+    out = _render_all(core_js, {"case": _base(
+        svg='<svg><rect __proto__="x" width="1" height="1"/></svg>')})["case"]
+    assert REJECTED in out

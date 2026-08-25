@@ -154,13 +154,25 @@ function _freeformValidateElement(el, depth) {
   var cleanAttrs = {};
   for (var k in el) {
     if (k === 'tag' || k === 'children' || k === 'text') continue;
+    // __proto__/constructor/prototype: `k in allowedAttrs` checks the whole
+    // prototype chain, not just own keys, so '__proto__' reads as "present"
+    // on ANY plain object even though no allowlist ever defines it -- and a
+    // later `cleanAttrs[k] = v` with k='__proto__' and an object-typed v
+    // reassigns cleanAttrs's actual prototype (confirmed with a live repro,
+    // Gemini security review follow-up, 2026-08-25). Rejected explicitly,
+    // first, before any allowlist lookup -- the Python reference has no
+    // equivalent gap (dict membership doesn't walk a prototype chain), so
+    // this fix has no sibling to mirror on that side.
+    if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
+      throw new FreeformCanvasError('attribute ' + JSON.stringify(k) + ' is never permitted');
+    }
     if (k === 'style') {
       throw new FreeformCanvasError('the style attribute is never permitted');
     }
     if (/^on/i.test(k)) {
       throw new FreeformCanvasError('event-handler-like attribute rejected: ' + JSON.stringify(k));
     }
-    if (!(k in allowedAttrs)) {
+    if (!Object.prototype.hasOwnProperty.call(allowedAttrs, k)) {
       throw new FreeformCanvasError('attribute ' + JSON.stringify(k) + ' not allowed on <' + tag + '>');
     }
     var v = el[k];
@@ -250,6 +262,21 @@ function _freeformParseXml(str) {
       var c = str.charAt(i);
       if (c === '/' || c === '>') break;
       var name = parseName();
+      // __proto__/constructor/prototype rejected explicitly here too, not
+      // just in _freeformValidateElement -- Gemini security review
+      // follow-up, 2026-08-25. Verified this specific spot isn't currently
+      // exploitable (attrs[name] = <string> for name='__proto__' is a
+      // documented no-op: SVG attribute values are always strings here,
+      // and the __proto__ setter silently ignores non-object/null values
+      // -- confirmed with a live repro, ownProperty stays false, for-in
+      // yields nothing). Rejecting explicitly anyway rather than relying
+      // on that as the only safety net: it's an implicit language quirk,
+      // not a policy this code actually states, and this atom's whole
+      // design principle is explicit allowlisting over incidental
+      // behaviour holding up by accident.
+      if (name === '__proto__' || name === 'constructor' || name === 'prototype') {
+        err('attribute ' + JSON.stringify(name) + ' is never permitted');
+      }
       skipWs();
       if (str.charAt(i) !== '=') err('expected = after attribute name ' + name);
       i++;
