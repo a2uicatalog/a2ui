@@ -13483,3 +13483,28 @@ blocks:
     latency_ms: 'number (optional). Execution duration in milliseconds.'
     error: 'string (optional). Error details or exception message if status is "error".'
   source: *id001
+- type: freeform_canvas
+  stage: preview
+  description: 'A bounded, sanitized SVG vector canvas for one-shot domain-specific
+    diagrams — topology graphs, circuit sketches, geometric illustrations — where
+    no catalog atom fits. This is an intentional escape hatch, not a general
+    layout/UI tool: only rect, circle, ellipse, line, polyline, polygon, path,
+    g, text, tspan, use, defs, clipPath, mask, linearGradient, radialGradient,
+    stop, marker, and pattern are permitted, with no script, no foreignObject,
+    no external URLs, and no CSS style strings, regardless of authoring form.
+    Requires a plain-text summary and a justification for why no existing atom
+    covers the content — reach for a specific catalog atom first; use this only
+    when one genuinely does not exist.'
+  compact_description: sanitized one-shot SVG diagram canvas, an explicit last-resort escape hatch
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+  fields:
+    summary: 'string (required). Plain-text description of the diagram, used as the accessibility label and as the full content on text-only surfaces.'
+    justification: 'string (required, minimum 20 characters). Why no existing catalog atom covers this content — reviewed and, if unconvincing, rejected at render time.'
+    viewbox: 'string (optional, default "0 0 800 500"). SVG viewBox for coordinate scaling.'
+    background: 'string (optional). Canvas background fill (hex or CSS color token).'
+    elements: 'array of element objects (exactly one of elements/svg required). Each element is {tag, ...attributes, children?}. Container tags (g, defs, clipPath, mask, linearGradient, radialGradient, marker, pattern) may nest further element objects via children. Validated against a strict tag/attribute allowlist — see renderers/web_article.py:validate_freeform_canvas.'
+    svg: 'string (exactly one of elements/svg required). Raw SVG markup, an alternative authoring form to elements with identical capability. Parsed and validated against the same allowlist, then re-rendered from the validated tree — never echoed verbatim.'
+  source: *id001

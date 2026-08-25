@@ -22929,3 +22929,320 @@ def _render_tool_call_card(b: dict) -> str:
 
 
 _RENDERERS['tool_call_card'] = _render_tool_call_card
+
+
+# ── freeform_canvas ────────────────────────────────────────────────────────────
+# A sanitized, one-shot SVG diagram escape hatch -- see atoms/schema.yaml's own
+# description for the product framing. Security model: ONE allowlist
+# (_FREEFORM_TAG_ATTRS) covers BOTH authoring forms -- structured `elements[]`
+# JSON and raw `svg` markup -- so capability never depends on which form an
+# agent picks. validate_freeform_canvas() is the single gate either form must
+# pass through; render_freeform_canvas_element() is the single renderer
+# either form's VALIDATED output goes through. The raw-svg path is parsed by
+# _parse_freeform_svg() into the SAME element-dict shape the structured path
+# already uses and is NEVER echoed verbatim into output -- only the
+# validated, re-serialized tree ever reaches the page. That closes off
+# parser-differential/mutation-XSS bugs, where a sanitizer's parser and the
+# eventual render target disagree about what a string means.
+#
+# A violation ANYWHERE in the tree fails the WHOLE payload -- no partial
+# render of "the parts that were safe". Partial silent stripping is a known
+# source of sanitizer bypass bugs (a stripped-and-reassembled string can
+# reconstruct something dangerous through a browser's own, more lenient,
+# parsing rules) -- see _render_freeform_canvas's fallback path.
+import defusedxml.ElementTree as _wa_defused_et  # NEVER xml.etree directly here -- see _parse_freeform_svg
+import re as _wa_freeform_re
+
+
+class FreeformCanvasError(Exception):
+    """Raised by validate_freeform_canvas[_element] / _parse_freeform_svg on
+    ANY violation. Always caught by _render_freeform_canvas -- never
+    escapes to a caller. Every catch site must discard whatever partial
+    state it had built and fall back to the text-only card; there is no
+    "render what validated and drop the rest" path."""
+
+
+# Attributes any element may carry, canonical snake_case -> real SVG
+# attribute name (SVG itself mixes kebab-case, camelCase and bare
+# lowercase; the structured `elements[]` JSON form always uses snake_case).
+# clip_path/mask reference an existing clipPath/mask element's `id` via
+# url(#id) -- see _FREEFORM_URL_ATTR_CANONICALS below for that check.
+_FREEFORM_COMMON_ATTRS = {
+    'fill': 'fill', 'stroke': 'stroke', 'opacity': 'opacity',
+    'transform': 'transform', 'id': 'id',
+    'stroke_width': 'stroke-width', 'stroke_dasharray': 'stroke-dasharray',
+    'clip_path': 'clip-path', 'mask': 'mask',
+}
+
+# Per-tag geometry/behaviour attrs, canonical -> real SVG attribute name.
+# This dict's keys are also the complete tag allowlist (_FREEFORM_TAGS).
+_FREEFORM_TAG_EXTRA_ATTRS = {
+    'rect':      {'x': 'x', 'y': 'y', 'width': 'width', 'height': 'height', 'rx': 'rx', 'ry': 'ry'},
+    'circle':    {'cx': 'cx', 'cy': 'cy', 'r': 'r'},
+    'ellipse':   {'cx': 'cx', 'cy': 'cy', 'rx': 'rx', 'ry': 'ry'},
+    'line':      {'x1': 'x1', 'y1': 'y1', 'x2': 'x2', 'y2': 'y2'},
+    'polyline':  {'points': 'points'},
+    'polygon':   {'points': 'points'},
+    'path':      {'d': 'd'},
+    'g':         {},
+    'text':      {'x': 'x', 'y': 'y', 'font_size': 'font-size', 'font_weight': 'font-weight',
+                  'font_family': 'font-family', 'text_anchor': 'text-anchor'},
+    'tspan':     {'x': 'x', 'y': 'y', 'font_size': 'font-size', 'font_weight': 'font-weight',
+                  'font_family': 'font-family', 'text_anchor': 'text-anchor'},
+    'use':       {'x': 'x', 'y': 'y', 'width': 'width', 'height': 'height', 'href': 'href'},
+    'defs':      {},
+    'clipPath':  {'clip_path_units': 'clipPathUnits'},
+    'mask':      {'mask_units': 'maskUnits'},
+    'linearGradient': {'x1': 'x1', 'y1': 'y1', 'x2': 'x2', 'y2': 'y2',
+                        'gradient_units': 'gradientUnits', 'href': 'href'},
+    'radialGradient': {'cx': 'cx', 'cy': 'cy', 'r': 'r',
+                        'gradient_units': 'gradientUnits', 'href': 'href'},
+    'stop':      {'offset': 'offset', 'stop_color': 'stop-color', 'stop_opacity': 'stop-opacity'},
+    'marker':    {'marker_width': 'markerWidth', 'marker_height': 'markerHeight',
+                  'ref_x': 'refX', 'ref_y': 'refY', 'orient': 'orient', 'viewbox': 'viewBox'},
+    'pattern':   {'x': 'x', 'y': 'y', 'width': 'width', 'height': 'height',
+                  'pattern_units': 'patternUnits', 'viewbox': 'viewBox'},
+}
+
+_FREEFORM_CONTAINER_TAGS = {'g', 'defs', 'clipPath', 'mask', 'linearGradient',
+                            'radialGradient', 'marker', 'pattern'}
+_FREEFORM_TEXT_TAGS = {'text', 'tspan'}  # may carry a `text` content string
+_FREEFORM_TAGS = set(_FREEFORM_TAG_EXTRA_ATTRS)
+
+# Explicitly named and checked first (not just "absent from the allowlist")
+# so the rejection reason a caller sees is legible, not a generic KeyError.
+_FREEFORM_FORBIDDEN_TAGS = {'script', 'foreignObject', 'image', 'iframe', 'object', 'embed'}
+
+# tag -> {canonical_attr: svg_attr}, common attrs merged into every tag.
+_FREEFORM_TAG_ATTRS = {
+    tag: {**_FREEFORM_COMMON_ATTRS, **extra}
+    for tag, extra in _FREEFORM_TAG_EXTRA_ATTRS.items()
+}
+
+# Attribute values that may legitimately be a url(#fragment) reference --
+# checked against _FREEFORM_LOCAL_URL_RE; any OTHER url(...) form (external
+# http(s), data:, javascript:) is rejected outright.
+_FREEFORM_URL_ATTR_CANONICALS = {'fill', 'stroke', 'clip_path', 'mask'}
+_FREEFORM_LOCAL_URL_RE = _wa_freeform_re.compile(r'^url\(\s*#([\w-]+)\s*\)$')
+
+
+def _freeform_check_value_safety(value):
+    """Defense in depth across EVERY attribute value, not just href/url()
+    ones -- javascript:/data: URIs have historically worked in unexpected
+    attribute contexts across SVG/browser combinations, so this is checked
+    unconditionally rather than only where a scheme is nominally expected."""
+    v = str(value).strip().lower()
+    if 'javascript:' in v or 'data:' in v:
+        raise FreeformCanvasError(f"disallowed value scheme in {value!r}")
+
+
+def _freeform_validate_url_value(value):
+    v = str(value).strip()
+    if 'url(' in v.lower() and not _FREEFORM_LOCAL_URL_RE.match(v):
+        raise FreeformCanvasError(
+            f"url() references must be a local #fragment, got {value!r}")
+
+
+def _freeform_validate_href_value(value):
+    v = str(value).strip()
+    if not v.startswith('#'):
+        raise FreeformCanvasError(
+            f"href/xlink:href must be a local #fragment reference, got {value!r}")
+
+
+def validate_freeform_canvas_element(el):
+    """The one real gate: BOTH authoring forms -- structured elements[] and
+    the raw-svg path once _parse_freeform_svg has normalized it into this
+    same shape -- pass every element through this, recursively. Raises
+    FreeformCanvasError on ANY violation anywhere in the tree; callers must
+    treat that as "reject the whole payload", never "skip this node and
+    keep going". Returns a normalized
+    {tag, attrs: {canonical: value}, text: str|None, children: [...]} dict."""
+    if not isinstance(el, dict):
+        raise FreeformCanvasError(f"element must be an object, got {type(el).__name__}")
+    tag = el.get('tag')
+    if tag in _FREEFORM_FORBIDDEN_TAGS:
+        raise FreeformCanvasError(f"forbidden tag: {tag!r}")
+    if tag not in _FREEFORM_TAGS:
+        raise FreeformCanvasError(f"tag not in allowlist: {tag!r}")
+
+    allowed_attrs = _FREEFORM_TAG_ATTRS[tag]
+    clean_attrs = {}
+    for k, v in el.items():
+        if k in ('tag', 'children', 'text'):
+            continue
+        if k == 'style':
+            raise FreeformCanvasError("the style attribute is never permitted")
+        if k.lower().startswith('on'):
+            raise FreeformCanvasError(f"event-handler-like attribute rejected: {k!r}")
+        if k not in allowed_attrs:
+            raise FreeformCanvasError(f"attribute {k!r} not allowed on <{tag}>")
+        _freeform_check_value_safety(v)
+        if k == 'href':
+            _freeform_validate_href_value(v)
+        if k in _FREEFORM_URL_ATTR_CANONICALS:
+            _freeform_validate_url_value(v)
+        clean_attrs[k] = v
+
+    text = el.get('text')
+    if text is not None and tag not in _FREEFORM_TEXT_TAGS:
+        raise FreeformCanvasError(f"<{tag}> may not carry text content")
+
+    children_in = el.get('children') or []
+    if children_in and tag not in _FREEFORM_CONTAINER_TAGS:
+        raise FreeformCanvasError(f"<{tag}> may not have children")
+    children = [validate_freeform_canvas_element(c) for c in children_in]
+
+    return {'tag': tag, 'attrs': clean_attrs, 'text': text, 'children': children}
+
+
+def validate_freeform_canvas(elements):
+    """elements: a list of raw (not yet validated) top-level element dicts.
+    Returns the list of normalized/validated dicts, or raises
+    FreeformCanvasError -- see validate_freeform_canvas_element."""
+    if not isinstance(elements, list) or not elements:
+        raise FreeformCanvasError("elements must be a non-empty list")
+    return [validate_freeform_canvas_element(e) for e in elements]
+
+
+# Real SVG attribute name -> canonical snake_case, the inverse of
+# _FREEFORM_TAG_ATTRS, built once. No two canonical names collide on the
+# same real SVG attribute name across tags in the table above, so this
+# reverse map is unambiguous. XML namespaces are stripped from tag/attr
+# names before this lookup -- see _freeform_strip_ns.
+_FREEFORM_SVG_ATTR_TO_CANONICAL = {}
+for _wa_ff_tag, _wa_ff_attrmap in _FREEFORM_TAG_ATTRS.items():
+    for _wa_ff_canon, _wa_ff_svgattr in _wa_ff_attrmap.items():
+        _FREEFORM_SVG_ATTR_TO_CANONICAL.setdefault(_wa_ff_svgattr, _wa_ff_canon)
+
+
+def _freeform_strip_ns(name):
+    """'{http://www.w3.org/2000/svg}rect' -> 'rect'; an xlink:href attribute
+    (ElementTree resolves the xlink: prefix to Clark notation using the
+    xlink namespace URI) -> 'href'."""
+    if name.startswith('{'):
+        return name.split('}', 1)[1]
+    return name
+
+
+def _freeform_xml_to_dict(node):
+    """One parsed defusedxml Element -> the same raw {tag, ...attrs} shape
+    validate_freeform_canvas_element expects -- NOT yet validated, only
+    normalized. An attribute/tag name with no canonical mapping is passed
+    through under its stripped literal name and gets rejected by
+    validate_freeform_canvas_element, which stays the single point of
+    truth for "allowed or not" -- this function's job is normalization,
+    not policy."""
+    tag = _freeform_strip_ns(node.tag)
+    el = {'tag': tag}
+    for k, v in node.attrib.items():
+        stripped = _freeform_strip_ns(k)
+        canonical = _FREEFORM_SVG_ATTR_TO_CANONICAL.get(stripped, stripped)
+        el[canonical] = v
+    text = (node.text or '').strip()
+    if text:
+        el['text'] = text
+    children = [_freeform_xml_to_dict(c) for c in node]
+    if children:
+        el['children'] = children
+    return el
+
+
+def _parse_freeform_svg(svg_string):
+    """Raw SVG markup -> a list of normalized (not yet validated) top-level
+    element dicts, via defusedxml -- NEVER xml.etree.ElementTree directly:
+    this is untrusted, agent-authored text, and stdlib ElementTree has no
+    protection against XXE / billion-laughs entity expansion on untrusted
+    input (defusedxml.ElementTree.fromstring defaults to
+    forbid_entities=True, forbid_external=True -- confirmed against a real
+    entity-expansion payload while building this). The root element must
+    literally be <svg>; its direct children become the top-level elements
+    list, matching the structured elements[] shape."""
+    try:
+        root = _wa_defused_et.fromstring(svg_string)
+    except FreeformCanvasError:
+        raise
+    except Exception as exc:
+        raise FreeformCanvasError(f"could not parse svg: {exc}") from exc
+    if _freeform_strip_ns(root.tag) != 'svg':
+        raise FreeformCanvasError(
+            f"root element must be <svg>, got <{_freeform_strip_ns(root.tag)}>")
+    return [_freeform_xml_to_dict(c) for c in root]
+
+
+def render_freeform_canvas_element(el):
+    """A single VALIDATED element dict (as returned by
+    validate_freeform_canvas_element) -> its HTML/SVG string. Only ever
+    called on already-validated output -- never on raw input from either
+    authoring form. Attribute values and text content are both escaped via
+    _esc, matching every other renderer in this file."""
+    tag = el['tag']
+    svg_attr_map = _FREEFORM_TAG_ATTRS[tag]
+    attr_str = ''.join(
+        f' {svg_attr_map[k]}="{_esc(v)}"' for k, v in el['attrs'].items()
+    )
+    inner_parts = []
+    if el.get('text'):
+        inner_parts.append(_esc(el['text']))
+    for child in el.get('children') or []:
+        inner_parts.append(render_freeform_canvas_element(child))
+    inner = ''.join(inner_parts)
+    if inner:
+        return f'<{tag}{attr_str}>{inner}</{tag}>'
+    return f'<{tag}{attr_str}/>'
+
+
+def _render_freeform_canvas_fallback(b, reason):
+    """A validation failure (or a missing summary/justification) rejects
+    the WHOLE payload -- this never receives or renders partial diagram
+    content, only the plain-text summary plus a visible reason."""
+    summary = _esc(b.get('summary') or 'Diagram unavailable')
+    return (
+        '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;'
+        'border-radius:8px;background:#f8f9fa;">'
+        f'<div style="font-size:0.85rem;color:#202124;">{summary}</div>'
+        f'<div style="margin-top:6px;font-size:0.75rem;color:#c5221f;">'
+        f'Diagram content was rejected by the safety policy ({_esc(reason)}).</div>'
+        '</div>'
+    )
+
+
+def _render_freeform_canvas(b):
+    summary = b.get('summary')
+    if not summary or not isinstance(summary, str):
+        return _render_freeform_canvas_fallback(b, "summary is required")
+
+    justification = b.get('justification')
+    if not justification or not isinstance(justification, str) or len(justification) < 20:
+        return _render_freeform_canvas_fallback(
+            b, "justification is required (minimum 20 characters)")
+
+    has_elements = b.get('elements') is not None
+    has_svg = b.get('svg') is not None
+    if has_elements == has_svg:  # both present, or neither
+        return _render_freeform_canvas_fallback(
+            b, "exactly one of elements or svg is required")
+
+    try:
+        raw_elements = b['elements'] if has_elements else _parse_freeform_svg(b['svg'])
+        validated = validate_freeform_canvas(raw_elements)
+    except FreeformCanvasError as exc:
+        return _render_freeform_canvas_fallback(b, str(exc))
+
+    viewbox = b.get('viewbox') or '0 0 800 500'
+    background = b.get('background')
+    bg_rect = f'<rect width="100%" height="100%" fill="{_esc(background)}"/>' if background else ''
+    body = ''.join(render_freeform_canvas_element(e) for e in validated)
+
+    return (
+        '<div style="margin:1.2rem 0;padding:14px 16px;border:1px solid #dadce0;'
+        'border-radius:8px;background:#ffffff;">'
+        f'<svg viewBox="{_esc(viewbox)}" role="img" aria-label="{_esc(summary)}" '
+        'style="width:100%;height:auto;display:block;">'
+        f'{bg_rect}{body}'
+        '</svg>'
+        '</div>'
+    )
+
+
+_RENDERERS['freeform_canvas'] = _render_freeform_canvas
