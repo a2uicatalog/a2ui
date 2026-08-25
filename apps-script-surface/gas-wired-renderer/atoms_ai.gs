@@ -386,3 +386,65 @@ _RENDERERS['gemini_handoff'] = function(b) {
     '<div style="font-size:0.75rem;color:#94a3b8;margin-top:6px;">' + _esc(hint) + '</div>' +
   '</div>';
 };
+
+// ── tool_call_card ────────────────────────────────────────────────────────────
+// Structured card for an AI agent tool invocation — in-flight, completed, or
+// failed. Mirrors renderers/web_article.py's _render_tool_call_card exactly
+// (same fields, same layout, same escaping), themed via CSS custom
+// properties (--green/--red/--accent/--muted/--border) instead of fixed hex,
+// matching this surface's own light/dark convention rather than web_article's.
+// Fields:
+//   tool_name    — required. Name of the invoked tool.
+//   status       — optional, default "running". "running" | "success" | "error" | "pending".
+//   args         — optional. Input arguments (string, or object formatted as JSON).
+//   result       — optional. Returned output (string, or object formatted as JSON).
+//   latency_ms   — optional. Elapsed duration in milliseconds.
+//   error        — optional. Error/exception message; takes priority over `result` when both are set.
+_RENDERERS['tool_call_card'] = function(b) {
+  var toolName  = _esc(b.tool_name || 'tool');
+  var status    = String(b.status || 'running').toLowerCase();
+  var latencyMs = b.latency_ms;
+  var latencyStr = (latencyMs !== undefined && latencyMs !== null) ? latencyMs + 'ms' : '';
+
+  var statusColor, statusLabel;
+  if (status === 'success') { statusColor = 'var(--green)';  statusLabel = '✓ success'; }
+  else if (status === 'error') { statusColor = 'var(--red)'; statusLabel = '✕ error'; }
+  else if (status === 'running') { statusColor = 'var(--accent,#6366f1)'; statusLabel = '● running'; }
+  else { statusColor = 'var(--muted,#94a3b8)'; statusLabel = status; }
+
+  var badgeHtml = '<span style="background:' + statusColor + ';color:#fff;font-size:0.7rem;font-weight:600;' +
+    'padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:0.03em;">' +
+    _esc(statusLabel) + '</span>';
+  var latencyHtml = latencyStr
+    ? '<span style="color:var(--muted,#94a3b8);font-size:0.75rem;margin-left:auto;">' + _esc(latencyStr) + '</span>'
+    : '';
+
+  function block(label, text, isError) {
+    var color = isError ? 'var(--red)' : 'var(--muted,#94a3b8)';
+    return '<div style="margin-top:8px;">' +
+      '<div style="font-size:0.7rem;font-weight:600;color:' + color + ';text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">' + label + '</div>' +
+      '<pre style="margin:0;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);color:var(--text);' +
+      'padding:8px 10px;border-radius:6px;font-family:\'Courier New\',monospace;font-size:0.78rem;overflow-x:auto;white-space:pre-wrap;">' +
+      _esc(text) + '</pre></div>';
+  }
+
+  var argsHtml = '';
+  if (b.args !== undefined && b.args !== null) {
+    var argsStr = (typeof b.args === 'object') ? JSON.stringify(b.args, null, 2) : String(b.args);
+    argsHtml = block('Arguments', argsStr, false);
+  }
+
+  var resultHtml = '';
+  if (b.error) {
+    resultHtml = block('Error', String(b.error), true);
+  } else if (b.result !== undefined && b.result !== null) {
+    var resultStr = (typeof b.result === 'object') ? JSON.stringify(b.result, null, 2) : String(b.result);
+    resultHtml = block('Result', resultStr, false);
+  }
+
+  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:8px;background:var(--surface,#fff);">' +
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+    '<span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent,#6366f1);font-size:0.9rem;">' + toolName + '</span>' +
+    badgeHtml + latencyHtml + '</div>' +
+    argsHtml + resultHtml + '</div>';
+};
