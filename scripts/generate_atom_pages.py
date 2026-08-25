@@ -81,6 +81,26 @@ _EXAMPLE_BLOCKS = {
     # {"type": "schema_qr"} preview — the QR renders nothing without a url.
     "schema_qr": {"type": "schema_qr", "url": "https://a2uicatalog.ai",
         "label": "Scan to open on any device", "size": 200},
+    # example_payload()'s auto-generation supplies BOTH `elements: []` and
+    # `svg: []` (freeform_canvas requires EXACTLY one, and neither is a
+    # valid non-empty value) plus a `justification` under the 20-char
+    # minimum -- the auto-example never reaches real rendering, only the
+    # rejection fallback. A real, valid example exercises the actual
+    # allowlist/render path in the mcp-apps sweep test, not just the
+    # fallback card.
+    "freeform_canvas": {"type": "freeform_canvas",
+        "summary": "Two-node ring topology diagram with directional data flow.",
+        "justification": "No catalog atom represents a directed two-node ring topology.",
+        "viewbox": "0 0 400 200",
+        "elements": [
+            {"tag": "circle", "cx": 100, "cy": 100, "r": 40, "fill": "#0284c7"},
+            {"tag": "circle", "cx": 300, "cy": 100, "r": 40, "fill": "#0284c7"},
+            {"tag": "path", "d": "M 140 100 L 260 100", "stroke": "#94a3b8", "stroke_width": 2},
+            {"tag": "text", "x": 100, "y": 105, "fill": "#ffffff", "text_anchor": "middle",
+             "text": "A"},
+            {"tag": "text", "x": 300, "y": 105, "fill": "#ffffff", "text_anchor": "middle",
+             "text": "B"},
+        ]},
     # Same class of gap as math_block above: `images` is a REQUIRED array of
     # {id, url, alt?, caption?, badge?, active?} objects, but
     # example_payload()'s auto-generation has no way to synthesize an array
