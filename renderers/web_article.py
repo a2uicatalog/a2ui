@@ -23030,10 +23030,23 @@ def _freeform_check_value_safety(value):
     """Defense in depth across EVERY attribute value, not just href/url()
     ones -- javascript:/data: URIs have historically worked in unexpected
     attribute contexts across SVG/browser combinations, so this is checked
-    unconditionally rather than only where a scheme is nominally expected."""
+    unconditionally rather than only where a scheme is nominally expected.
+
+    Blocks any scheme-like prefix (word chars followed by ':'), not just a
+    javascript:/data: substring match -- found in Gemini security review,
+    2026-08-25: a bare `fill="http://evil.example/track.png"` isn't a valid
+    SVG <paint> value so no current browser fetches it, but that safety
+    depends entirely on today's UA parsing behaviour, not on this atom's own
+    policy. The one legitimate colon-bearing form, `url(#fragment)`, is
+    handled separately by _freeform_validate_url_value and is exempted here
+    by its `url(` prefix."""
     v = str(value).strip().lower()
     if 'javascript:' in v or 'data:' in v:
         raise FreeformCanvasError(f"disallowed value scheme in {value!r}")
+    if ':' in v and not v.startswith('url('):
+        scheme = v.split(':', 1)[0]
+        if scheme.isalpha() and len(scheme) > 1:
+            raise FreeformCanvasError(f"disallowed scheme-like value in {value!r}")
 
 
 def _freeform_validate_url_value(value):
@@ -23170,6 +23183,36 @@ def _parse_freeform_svg(svg_string):
     return [_freeform_xml_to_dict(c) for c in root]
 
 
+def _freeform_namespace_element(el, prefix):
+    """Rewrite every `id` an element DEFINES, and every local #fragment
+    reference (fill/stroke/clip_path/mask's url(#x), href="#x"), to carry a
+    per-render-instance prefix. Found in Gemini security review, 2026-08-25:
+    without this, two freeform_canvas atoms on the SAME page could define
+    colliding ids (both using id="grad1"), and a url(#grad1) reference in
+    one diagram could resolve against the OTHER diagram's element -- a real
+    correctness bug, not itself an injection primitive. Applied AFTER
+    validation, on the already-validated tree, using the same deterministic
+    per-block _wa_uid(b) convention other atoms in this file already use for
+    exactly this class of problem."""
+    attrs = dict(el['attrs'])
+    if 'id' in attrs:
+        attrs['id'] = f'{prefix}-{attrs["id"]}'
+    for k in ('clip_path', 'mask', 'fill', 'stroke'):
+        v = attrs.get(k)
+        if v:
+            m = _FREEFORM_LOCAL_URL_RE.match(v)
+            if m:
+                attrs[k] = f'url(#{prefix}-{m.group(1)})'
+    href = attrs.get('href')
+    if href and href.startswith('#'):
+        attrs['href'] = f'#{prefix}-{href[1:]}'
+    return {
+        **el,
+        'attrs': attrs,
+        'children': [_freeform_namespace_element(c, prefix) for c in el.get('children') or []],
+    }
+
+
 def render_freeform_canvas_element(el):
     """A single VALIDATED element dict (as returned by
     validate_freeform_canvas_element) -> its HTML/SVG string. Only ever
@@ -23223,14 +23266,33 @@ def _render_freeform_canvas(b):
         return _render_freeform_canvas_fallback(
             b, "exactly one of elements or svg is required")
 
+    viewbox = b.get('viewbox') or '0 0 800 500'
+    background = b.get('background')
+
     try:
+        # viewbox/background bypassed per-element validation entirely in an
+        # earlier draft -- found in Gemini security review, 2026-08-25.
+        # _esc() already prevents attribute-breakout (html.escape's default
+        # quote=True escapes both " and '), so this isn't an XSS path, but
+        # routing every field through the SAME check the element attributes
+        # get is the actual design invariant this atom claims ("one
+        # allowlist/validator, no field bypasses it") and closes off
+        # reliance on current browser paint-value parsing quirks.
+        _freeform_check_value_safety(viewbox)
+        if not _wa_freeform_re.match(r'^[\d\s.\-]+$', viewbox):
+            raise FreeformCanvasError(f"invalid viewbox format: {viewbox!r}")
+        if background:
+            _freeform_check_value_safety(background)
+            if not _wa_freeform_re.match(r'^(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)$', background):
+                raise FreeformCanvasError(f"invalid background format: {background!r}")
+
         raw_elements = b['elements'] if has_elements else _parse_freeform_svg(b['svg'])
         validated = validate_freeform_canvas(raw_elements)
     except FreeformCanvasError as exc:
         return _render_freeform_canvas_fallback(b, str(exc))
 
-    viewbox = b.get('viewbox') or '0 0 800 500'
-    background = b.get('background')
+    prefix = _wa_uid(b)
+    validated = [_freeform_namespace_element(e, prefix) for e in validated]
     bg_rect = f'<rect width="100%" height="100%" fill="{_esc(background)}"/>' if background else ''
     body = ''.join(render_freeform_canvas_element(e) for e in validated)
 
