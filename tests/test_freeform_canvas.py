@@ -301,6 +301,37 @@ def test_marker_start_external_url_rejected():
     assert REJECTED in out
 
 
+def test_pattern_gradient_marker_transform_and_focal_attrs_are_allowed():
+    """Third live allowlist gap in a row for the reference-definition tags
+    specifically (linearGradient/radialGradient/marker/pattern) -- found
+    2026-08-25: patternTransform rejected on a real diagram needing a
+    repeating brick pattern. Completing the whole group, not patching one
+    more attribute reactively."""
+    elements = [
+        {"tag": "defs", "children": [
+            {"tag": "pattern", "id": "bricks", "width": 10, "height": 10,
+             "pattern_units": "userSpaceOnUse", "pattern_transform": "rotate(15)",
+             "children": [{"tag": "rect", "x": 0, "y": 0, "width": 5, "height": 5}]},
+            {"tag": "linearGradient", "id": "g1", "x1": 0, "y1": 0, "x2": 1, "y2": 0,
+             "gradient_transform": "scale(1.5)", "spread_method": "reflect",
+             "children": [{"tag": "stop", "offset": "0%", "stop_color": "#fff"}]},
+            {"tag": "radialGradient", "id": "g2", "cx": 0.5, "cy": 0.5, "r": 0.5,
+             "fx": 0.4, "fy": 0.4, "fr": 0.1, "gradient_transform": "rotate(30)",
+             "children": [{"tag": "stop", "offset": "0%", "stop_color": "#000"}]},
+            {"tag": "marker", "id": "arrow", "marker_width": 6, "marker_height": 6,
+             "marker_units": "strokeWidth", "orient": "auto",
+             "children": [{"tag": "path", "d": "M0 0 L6 3 Z"}]},
+        ]},
+        {"tag": "rect", "x": 0, "y": 0, "width": 10, "height": 10, "fill": "url(#bricks)"},
+    ]
+    out = _render_freeform_canvas({**_base(elements=elements)})
+    assert REJECTED not in out
+    for frag in ('patternTransform="rotate(15)"', 'gradientTransform="scale(1.5)"',
+                 'spreadMethod="reflect"', 'fx="0.4"', 'fy="0.4"', 'fr="0.1"',
+                 'markerUnits="strokeWidth"'):
+        assert frag in out, frag
+
+
 def test_unknown_tag_rejected():
     out = _render_freeform_canvas({**_base(elements=[{"tag": "div"}])})
     assert REJECTED in out
