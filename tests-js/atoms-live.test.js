@@ -7,7 +7,7 @@ const {
   createStreamingTextController, createStepTrackerController, createToolCallController,
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
   createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
-  createLiveConfidenceBarController,
+  createLiveConfidenceBarController, createLiveProgressBarController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -667,6 +667,92 @@ test('live_confidence_bar: missing/malformed input defaults gracefully without c
 
   ctrl.onEvent({ type: 'StateDelta', lifecycle: 'streaming', state: { items: [null, { value: 'invalid' }] } });
   assert.deepEqual(adapter.calls.items, [{ label: 'Confidence', value: 0, color: '#ef4444' }]);
+});
+
+// ─── live_progress_bar / live_progress_circle ───────────────────────────
+function fakeProgressAdapter() {
+  const calls = { data: null, status: null };
+  return {
+    calls,
+    setProgress(data) { calls.data = data; },
+    setStatus(status) { calls.status = status; },
+  };
+}
+
+test('live_progress_bar: standard value / max calculation and status tracking', () => {
+  const adapter = fakeProgressAdapter();
+  const ctrl = createLiveProgressBarController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { label: 'Compiling assets', value: 45, max: 100, color: '#4f46e5' },
+  });
+  assert.deepEqual(adapter.calls.data, {
+    value: 45,
+    max: 100,
+    percent: 45,
+    label: 'Compiling assets',
+    caption: '',
+    color: '#4f46e5',
+    showPercent: true,
+    indeterminate: false,
+  });
+  assert.equal(adapter.calls.status, 'streaming');
+
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'complete',
+    state: { value: 100, max: 100, caption: 'Done in 2.4s' },
+  });
+  assert.equal(adapter.calls.data.percent, 100);
+  assert.equal(adapter.calls.data.caption, 'Done in 2.4s');
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('live_progress_bar: normalizes fractional progress (0.0 - 1.0) and custom current/total', () => {
+  const adapter = fakeProgressAdapter();
+  const ctrl = createLiveProgressBarController(adapter);
+
+  // Fractional progress without max
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { value: 0.725 },
+  });
+  assert.equal(adapter.calls.data.percent, 73);
+
+  // current / total format
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { current: 3, total: 8, label: 'Chunk 3 of 8' },
+  });
+  assert.equal(adapter.calls.data.value, 3);
+  assert.equal(adapter.calls.data.max, 8);
+  assert.equal(adapter.calls.data.percent, 38);
+  assert.equal(adapter.calls.data.label, 'Chunk 3 of 8');
+});
+
+test('live_progress_bar: handles indeterminate mode and clamping', () => {
+  const adapter = fakeProgressAdapter();
+  const ctrl = createLiveProgressBarController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { indeterminate: true, label: 'Calculating hashes...' },
+  });
+  assert.equal(adapter.calls.data.indeterminate, true);
+  assert.equal(adapter.calls.data.percent, 0);
+
+  // Out of bounds value clamping
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { value: 150, max: 100, indeterminate: false },
+  });
+  assert.equal(adapter.calls.data.percent, 100);
+
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'streaming',
+    state: { value: -20, max: 100 },
+  });
+  assert.equal(adapter.calls.data.percent, 0);
 });
 
 console.log('all a2ui-atoms-live tests defined');

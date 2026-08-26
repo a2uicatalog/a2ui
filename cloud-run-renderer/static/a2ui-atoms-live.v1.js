@@ -1021,14 +1021,214 @@
     return { element: el, controller: createLiveConfidenceBarController(adapter) };
   }
 
+  // ─── live_progress_bar and live_progress_circle controllers ─────────────
+  // Patch-mode progress controllers for deterministic task execution,
+  // file transfers, token limits, and multi-step agent workflows.
+  // Normalizes value/max ranges, fractional percentages, and supports
+  // indeterminate and labelled progress states.
+  function createLiveProgressBarController(adapter) {
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+        let rawVal = src.value !== undefined ? src.value : (src.current !== undefined ? src.current : 0);
+        let val = Number(rawVal);
+        if (isNaN(val)) val = 0;
+
+        let rawMax = src.max !== undefined ? src.max : (src.total !== undefined ? src.total : 100);
+        let max = Number(rawMax);
+        if (isNaN(max) || max <= 0) max = 100;
+
+        let pct;
+        if (val > 0 && val <= 1 && max === 1) {
+          pct = Math.round(val * 100);
+        } else if (val > 0 && val <= 1 && src.max === undefined && src.total === undefined && !src.isPercent) {
+          pct = Math.round(val * 100);
+        } else {
+          pct = Math.round((val / max) * 100);
+        }
+        pct = Math.max(0, Math.min(100, isNaN(pct) ? 0 : pct));
+
+        const label = src.label != null ? String(src.label) : '';
+        const caption = src.caption != null ? String(src.caption) : (src.message != null ? String(src.message) : '');
+        const color = src.color || src.accent || '#6366f1';
+        const showPercent = src.show_percent !== undefined ? Boolean(src.show_percent) : (src.showPercent !== undefined ? Boolean(src.showPercent) : true);
+        const indeterminate = Boolean(src.indeterminate);
+
+        adapter.setProgress({
+          value: val,
+          max,
+          percent: pct,
+          label,
+          caption,
+          color,
+          showPercent,
+          indeterminate,
+        });
+        adapter.setStatus(event.lifecycle || src.status || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveProgressBar(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-progress-bar';
+    el.style.cssText = 'margin:0.75rem 0;';
+
+    const header = document.createElement('div');
+    header.className = 'a2ui-progress-header';
+    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;';
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'a2ui-progress-label';
+    labelEl.style.cssText = 'font-size:0.82rem;font-weight:600;color:#374151;';
+
+    const pctEl = document.createElement('span');
+    pctEl.className = 'a2ui-progress-pct';
+    pctEl.style.cssText = 'font-size:0.82rem;font-weight:700;color:#6b7280;font-family:ui-monospace,monospace;';
+
+    header.appendChild(labelEl);
+    header.appendChild(pctEl);
+
+    const track = document.createElement('div');
+    track.className = 'a2ui-progress-track';
+    track.style.cssText = 'height:8px;background:#e5e7eb;border-radius:100px;overflow:hidden;position:relative;';
+
+    const fill = document.createElement('div');
+    fill.className = 'a2ui-progress-fill';
+    fill.style.cssText = 'height:100%;width:0%;border-radius:100px;transition:width 0.4s ease;';
+
+    track.appendChild(fill);
+
+    const captionEl = document.createElement('p');
+    captionEl.className = 'a2ui-progress-caption';
+    captionEl.style.cssText = 'font-size:0.78rem;color:#6b7280;margin:4px 0 0 0;display:none;';
+
+    el.appendChild(header);
+    el.appendChild(track);
+    el.appendChild(captionEl);
+    container.appendChild(el);
+
+    const adapter = {
+      setProgress(data) {
+        labelEl.textContent = data.label;
+        if (data.showPercent) {
+          pctEl.textContent = data.indeterminate ? '...' : (data.percent + '%');
+          pctEl.style.display = '';
+          pctEl.style.color = data.color;
+        } else {
+          pctEl.style.display = 'none';
+        }
+        if (data.indeterminate) {
+          fill.style.width = '100%';
+          fill.style.background = `repeating-linear-gradient(45deg, ${data.color}, ${data.color} 10px, transparent 10px, transparent 20px)`;
+          fill.style.opacity = '0.7';
+        } else {
+          fill.style.width = data.percent + '%';
+          fill.style.background = data.color;
+          fill.style.opacity = '1';
+        }
+        if (data.caption) {
+          captionEl.textContent = data.caption;
+          captionEl.style.display = '';
+        } else {
+          captionEl.style.display = 'none';
+        }
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveProgressBarController(adapter) };
+  }
+
+  function mountLiveProgressCircle(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-progress-circle';
+    el.style.cssText = 'display:inline-flex;flex-direction:column;align-items:center;gap:6px;margin:0.5rem 0;';
+
+    const size = 80;
+    const strokeWidth = 8;
+    const r = (size - strokeWidth) / 2;
+    const circ = +(2 * Math.PI * r).toFixed(2);
+    const center = size / 2;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', String(size));
+    svg.setAttribute('height', String(size));
+    svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+
+    const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    bgCircle.setAttribute('cx', String(center));
+    bgCircle.setAttribute('cy', String(center));
+    bgCircle.setAttribute('r', String(r));
+    bgCircle.setAttribute('fill', 'none');
+    bgCircle.setAttribute('stroke', '#e5e7eb');
+    bgCircle.setAttribute('stroke-width', String(strokeWidth));
+
+    const progressCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    progressCircle.setAttribute('cx', String(center));
+    progressCircle.setAttribute('cy', String(center));
+    progressCircle.setAttribute('r', String(r));
+    progressCircle.setAttribute('fill', 'none');
+    progressCircle.setAttribute('stroke', '#6366f1');
+    progressCircle.setAttribute('stroke-width', String(strokeWidth));
+    progressCircle.setAttribute('stroke-linecap', 'round');
+    progressCircle.setAttribute('stroke-dasharray', `${circ} ${circ}`);
+    progressCircle.setAttribute('stroke-dashoffset', String(circ));
+    progressCircle.setAttribute('transform', `rotate(-90 ${center} ${center})`);
+    progressCircle.style.transition = 'stroke-dashoffset 0.4s ease, stroke 0.3s ease';
+
+    const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textEl.setAttribute('x', String(center));
+    textEl.setAttribute('y', String(center));
+    textEl.setAttribute('text-anchor', 'middle');
+    textEl.setAttribute('dominant-baseline', 'middle');
+    textEl.setAttribute('font-size', '16');
+    textEl.setAttribute('font-weight', '800');
+    textEl.setAttribute('fill', '#111827');
+    textEl.setAttribute('font-family', 'ui-monospace,monospace');
+    textEl.textContent = '0%';
+
+    svg.appendChild(bgCircle);
+    svg.appendChild(progressCircle);
+    svg.appendChild(textEl);
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'a2ui-progress-circle-label';
+    labelEl.style.cssText = 'font-size:0.78rem;color:#6b7280;text-align:center;max-width:100px;';
+
+    el.appendChild(svg);
+    el.appendChild(labelEl);
+    container.appendChild(el);
+
+    const adapter = {
+      setProgress(data) {
+        labelEl.textContent = data.label;
+        labelEl.style.display = data.label ? '' : 'none';
+        progressCircle.setAttribute('stroke', data.color);
+        if (data.indeterminate) {
+          textEl.textContent = '...';
+          progressCircle.setAttribute('stroke-dashoffset', String(circ * 0.25));
+        } else {
+          const offset = circ * (1 - data.percent / 100);
+          progressCircle.setAttribute('stroke-dashoffset', String(offset));
+          textEl.textContent = data.showPercent ? (data.percent + '%') : '';
+        }
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveProgressBarController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
     createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
-    createLiveConfidenceBarController,
+    createLiveConfidenceBarController, createLiveProgressBarController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountLiveConfidenceBar, mountCompactConfidenceBar,
+    mountLiveProgressBar, mountProgressBar: mountLiveProgressBar,
+    mountLiveProgressCircle, mountProgressCircle: mountLiveProgressCircle,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
