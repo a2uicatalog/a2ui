@@ -670,6 +670,18 @@ def test_animated_border_card_works_on_meet_stage(atoms):
     assert "google-meet-stage" in works_on
 
 
+def test_animated_border_card_list_body_does_not_crash(renderer):
+    """Found live 2026-08-26: an agent composing this atom sent a list
+    (bullet points) instead of the schema'd plain string, and
+    hashlib.md5()'s title+body concatenation raised 'can only
+    concatenate str (not "list") to str' before any HTML was produced."""
+    html = r(renderer, {"component": "animated_border_card",
+                        "title": "Why agentic AI now",
+                        "body": ["Point one", "Point two", "Point three"]})
+    assert "Point one" in html
+    assert "Point three" in html
+
+
 # ── Aceternity UI-inspired atoms (batch 2) ────────────────────────────────────
 
 def test_aurora_background_basic(renderer):

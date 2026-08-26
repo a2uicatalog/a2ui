@@ -6020,9 +6020,17 @@ def _render_typewriter_text(b: dict) -> str:
 
 def _render_animated_border_card(b: dict) -> str:
     import hashlib
-    cid     = "abc_" + hashlib.md5((b.get("title", "") + b.get("body", "")).encode()).hexdigest()[:6]
-    title   = b.get("title", "")
-    body    = b.get("body", "")
+    # title/body are schema'd as plain strings, but an agent composing this
+    # atom occasionally sends a list (e.g. bullet points) instead of a
+    # pre-joined string -- coerce rather than let hashlib.md5's .encode()
+    # raise "can only concatenate str (not 'list') to str" on the very
+    # first line (found live 2026-08-26, a poster/CTA prompt on
+    # streaming-testbench's /catalog demo).
+    def _as_str(v):
+        return "\n".join(str(x) for x in v) if isinstance(v, list) else str(v) if v is not None else ""
+    title   = _as_str(b.get("title", ""))
+    body    = _as_str(b.get("body", ""))
+    cid     = "abc_" + hashlib.md5((title + body).encode()).hexdigest()[:6]
     accent  = b.get("accent", "#38bdf8")
     accent2 = b.get("accent2", "#818cf8")
     bg      = b.get("background", "#ffffff")
