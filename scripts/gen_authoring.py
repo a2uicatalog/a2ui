@@ -654,6 +654,13 @@ WORKSPACE_HOST_JS = """
   // #ws-home-btn breadcrumb below (which always means "go home", not
   // "reload whatever the url says") can stay a plain no-arg call.
   var initialView = new URLSearchParams(window.location.search).get('view');
+  // /workspace/?reading=<id> opens ONE saved reading directly, decoded
+  // server-side from its stored payload — no GAS ?p= link, no size ceiling,
+  // the exact mechanism a history row's one-click reopen already uses
+  // (mcp:export_reading). Takes priority over ?view if somehow both are
+  // given: naming a specific reading is a strictly more specific request
+  // than naming a screen.
+  var initialReadingId = new URLSearchParams(window.location.search).get('reading');
 
   function loadWorkspace(view) {
     setStatus('', 'Opening your workspace…');
@@ -667,6 +674,31 @@ WORKSPACE_HOST_JS = """
         if (!resp.ok) { setStatus('err', 'Could not open workspace: ' + resp.error); return; }
         setStatus('live', 'Workspace open');
         send(resp.structuredContent);
+      })
+      .catch(function (e) { setStatus('err', String(e && e.message || e)); });
+  }
+
+  function openReading(id) {
+    setStatus('', 'Opening your reading…');
+    fetch('/authoring/api/workspace-tool', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'export_reading', arguments: { id: id, format: 'surface' } })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (resp) {
+        if (!resp.ok) { setStatus('err', 'Could not open reading: ' + resp.error); return; }
+        var sc = resp.structuredContent;
+        // 'surface' format spreads the payload at the top level ONLY on
+        // success (createSurface/blocks present, same shape paint_result
+        // itself checks) — a miss comes back as {available, exported:false,
+        // reason} instead. Mirror that check rather than assume the shape.
+        if (!sc || (!sc.blocks && !sc.createSurface)) {
+          setStatus('err', (sc && sc.reason) || 'That reading is not available.');
+          return;
+        }
+        setStatus('live', 'Reading open');
+        send(sc);
       })
       .catch(function (e) { setStatus('err', String(e && e.message || e)); });
   }
@@ -698,7 +730,7 @@ WORKSPACE_HOST_JS = """
     if (msg.method === 'ui/notifications/initialized') {
       viewReady = true;
       setStatus('', 'View ready…');
-      loadWorkspace(initialView);
+      if (initialReadingId) { openReading(initialReadingId); } else { loadWorkspace(initialView); }
       return;
     }
 
