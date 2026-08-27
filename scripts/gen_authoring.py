@@ -648,12 +648,19 @@ WORKSPACE_HOST_JS = """
 
   var viewReady = false;
 
-  function loadWorkspace() {
+  // Read once, at page load, from the page's OWN url — e.g.
+  // /workspace/?view=read bookmarks straight into the Article Reader instead
+  // of the tool-selector home. Captured before any navigation happens so the
+  // #ws-home-btn breadcrumb below (which always means "go home", not
+  // "reload whatever the url says") can stay a plain no-arg call.
+  var initialView = new URLSearchParams(window.location.search).get('view');
+
+  function loadWorkspace(view) {
     setStatus('', 'Opening your workspace…');
     fetch('/authoring/api/workspace-tool', {
       method: 'POST', credentials: 'same-origin',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: 'open_workspace', arguments: {} })
+      body: JSON.stringify({ name: 'open_workspace', arguments: view ? { view: view } : {} })
     })
       .then(function (r) { return r.json(); })
       .then(function (resp) {
@@ -691,7 +698,7 @@ WORKSPACE_HOST_JS = """
     if (msg.method === 'ui/notifications/initialized') {
       viewReady = true;
       setStatus('', 'View ready…');
-      loadWorkspace();
+      loadWorkspace(initialView);
       return;
     }
 
