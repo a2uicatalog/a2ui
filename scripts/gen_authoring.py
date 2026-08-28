@@ -992,16 +992,22 @@ def _build_share_icon_png(size: int) -> bytes:
 
 def build_share_manifest() -> str:
     manifest = {
+        "id": "/share/",
         "name": "Queue for A2UI Reading",
         "short_name": "Queue Reading",
+        "description": "Send any article straight into the A2UI Workspace's article_playbook reading pipeline from your phone's Share menu.",
         "start_url": "/share/",
         "scope": "/share/",
         "display": "standalone",
         "background_color": "#0a0e17",
         "theme_color": "#0a0e17",
         "icons": [
-            {"src": "/share/icon-192.png", "sizes": "192x192", "type": "image/png"},
-            {"src": "/share/icon-512.png", "sizes": "512x512", "type": "image/png"},
+            # "any maskable" on both: the icon's own padding already keeps
+            # the glyph inside a maskable icon's ~80%-diameter safe zone
+            # (pad = 22% of the canvas per edge), and the background fills
+            # the full canvas — no separate maskable-only asset needed.
+            {"src": "/share/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/share/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
         ],
         # GET, not POST: no multipart parsing, no service worker fetch
         # handler required — the browser just navigates to `action` with
@@ -1047,20 +1053,85 @@ SHARE_INDEX_HTML = """<!DOCTYPE html>
   h1{font-size:16px;margin-bottom:12px}
   p{font-size:13px;color:var(--muted);line-height:1.6}
   a{color:var(--indigo)}
+  button{font:inherit;font-size:13px;font-weight:700;letter-spacing:.03em;
+    color:var(--bg);background:var(--indigo);border:0;border-radius:999px;
+    padding:12px 22px;cursor:pointer}
+  button:hover{filter:brightness(1.1)}
+  #checklist{text-align:left;margin-top:8px;border:1px solid var(--border);
+    border-radius:10px;background:var(--card);padding:14px 16px}
+  .step{font-size:12.5px;color:var(--muted);padding:5px 0;
+    display:flex;align-items:center;gap:8px}
+  .step::before{content:'○';color:var(--border);flex-shrink:0}
+  .step.done{color:var(--text)}
+  .step.done::before{content:'✓';color:#3fb950}
+  #finalNote{font-size:13px;color:var(--text);line-height:1.6;
+    margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
   <div class="card">
-    <h1>📥 Queue for A2UI Reading</h1>
-    <p>Nothing to do here directly — from any article, tap your phone's
-       <b>Share</b> button and pick <b>Queue for A2UI Reading</b> from the
-       list. That sends the link straight to the
-       <a href="/workspace/?view=read">Workspace's Read pipeline</a>.</p>
+    <h1 id="heading">📥 Queue for A2UI Reading</h1>
+    <p id="intro">One-time setup, then every article is a single tap from
+       your phone's <b>Share</b> menu.</p>
+    <button id="setupBtn" type="button">Set up sharing</button>
+    <div id="checklist" style="display:none"></div>
+    <p style="margin-top:18px"><a href="/workspace/?view=read">Prefer not to
+       install anything? Bookmark the Read page directly instead.</a></p>
   </div>
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/share/sw.js').catch(function () {});
 }
+
+// Chrome will only offer a REAL install (its own icon, a confirmation
+// dialog — what excalidraw.com gives you) rather than degrading silently to
+// a plain Chrome-branded shortcut once the page has had at least one
+// tap/click AND ~30s of dwell time (found live 2026-08-28: a static blurb
+// with nothing to interact with fails this silently, with no error shown —
+// it just quietly becomes a shortcut instead of an app). Rather than making
+// someone stare at a stopwatch, this turns that same ~30s into a real,
+// visible setup sequence: one tap starts it, a few staged status lines fill
+// the dwell time honestly (each step IS something a first real share would
+// need to have gone right), and only the FINAL step tells you to open the
+// browser menu — by which point the heuristic is already satisfied.
+(function () {
+  var STEPS = [
+    ['Checking your Workspace connection…', 4000],
+    ['Registering the Share Sheet entry…', 9000],
+    ['Confirming the read pipeline is reachable…', 10000],
+    ['Ready.', 9000],
+  ];
+  var btn = document.getElementById('setupBtn');
+  var list = document.getElementById('checklist');
+  btn.addEventListener('click', function () {
+    btn.style.display = 'none';
+    document.getElementById('intro').style.display = 'none';
+    list.style.display = 'block';
+    var rows = STEPS.map(function (s) {
+      var row = document.createElement('div');
+      row.className = 'step';
+      row.textContent = s[0];
+      list.appendChild(row);
+      return row;
+    });
+    var t = 0;
+    STEPS.forEach(function (s, i) {
+      t += s[1];
+      setTimeout(function () {
+        rows[i].classList.add('done');
+        if (i === STEPS.length - 1) {
+          var final = document.createElement('p');
+          final.id = 'finalNote';
+          final.innerHTML = 'Now open your browser\\'s menu and tap ' +
+            '<b>Install app</b> \\u2014 not "Add to Home screen". You should ' +
+            'see a confirmation with this app\\'s own icon, the same as any ' +
+            'other real app install.';
+          list.parentNode.insertBefore(final, list.nextSibling);
+        }
+      }, t);
+    });
+  });
+})();
 </script>
 </body>
 </html>
