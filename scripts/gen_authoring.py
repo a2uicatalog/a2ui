@@ -678,6 +678,49 @@ WORKSPACE_HOST_JS = """
       .catch(function (e) { setStatus('err', String(e && e.message || e)); });
   }
 
+  // /workspace/?url=<article>&title=<t> — one tap from Android's Share Sheet
+  // (see /share/ — a tiny installed PWA whose share_target redirects here).
+  // No page text is available from a share intent, only the link, so this
+  // tells Gemini to FETCH it itself — same fetch_url path the chat/ui-message
+  // flow already exercises when a reader pastes a URL instead of text. Loses
+  // the extension's paywall workaround (nothing to paste here), gains
+  // "works from literally any app's Share Sheet, no install-per-site."
+  var initialShareUrl = new URLSearchParams(window.location.search).get('url');
+  var initialShareTitle = new URLSearchParams(window.location.search).get('title');
+
+  function composeShareInstruction(url, title) {
+    return 'Using the a2ui connector: fetch ' + url + ' and run the article_playbook ' +
+      'playbook on it. This runbook\\'s elicit questions are already answered — do not ask ' +
+      'them again, proceed straight to the reading: lens = challenge; my domains = the ones ' +
+      'on my profile; what to push back on or look for = nothing specific — use your own ' +
+      'judgement. Call emit_runbook_surface with the runbook_id first to get the contract, ' +
+      'then fetch and read the source YOURSELF — every spine rung needs a verbatim quotation ' +
+      'from the real text, so do not fill the contract from memory and do not invent ' +
+      'quotations. Then stamp it and keep it with save_reading.' +
+      (title ? ' Source title (from the share): ' + title + '.' : '');
+  }
+
+  // Shared by the chat-style ui/message path (a human typing/pasting) and the
+  // Share Sheet boot path above — same request, same response handling,
+  // wanted this to stop being two copies the moment there were two callers.
+  function runWorkspaceRead(instructionText) {
+    setStatus('', 'Reading via Gemini — this can take a while for a real article…');
+    fetch('/authoring/api/workspace-read', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text: instructionText })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (resp) {
+        if (!resp.ok) { setStatus('err', 'Reading failed: ' + resp.error); return; }
+        setStatus('live', resp.save_reading_error
+          ? 'Reading complete (NOT saved to history: ' + resp.save_reading_error + ')'
+          : 'Reading complete — analysed by ' + resp.analysed_by);
+        send(resp.payload);
+      })
+      .catch(function (e) { setStatus('err', String(e && e.message || e)); });
+  }
+
   function openReading(id) {
     setStatus('', 'Opening your reading…');
     fetch('/authoring/api/workspace-tool', {
@@ -730,7 +773,19 @@ WORKSPACE_HOST_JS = """
     if (msg.method === 'ui/notifications/initialized') {
       viewReady = true;
       setStatus('', 'View ready…');
-      if (initialReadingId) { openReading(initialReadingId); } else { loadWorkspace(initialView); }
+      if (initialShareUrl) {
+        // Land on the tool-selector's OWN home first (send()), THEN start the
+        // read on top of it — otherwise a slow/failed Gemini call leaves the
+        // iframe on the SDK's blank pre-init screen with no way back, since
+        // the #ws-home-btn breadcrumb re-running loadWorkspace() would be the
+        // only recovery and a reader mid-share doesn't know that trick.
+        loadWorkspace();
+        runWorkspaceRead(composeShareInstruction(initialShareUrl, initialShareTitle));
+      } else if (initialReadingId) {
+        openReading(initialReadingId);
+      } else {
+        loadWorkspace(initialView);
+      }
       return;
     }
 
@@ -830,21 +885,7 @@ WORKSPACE_HOST_JS = """
       // ACK IMMEDIATELY. See header comment: this host does not race the
       // bundle's own ui/message timeout with however long Gemini takes.
       iframe.contentWindow.postMessage({ jsonrpc: '2.0', id: msg.id, result: {} }, '*');
-      setStatus('', 'Reading via Gemini — this can take a while for a real article…');
-      fetch('/authoring/api/workspace-read', {
-        method: 'POST', credentials: 'same-origin',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text: textMsg })
-      })
-        .then(function (r) { return r.json(); })
-        .then(function (resp) {
-          if (!resp.ok) { setStatus('err', 'Reading failed: ' + resp.error); return; }
-          setStatus('live', resp.save_reading_error
-            ? 'Reading complete (NOT saved to history: ' + resp.save_reading_error + ')'
-            : 'Reading complete — analysed by ' + resp.analysed_by);
-          send(resp.payload);
-        })
-        .catch(function (e) { setStatus('err', String(e && e.message || e)); });
+      runWorkspaceRead(textMsg);
       return;
     }
   });
@@ -898,6 +939,174 @@ button.ws-chip{{font:inherit;letter-spacing:inherit;cursor:pointer}}
   </div>
 <script>
 {host_js}
+</script>
+</body>
+</html>
+"""
+
+
+# ── Share Sheet target (2026-08-27) ─────────────────────────────────────────
+# The mobile answer to the browser extension: Android's Web Share Target API
+# needs no sideloading, no developer mode, no unknown-sources toggle — just
+# "Add to Home Screen" on an ordinary web page. share_target's GET method
+# needs no service worker on current Chrome, but one is included anyway
+# (cheap insurance against older installability heuristics that did require
+# it). iOS has no share_target equivalent (Apple hasn't shipped it) — this is
+# Android-only by platform limitation, not by choice.
+SHARE_ICON_BG = (10, 14, 23, 255)      # #0a0e17 — same dark as the Workspace shell
+SHARE_ICON_ACCENT = (124, 156, 255, 255)  # #7c9cff — the Workspace's own --indigo
+
+
+def _build_share_icon_png(size: int) -> bytes:
+    """
+    An inbox-tray glyph (arrow dropping into an open tray) — GENERATED, not a
+    checked-in binary, so a one-off PWA icon stays consistent with this
+    repo's "derive everything" convention. Pure PIL primitives (rectangle/
+    polygon/line), deliberately no text so there is no font dependency.
+    """
+    import io
+    from PIL import Image, ImageDraw
+
+    img = Image.new("RGBA", (size, size), SHARE_ICON_BG)
+    draw = ImageDraw.Draw(img)
+    pad = size * 0.22
+    cx = size / 2
+    shaft_w = size * 0.10
+    draw.rectangle(
+        [cx - shaft_w / 2, pad, cx + shaft_w / 2, size * 0.56], fill=SHARE_ICON_ACCENT
+    )
+    head = size * 0.16
+    draw.polygon(
+        [(cx - head, size * 0.50), (cx + head, size * 0.50), (cx, size * 0.50 + head * 1.15)],
+        fill=SHARE_ICON_ACCENT,
+    )
+    tray_y = size * 0.72
+    tray_w = max(2, int(size * 0.06))
+    draw.line([(pad, tray_y), (pad, size - pad)], fill=SHARE_ICON_ACCENT, width=tray_w)
+    draw.line([(size - pad, tray_y), (size - pad, size - pad)], fill=SHARE_ICON_ACCENT, width=tray_w)
+    draw.line([(pad, size - pad), (size - pad, size - pad)], fill=SHARE_ICON_ACCENT, width=tray_w)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def build_share_manifest() -> str:
+    manifest = {
+        "name": "Queue for A2UI Reading",
+        "short_name": "Queue Reading",
+        "start_url": "/share/",
+        "scope": "/share/",
+        "display": "standalone",
+        "background_color": "#0a0e17",
+        "theme_color": "#0a0e17",
+        "icons": [
+            {"src": "/share/icon-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/share/icon-512.png", "sizes": "512x512", "type": "image/png"},
+        ],
+        # GET, not POST: no multipart parsing, no service worker fetch
+        # handler required — the browser just navigates to `action` with
+        # these as ordinary query params, indistinguishable from a link.
+        "share_target": {
+            # Trailing slash matters: this is served from
+            # public-full/share/target/index.html, and a bare "/share/target"
+            # risks a redirect-to-add-slash hop that isn't guaranteed to
+            # carry the query string through every host.
+            "action": "/share/target/",
+            "method": "GET",
+            "params": {"title": "title", "text": "text", "url": "url"},
+        },
+    }
+    return json.dumps(manifest, indent=2)
+
+
+SHARE_SW_JS = """\
+// Present only so older installability heuristics that expect a fetch
+// handler still qualify this as an installable, share_target-eligible PWA.
+// Deliberately a pass-through, not a cache — this app has nothing worth
+// caching, it exists purely to be a Share Sheet entry.
+self.addEventListener('fetch', function (event) {
+  event.respondWith(fetch(event.request));
+});
+"""
+
+SHARE_INDEX_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Queue for A2UI Reading</title>
+<link rel="manifest" href="/share/manifest.json">
+<style>
+  :root{--bg:#0a0e17;--card:#111826;--border:#1f2937;--text:#e6edf3;--muted:#8b949e;--indigo:#7c9cff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;background:var(--bg);color:var(--text);
+    font-family:ui-monospace,SFMono-Regular,Menlo,'JetBrains Mono',monospace;
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{max-width:420px;text-align:center}
+  h1{font-size:16px;margin-bottom:12px}
+  p{font-size:13px;color:var(--muted);line-height:1.6}
+  a{color:var(--indigo)}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>📥 Queue for A2UI Reading</h1>
+    <p>Nothing to do here directly — from any article, tap your phone's
+       <b>Share</b> button and pick <b>Queue for A2UI Reading</b> from the
+       list. That sends the link straight to the
+       <a href="/workspace/?view=read">Workspace's Read pipeline</a>.</p>
+  </div>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/share/sw.js').catch(function () {});
+}
+</script>
+</body>
+</html>
+"""
+
+SHARE_TARGET_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sending to Workspace…</title>
+<style>
+  body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+    background:#0a0e17;color:#8b949e;font-family:ui-monospace,SFMono-Regular,Menlo,'JetBrains Mono',monospace;
+    font-size:14px;text-align:center;padding:24px;box-sizing:border-box}
+</style>
+</head>
+<body>
+  <div id="status">Opening your Workspace…</div>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  // Android share intents are inconsistent about WHERE the link actually
+  // ends up — some apps populate `url` directly, many put "<caption> <link>"
+  // in `text` instead, a few only ever set `title`. Take the first real
+  // http(s) URL found, checking fields in that priority order.
+  var urlPattern = /https?:\\/\\/\\S+/;
+  var candidates = [params.get('url'), params.get('text'), params.get('title')];
+  var found = null;
+  for (var i = 0; i < candidates.length; i++) {
+    if (!candidates[i]) continue;
+    var m = candidates[i].match(urlPattern);
+    if (m) { found = m[0]; break; }
+  }
+  if (!found) {
+    document.getElementById('status').textContent =
+      "Could not find a link in what was shared \\u2014 open the article's own Share menu " +
+      'and try again.';
+    return;
+  }
+  var title = params.get('title') || '';
+  var dest = '/workspace/?url=' + encodeURIComponent(found) +
+    (title ? '&title=' + encodeURIComponent(title) : '');
+  window.location.replace(dest);
+})();
 </script>
 </body>
 </html>
@@ -2020,11 +2229,24 @@ def main():
     workspace_dir.mkdir(parents=True, exist_ok=True)
     (workspace_dir / "index.html").write_text(build_workspace_page(), encoding="utf-8")
 
+    # Android Share Sheet target (2026-08-27) — one tap from any app's Share
+    # menu straight into the Workspace's read pipeline, no sideloading.
+    share_dir = ROOT / "public-full" / "share"
+    share_target_dir = share_dir / "target"
+    share_dir.mkdir(parents=True, exist_ok=True)
+    share_target_dir.mkdir(parents=True, exist_ok=True)
+    (share_dir / "index.html").write_text(SHARE_INDEX_HTML, encoding="utf-8")
+    (share_dir / "manifest.json").write_text(build_share_manifest(), encoding="utf-8")
+    (share_dir / "sw.js").write_text(SHARE_SW_JS, encoding="utf-8")
+    (share_dir / "icon-192.png").write_bytes(_build_share_icon_png(192))
+    (share_dir / "icon-512.png").write_bytes(_build_share_icon_png(512))
+    (share_target_dir / "index.html").write_text(SHARE_TARGET_HTML, encoding="utf-8")
+
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
     print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/, "
           f"/authoring/templates/teaser-card-carousel/, /authoring/templates/single-post/, "
-          f"/workspace/ "
+          f"/workspace/, /share/ "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json, "
           f"{len(current_drafts)} draft(s) on the cooking board, "
           f"{len(carousel_drafts)} carousel draft(s), "
