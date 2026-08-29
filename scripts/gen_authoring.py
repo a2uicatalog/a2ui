@@ -752,6 +752,9 @@ WORKSPACE_HOST_JS = """
   document.getElementById('ws-home-btn').addEventListener('click', function () {
     loadWorkspace();
   });
+  document.getElementById('ws-history-btn').addEventListener('click', function () {
+    loadWorkspace('history');
+  });
 
   window.addEventListener('message', function (ev) {
     if (ev.source !== iframe.contentWindow) return;
@@ -914,7 +917,7 @@ def build_workspace_page():
 *{{box-sizing:border-box;margin:0;padding:0}}
 html,body{{height:100%;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo,'JetBrains Mono',monospace}}
 #mcp-view{{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}}
-.ws-bar{{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}}
+.ws-bar{{position:fixed;top:12px;left:12px;right:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;z-index:10;pointer-events:none}}
 .ws-bar>*{{pointer-events:auto}}
 .ws-chip{{display:inline-flex;align-items:center;gap:8px;background:rgba(10,14,23,.9);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}}
 a.ws-chip:hover,button.ws-chip:hover{{border-color:var(--indigo);color:var(--indigo)}}
@@ -935,6 +938,10 @@ button.ws-chip{{font:inherit;letter-spacing:inherit;cursor:pointer}}
          only place this can live (Curtis, 2026-08-04: "we did not add
          breadcrumb back to the workspace homepage in a created artifact"). -->
     <button class="ws-chip" id="ws-home-btn" type="button">🏠 Workspace</button>
+    <!-- Same host-level, outside-the-iframe reasoning as the home button
+         above — a one-tap way back to History from wherever you are,
+         instead of home then a second tap (Curtis, 2026-08-29). -->
+    <button class="ws-chip" id="ws-history-btn" type="button">📜 History</button>
     <span class="ws-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
   </div>
 <script>
