@@ -95,6 +95,21 @@
           "title": "API documentation and endpoint reference"
         },
         {
+          "href": "https://a2uicatalog.ai/api-docs/",
+          "type": "text/html",
+          "title": "API docs and reference directory"
+        },
+        {
+          "href": "https://a2uicatalog.ai/auth/",
+          "type": "text/html",
+          "title": "Authentication and security documentation"
+        },
+        {
+          "href": "https://a2uicatalog.ai/webhooks/",
+          "type": "text/html",
+          "title": "Webhooks and event delivery documentation"
+        },
+        {
           "href": "https://a2uicatalog.ai/versioning.md",
           "type": "text/markdown",
           "title": "Versioning and deprecation policy"

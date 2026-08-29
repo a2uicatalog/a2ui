@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>API Docs & Reference — A2UI Atomic Catalog</title>
-<meta name="description" content="A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, MCP servers, and integration guides.">
-<link rel="canonical" href="https://a2uicatalog.ai/api-docs/">
+<title>Authentication &amp; Security Docs — A2UI Atomic Catalog</title>
+<meta name="description" content="A2UI Atomic Catalog authentication docs: unauthenticated MCP/REST access, rate limits, and enterprise OAuth.">
+<link rel="canonical" href="https://a2uicatalog.ai/auth/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="API Docs & Reference — A2UI Atomic Catalog">
-<meta property="og:description" content="A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, MCP servers, and integration guides.">
-<meta property="og:url" content="https://a2uicatalog.ai/api-docs/">
+<meta property="og:title" content="Authentication &amp; Security Docs — A2UI Atomic Catalog">
+<meta property="og:description" content="A2UI Atomic Catalog authentication docs: unauthenticated MCP/REST access, rate limits, and enterprise OAuth.">
+<meta property="og:url" content="https://a2uicatalog.ai/auth/">
 <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "APIReference",
-  "url": "https://a2uicatalog.ai/api-docs/",
-  "name": "API Docs & Reference \u2014 A2UI Atomic Catalog",
+  "@type": "WebPage",
+  "url": "https://a2uicatalog.ai/auth/",
+  "name": "Authentication & Security Docs \u2014 A2UI Atomic Catalog",
   "publisher": {
     "@id": "https://a2uicatalog.ai/#org"
   }
@@ -45,20 +45,22 @@ footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
 <body>
 <nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
 <div class="wrap">
-<h1>API Docs & Reference</h1>
+<h1>Authentication &amp; Security Docs</h1>
 <h2 class="k">A2UI Atomic Catalog</h2>
 
-<p>Predictable entry point for developer resources and API reference documents.</p>
-<p>Primary integration surface: <a href="/mcp">the MCP server at /mcp</a> — no API key, no
-signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
+<p>Authentication and security documentation for developers and AI agents integrating with the A2UI Atomic Catalog.</p>
+
+<h2>Public Unauthenticated Access</h2>
+<p>The primary MCP server (<code>https://a2uicatalog.ai/mcp</code>) and public REST endpoints (<code>/api/compose</code>, <code>/ask</code>, <code>/spec.json</code>) require <strong>no API key</strong> and <strong>no account signup</strong>. Clients can send requests immediately.</p>
+
+<h2>Auth Documentation &amp; Policies</h2>
 <ul>
-<li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
-<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
-<li><a href="/developers/">Developers Guide</a> — human integration guide</li>
-<li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
-<li><a href="/spec.json">spec.json</a> — 480 atom definitions and field contracts</li>
-<li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
-<li><a href="/webhooks/">Webhooks &amp; Events</a> — real-time event streaming and delivery patterns</li>
+<li><a href="/auth.md">Authentication Guide (Markdown)</a> — architectural explanation and OAuth discovery</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; Rate Limits</a> — per-endpoint rate limits and enforcement policies</li>
+<li><a href="/.well-known/oauth-authorization-server">OAuth Authorization Server Metadata</a> (RFC 8414)</li>
+<li><a href="/.well-known/oauth-protected-resource/mcp-auth">OAuth Protected Resource Metadata</a> (RFC 9728)</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a></li>
+<li><a href="/mcp">MCP Server Endpoint</a></li>
 </ul>
 </div>
 <footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.

@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>API Docs & Reference — A2UI Atomic Catalog</title>
-<meta name="description" content="A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, MCP servers, and integration guides.">
-<link rel="canonical" href="https://a2uicatalog.ai/api-docs/">
+<title>Webhooks &amp; Event Delivery — A2UI Atomic Catalog</title>
+<meta name="description" content="A2UI Atomic Catalog webhooks and event delivery documentation: SSE streaming, JSON-RPC notifications, and Chat webhooks.">
+<link rel="canonical" href="https://a2uicatalog.ai/webhooks/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="API Docs & Reference — A2UI Atomic Catalog">
-<meta property="og:description" content="A2UI Atomic Catalog API docs and reference: OpenAPI 3.1 spec, endpoints, MCP servers, and integration guides.">
-<meta property="og:url" content="https://a2uicatalog.ai/api-docs/">
+<meta property="og:title" content="Webhooks &amp; Event Delivery — A2UI Atomic Catalog">
+<meta property="og:description" content="A2UI Atomic Catalog webhooks and event delivery documentation: SSE streaming, JSON-RPC notifications, and Chat webhooks.">
+<meta property="og:url" content="https://a2uicatalog.ai/webhooks/">
 <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "APIReference",
-  "url": "https://a2uicatalog.ai/api-docs/",
-  "name": "API Docs & Reference \u2014 A2UI Atomic Catalog",
+  "@type": "WebPage",
+  "url": "https://a2uicatalog.ai/webhooks/",
+  "name": "Webhooks & Event Delivery \u2014 A2UI Atomic Catalog",
   "publisher": {
     "@id": "https://a2uicatalog.ai/#org"
   }
@@ -45,20 +45,25 @@ footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
 <body>
 <nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
 <div class="wrap">
-<h1>API Docs & Reference</h1>
+<h1>Webhooks &amp; Event Delivery</h1>
 <h2 class="k">A2UI Atomic Catalog</h2>
 
-<p>Predictable entry point for developer resources and API reference documents.</p>
-<p>Primary integration surface: <a href="/mcp">the MCP server at /mcp</a> — no API key, no
-signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
+<p>Event delivery, webhook integration, and streaming documentation for the A2UI Atomic Catalog.</p>
+
+<h2>Event Delivery Architecture</h2>
+<p>A2UI uses modern streaming and push transports designed for AI agents and chat surfaces:</p>
 <ul>
-<li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
-<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
-<li><a href="/developers/">Developers Guide</a> — human integration guide</li>
-<li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
-<li><a href="/spec.json">spec.json</a> — 480 atom definitions and field contracts</li>
-<li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
-<li><a href="/webhooks/">Webhooks &amp; Events</a> — real-time event streaming and delivery patterns</li>
+<li><strong>MCP Streamable HTTP / JSON-RPC</strong> — live streaming tool invocations over <code>/mcp</code></li>
+<li><strong>Server-Sent Events (SSE)</strong> — live incremental streaming on <code>/ask</code> (pass <code>Accept: text/event-stream</code>)</li>
+<li><strong>Google Chat Webhooks</strong> — server-side rendering of cardsV2 messages directly posted to incoming webhook URLs</li>
+</ul>
+
+<h2>Developer Resources</h2>
+<ul>
+<li><a href="/docs/">API Documentation</a> — endpoint schemas and transport contracts</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable spec</li>
+<li><a href="/mcp">MCP Server Endpoint</a> — live streamable JSON-RPC 2.0 interface</li>
+<li><a href="/developers/">Developers Guide</a> — deployment and integration guides</li>
 </ul>
 </div>
 <footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
