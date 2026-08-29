@@ -228,8 +228,33 @@ atoms:
     not_when: >-
       The items are unordered (icon_list — numbering unordered things implies a
       priority you did not compute). Items have several fields each
-      (data_table_sortable).
+      (data_table_sortable). An active multi-step workflow with completion states
+      (step_progress).
     answers: ["what should I do first", "what's the plan"]
+
+  step_progress:
+    use_when: >-
+      A multi-step procedure or staged workflow where the reader needs to see
+      which step is active, which are completed, and what remains — wizard
+      flows, staged repairs, or sequential execution steps.
+    not_when: >-
+      A static ranked list without an active step indicator (numbered_list).
+      Historical events over time with dates rather than staged milestones
+      (timeline). Continuous progress without discrete named stages
+      (progress_bar).
+    answers: ["where are we in the process", "what step is next", "how many steps are left"]
+
+  freeform_canvas:
+    use_when: >-
+      A one-shot domain-specific diagram (topology graph, circuit layout,
+      geometric sketch) where no specialized catalog atom fits the shape.
+    not_when: >-
+      Any concept covered by an existing structured atom — wall layouts
+      (wall_elevation), sequential interactions (sequence_diagram), comparison
+      charts (chartjs_bar or chartjs_line), or structured rows
+      (data_table_sortable). Freeform canvas requires an explicit domain need
+      and must not replace standard UI blocks.
+    answers: ["draw a custom diagram", "show a topological layout"]
 
   icon_list:
     use_when: >-
