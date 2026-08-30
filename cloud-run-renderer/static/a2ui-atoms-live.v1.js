@@ -1219,16 +1219,157 @@
     return { element: el, controller: createLiveProgressBarController(adapter) };
   }
 
+  // ─── live_progress_checkpoint controller ────────────────────────────────
+  // Patch-mode milestone tracker along a progress track for multi-step
+  // workflows, tutorials, and staged execution runs.
+  // Extends the static progress_checkpoint atom (renderers/web_article.py)
+  // for live streaming updates.
+  function createLiveProgressCheckpointController(adapter) {
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+        const labels = Array.isArray(src.labels)
+          ? src.labels.map(String)
+          : (Array.isArray(src.steps) && typeof src.steps[0] === 'string' ? src.steps.map(String) : []);
+
+        let rawTotal = src.total_steps !== undefined
+          ? src.total_steps
+          : (src.totalSteps !== undefined
+            ? src.totalSteps
+            : (src.total !== undefined
+              ? src.total
+              : (src.max_steps !== undefined
+                ? src.max_steps
+                : (src.max !== undefined
+                  ? src.max
+                  : (labels.length > 0 ? labels.length : (Array.isArray(src.steps) ? src.steps.length : 1))))));
+        let total = Number(rawTotal);
+        if (isNaN(total) || total < 1) total = 1;
+
+        let rawCurrent = src.current_step !== undefined
+          ? src.current_step
+          : (src.currentStep !== undefined
+            ? src.currentStep
+            : (src.current !== undefined
+              ? src.current
+              : (src.step !== undefined ? src.step : 1)));
+        let current = Number(rawCurrent);
+        if (isNaN(current)) current = 1;
+        current = Math.max(0, Math.min(total, current));
+
+        const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+        const color = src.color || src.accent || '#7c3aed';
+        const currentTitle = src.title || src.current_label || src.currentLabel || (labels[current - 1] || '');
+        const caption = src.caption != null ? String(src.caption) : (src.message != null ? String(src.message) : '');
+
+        adapter.setCheckpoint({
+          currentStep: current,
+          totalSteps: total,
+          percent: pct,
+          labels,
+          currentTitle,
+          caption,
+          color,
+        });
+        adapter.setStatus(event.lifecycle || src.status || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveProgressCheckpoint(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-progress-checkpoint';
+    el.style.cssText = 'border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;margin:1.2rem 0;background:#ffffff;';
+
+    const stepsRow = document.createElement('div');
+    stepsRow.className = 'a2ui-checkpoint-steps';
+    stepsRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;';
+
+    const track = document.createElement('div');
+    track.className = 'a2ui-checkpoint-track';
+    track.style.cssText = 'background:#f3f4f6;border-radius:100px;height:6px;overflow:hidden;position:relative;';
+
+    const fill = document.createElement('div');
+    fill.className = 'a2ui-checkpoint-fill';
+    fill.style.cssText = 'height:100%;background:#7c3aed;width:0%;border-radius:100px;transition:width 0.4s ease, background 0.3s ease;';
+
+    track.appendChild(fill);
+
+    const footer = document.createElement('div');
+    footer.className = 'a2ui-checkpoint-footer';
+    footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:8px;';
+
+    const stepText = document.createElement('div');
+    stepText.className = 'a2ui-checkpoint-step-text';
+    stepText.style.cssText = 'font-size:0.78rem;font-weight:600;color:#6b7280;';
+
+    const captionText = document.createElement('div');
+    captionText.className = 'a2ui-checkpoint-caption-text';
+    captionText.style.cssText = 'font-size:0.78rem;color:#9ca3af;display:none;';
+
+    footer.appendChild(stepText);
+    footer.appendChild(captionText);
+
+    el.appendChild(stepsRow);
+    el.appendChild(track);
+    el.appendChild(footer);
+    container.appendChild(el);
+
+    const adapter = {
+      setCheckpoint(data) {
+        stepsRow.innerHTML = '';
+        for (let i = 1; i <= data.totalSteps; i++) {
+          const stepCircle = document.createElement('div');
+          stepCircle.className = 'a2ui-checkpoint-node';
+          const isDone = i < data.currentStep;
+          const isActive = i === data.currentStep;
+          const bg = (isDone || isActive) ? data.color : '#e5e7eb';
+          const textColor = (isDone || isActive) ? '#ffffff' : '#9ca3af';
+
+          let extraStyle = '';
+          if (isActive) {
+            extraStyle = `box-shadow:0 0 0 2px #fff, 0 0 0 4px ${data.color};`;
+          }
+
+          stepCircle.style.cssText = `width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;background:${bg};color:${textColor};transition:all 0.3s ease;${extraStyle}`;
+          stepCircle.textContent = String(i);
+          if (data.labels && data.labels[i - 1]) {
+            stepCircle.title = data.labels[i - 1];
+          }
+          stepsRow.appendChild(stepCircle);
+        }
+
+        fill.style.width = data.percent + '%';
+        fill.style.background = data.color;
+
+        const titleSuffix = data.currentTitle ? `: ${data.currentTitle}` : '';
+        stepText.textContent = `Step ${data.currentStep} of ${data.totalSteps}${titleSuffix}`;
+
+        if (data.caption) {
+          captionText.textContent = data.caption;
+          captionText.style.display = '';
+        } else {
+          captionText.style.display = 'none';
+        }
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveProgressCheckpointController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
     createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
     createLiveConfidenceBarController, createLiveProgressBarController,
+    createLiveProgressCheckpointController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountLiveConfidenceBar, mountCompactConfidenceBar,
     mountLiveProgressBar, mountProgressBar: mountLiveProgressBar,
     mountLiveProgressCircle, mountProgressCircle: mountLiveProgressCircle,
+    mountLiveProgressCheckpoint, mountProgressCheckpoint: mountLiveProgressCheckpoint,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;

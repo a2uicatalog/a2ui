@@ -8,6 +8,7 @@ const {
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
   createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
   createLiveConfidenceBarController, createLiveProgressBarController,
+  createLiveProgressCheckpointController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -753,6 +754,98 @@ test('live_progress_bar: handles indeterminate mode and clamping', () => {
     state: { value: -20, max: 100 },
   });
   assert.equal(adapter.calls.data.percent, 0);
+});
+
+// ─── live_progress_checkpoint ───────────────────────────────────────────
+function fakeCheckpointAdapter() {
+  const calls = { data: null, status: null };
+  return {
+    calls,
+    setCheckpoint(data) { calls.data = data; },
+    setStatus(status) { calls.status = status; },
+  };
+}
+
+test('live_progress_checkpoint: calculates step progress and handles standard current_step / total_steps', () => {
+  const adapter = fakeCheckpointAdapter();
+  const ctrl = createLiveProgressCheckpointController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { current_step: 2, total_steps: 5, color: '#6366f1' },
+  });
+  assert.deepEqual(adapter.calls.data, {
+    currentStep: 2,
+    totalSteps: 5,
+    percent: 40,
+    labels: [],
+    currentTitle: '',
+    caption: '',
+    color: '#6366f1',
+  });
+  assert.equal(adapter.calls.status, 'streaming');
+
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'complete',
+    state: { current_step: 5, total_steps: 5, caption: 'All milestones reached' },
+  });
+  assert.equal(adapter.calls.data.currentStep, 5);
+  assert.equal(adapter.calls.data.totalSteps, 5);
+  assert.equal(adapter.calls.data.percent, 100);
+  assert.equal(adapter.calls.data.caption, 'All milestones reached');
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('live_progress_checkpoint: supports aliases (currentStep, totalSteps, step, total) and step labels', () => {
+  const adapter = fakeCheckpointAdapter();
+  const ctrl = createLiveProgressCheckpointController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: {
+      currentStep: 3,
+      labels: ['Planning', 'Implementation', 'Verification', 'Deployment'],
+      caption: 'Running test suite',
+    },
+  });
+  assert.equal(adapter.calls.data.currentStep, 3);
+  assert.equal(adapter.calls.data.totalSteps, 4); // Inferred from labels.length
+  assert.equal(adapter.calls.data.percent, 75);
+  assert.equal(adapter.calls.data.currentTitle, 'Verification');
+  assert.equal(adapter.calls.data.caption, 'Running test suite');
+  assert.deepEqual(adapter.calls.data.labels, ['Planning', 'Implementation', 'Verification', 'Deployment']);
+});
+
+test('live_progress_checkpoint: clamps out-of-bounds steps and defaults gracefully', () => {
+  const adapter = fakeCheckpointAdapter();
+  const ctrl = createLiveProgressCheckpointController(adapter);
+
+  // Exceeds total
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { current_step: 10, total_steps: 4 },
+  });
+  assert.equal(adapter.calls.data.currentStep, 4);
+  assert.equal(adapter.calls.data.totalSteps, 4);
+  assert.equal(adapter.calls.data.percent, 100);
+
+  // Below 0
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { current_step: -2, total_steps: 3 },
+  });
+  assert.equal(adapter.calls.data.currentStep, 0);
+  assert.equal(adapter.calls.data.totalSteps, 3);
+  assert.equal(adapter.calls.data.percent, 0);
+
+  // Empty state fallback
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'idle',
+    state: {},
+  });
+  assert.equal(adapter.calls.data.currentStep, 1);
+  assert.equal(adapter.calls.data.totalSteps, 1);
+  assert.equal(adapter.calls.data.percent, 100);
 });
 
 console.log('all a2ui-atoms-live tests defined');
