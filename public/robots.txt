@@ -58,6 +58,7 @@ Disallow: /try/
 Disallow: /frugal-ai-ops/
 
 Sitemap: https://a2uicatalog.ai/sitemap.xml
+Agentmap: /.well-known/ard.json
 Agentmap: /.well-known/ai-catalog.json
 # NLWeb Schema Feeds — structured feeds an agent can consume directly
 # rather than scraping HTML.
@@ -73,6 +74,7 @@ Schemamap: https://a2uicatalog.ai/schema-map.xml
 # bare unrecognised key risks a strict parser treating the file as malformed.
 # The <link rel> tags in every page <head> are the machine-parseable half.
 # api-catalog: https://a2uicatalog.ai/.well-known/api-catalog
+# ard:         https://a2uicatalog.ai/.well-known/ard.json
 # llms.txt:    https://a2uicatalog.ai/llms.txt
 # openapi:     https://a2uicatalog.ai/openapi.json
 # agents.md:   https://a2uicatalog.ai/agents.md

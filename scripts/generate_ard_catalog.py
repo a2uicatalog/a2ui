@@ -23,7 +23,8 @@ except ImportError:
     sys.exit(1)
 
 SCHEMA = os.path.join(os.path.dirname(__file__), "..", "atoms", "schema.yaml")
-OUTPUT = os.path.join(os.path.dirname(__file__), "..", "public", ".well-known", "ai-catalog.json")
+OUTPUT = os.path.join(os.path.dirname(__file__), "..", "public", ".well-known", "ard.json")
+LEGACY_OUTPUT = os.path.join(os.path.dirname(__file__), "..", "public", ".well-known", "ai-catalog.json")
 
 
 def type_to_display(type_str):
@@ -68,11 +69,11 @@ def generate_queries(atom):
     return result
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--domain", default="a2uicatalog.ai")
     parser.add_argument("--output", default=OUTPUT)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     domain = args.domain
     base   = f"https://{domain}"
@@ -185,7 +186,13 @@ def main():
     with open(out_path, "w") as f:
         json.dump(catalog, f, indent=2)
 
-    print(f"✓ {len(entries)} entries ({len(unique)} atoms + 1 renderer) → {out_path}")
+    # If default output path, also maintain backward-compatible legacy ai-catalog.json
+    if out_path == OUTPUT:
+        with open(LEGACY_OUTPUT, "w") as f:
+            json.dump(catalog, f, indent=2)
+        print(f"✓ {len(entries)} entries ({len(unique)} atoms + 1 renderer) → {out_path} and {LEGACY_OUTPUT}")
+    else:
+        print(f"✓ {len(entries)} entries ({len(unique)} atoms + 1 renderer) → {out_path}")
 
 
 if __name__ == "__main__":
