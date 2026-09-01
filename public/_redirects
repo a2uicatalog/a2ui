@@ -3,10 +3,13 @@
 /play /surfaces/mcp-apps/play/ 302
 
 # Conventional developer-portal aliases some crawlers/scanners probe literally.
-# There is no console or dashboard (no accounts, no API keys) — both point at
-# the one real developer page rather than 404ing.
+# There is no console or dashboard (no accounts, no API keys) — all point at
+# the one real developer page rather than 404ing (safe 301 redirects to public docs).
 /console /developers/ 301
 /dashboard /developers/ 301
+/developer /developers/ 301
+/developer-portal /developers/ 301
+/portal /developers/ 301
 
 # Predictable documentation, API reference, OpenAPI, auth, and webhook paths
 # mapped directly to their published destinations.
@@ -22,9 +25,15 @@
 /openapi.yaml /openapi.json 301
 /api/openapi.json /openapi.json 301
 /api/swagger.json /openapi.json 301
+/.well-known/openapi.json /openapi.json 301
+/.well-known/openapi.yaml /openapi.json 301
 /auth /auth/ 301
 /authentication /auth/ 301
+/security /auth/ 301
+/docs/auth /auth/ 301
 /webhooks /webhooks/ 301
 /docs/webhooks /webhooks/ 301
+/events /webhooks/ 301
+/webhook /webhooks/ 301
 /ard.json /.well-known/ard.json 301
 /.well-known/ard /.well-known/ard.json 301

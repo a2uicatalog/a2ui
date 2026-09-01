@@ -150,10 +150,17 @@ def test_predictable_redirects_route_correctly():
 
     assert redirect_map.get("/api-docs") == "/api-docs/"
     assert redirect_map.get("/docs") == "/docs/"
+    assert redirect_map.get("/developer") == "/developers/"
+    assert redirect_map.get("/developer-portal") == "/developers/"
     assert redirect_map.get("/swagger.json") == "/openapi.json"
     assert redirect_map.get("/openapi.yaml") == "/openapi.json"
+    assert redirect_map.get("/.well-known/openapi.json") == "/openapi.json"
     assert redirect_map.get("/auth") == "/auth/"
+    assert redirect_map.get("/security") == "/auth/"
+    assert redirect_map.get("/docs/auth") == "/auth/"
     assert redirect_map.get("/webhooks") == "/webhooks/"
+    assert redirect_map.get("/webhook") == "/webhooks/"
+    assert redirect_map.get("/events") == "/webhooks/"
     assert redirect_map.get("/ard.json") == "/.well-known/ard.json"
 
 
