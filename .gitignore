@@ -48,6 +48,7 @@ apps-script-surface/gas-trade-bot/
 /ops
 /thoughts
 /apps-script-surface/gas-trade-bot
+/apps-script-surface/gas-schema-renderer/node_modules
 mcp/node_modules/
 mcp/.env
 # @a2ui/mcp (mcp/) was closed-source-for-launch (2026-07-04/05, scrubbed from
