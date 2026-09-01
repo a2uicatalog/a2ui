@@ -531,7 +531,7 @@ LLMS_TXT = """# A2UI Atomic Catalog
 - [Versioning & deprecation policy]({base}/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
-- [Agent discovery document]({base}/.well-known/ai-catalog.json): Per-atom capability/description index (also referenced from robots.txt's `Agentmap:` directive).
+- [Agent discovery document]({base}/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
 - [MCP Apps playground]({base}/surfaces/mcp-apps): Renders atoms live inside MCP Apps-capable hosts (e.g. claude.ai); paste a payload or open a `#p=` link.
 - [Self-host the renderer]({base}/renderer): Deploy your own Apps Script renderer in 4 commands — own the URL, no shared-demo rate limit.
 
@@ -585,7 +585,8 @@ def build_api_catalog():
                 item(f"{BASE}/api/data/{{source}}", "application/json", "Declared data-source proxy"),
                 item(f"{BASE}/catalogue/index.json", "application/json", "Catalog selection index"),
                 item(f"{BASE}/catalogue/atoms-json-schema.json", "application/schema+json", "Strict per-atom JSON Schema"),
-                item(f"{BASE}/.well-known/ai-catalog.json", "application/json", "ARD discovery catalog"),
+                item(f"{BASE}/.well-known/ard.json", "application/json", "ARD v0.91 discovery catalog"),
+                item(f"{BASE}/.well-known/ai-catalog.json", "application/json", "ARD discovery catalog (legacy alias)"),
                 item(f"{BASE}/.well-known/mcp.json", "application/json", "MCP discovery pointer"),
                 item(f"{BASE}/.well-known/agent-card.json", "application/json", "A2A agent card"),
                 # Path-suffixed per RFC 9728 §3.1 — this document describes
@@ -652,6 +653,7 @@ def build_agent_view(n_atoms, n_surfaces):
             "auth": f"{BASE}/auth.md",
             "versioning": f"{BASE}/versioning.md",
             "api_catalog": f"{BASE}/.well-known/api-catalog",
+            "ard_catalog": f"{BASE}/.well-known/ard.json",
             "agent_card": f"{BASE}/.well-known/agent-card.json",
         },
         "capabilities": [

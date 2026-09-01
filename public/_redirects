@@ -26,3 +26,5 @@
 /authentication /auth/ 301
 /webhooks /webhooks/ 301
 /docs/webhooks /webhooks/ 301
+/ard.json /.well-known/ard.json 301
+/.well-known/ard /.well-known/ard.json 301

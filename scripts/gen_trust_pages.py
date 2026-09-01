@@ -182,7 +182,7 @@ unauthenticated, and machine-readable.</p>
 <li><a href="/pricing.md">Pricing &amp; Limits</a> — free tier terms and self-hosting runbooks</li>
 <li><a href="/versioning.md">Versioning Policy</a> — API versioning (X-API-Version) and deprecation rules</li>
 <li><a href="/.well-known/api-catalog">RFC 9727 API Catalog</a> — linkset of all API surfaces</li>
-<li><a href="/.well-known/ai-catalog.json">ARD Discovery Catalog</a> — AI Resource Discovery index</li>
+<li><a href="/.well-known/ard.json">ARD Discovery Catalog</a> — AI Resource Discovery index</li>
 </ul>"""),
         "api-docs": dict(
             title="API Docs & Reference",

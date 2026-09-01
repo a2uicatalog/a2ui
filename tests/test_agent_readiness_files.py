@@ -20,9 +20,11 @@ sys.path.insert(0, str(Path(ROOT) / "scripts"))
 import gen_openapi  # noqa: E402
 import gen_server_card  # noqa: E402
 import gen_trust_pages  # noqa: E402
+import generate_ard_catalog  # noqa: E402
 
 gen_openapi.main()
 gen_trust_pages.main()
+generate_ard_catalog.main([])
 
 
 def _load(*parts):
@@ -152,6 +154,23 @@ def test_predictable_redirects_route_correctly():
     assert redirect_map.get("/openapi.yaml") == "/openapi.json"
     assert redirect_map.get("/auth") == "/auth/"
     assert redirect_map.get("/webhooks") == "/webhooks/"
+    assert redirect_map.get("/ard.json") == "/.well-known/ard.json"
+
+
+def test_ard_catalog_and_discovery():
+    """ARD v0.91 resource discovery catalog must exist at /.well-known/ard.json and be valid JSON."""
+    ard_txt = _load(".well-known", "ard.json")
+    ard = json.loads(ard_txt)
+    assert ard.get("specVersion") == "1.0"
+    assert ard.get("host", {}).get("displayName") == "A2UI Atomic Catalog"
+    assert len(ard.get("entries", [])) > 0
+
+    # Also verify backward compatible legacy file exists
+    legacy = json.loads(_load(".well-known", "ai-catalog.json"))
+    assert len(legacy.get("entries", [])) == len(ard.get("entries", []))
+
+    robots = _load("robots.txt")
+    assert "Agentmap: /.well-known/ard.json" in robots
 
 
 def test_api_catalog_and_llms_advertise_developer_resources():
