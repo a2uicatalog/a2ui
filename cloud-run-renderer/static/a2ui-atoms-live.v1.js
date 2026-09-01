@@ -1358,18 +1358,100 @@
     return { element: el, controller: createLiveProgressCheckpointController(adapter) };
   }
 
+  // ─── live_status_pill controller ─────────────────────────────────────────
+  // Patch-mode status pill badge reflecting live system, task, or agent states.
+  // Extends the static status_pill atom (renderers/web_article.py)
+  // for live streaming updates.
+  function createLiveStatusPillController(adapter) {
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+        const status = src.status != null ? String(src.status) : (event.lifecycle || 'default');
+        const text = src.text != null
+          ? String(src.text)
+          : (src.label != null
+            ? String(src.label)
+            : (src.value != null ? String(src.value) : (status ? status.charAt(0).toUpperCase() + status.slice(1) : '')));
+        const color = src.color || src.fg || null;
+        const bg = src.background || src.bg || null;
+        const pulse = Boolean(src.pulse || src.animated || status === 'running' || status === 'active' || status === 'live' || event.lifecycle === 'streaming');
+
+        adapter.setPill({
+          status,
+          text,
+          color,
+          bg,
+          pulse,
+        });
+        adapter.setStatus(event.lifecycle || status || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveStatusPill(container) {
+    const el = document.createElement('span');
+    el.className = 'a2ui-status-pill';
+    el.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:100px;font-size:0.75rem;font-weight:700;transition:all 0.3s ease;';
+
+    const dot = document.createElement('span');
+    dot.className = 'a2ui-status-pill-dot';
+    dot.style.cssText = 'width:6px;height:6px;border-radius:50%;display:inline-block;';
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'a2ui-status-pill-text';
+
+    el.appendChild(dot);
+    el.appendChild(labelSpan);
+    container.appendChild(el);
+
+    const colorMap = {
+      active: { fg: '#10b981', bg: '#d1fae5' },
+      live: { fg: '#10b981', bg: '#d1fae5' },
+      success: { fg: '#10b981', bg: '#d1fae5' },
+      ok: { fg: '#10b981', bg: '#d1fae5' },
+      inactive: { fg: '#6b7280', bg: '#f3f4f6' },
+      draft: { fg: '#9ca3af', bg: '#f3f4f6' },
+      pending: { fg: '#d97706', bg: '#fef3c7' },
+      running: { fg: '#d97706', bg: '#fef3c7' },
+      warning: { fg: '#d97706', bg: '#fef3c7' },
+      error: { fg: '#ef4444', bg: '#fee2e2' },
+      failed: { fg: '#ef4444', bg: '#fee2e2' },
+      info: { fg: '#2563eb', bg: '#dbeafe' },
+      default: { fg: '#6366f1', bg: '#ede9fe' },
+    };
+
+    const adapter = {
+      setPill(data) {
+        const normStatus = (data.status || 'default').toLowerCase();
+        const scheme = colorMap[normStatus] || colorMap.default;
+        const fg = data.color || scheme.fg;
+        const bg = data.bg || scheme.bg;
+
+        el.style.color = fg;
+        el.style.backgroundColor = bg;
+        el.dataset.status = normStatus;
+        dot.style.backgroundColor = fg;
+        labelSpan.textContent = data.text || normStatus;
+      },
+      setStatus(lifecycle) { el.dataset.lifecycle = lifecycle; },
+    };
+    return { element: el, controller: createLiveStatusPillController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
     createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
     createLiveConfidenceBarController, createLiveProgressBarController,
-    createLiveProgressCheckpointController,
+    createLiveProgressCheckpointController, createLiveStatusPillController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountLiveConfidenceBar, mountCompactConfidenceBar,
     mountLiveProgressBar, mountProgressBar: mountLiveProgressBar,
     mountLiveProgressCircle, mountProgressCircle: mountLiveProgressCircle,
     mountLiveProgressCheckpoint, mountProgressCheckpoint: mountLiveProgressCheckpoint,
+    mountLiveStatusPill, mountStatusPill: mountLiveStatusPill,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
