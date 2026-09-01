@@ -160,9 +160,16 @@ def _paths():
                             "fails validation."),
             "responses": {"200": {"description": "JSON Schema", "content": {
                 "application/schema+json": {"schema": {"type": "object"}}}}}}},
+        "/.well-known/ard.json": {"get": {
+            "tags": ["catalog"], "operationId": "getCanonicalArdCatalog",
+            "summary": "Agentic Resource Discovery catalog (ARD v0.91 canonical path)",
+            "description": ("ARD-compliant discovery document (specVersion 1.0) describing this "
+                            "host and every atom as an addressable capability."),
+            "responses": {"200": {"description": "ARD catalog",
+                                  "content": {"application/json": {"schema": {"type": "object"}}}}}}},
         "/.well-known/ai-catalog.json": {"get": {
             "tags": ["catalog"], "operationId": "getArdCatalog",
-            "summary": "Agentic Resource Discovery catalog",
+            "summary": "Agentic Resource Discovery catalog (legacy alias)",
             "description": ("ARD-compliant discovery document (specVersion 1.0) describing this "
                             "host and every atom as an addressable capability."),
             "responses": {"200": {"description": "ARD catalog",
