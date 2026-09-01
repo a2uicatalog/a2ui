@@ -173,6 +173,14 @@ def test_ard_catalog_and_discovery():
     assert "Agentmap: /.well-known/ard.json" in robots
 
 
+def test_homepage_developer_resource_links():
+    """Homepage must prominently link to documentation, developer portal, and ARD catalog."""
+    html = _load("index.html")
+    assert "/docs" in html
+    assert "/.well-known/ard.json" in html
+    assert 'rel="ard-catalog"' in html
+
+
 def test_api_catalog_and_llms_advertise_developer_resources():
     """RFC 9727 api-catalog and llms.txt must advertise docs, openapi, mcp, and auth."""
     llms_txt = _load("llms.txt")
