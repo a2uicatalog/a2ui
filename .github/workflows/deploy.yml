@@ -55,6 +55,21 @@ jobs:
       - name: Compile knowledge atoms (opt-in, unannounced tier)
         run: python3 scripts/gen_knowledge.py
 
+      - name: Build ARD discovery catalog (ard.json + legacy ai-catalog.json alias)
+        # Confirmed live, 2026-09-01: this step was missing entirely -- #42
+        # wired /.well-known/ard.json into robots.txt/llms.txt/every atom
+        # page's <head>, but nothing in this workflow ever ran the
+        # generator, so the file 404'd on the real deployed site all day
+        # despite the generator itself working correctly and its own test
+        # passing (that test invokes the generator inline, so it never
+        # exercised whether a real deploy does). Same failure class this
+        # repo's own check_catalog_links.py already exists to catch --
+        # "referenced discovery doc silently 404s" -- its own comment
+        # names /spec.json 404ing for weeks as the precedent. Placed
+        # before that check so it validates real build output, not an
+        # absent file.
+        run: python3 scripts/generate_ard_catalog.py
+
       - name: Dereference discovery document URLs against build output
         run: python3 scripts/check_catalog_links.py
 
