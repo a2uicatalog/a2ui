@@ -105,10 +105,18 @@ input_contract:
     pieces with the same title are one piece pretending to be the other.
   source: >
     object (required) — {title, url, author?, publication?, published?,
-    read_minutes?, label?, steered_by?}. The original, rendered as an
-    attribution bar ABOVE the headline with `title` as a live link. `label` sets
-    the bar's kicker ("Analysis of", "Teardown of", "Challenge reading of").
-    `steered_by` is the user's `concerns` answer, verbatim.
+    read_minutes?, label?, steered_by?, no_public_url?}. The original,
+    rendered as an attribution bar ABOVE the headline with `title` as a live
+    link. `label` sets the bar's kicker ("Analysis of", "Teardown of",
+    "Challenge reading of"). `steered_by` is the user's `concerns` answer,
+    verbatim. `url` is required UNLESS the source genuinely has no public
+    URL — a document the reader uploaded directly (a PDF or Markdown file,
+    not a link they pasted or asked you to fetch) rather than a published,
+    linkable page. In that one case, set `no_public_url: true` and omit
+    `url` entirely rather than inventing a placeholder link; the attribution
+    bar renders `title` as plain text instead of a link when this is set.
+    Do NOT set this just because fetching a real URL failed or was
+    inconvenient — only when there genuinely is no public page to link to.
   analysed_by: >
     string (optional but STRONGLY WANTED) — the model that produced this
     reading, e.g. "claude-opus-5" or "gemini-2.5-flash". Once more than one
@@ -193,10 +201,13 @@ parsing_guide: >
   constraint is deliberate governance") is an inference, not an observation,
   and must say so in the prose. An unfalsifiable charitable reading is still an
   unfalsifiable reading.
-  4. Attribution and steering stay on screen: `source.url` is always a live
-  link, and the user's concerns go verbatim into `source.steered_by`. A reading
-  that hides what shaped it is making a claim about its own neutrality that
-  isn't true.
+  4. Attribution and steering stay on screen: `source.url` is a live link
+  whenever the source has a public page, and the user's concerns go verbatim
+  into `source.steered_by`. A reading that hides what shaped it is making a
+  claim about its own neutrality that isn't true. The one exception is a
+  document the reader uploaded directly with no public page to link — set
+  `source.no_public_url: true` rather than inventing a URL; do not reach for
+  this just because fetching was inconvenient.
   5. Disagreeing with the source is allowed and often the point — the value is
   in reaching conclusions the original author did not have in mind. Being
   unfair to it is not. The difference is entirely whether the spine did its job.
