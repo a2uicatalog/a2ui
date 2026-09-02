@@ -8,7 +8,7 @@ const {
   createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
   createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
   createLiveConfidenceBarController, createLiveProgressBarController,
-  createLiveProgressCheckpointController,
+  createLiveProgressCheckpointController, createLiveStatusPillController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -846,6 +846,77 @@ test('live_progress_checkpoint: clamps out-of-bounds steps and defaults graceful
   assert.equal(adapter.calls.data.currentStep, 1);
   assert.equal(adapter.calls.data.totalSteps, 1);
   assert.equal(adapter.calls.data.percent, 100);
+});
+
+// ─── live_status_pill ───────────────────────────────────────────────────
+function fakeStatusPillAdapter() {
+  const calls = { data: null, status: null };
+  return {
+    calls,
+    setPill(data) { calls.data = data; },
+    setStatus(status) { calls.status = status; },
+  };
+}
+
+test('live_status_pill: updates status, label text, and status lifecycle', () => {
+  const adapter = fakeStatusPillAdapter();
+  const ctrl = createLiveStatusPillController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { status: 'active', text: 'Processing Request' },
+  });
+  assert.deepEqual(adapter.calls.data, {
+    status: 'active',
+    text: 'Processing Request',
+    color: null,
+    bg: null,
+    pulse: true,
+  });
+  assert.equal(adapter.calls.status, 'streaming');
+
+  ctrl.onEvent({
+    type: 'StateDelta', lifecycle: 'idle',
+    state: { status: 'success', text: 'Completed', pulse: false },
+  });
+  assert.equal(adapter.calls.data.status, 'success');
+  assert.equal(adapter.calls.data.text, 'Completed');
+  assert.equal(adapter.calls.data.pulse, false);
+  assert.equal(adapter.calls.status, 'idle');
+});
+
+test('live_status_pill: handles label/value aliases, custom colors, and fallback text', () => {
+  const adapter = fakeStatusPillAdapter();
+  const ctrl = createLiveStatusPillController(adapter);
+
+  // Using `label` alias and custom color
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'streaming',
+    state: { status: 'pending', label: 'Queued', color: '#ff9900', bg: '#fff3cd' },
+  });
+  assert.equal(adapter.calls.data.status, 'pending');
+  assert.equal(adapter.calls.data.text, 'Queued');
+  assert.equal(adapter.calls.data.color, '#ff9900');
+  assert.equal(adapter.calls.data.bg, '#fff3cd');
+
+  // Fallback text derived from status name
+  ctrl.onEvent({
+    type: 'StateSnapshot', lifecycle: 'idle',
+    state: { status: 'error' },
+  });
+  assert.equal(adapter.calls.data.status, 'error');
+  assert.equal(adapter.calls.data.text, 'Error');
+});
+
+test('live_status_pill: defaults gracefully when empty event or payload given', () => {
+  const adapter = fakeStatusPillAdapter();
+  const ctrl = createLiveStatusPillController(adapter);
+
+  ctrl.onEvent({ type: 'StateSnapshot', lifecycle: 'running' });
+  assert.equal(adapter.calls.data.status, 'running');
+  assert.equal(adapter.calls.data.text, 'Running');
+  assert.equal(adapter.calls.data.pulse, true);
+  assert.equal(adapter.calls.status, 'running');
 });
 
 console.log('all a2ui-atoms-live tests defined');
