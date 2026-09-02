@@ -135,9 +135,29 @@ atoms:
       Completion against a known total — jobs done in a project, spend against
       budget.
     not_when: >-
-      There is no meaningful denominator (stat_card — a bar with an invented
-      total is a lie). Comparing several things' progress (data_table_sortable).
+      There is no meaningful denominator (stat_card or spinner — a bar with an
+      invented total is a lie). Comparing several things' progress
+      (data_table_sortable). Discrete named milestone stages (step_progress).
     answers: ["how far through are we", "how much of the budget is gone"]
+
+  progress_ring:
+    use_when: >-
+      A compact circular completion gauge for a single percentage or metric
+      ratio, especially in tight card headers or dashboard summaries.
+    not_when: >-
+      A horizontal linear span (progress_bar). Multiple stages or named steps
+      (step_progress). Indeterminate loading with no known percentage (spinner).
+    answers: ["what is the completion percentage", "show circular progress"]
+
+  spinner:
+    use_when: >-
+      An operation or task in progress with uncertain duration or indeterminate
+      completion, where no denominator or step count is known yet.
+    not_when: >-
+      Progress has a known total or percentage (progress_bar or progress_ring).
+      A multi-step procedure where the active step can be named (step_progress).
+      The operation has completed (status_pill).
+    answers: ["is it still working", "please wait while processing"]
 
   # ── Analysis ───────────────────────────────────────────────────────────────
   data_table_sortable:
