@@ -928,7 +928,7 @@ button.ws-chip{{font:inherit;letter-spacing:inherit;cursor:pointer}}
 </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="{bundle_src}" title="A2UI Workspace"></iframe>
+  <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="{bundle_src}" title="A2UI Workspace"></iframe>
   <div class="ws-bar">
     <a class="ws-chip" href="/">← A2UI Catalog</a>
     <!-- Lives OUTSIDE the iframe, so it survives no matter what's painted
