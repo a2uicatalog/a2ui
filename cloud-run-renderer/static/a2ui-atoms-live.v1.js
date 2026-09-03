@@ -1439,12 +1439,180 @@
     return { element: el, controller: createLiveStatusPillController(adapter) };
   }
 
+  // ─── live_aggregator controller ──────────────────────────────────────────
+  // Comparative progress-bar display for real-time vote/response/metric data.
+  // Extends the static live_aggregator atom (renderers/web_article.py)
+  // for live streaming updates.
+  function createLiveAggregatorController(adapter) {
+    const DEFAULT_COLORS = ['#1a73e8', '#34a853', '#9c27b0', '#ea4335', '#fbbc04', '#00bcd4', '#ff6d00', '#00897b'];
+    let title = '';
+    let items = [];
+    let showValues = true;
+    let maxValue = null;
+
+    function normalizeItems(rawItems, globalColor) {
+      if (!Array.isArray(rawItems)) return [];
+      return rawItems.map((item, idx) => {
+        if (!item || typeof item !== 'object') {
+          return {
+            label: `Option ${idx + 1}`,
+            value: 0,
+            color: DEFAULT_COLORS[idx % DEFAULT_COLORS.length],
+          };
+        }
+        const label = item.label != null ? String(item.label) : (item.name != null ? String(item.name) : `Option ${idx + 1}`);
+        const rawVal = item.value !== undefined ? item.value : (item.count !== undefined ? item.count : (item.votes !== undefined ? item.votes : 0));
+        let numVal = Number(rawVal);
+        if (isNaN(numVal)) numVal = 0;
+        const color = item.color || globalColor || DEFAULT_COLORS[idx % DEFAULT_COLORS.length];
+        return { label, value: numVal, color };
+      });
+    }
+
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+        if (src.title !== undefined) title = String(src.title);
+        if (src.show_values !== undefined) showValues = Boolean(src.show_values);
+        else if (src.showValues !== undefined) showValues = Boolean(src.showValues);
+
+        if (src.max_value !== undefined) {
+          const m = Number(src.max_value);
+          maxValue = (!isNaN(m) && m > 0) ? m : null;
+        } else if (src.maxValue !== undefined) {
+          const m = Number(src.maxValue);
+          maxValue = (!isNaN(m) && m > 0) ? m : null;
+        }
+
+        const globalColor = src.color || src.accent || '';
+        if (Array.isArray(src.items)) {
+          items = normalizeItems(src.items, globalColor);
+        } else if (Array.isArray(src.sources)) {
+          items = normalizeItems(src.sources, globalColor);
+        } else if (src.label !== undefined || src.value !== undefined || src.delta !== undefined) {
+          const targetLabel = src.label != null ? String(src.label) : (src.name != null ? String(src.name) : '');
+          const existingIdx = items.findIndex((it) => it.label === targetLabel);
+          const delta = src.delta !== undefined ? Number(src.delta) : undefined;
+          const val = src.value !== undefined ? Number(src.value) : (src.count !== undefined ? Number(src.count) : (src.votes !== undefined ? Number(src.votes) : undefined));
+
+          if (existingIdx >= 0) {
+            const current = items[existingIdx];
+            const newVal = delta !== undefined ? current.value + (isNaN(delta) ? 0 : delta) : (val !== undefined && !isNaN(val) ? val : current.value);
+            const newColor = src.color || current.color;
+            items[existingIdx] = { ...current, value: newVal, color: newColor };
+          } else if (targetLabel) {
+            const initialVal = val !== undefined && !isNaN(val) ? val : (delta !== undefined && !isNaN(delta) ? delta : 0);
+            const color = src.color || globalColor || DEFAULT_COLORS[items.length % DEFAULT_COLORS.length];
+            items.push({ label: targetLabel, value: initialVal, color });
+          }
+        }
+
+        const values = items.map((it) => it.value);
+        const autoMax = values.length > 0 ? Math.max(...values, 0) : 1;
+        const effectiveMax = (maxValue !== null && maxValue > 0) ? maxValue : (autoMax > 0 ? autoMax : 1);
+
+        const computedItems = items.map((it) => {
+          const pct = Math.min(100, Math.max(0, (it.value / effectiveMax) * 100));
+          const disp = Number.isInteger(it.value) ? it.value : Math.round(it.value * 10) / 10;
+          return {
+            label: it.label,
+            value: it.value,
+            displayValue: disp,
+            percent: Math.round(pct * 10) / 10,
+            color: it.color,
+          };
+        });
+
+        adapter.setAggregator({
+          title,
+          items: computedItems,
+          maxValue: effectiveMax,
+          showValues,
+        });
+        adapter.setStatus(event.lifecycle || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveAggregator(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-live-aggregator';
+    el.style.cssText = 'margin:1rem 0;padding:18px 20px;background:#0f172a;border:1px solid #1e293b;border-radius:12px;color:#f8fafc;font-family:system-ui,-apple-system,sans-serif;';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'a2ui-aggregator-title';
+    titleEl.style.cssText = 'font-size:0.78rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:none;';
+
+    const rowsContainer = document.createElement('div');
+    rowsContainer.className = 'a2ui-aggregator-rows';
+
+    el.appendChild(titleEl);
+    el.appendChild(rowsContainer);
+    container.appendChild(el);
+
+    const adapter = {
+      setAggregator(data) {
+        if (data.title) {
+          titleEl.textContent = data.title;
+          titleEl.style.display = 'block';
+        } else {
+          titleEl.style.display = 'none';
+        }
+
+        rowsContainer.innerHTML = '';
+        for (const item of data.items) {
+          const row = document.createElement('div');
+          row.className = 'a2ui-aggregator-row';
+          row.style.cssText = 'margin-bottom:12px;';
+
+          const labelRow = document.createElement('div');
+          labelRow.className = 'a2ui-aggregator-label-row';
+          labelRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;';
+
+          const labelSpan = document.createElement('span');
+          labelSpan.className = 'a2ui-aggregator-label';
+          labelSpan.style.cssText = 'font-size:0.85rem;color:#e2e8f0;font-weight:500;';
+          labelSpan.textContent = item.label;
+
+          labelRow.appendChild(labelSpan);
+
+          if (data.showValues !== false) {
+            const valSpan = document.createElement('span');
+            valSpan.className = 'a2ui-aggregator-value';
+            valSpan.style.cssText = 'font-size:0.75rem;color:#94a3b8;white-space:nowrap;';
+            valSpan.textContent = String(item.displayValue);
+            labelRow.appendChild(valSpan);
+          }
+
+          const track = document.createElement('div');
+          track.className = 'a2ui-aggregator-track';
+          track.style.cssText = 'height:8px;background:#1e293b;border-radius:4px;overflow:hidden;';
+
+          const fill = document.createElement('div');
+          fill.className = 'a2ui-aggregator-fill';
+          fill.style.cssText = `height:100%;width:${item.percent}%;background:${item.color};border-radius:4px;transition:width 0.4s ease;`;
+
+          track.appendChild(fill);
+          row.appendChild(labelRow);
+          row.appendChild(track);
+          rowsContainer.appendChild(row);
+        }
+      },
+      setStatus(lifecycle) {
+        el.dataset.lifecycle = lifecycle;
+      },
+    };
+    return { element: el, controller: createLiveAggregatorController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
     createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
     createLiveConfidenceBarController, createLiveProgressBarController,
     createLiveProgressCheckpointController, createLiveStatusPillController,
+    createLiveAggregatorController,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountLiveConfidenceBar, mountCompactConfidenceBar,
@@ -1452,6 +1620,7 @@
     mountLiveProgressCircle, mountProgressCircle: mountLiveProgressCircle,
     mountLiveProgressCheckpoint, mountProgressCheckpoint: mountLiveProgressCheckpoint,
     mountLiveStatusPill, mountStatusPill: mountLiveStatusPill,
+    mountLiveAggregator, mountAggregator: mountLiveAggregator,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
