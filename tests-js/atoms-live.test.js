@@ -9,6 +9,7 @@ const {
   createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
   createLiveConfidenceBarController, createLiveProgressBarController,
   createLiveProgressCheckpointController, createLiveStatusPillController,
+  createLiveAggregatorController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -917,6 +918,141 @@ test('live_status_pill: defaults gracefully when empty event or payload given', 
   assert.equal(adapter.calls.data.text, 'Running');
   assert.equal(adapter.calls.data.pulse, true);
   assert.equal(adapter.calls.status, 'running');
+});
+
+// ─── live_aggregator ───────────────────────────────────────────────────
+function fakeAggregatorAdapter() {
+  const calls = { data: null, status: null };
+  return {
+    calls,
+    setAggregator(data) { calls.data = data; },
+    setStatus(status) { calls.status = status; },
+  };
+}
+
+test('live_aggregator: computes bar widths relative to auto-max and updates title', () => {
+  const adapter = fakeAggregatorAdapter();
+  const ctrl = createLiveAggregatorController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'streaming',
+    state: {
+      title: 'Poll Results',
+      items: [
+        { label: 'Option A', value: 30 },
+        { label: 'Option B', value: 60 },
+      ],
+    },
+  });
+
+  assert.equal(adapter.calls.data.title, 'Poll Results');
+  assert.equal(adapter.calls.data.maxValue, 60);
+  assert.equal(adapter.calls.data.showValues, true);
+  assert.equal(adapter.calls.data.items.length, 2);
+  assert.equal(adapter.calls.data.items[0].label, 'Option A');
+  assert.equal(adapter.calls.data.items[0].value, 30);
+  assert.equal(adapter.calls.data.items[0].percent, 50);
+  assert.equal(adapter.calls.data.items[1].label, 'Option B');
+  assert.equal(adapter.calls.data.items[1].value, 60);
+  assert.equal(adapter.calls.data.items[1].percent, 100);
+  assert.equal(adapter.calls.status, 'streaming');
+});
+
+test('live_aggregator: respects explicit max_value and show_values flag', () => {
+  const adapter = fakeAggregatorAdapter();
+  const ctrl = createLiveAggregatorController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'complete',
+    payload: {
+      title: 'Performance Benchmark',
+      max_value: 200,
+      show_values: false,
+      items: [
+        { label: 'Latency', count: 50, color: '#34a853' },
+      ],
+    },
+  });
+
+  assert.equal(adapter.calls.data.title, 'Performance Benchmark');
+  assert.equal(adapter.calls.data.maxValue, 200);
+  assert.equal(adapter.calls.data.showValues, false);
+  assert.equal(adapter.calls.data.items[0].percent, 25);
+  assert.equal(adapter.calls.data.items[0].color, '#34a853');
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('live_aggregator: handles item delta and patch updates by label', () => {
+  const adapter = fakeAggregatorAdapter();
+  const ctrl = createLiveAggregatorController(adapter);
+
+  // Initial snapshot
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    state: {
+      items: [
+        { label: 'Candidate 1', votes: 10 },
+        { label: 'Candidate 2', votes: 20 },
+      ],
+    },
+  });
+  assert.equal(adapter.calls.data.items[0].value, 10);
+  assert.equal(adapter.calls.data.items[1].value, 20);
+
+  // Delta update for Candidate 1
+  ctrl.onEvent({
+    type: 'StateDelta',
+    payload: {
+      label: 'Candidate 1',
+      delta: 5,
+    },
+  });
+  assert.equal(adapter.calls.data.items[0].value, 15);
+  assert.equal(adapter.calls.data.items[1].value, 20);
+  assert.equal(adapter.calls.data.maxValue, 20);
+  assert.equal(adapter.calls.data.items[0].percent, 75);
+
+  // New item patch
+  ctrl.onEvent({
+    type: 'StateDelta',
+    payload: {
+      label: 'Candidate 3',
+      value: 25,
+      color: '#ea4335',
+    },
+  });
+  assert.equal(adapter.calls.data.items.length, 3);
+  assert.equal(adapter.calls.data.items[2].label, 'Candidate 3');
+  assert.equal(adapter.calls.data.items[2].value, 25);
+  assert.equal(adapter.calls.data.maxValue, 25);
+  assert.equal(adapter.calls.data.items[2].percent, 100);
+});
+
+test('live_aggregator: handles empty and malformed items gracefully', () => {
+  const adapter = fakeAggregatorAdapter();
+  const ctrl = createLiveAggregatorController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    state: {},
+  });
+  assert.equal(adapter.calls.data.title, '');
+  assert.equal(adapter.calls.data.items.length, 0);
+  assert.equal(adapter.calls.data.maxValue, 1);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    state: {
+      items: [null, { label: 'Valid', value: 'invalid-num' }],
+    },
+  });
+  assert.equal(adapter.calls.data.items.length, 2);
+  assert.equal(adapter.calls.data.items[0].label, 'Option 1');
+  assert.equal(adapter.calls.data.items[0].value, 0);
+  assert.equal(adapter.calls.data.items[1].label, 'Valid');
+  assert.equal(adapter.calls.data.items[1].value, 0);
 });
 
 console.log('all a2ui-atoms-live tests defined');
