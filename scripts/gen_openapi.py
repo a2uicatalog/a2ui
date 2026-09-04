@@ -19,6 +19,7 @@ Run:
 import json
 import os
 import sys
+import yaml
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 PUBLIC = os.path.join(ROOT, "public")
@@ -246,10 +247,31 @@ def _paths():
                                 "html": {"type": "string"}, "error": {"type": "string"},
                                 "degraded": {"type": "array", "items": {"type": "string"}},
                                 "incompatible": {"type": "array", "items": {"type": "string"}}}}}}}}}},
+                "202": {"description": "Asynchronous render job accepted. Poll location or job endpoint for completion (RFC 7240 async-job pattern).",
+                        "headers": {
+                            "Location": {"$ref": "#/components/headers/Location"},
+                            "Retry-After": {"description": "Recommended polling delay in seconds", "schema": {"type": "integer"}},
+                            "X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobEnvelope"}}}},
                 "400": {"description": "Malformed batch, unknown surface, or over the 25-payload cap",
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
                 "413": {"description": "Body larger than 1 MB",
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+                "429": {"$ref": "#/components/responses/RateLimited"}}}},
+        "/api/render/jobs/{id}": {"get": {
+            "tags": ["render"], "operationId": "getRenderJobStatus",
+            "summary": "Check status of an asynchronous batch render job",
+            "description": ("Poll the status of an asynchronous batch render job. Returns pending/running/completed/failed "
+                            "status and rendered HTML payloads once complete."),
+            "parameters": [
+                {"name": "id", "in": "path", "required": True,
+                 "schema": {"type": "string"}, "description": "Job identifier returned in 202 response"}
+            ],
+            "responses": {
+                "200": {"description": "Current job status and results if completed",
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobStatus"}}}},
+                "404": {"$ref": "#/components/responses/NotFound"},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
         "/api/compose": {"post": {
             "tags": ["compose"], "operationId": "composeFromText",
@@ -379,6 +401,9 @@ def _components():
                                 "additive alternative to a /v1/ path prefix: bump only on a "
                                 "documented, intentional change to a response shape."),
                 "schema": {"type": "string", "example": "1"}},
+            "Location": {
+                "description": "URL to poll for asynchronous job status.",
+                "schema": {"type": "string", "example": "/api/render/jobs/job_abc123"}},
             "Deprecation": {
                 "description": ("RFC 9745. Present only on a response the versioning policy has "
                                 "announced as deprecated; its value is the deprecation date. "
@@ -410,6 +435,26 @@ def _components():
                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
         },
         "schemas": {
+            "JobEnvelope": {
+                "type": "object",
+                "description": "Asynchronous job submission response (RFC 7240 / async-job pattern).",
+                "required": ["job_id", "status", "status_url"],
+                "properties": {
+                    "job_id": {"type": "string", "example": "job_abc123"},
+                    "status": {"type": "string", "enum": ["pending", "running", "completed", "failed"], "example": "pending"},
+                    "status_url": {"type": "string", "format": "uri-reference", "example": "/api/render/jobs/job_abc123"},
+                    "poll_interval_seconds": {"type": "integer", "example": 2}}},
+            "JobStatus": {
+                "type": "object",
+                "description": "Status and result of an asynchronous job.",
+                "required": ["job_id", "status"],
+                "properties": {
+                    "job_id": {"type": "string", "example": "job_abc123"},
+                    "status": {"type": "string", "enum": ["pending", "running", "completed", "failed"], "example": "completed"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "completed_at": {"type": "string", "format": "date-time", "nullable": True},
+                    "results": {"type": "array", "items": {"type": "object"}, "description": "Render results when status=completed"},
+                    "error": {"type": "string", "nullable": True}}},
             "ErrorResponse": {
                 "type": "object",
                 "description": ("Shape of every non-2xx JSON response on the REST surface (the "
@@ -534,8 +579,8 @@ LLMS_TXT = """# A2UI Atomic Catalog
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
 - [Webhooks & events]({base}/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
-- [Pricing and rate limits]({base}/pricing.md): Free tier limits and self-hosting options.
-- [Versioning & deprecation policy]({base}/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
+- [Pricing and rate limits]({base}/pricing/): Free tier limits and self-hosting options.
+- [Versioning & deprecation policy]({base}/versioning/): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
 - [Agent discovery document]({base}/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
@@ -611,6 +656,8 @@ def build_api_catalog():
                 item(f"{BASE}/api-docs/", "text/html", "API docs and reference directory"),
                 item(f"{BASE}/auth/", "text/html", "Authentication and security documentation"),
                 item(f"{BASE}/webhooks/", "text/html", "Webhooks and event delivery documentation"),
+                item(f"{BASE}/versioning/", "text/html", "Versioning and deprecation policy documentation"),
+                item(f"{BASE}/pricing/", "text/html", "Pricing and rate limit documentation"),
                 item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
                 item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
                 item(f"{BASE}/pricing.md", "text/markdown", "Pricing and rate limits"),
@@ -650,15 +697,19 @@ def build_agent_view(n_atoms, n_surfaces):
         },
         "documentation": {
             "openapi": f"{BASE}/openapi.json",
+            "openapi_yaml": f"{BASE}/openapi.yaml",
             "developers": f"{BASE}/developers/",
             "api_docs": f"{BASE}/docs/",
             "api_reference": f"{BASE}/api-docs/",
             "auth_docs": f"{BASE}/auth/",
             "webhooks": f"{BASE}/webhooks/",
+            "versioning_docs": f"{BASE}/versioning/",
+            "pricing_docs": f"{BASE}/pricing/",
             "llms": f"{BASE}/llms.txt",
             "agents": f"{BASE}/agents.md",
             "auth": f"{BASE}/auth.md",
             "versioning": f"{BASE}/versioning.md",
+            "pricing": f"{BASE}/pricing.md",
             "api_catalog": f"{BASE}/.well-known/api-catalog",
             "ard_catalog": f"{BASE}/.well-known/ard.json",
             "agent_card": f"{BASE}/.well-known/agent-card.json",
@@ -678,11 +729,17 @@ def build_agent_view(n_atoms, n_surfaces):
 def main():
     n_atoms, n_surfaces, n_mcp = _counts()
 
+    openapi_doc = build_openapi(n_atoms, n_surfaces)
     out = os.path.join(PUBLIC, "openapi.json")
     with open(out, "w", encoding="utf-8") as f:
-        json.dump(build_openapi(n_atoms, n_surfaces), f, indent=2, ensure_ascii=False)
+        json.dump(openapi_doc, f, indent=2, ensure_ascii=False)
         f.write("\n")
     print(f"wrote {out} ({n_atoms} atoms, {n_surfaces} surfaces)")
+
+    out_yaml = os.path.join(PUBLIC, "openapi.yaml")
+    with open(out_yaml, "w", encoding="utf-8") as f:
+        yaml.safe_dump(openapi_doc, f, sort_keys=False, allow_unicode=True)
+    print(f"wrote {out_yaml}")
 
     out2 = os.path.join(PUBLIC, "llms.txt")
     with open(out2, "w", encoding="utf-8") as f:

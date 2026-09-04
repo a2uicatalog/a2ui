@@ -131,6 +131,8 @@ def test_developer_resource_pages_exist_and_include_product_name():
         ("developers", "index.html"),
         ("auth", "index.html"),
         ("webhooks", "index.html"),
+        ("versioning", "index.html"),
+        ("pricing", "index.html"),
     ]
     for parts in predictable_pages:
         html = _load(*parts)
@@ -161,7 +163,27 @@ def test_predictable_redirects_route_correctly():
     assert redirect_map.get("/webhooks") == "/webhooks/"
     assert redirect_map.get("/webhook") == "/webhooks/"
     assert redirect_map.get("/events") == "/webhooks/"
+    assert redirect_map.get("/versioning") == "/versioning/"
+    assert redirect_map.get("/deprecation") == "/versioning/"
+    assert redirect_map.get("/pricing") == "/pricing/"
     assert redirect_map.get("/ard.json") == "/.well-known/ard.json"
+
+
+def test_openapi_documents_and_async_job_pattern():
+    """OpenAPI 3.1 specifications in JSON and YAML format, including async job pattern definitions."""
+    openapi_json = json.loads(_load("openapi.json"))
+    assert openapi_json["openapi"] == "3.1.0"
+    assert "/api/render/batch" in openapi_json["paths"]
+    assert "202" in openapi_json["paths"]["/api/render/batch"]["post"]["responses"]
+    assert "/api/render/jobs/{id}" in openapi_json["paths"]
+    assert "JobEnvelope" in openapi_json["components"]["schemas"]
+    assert "JobStatus" in openapi_json["components"]["schemas"]
+
+    import yaml
+    openapi_yaml_txt = _load("openapi.yaml")
+    parsed_yaml = yaml.safe_load(openapi_yaml_txt)
+    assert parsed_yaml["openapi"] == "3.1.0"
+    assert "/api/render/batch" in parsed_yaml["paths"]
 
 
 def test_ard_catalog_and_discovery():
@@ -196,6 +218,8 @@ def test_api_catalog_and_llms_advertise_developer_resources():
     assert "/mcp" in llms_txt
     assert "/auth/" in llms_txt or "/auth.md" in llms_txt
     assert "/webhooks/" in llms_txt
+    assert "/versioning/" in llms_txt or "/versioning.md" in llms_txt
+    assert "/pricing/" in llms_txt or "/pricing.md" in llms_txt
 
     api_catalog = json.loads(_load(".well-known", "api-catalog"))
     linkset = api_catalog["linkset"][0]
@@ -207,6 +231,8 @@ def test_api_catalog_and_llms_advertise_developer_resources():
         "https://a2uicatalog.ai/docs/",
         "https://a2uicatalog.ai/auth/",
         "https://a2uicatalog.ai/webhooks/",
+        "https://a2uicatalog.ai/versioning/",
+        "https://a2uicatalog.ai/pricing/",
     ):
         assert required in all_hrefs, f"api-catalog missing required developer resource link: {required}"
 

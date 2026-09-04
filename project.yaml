@@ -37,6 +37,7 @@ policy:
     - public/sitemap.xml
     - public/sitemap-pages.xml
     - public/openapi.json
+    - public/openapi.yaml
     - public/brand/**
     - public/agents.md
     - public/index.md
@@ -71,6 +72,8 @@ policy:
     - public/developers/**
     - public/auth/**
     - public/webhooks/**
+    - public/versioning/**
+    - public/pricing/**
     - public/about/**
     - public/contact/**
     - public/privacy/**

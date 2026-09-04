@@ -35,5 +35,13 @@
 /docs/webhooks /webhooks/ 301
 /events /webhooks/ 301
 /webhook /webhooks/ 301
+/versioning /versioning/ 301
+/deprecation /versioning/ 301
+/api-versioning /versioning/ 301
+/docs/versioning /versioning/ 301
+/pricing /pricing/ 301
+/limits /pricing/ 301
+/rate-limits /pricing/ 301
+/docs/pricing /pricing/ 301
 /ard.json /.well-known/ard.json 301
 /.well-known/ard /.well-known/ard.json 301
