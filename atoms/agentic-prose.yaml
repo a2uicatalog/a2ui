@@ -31,7 +31,7 @@
 
 version: 1
 scope:
-  catalogs: [a2ui-atoms-v1, a2ui-charts-v1]
+  catalogs: [a2ui-atoms-v1, a2ui-charts-v1, a2ui-display-v1, a2ui-meta-v1]
   domain: >-
     Household building and maintenance jobs — status, cost, planning. Chosen
     because it is a real app with a real agent, not a demo.
@@ -230,6 +230,16 @@ atoms:
       percentage for a pure guess is false precision; say so in a sentence (body).
     answers: ["how sure are you", "is this estimate reliable", "how confident is the match"]
 
+  tool_call_card:
+    use_when: >-
+      An autonomous agent tool invocation is in-flight, completed, or failed,
+      and the user needs to inspect the tool name, arguments, latency, or returned results.
+    not_when: >-
+      A simple progress indicator without tool call arguments or results (spinner or progress_bar).
+      General text narration of agent reasoning (body). A high-level staged workflow
+      without individual function call telemetry (step_progress).
+    answers: ["what tool is running", "show tool execution details", "what did the tool return"]
+
 
   # ── Framework ──────────────────────────────────────────────────────────────
   heading:
@@ -317,6 +327,16 @@ atoms:
     answers: ["what has this cost", "how much is left", "how far through are we"]
 
   # ── Decision ───────────────────────────────────────────────────────────────
+  action_required_card:
+    use_when: >-
+      A human-in-the-loop approval, explicit decision, or blocking user action
+      is required before an agent workflow can safely proceed.
+    not_when: >-
+      General suggestions or optional proposals (info_card). Simple passive warnings
+      or alerts that do not halt execution (alert_banner or inline_alert).
+      Routine single-click actions with no blocking gate (cta_button).
+    answers: ["what do you need me to approve", "what action is required to proceed", "why is the workflow waiting"]
+
   info_card:
     use_when: >-
       Presenting something for the reader to consider and act on — a proposal,

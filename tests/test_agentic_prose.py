@@ -100,6 +100,13 @@ def test_the_restraint_rule_is_stated_once_at_the_top(prose):
     assert "body" in preamble and "sentence" in preamble
 
 
+def test_agentic_realtime_atoms_covered(prose):
+    """Core realtime and agentic decision atoms must have selection guidance."""
+    required = ["action_required_card", "tool_call_card", "confidence_bar", "spinner", "step_progress"]
+    for atom in required:
+        assert atom in prose["atoms"], f"missing agentic selection guidance for {atom}"
+
+
 def test_the_overlay_is_not_published(prose):
     """Repo-only. If this ever needs to ship, it goes through the same
     per-artifact opt-in as everything else in public/."""
