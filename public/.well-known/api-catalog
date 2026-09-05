@@ -58,9 +58,14 @@
           "title": "Strict per-atom JSON Schema"
         },
         {
+          "href": "https://a2uicatalog.ai/.well-known/ard.json",
+          "type": "application/json",
+          "title": "ARD v0.91 discovery catalog"
+        },
+        {
           "href": "https://a2uicatalog.ai/.well-known/ai-catalog.json",
           "type": "application/json",
-          "title": "ARD discovery catalog"
+          "title": "ARD discovery catalog (legacy alias)"
         },
         {
           "href": "https://a2uicatalog.ai/.well-known/mcp.json",
@@ -108,6 +113,16 @@
           "href": "https://a2uicatalog.ai/webhooks/",
           "type": "text/html",
           "title": "Webhooks and event delivery documentation"
+        },
+        {
+          "href": "https://a2uicatalog.ai/versioning/",
+          "type": "text/html",
+          "title": "Versioning and deprecation policy documentation"
+        },
+        {
+          "href": "https://a2uicatalog.ai/pricing/",
+          "type": "text/html",
+          "title": "Pricing and rate limit documentation"
         },
         {
           "href": "https://a2uicatalog.ai/versioning.md",

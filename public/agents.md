@@ -62,7 +62,7 @@ declared sources), or on hosts that cannot display HTML.
 | Full atom vocabulary | https://a2uicatalog.ai/spec.json |
 | Strict per-atom JSON Schema | https://a2uicatalog.ai/catalogue/atoms-json-schema.json |
 | Catalog selection menu | https://a2uicatalog.ai/catalogue/index.json |
-| ARD discovery document | https://a2uicatalog.ai/.well-known/ai-catalog.json |
+| ARD discovery document | https://a2uicatalog.ai/.well-known/ard.json |
 | Auth & rate limits | https://a2uicatalog.ai/.well-known/agent-auth.md |
 | Authentication guide | https://a2uicatalog.ai/auth.md |
 | Pricing & limits | https://a2uicatalog.ai/pricing.md |
