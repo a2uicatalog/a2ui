@@ -17,11 +17,11 @@
 - [Auth & rate limits](https://a2uicatalog.ai/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide](https://a2uicatalog.ai/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
 - [Webhooks & events](https://a2uicatalog.ai/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
-- [Pricing and rate limits](https://a2uicatalog.ai/pricing.md): Free tier limits and self-hosting options.
-- [Versioning & deprecation policy](https://a2uicatalog.ai/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
+- [Pricing and rate limits](https://a2uicatalog.ai/pricing/): Free tier limits and self-hosting options.
+- [Versioning & deprecation policy](https://a2uicatalog.ai/versioning/): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog](https://a2uicatalog.ai/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema](https://a2uicatalog.ai/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
-- [Agent discovery document](https://a2uicatalog.ai/.well-known/ai-catalog.json): Per-atom capability/description index (also referenced from robots.txt's `Agentmap:` directive).
+- [Agent discovery document](https://a2uicatalog.ai/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
 - [MCP Apps playground](https://a2uicatalog.ai/surfaces/mcp-apps): Renders atoms live inside MCP Apps-capable hosts (e.g. claude.ai); paste a payload or open a `#p=` link.
 - [Self-host the renderer](https://a2uicatalog.ai/renderer): Deploy your own Apps Script renderer in 4 commands — own the URL, no shared-demo rate limit.
 

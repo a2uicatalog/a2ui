@@ -20,16 +20,21 @@
   },
   "documentation": {
     "openapi": "https://a2uicatalog.ai/openapi.json",
+    "openapi_yaml": "https://a2uicatalog.ai/openapi.yaml",
     "developers": "https://a2uicatalog.ai/developers/",
     "api_docs": "https://a2uicatalog.ai/docs/",
     "api_reference": "https://a2uicatalog.ai/api-docs/",
     "auth_docs": "https://a2uicatalog.ai/auth/",
     "webhooks": "https://a2uicatalog.ai/webhooks/",
+    "versioning_docs": "https://a2uicatalog.ai/versioning/",
+    "pricing_docs": "https://a2uicatalog.ai/pricing/",
     "llms": "https://a2uicatalog.ai/llms.txt",
     "agents": "https://a2uicatalog.ai/agents.md",
     "auth": "https://a2uicatalog.ai/auth.md",
     "versioning": "https://a2uicatalog.ai/versioning.md",
+    "pricing": "https://a2uicatalog.ai/pricing.md",
     "api_catalog": "https://a2uicatalog.ai/.well-known/api-catalog",
+    "ard_catalog": "https://a2uicatalog.ai/.well-known/ard.json",
     "agent_card": "https://a2uicatalog.ai/.well-known/agent-card.json"
   },
   "capabilities": [
