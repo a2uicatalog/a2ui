@@ -133,7 +133,9 @@ def _paths():
                                                    "value": "1,234", "label": "Daily users", "delta": "+12%"}]}}}}},
                     }}}},
                 "responses": {"200": {"description": "JSON-RPC response",
-                    "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                    "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                "Sunset": {"$ref": "#/components/headers/Sunset"}},
                     "content": {
                     "application/json": {"schema": {"$ref": "#/components/schemas/JsonRpcResponse"}}}}},
             },
@@ -265,7 +267,9 @@ def _paths():
                 "example": {"prompt": "a dashboard with daily users and a bar chart of traffic sources"}}}},
             "responses": {
                 "200": {"description": "Atom blocks",
-                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"}},
                         "content": {"application/json": {"schema": {
                     "type": "object", "properties": {"blocks": {"type": "array", "items": {
                         "$ref": "#/components/schemas/AtomBlock"}}}}}}},
@@ -297,7 +301,9 @@ def _paths():
                                         "(string, absent/null when exhausted) and has_more "
                                         "(boolean) alongside the sliced data — cursor-based, not "
                                         "page-number-based."),
-                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"}},
                         "content": {"application/json": {"schema": {"type": "object", "properties": {
                             "next_cursor": {"type": "string", "nullable": True},
                             "has_more": {"type": "boolean"}}, "additionalProperties": True}}}},
@@ -322,7 +328,9 @@ def _paths():
                      "description": "text/event-stream requests an SSE stream (start/result/complete events)."}],
                 "responses": {
                     "200": {"description": "Search results",
-                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                        "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                        "Sunset": {"$ref": "#/components/headers/Sunset"}},
                             "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NLWebAskResponse"}}}},
                     "400": {"$ref": "#/components/responses/NotFound"},
                     "429": {"$ref": "#/components/responses/RateLimited"}}},
@@ -335,7 +343,9 @@ def _paths():
                     "example": {"query": "what atom do I use for a countdown timer?", "mode": "list,summarize"}}}},
                 "responses": {
                     "200": {"description": "Search results",
-                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                            "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                        "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                        "Sunset": {"$ref": "#/components/headers/Sunset"}},
                             "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NLWebAskResponse"}}}},
                     "400": {"$ref": "#/components/responses/NotFound"},
                     "429": {"$ref": "#/components/responses/RateLimited"}}}},
@@ -350,7 +360,9 @@ def _paths():
             "responses": {
                 "302": {"description": "Redirect to the rendered surface"},
                 "200": {"description": "Stored payload (when requested as .json)",
-                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
+                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"},
+                                    "Deprecation": {"$ref": "#/components/headers/Deprecation"},
+                                    "Sunset": {"$ref": "#/components/headers/Sunset"}},
                         "content": {
                     "application/json": {"schema": {"$ref": "#/components/schemas/A2uiPayload"}}}},
                 "404": {"$ref": "#/components/responses/NotFound"}}}},
