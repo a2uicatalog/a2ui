@@ -513,7 +513,7 @@ _DEVICE_SCALE = 2
 
 
 def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: str = '',
-                      want_media_rect: bool = False):
+                      want_media_rect: bool = False, theme: str = 'light'):
     """Shared by /render and /chat — one browser-render code path, not two.
 
     want_media_rect=True additionally returns the device-pixel rect of the
@@ -526,7 +526,7 @@ def _render_block_png(block: dict, width: int = 620, title: str = '', subtitle: 
     if fn is None:
         raise ValueError(f"unknown atom '{block.get('type')}'")
     frag = fn(block)
-    html = wrap_atom_html(frag, width, title, subtitle)
+    html = wrap_atom_html(frag, width, title, subtitle, theme)
     # A fresh sync_playwright() context per request, not a cached long-lived
     # browser — Playwright's sync API is thread-affined (its dispatcher
     # greenlet is pinned to whichever OS thread started it), and a WSGI
@@ -588,6 +588,7 @@ def render():
     block = payload.get('block')
     title = payload.get('title', '')
     subtitle = payload.get('subtitle', '')
+    theme = payload.get('theme', 'light')
 
     try:
         block = _validated_block(block)
@@ -604,7 +605,7 @@ def render():
         return Response(json.dumps({'ok': False, 'error': str(e)}),
                         status=429 if isinstance(e, RuntimeError) else 400, mimetype='application/json')
 
-    png = _render_block_png(block, width, title, subtitle)
+    png = _render_block_png(block, width, title, subtitle, theme=theme)
 
     if 'application/json' in request.headers.get('Accept', ''):
         return Response(json.dumps({'ok': True, 'png_base64': base64.b64encode(png).decode('ascii')}),
@@ -641,8 +642,11 @@ class _BoundedCache:
 _render_cache = _BoundedCache(maxsize=200)  # (json-key, width) -> PNG bytes
 
 
-def _render_block_png_cached(block: dict, width: int) -> bytes:
-    cache_key = (json.dumps(block, sort_keys=True), width)
+def _render_block_png_cached(block: dict, width: int, theme: str = 'light') -> bytes:
+    # theme is part of the cache key -- found live, 2026-09-04, alongside
+    # adding real theme support: two requests for the same block/width but
+    # different theme must never collide and serve each other's PNG.
+    cache_key = (json.dumps(block, sort_keys=True), width, theme)
     cached = _render_cache.get(cache_key)
     if cached is None:
         # Rate limit + size validation ONLY on a genuine cache miss -- a
@@ -651,7 +655,7 @@ def _render_block_png_cached(block: dict, width: int) -> bytes:
         # launch.
         _validated_block(block)
         _check_render_rate_limit()
-        cached = _render_block_png(block, width)
+        cached = _render_block_png(block, width, theme=theme)
         _render_cache.set(cache_key, cached)
     return cached
 
@@ -667,7 +671,8 @@ def render_png():
     try:
         spec = _decode_block_qs(request.args.get('b', ''))
         width = _validated_width(spec.get('width', 620))
-        png = _render_block_png_cached(spec['block'], width)
+        theme = spec.get('theme', 'light')
+        png = _render_block_png_cached(spec['block'], width, theme)
     except _InvalidToken as e:
         return Response(f'render.png failed: {e}', status=403, mimetype='text/plain')
     except RuntimeError as e:
