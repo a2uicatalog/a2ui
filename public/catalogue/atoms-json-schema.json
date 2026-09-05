@@ -925,6 +925,241 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "sortable_list"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "order": {
+                  "type": "string"
+                },
+                "group": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label"
+              ]
+            }
+          },
+          "label": {
+            "type": "string"
+          },
+          "emptyMessage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "photo_grid"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "alt": {
+                  "type": "string"
+                },
+                "caption": {
+                  "type": "string"
+                },
+                "badge": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "url"
+              ]
+            }
+          },
+          "cols": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "photo_stepper"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "alt": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "price_display": {
+                  "type": "string"
+                },
+                "badge": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "string"
+                },
+                "starred_by_display": {
+                  "type": "string"
+                },
+                "source_url": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "url"
+              ]
+            }
+          },
+          "accent": {
+            "type": "string"
+          },
+          "trigger_label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "preview_frame"
+          },
+          "src": {
+            "type": "string",
+            "format": "uri"
+          },
+          "label": {
+            "type": "string"
+          },
+          "height": {
+            "type": "number"
+          },
+          "emptyMessage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "actual_vs_estimate"
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "\"Cost\"",
+              "\"Effort\"",
+              "\"Jobs\""
+            ]
+          },
+          "actual": {
+            "type": "number"
+          },
+          "estimate": {
+            "type": "integer"
+          },
+          "unit": {
+            "type": "number"
+          },
+          "show_total": {
+            "type": "string",
+            "enum": [
+              "theauthorneversuppliesitAone-payload",
+              "one-renderarithmeticbelongstotherendererunderthederivationboundaryrule",
+              "andanauthorwhosuppliesasumcansupplyawrongoneSetfalsewhereaddingthetwoisnonsense"
+            ]
+          },
+          "actual_label": {
+            "type": "string"
+          },
+          "estimate_label": {
+            "type": "string"
+          },
+          "total_label": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "accent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "label",
+          "actual",
+          "estimate"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "stat_card"
           },
           "value": {
@@ -5156,6 +5391,62 @@
           "type",
           "value",
           "max_value"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "masonry_elevation"
+          },
+          "width_mm": {
+            "type": "string",
+            "enum": [
+              "theROUNDED-to-whole-coursesvalue(egacalctool'sactual_w_mm)",
+              "nottherawrequestedwidth",
+              "orthelastpartialcourse/columnsilentlyclips"
+            ]
+          },
+          "height_mm": {
+            "type": "number"
+          },
+          "unit_l_mm": {
+            "type": "integer"
+          },
+          "course_h_mm": {
+            "type": "integer"
+          },
+          "courses": {
+            "type": "integer"
+          },
+          "per_course": {
+            "type": "integer"
+          },
+          "pattern": {
+            "type": "string"
+          },
+          "colour": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "stats_line": {
+            "type": "string"
+          },
+          "render_style": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type",
+          "width_mm",
+          "height_mm",
+          "unit_l_mm",
+          "course_h_mm",
+          "courses"
         ],
         "additionalProperties": false
       },
@@ -16593,6 +16884,42 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "form_textarea"
+          },
+          "label": {
+            "type": "string"
+          },
+          "placeholder": {
+            "type": "string",
+            "enum": [
+              "neversubmittedifthereaderdoesn'ttypeUse`value`insteadforareal",
+              "editable",
+              "submittablepre-fill"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "renderedasactualtextinsidethebox",
+              "submittedas-isifthereaderdoesn'tchangeitIfyoualsodeclareaValueStoreforthisfield'sonChange",
+              "keepitsinitialValueequaltothissamestring",
+              "orareaderwhonevertouchestheboxwillsubmitanemptyvaluedespiteseeingrealtext"
+            ]
+          },
+          "rows": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "flashcard_deck"
           },
           "cards": {
@@ -16670,6 +16997,283 @@
         "required": [
           "type",
           "events"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "me"
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "string (optional, inline",
+              "top-right, default \"inline\")"
+            ]
+          },
+          "show_name": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "theme_toggle"
+          },
+          "initial": {
+            "type": "string",
+            "enum": [
+              "whichstatethetoggle(anditslabel/chrome)paintsasonfirstloadNotitselfpersistence\u2014asurfacethatrepaintsitself(egviapaint_result)mustpassthereader'sLASTchoicebackinhere",
+              "oreveryrepaintresetstowhateverthissays"
+            ]
+          },
+          "position": {
+            "type": "string"
+          },
+          "dark_bg": {
+            "type": "string"
+          },
+          "label_dark": {
+            "type": "string"
+          },
+          "label_light": {
+            "type": "string"
+          },
+          "persist_to": {
+            "type": "string",
+            "enum": [
+              "whensettogetherwithpersist_action",
+              "aclickALSOcallstheenginedirectly(bypassingthestandardwire-propsystem",
+              "whichhasnoeventcarrying\"whichthemeitbecame\")tosetthisValueStoreto\"dark\"/\"light\"andrunpersist_actionOmiteitherandthetoggleispurelyvisual",
+              "asbefore"
+            ]
+          },
+          "persist_action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "tool_tile"
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "\"user\"",
+              "\"book\"",
+              "\"folder\"today",
+              "extendthelookuptableinatoms_navgsasmoreareneededInline",
+              "deliberatelynotawebfont\u2014MaterialSymbols(icon_feature_grid)loadsfromanexternalCDNtheMCPAppsbundle'sCSP-clean-by-designprincipleisverylikelytoblockAtokenthisatomdoesnotrecogniserendersasliteraltextinsteadofnothing",
+              "sopassinganemojidirectlystilldegradesvisiblyratherthansilently"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          },
+          "badge": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string",
+            "enum": [
+              "twofixedcolortreatments",
+              "notanarbitrarycolorprop",
+              "soagridoftilesreadsasonedeliberatepaletteratherthanarandomassortment"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "lens_grid"
+          },
+          "target": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "caption": {
+                  "type": "string"
+                },
+                "selected": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label"
+              ]
+            }
+          },
+          "columns": {
+            "type": "number"
+          },
+          "gap": {
+            "type": "number"
+          },
+          "selected": {
+            "type": "string",
+            "enum": [
+              "arepaintmustpassthereader'slastchoicebackinhereoritresets",
+              "sameruleastheme_toggle'sinitial"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "domain_picker"
+          },
+          "target": {
+            "type": "string"
+          },
+          "default_option": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label"
+              ]
+            }
+          },
+          "default_domains": {
+            "type": "string"
+          },
+          "free_entry": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "placeholder"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "tab_group"
+          },
+          "target": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "selected": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label"
+              ]
+            }
+          },
+          "panels": {
+            "type": "string",
+            "enum": [
+              "thatelement'swrapperisshownwhenitstabisselected",
+              "hiddenotherwise"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "panels"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "quiet_link"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "text"
         ],
         "additionalProperties": false
       },
@@ -16782,6 +17386,359 @@
         "required": [
           "type",
           "mathml"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "service_status_board"
+          },
+          "title": {
+            "type": "string"
+          },
+          "stamp": {
+            "type": "string"
+          },
+          "verdict": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "level": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "level",
+                "text"
+              ]
+            }
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "state"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "services"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "incident_log"
+          },
+          "title": {
+            "type": "string"
+          },
+          "stamp": {
+            "type": "string"
+          },
+          "week": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "count",
+                "severity"
+              ]
+            }
+          },
+          "incidents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "service": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "duration": {
+                  "type": "string"
+                },
+                "when": {
+                  "type": "string"
+                },
+                "ongoing": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "service",
+                "summary",
+                "severity",
+                "duration",
+                "when",
+                "ongoing"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "week",
+          "incidents"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "stat_pulse"
+          },
+          "title": {
+            "type": "string"
+          },
+          "stamp": {
+            "type": "string"
+          },
+          "stats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "delta": {
+                  "type": "string"
+                },
+                "tone": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label",
+                "delta",
+                "tone"
+              ]
+            }
+          },
+          "trend": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bars": {
+                  "type": "string"
+                },
+                "labels": {
+                  "type": "string"
+                },
+                "hot_index": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "bars",
+                "labels",
+                "hot_index"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "stats",
+          "trend"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "weather_now"
+          },
+          "city_line": {
+            "type": "string"
+          },
+          "stamp": {
+            "type": "string"
+          },
+          "temp": {
+            "type": "integer"
+          },
+          "condition": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "string, one of sun",
+              "partly",
+              "cloud",
+              "rain",
+              "storm. Selects the drawn glyph."
+            ]
+          },
+          "hi": {
+            "type": "integer"
+          },
+          "lo": {
+            "type": "integer"
+          },
+          "stats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "city_line",
+          "temp",
+          "condition",
+          "code",
+          "hi",
+          "lo",
+          "stats"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "weather_outlook"
+          },
+          "title": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "scale": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "string"
+                },
+                "max": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "min",
+                "max"
+              ]
+            }
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "hi": {
+                  "type": "string"
+                },
+                "lo": {
+                  "type": "string"
+                },
+                "precip": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "date",
+                "code",
+                "hi",
+                "lo",
+                "precip"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "scale",
+          "days"
         ],
         "additionalProperties": false
       },
@@ -17089,6 +18046,46 @@
         "required": [
           "type",
           "name"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "tool_call_card"
+          },
+          "tool_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "args": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "string . The output data",
+              "response returned by the tool."
+            ]
+          },
+          "latency_ms": {
+            "type": "number"
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "string . Error details",
+              "exception message if status is \"error\"."
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "tool_name"
         ],
         "additionalProperties": false
       }

@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 480,
+ "atomCount": 500,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -313,6 +313,46 @@
    "surfaces": [
     "web",
     "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "sortable_list",
+   "compact": "drag-to-reorder list emitting {id, order} on drop",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "photo_grid",
+   "compact": "clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "photo_stepper",
+   "compact": "full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "preview_frame",
+   "compact": "iframe whose src is wired to another node's value, so picking updates it with no repaint",
+   "surfaces": [
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "actual_vs_estimate",
+   "compact": "one quantity as actual + estimate, both labelled, neither omittable",
+   "surfaces": [
+    "web",
     "google-apps-script-web",
     "mcp-apps"
    ]
@@ -1799,6 +1839,16 @@
   {
    "type": "gauge_sla",
    "compact": "radial SLA gauge with glowing pointer and large metric value",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "masonry_elevation",
+   "compact": "coursed block/brick wall elevation with bond-pattern stagger and render-style options",
    "surfaces": [
     "web",
     "google-meet-stage",
@@ -4639,6 +4689,14 @@
    ]
   },
   {
+   "type": "form_textarea",
+   "compact": "multi-line text input area",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
    "type": "flashcard_deck",
    "compact": "flip-card deck of question answer pairs",
    "surfaces": [
@@ -4649,6 +4707,62 @@
   {
    "type": "brevet_timeline",
    "compact": "dated vertical revision timeline",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "me",
+   "compact": "current user identity chip",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "theme_toggle",
+   "compact": "floating light dark theme switch",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "tool_tile",
+   "compact": "large icon+title tile, whole tile clickable, for an app/tool selector grid",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "lens_grid",
+   "compact": "selectable card grid for a small, explained set of options",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "domain_picker",
+   "compact": "default-pill plus free-text override for a config question",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "tab_group",
+   "compact": "pill tabs that show/hide sibling layout elements",
+   "surfaces": [
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "quiet_link",
+   "compact": "chromeless secondary text action, for use beside one primary button",
    "surfaces": [
     "google-apps-script-web",
     "mcp-apps"
@@ -4682,6 +4796,41 @@
    ]
   },
   {
+   "type": "service_status_board",
+   "compact": "verdict-first service status grid with triple-encoded state",
+   "surfaces": [
+    "google-chat-chromium-render"
+   ]
+  },
+  {
+   "type": "incident_log",
+   "compact": "7-day incident strip plus recent incident rows",
+   "surfaces": [
+    "google-chat-chromium-render"
+   ]
+  },
+  {
+   "type": "stat_pulse",
+   "compact": "three hero stat tiles plus a small emphasized trend bar chart",
+   "surfaces": [
+    "google-chat-chromium-render"
+   ]
+  },
+  {
+   "type": "weather_now",
+   "compact": "hero temperature with drawn weather glyph and 4 supporting stats",
+   "surfaces": [
+    "google-chat-chromium-render"
+   ]
+  },
+  {
+   "type": "weather_outlook",
+   "compact": "multi-day range-bar forecast on one shared temperature axis",
+   "surfaces": [
+    "google-chat-chromium-render"
+   ]
+  },
+  {
    "type": "concept_ladder",
    "compact": "layered-depth concept explainer — hook, mental-model card, depth rungs, worked example",
    "surfaces": [
@@ -4711,6 +4860,15 @@
   {
    "type": "stack_layer",
    "compact": "one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack",
+   "surfaces": [
+    "web",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "tool_call_card",
+   "compact": "structured agent tool call card with status, inputs, result, and latency",
    "surfaces": [
     "web",
     "google-apps-script-web",

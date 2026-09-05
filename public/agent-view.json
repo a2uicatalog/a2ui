@@ -1,6 +1,6 @@
 {
   "name": "A2UI Atomic Catalog",
-  "description": "480 typed UI atoms an AI agent composes into real rendered interfaces across 8 surfaces, instead of generating HTML.",
+  "description": "500 typed UI atoms an AI agent composes into real rendered interfaces across 9 surfaces, instead of generating HTML.",
   "authentication": {
     "required": false,
     "detail": "No API key, no signup. See /auth.md for the optional enterprise OAuth path."

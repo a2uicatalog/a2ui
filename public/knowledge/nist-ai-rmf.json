@@ -7,7 +7,7 @@
  "license": "Public Domain — U.S. Government work",
  "steps": null,
  "coverage": "precompiled",
- "built": "2026-07-02",
+ "built": "2026-09-05",
  "planes": {
   "learning-interactive": {
    "surface": "blocks-page",

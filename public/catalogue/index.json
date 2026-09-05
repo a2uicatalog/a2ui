@@ -10,11 +10,15 @@
       "title": "A2UI base atoms",
       "alwaysResolved": true,
       "whenToUse": "The standard catalog — structure, text, data display, inputs, actions and the wired state connectors. ALWAYS resolved; every surface uses it.",
-      "atomCount": 95,
+      "atomCount": 107,
       "atoms": [
         {
           "type": "accordion_item",
           "description": "single collapsible section with toggle by clicking its header, using only CSS."
+        },
+        {
+          "type": "actual_vs_estimate",
+          "description": "one quantity as actual + estimate, both labelled, neither omittable"
         },
         {
           "type": "alert_banner",
@@ -133,6 +137,10 @@
           "description": "horizontal visual section break"
         },
         {
+          "type": "domain_picker",
+          "description": "default-pill plus free-text override for a config question"
+        },
+        {
           "type": "empty_state",
           "description": "zero-data empty state with icon and call to action image, message, and an optional call to action."
         },
@@ -178,6 +186,10 @@
         {
           "type": "form_switch_group",
           "description": "group of labelled toggle switches"
+        },
+        {
+          "type": "form_textarea",
+          "description": "multi-line text input area"
         },
         {
           "type": "google_icon",
@@ -236,6 +248,10 @@
         {
           "type": "key_value",
           "description": "label and value pairs in a compact grid"
+        },
+        {
+          "type": "lens_grid",
+          "description": "selectable card grid for a small, explained set of options"
         },
         {
           "type": "link_button",
@@ -308,6 +324,18 @@
           "description": "prose paragraph (GAS alias for body)"
         },
         {
+          "type": "photo_grid",
+          "description": "clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state"
+        },
+        {
+          "type": "photo_stepper",
+          "description": "full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos"
+        },
+        {
+          "type": "preview_frame",
+          "description": "iframe whose src is wired to another node's value, so picking updates it with no repaint"
+        },
+        {
           "type": "print_button",
           "description": "button to print or save page as PDF"
         },
@@ -328,6 +356,10 @@
               "spreadsheets"
             ]
           }
+        },
+        {
+          "type": "quiet_link",
+          "description": "chromeless secondary text action, for use beside one primary button"
         },
         {
           "type": "quote",
@@ -362,6 +394,10 @@
         {
           "type": "skeleton",
           "description": "shimmer loading placeholder shapes"
+        },
+        {
+          "type": "sortable_list",
+          "description": "drag-to-reorder list emitting {id, order} on drop"
         },
         {
           "type": "spacer",
@@ -418,6 +454,10 @@
           "description": "horizontal tab navigation bar typically leading to different sections or pages."
         },
         {
+          "type": "tab_group",
+          "description": "pill tabs that show/hide sibling layout elements"
+        },
+        {
           "type": "tabbed_code",
           "description": "organize multiple programming language snippets inside an interactive tab container"
         },
@@ -442,12 +482,20 @@
           "description": "lightweight tinted inline tip or note block no icon"
         },
         {
+          "type": "theme_toggle",
+          "description": "floating light dark theme switch"
+        },
+        {
           "type": "timeline",
           "description": "chronological event timeline"
         },
         {
           "type": "toggle_switch",
           "description": "CSS toggle switch input"
+        },
+        {
+          "type": "tool_tile",
+          "description": "large icon+title tile, whole tile clickable, for an app/tool selector grid"
         },
         {
           "type": "tooltip",
@@ -541,7 +589,7 @@
       "title": "Data visualisation",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
-      "atomCount": 21,
+      "atomCount": 22,
       "atoms": [
         {
           "type": "benchmark_comparison",
@@ -585,6 +633,10 @@
         {
           "type": "heatmap",
           "description": "grid heatmap coloured by intensity value are represented as colors in a matrix."
+        },
+        {
+          "type": "masonry_elevation",
+          "description": "coursed block/brick wall elevation with bond-pattern stagger and render-style options"
         },
         {
           "type": "mini_sparkline_set",
@@ -1516,7 +1568,7 @@
       "title": "Google Workspace (live data)",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface shows the signed-in user's OWN live Google Workspace data — Gmail, Drive, Calendar, Sheets, Tasks, Chat, Meet. Server-fetched, per-user.",
-      "atomCount": 28,
+      "atomCount": 29,
       "atoms": [
         {
           "type": "action_items",
@@ -1625,6 +1677,13 @@
         {
           "type": "heatmap_calendar",
           "description": "calendar month heatmap with date-value density colouring"
+        },
+        {
+          "type": "me",
+          "description": "current user identity chip",
+          "processing": {
+            "required_scope": "userinfo.email"
+          }
         },
         {
           "type": "multi_doc_ai_brief",
@@ -2021,7 +2080,7 @@
       "title": "Catalog & AI meta",
       "alwaysResolved": false,
       "whenToUse": "Use for surfaces ABOUT the catalog or AI tooling — atom anatomy, schema reveal, prompt-to-schema, Gemini handoff, model cards.",
-      "atomCount": 15,
+      "atomCount": 16,
       "atoms": [
         {
           "type": "ai_build_trace",
@@ -2085,6 +2144,10 @@
           "description": "context window token usage meter with capacity warning colours"
         },
         {
+          "type": "tool_call_card",
+          "description": "structured agent tool call card with status, inputs, result, and latency"
+        },
+        {
           "type": "url_anatomy",
           "description": "annotated URL anatomy diagram"
         }
@@ -2096,7 +2159,7 @@
       "title": "Status & ops",
       "alwaysResolved": false,
       "whenToUse": "Use for operational dashboards — status/SLA, Jira, sprint boards, notifications, changelogs, live polls and votes.",
-      "atomCount": 40,
+      "atomCount": 45,
       "atoms": [
         {
           "type": "api_param_table",
@@ -2157,6 +2220,10 @@
         {
           "type": "http_request_block",
           "description": "document REST API endpoints with HTTP methods, headers, and payloads"
+        },
+        {
+          "type": "incident_log",
+          "description": "7-day incident strip plus recent incident rows"
         },
         {
           "type": "inventory_table",
@@ -2238,12 +2305,20 @@
           "description": "quarter-based product roadmap with status-tagged milestones"
         },
         {
+          "type": "service_status_board",
+          "description": "verdict-first service status grid with triple-encoded state"
+        },
+        {
           "type": "shortcut_legend",
           "description": "keyboard shortcut cheat-sheet grid with key combos and labels"
         },
         {
           "type": "sprint_board",
           "description": "kanban sprint board with named columns and compact issue cards"
+        },
+        {
+          "type": "stat_pulse",
+          "description": "three hero stat tiles plus a small emphasized trend bar chart"
         },
         {
           "type": "status_dashboard",
@@ -2260,6 +2335,14 @@
         {
           "type": "vote_button_group",
           "description": "Multi-option vote buttons in pill, neon, or default style"
+        },
+        {
+          "type": "weather_now",
+          "description": "hero temperature with drawn weather glyph and 4 supporting stats"
+        },
+        {
+          "type": "weather_outlook",
+          "description": "multi-day range-bar forecast on one shared temperature axis"
         }
       ]
     },

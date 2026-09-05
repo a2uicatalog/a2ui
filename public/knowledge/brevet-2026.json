@@ -7,7 +7,7 @@
  "license": "Licence Ouverte 2.0 (contenus officiels); assembly a2uicatalog",
  "steps": null,
  "coverage": "precompiled",
- "built": "2026-07-02",
+ "built": "2026-09-05",
  "planes": {
   "learning-interactive": {
    "surface": "blocks-page",

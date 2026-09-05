@@ -7,7 +7,7 @@
  "license": "CC-BY-4.0",
  "steps": 5,
  "coverage": "4/6 sections",
- "built": "2026-07-02",
+ "built": "2026-09-05",
  "planes": {
   "learning-interactive": {
    "surface": "a2ui_wired_surface",
@@ -19,35 +19,40 @@
       "id": "s_1",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_2",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_3",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_4",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_5",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
