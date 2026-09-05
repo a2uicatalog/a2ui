@@ -199,6 +199,52 @@ def test_openapi_published_in_json_and_yaml():
     assert "/api/render/batch" in parsed_yaml["paths"]
 
 
+def test_versioning_policy_headers_are_wired_not_just_declared():
+    """public/versioning.md promises Deprecation (RFC 9745) / Sunset (RFC
+    8594) headers "on the affected responses" of a breaking change, with a
+    90-day minimum gap. Found in review, 2026-09-05: components/headers
+    declared Deprecation and Sunset schemas, but no path response anywhere
+    in the spec actually referenced them with $ref -- and the live MCP
+    worker (a2ui-private/mcp-worker) never emitted either header on any
+    response, so the promise was pure prose with nothing checking it.
+    a2ui-private/mcp-worker/src/deprecations.js now actually emits these
+    headers from a registry, validated at import time against the 90-day
+    minimum; this test locks in that every endpoint carrying X-API-Version
+    also documents Deprecation/Sunset as the two travel together."""
+    openapi_json = json.loads(_load("openapi.json"))
+    paths = openapi_json["paths"]
+
+    def responses_with_api_version(spec):
+        for path, methods in spec.items():
+            for method, op in methods.items():
+                if method not in ("get", "post", "put", "delete", "patch"):
+                    continue
+                for status, resp in (op.get("responses") or {}).items():
+                    headers = resp.get("headers") or {}
+                    if "X-API-Version" in headers:
+                        yield f"{method.upper()} {path} -> {status}", headers
+
+    # GET /mcp is the server descriptor itself (name/transport/tools/limits) --
+    # a metadata document about the server, not a per-tool/per-route response
+    # shape that the deprecation registry (keyed by "tool:<name>" / "route:<path>")
+    # is built to describe. Every other X-API-Version response IS such a shape.
+    EXEMPT = {"GET /mcp -> 200"}
+
+    checked = 0
+    for label, headers in responses_with_api_version(paths):
+        if label in EXEMPT:
+            continue
+        checked += 1
+        assert "Deprecation" in headers, f"{label}: carries X-API-Version but not Deprecation"
+        assert "Sunset" in headers, f"{label}: carries X-API-Version but not Sunset"
+        assert headers["Deprecation"]["$ref"] == "#/components/headers/Deprecation"
+        assert headers["Sunset"]["$ref"] == "#/components/headers/Sunset"
+    assert checked >= 6, f"expected at least 6 versioned responses, found {checked}"
+
+    components = openapi_json["components"]["headers"]
+    assert "Deprecation" in components and "Sunset" in components
+
+
 def test_ard_catalog_and_discovery():
     """ARD v0.91 resource discovery catalog must exist at /.well-known/ard.json and be valid JSON."""
     ard_txt = _load(".well-known", "ard.json")

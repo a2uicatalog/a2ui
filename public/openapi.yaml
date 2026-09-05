@@ -131,6 +131,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -425,6 +429,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -479,6 +487,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -539,6 +551,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -569,6 +585,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
@@ -600,6 +620,10 @@ paths:
           headers:
             X-API-Version:
               $ref: '#/components/headers/ApiVersion'
+            Deprecation:
+              $ref: '#/components/headers/Deprecation'
+            Sunset:
+              $ref: '#/components/headers/Sunset'
           content:
             application/json:
               schema:
