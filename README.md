@@ -12,7 +12,7 @@ The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation
 [![Atoms](https://img.shields.io/badge/atoms-480-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
 [![Surfaces](https://img.shields.io/badge/surfaces-8-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
 [![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
-[![ARD](https://img.shields.io/badge/ARD-ai--catalog.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ai-catalog.json)
+[![ARD](https://img.shields.io/badge/ARD-ard.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ard.json)
 [![Smithery](https://smithery.ai/badge/a2uicatalog/a2uicatalog)](https://smithery.ai/servers/a2uicatalog/a2uicatalog)
 [![License](https://img.shields.io/badge/license-MIT-34d399?style=flat-square&labelColor=0a0e17)](LICENSE)
 [![A2UI](https://img.shields.io/badge/spec-v1.0_candidate-a78bfa?style=flat-square&labelColor=0a0e17)](renderers/a2ui_v1.py)
@@ -47,7 +47,7 @@ The catalog is consumable three ways, no signup for any of them — BYO by desig
 | Channel | Endpoint | What an agent gets |
 |---|---|---|
 | **MCP server** | [`a2uicatalog.ai/mcp`](https://a2uicatalog.ai/mcp) | Tools to browse catalogs, validate/compose payloads, emit render URLs, and render live views on MCP Apps hosts |
-| **ARD manifest** | [`/.well-known/ai-catalog.json`](https://a2uicatalog.ai/.well-known/ai-catalog.json) | Agentic Resource Discovery — every atom as a crawlable, typed entry |
+| **ARD manifest** | [`/.well-known/ard.json`](https://a2uicatalog.ai/.well-known/ard.json) | Agentic Resource Discovery — every atom as a crawlable, typed entry |
 | **Machine catalog** | [`a2uicatalog.ai/spec.json`](https://a2uicatalog.ai/spec.json) | The full schema in one fetch — types, fields, surface compatibility, degradation notes |
 
 **5-minute quickstarts:** [Claude (Desktop / claude.ai)](docs/quickstart-claude.md) · [Gemini Enterprise (BYO-MCP)](docs/quickstart-gemini-enterprise.md)
