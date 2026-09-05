@@ -8,7 +8,7 @@
    "license": "Public Domain — U.S. Government work",
    "steps": null,
    "coverage": "precompiled",
-   "built": "2026-07-02"
+   "built": "2026-09-05"
   },
   {
    "id": "brevet-2026",
@@ -18,7 +18,7 @@
    "license": "Licence Ouverte 2.0 (contenus officiels); assembly a2uicatalog",
    "steps": null,
    "coverage": "precompiled",
-   "built": "2026-07-02"
+   "built": "2026-09-05"
   },
   {
    "id": "clasp-deployment",
@@ -28,7 +28,7 @@
    "license": "Apache-2.0",
    "steps": 7,
    "coverage": "1/6 sections",
-   "built": "2026-07-02"
+   "built": "2026-09-05"
   },
   {
    "id": "cloudflare-workers-get-started",
@@ -38,7 +38,7 @@
    "license": "CC-BY-4.0",
    "steps": 5,
    "coverage": "4/6 sections",
-   "built": "2026-07-02"
+   "built": "2026-09-05"
   },
   {
    "id": "gh-cli-quickstart",
@@ -48,7 +48,7 @@
    "license": "CC-BY-4.0",
    "steps": 13,
    "coverage": "4/6 sections",
-   "built": "2026-07-02"
+   "built": "2026-09-05"
   },
   {
    "id": "vite-getting-started",
@@ -58,7 +58,7 @@
    "license": "MIT",
    "steps": 19,
    "coverage": "5/6 sections",
-   "built": "2026-07-02"
+   "built": "2026-09-05"
   }
  ],
  "note": "Compiled knowledge artifacts — payload + provenance. Unannounced tier."

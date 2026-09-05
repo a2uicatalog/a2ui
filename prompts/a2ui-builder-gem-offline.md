@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 480 atoms.** One line each:
+1. **Compact index — all 500 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 480 atoms)
+### Compact index (all 500 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -409,6 +409,11 @@ does not exist.
 - `carousel` — horizontally scrollable card carousel
 - `timeline` — chronological event timeline
 - `annotated_code` — code block with numbered callout bubbles on specific lines explanation list below
+- `sortable_list` — drag-to-reorder list emitting {id, order} on drop
+- `photo_grid` — clickable image grid — data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state
+- `photo_stepper` — full-viewport one-at-a-time photo lightbox — opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos
+- `preview_frame` — iframe whose src is wired to another node's value, so picking updates it with no repaint
+- `actual_vs_estimate` — one quantity as actual + estimate, both labelled, neither omittable
 - `stat_card` — single KPI value with label delta and accent colour indicator
 - `progress_bar` — labelled horizontal progress bar with percentage
 - `badge_group` — row of coloured label badges
@@ -559,6 +564,7 @@ does not exist.
 - `copy_to_clipboard` — copy-to-clipboard button with inline code and feedback
 - `conversion_funnel` — pipeline conversion funnel with step tapering and leak markers
 - `gauge_sla` — radial SLA gauge with glowing pointer and large metric value
+- `masonry_elevation` — coursed block/brick wall elevation with bond-pattern stagger and render-style options
 - `stacked_area` — stacked area chart with overlapping glowing translucent gradients
 - `scatter_trend` — coordinate scatter plot with regression trend line
 - `call_mood_board` — visual summary board of call sentiments moods and active themes
@@ -852,15 +858,29 @@ does not exist.
 - `hub` — deck navigation shell with subjects and slides
 - `jump_nav` — anchor pill buttons scrolling to page sections
 - `command_step` — copyable command with completion checkbox
+- `form_textarea` — multi-line text input area
 - `flashcard_deck` — flip-card deck of question answer pairs
 - `brevet_timeline` — dated vertical revision timeline
+- `me` — current user identity chip
+- `theme_toggle` — floating light dark theme switch
+- `tool_tile` — large icon+title tile, whole tile clickable, for an app/tool selector grid
+- `lens_grid` — selectable card grid for a small, explained set of options
+- `domain_picker` — default-pill plus free-text override for a config question
+- `tab_group` — pill tabs that show/hide sibling layout elements
+- `quiet_link` — chromeless secondary text action, for use beside one primary button
 - `gdm_rocket_panel` — isometric rocket launch canvas animation, fixed half-viewport overlay
 - `content_tabs` — tabbed panels holding nested atom blocks
 - `math_block` — native MathML equation typeset with the math font family
+- `service_status_board` — verdict-first service status grid with triple-encoded state
+- `incident_log` — 7-day incident strip plus recent incident rows
+- `stat_pulse` — three hero stat tiles plus a small emphasized trend bar chart
+- `weather_now` — hero temperature with drawn weather glyph and 4 supporting stats
+- `weather_outlook` — multi-day range-bar forecast on one shared temperature axis
 - `concept_ladder` — layered-depth concept explainer — hook, mental-model card, depth rungs, worked example
 - `concept_rung` — one depth level (kind chip, title, body, code, takeaway) — normally used inside concept_ladder
 - `layer_stack` — labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow
 - `stack_layer` — one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack
+- `tool_call_card` — structured agent tool call card with status, inputs, result, and latency
 ## Payload envelope (renderer contract — not in the catalog)
 
 Simple page:

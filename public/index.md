@@ -1,12 +1,12 @@
 ---
 title: A2UI Atomic Catalog
-description: 480 typed UI atoms an AI agent composes into real rendered interfaces instead of generating HTML.
+description: 500 typed UI atoms an AI agent composes into real rendered interfaces instead of generating HTML.
 canonical: https://a2uicatalog.ai/
 ---
 
 # A2UI Atomic Catalog
 
-480 typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
+500 typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
 Apps Script, Google Chat and MCP Apps — instead of generating HTML.
 
 ## Start here

@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 480 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 500 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -598,6 +598,86 @@
         "show a code block with numbered callout bubbles on specific lines explanation list below",
         "code block with numbered yellow callout bubbles on specific lines,",
         "render a annotated code"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:sortable_list",
+      "displayName": "Sortable List",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/sortable_list",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Drag to reorder a list, emitting the new position as one event.\nA DATA atom, not a domain one: it renders whatever {id, label} pairs it is given and emits a position, so the same atom serves form fields, a shopping run, or any other AUTHORED ordering. There is deliberately no sortable_jobs and no sortable_fields \u2014 one named interaction per use case is the drift this vocabulary already has (onFlightClick, onAssign), and it costs a renderer change every time.\nThe reason it fits a declarative binding model at all is containment: the gesture never reaches the state engine. dragstart/dragover/drop are high-frequency and purely visual; only the DROP publishes, once, through the `onReorder` output wire as {id, order}. That is the same shape the atom renders FROM, so position is derived state rather than a second source of truth \u2014 what it emits and what it consumes are one field.\n`order` is fractional: a drop takes the midpoint of its two neighbours, so exactly one item changes. Dense re-indexing would rewrite every position on every drag, turning a one-line reviewable diff into a wall of noise, which matters wherever the result is a change someone accepts or reverts.\nUse it only where order is AUTHORED. Where order is COMPUTED \u2014 a job list ranked by severity then priority \u2014 a dragged position becomes a second, competing ordering, and the derivation boundary rule says that ranking belongs to the server.",
+      "representativeQueries": [
+        "show a drag-to-reorder list emitting {id, order} on drop",
+        "drag to reorder a list, emitting the new position as one event.\na data atom, not a domain one: it renders whatever",
+        "render a sortable list"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:photo_grid",
+      "displayName": "Photo Grid",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/photo_grid",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A clickable image grid: every tile is both a photo and a row.\nBuilt to close a real gap \u2014 data_table has no way to show what a row IS, only what it says about itself, so a photo-driven decision (which wallpaper, which chair) forced a text table plus a separate \"View photo\" link plus a separate select-then-tap-a-button flow before an action could fire. This atom is the shape that removes all three: the thing you look at and the thing you click are the same element.\nReuses data_table's onRowClick contract exactly \u2014 same data-row-json attribute, same _a2uiBindRowClicks binder, same array-wire form for \"select AND immediately run an action\" in one tap (shipped 2026-08-04 for onRowClick, inherited here for free rather than rebuilt). A DATA atom, not a domain one, same reasoning sortable_list gives for its own genericness: it renders whatever {id, url, ...} objects it is given and fires whatever the caller wired onRowClick to, so the same atom serves a voting board, a photo picker, or a product chooser without a second named atom per use case.\n`badge` and `active` exist because a click-driven UI still has to show its OWN state back \u2014 a starred tile that does not visibly read as starred after the tap is a button that looks like it did nothing. Both are plain strings/booleans the caller derives server-side (a star count, a \"you picked this\" flag); the atom does not compute either.",
+      "representativeQueries": [
+        "show a clickable image grid \u2014 data-row-json tiles, reuses data_table's onRowClick contract; badge + active show per-tile state",
+        "a clickable image grid: every tile is both a photo and a row.\nbuilt to close a real gap \u2014 data_table has no way to",
+        "render a photo grid"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:photo_stepper",
+      "displayName": "Photo Stepper",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/photo_stepper",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A full-viewport, one-photo-at-a-time lightbox with prev/next and a vote button per slide \u2014 the sibling photo_grid does not cover: reviewing options ONE AT A TIME with full attention, immersively, rather than scanning a grid. Neither replaces the other; pick per use case, or offer both. Renders closed as a compact trigger card (first photo + label); clicking it opens the full takeover.\nThe takeover itself is a pure-CSS checkbox toggle \u2014 the SAME `#checkbox:checked ~ .overlay{display:...}` pattern the `css_modal` atom already uses for its own position:fixed;inset:0 overlay, not a new mechanism. Paging within the open overlay is the SAME pure-CSS radio-input trick the existing `carousel` atom already uses (sibling :checked selectors drive the slide transform) \u2014 no JS-tracked index to go stale, and critically, nothing for a live data refresh to disturb: `carousel` never had a live-update wire to worry about, but this atom does, and the radio's own browser-owned :checked state surviving a vote untouched is what stops \"vote on photo 12, get silently bounced back to photo 1\" from ever being possible in the first place \u2014 not a bug that was fixed, a failure mode the design does not have. Same reasoning protects open/closed state: the checkbox is the browser's own state too, so a live update cannot close the overlay out from under you either.\nThat is also why this atom's live-update path (_a2uiUpdatePhotoStepper) is NOT a rebuild like photo_grid's own _a2uiUpdatePhotoGrid \u2014 it patches each slide's badge/vote-button/voter-line IN PLACE, matched by candidate id (not array position), and touches nothing else. Matching by id, specifically, because the typical consumer of this atom (a live vote board) re-sorts its candidate list by vote count on every read while voting is open \u2014 so a candidate's position in the incoming array can move the instant ANY vote lands, including the one just cast on the slide currently open; patching by position against a reordered array would silently swap a different candidate's photo/name into the slide the radio's :checked state still has open. A consequence worth knowing before using this atom: because the update path patches EXISTING slide elements rather than creating them, the caller should populate the initial `images` prop with real data at render time (server-side), not rely purely on the `rows` wire to populate an empty first paint \u2014 an update arriving before any slide exists to patch has nothing to act on.\nReuses photo_grid's click contract exactly for the vote button (same data-row-json attribute, same generalised [data-row-json] binder in A2UIState.html) \u2014 the third consumer of a mechanism built once for data_table's own onRowClick.",
+      "representativeQueries": [
+        "show a full-viewport one-at-a-time photo lightbox \u2014 opens from a compact trigger card, carousel-style CSS paging, per-slide vote button reusing photo_grid''s click contract, live badge/voter updates patched in place by candidate id so voting never resets position or swaps photos",
+        "a full-viewport, one-photo-at-a-time lightbox with prev/next and a vote button per slide \u2014 the sibling photo_grid does",
+        "render a photo stepper"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:preview_frame",
+      "displayName": "Preview Frame",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/preview_frame",
+      "capabilities": [
+        "mcp-apps"
+      ],
+      "description": "An iframe whose `src` is driven by a wire, so picking a value elsewhere on the page re-navigates it CLIENT-SIDE \u2014 no server round trip, no paint_result, nothing else on the page repainted.\nA DATA atom, same spirit as sortable_list: it renders whatever src it is given and reacts to whatever is wired into it; it has no opinion on what the iframe shows. Meant to sit next to a picker (menu/select) and a StringTemplate primitive that turns the picked value into a URL \u2014 e.g. a \"preview this before you commit it\" panel, where committing is a SEPARATE, ordinary action.\nSame-origin only in practice: nothing here relaxes sandboxing. A cross-origin src is subject to the embedded page's own frame-ancestors / X-Frame-Options exactly as any other iframe.",
+      "representativeQueries": [
+        "show a iframe whose src is wired to another node's value, so picking updates it with no repaint",
+        "an iframe whose `src` is driven by a wire, so picking a value elsewhere on the page re-navigates it client-side \u2014 no",
+        "render a preview frame"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:actual_vs_estimate",
+      "displayName": "Actual Vs Estimate",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/actual_vs_estimate",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A quantity carrying BOTH what is known and what is projected, each labelled, neither omittable. A data atom rather than a domain one: cost is only the first instance. The same shape holds for effort (hours worked vs hours estimated), for work items (closed vs open) and for anything else an app tracks with an actual alongside a forecast \u2014 which is most things worth tracking.\nExists because that distinction is where composed answers go wrong. Asked \"what has this cost\", a model resolves the ambiguity by guessing, and on 2026-08-14 presented a EUR300 estimate for unstarted work under the heading \"COST\". Selection prose can ask it not to; a required-field shape makes it unrepresentable. Both figures are mandatory for exactly that reason.\nThe contract runs in two directions, which is the point. Upward it constrains what a UI can say. Downward it tells the data layer what it must be able to produce: an app that cannot separate incurred from projected cannot fill this atom, and discovering that is the useful part.",
+      "representativeQueries": [
+        "show a one quantity as actual + estimate, both labelled, neither omittable",
+        "a quantity carrying both what is known and what is projected, each labelled, neither omittable. a data atom rather",
+        "render a actual vs estimate"
       ]
     },
     {
@@ -3284,6 +3364,24 @@
         "show a radial SLA gauge with glowing pointer and large metric value",
         "renders a semi-circular radial gauge track with high contrast status quadrants, a glowing needle tick, and a prominent",
         "render a gauge sla"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:masonry_elevation",
+      "displayName": "Masonry Elevation",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/masonry_elevation",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Coursed block/brick wall elevation \u2014 draws courses bottom-up from wall-shape inputs (dimensions, per-block dimensions, course/per-course counts, bond pattern), with a running-bond half-unit stagger on alternate courses or none for stack bond. Draws the geometry itself from the given shape rather than taking a pre-computed rectangle list, so a caller only needs to hand it the same numbers a wall-calculation tool already produced.",
+      "representativeQueries": [
+        "show a coursed block/brick wall elevation with bond-pattern stagger and render-style options",
+        "coursed block/brick wall elevation \u2014 draws courses bottom-up from wall-shape inputs (dimensions, per-block dimensions,",
+        "render a masonry elevation"
       ]
     },
     {
@@ -8458,6 +8556,22 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:form_textarea",
+      "displayName": "Form Textarea",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/form_textarea",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Multi-line text input. Wire onChange to a ValueStore setValue to capture typed content.",
+      "representativeQueries": [
+        "show a multi-line text input area",
+        "multi-line text input. wire onchange to a valuestore setvalue to capture typed content",
+        "render a form textarea"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:flashcard_deck",
       "displayName": "Flashcard Deck",
       "type": "application/vnd.a2ui.atom+json",
@@ -8487,6 +8601,118 @@
         "show a dated vertical revision timeline",
         "vertical dated timeline of events for study/revision pages",
         "render a brevet timeline"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:me",
+      "displayName": "Me",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/me",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Chip showing the accessing user's identity (avatar/initial, optional name).",
+      "representativeQueries": [
+        "show a current user identity chip",
+        "chip showing the accessing user's identity (avatar/initial, optional name)",
+        "render a me"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:theme_toggle",
+      "displayName": "Theme Toggle",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/theme_toggle",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Floating light/dark theme switch persisted per visitor.",
+      "representativeQueries": [
+        "show a floating light dark theme switch",
+        "floating light/dark theme switch persisted per visitor",
+        "render a theme toggle"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:tool_tile",
+      "displayName": "Tool Tile",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/tool_tile",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Large icon+title tile, the WHOLE tile clickable \u2014 for a small set of primary choices (an app/tool selector), not a data-dense card. Bigger visual weight than a plain button. The wired dialect has no nested-children container atom, so lay several of these out as a grid by wrapping them in row_open/row_close with style \"display:grid; grid-template-columns:repeat(N,1fr)\" (row_open's own default display:flex is overridden by a later declaration in the same style string \u2014 normal CSS cascade, not a special case this atom needs to know about).",
+      "representativeQueries": [
+        "show a large icon+title tile, whole tile clickable, for an app/tool selector grid",
+        "large icon+title tile, the whole tile clickable \u2014 for a small set of primary choices (an app/tool selector), not a",
+        "render a tool tile"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:lens_grid",
+      "displayName": "Lens Grid",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/lens_grid",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Grid of selectable cards for a config question with a small fixed set of options, each worth a short explanation \u2014 unlike a dropdown, which hides the explanation until opened. Not driven by the standard onClick wire (there is no event carrying \"which card\"); pass target (a ValueStore id) and the card's own click updates it directly, mirroring theme_toggle's persist_to pattern.",
+      "representativeQueries": [
+        "show a selectable card grid for a small, explained set of options",
+        "grid of selectable cards for a config question with a small fixed set of options, each worth a short explanation \u2014",
+        "render a lens grid"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:domain_picker",
+      "displayName": "Domain Picker",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/domain_picker",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "One filled pill (\"use my saved default\") beside a free-text field, for a config question that almost always wants the same answer but sometimes needs a one-off override. The pill and the field write the SAME target ValueStore \u2014 whichever the reader touched last wins, so there is no separate \"which mode\" flag anywhere to fall out of sync.",
+      "representativeQueries": [
+        "show a default-pill plus free-text override for a config question",
+        "one filled pill (\"use my saved default\") beside a free-text field, for a config question that almost always wants the",
+        "render a domain picker"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:tab_group",
+      "displayName": "Tab Group",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/tab_group",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Pill tabs that switch which ONE of several sibling atoms is visible, e.g. \"how will you give me the source \u2014 a URL, a file, or pasted text\" \u2014 rather than showing every input area stacked and unlabelled at once. panels maps a tab's value to ANOTHER layout element's id and toggles that element's own wrapper directly; safe regardless of layout order, since the whole surface's markup exists before any atom's script runs. Same direct-engine pattern as lens_grid/domain_picker.",
+      "representativeQueries": [
+        "show a pill tabs that show/hide sibling layout elements",
+        "pill tabs that switch which one of several sibling atoms is visible, e.g. \"how will you give me the source \u2014 a url, a",
+        "render a tab group"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:quiet_link",
+      "displayName": "Quiet Link",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/quiet_link",
+      "capabilities": [
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A secondary action with no button chrome \u2014 centered, small, muted, underlined text \u2014 so a screen's ONE primary action (a full-chrome button) stays visually singular. Still a real button underneath, so the standard onClick wire every other clickable atom uses works unchanged.",
+      "representativeQueries": [
+        "show a chromeless secondary text action, for use beside one primary button",
+        "a secondary action with no button chrome \u2014 centered, small, muted, underlined text \u2014 so a screen's one primary action",
+        "render a quiet link"
       ]
     },
     {
@@ -8538,6 +8764,81 @@
         "show a native MathML equation typeset with the math font family",
         "native mathml equation typeset with the css `math` generic font family (stix / latin modern math) \u2014 no javascript, no",
         "render a math block"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:service_status_board",
+      "displayName": "Service Status Board",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/service_status_board",
+      "capabilities": [
+        "google-chat-chromium-render"
+      ],
+      "description": "Verdict-first service status board \u2014 a lead line naming the single most important thing (all-clear, or the one active disruption), followed by a two-column grid of every tracked service with its state encoded as shape + label + color (never color alone). Designed for any status feed (Google Workspace, an internal fleet, ServiceNow) reduced to name + state.",
+      "representativeQueries": [
+        "show a verdict-first service status grid with triple-encoded state",
+        "verdict-first service status board \u2014 a lead line naming the single most important thing (all-clear, or the one active",
+        "render a service status board"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:incident_log",
+      "displayName": "Incident Log",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/incident_log",
+      "capabilities": [
+        "google-chat-chromium-render"
+      ],
+      "description": "Recent-history companion to service_status_board \u2014 a 7-cell week strip (count + severity tint per day) above a short list of incident rows (service, one-line summary, severity stripe, duration, ongoing state).",
+      "representativeQueries": [
+        "show a 7-day incident strip plus recent incident rows",
+        "recent-history companion to service_status_board \u2014 a 7-cell week strip (count + severity tint per day) above a short",
+        "render a incident log"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:stat_pulse",
+      "displayName": "Stat Pulse",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/stat_pulse",
+      "capabilities": [
+        "google-chat-chromium-render"
+      ],
+      "description": "Three hero stat tiles (value, label, delta with tone) above a small trend bar chart with rounded tops and one emphasized \"current\" bar. A closing figure for any status or activity digest.",
+      "representativeQueries": [
+        "show a three hero stat tiles plus a small emphasized trend bar chart",
+        "three hero stat tiles (value, label, delta with tone) above a small trend bar chart with rounded tops and one",
+        "render a stat pulse"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:weather_now",
+      "displayName": "Weather Now",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/weather_now",
+      "capabilities": [
+        "google-chat-chromium-render"
+      ],
+      "description": "Current-conditions weather card \u2014 a hero temperature reading beside a drawn CSS weather glyph (sun/cloud/storm, not an emoji or external icon font), condition text, hi/lo, and 4 supporting stat tiles (precip, wind, UV, humidity).",
+      "representativeQueries": [
+        "show a hero temperature with drawn weather glyph and 4 supporting stats",
+        "current-conditions weather card \u2014 a hero temperature reading beside a drawn css weather glyph (sun/cloud/storm, not an",
+        "render a weather now"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:weather_outlook",
+      "displayName": "Weather Outlook",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/weather_outlook",
+      "capabilities": [
+        "google-chat-chromium-render"
+      ],
+      "description": "Multi-day forecast as horizontal range bars on one shared temperature axis with gridlines \u2014 lo anchored at the bar's cool end, hi at its warm end, a small drawn weather glyph per row, and a precipitation chip that highlights when precip crosses a wet threshold. The shared axis is what makes a cold/wet day visually collapse relative to its neighbours.",
+      "representativeQueries": [
+        "show a multi-day range-bar forecast on one shared temperature axis",
+        "multi-day forecast as horizontal range bars on one shared temperature axis with gridlines \u2014 lo anchored at the bar's",
+        "render a weather outlook"
       ]
     },
     {
@@ -8606,6 +8907,23 @@
         "show a one layer band (badge, name, field/note or per-column cells) \u2014 normally used inside layer_stack",
         "one band of a layer_stack \u2014 a badge, the layer name, and either a single field/note pane or one pane per column via",
         "render a stack layer"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:tool_call_card",
+      "displayName": "Tool Call Card",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/tool_call_card",
+      "capabilities": [
+        "web",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A structured card displaying an AI agent tool invocation \u2014 in-flight, completed, or failed. Shows the tool name, execution status badge (running, success, error, pending), elapsed latency, formatted input arguments, and returned result or error message. Essential for agentic run narration, live tool traces, and human inspection of autonomous actions.",
+      "representativeQueries": [
+        "show a structured agent tool call card with status, inputs, result, and latency",
+        "a structured card displaying an ai agent tool invocation \u2014 in-flight, completed, or failed. shows the tool name,",
+        "render a tool call card"
       ]
     }
   ]

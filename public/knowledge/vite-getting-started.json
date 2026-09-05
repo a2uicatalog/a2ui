@@ -7,7 +7,7 @@
  "license": "MIT",
  "steps": 19,
  "coverage": "5/6 sections",
- "built": "2026-07-02",
+ "built": "2026-09-05",
  "planes": {
   "learning-interactive": {
    "surface": "a2ui_wired_surface",
@@ -19,133 +19,152 @@
       "id": "s_1",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_2",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_3",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_4",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_5",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_6",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_7",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_8",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_9",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_10",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_11",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_12",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_13",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_14",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_15",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_16",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_17",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_18",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
       "id": "s_19",
       "primitive": "ValueStore",
       "props": {
-       "defaultValue": false
+       "defaultValue": false,
+       "persist": true
       }
      },
      {
