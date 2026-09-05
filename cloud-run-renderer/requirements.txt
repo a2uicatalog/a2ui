@@ -14,3 +14,13 @@ gunicorn==22.*
 markdown==3.6
 playwright==1.44.*
 Pillow==10.4.0
+# renderers/web_article.py imports this at MODULE LOAD TIME (secure XML
+# parsing, never raw xml.etree on untrusted input -- see its own comment
+# there) -- was present in the repo ROOT requirements.txt but never added
+# here. Found live, 2026-09-04: this service hadn't been redeployed in a
+# while, so the gap sat latent until the next real deploy crashed every
+# worker on boot (ModuleNotFoundError, 503 on every request, full outage)
+# -- same "requirements silently drifted since the last deploy" failure
+# class as this file's own --memory/RENDER_SIGNING_KEY incidents, see
+# project.yaml's renderer-public-deploy notes.
+defusedxml
