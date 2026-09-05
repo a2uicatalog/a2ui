@@ -113,7 +113,15 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
     3. If the Cloud Run service isn't configured, falls back to local
        chromium via Playwright (the original, laptop-bound path) — keeps
        this working with zero setup for anyone who hasn't deployed it.
+
+    All three paths render dark (matching the SVG rasterizer's hardcoded
+    background=(11, 11, 18) below) -- this function posts into Chat, not
+    the web catalogue, and nothing here has ever asked for a light card.
+    Pinned explicitly rather than left to wrap_atom_html's own default: that
+    default flipped to light (see render_wrap.py) for the web/print surfaces
+    that DO want it, and this caller must not silently flip with it.
     """
+    theme = 'dark'
     import web_article
     atom_type = block.get('type')
     fn = getattr(web_article, '_RENDERERS', {}).get(atom_type)
@@ -132,7 +140,8 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
     cloud_run_url = _cloud_run_config()
     if cloud_run_url:
         import urllib.request
-        body = json.dumps({'block': block, 'width': width, 'title': title, 'subtitle': subtitle}).encode()
+        body = json.dumps({'block': block, 'width': width, 'title': title, 'subtitle': subtitle,
+                           'theme': theme}).encode()
         id_token = _cloud_run_id_token(cloud_run_url)
         req = urllib.request.Request(f'{cloud_run_url}/render', data=body,
                                      headers={'Content-Type': 'application/json',
@@ -143,7 +152,7 @@ def render_png(block: dict, width: int = 620, title: str = '', subtitle: str = '
 
     from render_wrap import wrap_atom_html
     frag = fn(block)
-    html = wrap_atom_html(frag, width, title, subtitle)
+    html = wrap_atom_html(frag, width, title, subtitle, theme)
     from playwright.sync_api import sync_playwright
     exe = next((p for p in ('/usr/bin/google-chrome', '/usr/bin/chromium') if os.path.exists(p)), None)
     with sync_playwright() as pw:
