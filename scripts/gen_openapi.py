@@ -247,31 +247,10 @@ def _paths():
                                 "html": {"type": "string"}, "error": {"type": "string"},
                                 "degraded": {"type": "array", "items": {"type": "string"}},
                                 "incompatible": {"type": "array", "items": {"type": "string"}}}}}}}}}},
-                "202": {"description": "Asynchronous render job accepted. Poll location or job endpoint for completion (RFC 7240 async-job pattern).",
-                        "headers": {
-                            "Location": {"$ref": "#/components/headers/Location"},
-                            "Retry-After": {"description": "Recommended polling delay in seconds", "schema": {"type": "integer"}},
-                            "X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
-                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobEnvelope"}}}},
                 "400": {"description": "Malformed batch, unknown surface, or over the 25-payload cap",
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
                 "413": {"description": "Body larger than 1 MB",
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
-                "429": {"$ref": "#/components/responses/RateLimited"}}}},
-        "/api/render/jobs/{id}": {"get": {
-            "tags": ["render"], "operationId": "getRenderJobStatus",
-            "summary": "Check status of an asynchronous batch render job",
-            "description": ("Poll the status of an asynchronous batch render job. Returns pending/running/completed/failed "
-                            "status and rendered HTML payloads once complete."),
-            "parameters": [
-                {"name": "id", "in": "path", "required": True,
-                 "schema": {"type": "string"}, "description": "Job identifier returned in 202 response"}
-            ],
-            "responses": {
-                "200": {"description": "Current job status and results if completed",
-                        "headers": {"X-API-Version": {"$ref": "#/components/headers/ApiVersion"}},
-                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobStatus"}}}},
-                "404": {"$ref": "#/components/responses/NotFound"},
                 "429": {"$ref": "#/components/responses/RateLimited"}}}},
         "/api/compose": {"post": {
             "tags": ["compose"], "operationId": "composeFromText",
@@ -401,9 +380,6 @@ def _components():
                                 "additive alternative to a /v1/ path prefix: bump only on a "
                                 "documented, intentional change to a response shape."),
                 "schema": {"type": "string", "example": "1"}},
-            "Location": {
-                "description": "URL to poll for asynchronous job status.",
-                "schema": {"type": "string", "example": "/api/render/jobs/job_abc123"}},
             "Deprecation": {
                 "description": ("RFC 9745. Present only on a response the versioning policy has "
                                 "announced as deprecated; its value is the deprecation date. "
@@ -435,26 +411,6 @@ def _components():
                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
         },
         "schemas": {
-            "JobEnvelope": {
-                "type": "object",
-                "description": "Asynchronous job submission response (RFC 7240 / async-job pattern).",
-                "required": ["job_id", "status", "status_url"],
-                "properties": {
-                    "job_id": {"type": "string", "example": "job_abc123"},
-                    "status": {"type": "string", "enum": ["pending", "running", "completed", "failed"], "example": "pending"},
-                    "status_url": {"type": "string", "format": "uri-reference", "example": "/api/render/jobs/job_abc123"},
-                    "poll_interval_seconds": {"type": "integer", "example": 2}}},
-            "JobStatus": {
-                "type": "object",
-                "description": "Status and result of an asynchronous job.",
-                "required": ["job_id", "status"],
-                "properties": {
-                    "job_id": {"type": "string", "example": "job_abc123"},
-                    "status": {"type": "string", "enum": ["pending", "running", "completed", "failed"], "example": "completed"},
-                    "created_at": {"type": "string", "format": "date-time"},
-                    "completed_at": {"type": "string", "format": "date-time", "nullable": True},
-                    "results": {"type": "array", "items": {"type": "object"}, "description": "Render results when status=completed"},
-                    "error": {"type": "string", "nullable": True}}},
             "ErrorResponse": {
                 "type": "object",
                 "description": ("Shape of every non-2xx JSON response on the REST surface (the "

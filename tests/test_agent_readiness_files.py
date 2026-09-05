@@ -169,15 +169,28 @@ def test_predictable_redirects_route_correctly():
     assert redirect_map.get("/ard.json") == "/.well-known/ard.json"
 
 
-def test_openapi_documents_and_async_job_pattern():
-    """OpenAPI 3.1 specifications in JSON and YAML format, including async job pattern definitions."""
+def test_openapi_published_in_json_and_yaml():
+    """OpenAPI 3.1 specification, published in both JSON and YAML.
+
+    Real bug found in review, 2026-09-05: an earlier version of this test
+    (and the generator it exercises) documented a 202/async-job pattern
+    on /api/render/batch -- a `202` response, `/api/render/jobs/{id}`,
+    `JobEnvelope`/`JobStatus` schemas -- that has NO real implementation
+    anywhere in this codebase (confirmed: no `job_id`/`JobEnvelope`
+    anywhere outside this generator and its own test). /api/render/batch
+    is fully synchronous -- its own real description says so directly
+    ("PARTIAL SUCCESS is the contract... the batch is never failed over
+    one bad entry"), returning one 200 with per-payload results, always.
+    Publishing a spec entry for an endpoint that 404s would actively
+    mislead the agents this whole site exists to be readable by -- worse
+    than no documentation. Removed rather than implemented: a real async
+    job queue for batch renders is a genuine feature, not a bug fix, and
+    is a decision for a human to make deliberately, not something to
+    silently document into existence."""
     openapi_json = json.loads(_load("openapi.json"))
     assert openapi_json["openapi"] == "3.1.0"
     assert "/api/render/batch" in openapi_json["paths"]
-    assert "202" in openapi_json["paths"]["/api/render/batch"]["post"]["responses"]
-    assert "/api/render/jobs/{id}" in openapi_json["paths"]
-    assert "JobEnvelope" in openapi_json["components"]["schemas"]
-    assert "JobStatus" in openapi_json["components"]["schemas"]
+    assert "200" in openapi_json["paths"]["/api/render/batch"]["post"]["responses"]
 
     import yaml
     openapi_yaml_txt = _load("openapi.yaml")
