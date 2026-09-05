@@ -255,6 +255,69 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/mcp">MCP Server Endpoint</a> — live streamable JSON-RPC 2.0 interface</li>
 <li><a href="/developers/">Developers Guide</a> — deployment and integration guides</li>
 </ul>"""),
+        "versioning": dict(
+            title="API Versioning &amp; Deprecation Policy",
+            desc="A2UI Atomic Catalog API versioning policy: wire-format versioning (X-API-Version), deprecation timelines, and backward compatibility gates.",
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "WebPage",
+                "url": f"{BASE}/versioning/", "name": "API Versioning & Deprecation Policy — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Versioning and deprecation policy for developers and AI agents integrating with the A2UI Atomic Catalog.</p>
+
+<h2>Wire-Format Versioning (X-API-Version)</h2>
+<p>Every JSON response carries the wire-format version in an <code>X-API-Version: 1</code> header rather than an ephemeral URL path prefix. MCP client configurations remain stable and do not require URL migration on minor updates.</p>
+
+<h2>Deprecation &amp; Sunset Policy</h2>
+<p>Breaking changes are announced in advance via standard IETF headers:</p>
+<ul>
+<li><code>Deprecation</code> (RFC 9745) — timestamp when deprecation takes effect</li>
+<li><code>Sunset</code> (RFC 8594) — timestamp when deprecated behavior is permanently removed (minimum 90 days notice)</li>
+</ul>
+
+<h2>CI Compatibility Parity Gate</h2>
+<p>Every MCP server and API build runs structural parity tests in CI to verify that existing response shapes remain identical and non-breaking.</p>
+
+<h2>Developer Resources</h2>
+<ul>
+<li><a href="/versioning.md">Versioning Policy (Markdown)</a> — full policy documentation</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable contract</li>
+<li><a href="/docs/">API Documentation</a> — REST endpoints and error contracts</li>
+<li><a href="/mcp">MCP Server Endpoint</a> — JSON-RPC 2.0 integration surface</li>
+<li><a href="/developers/">Developers Portal</a> — guide to tools and self-hosting</li>
+</ul>"""),
+        "pricing": dict(
+            title="Pricing, Rate Limits &amp; Quotas",
+            desc="A2UI Atomic Catalog pricing and rate limits: 100% free unauthenticated tier, per-endpoint daily quotas, and self-hosting runbooks.",
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "WebPage",
+                "url": f"{BASE}/pricing/", "name": "Pricing, Rate Limits & Quotas — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Pricing, rate limits, and quota information for the A2UI Atomic Catalog.</p>
+
+<h2>Free Tier Limits</h2>
+<p>All developer endpoints and MCP tools are completely free to use with no API key or credit card:</p>
+<ul>
+<li><code>/api/render</code>: 50 requests per IP per day</li>
+<li><code>/api/compose</code>: 20 requests per IP per day</li>
+<li><code>/ask</code>: 60 requests per IP per day</li>
+<li><code>/spec.json</code> and catalog index: unlimited, cached via CDN</li>
+</ul>
+
+<h2>Zero-Cost Self-Hosting</h2>
+<p>Need higher volume? Deploy your own Apps Script renderer or Cloud Run instance in minutes with zero hosting cost beyond your Google account.</p>
+
+<h2>Developer Resources</h2>
+<ul>
+<li><a href="/pricing.md">Pricing Guide (Markdown)</a> — full terms and quota details</li>
+<li><a href="/.well-known/agent-auth.md">Agent Auth &amp; Rate Limits</a> — live per-tool rate limits</li>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable endpoint contracts</li>
+<li><a href="/docs/">API Documentation</a> — REST endpoint reference</li>
+<li><a href="/mcp">MCP Server Endpoint</a> — Model Context Protocol endpoint</li>
+</ul>"""),
         "about": dict(
             title="About",
             desc=("What the A2UI Atomic Catalog is, who maintains it, and why a typed UI "

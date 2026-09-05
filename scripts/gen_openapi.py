@@ -19,6 +19,7 @@ Run:
 import json
 import os
 import sys
+import yaml
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 PUBLIC = os.path.join(ROOT, "public")
@@ -534,8 +535,8 @@ LLMS_TXT = """# A2UI Atomic Catalog
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
 - [Webhooks & events]({base}/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
-- [Pricing and rate limits]({base}/pricing.md): Free tier limits and self-hosting options.
-- [Versioning & deprecation policy]({base}/versioning.md): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
+- [Pricing and rate limits]({base}/pricing/): Free tier limits and self-hosting options.
+- [Versioning & deprecation policy]({base}/versioning/): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
 - [Agent discovery document]({base}/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
@@ -611,6 +612,8 @@ def build_api_catalog():
                 item(f"{BASE}/api-docs/", "text/html", "API docs and reference directory"),
                 item(f"{BASE}/auth/", "text/html", "Authentication and security documentation"),
                 item(f"{BASE}/webhooks/", "text/html", "Webhooks and event delivery documentation"),
+                item(f"{BASE}/versioning/", "text/html", "Versioning and deprecation policy documentation"),
+                item(f"{BASE}/pricing/", "text/html", "Pricing and rate limit documentation"),
                 item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
                 item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
                 item(f"{BASE}/pricing.md", "text/markdown", "Pricing and rate limits"),
@@ -650,15 +653,19 @@ def build_agent_view(n_atoms, n_surfaces):
         },
         "documentation": {
             "openapi": f"{BASE}/openapi.json",
+            "openapi_yaml": f"{BASE}/openapi.yaml",
             "developers": f"{BASE}/developers/",
             "api_docs": f"{BASE}/docs/",
             "api_reference": f"{BASE}/api-docs/",
             "auth_docs": f"{BASE}/auth/",
             "webhooks": f"{BASE}/webhooks/",
+            "versioning_docs": f"{BASE}/versioning/",
+            "pricing_docs": f"{BASE}/pricing/",
             "llms": f"{BASE}/llms.txt",
             "agents": f"{BASE}/agents.md",
             "auth": f"{BASE}/auth.md",
             "versioning": f"{BASE}/versioning.md",
+            "pricing": f"{BASE}/pricing.md",
             "api_catalog": f"{BASE}/.well-known/api-catalog",
             "ard_catalog": f"{BASE}/.well-known/ard.json",
             "agent_card": f"{BASE}/.well-known/agent-card.json",
@@ -678,11 +685,17 @@ def build_agent_view(n_atoms, n_surfaces):
 def main():
     n_atoms, n_surfaces, n_mcp = _counts()
 
+    openapi_doc = build_openapi(n_atoms, n_surfaces)
     out = os.path.join(PUBLIC, "openapi.json")
     with open(out, "w", encoding="utf-8") as f:
-        json.dump(build_openapi(n_atoms, n_surfaces), f, indent=2, ensure_ascii=False)
+        json.dump(openapi_doc, f, indent=2, ensure_ascii=False)
         f.write("\n")
     print(f"wrote {out} ({n_atoms} atoms, {n_surfaces} surfaces)")
+
+    out_yaml = os.path.join(PUBLIC, "openapi.yaml")
+    with open(out_yaml, "w", encoding="utf-8") as f:
+        yaml.safe_dump(openapi_doc, f, sort_keys=False, allow_unicode=True)
+    print(f"wrote {out_yaml}")
 
     out2 = os.path.join(PUBLIC, "llms.txt")
     with open(out2, "w", encoding="utf-8") as f:

@@ -131,6 +131,8 @@ def test_developer_resource_pages_exist_and_include_product_name():
         ("developers", "index.html"),
         ("auth", "index.html"),
         ("webhooks", "index.html"),
+        ("versioning", "index.html"),
+        ("pricing", "index.html"),
     ]
     for parts in predictable_pages:
         html = _load(*parts)
@@ -161,7 +163,40 @@ def test_predictable_redirects_route_correctly():
     assert redirect_map.get("/webhooks") == "/webhooks/"
     assert redirect_map.get("/webhook") == "/webhooks/"
     assert redirect_map.get("/events") == "/webhooks/"
+    assert redirect_map.get("/versioning") == "/versioning/"
+    assert redirect_map.get("/deprecation") == "/versioning/"
+    assert redirect_map.get("/pricing") == "/pricing/"
     assert redirect_map.get("/ard.json") == "/.well-known/ard.json"
+
+
+def test_openapi_published_in_json_and_yaml():
+    """OpenAPI 3.1 specification, published in both JSON and YAML.
+
+    Real bug found in review, 2026-09-05: an earlier version of this test
+    (and the generator it exercises) documented a 202/async-job pattern
+    on /api/render/batch -- a `202` response, `/api/render/jobs/{id}`,
+    `JobEnvelope`/`JobStatus` schemas -- that has NO real implementation
+    anywhere in this codebase (confirmed: no `job_id`/`JobEnvelope`
+    anywhere outside this generator and its own test). /api/render/batch
+    is fully synchronous -- its own real description says so directly
+    ("PARTIAL SUCCESS is the contract... the batch is never failed over
+    one bad entry"), returning one 200 with per-payload results, always.
+    Publishing a spec entry for an endpoint that 404s would actively
+    mislead the agents this whole site exists to be readable by -- worse
+    than no documentation. Removed rather than implemented: a real async
+    job queue for batch renders is a genuine feature, not a bug fix, and
+    is a decision for a human to make deliberately, not something to
+    silently document into existence."""
+    openapi_json = json.loads(_load("openapi.json"))
+    assert openapi_json["openapi"] == "3.1.0"
+    assert "/api/render/batch" in openapi_json["paths"]
+    assert "200" in openapi_json["paths"]["/api/render/batch"]["post"]["responses"]
+
+    import yaml
+    openapi_yaml_txt = _load("openapi.yaml")
+    parsed_yaml = yaml.safe_load(openapi_yaml_txt)
+    assert parsed_yaml["openapi"] == "3.1.0"
+    assert "/api/render/batch" in parsed_yaml["paths"]
 
 
 def test_ard_catalog_and_discovery():
@@ -196,6 +231,8 @@ def test_api_catalog_and_llms_advertise_developer_resources():
     assert "/mcp" in llms_txt
     assert "/auth/" in llms_txt or "/auth.md" in llms_txt
     assert "/webhooks/" in llms_txt
+    assert "/versioning/" in llms_txt or "/versioning.md" in llms_txt
+    assert "/pricing/" in llms_txt or "/pricing.md" in llms_txt
 
     api_catalog = json.loads(_load(".well-known", "api-catalog"))
     linkset = api_catalog["linkset"][0]
@@ -207,6 +244,8 @@ def test_api_catalog_and_llms_advertise_developer_resources():
         "https://a2uicatalog.ai/docs/",
         "https://a2uicatalog.ai/auth/",
         "https://a2uicatalog.ai/webhooks/",
+        "https://a2uicatalog.ai/versioning/",
+        "https://a2uicatalog.ai/pricing/",
     ):
         assert required in all_hrefs, f"api-catalog missing required developer resource link: {required}"
 
