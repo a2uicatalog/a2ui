@@ -1677,7 +1677,7 @@
           label,
           loading,
         });
-        adapter.setStatus(event.lifecycle || 'streaming');
+        adapter.setStatus((event && event.lifecycle) || 'streaming');
       },
       destroy() {},
     };
@@ -1748,6 +1748,14 @@
     el.appendChild(frameContainer);
     container.appendChild(el);
 
+    // Tracks the raw url we last assigned, NOT iframe.src itself -- reading
+    // iframe.src back returns the browser's WHATWG-normalized form (e.g. a
+    // bare-origin url gains a trailing slash), so comparing against that
+    // readback made the dedup check false-negative on every subsequent
+    // onEvent for the same url, reassigning (and reloading) the iframe on
+    // every StateDelta even when nothing about the url actually changed.
+    let lastAssignedUrl = null;
+
     const adapter = {
       setDemo(data) {
         if (data.title) {
@@ -1766,12 +1774,14 @@
           urlSpan.style.display = '';
           rightLink.href = safeUrl;
           rightLink.style.display = '';
-          if (iframe.src !== safeUrl) {
+          if (lastAssignedUrl !== safeUrl) {
             iframe.src = safeUrl;
+            lastAssignedUrl = safeUrl;
           }
           placeholder.style.display = 'none';
           iframe.style.display = 'block';
         } else {
+          lastAssignedUrl = null;
           urlSpan.textContent = '';
           urlSpan.style.display = 'none';
           rightLink.removeAttribute('href');

@@ -1164,6 +1164,19 @@ test('live_demo_embed: defaults gracefully on empty event', () => {
   assert.equal(adapter.calls.status, 'idle');
 });
 
+test('live_demo_embed: onEvent(null) does not throw and falls back to streaming', () => {
+  // Found in review (Claude PR-review job), 2026-09-06: `src` guarded a
+  // falsy event (`event && (event.state || event.payload)`) but the
+  // lifecycle read below it didn't, so a call with no event argument at
+  // all threw instead of degrading gracefully like every other guard here.
+  const adapter = fakeDemoEmbedAdapter();
+  const ctrl = createLiveDemoEmbedController(adapter);
+
+  assert.doesNotThrow(() => ctrl.onEvent(null));
+  assert.equal(adapter.calls.status, 'streaming');
+  assert.doesNotThrow(() => ctrl.onEvent());
+});
+
 // ─── live_demo_embed: isSafeEmbedUrl (real security boundary) ──────────
 // The controller above deliberately forwards ANY string verbatim (see
 // "supports field aliases" etc. -- it's a pure passthrough of streamed
