@@ -1,0 +1,144 @@
+name: "Gemini PR review"
+
+# Same shape as maison's/212tradingbot's/repo-improvement-agent's own
+# gemini-review.yml -- this repo (a2uicatalog/a2ui) is one of the 4
+# repos the daily gap-finding agent opens PRs on, but never had automated
+# review of its own until now (2026-09-06, "gemini review on the auto
+# PRs for now" -- prompted directly by a real XSS the newer Claude
+# adversarial-review job caught on PR #56 with no Gemini cross-check
+# available at all).
+#
+# WIF identity is DEDICATED to this repo -- a2uicatalog-review-ci@, with
+# its own provider (github-provider-a2uicatalog, attribute-condition
+# scoped to exactly 'a2uicatalog/a2ui'), rather than widening the shared
+# github-provider maison/repo-improvement-agent already use. Same
+# isolation reasoning 212tradingbot's own github-provider-tradingbot
+# already established: don't touch a provider other repos' working WIF
+# depends on just to add a new one.
+#
+# gemini-2.5-flash, not 3.7 -- same reason as every sibling workflow:
+# WIF auth sets GOOGLE_CLOUD_PROJECT/GOOGLE_CLOUD_LOCATION, the plain
+# IAM-scoped Vertex endpoint shape, and gemini-3.7-flash 404s there on
+# this project regardless of credentials.
+on:
+  pull_request:
+    branches: [main]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+  checks: write
+  id-token: write   # required for WIF's OIDC token exchange
+
+jobs:
+  review:
+    if: |
+      github.event_name == 'pull_request' ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        startsWith(github.event.comment.body, '/gemini-review') &&
+        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
+                 github.event.comment.author_association)
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha ||
+                   format('refs/pull/{0}/head', github.event.issue.number) }}
+
+      - name: Resolve PR number and head SHA
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            NUMBER="${{ github.event.issue.number }}"
+            SHA=$(gh api "repos/${{ github.repository }}/pulls/${NUMBER}" --jq '.head.sha')
+            echo "number=${NUMBER}" >> "$GITHUB_OUTPUT"
+            echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Authenticate to Google Cloud via WIF
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/500864195757/locations/global/workloadIdentityPools/github-pool/providers/github-provider-a2uicatalog'
+          service_account: 'a2uicatalog-review-ci@static-hangout-500821-d3.iam.gserviceaccount.com'
+
+      - name: Run Gemini Review Action
+        uses: derailed-dash/gemini-review-action@v1
+        env:
+          GOOGLE_GENAI_USE_VERTEXAI: "True"
+          GOOGLE_CLOUD_PROJECT: "static-hangout-500821-d3"
+          GOOGLE_CLOUD_LOCATION: "global"
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          gemini_model: 'gemini-2.5-flash'
+          language: 'English (UK)'
+
+      # Same mechanical verdict shape as every sibling workflow -- see
+      # maison's own gemini-review.yml for the original_commit_id /
+      # commit_id distinction and the GITHUB_TOKEN-can't-approve
+      # reasoning, both unchanged here. This repo's own deploy.yml DOES
+      # auto-deploy on push to main (unlike repo-improvement-agent's
+      # manual-only one) -- if this posted status is ever wanted as a
+      # deploy gate here too, that's a separate, deliberate change to
+      # this repo's deploy.yml, not implied by adding this workflow.
+      - name: Parse verdict from posted review comments
+        id: verdict
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${{ github.repository }}/pulls/${{ steps.pr.outputs.number }}/comments" \
+            --paginate --jq '.[] | select(.original_commit_id == "${{ steps.pr.outputs.sha }}") | .body | tojson' > /tmp/review_bodies.jsonl
+          python3 - <<'PYEOF' >> "$GITHUB_OUTPUT"
+          import json
+          block = False
+          try:
+              with open('/tmp/review_bodies.jsonl') as f:
+                  for line in f:
+                      line = line.strip()
+                      if not line:
+                          continue
+                      if json.loads(line).startswith(('\U0001F534', '\U0001F7E0')):
+                          block = True
+                          break
+          except FileNotFoundError:
+              pass
+          print(f"verdict={'block' if block else 'ok'}")
+          PYEOF
+
+      - name: Act on verdict — commit status + PR comment
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          SHA: ${{ steps.pr.outputs.sha }}
+        run: |
+          if [ "${{ steps.verdict.outputs.verdict }}" = "block" ]; then
+            gh api "repos/${{ github.repository }}/statuses/${SHA}" \
+              -f state=failure -f context='gemini-review/verdict' \
+              -f description='Critical/High severity findings' \
+              --silent
+            gh pr review "$PR_NUMBER" --comment \
+              -b "🚫 Gemini review found 🔴 Critical or 🟠 High severity findings — see inline comments. (push a fix, or comment /gemini-review to re-trigger)." \
+              || echo "::warning::Could not post the verdict PR comment — commit status was still set."
+          else
+            gh api "repos/${{ github.repository }}/statuses/${SHA}" \
+              -f state=success -f context='gemini-review/verdict' \
+              -f description='No Critical/High severity findings' \
+              --silent
+            gh pr review "$PR_NUMBER" --comment \
+              -b "✅ No 🔴 Critical or 🟠 High severity findings from Gemini review." \
+              || echo "::warning::Could not post the verdict PR comment — commit status was still set."
+          fi
