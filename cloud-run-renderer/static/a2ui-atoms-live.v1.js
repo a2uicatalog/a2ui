@@ -1606,13 +1606,221 @@
     return { element: el, controller: createLiveAggregatorController(adapter) };
   }
 
+  // Model/agent-streamed content (see createLiveDemoEmbedController's
+  // onEvent, below) drives both an iframe's src and a plain, unsandboxed
+  // <a href> in mountLiveDemoEmbed -- a javascript:/vbscript:/data: URL
+  // there would execute in THIS page's own origin the moment "Open in new
+  // tab" is clicked (the anchor isn't inside any iframe sandbox at all),
+  // independent of whatever the iframe's own sandbox attribute says.
+  // Allowlist http(s) only. `base` takes a real page's location.href in
+  // the browser (so a bare "/path" still resolves); in a non-browser test
+  // environment (no `global.location`) it falls back to a fixed origin so
+  // this stays a pure, DOM-free function callable directly from tests.
+  function isSafeEmbedUrl(u, base) {
+    try {
+      const resolvedBase = base || (global.location && global.location.href) || 'http://localhost/';
+      const parsed = new URL(u, resolvedBase);
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ─── live_demo_embed controller ──────────────────────────────────────────
+  // Interactive sandboxed live demo / web preview frame for agentic output.
+  // Extends the static live_demo_embed atom (renderers/web_article.py)
+  // for live streaming updates.
+  function createLiveDemoEmbedController(adapter) {
+    let url = '';
+    let title = 'Live Demo';
+    let height = '450px';
+    let label = 'Open in new tab →';
+    let loading = false;
+
+    function formatHeight(h) {
+      if (h == null || h === '') return '450px';
+      if (typeof h === 'number') return `${h}px`;
+      const str = String(h).trim();
+      if (/^\d+$/.test(str)) return `${str}px`;
+      return str;
+    }
+
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+
+        if (src.url !== undefined) url = String(src.url || '');
+        else if (src.src !== undefined) url = String(src.src || '');
+        else if (src.embed_url !== undefined) url = String(src.embed_url || '');
+        else if (src.embedUrl !== undefined) url = String(src.embedUrl || '');
+        else if (src.target_url !== undefined) url = String(src.target_url || '');
+        else if (src.targetUrl !== undefined) url = String(src.targetUrl || '');
+        else if (src.href !== undefined) url = String(src.href || '');
+
+        if (src.title !== undefined && src.title !== null) title = String(src.title);
+        else if (src.name !== undefined && src.name !== null) title = String(src.name);
+
+        if (src.height !== undefined && src.height !== null) height = formatHeight(src.height);
+
+        if (src.label !== undefined && src.label !== null) label = String(src.label);
+        else if (src.button_label !== undefined && src.button_label !== null) label = String(src.button_label);
+        else if (src.buttonLabel !== undefined && src.buttonLabel !== null) label = String(src.buttonLabel);
+        else if (src.link_text !== undefined && src.link_text !== null) label = String(src.link_text);
+
+        if (src.loading !== undefined) loading = Boolean(src.loading);
+        else loading = (event && event.lifecycle === 'streaming' && !url);
+
+        adapter.setDemo({
+          url,
+          title,
+          height,
+          label,
+          loading,
+        });
+        adapter.setStatus((event && event.lifecycle) || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  function mountLiveDemoEmbed(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-live-demo-embed';
+    el.style.cssText = 'margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);background:#ffffff;font-family:system-ui,-apple-system,sans-serif;';
+
+    const header = document.createElement('div');
+    header.className = 'a2ui-demo-header';
+    header.style.cssText = 'padding:8px 14px;background:#f8fafc;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+
+    const leftCol = document.createElement('div');
+    leftCol.style.cssText = 'display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;';
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'a2ui-demo-title';
+    titleSpan.style.cssText = 'font-size:0.82rem;font-weight:600;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    titleSpan.textContent = '🖥 Live Demo';
+
+    const urlSpan = document.createElement('span');
+    urlSpan.className = 'a2ui-demo-url';
+    urlSpan.style.cssText = 'font-size:12px;color:#64748b;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+
+    leftCol.appendChild(titleSpan);
+    leftCol.appendChild(urlSpan);
+
+    const rightLink = document.createElement('a');
+    rightLink.className = 'a2ui-demo-link';
+    rightLink.target = '_blank';
+    rightLink.rel = 'noopener noreferrer';
+    rightLink.style.cssText = 'font-size:12px;color:#6366f1;text-decoration:none;font-weight:500;white-space:nowrap;';
+    rightLink.textContent = 'Open in new tab →';
+
+    header.appendChild(leftCol);
+    header.appendChild(rightLink);
+
+    const frameContainer = document.createElement('div');
+    frameContainer.className = 'a2ui-demo-frame-wrap';
+    frameContainer.style.cssText = 'position:relative;width:100%;height:450px;background:#f1f5f9;';
+
+    const iframe = document.createElement('iframe');
+    iframe.className = 'a2ui-demo-iframe';
+    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+    iframe.loading = 'lazy';
+    // No allow-same-origin: this frame's `src` is model/agent-streamed
+    // content (see createLiveDemoEmbedController's onEvent, which reads
+    // url/src/embed_url/... straight off arbitrary StateDelta payloads) --
+    // allow-scripts + allow-same-origin together is a documented anti-
+    // pattern (MDN) because the framed content then keeps the privileges
+    // of whatever origin it actually loads with, defeating the sandbox.
+    // Dropping allow-same-origin still lets legitimate demo JS run, just
+    // inside an opaque origin that can't reach this page's cookies/DOM.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms');
+    iframe.setAttribute('allowfullscreen', 'true');
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'a2ui-demo-placeholder';
+    placeholder.style.cssText = 'position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#64748b;font-size:0.85rem;';
+    placeholder.textContent = 'Loading live demo preview...';
+
+    frameContainer.appendChild(iframe);
+    frameContainer.appendChild(placeholder);
+
+    el.appendChild(header);
+    el.appendChild(frameContainer);
+    container.appendChild(el);
+
+    // Tracks the raw url we last assigned, NOT iframe.src itself -- reading
+    // iframe.src back returns the browser's WHATWG-normalized form (e.g. a
+    // bare-origin url gains a trailing slash), so comparing against that
+    // readback made the dedup check false-negative on every subsequent
+    // onEvent for the same url, reassigning (and reloading) the iframe on
+    // every StateDelta even when nothing about the url actually changed.
+    let lastAssignedUrl = null;
+
+    const adapter = {
+      setDemo(data) {
+        if (data.title) {
+          titleSpan.textContent = data.title.startsWith('🖥') ? data.title : `🖥 ${data.title}`;
+        } else {
+          titleSpan.textContent = '🖥 Live Demo';
+        }
+
+        const safeUrl = data.url && isSafeEmbedUrl(data.url) ? data.url : '';
+        if (data.url && !safeUrl) {
+          console.warn('a2ui live_demo_embed: refusing non-http(s) URL', data.url);
+        }
+
+        if (safeUrl) {
+          urlSpan.textContent = safeUrl;
+          urlSpan.style.display = '';
+          rightLink.href = safeUrl;
+          rightLink.style.display = '';
+          if (lastAssignedUrl !== safeUrl) {
+            iframe.src = safeUrl;
+            lastAssignedUrl = safeUrl;
+          }
+          placeholder.style.display = 'none';
+          iframe.style.display = 'block';
+        } else {
+          lastAssignedUrl = null;
+          urlSpan.textContent = '';
+          urlSpan.style.display = 'none';
+          rightLink.removeAttribute('href');
+          rightLink.style.display = 'none';
+          if (data.loading) {
+            placeholder.textContent = 'Loading live demo preview...';
+            placeholder.style.display = 'flex';
+            iframe.style.display = 'none';
+          } else {
+            placeholder.textContent = data.url ? 'Preview URL was rejected (not http/https)'
+                                               : 'No preview URL available';
+            placeholder.style.display = 'flex';
+            iframe.style.display = 'none';
+          }
+        }
+
+        if (data.label) {
+          rightLink.textContent = data.label;
+        }
+
+        if (data.height) {
+          frameContainer.style.height = data.height;
+        }
+      },
+      setStatus(lifecycle) {
+        el.dataset.lifecycle = lifecycle;
+      },
+    };
+    return { element: el, controller: createLiveDemoEmbedController(adapter) };
+  }
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
     createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
     createLiveConfidenceBarController, createLiveProgressBarController,
     createLiveProgressCheckpointController, createLiveStatusPillController,
-    createLiveAggregatorController,
+    createLiveAggregatorController, createLiveDemoEmbedController,
+    isSafeEmbedUrl,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountLiveConfidenceBar, mountCompactConfidenceBar,
@@ -1621,6 +1829,7 @@
     mountLiveProgressCheckpoint, mountProgressCheckpoint: mountLiveProgressCheckpoint,
     mountLiveStatusPill, mountStatusPill: mountLiveStatusPill,
     mountLiveAggregator, mountAggregator: mountLiveAggregator,
+    mountLiveDemoEmbed, mountLiveDemo: mountLiveDemoEmbed, mountDemoEmbed: mountLiveDemoEmbed,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
