@@ -1606,6 +1606,26 @@
     return { element: el, controller: createLiveAggregatorController(adapter) };
   }
 
+  // Model/agent-streamed content (see createLiveDemoEmbedController's
+  // onEvent, below) drives both an iframe's src and a plain, unsandboxed
+  // <a href> in mountLiveDemoEmbed -- a javascript:/vbscript:/data: URL
+  // there would execute in THIS page's own origin the moment "Open in new
+  // tab" is clicked (the anchor isn't inside any iframe sandbox at all),
+  // independent of whatever the iframe's own sandbox attribute says.
+  // Allowlist http(s) only. `base` takes a real page's location.href in
+  // the browser (so a bare "/path" still resolves); in a non-browser test
+  // environment (no `global.location`) it falls back to a fixed origin so
+  // this stays a pure, DOM-free function callable directly from tests.
+  function isSafeEmbedUrl(u, base) {
+    try {
+      const resolvedBase = base || (global.location && global.location.href) || 'http://localhost/';
+      const parsed = new URL(u, resolvedBase);
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch (e) {
+      return false;
+    }
+  }
+
   // ─── live_demo_embed controller ──────────────────────────────────────────
   // Interactive sandboxed live demo / web preview frame for agentic output.
   // Extends the static live_demo_embed atom (renderers/web_article.py)
@@ -1705,7 +1725,15 @@
     iframe.className = 'a2ui-demo-iframe';
     iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
     iframe.loading = 'lazy';
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
+    // No allow-same-origin: this frame's `src` is model/agent-streamed
+    // content (see createLiveDemoEmbedController's onEvent, which reads
+    // url/src/embed_url/... straight off arbitrary StateDelta payloads) --
+    // allow-scripts + allow-same-origin together is a documented anti-
+    // pattern (MDN) because the framed content then keeps the privileges
+    // of whatever origin it actually loads with, defeating the sandbox.
+    // Dropping allow-same-origin still lets legitimate demo JS run, just
+    // inside an opaque origin that can't reach this page's cookies/DOM.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms');
     iframe.setAttribute('allowfullscreen', 'true');
 
     const placeholder = document.createElement('div');
@@ -1728,13 +1756,18 @@
           titleSpan.textContent = '🖥 Live Demo';
         }
 
-        if (data.url) {
-          urlSpan.textContent = data.url;
+        const safeUrl = data.url && isSafeEmbedUrl(data.url) ? data.url : '';
+        if (data.url && !safeUrl) {
+          console.warn('a2ui live_demo_embed: refusing non-http(s) URL', data.url);
+        }
+
+        if (safeUrl) {
+          urlSpan.textContent = safeUrl;
           urlSpan.style.display = '';
-          rightLink.href = data.url;
+          rightLink.href = safeUrl;
           rightLink.style.display = '';
-          if (iframe.src !== data.url) {
-            iframe.src = data.url;
+          if (iframe.src !== safeUrl) {
+            iframe.src = safeUrl;
           }
           placeholder.style.display = 'none';
           iframe.style.display = 'block';
@@ -1748,7 +1781,8 @@
             placeholder.style.display = 'flex';
             iframe.style.display = 'none';
           } else {
-            placeholder.textContent = 'No preview URL available';
+            placeholder.textContent = data.url ? 'Preview URL was rejected (not http/https)'
+                                               : 'No preview URL available';
             placeholder.style.display = 'flex';
             iframe.style.display = 'none';
           }
@@ -1776,6 +1810,7 @@
     createLiveConfidenceBarController, createLiveProgressBarController,
     createLiveProgressCheckpointController, createLiveStatusPillController,
     createLiveAggregatorController, createLiveDemoEmbedController,
+    isSafeEmbedUrl,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
     mountLiveConfidenceBar, mountCompactConfidenceBar,

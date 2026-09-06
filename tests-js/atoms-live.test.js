@@ -10,6 +10,7 @@ const {
   createLiveConfidenceBarController, createLiveProgressBarController,
   createLiveProgressCheckpointController, createLiveStatusPillController,
   createLiveAggregatorController, createLiveDemoEmbedController,
+  isSafeEmbedUrl,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -1161,6 +1162,41 @@ test('live_demo_embed: defaults gracefully on empty event', () => {
     loading: false,
   });
   assert.equal(adapter.calls.status, 'idle');
+});
+
+// ─── live_demo_embed: isSafeEmbedUrl (real security boundary) ──────────
+// The controller above deliberately forwards ANY string verbatim (see
+// "supports field aliases" etc. -- it's a pure passthrough of streamed
+// state). Validation belongs at the actual DOM sink instead, since that's
+// where a javascript: URL would otherwise execute -- see
+// mountLiveDemoEmbed's own adapter.setDemo, which is the real caller of
+// this function. Found in review (Claude PR-review job), 2026-09-06: the
+// original version assigned data.url straight to both iframe.src and a
+// plain, unsandboxed <a href> with no scheme check at all, and the iframe
+// separately combined allow-scripts+allow-same-origin (a documented
+// anti-pattern) -- either alone was exploitable via agent/model-streamed
+// state, since this atom's whole purpose is rendering exactly that.
+test('isSafeEmbedUrl: accepts http and https', () => {
+  assert.equal(isSafeEmbedUrl('https://example.com/demo'), true);
+  assert.equal(isSafeEmbedUrl('http://example.com/demo'), true);
+});
+
+test('isSafeEmbedUrl: accepts a bare path resolved against the fallback origin', () => {
+  assert.equal(isSafeEmbedUrl('/relative/path'), true);
+});
+
+test('isSafeEmbedUrl: rejects javascript: URLs', () => {
+  assert.equal(isSafeEmbedUrl('javascript:alert(document.cookie)'), false);
+});
+
+test('isSafeEmbedUrl: rejects data: and vbscript: URLs', () => {
+  assert.equal(isSafeEmbedUrl('data:text/html,<script>alert(1)</script>'), false);
+  assert.equal(isSafeEmbedUrl('vbscript:msgbox("x")'), false);
+});
+
+test('isSafeEmbedUrl: an explicit base overrides the default fallback origin', () => {
+  assert.equal(isSafeEmbedUrl('/x', 'https://demo.a2ui.dev/'), true);
+  assert.equal(isSafeEmbedUrl('javascript:evil()', 'https://demo.a2ui.dev/'), false);
 });
 
 console.log('all a2ui-atoms-live tests defined');
