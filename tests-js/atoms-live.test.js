@@ -9,7 +9,7 @@ const {
   createAgentRunSketchController, createLiveCostTrendController, createLogOutputController,
   createLiveConfidenceBarController, createLiveProgressBarController,
   createLiveProgressCheckpointController, createLiveStatusPillController,
-  createLiveAggregatorController,
+  createLiveAggregatorController, createLiveDemoEmbedController,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
 function fakeTextAdapter() {
@@ -1053,6 +1053,114 @@ test('live_aggregator: handles empty and malformed items gracefully', () => {
   assert.equal(adapter.calls.data.items[0].value, 0);
   assert.equal(adapter.calls.data.items[1].label, 'Valid');
   assert.equal(adapter.calls.data.items[1].value, 0);
+});
+
+// ─── live_demo_embed ───────────────────────────────────────────────────
+function fakeDemoEmbedAdapter() {
+  const calls = { data: null, status: null };
+  return {
+    calls,
+    setDemo(data) { calls.data = data; },
+    setStatus(status) { calls.status = status; },
+  };
+}
+
+test('live_demo_embed: renders url, title, height, and external link label', () => {
+  const adapter = fakeDemoEmbedAdapter();
+  const ctrl = createLiveDemoEmbedController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'streaming',
+    state: {
+      url: 'https://example.com/interactive-app',
+      title: 'Interactive 3D Viewport',
+      height: '600px',
+      label: 'Open App ↗',
+    },
+  });
+
+  assert.deepEqual(adapter.calls.data, {
+    url: 'https://example.com/interactive-app',
+    title: 'Interactive 3D Viewport',
+    height: '600px',
+    label: 'Open App ↗',
+    loading: false,
+  });
+  assert.equal(adapter.calls.status, 'streaming');
+});
+
+test('live_demo_embed: supports field aliases and numeric height formatting', () => {
+  const adapter = fakeDemoEmbedAdapter();
+  const ctrl = createLiveDemoEmbedController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'complete',
+    payload: {
+      src: 'https://example.org/sandbox',
+      name: 'Agent Sandbox',
+      height: 500,
+      button_label: 'Explore Sandbox →',
+    },
+  });
+
+  assert.deepEqual(adapter.calls.data, {
+    url: 'https://example.org/sandbox',
+    title: 'Agent Sandbox',
+    height: '500px',
+    label: 'Explore Sandbox →',
+    loading: false,
+  });
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('live_demo_embed: handles delta updates preserving previous configuration', () => {
+  const adapter = fakeDemoEmbedAdapter();
+  const ctrl = createLiveDemoEmbedController(adapter);
+
+  // Initial event sets title & height
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'streaming',
+    state: {
+      title: 'Realtime Visualizer',
+      height: '350px',
+    },
+  });
+  assert.equal(adapter.calls.data.title, 'Realtime Visualizer');
+  assert.equal(adapter.calls.data.height, '350px');
+  assert.equal(adapter.calls.data.url, '');
+  assert.equal(adapter.calls.data.loading, true); // Streaming without URL sets loading
+
+  // Delta arrives with final URL
+  ctrl.onEvent({
+    type: 'StateDelta',
+    lifecycle: 'complete',
+    payload: {
+      embed_url: 'https://demo.a2ui.dev/viz/123',
+    },
+  });
+  assert.equal(adapter.calls.data.url, 'https://demo.a2ui.dev/viz/123');
+  assert.equal(adapter.calls.data.title, 'Realtime Visualizer');
+  assert.equal(adapter.calls.data.height, '350px');
+  assert.equal(adapter.calls.data.loading, false);
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('live_demo_embed: defaults gracefully on empty event', () => {
+  const adapter = fakeDemoEmbedAdapter();
+  const ctrl = createLiveDemoEmbedController(adapter);
+
+  ctrl.onEvent({ type: 'StateSnapshot', lifecycle: 'idle' });
+  assert.deepEqual(adapter.calls.data, {
+    url: '',
+    title: 'Live Demo',
+    height: '450px',
+    label: 'Open in new tab →',
+    loading: false,
+  });
+  assert.equal(adapter.calls.status, 'idle');
 });
 
 console.log('all a2ui-atoms-live tests defined');
