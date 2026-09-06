@@ -1,5 +1,23 @@
 # A2UI Token Efficiency Benchmark
 
+> ## ⚠️ WITHDRAWN — 2026-09-06
+>
+> The headline figures below (−68.5% vs OpenUI Lang, −84.7% vs "Vercel JSON", the 35× offload)
+> **do not support an efficiency claim** and should not be cited. Documented defects:
+>
+> 1. **The "Vercel JSON-Render" and "C1 JSON" baselines are Thesys strawmen** from
+>    `thesysdev/openui`, not formats published by Vercel Labs or anyone else. This benchmark
+>    never measured Vercel's actual [`json-render`](https://github.com/vercel-labs/json-render).
+> 2. **Granularity confound** — A2UI composite atoms measured against primitive component trees;
+>    the pooled total averages matched and unmatched scenarios into a meaningless figure.
+> 3. **In-sample fitting** — `form` / `form_switch_group` atoms were added the same day as the v2
+>    measurement, modelled on the comparator, then the test set re-run.
+> 4. **Authored-minimum, not model-generated** — a theoretical floor, silent on validity, variance,
+>    render success.
+>
+> Retained as the record. A rebuilt, pre-registered comparison (neutral corpus, live generation) is
+> in progress.
+
 **vs OpenUI Lang, YAML, Vercel JSON-Render, Thesys C1 JSON**  
 _Measured 2026-06-12 · tiktoken cl100k_base encoder · 7 scenarios from [github.com/thesysdev/openui](https://github.com/thesysdev/openui/tree/main/benchmarks/samples)_
 
@@ -31,7 +49,8 @@ _v2 — contact-form and settings-panel now use native `form` / `form_switch_gro
 | A2UI vs Vercel JSON-Render | **−84.7%** |
 | A2UI vs Thesys C1 JSON | **−84.3%** |
 
-OpenUI Lang claims 67% fewer tokens than JSON-based formats. A2UI is **68.5% more efficient than OpenUI Lang** across the same 7 scenarios — without approximations.
+_(Withdrawn — see banner. The −68.5% vs OpenUI Lang figure compared composite atoms against a
+primitive component tree and used an in-sample-fitted vocabulary; it is not an efficiency claim.)_
 
 ---
 

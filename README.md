@@ -28,13 +28,9 @@ The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation
 
 Rather than asking an agent to generate custom UI every turn — expensive, fragile, unpredictable — give it a stable vocabulary of atoms and let it compose from those.
 
-```
-Raw HTML   609 tok  ████████████████████████████████████████
-OpenUI     287 tok  ███████████████████
-A2UI        68 tok  ████
-```
+The model names an atom; the renderer expands it into the full HTML server-side, and that expansion never re-enters the model's context window — so the tokens spent *describing* a UI are a fraction of the tokens in the rendered result.
 
-Fewer tokens to describe the same UI. The model names an atom; the renderer expands it into the full HTML server-side, and that expansion never re-enters the model's context window. (The efficiency framing here is still being validated — see `benchmarks/BENCHMARK.md` for the current methodology.)
+> **Token-efficiency multipliers withdrawn (2026-09-06).** Earlier versions of this README and `benchmarks/BENCHMARK.md` cited specific figures (e.g. "3.2× vs OpenUI", "6.5× vs Vercel JSON"). Those comparisons had methodological defects — the "Vercel" baseline was a third-party strawman, not Vercel Labs' actual [`json-render`](https://github.com/vercel-labs/json-render), and composite atoms were measured against primitive component trees. A rebuilt, pre-registered comparison is in progress; no multiplier should be quoted until it lands.
 
 > **Work in progress.** The atom vocabulary itself is stable; what it's *for* is still being explored. The live catalog and this repo are the vocabulary and its renderers — applying that vocabulary to new use cases (rendering a CLI's own output, for instance, in a sibling project not yet published) is ongoing, not finished.
 
@@ -148,7 +144,7 @@ The catalog's "Try it live" button uses a shared demo instance of the same rende
 | `components/` | Lit Web Components for the meet-stage surface |
 | `scripts/` | Build pipeline — atom pages, `spec.json`, MCP bundle, README compat matrix, link/brand checks |
 | `vendors/` | Landscape analysis of 9 UI libraries mapped to A2UI atoms |
-| `benchmarks/` | OpenUI comparison benchmark — token counts across 7 scenarios |
+| `benchmarks/` | Token comparison studies. The June 2026 run (`BENCHMARK.md`) is **withdrawn** — its "Vercel"/"C1" baselines are third-party strawmen, not those vendors' formats; a rebuilt pre-registered comparison is in progress |
 | `spec/` | Internal state/action contracts (gdm-v0.2, a2ui-state-v1) — the A2UI v1.0 candidate spec itself lives at [a2ui.org](https://a2ui.org/specification/v1.0-a2ui/), not vendored here |
 | `examples/` | Playbook YAML examples |
 | `knowledge-catalogue/` | Curriculum-to-atom pipeline — schema-validated curriculum markdown (Brevet 2026, NIST AI RMF) compiled into A2UI payloads. Separate concern from the atom vocabulary itself. |

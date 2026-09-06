@@ -7,7 +7,11 @@
 
 ## Why
 
-The [A2UI vs OpenUI benchmark](../../benchmarks/BENCHMARK.md) (2026-06-12) identified 9 components in OpenUI's standard library with no native A2UI equivalent. These are predominantly interactive/form patterns — the gap exposed when the benchmark ran `contact-form` and `settings-panel` scenarios.
+A comparison against OpenUI's standard library (2026-06-12) identified 9 components with no native
+A2UI equivalent — predominantly interactive/form patterns, surfaced by the `contact-form` and
+`settings-panel` scenarios. The component-gap observation stands on its own; the token-efficiency
+figures from that comparison are **withdrawn** (see [`../../benchmarks/BENCHMARK.md`](../../benchmarks/BENCHMARK.md) —
+adding these atoms and re-running the same test set is itself one of the documented defects).
 
 ## Component → atom mapping
 

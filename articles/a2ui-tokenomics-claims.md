@@ -1,4 +1,15 @@
-# A2UI Tokenomics — Validated Claims
+# A2UI Tokenomics — Claims (WITHDRAWN)
+
+> ## ⚠️ WITHDRAWN — 2026-09-06
+>
+> Every multiplier in this document (3.2× vs OpenUI Lang, 6.5× vs "Vercel JSON", 35× / 110× offload,
+> the $4,900 → $443 at-scale estimate) is **withdrawn** and should not be cited. The underlying
+> benchmark's "Vercel" and "C1" baselines are third-party strawmen — not Vercel Labs'
+> [`json-render`](https://github.com/vercel-labs/json-render) or any published format — and it
+> measured composite atoms against primitive component trees on hand-authored (not model-generated)
+> inputs. A rebuilt, pre-registered comparison is in progress.
+>
+> Retained as the record of what was claimed.
 
 *Self-contained reference. All figures reproducible from the scripts noted. Last run: 2026-06-18.*
 
@@ -106,7 +117,7 @@ The efficiency-claim image (`examples/efficiency-claim.png`) shows **35× fewer 
 A2UI does not have native `<Form>` or `<Switch>` atoms in the current web-renderer catalogue. The benchmark uses the closest available atoms (`form`, `toggle_switch`, etc.) with approximate field mappings. A minimal `html_panel` call for the same UI would be 15–40 tokens — making the A2UI advantage larger, not smaller.
 
 **OpenUI Lang is a compact DSL — a fair comparator.**
-OpenUI Lang (`.oui` format) is itself a compressed representation, not raw HTML. It is the most favourable baseline for OpenUI. A2UI still beats it by 3.2× overall, and by 85% on the pricing page scenario.
+OpenUI Lang (`.oui` format) is itself a compressed representation, not raw HTML — the most favourable baseline for OpenUI. (The 3.2× overall figure is withdrawn; see the banner.)
 
 **Token counts are not model-specific.**
 `cl100k_base` is a good approximation for GPT-4/Claude/Gemini. Actual billing token counts may vary ±5–10% by model. The ratios are stable across encodings.
@@ -153,10 +164,12 @@ The A2UI atom mappings for each scenario are editable in `benchmarks/a2ui_mappin
 
 ## Summary
 
-| Claim | Status | Evidence |
+**All rows below are WITHDRAWN (see banner).** Retained to show what was claimed and on what basis.
+
+| Claim | Status | Basis |
 |---|---|---|
-| A2UI outputs 3.2× fewer tokens than OpenUI Lang | ✅ Verified | `run_benchmark.py` — 1,521 vs 4,823 total |
-| A2UI outputs 6.5× fewer tokens than Vercel JSON | ✅ Verified | `run_benchmark.py` — 1,521 vs 9,934 total |
-| Rendered HTML the LLM replaces is ~35× the schema | ✅ Valid framing | Single-atom case: 68 tok schema, ~2,395 tok HTML |
-| 97% output token savings vs raw HTML generation | ✅ Directionally correct | Conservative estimate for multi-atom pages |
-| `contact-form` / `settings-panel` figures are conservative | ✅ Noted | No native Form/Switch atom — mappings are approximate |
+| A2UI outputs 3.2× fewer tokens than OpenUI Lang | ⚠️ Withdrawn | composite atoms vs primitive trees; in-sample vocab |
+| A2UI outputs 6.5× fewer tokens than Vercel JSON | ⚠️ Withdrawn | "Vercel JSON" is a Thesys strawman, not `json-render` |
+| Rendered HTML the LLM replaces is ~35× the schema | ⚠️ Withdrawn | analytical hand-calc, single-atom cherry-pick |
+| 97% output token savings vs raw HTML generation | ⚠️ Withdrawn | derived from the above |
+| `contact-form` / `settings-panel` figures are conservative | — | no native Form/Switch atom — mappings were approximate |

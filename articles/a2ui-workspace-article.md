@@ -60,28 +60,9 @@ The catalogue model separates these two concerns:
 - **Creative decisions** (which atoms to use, what content to put in them) happen at prompt time
 - **Rendering decisions** (how a `glowing_stat` looks, how a `dark_hero` is structured) are compiled into the renderer once and never re-spent
 
-Benchmarked against the same 7 UI scenarios used by the OpenUI project — a table, a contact form, a dashboard, a pricing page, a chart, a product page, and a settings panel — the numbers are clear. Token counts measured with `tiktoken` (`cl100k_base`), A2UI schemas from `benchmarks/a2ui_mappings.py`, OpenUI samples fetched from the [OpenUI benchmark repository](https://github.com/thesysdev/openui):
+How large that saving is, precisely, is something I'm still measuring. Earlier drafts of this article carried a benchmark table and specific multipliers (3.2× vs OpenUI Lang, 6.5× vs "Vercel-style JSON"). **I've withdrawn those numbers.** The comparison measured composite atoms against primitive component trees, the atom vocabulary had been fitted to the test set, and the "Vercel" baseline was a strawman from a third-party repo, not Vercel Labs' actual [`json-render`](https://github.com/vercel-labs/json-render) framework. A rebuilt, pre-registered comparison — neutral corpus, live model generation, published in full — is in progress. Until it lands, treat the tokenomics here as directional, not quantified.
 
-| Scenario | A2UI | OpenUI Lang | YAML | Vercel JSON | A2UI vs OUI |
-|---|---:|---:|---:|---:|---:|
-| simple-table | 92 | 149 | 317 | 332 | **−38%** |
-| contact-form | 209 | 287 | 753 | 860 | **−27%** |
-| dashboard | 468 | 1,232 | 2,131 | 2,192 | **−62%** |
-| pricing-page | 183 | 1,217 | 2,247 | 2,437 | **−85%** |
-| chart-with-data | 87 | 232 | 465 | 505 | **−63%** |
-| e-commerce-product | 205 | 1,172 | 2,158 | 2,399 | **−83%** |
-| settings-panel | 277 | 534 | 1,076 | 1,209 | **−48%** |
-| **Total / 7 scenarios** | **1,521** | **4,823** | **9,147** | **9,934** | **−68.5%** |
-
-A2UI outputs **3.2× fewer tokens than OpenUI Lang** and **6.5× fewer than Vercel-style JSON** across these scenarios. That gap widens further when you consider what the renderer replaces: the HTML, CSS, and JS for a typical rendered page runs to ~2,400 tokens — tokens the LLM never has to output at all. For a single-atom page that number is dramatic; for a complex multi-atom page the renderer's work compounds.
-
-![A2UI token efficiency benchmark — 35× fewer output tokens, identical UI](examples/efficiency-claim.png)
-
-There is a second gain that is less obvious: **system prompt compilation**. The full A2UI vocabulary — 289 atoms, their fields, and descriptions — is compiled into a compressed reference via `scripts/gen_vocab.py` and injected once into the agent system prompt. Subsequent turns do not re-explain the design system. The model has what it needs from context; it just picks atoms and fills in values.
-
-A Gemini agent primed with the vocabulary can produce a production-quality page schema in a single turn, consistently, every time. The vocabulary script and the benchmark are both in the repository.
-
-> **At scale:** at Claude Sonnet 4 output token pricing, a 1,000-page workload generating raw HTML costs roughly **$4.9k/month** in output tokens alone. The same workload on A2UI costs under **$300**. The renderer is free.
+The mechanism is still real regardless of the multiplier: the HTML, CSS, and JS for a rendered page are tokens the model never outputs, and the A2UI vocabulary — atom names, fields, and descriptions — is compiled once via `scripts/gen_vocab.py` and injected into the system prompt rather than re-explained every turn. The model picks atoms and fills in values; it does not re-derive the design system on each call.
 
 ---
 
