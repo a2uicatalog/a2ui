@@ -27,6 +27,10 @@
 /api/swagger.json /openapi.json 301
 /.well-known/openapi.json /openapi.json 301
 /.well-known/openapi.yaml /openapi.json 301
+/.well-known/llms.txt /llms.txt 301
+/mcp/openapi.json /openapi.json 301
+/mcp/docs /docs/ 301
+/developers/api /docs/ 301
 /auth /auth/ 301
 /authentication /auth/ 301
 /security /auth/ 301

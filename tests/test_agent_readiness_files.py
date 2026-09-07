@@ -138,6 +138,8 @@ def test_developer_resource_pages_exist_and_include_product_name():
         html = _load(*parts)
         assert "<title>" in html and "A2UI Atomic Catalog" in html.split("<title>")[1].split("</title>")[0], \
             f"{'/'.join(parts)} missing product name in <title>"
+        assert "<h1>" in html and "A2UI Atomic Catalog" in html.split("<h1>")[1].split("</h1>")[0], \
+            f"{'/'.join(parts)} missing product name in <h1> heading"
         assert "A2UI Atomic Catalog" in html, f"{'/'.join(parts)} missing product name in page body"
         # Must link to OpenAPI spec and MCP endpoint
         assert "/openapi.json" in html, f"{'/'.join(parts)} does not link to OpenAPI spec"
@@ -157,6 +159,7 @@ def test_predictable_redirects_route_correctly():
     assert redirect_map.get("/swagger.json") == "/openapi.json"
     assert redirect_map.get("/openapi.yaml") == "/openapi.json"
     assert redirect_map.get("/.well-known/openapi.json") == "/openapi.json"
+    assert redirect_map.get("/.well-known/llms.txt") == "/llms.txt"
     assert redirect_map.get("/auth") == "/auth/"
     assert redirect_map.get("/security") == "/auth/"
     assert redirect_map.get("/docs/auth") == "/auth/"
