@@ -102,7 +102,7 @@ def test_the_restraint_rule_is_stated_once_at_the_top(prose):
 
 def test_agentic_realtime_atoms_covered(prose):
     """Core realtime and agentic decision atoms must have selection guidance."""
-    required = ["action_required_card", "tool_call_card", "confidence_bar", "spinner", "step_progress"]
+    required = ["action_required_card", "tool_call_card", "confidence_bar", "spinner", "step_progress", "task_list", "gemini_handoff"]
     for atom in required:
         assert atom in prose["atoms"], f"missing agentic selection guidance for {atom}"
 
