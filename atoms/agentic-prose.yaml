@@ -274,6 +274,16 @@ atoms:
       (progress_bar).
     answers: ["where are we in the process", "what step is next", "how many steps are left"]
 
+  task_list:
+    use_when: >-
+      A collection of discrete action items or multi-step tasks with assignees,
+      priorities, due dates, or completion checkbox states.
+    not_when: >-
+      A linear step-by-step procedure tracking an active sequential state
+      (step_progress). A simple list of numbered instructions without status or
+      assignees (numbered_list). A plain unordered list of small points (icon_list).
+    answers: ["what tasks need doing", "show the action item checklist", "what are the assigned tasks"]
+
   freeform_canvas:
     use_when: >-
       A one-shot domain-specific diagram (topology graph, circuit layout,
@@ -355,6 +365,16 @@ atoms:
       is worse than no button. Several equal actions (that is a choice, and
       needs form_field or a list, not a row of buttons).
     answers: []
+
+  gemini_handoff:
+    use_when: >-
+      The current context, prompt, or task needs to be handed off directly to an
+      external Gemini or LLM environment with a single copy-and-launch action.
+    not_when: >-
+      A standard link or navigation button (cta_button). Merely copying arbitrary text
+      to clipboard without an agent handoff action (copy_to_clipboard). A human approval
+      gate blocking the current in-flight agent workflow (action_required_card).
+    answers: ["hand this off to Gemini", "open this prompt in Gemini", "transfer control to external model"]
 
   form_field:
     use_when: >-
