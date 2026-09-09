@@ -1813,6 +1813,211 @@
     return { element: el, controller: createLiveDemoEmbedController(adapter) };
   }
 
+  // ─── media_stream_card controller ─────────────────────────────────────────
+  // Video / audio / presentation stream embed card with platform auto-detection.
+  // Extends the static media_stream_card atom (renderers/web_article.py)
+  // for live streaming updates.
+
+  function resolveMediaStream(rawUrl, customTitle, customPlatform) {
+    const url = String(rawUrl || '').trim();
+    if (!url) {
+      const platform = customPlatform || 'Media';
+      return {
+        embedUrl: '',
+        platform,
+        label: customTitle || platform,
+      };
+    }
+
+    let embedUrl = url;
+    let platform = customPlatform || 'Media';
+
+    // YouTube: watch?v=ID, youtu.be/ID, embed/ID, live/ID, shorts/ID
+    const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]+)/i);
+    if (yt) {
+      embedUrl = `https://www.youtube.com/embed/${yt[1]}?rel=0`;
+      platform = customPlatform || 'YouTube';
+    } else {
+      // Loom: loom.com/share/ID, loom.com/embed/ID
+      const loom = url.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/i);
+      if (loom) {
+        embedUrl = `https://www.loom.com/embed/${loom[1]}`;
+        platform = customPlatform || 'Loom';
+      } else {
+        // Google Slides: docs.google.com/presentation/d/ID
+        const slides = url.match(/docs\.google\.com\/presentation\/d\/([^/?#]+)/i);
+        if (slides) {
+          embedUrl = `https://docs.google.com/presentation/d/${slides[1]}/embed?start=false&loop=false`;
+          platform = customPlatform || 'Google Slides';
+        } else {
+          // Vimeo: vimeo.com/ID or player.vimeo.com/video/ID
+          const vimeo = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/i);
+          if (vimeo) {
+            embedUrl = `https://player.vimeo.com/video/${vimeo[1]}`;
+            platform = customPlatform || 'Vimeo';
+          }
+        }
+      }
+    }
+
+    const label = customTitle || platform;
+    return {
+      embedUrl,
+      platform,
+      label,
+    };
+  }
+
+  function createMediaStreamCardController(adapter) {
+    let url = '';
+    let title = '';
+    let platform = '';
+    let height = '360px';
+    let loading = false;
+
+    function formatHeight(h) {
+      if (h == null || h === '') return '360px';
+      if (typeof h === 'number') return `${h}px`;
+      const str = String(h).trim();
+      if (/^\d+$/.test(str)) return `${str}px`;
+      return str;
+    }
+
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+
+        if (src.url !== undefined) url = String(src.url || '');
+        else if (src.src !== undefined) url = String(src.src || '');
+        else if (src.embed_url !== undefined) url = String(src.embed_url || '');
+        else if (src.embedUrl !== undefined) url = String(src.embedUrl || '');
+        else if (src.stream_url !== undefined) url = String(src.stream_url || '');
+        else if (src.streamUrl !== undefined) url = String(src.streamUrl || '');
+        else if (src.video_url !== undefined) url = String(src.video_url || '');
+        else if (src.videoUrl !== undefined) url = String(src.videoUrl || '');
+        else if (src.href !== undefined) url = String(src.href || '');
+
+        if (src.title !== undefined && src.title !== null) title = String(src.title);
+        else if (src.label !== undefined && src.label !== null) title = String(src.label);
+        else if (src.name !== undefined && src.name !== null) title = String(src.name);
+
+        if (src.platform !== undefined && src.platform !== null) platform = String(src.platform);
+
+        if (src.height !== undefined && src.height !== null) height = formatHeight(src.height);
+
+        if (src.loading !== undefined) loading = Boolean(src.loading);
+        else loading = Boolean(event && event.lifecycle === 'streaming' && !url);
+
+        const resolved = resolveMediaStream(url, title, platform);
+
+        adapter.setMedia({
+          url,
+          embedUrl: resolved.embedUrl,
+          platform: resolved.platform,
+          title: resolved.label,
+          rawTitle: title,
+          height,
+          loading,
+        });
+        adapter.setStatus((event && event.lifecycle) || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  const createLiveMediaStreamCardController = createMediaStreamCardController;
+
+  function mountMediaStreamCard(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-media-stream-card';
+    el.style.cssText = 'margin:1rem 0;border:1px solid #334155;border-radius:8px;overflow:hidden;background:#0f172a;font-family:system-ui,-apple-system,sans-serif;';
+
+    const header = document.createElement('div');
+    header.className = 'a2ui-media-header';
+    header.style.cssText = 'padding:8px 14px;background:#1e293b;font-size:0.78rem;color:#94a3b8;display:flex;align-items:center;gap:6px;';
+
+    const playIcon = document.createElement('span');
+    playIcon.style.cssText = 'color:#64748b;font-size:0.68rem;';
+    playIcon.textContent = '▶';
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'a2ui-media-title';
+    titleSpan.style.cssText = 'font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    titleSpan.textContent = 'Media';
+
+    header.appendChild(playIcon);
+    header.appendChild(titleSpan);
+
+    const frameContainer = document.createElement('div');
+    frameContainer.className = 'a2ui-media-frame-wrap';
+    frameContainer.style.cssText = 'position:relative;height:360px;background:#0f172a;';
+
+    const iframe = document.createElement('iframe');
+    iframe.className = 'a2ui-media-iframe';
+    iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;display:none;';
+    iframe.loading = 'lazy';
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', 'true');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'a2ui-media-placeholder';
+    placeholder.style.cssText = 'position:absolute;inset:0;height:100%;background:#0f172a;display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.85rem;';
+    placeholder.textContent = 'No URL provided';
+
+    frameContainer.appendChild(iframe);
+    frameContainer.appendChild(placeholder);
+
+    el.appendChild(header);
+    el.appendChild(frameContainer);
+    container.appendChild(el);
+
+    let lastAssignedUrl = null;
+
+    const adapter = {
+      setMedia(data) {
+        if (data.title) {
+          titleSpan.textContent = data.title;
+        } else {
+          titleSpan.textContent = data.platform || 'Media';
+        }
+
+        const safeUrl = data.embedUrl && isSafeEmbedUrl(data.embedUrl) ? data.embedUrl : '';
+        if (data.embedUrl && !safeUrl) {
+          console.warn('a2ui media_stream_card: refusing non-http(s) URL', data.embedUrl);
+        }
+
+        if (safeUrl) {
+          if (lastAssignedUrl !== safeUrl) {
+            iframe.src = safeUrl;
+            lastAssignedUrl = safeUrl;
+          }
+          placeholder.style.display = 'none';
+          iframe.style.display = 'block';
+        } else {
+          lastAssignedUrl = null;
+          iframe.style.display = 'none';
+          placeholder.style.display = 'flex';
+          if (data.loading) {
+            placeholder.textContent = 'Loading media stream...';
+          } else {
+            placeholder.textContent = data.url ? 'Media URL was rejected (not http/https)' : 'No URL provided';
+          }
+        }
+
+        if (data.height) {
+          frameContainer.style.height = data.height;
+        }
+      },
+      setStatus(lifecycle) {
+        el.dataset.lifecycle = lifecycle;
+      },
+    };
+    return { element: el, controller: createMediaStreamCardController(adapter) };
+  }
+
+  const mountLiveMediaStreamCard = mountMediaStreamCard;
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
@@ -1820,6 +2025,8 @@
     createLiveConfidenceBarController, createLiveProgressBarController,
     createLiveProgressCheckpointController, createLiveStatusPillController,
     createLiveAggregatorController, createLiveDemoEmbedController,
+    createMediaStreamCardController, createLiveMediaStreamCardController,
+    resolveMediaStream,
     isSafeEmbedUrl,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
@@ -1830,6 +2037,7 @@
     mountLiveStatusPill, mountStatusPill: mountLiveStatusPill,
     mountLiveAggregator, mountAggregator: mountLiveAggregator,
     mountLiveDemoEmbed, mountLiveDemo: mountLiveDemoEmbed, mountDemoEmbed: mountLiveDemoEmbed,
+    mountMediaStreamCard, mountLiveMediaStreamCard,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
