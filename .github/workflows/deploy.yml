@@ -89,3 +89,14 @@ jobs:
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0  # v4.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
+
+      # public-play/ is a repo-committed artifact (same "generators compile
+      # artifacts, never built fresh by CI" discipline as public/surfaces/
+      # mcp-apps/renderer-bundle.html above — see gen_mcp_apps_bundle.py's
+      # own OUT_PLAY comment) — this step only deploys what's already
+      # checked in, it doesn't regenerate anything.
+      - name: Deploy to Cloudflare Workers (play.a2uicatalog.ai)
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0  # v4.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          command: deploy --config wrangler-play.toml

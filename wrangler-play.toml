@@ -1,0 +1,34 @@
+name = "a2uicatalog-play"
+account_id = "874e86ca2e6319749c576074fcc72b97"
+compatibility_date = "2024-09-23"
+
+# This origin exists ONLY to isolate cross-origin embeds (see
+# gen_mcp_apps_bundle.py's own comment on why the mcp-apps renderer bundle
+# needs a genuinely separate origin, not just a stricter sandbox attribute
+# — #mcp-view's allow-same-origin is only safe because THIS hostname's
+# cookies/DOM are worthless to steal). That guarantee holds only as long as
+# this origin stays permanently stateless: no auth, no login, no saved
+# state, ever. If a future feature needs real state on this bundle, it
+# needs a DIFFERENT hostname, not this one.
+#
+# Same reasoning as wrangler-full.toml's own workers_dev/preview_urls
+# comment: no alternate unlisted origin should ever serve this content —
+# keeps the deployed surface to exactly the one documented hostname.
+workers_dev = false
+preview_urls = false
+
+# Declares the custom domain instead of binding it by hand in the Cloudflare
+# dashboard: `wrangler deploy` provisions play.a2uicatalog.ai (DNS record
+# included) itself on the next deploy, IF CF_API_TOKEN carries zone-level
+# permission. Neither wrangler.toml nor wrangler-full.toml uses this
+# mechanism today (both of THEIR custom domains were bound by hand) — this
+# is the first time it's tried in this repo, so treat the next "Deploy to
+# Cloudflare Workers (play.a2uicatalog.ai)" CI run as the real test: a
+# permission error there means the token needs zone:dns/workers routes
+# edit added before this can provision itself, not a bug in this file.
+routes = [
+  { pattern = "play.a2uicatalog.ai", custom_domain = true }
+]
+
+[assets]
+directory = "./public-play"

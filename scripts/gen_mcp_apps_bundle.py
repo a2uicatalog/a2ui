@@ -29,6 +29,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RENDERER_DIR = ROOT / "apps-script-surface" / "gas-wired-renderer"
 OUT = ROOT / "public" / "surfaces" / "mcp-apps" / "renderer-bundle.html"
+# Same bundle, byte-for-byte, ALSO served from play.a2uicatalog.ai (a
+# separate Worker, wrangler-play.toml) — the deliberately stateless origin
+# #mcp-view embeds now point at so allow-same-origin can be granted there
+# without exposing a2uicatalog.ai's own cookies/DOM to any of this file's
+# ~600 atom renderers. `public/surfaces/mcp-apps/renderer-bundle.html`
+# above is kept unchanged, not retired: a2ui-private's mcp-worker fetches
+# it server-side (Worker-to-Worker, no browser sandbox concern) to serve
+# the MCP host's own ui:// resource, and switching that would be a
+# coordinated cross-repo change this generator has no business forcing.
+OUT_PLAY = ROOT / "public-play" / "renderer-bundle.html"
 PDFJS_PATH = RENDERER_DIR / "vendor" / "pdfjs" / "pdf.min.mjs"
 QRCODEGEN_PATH = RENDERER_DIR / "vendor" / "qrcodegen" / "qrcodegen.js"
 
@@ -863,6 +873,19 @@ def main(argv=None):
     print("wrote %s (%d bytes, %d files concatenated)"
           % (OUT, len(bundle), len(renderer_files())))
     write_qrcodegen_partial()
+
+    # Same bundle, plus the one runtime-fetched asset it needs
+    # (pdf.min.mjs — see pdfjs_module_block's own docstring), also written
+    # for play.a2uicatalog.ai. See OUT_PLAY's own comment for why this is
+    # additive, not a replacement for the write above.
+    OUT_PLAY.parent.mkdir(parents=True, exist_ok=True)
+    OUT_PLAY.write_text(bundle)
+    print("wrote %s (%d bytes, %d files concatenated)"
+          % (OUT_PLAY, len(bundle), len(renderer_files())))
+    play_pdfjs_dir = OUT_PLAY.parent / "vendors" / "pdfjs"
+    play_pdfjs_dir.mkdir(parents=True, exist_ok=True)
+    (play_pdfjs_dir / "pdf.min.mjs").write_text(PDFJS_PATH.read_text())
+    print("wrote %s/pdf.min.mjs" % play_pdfjs_dir)
 
 
 if __name__ == "__main__":
