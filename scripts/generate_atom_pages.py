@@ -1821,8 +1821,23 @@ MCP_APPS_HERO_HTML = """
        widening of the sandbox — content rendered here (including
        hand-curated, non-catalog blocks) can now redirect the top-level
        page on a genuine click. Found 2026-07-12 via the learn-a2ui-mcp
-       demo's module_map hub. -->
-  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="./renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
+       demo's module_map hub.
+       allow-same-origin + src on play.a2uicatalog.ai (NOT a2uicatalog.ai
+       itself): media_stream_card/youtube's YouTube embed script reads
+       document.cookie during init and throws without allow-same-origin,
+       producing a black box instead of a working player (confirmed live,
+       headless Chromium, 2026-09-10) -- and no atom-level workaround
+       exists, the restriction cascades to any nested iframe this bundle
+       creates via script regardless of that iframe's own sandbox. Safe
+       to grant HERE specifically only because play.a2uicatalog.ai is a
+       genuinely separate origin (different hostname = different origin,
+       a hard browser wall) that is DELIBERATELY, PERMANENTLY stateless
+       -- see wrangler-play.toml's own comment. Granting this on
+       a2uicatalog.ai's own origin was rejected: this bundle renders
+       arbitrary agent/user payloads across ~600 mostly-unaudited atom
+       renderers, and that would expose the whole site's cookies/DOM to
+       any one of them, not just fix one card. -->
+  <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 </div>
 
 <div class="mcp-playground">
@@ -2364,7 +2379,12 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="/surfaces/mcp-apps/renderer-bundle.html?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
+  <!-- allow-same-origin + src on play.a2uicatalog.ai: see the hero-embed
+       template's own comment above (this file, ~line 1825) for the full
+       "why here, not a2uicatalog.ai itself" reasoning -- same bundle,
+       same iframe, same rationale, both templates kept in sync by hand
+       like every other sandbox/src change to #mcp-view. -->
+  <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
 
   <div class="play-bar">
     <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>

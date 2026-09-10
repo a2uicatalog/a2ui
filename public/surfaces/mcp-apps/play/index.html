@@ -40,7 +40,12 @@
   </style>
 </head>
 <body>
-  <iframe id="mcp-view" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="/surfaces/mcp-apps/renderer-bundle.html?v=0c928f1f9a" title="A2UI MCP Apps view"></iframe>
+  <!-- allow-same-origin + src on play.a2uicatalog.ai: see the hero-embed
+       template's own comment above (this file, ~line 1825) for the full
+       "why here, not a2uicatalog.ai itself" reasoning -- same bundle,
+       same iframe, same rationale, both templates kept in sync by hand
+       like every other sandbox/src change to #mcp-view. -->
+  <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=6e4e3850ed" title="A2UI MCP Apps view"></iframe>
 
   <div class="play-bar">
     <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
