@@ -17,5 +17,18 @@ compatibility_date = "2024-09-23"
 workers_dev = false
 preview_urls = false
 
+# Declares the custom domain instead of binding it by hand in the Cloudflare
+# dashboard: `wrangler deploy` provisions play.a2uicatalog.ai (DNS record
+# included) itself on the next deploy, IF CF_API_TOKEN carries zone-level
+# permission. Neither wrangler.toml nor wrangler-full.toml uses this
+# mechanism today (both of THEIR custom domains were bound by hand) — this
+# is the first time it's tried in this repo, so treat the next "Deploy to
+# Cloudflare Workers (play.a2uicatalog.ai)" CI run as the real test: a
+# permission error there means the token needs zone:dns/workers routes
+# edit added before this can provision itself, not a bug in this file.
+routes = [
+  { pattern = "play.a2uicatalog.ai", custom_domain = true }
+]
+
 [assets]
 directory = "./public-play"
