@@ -97,6 +97,32 @@ policy:
     - public/avatar/**
     - public/gallery/**   # article/demo screenshots referenced from the blog-drafting Google Doc — real static assets, not hosted on Drive/GAS (both have anonymous-hotlink restrictions)
 
+# Isolated Cloudflare Worker origins whose ENTIRE security argument depends
+# on staying permanently stateless (declared 2026-09-10, roast-panel
+# finding: this was previously enforced by a code comment only, not CI).
+# See generate_atom_pages.py's own #mcp-view comment for the full "why a
+# separate origin, why allow-same-origin is safe there" reasoning this
+# protects — an iframe embedding one of these hostnames was deliberately
+# granted allow-same-origin BECAUSE that hostname's cookies/DOM are
+# worthless to steal. Adding real state (a Worker script, a KV/D1/R2/
+# Durable Objects binding, a cookie-writing code path) to any of these
+# quietly invalidates that reasoning without touching the iframe's own
+# sandbox attribute at all — the bug would be invisible at the call site.
+# Enforced by tests/test_project_manifest.py::
+# test_stateless_origins_carry_no_worker_script_or_state_bindings, which
+# parses each entry's wrangler_config and fails if it declares `main` (a
+# Worker script — the only thing that could dynamically set a cookie at
+# all) or any state-bearing binding table (kv_namespaces/d1_databases/
+# r2_buckets/durable_objects/queues).
+stateless_origins:
+  play.a2uicatalog.ai:
+    wrangler_config: wrangler-play.toml
+    reason: media_stream_card (and any other iframe-embedding atom on the
+      mcp-apps play surface) needs allow-same-origin to work at all --
+      YouTube's own embed script reads document.cookie during init and
+      throws without it. Safe only because this origin has nothing real
+      to expose.
+
 # Consumed by scripts/gen_public_catalog.py — the single publication
 # decision for prompts. public/prompts/ may contain exactly these.
 # Knowledge atoms — compiled training.md sources served (UNANNOUNCED) at
