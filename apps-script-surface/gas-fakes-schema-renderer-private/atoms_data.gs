@@ -110,7 +110,12 @@ function _normaliseAdsbLol(raw, filterGnd) {
 }
 
 // Generic surface fetch used by all data atoms (caches by URL key)
+// _isFetchableUrl (Code.private.gs) blocks loopback/private/metadata hosts —
+// required here because data_source's url is attacker/payload-controlled;
+// adsb_feed/metar_feed never reach this check since their urls are built
+// from a hardcoded host.
 function _surfaceFetch(url, cacheKey, ttl) {
+  if (!_isFetchableUrl(url)) return null;
   var cache = CacheService.getScriptCache();
   var hit   = cache.get(cacheKey);
   if (hit) return hit;
