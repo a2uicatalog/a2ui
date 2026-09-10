@@ -356,27 +356,62 @@ _RENDERERS['media_mention_card'] = function(b) {
 // honours referrer and has looser playback rights; the tradeoff (real
 // YouTube cookies reachable inside this now-allow-same-origin iframe) is
 // the same one meetstudio already accepted for the identical reason.
+//
+// Own explicit `sandbox` on the inner iframe (2026-09-10, roast-panel
+// follow-up): this atom's Python and live-JS siblings both gate
+// allow-same-origin on `matched` -- true only when `src` was REWRITTEN to
+// a platform's own canonical embed endpoint below, false for the
+// untouched custom-stream fallback (an arbitrary, unvalidated URL with no
+// domain allowlist beyond _safeUrl's scheme check). This version never
+// had that distinction; #mcp-view's own allow-same-origin meant EVERY
+// media_stream_card render here got full privilege inside play.a2uicatalog.ai
+// regardless of whether the URL was a recognized platform. Verified live,
+// 2026-09-10: a child iframe's own MORE restrictive sandbox attribute
+// takes effect even when its parent is non-opaque (has allow-same-origin)
+// -- this is ordinary sandbox semantics, unrelated to the inheritance-
+// when-the-PARENT-lacks-allow-same-origin cascade found earlier the same
+// day. Vimeo/Google Slides detection added here too, matching the other
+// two implementations -- previously only this one lacked it.
 _RENDERERS['media_stream_card'] = function(b) {
   var url    = b.url || '';
   var title  = b.title || '';
   var height = b.height || '315px';
-  // Auto-detect YouTube and convert to embed URL
   var src = url;
+  var matched = false;
   var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   // mute=1 alongside autoplay=1 isn't optional -- browsers block unmuted
   // autoplay outright, so autoplay=1 alone silently does nothing. Same
   // pairing meetstudio's own gdm_stage_video_panel.ts already uses.
-  if (ytMatch) src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0&autoplay=1&mute=1';
+  if (ytMatch) {
+    src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0&autoplay=1&mute=1';
+    matched = true;
+  }
   var loomMatch = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
-  if (loomMatch) src = 'https://www.loom.com/embed/' + loomMatch[1] + '?autoplay=1';
+  if (loomMatch) {
+    src = 'https://www.loom.com/embed/' + loomMatch[1] + '?autoplay=1';
+    matched = true;
+  }
+  var slidesMatch = url.match(/docs\.google\.com\/presentation\/d\/([^/?#]+)/);
+  if (slidesMatch) {
+    src = 'https://docs.google.com/presentation/d/' + slidesMatch[1] + '/embed?start=false&loop=false';
+    matched = true;
+  }
+  var vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    src = 'https://player.vimeo.com/video/' + vimeoMatch[1];
+    matched = true;
+  }
   var titleHtml = title ? '<div style="font-size:0.82rem;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(title) + '</div>' : '';
+  var sandbox = matched
+    ? 'allow-scripts allow-same-origin allow-popups allow-forms'
+    : 'allow-scripts allow-popups allow-forms';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + titleHtml
     + '<div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;">'
     // allow="autoplay" is required, not decorative -- without it in the
     // iframe's own Permissions Policy, the autoplay=1 query param is
     // silently ignored regardless of the mute state.
-    + '<iframe src="' + _safeUrl(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>'
+    + '<iframe src="' + _safeUrl(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" sandbox="' + sandbox + '"></iframe>'
     + '</div></div>';
 };
 
