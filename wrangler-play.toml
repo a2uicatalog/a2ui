@@ -1,0 +1,21 @@
+name = "a2uicatalog-play"
+account_id = "874e86ca2e6319749c576074fcc72b97"
+compatibility_date = "2024-09-23"
+
+# This origin exists ONLY to isolate cross-origin embeds (see
+# gen_mcp_apps_bundle.py's own comment on why the mcp-apps renderer bundle
+# needs a genuinely separate origin, not just a stricter sandbox attribute
+# — #mcp-view's allow-same-origin is only safe because THIS hostname's
+# cookies/DOM are worthless to steal). That guarantee holds only as long as
+# this origin stays permanently stateless: no auth, no login, no saved
+# state, ever. If a future feature needs real state on this bundle, it
+# needs a DIFFERENT hostname, not this one.
+#
+# Same reasoning as wrangler-full.toml's own workers_dev/preview_urls
+# comment: no alternate unlisted origin should ever serve this content —
+# keeps the deployed surface to exactly the one documented hostname.
+workers_dev = false
+preview_urls = false
+
+[assets]
+directory = "./public-play"
