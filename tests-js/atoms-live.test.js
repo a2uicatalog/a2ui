@@ -1250,6 +1250,19 @@ test('resolveMediaStream: converts Loom, Google Slides, and Vimeo URLs', () => {
   assert.equal(vimeo.platform, 'Vimeo');
 });
 
+test('resolveMediaStream: forwards a Vimeo private/unlisted video hash as h=', () => {
+  const shareLink = resolveMediaStream('https://vimeo.com/123456789/abcdef0123');
+  assert.equal(shareLink.embedUrl, 'https://player.vimeo.com/video/123456789?h=abcdef0123');
+  assert.equal(shareLink.platform, 'Vimeo');
+
+  const playerLink = resolveMediaStream('https://player.vimeo.com/video/123456789?h=abcdef0123');
+  assert.equal(playerLink.embedUrl, 'https://player.vimeo.com/video/123456789?h=abcdef0123');
+
+  // No hash present -- still resolves cleanly, no trailing "?h=undefined".
+  const publicLink = resolveMediaStream('https://vimeo.com/123456789');
+  assert.equal(publicLink.embedUrl, 'https://player.vimeo.com/video/123456789');
+});
+
 test('resolveMediaStream: falls back to Media for custom stream URLs', () => {
   const stream = resolveMediaStream('https://stream.example.com/live.m3u8');
   assert.equal(stream.embedUrl, 'https://stream.example.com/live.m3u8');
@@ -1315,6 +1328,20 @@ test('media_stream_card: supports aliases and delta updates', () => {
   assert.equal(adapter.calls.data.title, 'Agent Demo Video');
   assert.equal(adapter.calls.data.loading, false);
   assert.equal(adapter.calls.status, 'complete');
+});
+
+test('media_stream_card: an explicit null on the canonical key falls through to a populated alias', () => {
+  const adapter = fakeMediaStreamAdapter();
+  const ctrl = createMediaStreamCardController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateDelta',
+    lifecycle: 'streaming',
+    payload: { url: null, embed_url: 'https://vimeo.com/12345678' },
+  });
+  assert.equal(adapter.calls.data.url, 'https://vimeo.com/12345678');
+  assert.equal(adapter.calls.data.embedUrl, 'https://player.vimeo.com/video/12345678');
+  assert.equal(adapter.calls.data.platform, 'Vimeo');
 });
 
 test('media_stream_card: handles empty/null event gracefully', () => {

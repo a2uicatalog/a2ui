@@ -1850,10 +1850,14 @@
           embedUrl = `https://docs.google.com/presentation/d/${slides[1]}/embed?start=false&loop=false`;
           platform = customPlatform || 'Google Slides';
         } else {
-          // Vimeo: vimeo.com/ID or player.vimeo.com/video/ID
-          const vimeo = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/i);
+          // Vimeo: vimeo.com/ID(/HASH) or player.vimeo.com/video/ID(?h=HASH) —
+          // the optional HASH segment authorizes playback of private/
+          // unlisted videos; dropping it silently produces a "this video
+          // is private" embed for exactly those links.
+          const vimeo = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)(?:[/?](?:h=)?([a-zA-Z0-9]+))?/i);
           if (vimeo) {
             embedUrl = `https://player.vimeo.com/video/${vimeo[1]}`;
+            if (vimeo[2]) embedUrl += `?h=${vimeo[2]}`;
             platform = customPlatform || 'Vimeo';
           }
         }
@@ -1887,15 +1891,15 @@
       onEvent(event) {
         const src = (event && (event.state || event.payload)) || {};
 
-        if (src.url !== undefined) url = String(src.url || '');
-        else if (src.src !== undefined) url = String(src.src || '');
-        else if (src.embed_url !== undefined) url = String(src.embed_url || '');
-        else if (src.embedUrl !== undefined) url = String(src.embedUrl || '');
-        else if (src.stream_url !== undefined) url = String(src.stream_url || '');
-        else if (src.streamUrl !== undefined) url = String(src.streamUrl || '');
-        else if (src.video_url !== undefined) url = String(src.video_url || '');
-        else if (src.videoUrl !== undefined) url = String(src.videoUrl || '');
-        else if (src.href !== undefined) url = String(src.href || '');
+        if (src.url != null) url = String(src.url || '');
+        else if (src.src != null) url = String(src.src || '');
+        else if (src.embed_url != null) url = String(src.embed_url || '');
+        else if (src.embedUrl != null) url = String(src.embedUrl || '');
+        else if (src.stream_url != null) url = String(src.stream_url || '');
+        else if (src.streamUrl != null) url = String(src.streamUrl || '');
+        else if (src.video_url != null) url = String(src.video_url || '');
+        else if (src.videoUrl != null) url = String(src.videoUrl || '');
+        else if (src.href != null) url = String(src.href || '');
 
         if (src.title !== undefined && src.title !== null) title = String(src.title);
         else if (src.label !== undefined && src.label !== null) title = String(src.label);
@@ -1958,7 +1962,17 @@
     iframe.loading = 'lazy';
     iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
     iframe.setAttribute('allowfullscreen', 'true');
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-forms');
+    // No allow-same-origin: resolveMediaStream's fallback (custom-stream)
+    // branch passes an unrecognized URL straight through as embedUrl with
+    // only a scheme check from isSafeEmbedUrl, no domain allowlist -- same
+    // reasoning mountLiveDemoEmbed's own iframe.setAttribute('sandbox', ...)
+    // documents above. allow-scripts + allow-same-origin together is a
+    // documented anti-pattern (MDN): the framed content keeps the
+    // privileges of whatever origin it actually loads with, defeating the
+    // sandbox. Dropping it still lets YouTube/Loom/Slides/Vimeo — and any
+    // other legitimate embed — run their own JS, just inside an opaque
+    // origin that can't reach this page's cookies/DOM.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms');
 
     const placeholder = document.createElement('div');
     placeholder.className = 'a2ui-media-placeholder';
