@@ -12,6 +12,7 @@ import fnmatch
 import glob
 import re
 import subprocess
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -208,3 +209,81 @@ def test_the_frozen_copies_really_are_frozen():
             "being maintained after all, so it is not frozen debt. Either "
             "bring it fully in sync (and give it a generator) or remove the "
             "declaration.")
+
+
+# ─── stateless_origins — a promise checked, not just written ─────────────────
+#
+# Roast panel finding, 2026-09-10: play.a2uicatalog.ai's ENTIRE security
+# argument (an iframe embedding it may safely grant allow-same-origin,
+# because that hostname's cookies/DOM are worthless to steal) was enforced
+# by a code comment only. Nothing stopped a future PR from quietly adding a
+# Worker script or a state-bearing binding to it and invalidating that
+# argument without touching the iframe's own sandbox attribute at all — the
+# regression would be invisible at the call site that actually depends on it.
+#
+# `main` (a Worker script) is the specific thing this guards hardest: with
+# no script attached, Cloudflare Workers Assets serves static files and
+# nothing else — there is no code path that could dynamically set a cookie,
+# read a binding, or do anything per-request at all. Once `main` exists,
+# state can arrive by definition; that's the bright line, not "does it
+# currently misbehave."
+_STATE_BEARING_BINDING_KEYS = (
+    "kv_namespaces", "d1_databases", "r2_buckets",
+    "durable_objects", "queues", "vectorize", "hyperdrive",
+)
+
+
+def test_stateless_origins_carry_no_worker_script_or_state_bindings():
+    for hostname, decl in MANIFEST["stateless_origins"].items():
+        config_path = ROOT / decl["wrangler_config"]
+        assert config_path.exists(), (
+            f"{hostname}: declared wrangler_config {decl['wrangler_config']} "
+            "does not exist")
+        config = tomllib.loads(config_path.read_text())
+        assert "main" not in config, (
+            f"{hostname} ({decl['wrangler_config']}) now declares a Worker "
+            "script (`main`) — this origin's whole reason an iframe may "
+            "grant it allow-same-origin is that NOTHING here can set a "
+            "cookie or hold state. A Worker script is exactly the thing "
+            "that could. Either this origin no longer belongs in "
+            "project.yaml's stateless_origins (and every allow-same-origin "
+            "grant to it needs re-justifying), or the script must be "
+            "provably stateless itself, which this test cannot verify — "
+            "don't add one without a real conversation about what it does.")
+        present_bindings = [k for k in _STATE_BEARING_BINDING_KEYS if k in config]
+        assert not present_bindings, (
+            f"{hostname} ({decl['wrangler_config']}) now declares state-"
+            f"bearing binding(s) {present_bindings} — same reasoning as the "
+            "`main` check above: this origin is only safe to grant "
+            "allow-same-origin to because it holds nothing worth reading.")
+
+
+def test_play_origin_bundle_source_never_writes_a_cookie():
+    """Defense in depth alongside the wrangler-config check above: even
+    with no server-side state possible (no Worker script, no bindings),
+    a future atom's own client-side JS could still call
+    `document.cookie = ...` inside the served bundle and start
+    accumulating real per-visitor state that way — the wrangler-level
+    guard can't see that, since it never executes any code to check.
+
+    Scoped to gen_mcp_apps_bundle.py's own renderer_files() -- the exact
+    source set concatenated into public-play/renderer-bundle.html, no
+    more, no less, so this stays a real check on what actually ships
+    there rather than a repo-wide grep that would also flag unrelated
+    surfaces this origin never serves."""
+    import sys
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle  # noqa: E402
+
+    hits = []
+    for path in gen_mcp_apps_bundle.renderer_files():
+        if not path.exists():
+            continue
+        if re.search(r"document\.cookie\s*=", path.read_text(errors="ignore")):
+            hits.append(str(path.relative_to(ROOT)))
+    assert not hits, (
+        f"document.cookie write(s) found in the play-origin bundle source: "
+        f"{hits} — play.a2uicatalog.ai (project.yaml stateless_origins) is "
+        "only safe to grant allow-same-origin to because nothing served "
+        "there can hold real state. A client-side cookie write is exactly "
+        "the kind of state that guarantee assumes doesn't exist.")
