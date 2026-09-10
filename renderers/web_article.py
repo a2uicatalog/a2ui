@@ -8370,26 +8370,35 @@ def _render_media_stream_card(b: dict) -> str:
 
     embed_url = _h.escape(url)
     platform  = "Media"
+    # True only when embed_url was REWRITTEN to a platform's own canonical
+    # embed endpoint below, never for the untouched custom-stream fallback
+    # -- see this function's own sandbox comment further down for why this
+    # distinction is the actual fix, not a blanket choice either way.
+    matched   = False
 
     yt = re.search(r'(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]+)', url)
     if yt:
         embed_url = f"https://www.youtube.com/embed/{yt.group(1)}?rel=0"
         platform  = "YouTube"
+        matched   = True
 
     loom = re.search(r'loom\.com/share/([a-zA-Z0-9]+)', url)
     if loom:
         embed_url = f"https://www.loom.com/embed/{loom.group(1)}"
         platform  = "Loom"
+        matched   = True
 
     slides = re.search(r'docs\.google\.com/presentation/d/([^/]+)', url)
     if slides:
         embed_url = f"https://docs.google.com/presentation/d/{slides.group(1)}/embed?start=false&loop=false"
         platform  = "Google Slides"
+        matched   = True
 
     vimeo = re.search(r'vimeo\.com/(\d+)', url)
     if vimeo:
         embed_url = f"https://player.vimeo.com/video/{vimeo.group(1)}"
         platform  = "Vimeo"
+        matched   = True
 
     # A non-matched (custom-stream) url is echoed through unescaped-for-
     # HTML-syntax but otherwise UNCHECKED above -- html.escape only blocks
@@ -8417,6 +8426,18 @@ def _render_media_stream_card(b: dict) -> str:
             f'justify-content:center;color:#475569;font-size:0.85rem;">{message}</div>'
             f'</div>'
         )
+    # allow-same-origin only for a REWRITTEN, platform-rewritten embed_url
+    # (YouTube/Loom/Slides/Vimeo's own canonical embed endpoint) -- verified
+    # live, headless Chromium, 2026-09-10: YouTube's iframe embed script
+    # reads document.cookie during init and throws ("Failed to read the
+    # 'cookie' property... sandboxed and lacks the 'allow-same-origin'
+    # flag") without it, producing a black box, not a working player. The
+    # allow-scripts+allow-same-origin combination is only a real anti-
+    # pattern here for the UNMATCHED custom-stream fallback -- an arbitrary,
+    # unvalidated url with no platform rewrite -- which keeps the harder
+    # sandbox (matches the fix already shipped in a2uicatalog/a2ui#60).
+    sandbox = ('allow-scripts allow-same-origin allow-popups allow-forms' if matched
+               else 'allow-scripts allow-popups allow-forms')
     return (
         f'<div style="margin:1rem 0;border:1px solid #334155;border-radius:8px;overflow:hidden;background:#0f172a;">'
         f'{title_html}'
@@ -8424,7 +8445,7 @@ def _render_media_stream_card(b: dict) -> str:
         f'<iframe src="{embed_url}" '
         f'style="position:absolute;inset:0;width:100%;height:100%;border:none;" '
         f'allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" '
-        f'allowfullscreen sandbox="allow-scripts allow-popups allow-forms">'
+        f'allowfullscreen sandbox="{sandbox}">'
         f'</iframe>'
         f'</div>'
         f'</div>'
