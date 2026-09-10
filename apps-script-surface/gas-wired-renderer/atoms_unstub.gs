@@ -340,22 +340,43 @@ _RENDERERS['media_mention_card'] = function(b) {
 };
 
 // ─── media_stream_card ────────────────────────────────────────────────────────
+// Click-to-open placeholder, NOT an inline iframe -- found live, 2026-09-10:
+// this view's own #mcp-view wrapper (see generate_atom_pages.py's own
+// comment on that iframe's sandbox) has NO allow-same-origin, and that
+// restriction cascades to ANY nested iframe THIS bundle creates via script,
+// even one with its own explicit sandbox="...allow-same-origin..." --
+// confirmed directly in headless Chromium, both the inherited-restriction
+// and the explicit-override-doesn't-work cases. YouTube's iframe embed
+// script reads document.cookie during init and throws without allow-same-
+// origin, producing a black box, not a working player.
+// The real fix (allow-same-origin on #mcp-view) was deliberately rejected:
+// that wrapper's origin is a2uicatalog.ai itself, and this bundle renders
+// arbitrary agent/user-supplied payloads across ~600 atom renderers, most
+// unaudited for injection -- granting it would let any one of them reach
+// this whole site's cookies/DOM, not just fix one card.
+// allow-popups-to-escape-sandbox (already granted on #mcp-view, see that
+// iframe's own comment) is the safe way out: a real user click opens the
+// ORIGINAL url in a genuinely new, unsandboxed tab -- no inherited
+// restriction there at all, same mechanism every outbound link in this
+// bundle already uses.
 _RENDERERS['media_stream_card'] = function(b) {
   var url    = b.url || '';
   var title  = b.title || '';
-  var height = b.height || '315px';
-  // Auto-detect YouTube and convert to embed URL
-  var src = url;
-  var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if (ytMatch) src = 'https://www.youtube-nocookie.com/embed/' + ytMatch[1];
-  var loomMatch = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
-  if (loomMatch) src = 'https://www.loom.com/embed/' + loomMatch[1];
+  var platform = 'Media';
+  if (/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(url)) platform = 'YouTube';
+  else if (/loom\.com\/share\/([a-zA-Z0-9]+)/.test(url)) platform = 'Loom';
+  else if (/docs\.google\.com\/presentation\/d\//.test(url)) platform = 'Google Slides';
+  else if (/vimeo\.com\//.test(url)) platform = 'Vimeo';
   var titleHtml = title ? '<div style="font-size:0.82rem;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(title) + '</div>' : '';
+  var safeHref = _safeUrl(url);
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + titleHtml
-    + '<div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;">'
-    + '<iframe src="' + _esc(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>'
-    + '</div></div>';
+    + '<a href="' + safeHref + '" target="_blank" rel="noopener" style="display:block;position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;text-decoration:none;">'
+    + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;font-family:system-ui,-apple-system,sans-serif;">'
+    + '<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">▶</div>'
+    + '<div style="font-size:0.82rem;color:rgba(255,255,255,0.85);">Watch on ' + _esc(platform) + ' →</div>'
+    + '</div>'
+    + '</a></div>';
 };
 
 // ─── product_thumbnail ────────────────────────────────────────────────────────
