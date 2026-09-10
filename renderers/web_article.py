@@ -3383,6 +3383,12 @@ def _render_live_demo_embed(b: dict) -> str:
     height = b.get("height", "80vh")
     label  = b.get("label", "Open in new tab →")
     title  = b.get("title", "Live demo")
+    # html.escape only blocks attribute breakout, not a dangerous scheme --
+    # a bare `javascript:`/`data:` url would otherwise land straight in
+    # iframe src. Same http(s)-only gate the live JS controller's own
+    # isSafeEmbedUrl applies (cloud-run-renderer/static/a2ui-atoms-live.v1.js).
+    if not url.startswith(('http://', 'https://')):
+        url = '#'
     safe_url = _h.escape(url)
     safe_label = _h.escape(label)
     safe_title = _h.escape(title)
@@ -3392,7 +3398,7 @@ def _render_live_demo_embed(b: dict) -> str:
         f'<span style="font-size:12px;color:#64748b;font-family:monospace;">{safe_url}</span>'
         f'<a href="{safe_url}" target="_blank" rel="noopener" style="font-size:12px;color:#6366f1;text-decoration:none;white-space:nowrap;">{safe_label}</a>'
         f'</div>'
-        f'<iframe src="{safe_url}" title="{safe_title}" style="width:100%;height:{_h.escape(str(height))};border:none;display:block;" loading="lazy" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>'
+        f'<iframe src="{safe_url}" title="{safe_title}" style="width:100%;height:{_h.escape(str(height))};border:none;display:block;" loading="lazy" sandbox="allow-scripts allow-popups allow-forms"></iframe>'
         f'</div>'
     )
 
@@ -8385,6 +8391,15 @@ def _render_media_stream_card(b: dict) -> str:
         embed_url = f"https://player.vimeo.com/video/{vimeo.group(1)}"
         platform  = "Vimeo"
 
+    # A non-matched (custom-stream) url is echoed through unescaped-for-
+    # HTML-syntax but otherwise UNCHECKED above -- html.escape only blocks
+    # attribute breakout, not a dangerous scheme. A bare `javascript:`/
+    # `data:` url would otherwise land straight in iframe src. Same
+    # http(s)-only gate the live JS controller's own isSafeEmbedUrl
+    # applies (cloud-run-renderer/static/a2ui-atoms-live.v1.js).
+    if not embed_url.startswith(('http://', 'https://')):
+        embed_url = ''
+
     label     = title or platform
     title_html = (
         f'<div style="padding:8px 14px;background:#1e293b;'
@@ -8393,12 +8408,13 @@ def _render_media_stream_card(b: dict) -> str:
         f'<span style="font-weight:500;">{_h.escape(label)}</span>'
         f'</div>'
     )
-    if not url:
+    if not embed_url:
+        message = 'Media URL was rejected (not http/https)' if url else 'No URL provided'
         return (
             f'<div style="margin:1rem 0;border:1px solid #334155;border-radius:8px;overflow:hidden;">'
             f'{title_html}'
             f'<div style="height:{height};background:#0f172a;display:flex;align-items:center;'
-            f'justify-content:center;color:#475569;font-size:0.85rem;">No URL provided</div>'
+            f'justify-content:center;color:#475569;font-size:0.85rem;">{message}</div>'
             f'</div>'
         )
     return (
@@ -8408,7 +8424,7 @@ def _render_media_stream_card(b: dict) -> str:
         f'<iframe src="{embed_url}" '
         f'style="position:absolute;inset:0;width:100%;height:100%;border:none;" '
         f'allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" '
-        f'allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms">'
+        f'allowfullscreen sandbox="allow-scripts allow-popups allow-forms">'
         f'</iframe>'
         f'</div>'
         f'</div>'
@@ -12911,19 +12927,6 @@ def _render_link_card(b: dict) -> str:
 _RENDERERS['link_card'] = _render_link_card
 
 
-def _render_live_demo_embed(b: dict) -> str:
-    url = b.get('url', '#')
-    title = b.get('title', 'Live Demo')
-    height = b.get('height', '400px')
-    return (f'<div style="margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
-            f'<div style="padding:8px 14px;background:#f9fafb;border-bottom:1px solid #e5e7eb;'
-            f'font-size:0.82rem;font-weight:600;color:#374151;">🖥 {_esc(title)}</div>'
-            f'<iframe src="{_esc(url)}" style="width:100%;height:{_esc(str(height))};border:none;'
-            f'display:block;" allowfullscreen loading="lazy"></iframe></div>')
-
-_RENDERERS['live_demo_embed'] = _render_live_demo_embed
-
-
 def _render_log_output(b: dict) -> str:
     content = b.get('content') or b.get('text', '')
     title = b.get('title', '')
@@ -14205,30 +14208,6 @@ def _render_media_mention_card(b: dict) -> str:
             f'"{_esc(quote)}"</p></div>')
 
 _RENDERERS['media_mention_card'] = _render_media_mention_card
-
-
-def _render_media_stream_card(b: dict) -> str:
-    title = b.get('title', '')
-    streamer = b.get('streamer') or b.get('author', '')
-    thumbnail = b.get('thumbnail', '')
-    url = b.get('url', '#')
-    live = b.get('live', False)
-    viewers = b.get('viewers', '')
-    live_badge = ('<span style="background:#ef4444;color:#fff;font-size:0.65rem;font-weight:800;'
-                  'padding:2px 6px;border-radius:3px;margin-left:6px;">LIVE</span>' if live else '')
-    thumb_html = (f'<img src="{_esc(thumbnail)}" alt="{_esc(title)}" style="width:100%;aspect-ratio:16/9;'
-                  f'object-fit:cover;display:block;">' if thumbnail else
-                  f'<div style="background:#1e1e2e;aspect-ratio:16/9;display:flex;align-items:center;'
-                  f'justify-content:center;font-size:2rem;">📺</div>')
-    return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" style="display:block;text-decoration:none;'
-            f'border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;max-width:340px;margin:1rem 0;">'
-            f'{thumb_html}'
-            f'<div style="padding:10px 12px;">'
-            f'<div style="font-weight:700;font-size:0.88rem;color:#111827;">{_esc(title)}{live_badge}</div>'
-            f'{"<div style=font-size:0.8rem;color:#9ca3af;margin-top:2px;>"+_esc(streamer)+("  ·  👥 "+str(viewers) if viewers else "")+"</div>" if streamer else ""}'
-            f'</div></a>')
-
-_RENDERERS['media_stream_card'] = _render_media_stream_card
 
 
 def _render_multi_select_input(b: dict) -> str:
