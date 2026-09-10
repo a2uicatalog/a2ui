@@ -137,6 +137,13 @@ def test_unregistered_atoms_match_declared_debt():
 
 MAINTAINED_ENGINE = "apps-script-surface/gas-wired-renderer/A2UIState.html"
 COMPILED_ENGINE = "public/surfaces/mcp-apps/renderer-bundle.html"
+# public-play/'s own copy is byte-identical output of the SAME generator
+# (gen_mcp_apps_bundle.py — see its own OUT_PLAY comment and project.yaml's
+# gen_mcp_apps_bundle entry) written for play.a2uicatalog.ai's isolated,
+# deliberately stateless origin — not a hand-sync, and not debt: it's
+# compiled every run alongside COMPILED_ENGINE, from the same source, by
+# the same script. Declared 2026-09-10.
+COMPILED_ENGINE_COPIES = {COMPILED_ENGINE, "public-play/renderer-bundle.html"}
 
 
 def test_no_undeclared_renderer_engine_copies():
@@ -167,7 +174,7 @@ def test_no_undeclared_renderer_engine_copies():
         if "node_modules" not in rel
         and "prop === 'onChange'" in (ROOT / rel).read_text(errors="ignore")
     )
-    accounted = ({MAINTAINED_ENGINE, COMPILED_ENGINE}
+    accounted = ({MAINTAINED_ENGINE} | COMPILED_ENGINE_COPIES
                  | set(MANIFEST["known_debt"]["frozen_renderer_copies"]))
     undeclared = sorted(set(dispatch) - accounted)
     assert not undeclared, (
@@ -176,7 +183,7 @@ def test_no_undeclared_renderer_engine_copies():
         "it from the engine, or declare it in project.yaml "
         f"known_debt.frozen_renderer_copies: {undeclared}")
 
-    gone = sorted(accounted - set(dispatch) - {COMPILED_ENGINE})
+    gone = sorted(accounted - set(dispatch) - COMPILED_ENGINE_COPIES)
     assert not gone, (
         "declared frozen renderer copies that no longer carry the dispatch — "
         f"delete the entry from project.yaml known_debt: {gone}")
