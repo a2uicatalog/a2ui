@@ -1813,6 +1813,243 @@
     return { element: el, controller: createLiveDemoEmbedController(adapter) };
   }
 
+  // ─── media_stream_card controller ─────────────────────────────────────────
+  // Video / audio / presentation stream embed card with platform auto-detection.
+  // Extends the static media_stream_card atom (renderers/web_article.py)
+  // for live streaming updates.
+
+  function resolveMediaStream(rawUrl, customTitle, customPlatform) {
+    const url = String(rawUrl || '').trim();
+    if (!url) {
+      const platform = customPlatform || 'Media';
+      return {
+        embedUrl: '',
+        platform,
+        label: customTitle || platform,
+        matched: false,
+      };
+    }
+
+    let embedUrl = url;
+    let platform = customPlatform || 'Media';
+    // True only when embedUrl was REWRITTEN to a platform's own canonical
+    // embed endpoint below, never for the untouched custom-stream
+    // fallback -- see mountMediaStreamCard's own sandbox comment for why
+    // this distinction is the fix, not a blanket choice either way.
+    let matched = false;
+
+    // YouTube: watch?v=ID, youtu.be/ID, embed/ID, live/ID, shorts/ID
+    const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]+)/i);
+    if (yt) {
+      embedUrl = `https://www.youtube.com/embed/${yt[1]}?rel=0`;
+      platform = customPlatform || 'YouTube';
+      matched = true;
+    } else {
+      // Loom: loom.com/share/ID, loom.com/embed/ID
+      const loom = url.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/i);
+      if (loom) {
+        embedUrl = `https://www.loom.com/embed/${loom[1]}`;
+        platform = customPlatform || 'Loom';
+        matched = true;
+      } else {
+        // Google Slides: docs.google.com/presentation/d/ID
+        const slides = url.match(/docs\.google\.com\/presentation\/d\/([^/?#]+)/i);
+        if (slides) {
+          embedUrl = `https://docs.google.com/presentation/d/${slides[1]}/embed?start=false&loop=false`;
+          platform = customPlatform || 'Google Slides';
+          matched = true;
+        } else {
+          // Vimeo: vimeo.com/ID(/HASH) or player.vimeo.com/video/ID(?h=HASH) —
+          // the optional HASH segment authorizes playback of private/
+          // unlisted videos; dropping it silently produces a "this video
+          // is private" embed for exactly those links.
+          const vimeo = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)(?:[/?](?:h=)?([a-zA-Z0-9]+))?/i);
+          if (vimeo) {
+            embedUrl = `https://player.vimeo.com/video/${vimeo[1]}`;
+            if (vimeo[2]) embedUrl += `?h=${vimeo[2]}`;
+            platform = customPlatform || 'Vimeo';
+            matched = true;
+          }
+        }
+      }
+    }
+
+    const label = customTitle || platform;
+    return {
+      embedUrl,
+      platform,
+      label,
+      matched,
+    };
+  }
+
+  function createMediaStreamCardController(adapter) {
+    let url = '';
+    let title = '';
+    let platform = '';
+    let height = '360px';
+    let loading = false;
+
+    function formatHeight(h) {
+      if (h == null || h === '') return '360px';
+      if (typeof h === 'number') return `${h}px`;
+      const str = String(h).trim();
+      if (/^\d+$/.test(str)) return `${str}px`;
+      return str;
+    }
+
+    return {
+      onEvent(event) {
+        const src = (event && (event.state || event.payload)) || {};
+
+        if (src.url != null) url = String(src.url || '');
+        else if (src.src != null) url = String(src.src || '');
+        else if (src.embed_url != null) url = String(src.embed_url || '');
+        else if (src.embedUrl != null) url = String(src.embedUrl || '');
+        else if (src.stream_url != null) url = String(src.stream_url || '');
+        else if (src.streamUrl != null) url = String(src.streamUrl || '');
+        else if (src.video_url != null) url = String(src.video_url || '');
+        else if (src.videoUrl != null) url = String(src.videoUrl || '');
+        else if (src.href != null) url = String(src.href || '');
+
+        if (src.title !== undefined && src.title !== null) title = String(src.title);
+        else if (src.label !== undefined && src.label !== null) title = String(src.label);
+        else if (src.name !== undefined && src.name !== null) title = String(src.name);
+
+        if (src.platform !== undefined && src.platform !== null) platform = String(src.platform);
+
+        if (src.height !== undefined && src.height !== null) height = formatHeight(src.height);
+
+        if (src.loading !== undefined) loading = Boolean(src.loading);
+        else loading = Boolean(event && event.lifecycle === 'streaming' && !url);
+
+        const resolved = resolveMediaStream(url, title, platform);
+
+        adapter.setMedia({
+          url,
+          embedUrl: resolved.embedUrl,
+          platform: resolved.platform,
+          title: resolved.label,
+          rawTitle: title,
+          height,
+          loading,
+          matched: resolved.matched,
+        });
+        adapter.setStatus((event && event.lifecycle) || 'streaming');
+      },
+      destroy() {},
+    };
+  }
+
+  const createLiveMediaStreamCardController = createMediaStreamCardController;
+
+  function mountMediaStreamCard(container) {
+    const el = document.createElement('div');
+    el.className = 'a2ui-media-stream-card';
+    el.style.cssText = 'margin:1rem 0;border:1px solid #334155;border-radius:8px;overflow:hidden;background:#0f172a;font-family:system-ui,-apple-system,sans-serif;';
+
+    const header = document.createElement('div');
+    header.className = 'a2ui-media-header';
+    header.style.cssText = 'padding:8px 14px;background:#1e293b;font-size:0.78rem;color:#94a3b8;display:flex;align-items:center;gap:6px;';
+
+    const playIcon = document.createElement('span');
+    playIcon.style.cssText = 'color:#64748b;font-size:0.68rem;';
+    playIcon.textContent = '▶';
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'a2ui-media-title';
+    titleSpan.style.cssText = 'font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    titleSpan.textContent = 'Media';
+
+    header.appendChild(playIcon);
+    header.appendChild(titleSpan);
+
+    const frameContainer = document.createElement('div');
+    frameContainer.className = 'a2ui-media-frame-wrap';
+    frameContainer.style.cssText = 'position:relative;height:360px;background:#0f172a;';
+
+    const iframe = document.createElement('iframe');
+    iframe.className = 'a2ui-media-iframe';
+    iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;display:none;';
+    iframe.loading = 'lazy';
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', 'true');
+    // Sandbox is set per-update in setMedia() below, not here -- it depends
+    // on data.matched (see resolveMediaStream's own docstring). allow-
+    // same-origin is only safe for a REWRITTEN, platform-rewritten
+    // embedUrl (YouTube/Loom/Slides/Vimeo's own canonical endpoint):
+    // verified live in headless Chromium, 2026-09-10 -- YouTube's embed
+    // script reads document.cookie during init and throws without it,
+    // producing a black box, not a working player. For the UNMATCHED
+    // custom-stream fallback (an arbitrary, unvalidated URL with no
+    // domain allowlist beyond isSafeEmbedUrl's scheme check) it stays
+    // off, the real anti-pattern Gemini/Claude's review flagged.
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'a2ui-media-placeholder';
+    placeholder.style.cssText = 'position:absolute;inset:0;height:100%;background:#0f172a;display:flex;align-items:center;justify-content:center;color:#475569;font-size:0.85rem;';
+    placeholder.textContent = 'No URL provided';
+
+    frameContainer.appendChild(iframe);
+    frameContainer.appendChild(placeholder);
+
+    el.appendChild(header);
+    el.appendChild(frameContainer);
+    container.appendChild(el);
+
+    let lastAssignedUrl = null;
+
+    const adapter = {
+      setMedia(data) {
+        if (data.title) {
+          titleSpan.textContent = data.title;
+        } else {
+          titleSpan.textContent = data.platform || 'Media';
+        }
+
+        const safeUrl = data.embedUrl && isSafeEmbedUrl(data.embedUrl) ? data.embedUrl : '';
+        if (data.embedUrl && !safeUrl) {
+          console.warn('a2ui media_stream_card: refusing non-http(s) URL', data.embedUrl);
+        }
+
+        if (safeUrl) {
+          if (lastAssignedUrl !== safeUrl) {
+            // sandbox is set BEFORE src so the new value governs the
+            // navigation about to happen -- Chromium applies whatever
+            // sandbox is current at the time an iframe navigates, not
+            // retroactively to an already-loaded document.
+            iframe.setAttribute('sandbox', data.matched
+              ? 'allow-scripts allow-same-origin allow-popups allow-forms'
+              : 'allow-scripts allow-popups allow-forms');
+            iframe.src = safeUrl;
+            lastAssignedUrl = safeUrl;
+          }
+          placeholder.style.display = 'none';
+          iframe.style.display = 'block';
+        } else {
+          lastAssignedUrl = null;
+          iframe.style.display = 'none';
+          placeholder.style.display = 'flex';
+          if (data.loading) {
+            placeholder.textContent = 'Loading media stream...';
+          } else {
+            placeholder.textContent = data.url ? 'Media URL was rejected (not http/https)' : 'No URL provided';
+          }
+        }
+
+        if (data.height) {
+          frameContainer.style.height = data.height;
+        }
+      },
+      setStatus(lifecycle) {
+        el.dataset.lifecycle = lifecycle;
+      },
+    };
+    return { element: el, controller: createMediaStreamCardController(adapter) };
+  }
+
+  const mountLiveMediaStreamCard = mountMediaStreamCard;
+
   const exportsObj = {
     createStreamingTextController, createStepTrackerController, createToolCallController,
     createReasoningTraceController, createLiveStateDashboardController, createFileEditCardController,
@@ -1820,6 +2057,8 @@
     createLiveConfidenceBarController, createLiveProgressBarController,
     createLiveProgressCheckpointController, createLiveStatusPillController,
     createLiveAggregatorController, createLiveDemoEmbedController,
+    createMediaStreamCardController, createLiveMediaStreamCardController,
+    resolveMediaStream,
     isSafeEmbedUrl,
     mountToolCallCard, mountReasoningTrace, mountLiveStateDashboard, mountFileEditCard,
     mountAgentRunSketch, mountLiveCostTrend, mountTokenBudgetMeter, mountLogOutput,
@@ -1830,6 +2069,7 @@
     mountLiveStatusPill, mountStatusPill: mountLiveStatusPill,
     mountLiveAggregator, mountAggregator: mountLiveAggregator,
     mountLiveDemoEmbed, mountLiveDemo: mountLiveDemoEmbed, mountDemoEmbed: mountLiveDemoEmbed,
+    mountMediaStreamCard, mountLiveMediaStreamCard,
     mountStreamingText, mountLiveStepTracker,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;

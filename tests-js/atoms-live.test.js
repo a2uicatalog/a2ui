@@ -10,6 +10,8 @@ const {
   createLiveConfidenceBarController, createLiveProgressBarController,
   createLiveProgressCheckpointController, createLiveStatusPillController,
   createLiveAggregatorController, createLiveDemoEmbedController,
+  createMediaStreamCardController, createLiveMediaStreamCardController,
+  resolveMediaStream,
   isSafeEmbedUrl,
 } = require(path.join(__dirname, '..', 'cloud-run-renderer', 'static', 'a2ui-atoms-live.v1.js'));
 
@@ -1210,6 +1212,166 @@ test('isSafeEmbedUrl: rejects data: and vbscript: URLs', () => {
 test('isSafeEmbedUrl: an explicit base overrides the default fallback origin', () => {
   assert.equal(isSafeEmbedUrl('/x', 'https://demo.a2ui.dev/'), true);
   assert.equal(isSafeEmbedUrl('javascript:evil()', 'https://demo.a2ui.dev/'), false);
+});
+
+// ─── media_stream_card ──────────────────────────────────────────────────
+function fakeMediaStreamAdapter() {
+  const calls = { data: null, status: null };
+  return {
+    calls,
+    setMedia(data) { calls.data = data; },
+    setStatus(status) { calls.status = status; },
+  };
+}
+
+test('resolveMediaStream: converts YouTube URLs to embed format and sets platform', () => {
+  const r1 = resolveMediaStream('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+  assert.equal(r1.embedUrl, 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0');
+  assert.equal(r1.platform, 'YouTube');
+  assert.equal(r1.label, 'YouTube');
+
+  const r2 = resolveMediaStream('https://youtu.be/abc123_-XYZ', 'My Video');
+  assert.equal(r2.embedUrl, 'https://www.youtube.com/embed/abc123_-XYZ?rel=0');
+  assert.equal(r2.platform, 'YouTube');
+  assert.equal(r2.label, 'My Video');
+});
+
+test('resolveMediaStream: converts Loom, Google Slides, and Vimeo URLs', () => {
+  const loom = resolveMediaStream('https://www.loom.com/share/abcde12345');
+  assert.equal(loom.embedUrl, 'https://www.loom.com/embed/abcde12345');
+  assert.equal(loom.platform, 'Loom');
+
+  const slides = resolveMediaStream('https://docs.google.com/presentation/d/12345slideId/edit');
+  assert.equal(slides.embedUrl, 'https://docs.google.com/presentation/d/12345slideId/embed?start=false&loop=false');
+  assert.equal(slides.platform, 'Google Slides');
+
+  const vimeo = resolveMediaStream('https://vimeo.com/987654321');
+  assert.equal(vimeo.embedUrl, 'https://player.vimeo.com/video/987654321');
+  assert.equal(vimeo.platform, 'Vimeo');
+});
+
+test('resolveMediaStream: forwards a Vimeo private/unlisted video hash as h=', () => {
+  const shareLink = resolveMediaStream('https://vimeo.com/123456789/abcdef0123');
+  assert.equal(shareLink.embedUrl, 'https://player.vimeo.com/video/123456789?h=abcdef0123');
+  assert.equal(shareLink.platform, 'Vimeo');
+
+  const playerLink = resolveMediaStream('https://player.vimeo.com/video/123456789?h=abcdef0123');
+  assert.equal(playerLink.embedUrl, 'https://player.vimeo.com/video/123456789?h=abcdef0123');
+
+  // No hash present -- still resolves cleanly, no trailing "?h=undefined".
+  const publicLink = resolveMediaStream('https://vimeo.com/123456789');
+  assert.equal(publicLink.embedUrl, 'https://player.vimeo.com/video/123456789');
+});
+
+test('resolveMediaStream: falls back to Media for custom stream URLs', () => {
+  const stream = resolveMediaStream('https://stream.example.com/live.m3u8');
+  assert.equal(stream.embedUrl, 'https://stream.example.com/live.m3u8');
+  assert.equal(stream.platform, 'Media');
+  assert.equal(stream.label, 'Media');
+  assert.equal(stream.matched, false);
+});
+
+test('resolveMediaStream: matched is true only for a platform-rewritten embedUrl', () => {
+  // Governs which sandbox mountMediaStreamCard applies (see that
+  // function's own comment) -- YouTube/Loom/Slides/Vimeo's own canonical
+  // embed endpoint is trusted enough for allow-same-origin (needed for
+  // YouTube's embed script to read document.cookie during init, verified
+  // live in headless Chromium, 2026-09-10); an unrecognized custom-stream
+  // URL, echoed through unchanged, is not.
+  assert.equal(resolveMediaStream('https://www.youtube.com/watch?v=dQw4w9WgXcQ').matched, true);
+  assert.equal(resolveMediaStream('https://www.loom.com/share/abcde12345').matched, true);
+  assert.equal(resolveMediaStream('https://docs.google.com/presentation/d/12345slideId/edit').matched, true);
+  assert.equal(resolveMediaStream('https://vimeo.com/987654321').matched, true);
+  assert.equal(resolveMediaStream('https://stream.example.com/live.m3u8').matched, false);
+  assert.equal(resolveMediaStream('').matched, false);
+});
+
+test('media_stream_card: updates media state, title, and height', () => {
+  const adapter = fakeMediaStreamAdapter();
+  const ctrl = createMediaStreamCardController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'streaming',
+    state: {
+      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      title: 'Rick Astley Live',
+      height: '400px',
+    },
+  });
+
+  assert.deepEqual(adapter.calls.data, {
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0',
+    platform: 'YouTube',
+    title: 'Rick Astley Live',
+    rawTitle: 'Rick Astley Live',
+    height: '400px',
+    loading: false,
+    matched: true,
+  });
+  assert.equal(adapter.calls.status, 'streaming');
+});
+
+test('media_stream_card: supports aliases and delta updates', () => {
+  const adapter = fakeMediaStreamAdapter();
+  const ctrl = createLiveMediaStreamCardController(adapter);
+
+  // Initial event without URL indicates loading in streaming lifecycle
+  ctrl.onEvent({
+    type: 'StateSnapshot',
+    lifecycle: 'streaming',
+    state: {
+      title: 'Agent Demo Video',
+      height: 480,
+    },
+  });
+  assert.equal(adapter.calls.data.title, 'Agent Demo Video');
+  assert.equal(adapter.calls.data.height, '480px');
+  assert.equal(adapter.calls.data.url, '');
+  assert.equal(adapter.calls.data.loading, true);
+
+  // Delta arrives with video_url
+  ctrl.onEvent({
+    type: 'StateDelta',
+    lifecycle: 'complete',
+    payload: {
+      video_url: 'https://vimeo.com/12345678',
+    },
+  });
+  assert.equal(adapter.calls.data.url, 'https://vimeo.com/12345678');
+  assert.equal(adapter.calls.data.embedUrl, 'https://player.vimeo.com/video/12345678');
+  assert.equal(adapter.calls.data.platform, 'Vimeo');
+  assert.equal(adapter.calls.data.matched, true);
+  assert.equal(adapter.calls.data.title, 'Agent Demo Video');
+  assert.equal(adapter.calls.data.loading, false);
+  assert.equal(adapter.calls.status, 'complete');
+});
+
+test('media_stream_card: an explicit null on the canonical key falls through to a populated alias', () => {
+  const adapter = fakeMediaStreamAdapter();
+  const ctrl = createMediaStreamCardController(adapter);
+
+  ctrl.onEvent({
+    type: 'StateDelta',
+    lifecycle: 'streaming',
+    payload: { url: null, embed_url: 'https://vimeo.com/12345678' },
+  });
+  assert.equal(adapter.calls.data.url, 'https://vimeo.com/12345678');
+  assert.equal(adapter.calls.data.embedUrl, 'https://player.vimeo.com/video/12345678');
+  assert.equal(adapter.calls.data.platform, 'Vimeo');
+});
+
+test('media_stream_card: handles empty/null event gracefully', () => {
+  const adapter = fakeMediaStreamAdapter();
+  const ctrl = createMediaStreamCardController(adapter);
+
+  assert.doesNotThrow(() => ctrl.onEvent(null));
+  assert.equal(adapter.calls.status, 'streaming');
+  assert.equal(adapter.calls.data.url, '');
+  assert.equal(adapter.calls.data.embedUrl, '');
+  assert.equal(adapter.calls.data.platform, 'Media');
+  assert.equal(adapter.calls.data.title, 'Media');
 });
 
 console.log('all a2ui-atoms-live tests defined');
