@@ -8376,15 +8376,31 @@ def _render_media_stream_card(b: dict) -> str:
     # distinction is the actual fix, not a blanket choice either way.
     matched   = False
 
+    # autoplay=1 alone does nothing -- browsers block unmuted autoplay
+    # outright, so mute=1 has to go alongside it (matches the same pairing
+    # already shipped for this atom's GAS/mcp-apps-bundle sibling,
+    # apps-script-surface/gas-wired-renderer/atoms_unstub.gs, and
+    # meetstudio's own gdm_stage_video_panel.ts before that). `allow=` two
+    # blocks down already includes autoplay in its Permissions Policy --
+    # only the query param was missing here.
+    # NOT applied to a screenshot capture's own visual outcome the way it
+    # is for a live-viewed page: this function also backs /render.png and
+    # /render.gif (real Chromium screenshot capture, not a live browser
+    # session) -- autoplay there just means the captured frame is
+    # whatever moment mid-buffer/mid-playback the screenshot happened to
+    # land on, not necessarily better or worse than the static thumbnail
+    # state, and genuinely untested either way. Kept for embed-URL/query-
+    # param parity with the other two implementations regardless, since
+    # that consistency is the actual thing this fix is for.
     yt = re.search(r'(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]+)', url)
     if yt:
-        embed_url = f"https://www.youtube.com/embed/{yt.group(1)}?rel=0"
+        embed_url = f"https://www.youtube.com/embed/{yt.group(1)}?rel=0&autoplay=1&mute=1"
         platform  = "YouTube"
         matched   = True
 
     loom = re.search(r'loom\.com/share/([a-zA-Z0-9]+)', url)
     if loom:
-        embed_url = f"https://www.loom.com/embed/{loom.group(1)}"
+        embed_url = f"https://www.loom.com/embed/{loom.group(1)}?autoplay=1"
         platform  = "Loom"
         matched   = True
 

@@ -1226,19 +1226,19 @@ function fakeMediaStreamAdapter() {
 
 test('resolveMediaStream: converts YouTube URLs to embed format and sets platform', () => {
   const r1 = resolveMediaStream('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-  assert.equal(r1.embedUrl, 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0');
+  assert.equal(r1.embedUrl, 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&autoplay=1&mute=1');
   assert.equal(r1.platform, 'YouTube');
   assert.equal(r1.label, 'YouTube');
 
   const r2 = resolveMediaStream('https://youtu.be/abc123_-XYZ', 'My Video');
-  assert.equal(r2.embedUrl, 'https://www.youtube.com/embed/abc123_-XYZ?rel=0');
+  assert.equal(r2.embedUrl, 'https://www.youtube.com/embed/abc123_-XYZ?rel=0&autoplay=1&mute=1');
   assert.equal(r2.platform, 'YouTube');
   assert.equal(r2.label, 'My Video');
 });
 
 test('resolveMediaStream: converts Loom, Google Slides, and Vimeo URLs', () => {
   const loom = resolveMediaStream('https://www.loom.com/share/abcde12345');
-  assert.equal(loom.embedUrl, 'https://www.loom.com/embed/abcde12345');
+  assert.equal(loom.embedUrl, 'https://www.loom.com/embed/abcde12345?autoplay=1');
   assert.equal(loom.platform, 'Loom');
 
   const slides = resolveMediaStream('https://docs.google.com/presentation/d/12345slideId/edit');
@@ -1302,7 +1302,7 @@ test('media_stream_card: updates media state, title, and height', () => {
 
   assert.deepEqual(adapter.calls.data, {
     url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0',
+    embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&autoplay=1&mute=1',
     platform: 'YouTube',
     title: 'Rick Astley Live',
     rawTitle: 'Rick Astley Live',

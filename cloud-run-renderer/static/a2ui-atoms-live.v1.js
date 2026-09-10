@@ -1839,16 +1839,23 @@
     let matched = false;
 
     // YouTube: watch?v=ID, youtu.be/ID, embed/ID, live/ID, shorts/ID
+    // autoplay=1 alone does nothing -- browsers block unmuted autoplay
+    // outright, so mute=1 has to go alongside it (matches this atom's
+    // Python and GAS/mcp-apps-bundle siblings, and meetstudio's own
+    // gdm_stage_video_panel.ts before any of them). mountMediaStreamCard's
+    // own iframe.setAttribute('allow', ...) below already includes
+    // autoplay in its Permissions Policy -- only the query param was
+    // missing here.
     const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]+)/i);
     if (yt) {
-      embedUrl = `https://www.youtube.com/embed/${yt[1]}?rel=0`;
+      embedUrl = `https://www.youtube.com/embed/${yt[1]}?rel=0&autoplay=1&mute=1`;
       platform = customPlatform || 'YouTube';
       matched = true;
     } else {
       // Loom: loom.com/share/ID, loom.com/embed/ID
       const loom = url.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/i);
       if (loom) {
-        embedUrl = `https://www.loom.com/embed/${loom[1]}`;
+        embedUrl = `https://www.loom.com/embed/${loom[1]}?autoplay=1`;
         platform = customPlatform || 'Loom';
         matched = true;
       } else {
