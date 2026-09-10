@@ -1826,29 +1826,38 @@
         embedUrl: '',
         platform,
         label: customTitle || platform,
+        matched: false,
       };
     }
 
     let embedUrl = url;
     let platform = customPlatform || 'Media';
+    // True only when embedUrl was REWRITTEN to a platform's own canonical
+    // embed endpoint below, never for the untouched custom-stream
+    // fallback -- see mountMediaStreamCard's own sandbox comment for why
+    // this distinction is the fix, not a blanket choice either way.
+    let matched = false;
 
     // YouTube: watch?v=ID, youtu.be/ID, embed/ID, live/ID, shorts/ID
     const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]+)/i);
     if (yt) {
       embedUrl = `https://www.youtube.com/embed/${yt[1]}?rel=0`;
       platform = customPlatform || 'YouTube';
+      matched = true;
     } else {
       // Loom: loom.com/share/ID, loom.com/embed/ID
       const loom = url.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/i);
       if (loom) {
         embedUrl = `https://www.loom.com/embed/${loom[1]}`;
         platform = customPlatform || 'Loom';
+        matched = true;
       } else {
         // Google Slides: docs.google.com/presentation/d/ID
         const slides = url.match(/docs\.google\.com\/presentation\/d\/([^/?#]+)/i);
         if (slides) {
           embedUrl = `https://docs.google.com/presentation/d/${slides[1]}/embed?start=false&loop=false`;
           platform = customPlatform || 'Google Slides';
+          matched = true;
         } else {
           // Vimeo: vimeo.com/ID(/HASH) or player.vimeo.com/video/ID(?h=HASH) —
           // the optional HASH segment authorizes playback of private/
@@ -1859,6 +1868,7 @@
             embedUrl = `https://player.vimeo.com/video/${vimeo[1]}`;
             if (vimeo[2]) embedUrl += `?h=${vimeo[2]}`;
             platform = customPlatform || 'Vimeo';
+            matched = true;
           }
         }
       }
@@ -1869,6 +1879,7 @@
       embedUrl,
       platform,
       label,
+      matched,
     };
   }
 
@@ -1922,6 +1933,7 @@
           rawTitle: title,
           height,
           loading,
+          matched: resolved.matched,
         });
         adapter.setStatus((event && event.lifecycle) || 'streaming');
       },
@@ -1962,17 +1974,16 @@
     iframe.loading = 'lazy';
     iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
     iframe.setAttribute('allowfullscreen', 'true');
-    // No allow-same-origin: resolveMediaStream's fallback (custom-stream)
-    // branch passes an unrecognized URL straight through as embedUrl with
-    // only a scheme check from isSafeEmbedUrl, no domain allowlist -- same
-    // reasoning mountLiveDemoEmbed's own iframe.setAttribute('sandbox', ...)
-    // documents above. allow-scripts + allow-same-origin together is a
-    // documented anti-pattern (MDN): the framed content keeps the
-    // privileges of whatever origin it actually loads with, defeating the
-    // sandbox. Dropping it still lets YouTube/Loom/Slides/Vimeo — and any
-    // other legitimate embed — run their own JS, just inside an opaque
-    // origin that can't reach this page's cookies/DOM.
-    iframe.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms');
+    // Sandbox is set per-update in setMedia() below, not here -- it depends
+    // on data.matched (see resolveMediaStream's own docstring). allow-
+    // same-origin is only safe for a REWRITTEN, platform-rewritten
+    // embedUrl (YouTube/Loom/Slides/Vimeo's own canonical endpoint):
+    // verified live in headless Chromium, 2026-09-10 -- YouTube's embed
+    // script reads document.cookie during init and throws without it,
+    // producing a black box, not a working player. For the UNMATCHED
+    // custom-stream fallback (an arbitrary, unvalidated URL with no
+    // domain allowlist beyond isSafeEmbedUrl's scheme check) it stays
+    // off, the real anti-pattern Gemini/Claude's review flagged.
 
     const placeholder = document.createElement('div');
     placeholder.className = 'a2ui-media-placeholder';
@@ -2003,6 +2014,13 @@
 
         if (safeUrl) {
           if (lastAssignedUrl !== safeUrl) {
+            // sandbox is set BEFORE src so the new value governs the
+            // navigation about to happen -- Chromium applies whatever
+            // sandbox is current at the time an iframe navigates, not
+            // retroactively to an already-loaded document.
+            iframe.setAttribute('sandbox', data.matched
+              ? 'allow-scripts allow-same-origin allow-popups allow-forms'
+              : 'allow-scripts allow-popups allow-forms');
             iframe.src = safeUrl;
             lastAssignedUrl = safeUrl;
           }

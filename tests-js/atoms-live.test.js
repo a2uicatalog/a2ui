@@ -1268,6 +1268,22 @@ test('resolveMediaStream: falls back to Media for custom stream URLs', () => {
   assert.equal(stream.embedUrl, 'https://stream.example.com/live.m3u8');
   assert.equal(stream.platform, 'Media');
   assert.equal(stream.label, 'Media');
+  assert.equal(stream.matched, false);
+});
+
+test('resolveMediaStream: matched is true only for a platform-rewritten embedUrl', () => {
+  // Governs which sandbox mountMediaStreamCard applies (see that
+  // function's own comment) -- YouTube/Loom/Slides/Vimeo's own canonical
+  // embed endpoint is trusted enough for allow-same-origin (needed for
+  // YouTube's embed script to read document.cookie during init, verified
+  // live in headless Chromium, 2026-09-10); an unrecognized custom-stream
+  // URL, echoed through unchanged, is not.
+  assert.equal(resolveMediaStream('https://www.youtube.com/watch?v=dQw4w9WgXcQ').matched, true);
+  assert.equal(resolveMediaStream('https://www.loom.com/share/abcde12345').matched, true);
+  assert.equal(resolveMediaStream('https://docs.google.com/presentation/d/12345slideId/edit').matched, true);
+  assert.equal(resolveMediaStream('https://vimeo.com/987654321').matched, true);
+  assert.equal(resolveMediaStream('https://stream.example.com/live.m3u8').matched, false);
+  assert.equal(resolveMediaStream('').matched, false);
 });
 
 test('media_stream_card: updates media state, title, and height', () => {
@@ -1292,6 +1308,7 @@ test('media_stream_card: updates media state, title, and height', () => {
     rawTitle: 'Rick Astley Live',
     height: '400px',
     loading: false,
+    matched: true,
   });
   assert.equal(adapter.calls.status, 'streaming');
 });
@@ -1325,6 +1342,7 @@ test('media_stream_card: supports aliases and delta updates', () => {
   assert.equal(adapter.calls.data.url, 'https://vimeo.com/12345678');
   assert.equal(adapter.calls.data.embedUrl, 'https://player.vimeo.com/video/12345678');
   assert.equal(adapter.calls.data.platform, 'Vimeo');
+  assert.equal(adapter.calls.data.matched, true);
   assert.equal(adapter.calls.data.title, 'Agent Demo Video');
   assert.equal(adapter.calls.data.loading, false);
   assert.equal(adapter.calls.status, 'complete');
