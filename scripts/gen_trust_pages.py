@@ -84,17 +84,17 @@ def _n():
 def pages(n):
     return {
         "developers": dict(
-            title="Developers",
-            desc=(f"Integrate with the A2UI Atomic Catalog: {n} typed atoms over MCP or REST. "
+            title="Developer Portal",
+            desc=(f"A2UI Atomic Catalog Developer Portal: integrate {n} typed atoms over MCP or REST. "
                   "No API key, no signup. OpenAPI spec, live server descriptor, rate limits."),
             jsonld=json.dumps({
                 "@context": "https://schema.org", "@type": "WebPage",
-                "url": f"{BASE}/developers/", "name": "Developers — A2UI Atomic Catalog",
+                "url": f"{BASE}/developers/", "name": "Developer Portal — A2UI Atomic Catalog",
                 "publisher": {"@id": f"{BASE}/#org"},
             }, indent=2),
             body=f"""
-<p>Everything here is free, unauthenticated, and machine-readable — this page is a human
-index into the same documents an agent reads.</p>
+<p>Everything here is free, unauthenticated, and machine-readable — this developer portal
+is a human index into the same documents an agent reads.</p>
 
 <h2>1. Connect the MCP server</h2>
 <p>The primary integration surface. No API key, no signup.</p>
@@ -115,10 +115,21 @@ server so it cannot go stale:</p>
 <tr><td style="padding:6px 10px 6px 0;"><code>POST /api/compose</code></td><td>Natural language → atom blocks</td></tr>
 </table>
 
-<h2>3. Reference</h2>
+<h2>3. Reference &amp; Developer Resources</h2>
 <ul>
-<li><a href="/openapi.json">OpenAPI 3.1 specification</a> — every endpoint, request/response schemas, examples</li>
-<li><a href="/docs/">API Documentation</a> — REST endpoints, error models, and rate limits</li>
+<li><a href="/openapi.json">OpenAPI Spec (OpenAPI 3.1)</a> — every endpoint, request/response schemas, examples</li>
+<li><a href="/docs/">API Docs</a> — REST endpoints, error models, and rate limits</li>
+<li><a href="/api-docs/">API Reference &amp; Docs</a> — complete endpoint and parameter directory</li>
+<li><a href="/auth/">Auth Docs</a> — authentication overview, rate limits, and enterprise OAuth</li>
+<li><a href="/webhooks/">Webhooks Docs</a> — SSE streaming, event delivery, and chat integrations</li>
+<li><a href="/versioning/">API Versioning Policy</a> — X-API-Version headers, deprecation timelines, and compatibility</li>
+<li><a href="/pricing/">Pricing &amp; Limits</a> — free tier allowances and self-hosting runbooks</li>
+<li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
+<li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
+<li><a href="/auth.md">Authentication guide</a> — why you probably need no credential, and the optional OAuth path if your platform requires one</li>
+<li><a href="/versioning.md">Versioning &amp; deprecation policy</a> — what changes without notice, and the CI gate that fails a deploy if a response shape changes undeclared</li>
+<li><a href="/.well-known/mcp.json">MCP discovery manifest</a></li>
+</ul>
 <li><a href="/agents.md">agents.md</a> — agent-facing guide, served as <code>text/markdown</code></li>
 <li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
 <li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
