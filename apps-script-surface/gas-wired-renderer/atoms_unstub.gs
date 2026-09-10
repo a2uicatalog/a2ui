@@ -363,14 +363,20 @@ _RENDERERS['media_stream_card'] = function(b) {
   // Auto-detect YouTube and convert to embed URL
   var src = url;
   var ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if (ytMatch) src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0';
+  // mute=1 alongside autoplay=1 isn't optional -- browsers block unmuted
+  // autoplay outright, so autoplay=1 alone silently does nothing. Same
+  // pairing meetstudio's own gdm_stage_video_panel.ts already uses.
+  if (ytMatch) src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?rel=0&autoplay=1&mute=1';
   var loomMatch = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
-  if (loomMatch) src = 'https://www.loom.com/embed/' + loomMatch[1];
+  if (loomMatch) src = 'https://www.loom.com/embed/' + loomMatch[1] + '?autoplay=1';
   var titleHtml = title ? '<div style="font-size:0.82rem;font-weight:600;color:var(--muted,#6b7280);margin-bottom:6px;">' + _esc(title) + '</div>' : '';
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + titleHtml
     + '<div style="position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;">'
-    + '<iframe src="' + _safeUrl(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>'
+    // allow="autoplay" is required, not decorative -- without it in the
+    // iframe's own Permissions Policy, the autoplay=1 query param is
+    // silently ignored regardless of the mute state.
+    + '<iframe src="' + _safeUrl(src) + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>'
     + '</div></div>';
 };
 
