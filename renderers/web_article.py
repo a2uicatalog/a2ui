@@ -17082,12 +17082,6 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
     )
 _RENDERERS["content_tabs"] = _render_content_tabs
 
-_ROMAN_NUMERALS = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x",
-                   "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix", "xx"]
-
-def _roman(n: int) -> str:
-    return _ROMAN_NUMERALS[n - 1] if 1 <= n <= len(_ROMAN_NUMERALS) else str(n)
-
 _PLATE_CSS = """
 <style>
 /* Follows the HOST page's own theme tokens (--text/--surface/--accent/...,
@@ -17143,9 +17137,9 @@ _PLATE_CSS = """
 .pp-repo:hover{color:var(--accent,#1a73e8);border-color:var(--accent,#1a73e8);}
 .pp-repo-placeholder{opacity:.55;cursor:not-allowed;}
 .pp-repo-placeholder:hover{color:var(--text-muted,#5f6368);border-color:var(--border,#e0e0e0);}
-.pp-gap{flex:0 0 64px;position:relative;}
-.pp-gap svg{position:absolute;top:0;left:0;}
-.pp-labels{flex:1 1 auto;position:relative;min-width:240px;}
+.pp-gap-side{flex:0 0 64px;position:relative;}
+.pp-gap-side svg{position:absolute;top:0;left:0;}
+.pp-labels-side{flex:1 1 0;position:relative;min-width:200px;}
 .pp-label{position:absolute;left:0;right:0;top:0;padding-left:2px;visibility:hidden;}
 .pp-label.pp-placed{visibility:visible;}
 .pp-label .pp-num{font-family:ui-monospace,monospace;color:var(--accent,#1a73e8);font-weight:700;
@@ -17154,11 +17148,16 @@ _PLATE_CSS = """
   display:block;letter-spacing:.02em;margin-bottom:2px;overflow-wrap:anywhere;}
 .pp-label .pp-note{font-size:.86rem;color:var(--text,#1f2328);display:block;line-height:1.35;overflow-wrap:anywhere;}
 .pp-label .pp-note.pp-chrome{color:var(--text-muted,#5f6368);font-style:italic;}
+/* Left column mirrors the right: text hugs the image side (right edge of
+   this column), padding switches sides to match -- everything else
+   (num/field/note styling) is shared. */
+.pp-labels-side.left .pp-label{left:auto;right:0;padding-left:0;padding-right:2px;text-align:right;}
 @media (max-width:860px){
   .pp-plate{flex-direction:column;}
-  .pp-gap{display:none;}
-  .pp-labels{min-width:0;position:static;}
-  .pp-label{position:static !important;margin:14px 0;padding-left:14px;
+  .pp-gap-side{display:none;}
+  .pp-labels-side{min-width:0;position:static;}
+  .pp-labels-side.left .pp-label{text-align:left;}
+  .pp-label{position:static !important;margin:14px 0;padding-left:14px;padding-right:0;
     border-left:2px solid var(--accent,#1a73e8);visibility:visible;}
 }
 </style>
@@ -17173,76 +17172,91 @@ _PLATE_JS = """
     (root || document).querySelectorAll('.pp-plate').forEach(function(plate){
       var imgwrap = plate.querySelector('.pp-imgwrap');
       var pins = [].slice.call(plate.querySelectorAll('.pp-pin'));
-      var gap = plate.querySelector('.pp-gap');
-      var labelsBox = plate.querySelector('.pp-labels');
-      var labels = [].slice.call(labelsBox.querySelectorAll('.pp-label'));
-      if (!pins.length || !labels.length) return;
+      if (!pins.length) return;
       var plateRect = plate.getBoundingClientRect();
-      var imgRect = imgwrap.getBoundingClientRect();
-      var pinYs = pins.map(function(p){
+      // Shared lookup by data-pin-idx (2026-09-11, two-sided layout): a
+      // label's line always targets ITS OWN pin's real position, however
+      // many sides exist and whichever one that label landed in --
+      // replaces the old same-index-both-arrays assumption, which broke
+      // the moment there could be two independent label columns instead
+      // of one.
+      var pinYByIdx = {};
+      pins.forEach(function(p){
         var r = p.getBoundingClientRect();
-        return (r.top + r.height / 2) - plateRect.top;
+        pinYByIdx[p.getAttribute('data-pin-idx')] = (r.top + r.height / 2) - plateRect.top;
       });
-      labels.forEach(function(l){ l.style.top = '0px'; l.style.visibility = 'hidden'; });
-      var heights = labels.map(function(l){ return l.getBoundingClientRect().height; });
-      // Stack in CURRENT pin-Y order, not DOM/original-index order (fixed
-      // 2026-09-11). The old version walked labels[i] against labels[i-1]
-      // assuming index order already matched top-to-bottom pin order --
-      // true for authored, never-repositioned pins, but a pin dragged past
-      // another's rank (e.g. an interactive drag-to-place tool) left its
-      // label stuck in its original slot while the pin moved, so the line
-      // below connected across a long, crossing diagonal instead of
-      // reflowing. Sorting by actual pinY first, then scattering the
-      // computed tops back to each label's own original index, keeps
-      // label identity (which text belongs to which pin) while fixing
-      // visual order to match where the pins actually are now.
-      var GAP = 14;
-      var order = pinYs.map(function(_, i){ return i; });
-      order.sort(function(a, b){ return pinYs[a] - pinYs[b]; });
-      var tops = new Array(pinYs.length);
-      var prevBottom = null;
-      order.forEach(function(idx){
-        var top = pinYs[idx] - heights[idx] / 2;
-        if (prevBottom !== null) top = Math.max(top, prevBottom + GAP);
-        tops[idx] = top;
-        prevBottom = top + heights[idx];
-      });
-      tops.forEach(function(top, i){
-        labels[i].style.top = top + 'px';
-        labels[i].style.visibility = 'visible';
-        labels[i].classList.add('pp-placed');
-      });
-      var totalH = Math.max(imgRect.height, prevBottom);
-      labelsBox.style.minHeight = totalH + 'px';
-      gap.style.minHeight = totalH + 'px';
-      var gapRect = gap.getBoundingClientRect();
-      var svgNS = 'http://www.w3.org/2000/svg';
-      var svg = gap.querySelector('svg');
-      if (svg) svg.remove();
-      svg = document.createElementNS(svgNS, 'svg');
-      svg.setAttribute('width', gapRect.width);
-      svg.setAttribute('height', totalH);
-      svg.setAttribute('viewBox', '0 0 ' + gapRect.width + ' ' + totalH);
-      pinYs.forEach(function(y, i){
-        var labelCenterY = tops[i] + heights[i] / 2;
+
+      ['left', 'right'].forEach(function(side){
+        var labelsBox = plate.querySelector('.pp-labels-side.' + side);
+        var gap = plate.querySelector('.pp-gap-side[data-side="' + side + '"]');
+        if (!labelsBox || !gap) return; // that side has zero pins -- collapsed server-side, nothing to lay out
+        var labels = [].slice.call(labelsBox.querySelectorAll('.pp-label'));
+        if (!labels.length) return;
+        var pinYs = labels.map(function(l){ return pinYByIdx[l.getAttribute('data-pin-idx')]; });
+
+        labels.forEach(function(l){ l.style.top = '0px'; l.style.visibility = 'hidden'; });
+        var heights = labels.map(function(l){ return l.getBoundingClientRect().height; });
+        // Stack in CURRENT pin-Y order, not DOM/original-index order
+        // (fixed 2026-09-11, same reasoning as the shared lookup above --
+        // a dragged/repositioned pin must not leave its label stranded in
+        // its old rank). Sort by actual pinY, scatter computed tops back
+        // to each label's own original index.
+        var GAP = 14;
+        var order = pinYs.map(function(_, i){ return i; });
+        order.sort(function(a, b){ return pinYs[a] - pinYs[b]; });
+        var tops = new Array(pinYs.length);
+        var prevBottom = null;
+        order.forEach(function(idx){
+          var top = pinYs[idx] - heights[idx] / 2;
+          if (prevBottom !== null) top = Math.max(top, prevBottom + GAP);
+          tops[idx] = top;
+          prevBottom = top + heights[idx];
+        });
+        tops.forEach(function(top, i){
+          labels[i].style.top = top + 'px';
+          labels[i].style.visibility = 'visible';
+          labels[i].classList.add('pp-placed');
+        });
+        var imgRect = imgwrap.getBoundingClientRect();
+        var totalH = Math.max(imgRect.height, prevBottom);
+        labelsBox.style.minHeight = totalH + 'px';
+        gap.style.minHeight = totalH + 'px';
+
+        var gapRect = gap.getBoundingClientRect();
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var existing = gap.querySelector('svg');
+        if (existing) existing.remove();
+        var svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('width', gapRect.width);
+        svg.setAttribute('height', totalH);
+        svg.setAttribute('viewBox', '0 0 ' + gapRect.width + ' ' + totalH);
+        // Mirrored for the left side: starts at the gap's RIGHT edge
+        // (touching the image's LEFT edge) instead of its left edge.
+        var fromX = side === 'left' ? gapRect.width : 0;
+        var toX = side === 'left' ? 0 : gapRect.width;
+        var nearLabelX = side === 'left' ? 6 : gapRect.width - 6;
         var midX = gapRect.width * 0.5;
-        var path = document.createElementNS(svgNS, 'path');
-        path.setAttribute('d', 'M0,' + y.toFixed(1) + ' L' + midX.toFixed(1) + ',' + y.toFixed(1) +
-          ' L' + (gapRect.width - 6).toFixed(1) + ',' + labelCenterY.toFixed(1) +
-          ' L' + gapRect.width + ',' + labelCenterY.toFixed(1));
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', 'var(--accent,#1a73e8)');
-        path.setAttribute('stroke-width', '1');
-        path.setAttribute('opacity', '0.75');
-        svg.appendChild(path);
-        var dot = document.createElementNS(svgNS, 'circle');
-        dot.setAttribute('cx', 0);
-        dot.setAttribute('cy', y.toFixed(1));
-        dot.setAttribute('r', 2.4);
-        dot.setAttribute('fill', 'var(--accent,#1a73e8)');
-        svg.appendChild(dot);
+        pinYs.forEach(function(y, i){
+          var labelCenterY = tops[i] + heights[i] / 2;
+          var path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', 'M' + fromX.toFixed(1) + ',' + y.toFixed(1) +
+            ' L' + midX.toFixed(1) + ',' + y.toFixed(1) +
+            ' L' + nearLabelX.toFixed(1) + ',' + labelCenterY.toFixed(1) +
+            ' L' + toX.toFixed(1) + ',' + labelCenterY.toFixed(1));
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', 'var(--accent,#1a73e8)');
+          path.setAttribute('stroke-width', '1');
+          path.setAttribute('opacity', '0.75');
+          svg.appendChild(path);
+          var dot = document.createElementNS(svgNS, 'circle');
+          dot.setAttribute('cx', fromX);
+          dot.setAttribute('cy', y.toFixed(1));
+          dot.setAttribute('r', 2.4);
+          dot.setAttribute('fill', 'var(--accent,#1a73e8)');
+          svg.appendChild(dot);
+        });
+        gap.appendChild(svg);
       });
-      gap.appendChild(svg);
     });
   };
   function runAll(){ requestAnimationFrame(function(){ window.__a2uiPlateLayout(document); }); }
@@ -17304,6 +17318,17 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
             for p in pins if p.get("connector") == "continuous"
         )
+        # Unified numbering across BOTH sides (2026-09-11), by actual y
+        # position, not left-side-then-right-side or declaration order --
+        # "3" always means the third-highest pin regardless of which
+        # column it lands in. Arabic, not roman: the circular badge
+        # already disambiguates a pin number from any digit that happens
+        # to appear in the screenshot itself, so roman's main advantage
+        # was redundant, and roman gets genuinely hard to read past ~vi
+        # on a busy plate.
+        order_by_y = sorted(range(len(pins)), key=lambda i: pins[i].get("y", 0))
+        display_num = {orig_i: n + 1 for n, orig_i in enumerate(order_by_y)}
+
         markers = []
         for i, p in enumerate(pins):
             advance = p.get("advance") and idx + 1 < n_states
@@ -17315,11 +17340,21 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
                 if advance else ""
             )
             markers.append(
-                f'<div class="pp-pin{adv_cls}" style="top:{p.get("y", 0)}%;left:{p.get("x", 0)}%;"{adv_attr}>'
-                f'{_roman(i + 1)}</div>'
+                f'<div class="pp-pin{adv_cls}" data-pin-idx="{i}" '
+                f'style="top:{p.get("y", 0)}%;left:{p.get("x", 0)}%;"{adv_attr}>'
+                f'{display_num[i]}</div>'
             )
         markers = "".join(markers)
-        label_divs = []
+
+        # Split by horizontal position (2026-09-11): a pin left of center
+        # routes to a label column on the LEFT of the image instead of
+        # always the right, so the connector line is roughly proportional
+        # to actual distance instead of every left-side pin drawing the
+        # longest possible line across to a single right-hand column. A
+        # side with zero pins renders neither its gap nor its label
+        # column -- collapses to exactly today's one-sided look, not an
+        # empty reserved space.
+        left_labels, right_labels = [], []
         for i, p in enumerate(pins):
             chrome_cls = " pp-chrome" if p.get("chrome") else ""
             # field now goes through _md_inline (2026-09-11), same as
@@ -17337,22 +17372,33 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             # CSS class size exactly as before this existed.
             field_style = f' style="font-size:{_esc(p["field_size"])}"' if p.get("field_size") else ""
             note_style = f' style="font-size:{_esc(p["note_size"])}"' if p.get("note_size") else ""
-            label_divs.append(
-                f'<div class="pp-label"><span class="pp-field"{field_style}>{field}{badge_html}</span>'
-                f'<span class="pp-note{chrome_cls}"{note_style}><span class="pp-num">{_roman(i + 1)}.</span> {note}</span></div>'
+            label_html = (
+                f'<div class="pp-label" data-pin-idx="{i}"><span class="pp-field"{field_style}>{field}{badge_html}</span>'
+                f'<span class="pp-note{chrome_cls}"{note_style}><span class="pp-num">{display_num[i]}.</span> {note}</span></div>'
             )
+            (left_labels if p.get("x", 0) < 50 else right_labels).append(label_html)
+
+        left_side_html = (
+            f'<div class="pp-labels-side left">{"".join(left_labels)}</div>'
+            f'<div class="pp-gap-side" data-side="left"></div>'
+        ) if left_labels else ""
+        right_side_html = (
+            f'<div class="pp-gap-side" data-side="right"></div>'
+            f'<div class="pp-labels-side right">{"".join(right_labels)}</div>'
+        ) if right_labels else ""
+
         active = " active" if idx == 0 else ""
         display = "display:block;" if idx == 0 else "display:none;"
         return (
             f'<div class="pp-state{active}" data-state="{uid}_{idx}" style="{display}">'
             f'<div class="pp-plate">'
+            f'{left_side_html}'
             f'<div class="pp-imgwrap" style="width:{width}px;">'
             f'<img src="{img}" alt="{_esc(state["alt"]) if state.get("alt") else f"{title} — captured UI state"}">'
             f'<svg viewBox="0 0 100 100" preserveAspectRatio="none">{lines}</svg>'
             f'{markers}'
             f'</div>'
-            f'<div class="pp-gap"></div>'
-            f'<div class="pp-labels">{"".join(label_divs)}</div>'
+            f'{right_side_html}'
             f'</div>'
             f'</div>'
         )

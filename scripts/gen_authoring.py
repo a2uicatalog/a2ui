@@ -2300,6 +2300,8 @@ def build_plate_page():
 .plate-cand textarea{{width:100%;box-sizing:border-box;font-size:.8rem;padding:5px 7px;border:1px solid var(--border);
   border-radius:5px;min-height:44px;resize:vertical;}}
 .plate-cand-field-label{{font-size:.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;margin:4px 0 2px;}}
+.plate-cand-opts{{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);color:var(--text-muted);}}
+.plate-cand-opts input[type=text]{{padding:3px 5px;font-size:.72rem;border:1px solid var(--border);border-radius:4px;margin:0;}}
 .plate-meta{{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}}
 .plate-meta label{{font-size:.75rem;color:var(--text-muted);display:flex;flex-direction:column;gap:3px;}}
 .plate-meta input{{font-size:.85rem;padding:6px 8px;border:1px solid var(--border);border-radius:5px;}}
@@ -2377,9 +2379,19 @@ function renderPreview(){
     return '<div class="pp-pin" style="top:' + cy + '%;left:' + cx + '%;">' + plateRoman(i + 1) + '</div>';
   }).join('');
 
+  // Same opt-in as the real renderer: a continuous line only for a pin
+  // that explicitly asked for one, from its own (x,y) to the image's
+  // right edge.
+  var lines = kept.filter(function(b){ return b.continuous; }).map(function(b){
+    var cx = b.x + b.width / 2, cy = b.y + b.height / 2;
+    return '<line x1="' + cx + '" y1="' + cy + '" x2="100" y2="' + cy + '" stroke="#1a73e8" stroke-width="0.4"/>';
+  }).join('');
+
   var labels = kept.map(function(b, i){
-    return '<div class="pp-label"><span class="pp-field">' + escHtml(b.description || '(no field yet)') + '</span>' +
-      '<span class="pp-note"><span class="pp-num">' + plateRoman(i + 1) + '.</span> ' +
+    var fieldStyle = b.fieldSize ? ' style="font-size:' + escAttr(b.fieldSize) + '"' : '';
+    var noteStyle = b.noteSize ? ' style="font-size:' + escAttr(b.noteSize) + '"' : '';
+    return '<div class="pp-label"><span class="pp-field"' + fieldStyle + '>' + escHtml(b.description || '(no field yet)') + '</span>' +
+      '<span class="pp-note"' + noteStyle + '><span class="pp-num">' + plateRoman(i + 1) + '.</span> ' +
       escHtml(b.note || '(no note yet — write one on the left)') + '</span></div>';
   }).join('');
 
@@ -2390,7 +2402,7 @@ function renderPreview(){
     '<div class="pp-state active" style="display:block;"><div class="pp-plate">' +
     '<div class="pp-imgwrap" style="width:' + width + 'px;">' +
     '<img src="data:' + plateImg.mimeType + ';base64,' + plateImg.base64 + '">' +
-    '<svg viewBox="0 0 100 100" preserveAspectRatio="none"></svg>' + markers +
+    '<svg viewBox="0 0 100 100" preserveAspectRatio="none">' + lines + '</svg>' + markers +
     '</div><div class="pp-gap"></div><div class="pp-labels">' + labels + '</div>' +
     '</div></div></div>';
 
@@ -2475,12 +2487,19 @@ addBoxBtn.addEventListener('click', function(){
 
 exportBtn.addEventListener('click', function(){
   var pins = plateBoxes.filter(function(b){ return b.keep; }).map(function(b){
-    return {
+    var pin = {
       x: Math.round((b.x + b.width / 2) * 10) / 10,
       y: Math.round((b.y + b.height / 2) * 10) / 10,
       field: b.description,
       note: b.note,
     };
+    // Optional fields only included when actually set -- keeps the common
+    // case (no overrides) identical to before these existed, no dead
+    // "connector": null cluttering every pin's JSON.
+    if (b.continuous) pin.connector = 'continuous';
+    if (b.fieldSize) pin.field_size = b.fieldSize;
+    if (b.noteSize) pin.note_size = b.noteSize;
+    return pin;
   });
   var out = {
     type: 'primitive_plate',
@@ -2523,10 +2542,15 @@ function renderBoxes(){
         '<label style="font-size:.75rem;display:flex;align-items:center;gap:5px"><input type="checkbox" class="keepBox"' + (box.keep ? ' checked' : '') + '> keep</label>' +
         '<button type="button" class="copy-btn delBox" style="margin-left:auto;padding:2px 8px;font-size:.65rem">DELETE</button>' +
       '</div>' +
-      '<div class="plate-cand-field-label">Field (short technical label)</div>' +
+      '<div class="plate-cand-field-label">Field (short technical label — **bold**/*italic*/`code` all work)</div>' +
       '<input type="text" class="fieldInput" value="' + escAttr(box.description) + '">' +
       '<div class="plate-cand-field-label">Note (the actual insight — write this by hand)</div>' +
-      '<textarea class="noteInput" placeholder="What is worth knowing about this? Never pre-filled.">' + escHtml(box.note) + '</textarea>';
+      '<textarea class="noteInput" placeholder="What is worth knowing about this? Never pre-filled.">' + escHtml(box.note) + '</textarea>' +
+      '<div class="plate-cand-opts">' +
+        '<label style="font-size:.72rem;display:flex;align-items:center;gap:5px"><input type="checkbox" class="continuousBox"' + (box.continuous ? ' checked' : '') + '> continuous line (only if this pin sits over empty background)</label>' +
+        '<label style="font-size:.72rem;display:flex;align-items:center;gap:5px">field size <input type="text" class="fieldSizeInput" placeholder="default" style="width:60px" value="' + escAttr(box.fieldSize || '') + '"></label>' +
+        '<label style="font-size:.72rem;display:flex;align-items:center;gap:5px">note size <input type="text" class="noteSizeInput" placeholder="default" style="width:60px" value="' + escAttr(box.noteSize || '') + '"></label>' +
+      '</div>';
     row.querySelector('.keepBox').addEventListener('change', function(e){ box.keep = e.target.checked; renderBoxes(); });
     row.querySelector('.delBox').addEventListener('click', function(){
       plateBoxes = plateBoxes.filter(function(b){ return b.id !== box.id; });
@@ -2534,6 +2558,9 @@ function renderBoxes(){
     });
     row.querySelector('.fieldInput').addEventListener('input', function(e){ box.description = e.target.value; renderPreview(); });
     row.querySelector('.noteInput').addEventListener('input', function(e){ box.note = e.target.value; renderPreview(); });
+    row.querySelector('.continuousBox').addEventListener('change', function(e){ box.continuous = e.target.checked; renderPreview(); });
+    row.querySelector('.fieldSizeInput').addEventListener('input', function(e){ box.fieldSize = e.target.value; renderPreview(); });
+    row.querySelector('.noteSizeInput').addEventListener('input', function(e){ box.noteSize = e.target.value; renderPreview(); });
     candList.appendChild(row);
   });
 
