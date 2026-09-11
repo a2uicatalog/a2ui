@@ -2376,11 +2376,6 @@ def build_plate_page():
 {_HTML2CANVAS_HTML}"""
 
     script = """
-function plateRoman(n){
-  var table = ['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii','xiii','xiv','xv','xvi','xvii','xviii'];
-  return table[n - 1] || String(n);
-}
-
 function renderPreview(){
   var host = document.getElementById('platePreviewHost');
   var section = document.getElementById('platePreviewSection');
@@ -2393,36 +2388,53 @@ function renderPreview(){
   var caption = document.getElementById('plateCaption').value;
   var width = parseInt(document.getElementById('plateWidth').value, 10) || 900;
 
-  var markers = kept.map(function(b, i){
-    var cx = b.x + b.width / 2, cy = b.y + b.height / 2;
-    return '<div class="pp-pin" style="top:' + cy + '%;left:' + cx + '%;">' + plateRoman(i + 1) + '</div>';
+  // Mirrors renderers/web_article.py's _state_body exactly (2026-09-11 --
+  // that function moved to arabic numbers ordered by y-position and a
+  // two-sided (data-pin-idx-keyed) label layout the same day; this preview
+  // markup was never updated to match, so __a2uiPlateLayout's pp-labels-side
+  // / pp-gap-side / data-pin-idx lookups found nothing and every label sat
+  // permanently visibility:hidden -- broken in both the live on-screen
+  // preview and every exported PNG, caught 2026-09-11 rendering a demo
+  // image for continuous connectors and finding the labels missing).
+  var pts = kept.map(function(b){ return { x: b.x + b.width / 2, y: b.y + b.height / 2, b: b }; });
+  var orderByY = pts.map(function(_, i){ return i; }).sort(function(a, c){ return pts[a].y - pts[c].y; });
+  var displayNum = {};
+  orderByY.forEach(function(origI, n){ displayNum[origI] = n + 1; });
+
+  var markers = pts.map(function(p, i){
+    return '<div class="pp-pin" data-pin-idx="' + i + '" style="top:' + p.y + '%;left:' + p.x + '%;">' + displayNum[i] + '</div>';
   }).join('');
 
   // Same opt-in as the real renderer: a continuous line only for a pin
   // that explicitly asked for one, from its own (x,y) to the image's
   // right edge.
-  var lines = kept.filter(function(b){ return b.continuous; }).map(function(b){
-    var cx = b.x + b.width / 2, cy = b.y + b.height / 2;
-    return '<line x1="' + cx + '" y1="' + cy + '" x2="100" y2="' + cy + '" stroke="#1a73e8" stroke-width="0.4"/>';
+  var lines = pts.filter(function(p){ return p.b.continuous; }).map(function(p){
+    return '<line x1="' + p.x + '" y1="' + p.y + '" x2="100" y2="' + p.y + '" stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>';
   }).join('');
 
-  var labels = kept.map(function(b, i){
+  var leftLabels = [], rightLabels = [];
+  pts.forEach(function(p, i){
+    var b = p.b;
     var fieldStyle = b.fieldSize ? ' style="font-size:' + escAttr(b.fieldSize) + '"' : '';
     var noteStyle = b.noteSize ? ' style="font-size:' + escAttr(b.noteSize) + '"' : '';
-    return '<div class="pp-label"><span class="pp-field"' + fieldStyle + '>' + escHtml(b.description || '(no field yet)') + '</span>' +
-      '<span class="pp-note"' + noteStyle + '><span class="pp-num">' + plateRoman(i + 1) + '.</span> ' +
+    var html = '<div class="pp-label" data-pin-idx="' + i + '"><span class="pp-field"' + fieldStyle + '>' + escHtml(b.description || '(no field yet)') + '</span>' +
+      '<span class="pp-note"' + noteStyle + '><span class="pp-num">' + displayNum[i] + '.</span> ' +
       escHtml(b.note || '(no note yet — write one on the left)') + '</span></div>';
-  }).join('');
+    (p.x < 50 ? leftLabels : rightLabels).push(html);
+  });
+  var leftSide = leftLabels.length ? ('<div class="pp-labels-side left">' + leftLabels.join('') + '</div><div class="pp-gap-side" data-side="left"></div>') : '';
+  var rightSide = rightLabels.length ? ('<div class="pp-gap-side" data-side="right"></div><div class="pp-labels-side right">' + rightLabels.join('') + '</div>') : '';
 
   host.innerHTML =
     '<div class="pp-wrap"><div class="pp-head"><h4>' + title + '</h4>' +
     (kind ? '<span class="pp-kind">' + escHtml(kind) + '</span>' : '') + '</div>' +
     (caption ? '<p class="pp-caption">' + escHtml(caption) + '</p>' : '') +
     '<div class="pp-state active" style="display:block;"><div class="pp-plate">' +
+    leftSide +
     '<div class="pp-imgwrap" style="width:' + width + 'px;">' +
     '<img src="data:' + plateImg.mimeType + ';base64,' + plateImg.base64 + '">' +
     '<svg viewBox="0 0 100 100" preserveAspectRatio="none">' + lines + '</svg>' + markers +
-    '</div><div class="pp-gap"></div><div class="pp-labels">' + labels + '</div>' +
+    '</div>' + rightSide +
     '</div></div></div>';
 
   var img = host.querySelector('img');
