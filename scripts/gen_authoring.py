@@ -47,6 +47,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from renderers.web_article import _PLATE_CSS, _PLATE_JS  # noqa: E402 -- the Primitive Plate authoring page's live preview reuses the REAL production CSS/JS rather than a second, drifting copy. Underscore-prefixed but this is the same codebase, not a public import boundary.
+
 try:
     import markdown
 except ImportError:
@@ -2342,9 +2345,60 @@ def build_plate_page():
       <textarea id="plateJsonOut" readonly style="display:none;margin-top:12px" placeholder="Exported JSON appears here"></textarea>
     </div>
   </div>
-</div>"""
+  <div id="platePreviewSection" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px;display:none">
+    <h2 style="font-size:1.05rem;margin:0 0 12px">Live preview — the real render, not a mockup</h2>
+    <p class="hint" style="margin:0 0 12px">Uses the SAME CSS/JS the published atom renders with (pulled from renderers/web_article.py at build time, not a second copy) — this is what the box overlay above collapses into, pins and connector lines included.</p>
+    <div id="platePreviewHost"></div>
+  </div>
+</div>
+{_PLATE_CSS}
+{_PLATE_JS}"""
 
     script = """
+function plateRoman(n){
+  var table = ['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii','xiii','xiv','xv','xvi','xvii','xviii'];
+  return table[n - 1] || String(n);
+}
+
+function renderPreview(){
+  var host = document.getElementById('platePreviewHost');
+  var section = document.getElementById('platePreviewSection');
+  var kept = plateBoxes.filter(function(b){ return b.keep; });
+  if (!plateImg || !kept.length){ section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  var title = escHtml(document.getElementById('plateTitle').value || 'Untitled');
+  var kind = document.getElementById('plateKind').value;
+  var caption = document.getElementById('plateCaption').value;
+  var width = parseInt(document.getElementById('plateWidth').value, 10) || 900;
+
+  var markers = kept.map(function(b, i){
+    var cx = b.x + b.width / 2, cy = b.y + b.height / 2;
+    return '<div class="pp-pin" style="top:' + cy + '%;left:' + cx + '%;">' + plateRoman(i + 1) + '</div>';
+  }).join('');
+
+  var labels = kept.map(function(b, i){
+    return '<div class="pp-label"><span class="pp-field">' + escHtml(b.description || '(no field yet)') + '</span>' +
+      '<span class="pp-note"><span class="pp-num">' + plateRoman(i + 1) + '.</span> ' +
+      escHtml(b.note || '(no note yet — write one on the left)') + '</span></div>';
+  }).join('');
+
+  host.innerHTML =
+    '<div class="pp-wrap"><div class="pp-head"><h4>' + title + '</h4>' +
+    (kind ? '<span class="pp-kind">' + escHtml(kind) + '</span>' : '') + '</div>' +
+    (caption ? '<p class="pp-caption">' + escHtml(caption) + '</p>' : '') +
+    '<div class="pp-state active" style="display:block;"><div class="pp-plate">' +
+    '<div class="pp-imgwrap" style="width:' + width + 'px;">' +
+    '<img src="data:' + plateImg.mimeType + ';base64,' + plateImg.base64 + '">' +
+    '<svg viewBox="0 0 100 100" preserveAspectRatio="none"></svg>' + markers +
+    '</div><div class="pp-gap"></div><div class="pp-labels">' + labels + '</div>' +
+    '</div></div></div>';
+
+  var img = host.querySelector('img');
+  function layout(){ if (window.__a2uiPlateLayout) window.__a2uiPlateLayout(document); }
+  if (img.complete) layout(); else img.onload = layout;
+}
+
 var plateImg = null;   // {base64, mimeType}
 var plateBoxes = [];   // [{x,y,width,height,description,note,keep}]
 var plateNumCounter = 0;
@@ -2478,11 +2532,17 @@ function renderBoxes(){
       plateBoxes = plateBoxes.filter(function(b){ return b.id !== box.id; });
       renderBoxes();
     });
-    row.querySelector('.fieldInput').addEventListener('input', function(e){ box.description = e.target.value; });
-    row.querySelector('.noteInput').addEventListener('input', function(e){ box.note = e.target.value; });
+    row.querySelector('.fieldInput').addEventListener('input', function(e){ box.description = e.target.value; renderPreview(); });
+    row.querySelector('.noteInput').addEventListener('input', function(e){ box.note = e.target.value; renderPreview(); });
     candList.appendChild(row);
   });
+
+  renderPreview();
 }
+
+['plateTitle', 'plateKind', 'plateCaption', 'plateWidth'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', renderPreview);
+});
 
 function escAttr(s){ return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
 function escHtml(s){ return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -2498,6 +2558,7 @@ function attachBoxDrag(el, box){
       box.x = Math.max(0, Math.min(100 - box.width, x));
       box.y = Math.max(0, Math.min(100 - box.height, y));
       el.style.left = box.x + '%'; el.style.top = box.y + '%';
+      renderPreview();
     }
     function onUp(){ document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
     document.addEventListener('mousemove', onMove);
@@ -2515,6 +2576,7 @@ function attachResizeDrag(handle, el, box){
       box.width = Math.max(2, Math.min(100 - box.x, w));
       box.height = Math.max(2, Math.min(100 - box.y, h));
       el.style.width = box.width + '%'; el.style.height = box.height + '%';
+      renderPreview();
     }
     function onUp(){ document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
     document.addEventListener('mousemove', onMove);
