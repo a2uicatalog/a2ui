@@ -284,6 +284,13 @@ generators:
       live slot->atom wiring)
     outputs: [public-full/authoring/]   # NEVER public/ — refuses to run without A2UI_CATALOG_FULL=1
     publish: none — gated full.a2uicatalog.ai only, never public/ or the CI deploy.yml path
+  gen_connection_atlas:
+    script: ../a2ui-private/ops/gen_connection_atlas.py
+    source: a2ui-private/linkedin/connections.json, a2ui-private/linkedin/followers.json
+      (both git-ignored PII — see intake_tooling.linkedin_export and
+      intake_tooling.li_followers_pull in ops/project-ops.yaml)
+    outputs: [public-full/connection-atlas/]   # NEVER public/ — refuses to run without A2UI_CATALOG_FULL=1
+    publish: none — gated full.a2uicatalog.ai only, never public/ or the CI deploy.yml path
   gen_schema_snapshot:
     script: scripts/gen_schema_snapshot.py
     source: atoms/schema.yaml
