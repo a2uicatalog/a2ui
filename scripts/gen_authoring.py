@@ -566,6 +566,10 @@ def build_landing_page(playbook_html):
       <div class="hub-card-title">Single Post</div>
       <div class="hub-card-desc">Template #2: one standalone card in the Field Report treatment — hook-sized headline, optional media, its own call to action. For a post that is a picture, not a swipe.</div>
     </a>
+    <a class="hub-card" href="/authoring/plate/">
+      <div class="hub-card-title">Primitive Plate</div>
+      <div class="hub-card-desc">Upload a real screenshot, Gemini proposes candidate UI elements as boxes, confirm/adjust/add by hand, export a primitive_plate JSON block — the pin-annotated capture format from the Gemini Enterprise field report, generalized to document any interface.</div>
+    </a>
   </div>
   <div class="playbook-doc" style="margin-top:36px">{playbook_html}</div>
 </div>"""
@@ -2249,6 +2253,312 @@ document.getElementById('spExportGifBtn').addEventListener('click', function(){{
     return _page_shell("Single Post", body, script)
 
 
+def build_plate_page():
+    """/authoring/plate/ -- upload a real screenshot, Vertex Gemini proposes
+    candidate elements as bounding boxes (server call: blog-worker/src/
+    plate.js's /authoring/api/plate-scan, private-repo-side for the Vertex
+    auth/secret boundary, same as promptbuilder's lift pane), review/adjust/
+    add boxes here, export as a primitive_plate JSON block. Boxes are an
+    editing aid only -- primitive_plate's own schema takes point pins, so
+    each box collapses to its center point at export time; the renderer
+    itself was never asked to understand boxes.
+
+    2026-09-11: box position/size from Gemini is a rough starting point,
+    not authoritative -- validated same day against two real screenshots
+    (Card, Tabs from the GE primitives gallery) that vision correctly
+    identifies WHICH elements are visually distinct and roughly where, but
+    can't recover facts that live in a payload/schema rather than pixels
+    (see a2uithoughts.md). This tool only ever sees pixels -- there is no
+    payload cross-reference step here, unlike a manual A2UI teardown. The
+    description field is a rough visual label to start editing from, not
+    a fact to trust; the note field is always written by hand.
+    """
+    body = f"""<style>
+.plate-workspace{{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;}}
+.plate-upload{{border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;color:var(--text-muted);cursor:pointer;}}
+.plate-upload:hover{{border-color:var(--accent);color:var(--accent);}}
+.plate-imgwrap{{position:relative;display:inline-block;max-width:100%;}}
+.plate-imgwrap img{{display:block;max-width:100%;height:auto;border-radius:8px;border:1px solid var(--border);}}
+.plate-box{{position:absolute;border:2px solid #1a73e8;background:rgba(26,115,232,0.12);cursor:move;box-sizing:border-box;}}
+.plate-box.rejected{{border-color:#9aa0a6;background:rgba(154,160,166,0.12);opacity:.5;}}
+.plate-box-num{{position:absolute;top:-11px;left:-11px;width:20px;height:20px;border-radius:50%;background:#1a73e8;color:#fff;
+  font-family:ui-monospace,monospace;font-size:.66rem;font-weight:700;display:flex;align-items:center;justify-content:center;pointer-events:none;}}
+.plate-box-handle{{position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;background:#1a73e8;border:1.5px solid #fff;
+  border-radius:2px;cursor:nwse-resize;}}
+.plate-drawhint{{font-size:.78rem;color:var(--text-muted);margin:6px 0 14px;}}
+.plate-candlist{{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow-y:auto;}}
+.plate-cand{{border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--surface-2,#f8f9fa);}}
+.plate-cand.rejected{{opacity:.5;}}
+.plate-cand-head{{display:flex;align-items:center;gap:8px;margin-bottom:6px;}}
+.plate-cand-num{{width:18px;height:18px;border-radius:50%;background:#1a73e8;color:#fff;font-family:ui-monospace,monospace;
+  font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}}
+.plate-cand input[type=text]{{width:100%;box-sizing:border-box;font-size:.82rem;padding:5px 7px;margin-bottom:5px;
+  border:1px solid var(--border);border-radius:5px;}}
+.plate-cand textarea{{width:100%;box-sizing:border-box;font-size:.8rem;padding:5px 7px;border:1px solid var(--border);
+  border-radius:5px;min-height:44px;resize:vertical;}}
+.plate-cand-field-label{{font-size:.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;margin:4px 0 2px;}}
+.plate-meta{{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}}
+.plate-meta label{{font-size:.75rem;color:var(--text-muted);display:flex;flex-direction:column;gap:3px;}}
+.plate-meta input{{font-size:.85rem;padding:6px 8px;border:1px solid var(--border);border-radius:5px;}}
+.plate-status{{font-size:.8rem;color:var(--text-faint);margin-left:10px;}}
+#plateJsonOut{{width:100%;box-sizing:border-box;height:220px;font-family:ui-monospace,monospace;font-size:.72rem;
+  padding:10px;border:1px solid var(--border);border-radius:8px;}}
+</style>
+<div class="authoring-top">
+  <div class="gate-note">🔒 full.a2uicatalog.ai only</div>
+  <h1>Primitive Plate</h1>
+  <p class="sub">Upload a real screenshot, let Gemini propose candidate elements to annotate, then confirm/adjust/add boxes by hand. Boxes are for review only — export collapses each to a point pin for the real primitive_plate atom.</p>
+</div>
+<div class="section">
+  <div class="plate-workspace">
+    <div>
+      <div class="plate-upload" id="plateUpload">Click to choose a screenshot, or drag one here</div>
+      <input type="file" id="plateFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+      <div id="plateImgHost" style="display:none">
+        <p class="plate-drawhint">Drag a box's body to move it, its corner handle to resize. Click-drag on empty image area to draw a new box by hand.</p>
+        <div class="plate-imgwrap" id="plateImgWrap">
+          <img id="plateShotImg">
+        </div>
+        <div style="margin-top:14px">
+          <button class="copy-btn" id="plateScanBtn" type="button">SCAN WITH GEMINI</button>
+          <span class="plate-status" id="plateScanStatus"></span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="plate-meta">
+        <label>Title <input id="plateTitle" type="text" placeholder="e.g. Skill builder"></label>
+        <label>Kind <input id="plateKind" type="text" placeholder="e.g. workspace studio · skills"></label>
+        <label style="grid-column:1/-1">Caption <input id="plateCaption" type="text" placeholder="One line under the title"></label>
+        <label>Width (px) <input id="plateWidth" type="number" value="900"></label>
+      </div>
+      <div class="plate-candlist" id="plateCandList">
+        <p class="hint" id="plateEmptyHint">Scan an image, or click "add box by hand" once an image is loaded.</p>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+        <button class="copy-btn" id="plateAddBoxBtn" type="button" disabled>ADD BOX BY HAND</button>
+        <button class="copy-btn" id="plateExportBtn" type="button" disabled>EXPORT PLATE JSON</button>
+      </div>
+      <textarea id="plateJsonOut" readonly style="display:none;margin-top:12px" placeholder="Exported JSON appears here"></textarea>
+    </div>
+  </div>
+</div>"""
+
+    script = """
+var plateImg = null;   // {base64, mimeType}
+var plateBoxes = [];   // [{x,y,width,height,description,note,keep}]
+var plateNumCounter = 0;
+
+var fileInput = document.getElementById('plateFileInput');
+var uploadZone = document.getElementById('plateUpload');
+var imgHost = document.getElementById('plateImgHost');
+var imgWrap = document.getElementById('plateImgWrap');
+var shotImg = document.getElementById('plateShotImg');
+var scanBtn = document.getElementById('plateScanBtn');
+var scanStatus = document.getElementById('plateScanStatus');
+var candList = document.getElementById('plateCandList');
+var emptyHint = document.getElementById('plateEmptyHint');
+var addBoxBtn = document.getElementById('plateAddBoxBtn');
+var exportBtn = document.getElementById('plateExportBtn');
+var jsonOut = document.getElementById('plateJsonOut');
+
+uploadZone.addEventListener('click', function(){ fileInput.click(); });
+uploadZone.addEventListener('dragover', function(e){ e.preventDefault(); });
+uploadZone.addEventListener('drop', function(e){
+  e.preventDefault();
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', function(){
+  if (fileInput.files && fileInput.files[0]) loadFile(fileInput.files[0]);
+});
+
+function loadFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    var dataUrl = reader.result;
+    var comma = dataUrl.indexOf(',');
+    var mimeType = dataUrl.slice(5, dataUrl.indexOf(';'));
+    plateImg = { base64: dataUrl.slice(comma + 1), mimeType: mimeType };
+    shotImg.src = dataUrl;
+    imgHost.style.display = '';
+    uploadZone.textContent = file.name + ' (click to choose a different file)';
+    addBoxBtn.disabled = false;
+    plateBoxes = [];
+    renderBoxes();
+  };
+  reader.readAsDataURL(file);
+}
+
+scanBtn.addEventListener('click', function(){
+  if (!plateImg) return;
+  scanBtn.disabled = true;
+  scanStatus.textContent = 'Scanning\\u2026';
+  fetch('/authoring/api/plate-scan', {
+    method: 'POST',
+    headers: {'content-type': 'application/json'},
+    body: JSON.stringify({ image: plateImg.base64, mimeType: plateImg.mimeType }),
+  })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      scanBtn.disabled = false;
+      if (data.error) { scanStatus.textContent = 'Error: ' + data.error; return; }
+      scanStatus.textContent = data.candidates.length + ' candidate(s) found.';
+      data.candidates.forEach(function(c){
+        plateBoxes.push({
+          x: c.x, y: c.y, width: c.width, height: c.height,
+          description: c.description || '', note: '', keep: true, id: plateNumCounter++,
+        });
+      });
+      renderBoxes();
+    })
+    .catch(function(e){ scanBtn.disabled = false; scanStatus.textContent = 'Error: ' + e; });
+});
+
+addBoxBtn.addEventListener('click', function(){
+  plateBoxes.push({ x: 35, y: 35, width: 20, height: 10, description: '', note: '', keep: true, id: plateNumCounter++ });
+  renderBoxes();
+});
+
+exportBtn.addEventListener('click', function(){
+  var pins = plateBoxes.filter(function(b){ return b.keep; }).map(function(b){
+    return {
+      x: Math.round((b.x + b.width / 2) * 10) / 10,
+      y: Math.round((b.y + b.height / 2) * 10) / 10,
+      field: b.description,
+      note: b.note,
+    };
+  });
+  var out = {
+    type: 'primitive_plate',
+    title: document.getElementById('plateTitle').value,
+    kind: document.getElementById('plateKind').value,
+    caption: document.getElementById('plateCaption').value,
+    width: parseInt(document.getElementById('plateWidth').value, 10) || 900,
+    states: [{ image: '<upload this screenshot somewhere real and put its URL here>', pins: pins }],
+  };
+  jsonOut.style.display = '';
+  jsonOut.value = JSON.stringify(out, null, 2);
+});
+
+function renderBoxes(){
+  imgWrap.querySelectorAll('.plate-box').forEach(function(el){ el.remove(); });
+  candList.innerHTML = '';
+  emptyHint.style.display = plateBoxes.length ? 'none' : '';
+  exportBtn.disabled = !plateBoxes.some(function(b){ return b.keep; });
+
+  plateBoxes.forEach(function(box, i){
+    var el = document.createElement('div');
+    el.className = 'plate-box' + (box.keep ? '' : ' rejected');
+    el.style.left = box.x + '%'; el.style.top = box.y + '%';
+    el.style.width = box.width + '%'; el.style.height = box.height + '%';
+    var num = document.createElement('div');
+    num.className = 'plate-box-num'; num.textContent = (i + 1);
+    el.appendChild(num);
+    var handle = document.createElement('div');
+    handle.className = 'plate-box-handle';
+    el.appendChild(handle);
+    attachBoxDrag(el, box);
+    attachResizeDrag(handle, el, box);
+    imgWrap.appendChild(el);
+
+    var row = document.createElement('div');
+    row.className = 'plate-cand' + (box.keep ? '' : ' rejected');
+    row.innerHTML =
+      '<div class="plate-cand-head">' +
+        '<span class="plate-cand-num">' + (i + 1) + '</span>' +
+        '<label style="font-size:.75rem;display:flex;align-items:center;gap:5px"><input type="checkbox" class="keepBox"' + (box.keep ? ' checked' : '') + '> keep</label>' +
+        '<button type="button" class="copy-btn delBox" style="margin-left:auto;padding:2px 8px;font-size:.65rem">DELETE</button>' +
+      '</div>' +
+      '<div class="plate-cand-field-label">Field (short technical label)</div>' +
+      '<input type="text" class="fieldInput" value="' + escAttr(box.description) + '">' +
+      '<div class="plate-cand-field-label">Note (the actual insight — write this by hand)</div>' +
+      '<textarea class="noteInput" placeholder="What is worth knowing about this? Never pre-filled.">' + escHtml(box.note) + '</textarea>';
+    row.querySelector('.keepBox').addEventListener('change', function(e){ box.keep = e.target.checked; renderBoxes(); });
+    row.querySelector('.delBox').addEventListener('click', function(){
+      plateBoxes = plateBoxes.filter(function(b){ return b.id !== box.id; });
+      renderBoxes();
+    });
+    row.querySelector('.fieldInput').addEventListener('input', function(e){ box.description = e.target.value; });
+    row.querySelector('.noteInput').addEventListener('input', function(e){ box.note = e.target.value; });
+    candList.appendChild(row);
+  });
+}
+
+function escAttr(s){ return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+function escHtml(s){ return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+function attachBoxDrag(el, box){
+  el.addEventListener('mousedown', function(e){
+    if (e.target !== el && e.target.className !== 'plate-box-num') return;
+    e.preventDefault(); e.stopPropagation();
+    var rect = imgWrap.getBoundingClientRect();
+    function onMove(ev){
+      var x = ((ev.clientX - rect.left) / rect.width) * 100 - box.width / 2;
+      var y = ((ev.clientY - rect.top) / rect.height) * 100 - box.height / 2;
+      box.x = Math.max(0, Math.min(100 - box.width, x));
+      box.y = Math.max(0, Math.min(100 - box.height, y));
+      el.style.left = box.x + '%'; el.style.top = box.y + '%';
+    }
+    function onUp(){ document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+function attachResizeDrag(handle, el, box){
+  handle.addEventListener('mousedown', function(e){
+    e.preventDefault(); e.stopPropagation();
+    var rect = imgWrap.getBoundingClientRect();
+    function onMove(ev){
+      var w = ((ev.clientX - rect.left) / rect.width) * 100 - box.x;
+      var h = ((ev.clientY - rect.top) / rect.height) * 100 - box.y;
+      box.width = Math.max(2, Math.min(100 - box.x, w));
+      box.height = Math.max(2, Math.min(100 - box.y, h));
+      el.style.width = box.width + '%'; el.style.height = box.height + '%';
+    }
+    function onUp(){ document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+// Draw a NEW box by click-dragging on empty image area (not on an existing box).
+imgWrap.addEventListener('mousedown', function(e){
+  if (e.target !== shotImg) return;
+  var rect = imgWrap.getBoundingClientRect();
+  var startX = ((e.clientX - rect.left) / rect.width) * 100;
+  var startY = ((e.clientY - rect.top) / rect.height) * 100;
+  var draft = document.createElement('div');
+  draft.className = 'plate-box';
+  draft.style.left = startX + '%'; draft.style.top = startY + '%'; draft.style.width = '0%'; draft.style.height = '0%';
+  imgWrap.appendChild(draft);
+  function onMove(ev){
+    var curX = ((ev.clientX - rect.left) / rect.width) * 100;
+    var curY = ((ev.clientY - rect.top) / rect.height) * 100;
+    var x = Math.min(startX, curX), y = Math.min(startY, curY);
+    var w = Math.abs(curX - startX), h = Math.abs(curY - startY);
+    draft.style.left = x + '%'; draft.style.top = y + '%'; draft.style.width = w + '%'; draft.style.height = h + '%';
+    draft.dataset.x = x; draft.dataset.y = y; draft.dataset.w = w; draft.dataset.h = h;
+  }
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    draft.remove();
+    var w = parseFloat(draft.dataset.w) || 0, h = parseFloat(draft.dataset.h) || 0;
+    if (w < 1 || h < 1) return; // too small to be a deliberate drag, not a click
+    plateBoxes.push({
+      x: parseFloat(draft.dataset.x), y: parseFloat(draft.dataset.y),
+      width: w, height: h, description: '', note: '', keep: true, id: plateNumCounter++,
+    });
+    renderBoxes();
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+});
+"""
+    return _page_shell("Primitive Plate", body, script)
+
+
 def main():
     _guard()
     playbook_html = markdown.markdown(
@@ -2285,6 +2595,10 @@ def main():
         build_whatscooking_page(archetypes, spec_atoms, current_drafts),
         encoding="utf-8",
     )
+
+    plate_dir = OUTPUT_DIR / "plate"
+    plate_dir.mkdir(parents=True, exist_ok=True)
+    (plate_dir / "index.html").write_text(build_plate_page(), encoding="utf-8")
 
     carousel_dir = OUTPUT_DIR / "templates" / "teaser-card-carousel"
     carousel_dir.mkdir(parents=True, exist_ok=True)
@@ -2323,6 +2637,7 @@ def main():
     wired = sum(1 for a in archetypes.values() for s in a["slots"] if s in spec_atoms)
     total = sum(len(a["slots"]) for a in archetypes.values())
     print(f"gen_authoring: wrote /authoring/, /authoring/promptbuilder/, /authoring/whatscooking/, "
+          f"/authoring/plate/, "
           f"/authoring/templates/teaser-card-carousel/, /authoring/templates/single-post/, "
           f"/workspace/, /share/ "
           f"({len(archetypes)} archetypes, {wired}/{total} slots wired to spec.json, "
