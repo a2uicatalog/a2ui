@@ -12569,12 +12569,17 @@ blocks:
     kind: string (optional). Small tag under the title, e.g. "container".
     caption: string (optional). One-line prose under the title.
     width: integer (optional, default 460). Display width in px of the capture image.
-    chat_equivalent: object (optional). Whether Google Chat Cards v2 has an
-      equivalent for this primitive — renders as a small badge (real Chat
-      logo + a check/tilde/cross) next to the kind tag. Two sub-fields -
-      status ("yes", "partial", or "no") and an optional note shown as a
-      hover tooltip (the specific reason/caveat, e.g. "Cards v2 has no
-      slider widget").
+    equivalent_in: object (optional). Whether some other named surface
+      (Google Chat Cards v2, Slack Block Kit, a bare HTML `<select>`,
+      whatever the author is actually comparing against) has an
+      equivalent for this primitive — renders as a small badge (surface
+      name + a check/tilde/cross) next to the kind tag. Three sub-fields -
+      surface (string, the comparison target's display name), status
+      ("yes", "partial", or "no"), and an optional note shown as a hover
+      tooltip (the specific reason/caveat, e.g. "Cards v2 has no slider
+      widget"). Renamed from `chat_equivalent` (2026-09-11) — that name
+      hardcoded a single Google Chat comparison; this atom documents any
+      primitive against any comparison surface, not just A2UI hosts.
     repo_url: string (optional — but INCLUDE the key even when blank).
       Renders a small "GitHub ↗" pill at the right edge of the head row.
       An empty string renders it as a greyed-out, unclickable placeholder
@@ -12584,9 +12589,9 @@ blocks:
     states:
     - label: string (optional). Toggle-chip label; only shown when states.length > 1.
       alt: string (optional). Image alt text override — default is
-        "<title> primitive rendering in Gemini Enterprise", not
-        appropriate for a non-primitive capture (e.g. an app screenshot
-        in a click-through tour).
+        "<title> — captured UI state", not appropriate for every
+        capture (e.g. a click-through tour screenshot may want its own
+        wording).
       image: string. URL or data-URI of the real capture.
       pins:
       - x: number. 0-100, percent across the image.

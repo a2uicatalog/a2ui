@@ -17102,7 +17102,6 @@ _PLATE_CSS = """
   border:1px solid var(--accent-2,var(--accent,#1a73e8));border-radius:3px;padding:2px 8px;}
 .pp-chat{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;
   border-radius:999px;padding:3px 10px 3px 8px;cursor:help;}
-.pp-chat img{display:block;flex:0 0 auto;}
 .pp-chat-yes{color:#1a7f37;background:#dafbe1;}
 .pp-chat-partial{color:#9a6700;background:#fff3c4;}
 .pp-chat-no{color:var(--text-muted,#5f6368);background:var(--surface,#f1f3f5);}
@@ -17272,11 +17271,16 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     def _state_body(state, idx):
         pins = state.get("pins") or []
         img = state.get("image", "")
-        lines = "".join(
-            f'<line x1="{p.get("x", 0)}" y1="{p.get("y", 0)}" x2="100" y2="{p.get("y", 0)}" '
-            f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
-            for p in pins
-        )
+        # No in-image line anymore (2026-09-11): it ran x1={pin's own x} to
+        # x2="100" regardless of pin position, so a left-side pin drew a
+        # line crossing the ENTIRE image, over whatever content sat between
+        # it and the right edge -- on a dense screenshot that's its own
+        # source of obscuring, separate from the pin dot itself. The only
+        # connector line now is the .pp-gap one (JS, below), which already
+        # starts exactly at the image's right edge and reads each pin's
+        # real position from the DOM directly -- removing this doesn't
+        # touch that.
+        lines = ""
         markers = []
         for i, p in enumerate(pins):
             advance = p.get("advance") and idx + 1 < n_states
@@ -17309,7 +17313,7 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
             f'<div class="pp-state{active}" data-state="{uid}_{idx}" style="{display}">'
             f'<div class="pp-plate">'
             f'<div class="pp-imgwrap" style="width:{width}px;">'
-            f'<img src="{img}" alt="{_esc(state["alt"]) if state.get("alt") else f"{title} primitive rendering in Gemini Enterprise"}">'
+            f'<img src="{img}" alt="{_esc(state["alt"]) if state.get("alt") else f"{title} — captured UI state"}">'
             f'<svg viewBox="0 0 100 100" preserveAspectRatio="none">{lines}</svg>'
             f'{markers}'
             f'</div>'
@@ -17342,16 +17346,22 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     caption_html = f'<p class="pp-caption">{_md_inline(caption)}</p>' if caption else ""
     kind_html = f'<span class="pp-kind">{kind}</span>' if kind else ""
 
-    chat_eq = b.get("chat_equivalent")
+    # Generic surface-comparison badge -- any target ("Google Chat Cards
+    # v2", "Slack Block Kit", "a bare <select>", whatever the author is
+    # actually comparing against), not hardcoded to one Google surface.
+    # Renamed from the original `chat_equivalent` (single hardcoded "Chat
+    # Cards v2" target) so this atom documents ANY software, not just A2UI
+    # hosts -- see a2uithoughts.md's decoupling-from-Gemini entry.
+    equiv = b.get("equivalent_in")
     chat_html = ""
-    if chat_eq:
-        status = chat_eq.get("status", "no")
+    if equiv:
+        status = equiv.get("status", "no")
         icon = {"yes": "✓", "partial": "~", "no": "✗"}.get(status, "?")
         cls = f"pp-chat-{status}"
-        note = _esc(chat_eq.get("note", ""))
+        note = _esc(equiv.get("note", ""))
         title_attr = f' title="{note}"' if note else ""
-        chat_logo = _ws_badge("chat", 14)
-        chat_html = f'<span class="pp-chat {cls}"{title_attr}>{chat_logo} Chat Cards v2 {icon}</span>'
+        surface = _esc(equiv.get("surface", "equivalent"))
+        chat_html = f'<span class="pp-chat {cls}"{title_attr}>{surface} {icon}</span>'
 
     repo_html = ""
     if "repo_url" in b:
