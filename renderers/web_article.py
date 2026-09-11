@@ -17287,16 +17287,23 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
     def _state_body(state, idx):
         pins = state.get("pins") or []
         img = state.get("image", "")
-        # No in-image line anymore (2026-09-11): it ran x1={pin's own x} to
-        # x2="100" regardless of pin position, so a left-side pin drew a
-        # line crossing the ENTIRE image, over whatever content sat between
-        # it and the right edge -- on a dense screenshot that's its own
-        # source of obscuring, separate from the pin dot itself. The only
-        # connector line now is the .pp-gap one (JS, below), which already
-        # starts exactly at the image's right edge and reads each pin's
-        # real position from the DOM directly -- removing this doesn't
-        # touch that.
-        lines = ""
+        # In-image line is OFF BY DEFAULT (2026-09-11): unconditionally
+        # drawing x1={pin's own x} to x2="100" meant a left-side pin drew a
+        # line crossing the ENTIRE image over whatever sat between it and
+        # the right edge -- a source of obscuring on any dense screenshot,
+        # separate from the pin dot itself. Re-added 2026-09-11 (later same
+        # day) as an explicit per-pin OPT-IN (`"connector": "continuous"`):
+        # some pins genuinely sit over empty background where a full line
+        # obscures nothing, and the author is in a better position to know
+        # that than a blanket rule either way. Default (no connector field,
+        # or any other value) stays the safe behavior -- only the .pp-gap
+        # line (JS, below), which starts at the image's right edge and
+        # reads each pin's real position from the DOM directly.
+        lines = "".join(
+            f'<line x1="{p.get("x", 0)}" y1="{p.get("y", 0)}" x2="100" y2="{p.get("y", 0)}" '
+            f'stroke="var(--accent,#1a73e8)" stroke-width="0.4"/>'
+            for p in pins if p.get("connector") == "continuous"
+        )
         markers = []
         for i, p in enumerate(pins):
             advance = p.get("advance") and idx + 1 < n_states
@@ -17315,13 +17322,24 @@ def _render_primitive_plate(b: dict, _pp_counter=[0]) -> str:
         label_divs = []
         for i, p in enumerate(pins):
             chrome_cls = " pp-chrome" if p.get("chrome") else ""
-            field = _esc(p.get("field", ""))
+            # field now goes through _md_inline (2026-09-11), same as
+            # caption/note already did -- was plain _esc only, so **bold**
+            # worked in a note but not in the field label right next to it,
+            # an inconsistency with no real reason behind it.
+            field = _md_inline(p.get("field", ""))
             note = _md_inline(p.get("note", ""))
             badge = p.get("badge")
             badge_html = f'<span class="pp-badge pp-badge-{_esc(badge)}">{_esc(badge.replace("-", " "))}</span>' if badge else ""
+            # Optional per-pin size overrides (2026-09-11) -- CSS length
+            # strings (e.g. "0.9rem"), author's call for a plate with an
+            # unusually long note or a field name that needs to stand out.
+            # Absent -> no inline style at all, falls through to the normal
+            # CSS class size exactly as before this existed.
+            field_style = f' style="font-size:{_esc(p["field_size"])}"' if p.get("field_size") else ""
+            note_style = f' style="font-size:{_esc(p["note_size"])}"' if p.get("note_size") else ""
             label_divs.append(
-                f'<div class="pp-label"><span class="pp-field">{field}{badge_html}</span>'
-                f'<span class="pp-note{chrome_cls}"><span class="pp-num">{_roman(i + 1)}.</span> {note}</span></div>'
+                f'<div class="pp-label"><span class="pp-field"{field_style}>{field}{badge_html}</span>'
+                f'<span class="pp-note{chrome_cls}"{note_style}><span class="pp-num">{_roman(i + 1)}.</span> {note}</span></div>'
             )
         active = " active" if idx == 0 else ""
         display = "display:block;" if idx == 0 else "display:none;"

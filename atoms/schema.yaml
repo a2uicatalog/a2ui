@@ -12596,7 +12596,7 @@ blocks:
       pins:
       - x: number. 0-100, percent across the image.
         y: number. 0-100, percent down the image.
-        field: string (optional). The technical/schema-fact line, monospace.
+        field: string (optional). The technical/schema-fact line, monospace, markdown-lite (same as note — **bold**/*italic*/`code` work here too).
         note: string. The plain-language gloss, markdown-lite.
         chrome: boolean (optional). Marks a pin as host-chrome (not payload content) — renders muted/italic.
         advance: boolean (optional). Makes this pin ALSO a "next step"
@@ -12611,6 +12611,18 @@ blocks:
           whether this step's action is a genuine server round-trip or
           purely client-side (a real, easy-to-lose distinction in a
           click-through demo).
+        connector: string (optional, only recognized value "continuous").
+          Draws a line across the image itself from this pin's exact (x,
+          y) to the image's right edge, then into the usual label
+          connector — OFF by default because that line crosses whatever
+          content sits between the pin and the edge, real obscuring on a
+          dense screenshot. Opt in per pin only where you've checked the
+          crossed area is empty background.
+        field_size: string (optional, CSS length e.g. "0.9rem"). Override
+          the field line's font size for this pin only. Absent means the
+          normal CSS class size, unchanged.
+        note_size: string (optional, CSS length e.g. "0.8rem"). Same, for
+          the note line.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
