@@ -17185,18 +17185,34 @@ _PLATE_JS = """
       });
       labels.forEach(function(l){ l.style.top = '0px'; l.style.visibility = 'hidden'; });
       var heights = labels.map(function(l){ return l.getBoundingClientRect().height; });
-      var GAP = 14, tops = [];
-      pinYs.forEach(function(y, i){
-        var top = y - heights[i] / 2;
-        if (i > 0) top = Math.max(top, tops[i - 1] + heights[i - 1] + GAP);
-        tops.push(top);
+      // Stack in CURRENT pin-Y order, not DOM/original-index order (fixed
+      // 2026-09-11). The old version walked labels[i] against labels[i-1]
+      // assuming index order already matched top-to-bottom pin order --
+      // true for authored, never-repositioned pins, but a pin dragged past
+      // another's rank (e.g. an interactive drag-to-place tool) left its
+      // label stuck in its original slot while the pin moved, so the line
+      // below connected across a long, crossing diagonal instead of
+      // reflowing. Sorting by actual pinY first, then scattering the
+      // computed tops back to each label's own original index, keeps
+      // label identity (which text belongs to which pin) while fixing
+      // visual order to match where the pins actually are now.
+      var GAP = 14;
+      var order = pinYs.map(function(_, i){ return i; });
+      order.sort(function(a, b){ return pinYs[a] - pinYs[b]; });
+      var tops = new Array(pinYs.length);
+      var prevBottom = null;
+      order.forEach(function(idx){
+        var top = pinYs[idx] - heights[idx] / 2;
+        if (prevBottom !== null) top = Math.max(top, prevBottom + GAP);
+        tops[idx] = top;
+        prevBottom = top + heights[idx];
       });
       tops.forEach(function(top, i){
         labels[i].style.top = top + 'px';
         labels[i].style.visibility = 'visible';
         labels[i].classList.add('pp-placed');
       });
-      var totalH = Math.max(imgRect.height, tops[tops.length - 1] + heights[heights.length - 1]);
+      var totalH = Math.max(imgRect.height, prevBottom);
       labelsBox.style.minHeight = totalH + 'px';
       gap.style.minHeight = totalH + 'px';
       var gapRect = gap.getBoundingClientRect();
