@@ -50,6 +50,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from renderers.web_article import _PLATE_CSS, _PLATE_JS  # noqa: E402 -- the Primitive Plate authoring page's live preview reuses the REAL production CSS/JS rather than a second, drifting copy. Underscore-prefixed but this is the same codebase, not a public import boundary.
 
+# Vendored html2canvas 1.4.1 (already in-repo for the GAS "any atom -> PNG"
+# capture path, apps-script-surface/gas-wired-renderer/Html2Canvas.html --
+# that path was checked 2026-09-11 and found orphaned/never wired up client
+# side, but the vendored library itself is real and current; reusing it here
+# closes an actual loop this tool was otherwise missing: the export button
+# gave you JSON, never an image, even though the live preview already
+# renders the exact real thing you'd want a picture OF. Loaded as a plain
+# <script> tag rather than a CDN import -- same "vendored, not fetched"
+# convention as its original use, and this page has no other external
+# script dependency to begin with.
+_HTML2CANVAS_HTML = (
+    Path(__file__).parent.parent / "apps-script-surface" / "gas-wired-renderer" / "Html2Canvas.html"
+).read_text(encoding="utf-8")
+
 try:
     import markdown
 except ImportError:
@@ -2343,8 +2357,12 @@ def build_plate_page():
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
         <button class="copy-btn" id="plateAddBoxBtn" type="button" disabled>ADD BOX BY HAND</button>
         <button class="copy-btn" id="plateExportBtn" type="button" disabled>EXPORT PLATE JSON</button>
+        <button class="copy-btn" id="plateExportImageBtn" type="button" disabled>EXPORT AS IMAGE</button>
       </div>
       <textarea id="plateJsonOut" readonly style="display:none;margin-top:12px" placeholder="Exported JSON appears here"></textarea>
+      <p class="hint" id="plateNextStepsHint" style="display:none;margin-top:10px">
+        Two ways this gets used: drop the exported PNG straight into a LinkedIn post / Slack message / anywhere an image works — done, no further steps. To land it in a future article instead: commit the PNG into <code>blog-worker/public/gallery/&lt;slug&gt;/</code>, replace the JSON's image placeholder with that real path, then add the block to a graduated <code>.a2ui.json</code> and its splice markers in the launch-src markdown — same process every existing plate in Part 1/Part 2 already went through by hand.
+      </p>
     </div>
   </div>
   <div id="platePreviewSection" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px;display:none">
@@ -2354,7 +2372,8 @@ def build_plate_page():
   </div>
 </div>
 {_PLATE_CSS}
-{_PLATE_JS}"""
+{_PLATE_JS}
+{_HTML2CANVAS_HTML}"""
 
     script = """
 function plateRoman(n){
@@ -2426,7 +2445,88 @@ var candList = document.getElementById('plateCandList');
 var emptyHint = document.getElementById('plateEmptyHint');
 var addBoxBtn = document.getElementById('plateAddBoxBtn');
 var exportBtn = document.getElementById('plateExportBtn');
+var exportImageBtn = document.getElementById('plateExportImageBtn');
 var jsonOut = document.getElementById('plateJsonOut');
+var nextStepsHint = document.getElementById('plateNextStepsHint');
+
+// html2canvas 1.4.1 can't parse the oklch() this shell's theme vars use
+// (PAGE_CSS, gen_authoring.py) -- and modern Chromium's getComputedStyle()
+// (and even Canvas2D's fillStyle round-trip, which used to downgrade any
+// color to rgb()) now both preserve oklch() verbatim instead of resolving
+// it, so there's no browser API left that converts it for us. Fix at the
+// source: swap the shell's color vars to real sRGB rgb() values -- computed
+// by hand via the standard OKLab matrices (Björn Ottosson's oklch.com) --
+// for the duration of the capture, then restore.
+var MODERN_COLOR_VARS = ['--bg','--surface','--surface-2','--border','--border-strong',
+  '--text','--text-muted','--text-faint','--accent','--accent-contrast','--accent-soft-bg',
+  '--accent-2','--positive','--warn','--code-bg','--shadow'];
+var OKLCH_RE = /oklch\(\s*([\d.]+)(%)?\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+)%?)?\s*\)/gi;
+
+function oklchToRgbString(match, lStr, lPct, cStr, hStr, aStr){
+  var L = parseFloat(lStr); if (lPct) L /= 100;
+  var C = parseFloat(cStr), H = parseFloat(hStr) * Math.PI / 180;
+  var a = C * Math.cos(H), b = C * Math.sin(H);
+  var l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+  var m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+  var s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+  var l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+  var r = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+  var g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+  var bl = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+  function toSrgb(c){
+    c = Math.min(1, Math.max(0, c));
+    c = c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+    return Math.round(Math.min(1, Math.max(0, c)) * 255);
+  }
+  var alpha = aStr !== undefined ? parseFloat(aStr) : 1;
+  return 'rgba(' + toSrgb(r) + ',' + toSrgb(g) + ',' + toSrgb(bl) + ',' + alpha + ')';
+}
+
+function normalizeModernColors(value){
+  return value.replace(OKLCH_RE, oklchToRgbString);
+}
+
+function withLegacyColors(fn){
+  var root = document.documentElement;
+  var restore = [];
+  MODERN_COLOR_VARS.forEach(function(name){
+    var val = getComputedStyle(root).getPropertyValue(name);
+    OKLCH_RE.lastIndex = 0;
+    if (val && OKLCH_RE.test(val)) {
+      restore.push([name, root.style.getPropertyValue(name)]);
+      root.style.setProperty(name, normalizeModernColors(val));
+    }
+  });
+  function undo(){
+    restore.forEach(function(pair){
+      if (pair[1]) root.style.setProperty(pair[0], pair[1]); else root.style.removeProperty(pair[0]);
+    });
+  }
+  return fn().then(function(v){ undo(); return v; }, function(e){ undo(); throw e; });
+}
+
+exportImageBtn.addEventListener('click', function(){
+  var target = document.querySelector('#platePreviewHost .pp-wrap');
+  if (!target) return;
+  exportImageBtn.disabled = true;
+  exportImageBtn.textContent = 'RENDERING…';
+  withLegacyColors(function(){
+    return html2canvas(target, {backgroundColor: '#ffffff', scale: 2});
+  }).then(function(canvas){
+    var link = document.createElement('a');
+    var slug = (document.getElementById('plateTitle').value || 'plate').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    link.download = (slug || 'plate') + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    exportImageBtn.disabled = false;
+    exportImageBtn.textContent = 'EXPORT AS IMAGE';
+    nextStepsHint.style.display = '';
+  }).catch(function(e){
+    exportImageBtn.disabled = false;
+    exportImageBtn.textContent = 'EXPORT AS IMAGE';
+    alert('Image export failed: ' + e);
+  });
+});
 
 uploadZone.addEventListener('click', function(){ fileInput.click(); });
 uploadZone.addEventListener('dragover', function(e){ e.preventDefault(); });
@@ -2511,13 +2611,16 @@ exportBtn.addEventListener('click', function(){
   };
   jsonOut.style.display = '';
   jsonOut.value = JSON.stringify(out, null, 2);
+  nextStepsHint.style.display = '';
 });
 
 function renderBoxes(){
   imgWrap.querySelectorAll('.plate-box').forEach(function(el){ el.remove(); });
   candList.innerHTML = '';
   emptyHint.style.display = plateBoxes.length ? 'none' : '';
-  exportBtn.disabled = !plateBoxes.some(function(b){ return b.keep; });
+  var hasKept = plateBoxes.some(function(b){ return b.keep; });
+  exportBtn.disabled = !hasKept;
+  exportImageBtn.disabled = !hasKept;
 
   plateBoxes.forEach(function(box, i){
     var el = document.createElement('div');
