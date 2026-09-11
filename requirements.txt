@@ -1,45 +1,45 @@
 # This repo's own real, empirically-confirmed test dependencies -- did not
-# exist before this file (2026-08-21). Matches exactly what this repo's own
-# CI (deploy.yml) already installs by hand; the full local test suite (540+
+# exist before this file (2026-08-21). The full local test suite (540+
 # tests) passes with just these three plus a `node` binary on PATH, which
 # this file intentionally does not cover -- it is a separate runtime
 # dependency (a real subprocess call, not a pip package) used by
 # test_mcp_apps_bundle.py and 8 other files to exercise the compiled JS
 # renderer bundle.
+#
+# THE ONLY place these are declared: both .github/workflows/deploy.yml
+# (this repo) and a2ui-private/.github/workflows/deploy-full-catalog.yml
+# run `pip install -r requirements.txt` (2026-09-11, replacing two
+# independently hand-kept pip-install lists). Before that fix, a package
+# added only here and not to both workflows' hardcoded lists was silent
+# drift -- happened three times (jsonschema/regex/defusedxml, 2026-08-24/25),
+# and the defusedxml gap broke a2ui-private's deploy-full-catalog.yml on
+# EVERY push for two days (2026-09-10..11) before anyone noticed, because
+# nothing surfaces a workflow silently failing on an unrelated commit.
+# Adding a dependency now means: add it below. Nothing else to sync.
 pytest
 pyyaml
 markdown
 # Added 2026-08-24 for tests/a2ui_v1_conformance.py -- real jsonschema
 # validation of emitted A2UI v1.0 messages against the vendored spec
 # (tests/fixtures/a2ui_v1_0_spec/), replacing eyeballed field-name matching.
-# MUST also be added to .github/workflows/deploy.yml's install step -- that
-# workflow hardcodes its pip install list rather than reading this file (see
-# this file's own header comment); a dependency added only here and not
-# there is exactly the class of drift this estate hit twice on 2026-08-23
-# (a deploy script's declared secrets silently diverging from what it
-# actually installed/mounted).
 jsonschema
 # Added same day: stdlib `re` can't compile the \p{...} Unicode-property
 # syntax the real spec's Extensions schema uses -- see
 # tests/a2ui_v1_conformance.py's own top-of-file comment for exactly where
-# this bit. Same two-places-must-match discipline as jsonschema above.
+# this bit.
 regex
 # Added 2026-08-25 for freeform_canvas's raw-svg authoring path
 # (renderers/web_article.py's _parse_freeform_svg) -- freeform_canvas
 # parses AGENT-AUTHORED, untrusted XML strings, and stdlib
 # xml.etree.ElementTree has no protection against XXE/billion-laughs
 # entity-expansion attacks on untrusted input. defusedxml wraps the same
-# ElementTree API with entity expansion disabled by default. Same
-# two-places-must-match discipline as jsonschema/regex above --
-# MUST also be added to .github/workflows/deploy.yml's install step.
+# ElementTree API with entity expansion disabled by default.
 defusedxml
 # Added 2026-08-24 for tests/test_a2a_counterpart.py -- the real A2A
 # interop test spins up the real a2a_counterpart/main.py service in-process
 # (httpx.ASGITransport, no network) and drives it with a real a2a-sdk
 # client, proving renderers/a2a_extension.py against a real a2a-sdk server,
-# not just a unit test of the wrap/unwrap functions alone. Same
-# two-places-must-match discipline as above -- also update
-# .github/workflows/deploy.yml's install step.
+# not just a unit test of the wrap/unwrap functions alone.
 a2a-sdk[http-server]>=0.3.25,<0.4.0
 httpx
 uvicorn
@@ -49,3 +49,11 @@ starlette
 # found live, a real 500 on first submit, that Starlette needs this even
 # for plain application/x-www-form-urlencoded bodies, not just multipart.
 python-multipart
+# Was already a real, uncovered dependency (scripts/gen_favicons.py,
+# gen_authoring.py's _build_share_icon_png) -- invisible locally because
+# every machine that had ever run gen_favicons.py already had Pillow
+# installed globally. Surfaced 2026-09-11 simulating deploy-full-catalog.yml
+# in a genuinely clean venv, right after fixing that workflow's OWN missing
+# defusedxml -- same silent-drift class, just never triggered because
+# gen_authoring.py's icon step is late in catalog-rebuild-full's step list.
+Pillow

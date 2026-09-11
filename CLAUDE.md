@@ -91,6 +91,18 @@ first, not last.
   `training_parser` parity tests), but that only catches the drift, it
   doesn't remove the hand-sync. See `a2uithoughts.md`'s "workspace verb
   parity" entry for the proposed manifest-driven fix.
+- **A hand-kept dependency list is a hand-sync bug waiting to happen.**
+  `deploy.yml`'s pip-install step and a2ui-private's
+  `deploy-full-catalog.yml` both used to hardcode their own copy of
+  `requirements.txt` — a package added to one and not the other broke CI
+  on the NEXT unrelated push, not the one that added it, so the actual
+  cause was already out of context. Found 2026-09-11: `defusedxml` had
+  been missing from `deploy-full-catalog.yml` for two days, failing every
+  push silently, past a same-day commit that already claimed to fix it.
+  Both workflows now `pip install -r requirements.txt` instead — see
+  `AGENTS.md`'s "Working style expected of agents here" (a2ui-private) for
+  the general rule this incident is an instance of: a known issue is not
+  an accepted one.
 
 ## Improvement work is measured, not asserted
 
