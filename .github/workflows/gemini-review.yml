@@ -75,7 +75,12 @@ jobs:
           service_account: 'a2uicatalog-review-ci@static-hangout-500821-d3.iam.gserviceaccount.com'
 
       - name: Run Gemini Review Action
-        uses: derailed-dash/gemini-review-action@v1
+        # Pinned to the commit v1 pointed to on 2026-09-12, not the moving tag itself --
+        # @v1 can move to a new release under Darren Lester's own control at any time, and a
+        # workflow that follows it picks up whatever that release does with no review on our
+        # side. Pinning trades that for an explicit choice: bump this SHA deliberately when we
+        # actually want the update, after checking what changed.
+        uses: derailed-dash/gemini-review-action@9c3963b77439a0e1da3c026a19e517d17a861466 # v1 (2026-09-04)
         env:
           GOOGLE_GENAI_USE_VERTEXAI: "True"
           GOOGLE_CLOUD_PROJECT: "static-hangout-500821-d3"
