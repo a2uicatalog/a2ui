@@ -16,10 +16,15 @@ name: "Gemini PR review"
 # already established: don't touch a provider other repos' working WIF
 # depends on just to add a new one.
 #
-# gemini-2.5-flash, not 3.7 -- same reason as every sibling workflow:
-# WIF auth sets GOOGLE_CLOUD_PROJECT/GOOGLE_CLOUD_LOCATION, the plain
-# IAM-scoped Vertex endpoint shape, and gemini-3.7-flash 404s there on
-# this project regardless of credentials.
+# gemini-3.8-flash, not 2.5 (updated 2026-09-12, following an exchange with
+# Darren Lester on LinkedIn) -- keeps this review pass on the same model
+# generation as the daily-gap agent's own worker (gemini-3.7-flash) instead
+# of trailing two versions behind it. Same WIF/plain-IAM-scoped Vertex
+# endpoint shape as every sibling workflow, where gemini-3.7-flash once
+# 404'd regardless of credentials (see maison's own copy of this file for
+# that incident) -- re-verified 2026-09-12 via the exact google-genai
+# client this action uses (vertexai=True, project/location set, NOT
+# Express Mode): 3.8-flash responds fine, no 404.
 on:
   pull_request:
     branches: [main]
@@ -87,7 +92,7 @@ jobs:
           GOOGLE_CLOUD_LOCATION: "global"
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          gemini_model: 'gemini-2.5-flash'
+          gemini_model: 'gemini-3.8-flash'
           language: 'English (UK)'
 
       # Same mechanical verdict shape as every sibling workflow -- see
