@@ -23767,3 +23767,257 @@ def _render_wall_elevation(b: dict) -> str:
 
 
 _RENDERERS['wall_elevation'] = _render_wall_elevation
+
+
+def _render_seat_map(b: dict) -> str:
+    """Spatial grid seat/venue picker. CSS-only status colouring + selection
+    highlight; a small inline script resolves summary_template against the
+    picked seat's label, per spec/interaction-record-v0.1.md — the plain-text
+    record stays live-in-sync with the visual pick because it reads the same
+    change event, not a parallel computation.
+    """
+    import hashlib
+    name = _esc(b.get("name", "seat"))
+    gid = "sm_" + hashlib.md5(name.encode()).hexdigest()[:6]
+    rows = b.get("rows", [])
+    legend = b.get("legend", [])
+    summary_template = b.get("summary_template", "")
+
+    status_style = {
+        "available": ("#fff", "#dadce0"),
+        "occupied": ("#f1f3f4", "#dadce0"),
+        "premium": ("#fef7e0", "#f9ab00"),
+        "selected": ("#e8f0fe", "#1a73e8"),
+    }
+
+    rows_html = ""
+    for row in rows:
+        seats_html = ""
+        for seat in row:
+            sid = _esc(seat.get("id", ""))
+            label = _esc(seat.get("label", sid))
+            status = seat.get("status", "available")
+            price = seat.get("price")
+            occupied = status == "occupied"
+            bg, border = status_style.get(status, status_style["available"])
+            iid = f"{gid}_{hashlib.md5(sid.encode()).hexdigest()[:4]}"
+            title = label + (f' — {price}' if price is not None else '')
+            seats_html += (
+                f'<label for="{iid}" class="{gid}-seat" title="{_esc(title)}" '
+                f'style="display:flex;align-items:center;justify-content:center;'
+                f'width:32px;height:32px;border:1.5px solid {border};border-radius:6px;'
+                f'background:{bg};font-size:0.68rem;color:#3c4043;'
+                f'cursor:{"default" if occupied else "pointer"};'
+                f'opacity:{"0.4" if occupied else "1"};">'
+                f'<input type="radio" id="{iid}" name="{name}" value="{sid}" '
+                f'data-label="{_esc(label)}" {"disabled" if occupied else ""} '
+                f'style="display:none;" class="{gid}-input">'
+                f'{label}'
+                f'</label>'
+            )
+        rows_html += f'<div style="display:flex;gap:6px;margin-bottom:6px;">{seats_html}</div>'
+
+    legend_html = ""
+    if legend:
+        chips = "".join(
+            f'<span style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;font-size:0.75rem;color:#5f6368;">'
+            f'<span style="width:10px;height:10px;border-radius:3px;'
+            f'background:{status_style.get(item.get("status",""), status_style["available"])[0]};'
+            f'border:1px solid {status_style.get(item.get("status",""), status_style["available"])[1]};"></span>'
+            f'{_esc(item.get("label",""))}</span>'
+            for item in legend
+        )
+        legend_html = f'<div style="margin-top:8px;">{chips}</div>'
+
+    summary_html = (
+        f'<div id="{gid}_summary" style="margin-top:10px;font-size:0.85rem;color:#3c4043;font-weight:500;"></div>'
+        if summary_template else ""
+    )
+    script = (
+        f'<script>(function(){{'
+        f'var inputs=document.querySelectorAll(".{gid}-input");'
+        f'var out=document.getElementById("{gid}_summary");'
+        f'var tpl={_json.dumps(summary_template)};'
+        f'inputs.forEach(function(inp){{inp.addEventListener("change",function(){{'
+        f'if(out&&inp.checked)out.textContent=tpl.replace("{{label}}",inp.getAttribute("data-label")||"");'
+        f'}});}});'
+        f'}})();</script>'
+    ) if summary_template else ""
+
+    return (
+        f'<div style="margin:1rem 0;">'
+        f'<style>.{gid}-seat:has(input:checked){{border-color:#1a73e8!important;background:#e8f0fe!important;}}</style>'
+        f'{rows_html}'
+        f'{legend_html}'
+        f'{summary_html}'
+        f'{script}'
+        f'</div>'
+    )
+
+
+def _render_slot_scheduler(b: dict) -> str:
+    """Date + time-slot appointment picker with a confirm step.
+
+    Static-render demonstration of the loading/error/confirmed states named
+    in spec/interaction-record-v0.1.md: a real backend surface maps those onto
+    action_node.isPending/isError/isSuccess; here (no backend), picking a slot
+    then clicking confirm goes straight to the confirmed state and reveals the
+    confirmation block, with summary_template resolved from the pick.
+    """
+    import hashlib
+    dates = b.get("dates", [])
+    confirm_label = _esc(b.get("confirm_label", "Confirm"))
+    provider = _esc(b.get("provider", ""))
+    location = _esc(b.get("location", ""))
+    timezone_label = _esc(b.get("timezone", ""))
+    summary_template = b.get("summary_template", "")
+    gid = "ss_" + hashlib.md5(_json.dumps(dates, sort_keys=True).encode()).hexdigest()[:6]
+
+    dates_html = ""
+    for d in dates:
+        date_str = _esc(d.get("date", ""))
+        slots_html = ""
+        for slot in d.get("slots", []):
+            time_str = _esc(slot.get("time", ""))
+            available = slot.get("available", True)
+            sid = f"{gid}_{hashlib.md5((date_str + time_str).encode()).hexdigest()[:5]}"
+            slots_html += (
+                f'<label for="{sid}" class="{gid}-slot" '
+                f'style="display:inline-flex;padding:6px 12px;margin:0 6px 6px 0;'
+                f'border:1.5px solid #dadce0;border-radius:16px;font-size:0.8rem;'
+                f'cursor:{"pointer" if available else "default"};'
+                f'opacity:{"1" if available else "0.4"};background:#fff;">'
+                f'<input type="radio" id="{sid}" name="{gid}_slot" '
+                f'data-date="{date_str}" data-time="{time_str}" '
+                f'{"disabled" if not available else ""} style="display:none;" class="{gid}-input">'
+                f'{time_str}'
+                f'</label>'
+            )
+        dates_html += (
+            f'<div style="margin-bottom:10px;">'
+            f'<div style="font-size:0.8rem;font-weight:600;color:#3c4043;margin-bottom:4px;">{date_str}</div>'
+            f'<div>{slots_html}</div>'
+            f'</div>'
+        )
+
+    meta_html = "".join(
+        f'<div>{label}: <strong>{value}</strong></div>'
+        for label, value in (("Provider", provider), ("Location", location), ("Timezone", timezone_label))
+        if value
+    )
+
+    confirmation_html = (
+        f'<div id="{gid}_confirmation" style="display:none;margin-top:12px;padding:12px 14px;'
+        f'border:1.5px solid #34a853;border-radius:8px;background:#e6f4ea;font-size:0.85rem;color:#3c4043;">'
+        f'<div style="font-weight:600;margin-bottom:4px;">Confirmed</div>'
+        f'<div id="{gid}_confirmation_text"></div>'
+        f'</div>'
+    )
+
+    script = (
+        f'<script>(function(){{'
+        f'var inputs=document.querySelectorAll(".{gid}-input");'
+        f'var btn=document.getElementById("{gid}_confirm");'
+        f'var conf=document.getElementById("{gid}_confirmation");'
+        f'var confText=document.getElementById("{gid}_confirmation_text");'
+        f'var picked=null;'
+        f'inputs.forEach(function(inp){{inp.addEventListener("change",function(){{'
+        f'if(inp.checked){{picked={{date:inp.getAttribute("data-date"),time:inp.getAttribute("data-time")}};'
+        f'if(btn)btn.disabled=false;}}}});}});'
+        f'if(btn)btn.addEventListener("click",function(){{'
+        f'if(!picked||!conf)return;'
+        f'var tpl={_json.dumps(summary_template)};'
+        f'var text=tpl.replace("{{date}}",picked.date).replace("{{time}}",picked.time);'
+        f'if(confText)confText.textContent=text||(picked.date+" "+picked.time);'
+        f'conf.style.display="block";'
+        f'}});'
+        f'}})();</script>'
+    )
+
+    return (
+        f'<div style="margin:1rem 0;">'
+        f'<style>.{gid}-slot:has(input:checked){{border-color:#1a73e8!important;background:#e8f0fe!important;}}</style>'
+        f'{dates_html}'
+        f'{meta_html}'
+        f'<button id="{gid}_confirm" disabled type="button" '
+        f'style="margin-top:8px;padding:8px 20px;border:none;border-radius:6px;'
+        f'background:#1a73e8;color:#fff;font-size:0.85rem;font-weight:600;'
+        f'cursor:pointer;opacity:0.5;" '
+        f'onmousedown="this.style.opacity=this.disabled?0.5:1;">{confirm_label}</button>'
+        f'{confirmation_html}'
+        f'{script}'
+        f'</div>'
+    )
+
+
+def _render_option_plan_builder(b: dict) -> str:
+    """Toggleable option list with a live running total.
+
+    total_expr documents how a full wired surface binds this atom's total to
+    a Computed primitive (spec/interaction-record-v0.1.md) so it participates
+    in a payload's broader state graph; this standalone renderer computes the
+    same sum locally via inline script, the same relationship live_metric has
+    to a fuller live-data wiring.
+    """
+    import hashlib
+    options = b.get("options", [])
+    total_label = _esc(b.get("total_label", "Total"))
+    summary_template = b.get("summary_template", "")
+    gid = "opb_" + hashlib.md5(_json.dumps(options, sort_keys=True).encode()).hexdigest()[:6]
+
+    options_html = ""
+    for opt in options:
+        oid = _esc(opt.get("id", ""))
+        label = _esc(opt.get("label", oid))
+        price_delta = opt.get("price_delta", 0)
+        default_on = bool(opt.get("default_on", False))
+        cid = f"{gid}_{hashlib.md5(oid.encode()).hexdigest()[:5]}"
+        sign = "+" if price_delta >= 0 else ""
+        options_html += (
+            f'<label for="{cid}" style="display:flex;align-items:center;justify-content:space-between;'
+            f'padding:8px 4px;border-bottom:1px solid #f1f3f4;cursor:pointer;font-size:0.85rem;color:#3c4043;">'
+            f'<span><input type="checkbox" id="{cid}" class="{gid}-input" '
+            f'data-price="{price_delta}" data-label="{_esc(label)}" '
+            f'{"checked" if default_on else ""} style="margin-right:8px;">{label}</span>'
+            f'<span style="color:#5f6368;">{sign}{price_delta}</span>'
+            f'</label>'
+        )
+
+    summary_html = (
+        f'<div id="{gid}_summary" style="margin-top:8px;font-size:0.8rem;color:#5f6368;"></div>'
+        if summary_template else ""
+    )
+
+    script = (
+        f'<script>(function(){{'
+        f'var inputs=document.querySelectorAll(".{gid}-input");'
+        f'var totalEl=document.getElementById("{gid}_total");'
+        f'var summaryEl=document.getElementById("{gid}_summary");'
+        f'var tpl={_json.dumps(summary_template)};'
+        f'function recompute(){{'
+        f'var total=0;'
+        f'inputs.forEach(function(inp){{if(inp.checked)total+=parseFloat(inp.getAttribute("data-price"))||0;}});'
+        f'if(totalEl)totalEl.textContent=total;'
+        f'if(summaryEl&&tpl)summaryEl.textContent=tpl.replace("{{total}}",total);'
+        f'}}'
+        f'inputs.forEach(function(inp){{inp.addEventListener("change",recompute);}});'
+        f'recompute();'
+        f'}})();</script>'
+    )
+
+    return (
+        f'<div style="margin:1rem 0;border:1px solid #dadce0;border-radius:8px;padding:12px 16px;">'
+        f'{options_html}'
+        f'<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;'
+        f'border-top:1.5px solid #dadce0;font-weight:600;font-size:0.9rem;color:#3c4043;">'
+        f'<span>{total_label}</span><span id="{gid}_total">0</span>'
+        f'</div>'
+        f'{summary_html}'
+        f'{script}'
+        f'</div>'
+    )
+
+
+_RENDERERS['seat_map'] = _render_seat_map
+_RENDERERS['slot_scheduler'] = _render_slot_scheduler
+_RENDERERS['option_plan_builder'] = _render_option_plan_builder

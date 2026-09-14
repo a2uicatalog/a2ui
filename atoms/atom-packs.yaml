@@ -616,3 +616,8 @@ a2ui-lens-interpreted-v1:
 a2ui-lens-external-v1:
 - lens_similar
 - lens_context
+
+a2ui-booking-v1:
+- seat_map
+- slot_scheduler
+- option_plan_builder

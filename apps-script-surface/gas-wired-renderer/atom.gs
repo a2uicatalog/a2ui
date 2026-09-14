@@ -4625,6 +4625,216 @@ _RENDERERS['article_journey'] = function(b) {
     + '</div>';
 };
 
+// seat_map / slot_scheduler / option_plan_builder — a2ui-booking-v1, mirrors
+// renderers/web_article.py's Python implementations field-for-field. See
+// spec/interaction-record-v0.1.md for the summary_template / total_expr
+// conventions these three follow.
 
- 
- 
+_RENDERERS['seat_map'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var name = b.name || 'seat';
+  var rows = b.rows || [];
+  var legend = b.legend || [];
+  var summaryTemplate = b.summary_template || '';
+  var statusStyle = {
+    available: ['#fff', '#dadce0'],
+    occupied: ['#f1f3f4', '#dadce0'],
+    premium: ['#fef7e0', '#f9ab00'],
+    selected: ['#e8f0fe', '#1a73e8']
+  };
+
+  var rowsHtml = '';
+  for (var r = 0; r < rows.length; r++) {
+    var seatsHtml = '';
+    var row = rows[r] || [];
+    for (var s = 0; s < row.length; s++) {
+      var seat = row[s];
+      var sid = seat.id || '';
+      var label = seat.label || sid;
+      var status = seat.status || 'available';
+      var occupied = status === 'occupied';
+      var style = statusStyle[status] || statusStyle.available;
+      var iid = 'sm-' + uid + '-' + r + '-' + s;
+      seatsHtml +=
+        '<label for="' + iid + '" class="sm-seat-' + uid + '" ' +
+        'style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;' +
+        'border:1.5px solid ' + style[1] + ';border-radius:6px;background:' + style[0] + ';' +
+        'font-size:0.68rem;color:#3c4043;cursor:' + (occupied ? 'default' : 'pointer') + ';' +
+        'opacity:' + (occupied ? '0.4' : '1') + ';">' +
+        '<input type="radio" id="' + iid + '" name="' + _esc(name) + '" value="' + _esc(sid) + '" ' +
+        'data-label="' + _esc(label) + '" ' + (occupied ? 'disabled' : '') + ' ' +
+        'style="display:none;" class="sm-input-' + uid + '">' +
+        _esc(label) +
+        '</label>';
+    }
+    rowsHtml += '<div style="display:flex;gap:6px;margin-bottom:6px;">' + seatsHtml + '</div>';
+  }
+
+  var legendHtml = '';
+  if (legend.length) {
+    var chips = '';
+    for (var l = 0; l < legend.length; l++) {
+      var item = legend[l];
+      var lStyle = statusStyle[item.status || ''] || statusStyle.available;
+      chips +=
+        '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;font-size:0.75rem;color:#5f6368;">' +
+        '<span style="width:10px;height:10px;border-radius:3px;background:' + lStyle[0] + ';border:1px solid ' + lStyle[1] + ';"></span>' +
+        _esc(item.label || '') + '</span>';
+    }
+    legendHtml = '<div style="margin-top:8px;">' + chips + '</div>';
+  }
+
+  var summaryHtml = summaryTemplate
+    ? '<div id="sm-summary-' + uid + '" style="margin-top:10px;font-size:0.85rem;color:#3c4043;font-weight:500;"></div>'
+    : '';
+  var script = summaryTemplate
+    ? '<script>(function(){' +
+      'var inputs=document.querySelectorAll(".sm-input-' + uid + '");' +
+      'var out=document.getElementById("sm-summary-' + uid + '");' +
+      'var tpl=' + JSON.stringify(summaryTemplate) + ';' +
+      'inputs.forEach(function(inp){inp.addEventListener("change",function(){' +
+      'if(out&&inp.checked)out.textContent=tpl.replace("{label}",inp.getAttribute("data-label")||"");' +
+      '});});' +
+      '})();</script>'
+    : '';
+
+  return '<style>.sm-seat-' + uid + ':has(input:checked){border-color:#1a73e8!important;background:#e8f0fe!important;}</style>' +
+    '<div style="margin:1rem 0;">' + rowsHtml + legendHtml + summaryHtml + script + '</div>';
+};
+
+_RENDERERS['slot_scheduler'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var dates = b.dates || [];
+  var confirmLabel = b.confirm_label || 'Confirm';
+  var provider = b.provider || '';
+  var location = b.location || '';
+  var timezoneLabel = b.timezone || '';
+  var summaryTemplate = b.summary_template || '';
+
+  var datesHtml = '';
+  for (var d = 0; d < dates.length; d++) {
+    var day = dates[d];
+    var dateStr = day.date || '';
+    var slots = day.slots || [];
+    var slotsHtml = '';
+    for (var s = 0; s < slots.length; s++) {
+      var slot = slots[s];
+      var timeStr = slot.time || '';
+      var available = slot.available !== false;
+      var sid = 'ss-' + uid + '-' + d + '-' + s;
+      slotsHtml +=
+        '<label for="' + sid + '" class="ss-slot-' + uid + '" ' +
+        'style="display:inline-flex;padding:6px 12px;margin:0 6px 6px 0;border:1.5px solid #dadce0;' +
+        'border-radius:16px;font-size:0.8rem;cursor:' + (available ? 'pointer' : 'default') + ';' +
+        'opacity:' + (available ? '1' : '0.4') + ';background:#fff;">' +
+        '<input type="radio" id="' + sid + '" name="ss-slot-' + uid + '" ' +
+        'data-date="' + _esc(dateStr) + '" data-time="' + _esc(timeStr) + '" ' +
+        (available ? '' : 'disabled') + ' style="display:none;" class="ss-input-' + uid + '">' +
+        _esc(timeStr) +
+        '</label>';
+    }
+    datesHtml +=
+      '<div style="margin-bottom:10px;">' +
+      '<div style="font-size:0.8rem;font-weight:600;color:#3c4043;margin-bottom:4px;">' + _esc(dateStr) + '</div>' +
+      '<div>' + slotsHtml + '</div>' +
+      '</div>';
+  }
+
+  var metaHtml = '';
+  var metaRows = [['Provider', provider], ['Location', location], ['Timezone', timezoneLabel]];
+  for (var m = 0; m < metaRows.length; m++) {
+    if (metaRows[m][1]) {
+      metaHtml += '<div>' + metaRows[m][0] + ': <strong>' + _esc(metaRows[m][1]) + '</strong></div>';
+    }
+  }
+
+  var confirmationHtml =
+    '<div id="ss-confirmation-' + uid + '" style="display:none;margin-top:12px;padding:12px 14px;' +
+    'border:1.5px solid #34a853;border-radius:8px;background:#e6f4ea;font-size:0.85rem;color:#3c4043;">' +
+    '<div style="font-weight:600;margin-bottom:4px;">Confirmed</div>' +
+    '<div id="ss-confirmation-text-' + uid + '"></div>' +
+    '</div>';
+
+  var script =
+    '<script>(function(){' +
+    'var inputs=document.querySelectorAll(".ss-input-' + uid + '");' +
+    'var btn=document.getElementById("ss-confirm-' + uid + '");' +
+    'var conf=document.getElementById("ss-confirmation-' + uid + '");' +
+    'var confText=document.getElementById("ss-confirmation-text-' + uid + '");' +
+    'var picked=null;' +
+    'inputs.forEach(function(inp){inp.addEventListener("change",function(){' +
+    'if(inp.checked){picked={date:inp.getAttribute("data-date"),time:inp.getAttribute("data-time")};' +
+    'if(btn)btn.disabled=false;}});});' +
+    'if(btn)btn.addEventListener("click",function(){' +
+    'if(!picked||!conf)return;' +
+    'var tpl=' + JSON.stringify(summaryTemplate) + ';' +
+    'var text=tpl.replace("{date}",picked.date).replace("{time}",picked.time);' +
+    'if(confText)confText.textContent=text||(picked.date+" "+picked.time);' +
+    'conf.style.display="block";' +
+    '});' +
+    '})();</script>';
+
+  return '<style>.ss-slot-' + uid + ':has(input:checked){border-color:#1a73e8!important;background:#e8f0fe!important;}</style>' +
+    '<div style="margin:1rem 0;">' + datesHtml + metaHtml +
+    '<button id="ss-confirm-' + uid + '" disabled type="button" ' +
+    'style="margin-top:8px;padding:8px 20px;border:none;border-radius:6px;background:#1a73e8;color:#fff;' +
+    'font-size:0.85rem;font-weight:600;cursor:pointer;opacity:0.5;" ' +
+    'onmousedown="this.style.opacity=this.disabled?0.5:1;">' + _esc(confirmLabel) + '</button>' +
+    confirmationHtml + script + '</div>';
+};
+
+_RENDERERS['option_plan_builder'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var options = b.options || [];
+  var totalLabel = b.total_label || 'Total';
+  var summaryTemplate = b.summary_template || '';
+
+  var optionsHtml = '';
+  for (var i = 0; i < options.length; i++) {
+    var opt = options[i];
+    var oid = opt.id || '';
+    var label = opt.label || oid;
+    var priceDelta = opt.price_delta || 0;
+    var defaultOn = !!opt.default_on;
+    var cid = 'opb-' + uid + '-' + i;
+    var sign = priceDelta >= 0 ? '+' : '';
+    optionsHtml +=
+      '<label for="' + cid + '" style="display:flex;align-items:center;justify-content:space-between;' +
+      'padding:8px 4px;border-bottom:1px solid #f1f3f4;cursor:pointer;font-size:0.85rem;color:#3c4043;">' +
+      '<span><input type="checkbox" id="' + cid + '" class="opb-input-' + uid + '" ' +
+      'data-price="' + priceDelta + '" data-label="' + _esc(label) + '" ' +
+      (defaultOn ? 'checked' : '') + ' style="margin-right:8px;">' + _esc(label) + '</span>' +
+      '<span style="color:#5f6368;">' + sign + priceDelta + '</span>' +
+      '</label>';
+  }
+
+  var summaryHtml = summaryTemplate
+    ? '<div id="opb-summary-' + uid + '" style="margin-top:8px;font-size:0.8rem;color:#5f6368;"></div>'
+    : '';
+
+  var script =
+    '<script>(function(){' +
+    'var inputs=document.querySelectorAll(".opb-input-' + uid + '");' +
+    'var totalEl=document.getElementById("opb-total-' + uid + '");' +
+    'var summaryEl=document.getElementById("opb-summary-' + uid + '");' +
+    'var tpl=' + JSON.stringify(summaryTemplate) + ';' +
+    'function recompute(){' +
+    'var total=0;' +
+    'inputs.forEach(function(inp){if(inp.checked)total+=parseFloat(inp.getAttribute("data-price"))||0;});' +
+    'if(totalEl)totalEl.textContent=total;' +
+    'if(summaryEl&&tpl)summaryEl.textContent=tpl.replace("{total}",total);' +
+    '}' +
+    'inputs.forEach(function(inp){inp.addEventListener("change",recompute);});' +
+    'recompute();' +
+    '})();</script>';
+
+  return '<div style="margin:1rem 0;border:1px solid #dadce0;border-radius:8px;padding:12px 16px;">' +
+    optionsHtml +
+    '<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;' +
+    'border-top:1.5px solid #dadce0;font-weight:600;font-size:0.9rem;color:#3c4043;">' +
+    '<span>' + _esc(totalLabel) + '</span><span id="opb-total-' + uid + '">0</span>' +
+    '</div>' + summaryHtml + script + '</div>';
+};
+
+
+

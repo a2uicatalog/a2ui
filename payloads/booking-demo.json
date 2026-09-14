@@ -1,0 +1,73 @@
+{
+  "title": "Booking demo — a2ui-booking-v1",
+  "theme": "light",
+  "blocks": [
+    { "type": "heading", "text": "Choose your seat", "level": 2 },
+    {
+      "type": "seat_map",
+      "name": "seat",
+      "rows": [
+        [
+          { "id": "12A", "label": "12A", "status": "available", "price": 0 },
+          { "id": "12B", "label": "12B", "status": "occupied" },
+          { "id": "12C", "label": "12C", "status": "premium", "price": 25 }
+        ],
+        [
+          { "id": "13A", "label": "13A", "status": "available", "price": 0 },
+          { "id": "13B", "label": "13B", "status": "available", "price": 0 },
+          { "id": "13C", "label": "13C", "status": "premium", "price": 25 }
+        ]
+      ],
+      "legend": [
+        { "status": "available", "label": "Available" },
+        { "status": "occupied", "label": "Occupied" },
+        { "status": "premium", "label": "Premium (+€25)" }
+      ],
+      "summary_template": "Selected seat {label}"
+    },
+
+    { "type": "divider" },
+
+    { "type": "heading", "text": "Pick an appointment", "level": 2 },
+    {
+      "type": "slot_scheduler",
+      "dates": [
+        {
+          "date": "Mon 15 Sep",
+          "slots": [
+            { "time": "09:00", "available": true },
+            { "time": "10:00", "available": false },
+            { "time": "11:00", "available": true }
+          ]
+        },
+        {
+          "date": "Tue 16 Sep",
+          "slots": [
+            { "time": "09:00", "available": true },
+            { "time": "14:00", "available": true }
+          ]
+        }
+      ],
+      "confirm_label": "Confirm appointment",
+      "provider": "Dr. Aline Moreau",
+      "location": "12 Rue des Lilas, Paris",
+      "timezone": "Europe/Paris",
+      "summary_template": "Booked {date} at {time}"
+    },
+
+    { "type": "divider" },
+
+    { "type": "heading", "text": "Build your plan", "level": 2 },
+    {
+      "type": "option_plan_builder",
+      "options": [
+        { "id": "base", "label": "Base plan", "price_delta": 20, "default_on": true },
+        { "id": "extra_storage", "label": "+50GB storage", "price_delta": 5 },
+        { "id": "priority_support", "label": "Priority support", "price_delta": 8 },
+        { "id": "team_seats", "label": "3 extra team seats", "price_delta": 15 }
+      ],
+      "total_label": "Monthly total (€)",
+      "summary_template": "Plan total: €{total}/mo"
+    }
+  ]
+}

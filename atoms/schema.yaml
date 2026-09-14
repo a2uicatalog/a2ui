@@ -13589,3 +13589,117 @@ blocks:
     include_dpc: 'boolean (optional, default false). Adds a damp-proof-course line item spanning the wall width.'
     builders: 'integer (optional, default 2, clamped 1–6). Selects one point on the computed build-days-vs-builders curve.'
   source: *id001
+- type: seat_map
+  stage: preview
+  description: 'A grid of selectable seats (e.g. an aircraft cabin or venue
+    layout), each with a status of available/selected/occupied/premium and an
+    optional price. Selection is a single-value pick like choicebox_group, but
+    laid out as a spatial grid rather than a card list. Follows the
+    interaction-record convention (spec/interaction-record-v0.1.md): wire
+    summary_template to a StringTemplate primitive reading the same store the
+    map writes to, so a plain-text record ("Selected seat 14C") exists
+    alongside the visual pick for handoff/logging and for incompatible_on
+    surfaces.'
+  compact_description: spatial grid seat/venue picker with per-seat status and price
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: google-meet-stage
+      note: Renders and is selectable; value capture requires stage-level routing
+    incompatible_on:
+    - surface: google-chat
+      reason: Use choicebox_group or action buttons instead
+    - surface: email
+      reason: Non-functional in email
+    - surface: pdf
+      reason: Static only — render the resolved summary_template text instead
+  fields:
+    name: string. Form field name for the selected seat id.
+    rows:
+      type: array
+      description: List of seat rows, each an array of {id, label, status, price?}
+        entries. status is one of available|selected|occupied|premium.
+    legend: array of {status, label} entries (optional). Shown below the grid.
+    summary_template: 'string (optional). Plain-text template with a {label}
+      placeholder, e.g. "Selected seat {label}" — wired to a StringTemplate
+      primitive reading the same selection store, per
+      spec/interaction-record-v0.1.md.'
+  source: *id001
+- type: slot_scheduler
+  stage: preview
+  description: 'A date + time-slot appointment picker: pick a date, pick an
+    available time slot, confirm. Maps its interaction states onto the
+    existing action_node contract (spec/a2ui-state.yaml) per
+    spec/interaction-record-v0.1.md — loading is action_node.isPending, error
+    is action_node.isError, confirmed is action_node.isSuccess, shown as the
+    confirmation block (provider/date/time/timezone/location).'
+  compact_description: date and time-slot appointment scheduler with a confirmation state
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: google-chat
+      reason: Use a form or key_value confirmation instead
+    - surface: email
+      reason: Non-functional in email
+    - surface: pdf
+      reason: Static only — render the resolved summary_template text instead
+  fields:
+    dates:
+      type: array
+      description: List of {date, slots} entries, where slots is an array of
+        {time, available} entries.
+    confirm_label: string (optional, default 'Confirm'). Label for the confirm
+      button, enabled once a slot is selected.
+    provider: string (optional). Shown in the confirmation block once booked.
+    location: string (optional). Shown in the confirmation block once booked.
+    timezone: string (optional). Shown alongside the picked time and in the
+      confirmation block.
+    summary_template: 'string (optional). Plain-text template with {date} and
+      {time} placeholders, wired to a StringTemplate primitive per
+      spec/interaction-record-v0.1.md.'
+  source: *id001
+- type: option_plan_builder
+  stage: preview
+  description: 'A toggleable list of options (e.g. plan add-ons) with a live
+    running total. The standalone web renderer computes the total itself from
+    price_delta. A full wired surface may instead bind total_expr to a
+    Computed primitive (spec/a2ui-state.yaml) summing the same values, per
+    spec/interaction-record-v0.1.md, so the total participates in the
+    payload''s broader state graph — reusing the existing client-side
+    Computed primitive rather than adding a new derivation op, per the frozen
+    derivation-boundary rule in spec/a2ui-state.yaml.'
+  compact_description: toggleable option list with an externally-wired live running total
+  surfaces:
+    works_on:
+    - web
+    - google-apps-script-web
+    - mcp-apps
+    incompatible_on:
+    - surface: google-chat
+      reason: Use form_checkbox_group instead — no live computed total on that surface
+    - surface: email
+      reason: Non-functional in email
+    - surface: pdf
+      reason: Static only — render the resolved summary_template text instead
+  fields:
+    options:
+      type: array
+      description: List of {id, label, price_delta, default_on?} entries.
+    total_label: string (optional, default 'Total'). Label shown beside the
+      running total.
+    total_expr: 'string (optional). On a full wired surface, the wire
+      reference to a Computed primitive''s value/display output that sums
+      selected price_delta values, e.g. "#plan_total.display", so the total
+      participates in the payload''s broader state graph. The standalone web
+      renderer ignores this field and always computes the running total
+      itself from price_delta — see renderers/web_article.py.'
+    summary_template: 'string (optional). Plain-text template with a {total}
+      placeholder, wired to a StringTemplate primitive per
+      spec/interaction-record-v0.1.md.'
+  source: *id001
