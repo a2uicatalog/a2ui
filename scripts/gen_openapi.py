@@ -532,23 +532,23 @@ LLMS_TXT = """# A2UI Atomic Catalog
 
 > Open-source, typed UI vocabulary ({n_atoms} atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, and MCP Apps — from one JSON schema payload, instead of generating HTML.
 
-## Integrate
+## Integrate & Developer Resources
 
 - [MCP server]({base}/mcp): Live JSON-RPC endpoint, no auth/signup required. GET with `Accept: application/json` returns a machine-readable server descriptor listing every tool.
 - [Documentation MCP server]({base}/mcp-docs): A separate MCP identity (`a2uicatalog-docs`) for questions FROM this product's own docs — `search_docs(query)` and `list_docs()`. The product server above takes actions (compose/render/publish); this one only answers doc questions.
 - [CLI / local MCP server (npm registry)](https://registry.npmjs.org/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui). (npm's own package-page web UI 403s plain HTTP clients — the registry API link above is the one that resolves for a bot; `npm view @a2uicatalog/mcp` or a browser both work fine for a human.)
 - [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
-- [Developer documentation]({base}/developers/): Integration guide, REST surfaces, code samples, self-hosting runbooks.
-- [API documentation]({base}/docs/): REST API endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
-- [API docs and reference]({base}/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
-- [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
-- [OpenAPI specification]({base}/openapi.json): The full API surface — MCP endpoint, catalog documents, compose, data-proxy and NLWeb routes.
-- [Auth documentation]({base}/auth/): Authentication guide, enterprise OAuth discovery metadata, and public unauthenticated access policies.
+- [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
+- [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
+- [API reference]({base}/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
+- [OpenAPI spec]({base}/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
+- [Auth docs]({base}/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
 - [Webhooks & events]({base}/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
-- [Pricing and rate limits]({base}/pricing/): Free tier limits and self-hosting options.
+- [Pricing & quotas]({base}/pricing/): Free tier limits and self-hosting options.
 - [Versioning & deprecation policy]({base}/versioning/): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
+- [NLWeb search]({base}/ask): Ask a plain-English question about the catalog (GET `?query=` or POST JSON) and get ranked, typed atom matches — no need to scrape HTML. `mode=summarize` adds a one-paragraph answer; `mode=generate` composes a real UI from the match. Supports SSE streaming (`Accept: text/event-stream`).
 - [Machine-readable catalog]({base}/spec.json): The full atom vocabulary as structured JSON — every field contract, generated from the schema.
 - [Strict per-atom JSON Schema]({base}/catalogue/atoms-json-schema.json): For constrained decoding, so a model cannot emit an invalid atom.
 - [Agent discovery document]({base}/.well-known/ard.json): Canonical ARD v0.91 resource discovery catalog (legacy alias at /.well-known/ai-catalog.json; also referenced from robots.txt's `Agentmap:` directive).
