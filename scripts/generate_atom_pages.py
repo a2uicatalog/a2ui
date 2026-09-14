@@ -1229,6 +1229,21 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .showcase-dot{width:6px;height:6px;padding:0;border-radius:50%;border:none;background:var(--border-strong);cursor:pointer;transition:background .15s,transform .15s}
 .showcase-dot.active{background:var(--accent);transform:scale(1.3)}
 @media(prefers-reduced-motion:reduce){.showcase-slide{transition:none}}
+.spotlight{display:grid;grid-template-columns:280px 1fr;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:32px}
+.spotlight-visual{background:#0b0f1a;padding:20px;display:flex;align-items:center;justify-content:center}
+.spotlight-visual svg{max-width:100%}
+.spotlight-body{padding:26px 28px}
+.spotlight-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.spotlight-kicker .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--positive);margin-right:7px;box-shadow:0 0 0 3px oklch(58% 0.15 146 / .18)}
+.spotlight h2{font-size:1.5rem;font-weight:800;letter-spacing:-.5px;margin:0 0 10px;color:var(--text)}
+.spotlight p{font-size:14px;line-height:1.65;color:var(--muted);margin:0 0 12px;max-width:60ch}
+.spotlight p strong{color:var(--text)}
+.spotlight p code{background:var(--code-bg);border-radius:4px;padding:1px 5px;font-size:12.5px;font-family:ui-monospace,'SF Mono',Monaco,monospace;color:var(--text)}
+.spotlight-guardrails{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
+.spotlight-guardrails span{font-size:11.5px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:5px 11px}
+.spotlight-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--accent);color:var(--accent-contrast);border-radius:8px;font-size:13.5px;font-weight:700;letter-spacing:.02em}
+.spotlight-cta:hover{filter:brightness(1.08);box-shadow:var(--glow);text-decoration:none}
+@media(max-width:640px){.spotlight{grid-template-columns:1fr}}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
 #search{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;font-size:14px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
 #search:focus{border-color:var(--accent);box-shadow:var(--glow)}
@@ -1442,7 +1457,92 @@ def _showcase_html(slides):
     }})();</script>'''
 
 
+# The catalog's orbit mark, as agent_sketchpad strokes -- geometry lifted
+# directly from the header wordmark's inline SVG (.logo-atom, scaled x10 from
+# its 24x24 viewBox). One definition, used by both the showcase strip slide
+# and the Atom Spotlight section below, so the two can't drift apart.
+_ATOM_LOGO_SKETCH_STROKES = [
+    {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(-32 120 120)" stroke="#6366f1" stroke-width="3" fill="none"/>', "label": "first orbit"},
+    {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(32 120 120)" stroke="#a855f7" stroke-width="3" fill="none"/>', "label": "second orbit"},
+    {"element": '<circle cx="120" cy="120" r="27" fill="#6366f1"/>', "label": "nucleus"},
+    {"element": '<circle cx="32.1" cy="159.8" r="12.5" fill="#a855f7"/>', "label": "electron"},
+    {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(90 120 120)" stroke="#6366f1" stroke-width="3" fill="none" opacity="0.4"/>', "label": "third orbit, drawn live"},
+]
+
+_ROBOT_PAINTING_STROKES = [  # real cached agent_sketchpad run, fetched from
+    # sketch-demo's Firestore cache (sketch_clipart_cache, project static-hangout-
+    # 500821-d3) -- topic "a robot painting a watercolour of a robot painting on a
+    # canvas", 13 strokes, verified 2026-09-14 to validate cleanly against THIS repo's
+    # own agent_sketchpad allowlist (all 13 survive _validate_sketchpad_element intact,
+    # none dropped) before being committed here as a static, self-contained payload --
+    # not a live cross-repo fetch at generation time.
+    {"element": '<path d="M 20 250 L 380 250" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />', "label": 'studio floor line and soft background'},
+    {"element": '<path d="M 295 40 L 250 260 M 295 40 L 350 260 M 295 40 L 295 260 M 235 205 L 365 205" stroke="#b45309" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />', "label": 'wooden easel stand'},
+    {"element": '<rect x="245" y="65" width="100" height="135" rx="3" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />', "label": 'white stretched canvas'},
+    {"element": '<path d="M 252 80 Q 280 75 320 82 Q 338 100 335 140 Q 325 185 275 180 Q 250 160 252 80 Z" fill="#e0f2fe" opacity="0.7" />', "label": 'watercolor wash on canvas'},
+    {"element": '<g stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none">\n  \n  <line x1="320" y1="110" x2="305" y2="175" />\n  <line x1="320" y1="110" x2="335" y2="175" />\n  <rect x="305" y="120" width="30" height="40" rx="1" fill="#f8fafc" stroke="#3b82f6" />\n  \n  <rect x="310" y="130" width="8" height="12" rx="1" fill="#93c5fd" />\n  <rect x="319" y="132" width="10" height="15" fill="#fde047" stroke="#3b82f6" stroke-width="1" />\n  \n  <rect x="270" y="130" width="22" height="28" rx="3" fill="#60a5fa" fill-opacity="0.5" />\n  <rect x="273" y="112" width="16" height="14" rx="2" fill="#93c5fd" fill-opacity="0.8" />\n  <line x1="281" y1="112" x2="281" y2="105" />\n  <circle cx="281" cy="104" r="2" fill="#ef4444" stroke="none" />\n  \n  <path d="M 290 138 Q 300 135 308 132" stroke="#2563eb" stroke-width="1.5" />\n  <circle cx="309" cy="132" r="1.5" fill="#ef4444" stroke="none" />\n  \n  <line x1="275" y1="158" x2="275" y2="175" />\n  <line x1="287" y1="158" x2="287" y2="175" />\n</g>', "label": 'mini robot painting on tiny easel on canvas'},
+    {"element": '<g opacity="0.65">\n  <circle cx="260" cy="180" r="5" fill="#f43f5e" />\n  <circle cx="263" cy="187" r="2.5" fill="#f43f5e" />\n  <circle cx="330" cy="95" r="4" fill="#38bdf8" />\n  <circle cx="335" cy="170" r="6" fill="#facc15" />\n  <circle cx="295" cy="90" r="3" fill="#a855f7" />\n</g>', "label": 'watercolor paint blobs and drips on canvas'},
+    {"element": '<g stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="#64748b">\n  \n  <line x1="110" y1="200" x2="110" y2="245" stroke-width="6" />\n  <ellipse cx="108" cy="248" rx="14" ry="6" fill="#475569" stroke="#334155" stroke-width="2.5" />\n  \n  <line x1="150" y1="200" x2="150" y2="245" stroke-width="6" />\n  <ellipse cx="152" cy="248" rx="14" ry="6" fill="#475569" stroke="#334155" stroke-width="2.5" />\n</g>', "label": 'robot legs and feet'},
+    {"element": '<g>\n  \n  <rect x="85" y="125" width="85" height="80" rx="12" fill="#94a3b8" stroke="#334155" stroke-width="3.5" />\n  \n  <rect x="98" y="138" width="60" height="35" rx="6" fill="#f8fafc" stroke="#334155" stroke-width="2" />\n  <circle cx="113" cy="155" r="8" fill="#38bdf8" />\n  <circle cx="113" cy="155" r="3" fill="#0284c7" />\n  \n  <circle cx="137" cy="150" r="4" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />\n  <circle cx="148" cy="150" r="4" fill="#34d399" stroke="#059669" stroke-width="1.5" />\n  \n  <line x1="105" y1="188" x2="150" y2="188" stroke="#475569" stroke-width="2.5" stroke-linecap="round" />\n  <line x1="110" y1="194" x2="145" y2="194" stroke="#475569" stroke-width="2.5" stroke-linecap="round" />\n</g>', "label": 'robot torso and body panels'},
+    {"element": '<g stroke="#334155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">\n  \n  <rect x="117" y="112" width="20" height="15" fill="#64748b" />\n  \n  <rect x="95" y="55" width="65" height="58" rx="10" fill="#cbd5e1" />\n  \n  <rect x="88" y="74" width="7" height="16" rx="2" fill="#64748b" />\n  <rect x="160" y="74" width="7" height="16" rx="2" fill="#64748b" />\n  \n  <line x1="127" y1="55" x2="127" y2="35" stroke-width="3" />\n  <circle cx="127" cy="32" r="6" fill="#ef4444" stroke="#b91c1c" stroke-width="2" />\n  \n  <path d="M 92 60 C 95 38 135 32 155 46 C 165 52 165 62 145 62 Z" fill="#e11d48" stroke="#9f1239" stroke-width="2.5" />\n  <circle cx="122" cy="38" r="2.5" fill="#be123c" stroke="none" />\n</g>', "label": 'robot head and artists beret'},
+    {"element": '<g>\n  \n  <rect x="105" y="68" width="45" height="30" rx="6" fill="#1e293b" />\n  \n  <circle cx="117" cy="80" r="4.5" fill="#38bdf8" />\n  <circle cx="118.5" cy="78.5" r="1.5" fill="#ffffff" />\n  <circle cx="137" cy="80" r="4.5" fill="#38bdf8" />\n  <circle cx="138.5" cy="78.5" r="1.5" fill="#ffffff" />\n  \n  <path d="M 119 91 Q 127 96 135 91" stroke="#38bdf8" stroke-width="2" fill="none" stroke-linecap="round" />\n</g>', "label": 'robot friendly facial expression'},
+    {"element": '<g stroke="#334155" stroke-linecap="round" stroke-linejoin="round">\n  \n  <path d="M 90 145 Q 65 170 85 195" fill="none" stroke-width="5" />\n  \n  <path d="M 82 190 Q 75 195 85 202" fill="none" stroke-width="3" />\n  \n  <path d="M 70 190 C 55 180 50 215 75 220 C 105 225 115 195 95 185 C 85 180 78 185 70 190 Z" fill="#fde68a" stroke="#d97706" stroke-width="2" />\n  \n  <ellipse cx="85" cy="198" rx="3.5" ry="4.5" fill="#94a3b8" stroke="#d97706" stroke-width="1.5" />\n  \n  <circle cx="63" cy="195" r="3.5" fill="#ef4444" stroke="none" />\n  <circle cx="68" cy="208" r="3.5" fill="#3b82f6" stroke="none" />\n  <circle cx="83" cy="214" r="3.5" fill="#10b981" stroke="none" />\n  <circle cx="98" cy="210" r="3.5" fill="#a855f7" stroke="none" />\n  <circle cx="102" cy="195" r="3.5" fill="#f59e0b" stroke="none" />\n</g>', "label": 'left arm and watercolor palette'},
+    {"element": '<g stroke-linecap="round" stroke-linejoin="round">\n  \n  <path d="M 165 145 Q 195 130 215 145" fill="none" stroke="#334155" stroke-width="5" />\n  \n  <circle cx="215" cy="145" r="4" fill="#64748b" stroke="#334155" stroke-width="2" />\n  <path d="M 213 141 Q 222 143 225 147" fill="none" stroke="#334155" stroke-width="2.5" />\n  \n  <line x1="205" y1="155" x2="252" y2="135" stroke="#92400e" stroke-width="3" />\n  \n  <line x1="247" y1="137" x2="254" y2="134" stroke="#94a3b8" stroke-width="3.5" />\n  \n  <path d="M 254 134 Q 262 131 267 131" stroke="#3b82f6" stroke-width="3" />\n  \n  <circle cx="268" cy="131" r="2.5" fill="#60a5fa" />\n</g>', "label": 'right arm and paintbrush touching canvas'},
+    {"element": '<g>\n  \n  <rect x="200" y="230" width="18" height="22" rx="3" fill="#bae6fd" fill-opacity="0.6" stroke="#0284c7" stroke-width="1.5" />\n  <ellipse cx="209" cy="230" rx="9" ry="3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" />\n  <path d="M 203 236 Q 209 238 215 236" stroke="#0369a1" stroke-width="1" fill="none" />\n  \n  <line x1="209" y1="248" x2="218" y2="220" stroke="#78350f" stroke-width="2" stroke-linecap="round" />\n  \n  <ellipse cx="185" cy="254" rx="4" ry="1.5" fill="#3b82f6" opacity="0.7" />\n  <ellipse cx="225" cy="256" rx="5" ry="2" fill="#ef4444" opacity="0.6" />\n  <ellipse cx="270" cy="255" rx="6" ry="2" fill="#eab308" opacity="0.6" />\n  \n  <path d="M 175 65 L 178 72 L 185 75 L 178 78 L 175 85 L 172 78 L 165 75 L 172 72 Z" fill="#facc15" />\n  <path d="M 230 45 L 232 50 L 237 52 L 232 54 L 230 59 L 228 54 L 223 52 L 228 50 Z" fill="#f43f5e" opacity="0.8" />\n</g>', "label": 'water glass and colorful studio splashes'},
+]
+
+
+def _atom_spotlight_html():
+    """Editorial callout between the showcase strip and the grid, introducing
+    agent_sketchpad by name rather than leaving it to be found by scrolling.
+    The guardrails copy is not marketing prose invented for this section --
+    every number and claim here is read directly off
+    _validate_sketchpad_element / _SKETCHPAD_ALLOWED_TAGS / _SKETCHPAD_ALLOWED_ATTRS
+    / _SKETCHPAD_SAFE_VALUE in renderers/web_article.py, so a change to that
+    validator that isn't reflected here would make this section wrong, not
+    just stale -- check it stayed true if those change."""
+    visual = _agent_sketchpad_sequence_html(
+        _ROBOT_PAINTING_STROKES, "0 0 400 300", "", delay_ms=550)
+    return f'''<div class="spotlight">
+      <div class="spotlight-visual">{visual}</div>
+      <div class="spotlight-body">
+        <div class="spotlight-kicker"><span class="dot"></span>ATOM SPOTLIGHT &middot; LATEST</div>
+        <h2>Give your agent a paintbrush.</h2>
+        <p><code>agent_sketchpad</code> lets a tool-calling agent draw for real: an ordered list of SVG strokes,
+        one real update per shape, only the newest stroke animating in as it lands. What's drawing on the left
+        isn't a mockup &mdash; it's a real, cached run from a live sketch agent, free-drawn (no reference image,
+        no human-placed points) from the prompt <em>"a robot painting a watercolour of a robot painting on a
+        canvas"</em>, all 13 of its strokes replayed here exactly as the agent sent them.</p>
+        <p><strong>Creative freedom inside a fence it can't climb.</strong> Every stroke is parsed with a real XML
+        parser and re-validated server-side before it's ever embedded &mdash; never trusted as a string just
+        because the agent already checked its own output. A fixed allowlist: 8 SVG element types, 24 attributes,
+        no others accepted &mdash; so no <code>onclick</code>, no event handlers of any kind. Attribute values are
+        restricted to a safe character class with no colon, which rules out <code>javascript:</code> and every
+        other URI-scheme trick in one move. Malformed or disallowed elements are skipped with a warning, not a
+        crash. Capped at 250 elements per canvas so nothing pathological gets embedded either.</p>
+        <div class="spotlight-guardrails">
+          <span>Real XML parser, not regex</span>
+          <span>8-tag, 24-attribute allowlist</span>
+          <span>No colon in values &rarr; no javascript:</span>
+          <span>250-element cap</span>
+          <span>Fails safe, not loud</span>
+        </div>
+        <a class="spotlight-cta" href="/atoms/agent_sketchpad">See the atom &rarr;</a>
+      </div>
+    </div>'''
+
+
 def generate_index(atoms):
+    # A visitor lands on the hero stat ("501 atoms"), scrolls two screens, and
+    # hits the MCP Apps banner's real, different, ALSO-exact number (atoms
+    # whose works_on actually includes mcp-apps, currently fewer than the
+    # full catalog) -- two precise-looking numbers that don't match read as a
+    # bug, even though both are true. Round the CATALOG-SIZE claims (marketing
+    # prose, not the JSON-LD numberOfItems, which stays exact for machine
+    # consumption) down to a "500+" style figure computed from the live count
+    # -- not a hand-typed literal, so it can't go stale the way gen_readme_
+    # badges.py's fix was written to prevent ("450+" sitting stale past 473).
+    atom_count_rounded = f"{(len(atoms) // 50) * 50}+"
     all_surfaces = []
     for atom in atoms:
         for s in (atom.get("surfaces") or {}).get("works_on") or []:
@@ -1519,7 +1619,7 @@ def generate_index(atoms):
         ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
         ("kinetic_headline", {"type": "kinetic_headline", "text": "Declarative for agents, useful for humans.", "style": "up", "size": "clamp(1.2rem,2.6vw,1.7rem)"}),
         ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
-        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{len(atoms)} atoms, every surface"}),
+        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{atom_count_rounded} atoms, every surface"}),
         ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
         ("animated_counter", {"type": "animated_counter", "counters": [{"value": len(atoms), "label": "atoms", "color": "#f4f4f5"}]}),
         # The catalog's own orbit mark, sketched stroke by stroke via
@@ -1528,18 +1628,15 @@ def generate_index(atoms):
         # its 24x24 viewBox), so this is the same brand mark, not a lookalike.
         # Only the LAST stroke animates (this atom's stateless draw rule) --
         # ordered so the faint third orbit sweeps in last, over an
-        # already-complete nucleus+electron+two-orbit base.
+        # already-complete nucleus+electron+two-orbit base. Shared with the
+        # Atom Spotlight section below (_ATOM_LOGO_SKETCH_STROKES) so both
+        # uses draw the exact same mark from one source, not two copies that
+        # could drift apart.
         ("agent_sketchpad", {
             "type": "agent_sketchpad",
             "viewBox": "0 0 240 240",
             "label": "An agent draws this, one real stroke at a time",
-            "strokes": [
-                {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(-32 120 120)" stroke="#6366f1" stroke-width="3" fill="none"/>', "label": "first orbit"},
-                {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(32 120 120)" stroke="#a855f7" stroke-width="3" fill="none"/>', "label": "second orbit"},
-                {"element": '<circle cx="120" cy="120" r="27" fill="#6366f1"/>', "label": "nucleus"},
-                {"element": '<circle cx="32.1" cy="159.8" r="12.5" fill="#a855f7"/>', "label": "electron"},
-                {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(90 120 120)" stroke="#6366f1" stroke-width="3" fill="none" opacity="0.4"/>', "label": "third orbit, drawn live"},
-            ],
+            "strokes": _ATOM_LOGO_SKETCH_STROKES,
         }),
     ]
     showcase_slides = []
@@ -1567,7 +1664,7 @@ def generate_index(atoms):
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Catalog — Declarative UI Atoms for AI Agents &amp; MCP</title>
-  <meta name="description" content="A2UI Catalog: {len(atoms)} typed, declarative UI components for AI agents — MCP-ready, no HTML generated by the model. Renders natively on web, Google Meet, Apps Script, Chat, and MCP Apps.">
+  <meta name="description" content="A2UI Catalog: {atom_count_rounded} typed, declarative UI components for AI agents — MCP-ready, no HTML generated by the model. Renders natively on web, Google Meet, Apps Script, Chat, and MCP Apps.">
   <link rel="canonical" href="https://a2uicatalog.ai/">
   <link rel="ai-catalog" type="application/json" href="/.well-known/ard.json">
   <link rel="ard-catalog" type="application/json" href="/.well-known/ard.json">
@@ -1586,14 +1683,14 @@ def generate_index(atoms):
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="A2UI Atomic Catalog">
   <meta property="og:title" content="A2UI Atomic Catalog">
-  <meta property="og:description" content="{len(atoms)} typed UI atoms an AI agent composes into real interfaces — web, Meet, Apps Script, Chat, MCP Apps. No HTML generated by the model.">
+  <meta property="og:description" content="{atom_count_rounded} typed UI atoms an AI agent composes into real interfaces — web, Meet, Apps Script, Chat, MCP Apps. No HTML generated by the model.">
   <meta property="og:url" content="https://a2uicatalog.ai/">
   <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="A2UI Atomic Catalog">
-  <meta name="twitter:description" content="{len(atoms)} typed UI atoms an AI agent composes into real interfaces.">
+  <meta name="twitter:description" content="{atom_count_rounded} typed UI atoms an AI agent composes into real interfaces.">
   <meta name="twitter:image" content="https://a2uicatalog.ai/brand/og-card.png">
   <script type="application/ld+json">
   {{
@@ -1605,7 +1702,7 @@ def generate_index(atoms):
         "name": "A2UI Atomic Catalog",
         "alternateName": "a2uicatalog",
         "url": "https://a2uicatalog.ai",
-        "description": "{len(atoms)} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.",
+        "description": "{atom_count_rounded} typed UI atoms for web, Google Meet, Apps Script, MCP Apps, and Chat. ARD-compliant catalog.",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
         "license": "https://opensource.org/licenses/MIT",
@@ -1733,9 +1830,9 @@ def generate_index(atoms):
     <h1><span class="grad">A2UI</span> Atomic Catalog</h1>
     <p class="tagline">Useful for Humans. Declarative for AI Agents.</p>
     <p class="sub">A growing catalog of typed UI atoms — and the patterns you compose from them — that AI agents build real interfaces with, instead of generating raw HTML. Renders natively on the web, in chat, and inside MCP hosts.</p>
-    <p class="sub">{len(atoms)} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
+    <p class="sub">{atom_count_rounded} typed atoms for web, Meet, Apps Script, MCP Apps, Chat &middot; <a href="/.well-known/ai-catalog.json">ARD catalog</a> &middot; <a href="https://github.com/a2uicatalog/a2ui">GitHub</a></p>
     <div class="hero-stats">
-      <div><b>{len(atoms)}</b>atoms</div>
+      <div><b>{atom_count_rounded}</b>atoms</div>
       <div><b>{len([s for s in all_surfaces if s not in HIDDEN_SURFACES])}</b>surfaces</div>
       <div><b>v1.0.0</b>spec</div>
     </div>
@@ -1743,7 +1840,7 @@ def generate_index(atoms):
       <a class="entry-path" href="#grid">
         <span class="entry-kicker">Browse</span>
         <h3>Explore the catalog</h3>
-        <p>Search and preview {len(atoms)} atoms live, right on this page.</p>
+        <p>Search and preview {atom_count_rounded} atoms live, right on this page.</p>
       </a>
       <a class="entry-path" href="/surfaces/mcp-apps">
         <span class="entry-kicker">Integrate</span>
@@ -1762,7 +1859,7 @@ def generate_index(atoms):
          itself. Keep the destinations distinct if either is reworded. -->
     <a class="launch-banner" href="/surfaces/mcp-apps">
       <span class="launch-badge">Try it</span>
-      <span class="launch-text">Open the MCP Apps playground — {len([a for a in atoms if 'mcp-apps' in (a.get('surfaces') or {{}}).get('works_on', [])])} atoms rendering live inside a sandboxed MCP host</span>
+      <span class="launch-text">Open the MCP Apps playground — {len([a for a in atoms if 'mcp-apps' in (a.get('surfaces') or {{}}).get('works_on', [])])} of {atom_count_rounded} atoms rendering live inside a sandboxed MCP host</span>
       <span class="launch-arrow">Open the playground →</span>
     </a>
     <div class="hero-demo">
@@ -1777,10 +1874,11 @@ def generate_index(atoms):
       </div>
     </div>
     {_showcase_html(showcase_slides)}
+    {_atom_spotlight_html()}
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off" aria-label="Search atoms">
       <div class="filters">{filter_pills}</div>
-      <span class="count" id="count">{len(atoms)} atoms</span>
+      <span class="count" id="count">{atom_count_rounded} atoms</span>
     </div>
   </header>
   <div class="grid" id="grid">
