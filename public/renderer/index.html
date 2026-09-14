@@ -194,10 +194,10 @@
       <div class="step-num">1</div>
       <div class="step-body">
         <h3>Clone the repo</h3>
-        <p>The renderer lives in <code>apps-script-surface/gas-schema-renderer/</code> — 480 atoms, no CDN, no external dependencies.</p>
+        <p>The renderer lives in <code>apps-script-surface/gas-wired-renderer/</code> — 501 atoms, no CDN, no external dependencies.</p>
         <pre id="code-clone"><span class="comment"># Clone and navigate to the renderer directory</span>
 git clone https://github.com/a2uicatalog/a2ui
-cd apps-script-surface/gas-schema-renderer
+cd a2ui/apps-script-surface/gas-wired-renderer
 <button class="copy-btn" onclick="copy('code-clone',this)">COPY</button></pre>
       </div>
     </div>
@@ -246,8 +246,8 @@ clasp push
     </div>
     <div class="feature">
       <div class="feature-icon">⚡</div>
-      <h4>480 atoms, ready to go</h4>
-      <p>Every atom in the catalog works immediately — stat cards, charts, globes, animations, tables, forms.</p>
+      <h4>501 atoms, ready to go</h4>
+      <p>Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">🎨</div>
@@ -286,9 +286,13 @@ function doGet() {
     <strong>The "Try it live" button on each atom page</strong> uses the catalog's shared demo renderer — same code, same atoms. It's there so you can explore without deploying. For production use, deploy your own.
   </div>
 
+  <div class="note">
+    <strong>A few atoms want their own Script Properties</strong> — Trading212 (<code>T212_API_KEY</code>, <code>T212_API_SECRET</code>), Twelve Data (<code>TWELVE_API_KEY</code>) and Vertex AI (<code>VERTEX_PROJECT_ID</code>) each back one data-source atom. Set them under <strong>Project Settings → Script Properties</strong> in your Apps Script editor if you use those atoms; every other atom works with none set, and these three fail gracefully (return an explicit error, not a broken page) without their key.
+  </div>
+
   <div class="cta-row">
     <a href="/" class="btn-primary">Browse atoms →</a>
-    <a href="https://github.com/a2uicatalog/a2ui/tree/main/apps-script-surface/gas-schema-renderer" target="_blank" rel="noopener" class="btn-secondary">View source on GitHub</a>
+    <a href="https://github.com/a2uicatalog/a2ui/tree/main/apps-script-surface/gas-wired-renderer" target="_blank" rel="noopener" class="btn-secondary">View source on GitHub</a>
     <a href="/.well-known/ai-catalog.json" class="btn-secondary">ARD manifest</a>
   </div>
 

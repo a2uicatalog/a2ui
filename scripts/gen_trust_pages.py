@@ -136,7 +136,7 @@ server so it cannot go stale:</p>
 <p>The shared demo renderer is rate limited by design. Deploy your own Apps Script renderer in
 four commands — no cost beyond a Google account — and every subsequent call targets it instead:</p>
 <pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>git clone {REPO}
-cd a2ui/apps-script-surface/gas-schema-renderer
+cd a2ui/apps-script-surface/gas-wired-renderer
 clasp login && clasp create --type webapp && clasp push && clasp deploy</code></pre>
 
 <h2>5. Auth</h2>
