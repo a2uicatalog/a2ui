@@ -1361,6 +1361,40 @@ def card_stage(atom):
     return f'<div class="stage"><div class="stage-inner" aria-hidden="true">{html}</div></div>'
 
 
+def _agent_sketchpad_sequence_html(strokes, view_box, caption, delay_ms=1500):
+    """Bakes agent_sketchpad as N progressively-growing snapshots (1..len
+    strokes) instead of one static render, and sequences them client-side.
+    The atom's own rule is that only the LAST stroke in an array animates --
+    true to a real agent sending one message per stroke, but a single bake
+    of the full array only ever shows one line draw. Each snapshot here is
+    still an honest, unmodified render of the atom at that real stroke
+    count (exactly what a real N-message stream would have shown at step N)
+    -- replayed, not faked. Same technique the terminal_boot showcase slide
+    already uses (bake frames, time them with a small script)."""
+    import hashlib
+    frames = [
+        _web_renderer.render([{
+            "type": "agent_sketchpad", "viewBox": view_box,
+            "label": caption, "strokes": strokes[:n],
+        }])
+        for n in range(1, len(strokes) + 1)
+    ]
+    uid = hashlib.md5(caption.encode()).hexdigest()[:6]
+    return f'''<div id="sk_{uid}">{frames[0]}</div>
+    <script>(function(){{
+      var frames={json.dumps(frames)};
+      var el=document.getElementById("sk_{uid}");
+      var i=1;
+      function step(){{
+        if(!el||i>=frames.length)return;
+        el.innerHTML=frames[i];
+        i++;
+        setTimeout(step,{delay_ms});
+      }}
+      setTimeout(step,{delay_ms});
+    }})();</script>'''
+
+
 def _showcase_html(slides):
     """Small browser mockup, cross-fading through hand-picked striking atoms —
     lands above the fold so a first-time visitor sees something impressive
@@ -1511,7 +1545,11 @@ def generate_index(atoms):
     showcase_slides = []
     for name, block in _SHOWCASE_BLOCKS:
         try:
-            html = _web_renderer.render([block])
+            if name == "agent_sketchpad":
+                html = _agent_sketchpad_sequence_html(
+                    block["strokes"], block["viewBox"], block["label"])
+            else:
+                html = _web_renderer.render([block])
             if html.strip():
                 showcase_slides.append((name, html))
         except Exception as e:
