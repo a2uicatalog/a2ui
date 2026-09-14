@@ -1488,6 +1488,25 @@ def generate_index(atoms):
         ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{len(atoms)} atoms, every surface"}),
         ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
         ("animated_counter", {"type": "animated_counter", "counters": [{"value": len(atoms), "label": "atoms", "color": "#f4f4f5"}]}),
+        # The catalog's own orbit mark, sketched stroke by stroke via
+        # agent_sketchpad -- an atom drawing an atom. Geometry lifted directly
+        # from the header wordmark's inline SVG (.logo-atom, scaled x10 from
+        # its 24x24 viewBox), so this is the same brand mark, not a lookalike.
+        # Only the LAST stroke animates (this atom's stateless draw rule) --
+        # ordered so the faint third orbit sweeps in last, over an
+        # already-complete nucleus+electron+two-orbit base.
+        ("agent_sketchpad", {
+            "type": "agent_sketchpad",
+            "viewBox": "0 0 240 240",
+            "label": "An agent draws this, one real stroke at a time",
+            "strokes": [
+                {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(-32 120 120)" stroke="#6366f1" stroke-width="3" fill="none"/>', "label": "first orbit"},
+                {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(32 120 120)" stroke="#a855f7" stroke-width="3" fill="none"/>', "label": "second orbit"},
+                {"element": '<circle cx="120" cy="120" r="27" fill="#6366f1"/>', "label": "nucleus"},
+                {"element": '<circle cx="32.1" cy="159.8" r="12.5" fill="#a855f7"/>', "label": "electron"},
+                {"element": '<ellipse cx="120" cy="120" rx="100" ry="44" transform="rotate(90 120 120)" stroke="#6366f1" stroke-width="3" fill="none" opacity="0.4"/>', "label": "third orbit, drawn live"},
+            ],
+        }),
     ]
     showcase_slides = []
     for name, block in _SHOWCASE_BLOCKS:
