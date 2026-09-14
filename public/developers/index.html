@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Developers — A2UI Atomic Catalog</title>
-<meta name="description" content="Integrate with the A2UI Atomic Catalog: 500 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.">
+<title>Developer Portal — A2UI Atomic Catalog</title>
+<meta name="description" content="A2UI Atomic Catalog Developer Portal: integrate 501 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.">
 <link rel="canonical" href="https://a2uicatalog.ai/developers/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Developers — A2UI Atomic Catalog">
-<meta property="og:description" content="Integrate with the A2UI Atomic Catalog: 500 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.">
+<meta property="og:title" content="Developer Portal — A2UI Atomic Catalog">
+<meta property="og:description" content="A2UI Atomic Catalog Developer Portal: integrate 501 typed atoms over MCP or REST. No API key, no signup. OpenAPI spec, live server descriptor, rate limits.">
 <meta property="og:url" content="https://a2uicatalog.ai/developers/">
 <meta property="og:image" content="https://a2uicatalog.ai/brand/og-card.png">
 <script type="application/ld+json">
@@ -16,7 +16,7 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "url": "https://a2uicatalog.ai/developers/",
-  "name": "Developers \u2014 A2UI Atomic Catalog",
+  "name": "Developer Portal \u2014 A2UI Atomic Catalog",
   "publisher": {
     "@id": "https://a2uicatalog.ai/#org"
   }
@@ -45,11 +45,11 @@ footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
 <body>
 <nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
 <div class="wrap">
-<h1>A2UI Atomic Catalog — Developers</h1>
+<h1>A2UI Atomic Catalog — Developer Portal</h1>
 <h2 class="k">Developer &amp; Agent Documentation</h2>
 
-<p>Everything here is free, unauthenticated, and machine-readable — this page is a human
-index into the same documents an agent reads.</p>
+<p>Everything here is free, unauthenticated, and machine-readable — this developer portal
+is a human index into the same documents an agent reads.</p>
 
 <h2>1. Connect the MCP server</h2>
 <p>The primary integration surface. No API key, no signup.</p>
@@ -64,16 +64,21 @@ server so it cannot go stale:</p>
 
 <h2>2. Or use the REST surfaces directly</h2>
 <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:.92rem;">
-<tr><td style="padding:6px 10px 6px 0;"><code>GET /spec.json</code></td><td>Full atom vocabulary — 500 atoms, every field contract</td></tr>
+<tr><td style="padding:6px 10px 6px 0;"><code>GET /spec.json</code></td><td>Full atom vocabulary — 501 atoms, every field contract</td></tr>
 <tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/index.json</code></td><td>Compact catalog selection menu</td></tr>
 <tr><td style="padding:6px 10px 6px 0;"><code>GET /catalogue/atoms-json-schema.json</code></td><td>Strict per-atom JSON Schema for constrained decoding</td></tr>
 <tr><td style="padding:6px 10px 6px 0;"><code>POST /api/compose</code></td><td>Natural language → atom blocks</td></tr>
 </table>
 
-<h2>3. Reference</h2>
+<h2>3. Reference &amp; Developer Resources</h2>
 <ul>
-<li><a href="/openapi.json">OpenAPI 3.1 specification</a> — every endpoint, request/response schemas, examples</li>
-<li><a href="/docs/">API Documentation</a> — REST endpoints, error models, and rate limits</li>
+<li><a href="/openapi.json">OpenAPI Spec (OpenAPI 3.1)</a> — every endpoint, request/response schemas, examples</li>
+<li><a href="/docs/">API Docs</a> — REST endpoints, error models, and rate limits</li>
+<li><a href="/api-docs/">API Reference &amp; Docs</a> — complete endpoint and parameter directory</li>
+<li><a href="/auth/">Auth Docs</a> — authentication overview, rate limits, and enterprise OAuth</li>
+<li><a href="/webhooks/">Webhooks Docs</a> — SSE streaming, event delivery, and chat integrations</li>
+<li><a href="/versioning/">API Versioning Policy</a> — X-API-Version headers, deprecation timelines, and compatibility</li>
+<li><a href="/pricing/">Pricing &amp; Limits</a> — free tier allowances and self-hosting runbooks</li>
 <li><a href="/agents.md">agents.md</a> — agent-facing guide, served as <code>text/markdown</code></li>
 <li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
 <li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>

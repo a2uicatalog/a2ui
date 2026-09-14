@@ -32,6 +32,25 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 SPEC = os.path.join(ROOT, "public", "spec.json")
 EVAL_PATH = os.path.join(ROOT, "..", "a2ui-private", "mcp-worker", "test", "compose-routing-eval.json")
 
+# KNOWN, TRACKED, TEMPORARY exceptions -- a ratchet, not a permanent allowlist.
+# Reviewable exactly like pre_push_audit.py's secret_hygiene content_allowlist:
+# add an entry (with a reason + date) ONLY in the same commit that promotes
+# the atom, remove it once `ops.py run atom-multirep-onboard` picks the atom
+# up for real. This gate BLOCKS any uncovered atom NOT listed here, so
+# nothing new can join the backlog silently -- but it can't be a hard
+# zero-tolerance gate, because the one tool that fixes coverage
+# (mcp-worker/test/generate-eval-prompts.mjs) fetches ground truth from the
+# LIVE deployed a2uicatalog.ai/spec.json, not local state. A just-promoted
+# atom is structurally uncoverable until its OWN promoting push has already
+# gone live -- discovered 2026-09-13 promoting agent_sketchpad: running the
+# full onboarding pipeline beforehand fixed 24 OTHER long-uncovered atoms
+# (real pre-existing debt) but silently no-opped on agent_sketchpad itself
+# ("0 to generate for") because the live site didn't know about it yet.
+KNOWN_UNCOVERED_BASELINE = frozenset({
+    "agent_sketchpad",  # promoted 2026-09-13; rerun atom-multirep-onboard
+                        # after this push deploys, then remove this line.
+})
+
 
 def main():
     if not os.path.isfile(EVAL_PATH):
@@ -54,17 +73,31 @@ def main():
             covered.update(group)
 
     uncovered = sorted(all_types - covered)
-    if uncovered:
-        print(f"❌ {len(uncovered)} of {len(all_types)} published atoms have ZERO eval coverage "
-              f"(invisible to the routing gap-finder):", file=sys.stderr)
-        for t in uncovered:
+    new_uncovered = [t for t in uncovered if t not in KNOWN_UNCOVERED_BASELINE]
+    stale_baseline = sorted(KNOWN_UNCOVERED_BASELINE - set(uncovered))
+
+    if new_uncovered:
+        print(f"❌ {len(new_uncovered)} of {len(all_types)} published atoms have ZERO eval coverage "
+              f"and are NOT in KNOWN_UNCOVERED_BASELINE (invisible to the routing gap-finder):", file=sys.stderr)
+        for t in new_uncovered:
             print(f"   {t}", file=sys.stderr)
         print("\nFix: node test/generate-eval-prompts.mjs --append (from a2ui-private/mcp-worker, "
               "needs a local ai-proxy-scratch wrangler dev on :8798 — see test/ai-proxy-scratch/), "
-              "or run ops.py run atom-multirep-onboard.", file=sys.stderr)
+              "or run ops.py run atom-multirep-onboard.\n\nJust promoted this atom and the fix above "
+              "reports \"0 to generate for\"? That tool reads the LIVE deployed spec.json, not local "
+              "state -- it can't cover an atom before ITS OWN promoting push is already live. Add the "
+              "atom to KNOWN_UNCOVERED_BASELINE in THIS commit instead, with a comment naming when to "
+              "remove it (after this push deploys and atom-multirep-onboard is rerun).", file=sys.stderr)
         sys.exit(1)
 
-    print(f"✅ eval-coverage-check: all {len(all_types)} published atoms have ≥1 eval-set entry")
+    if stale_baseline:
+        print(f"⚠️  {len(stale_baseline)} atom(s) in KNOWN_UNCOVERED_BASELINE now have real coverage -- "
+              f"remove from the baseline (it's a ratchet, not a permanent exemption): {stale_baseline}")
+    if uncovered:
+        print(f"⚠️  {len(uncovered)} atom(s) still uncovered but tracked in KNOWN_UNCOVERED_BASELINE "
+              f"(not blocking, not forgotten): {uncovered}")
+    print(f"✅ eval-coverage-check: no NEW uncovered atoms outside the tracked baseline "
+          f"({len(all_types) - len(uncovered)} of {len(all_types)} have real eval-set entries)")
 
 
 if __name__ == "__main__":

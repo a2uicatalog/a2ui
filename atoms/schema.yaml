@@ -7548,7 +7548,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: agent_sketchpad
-  stage: preview
   description: A single composite SVG canvas built from an ORDERED list of
     validated SVG elements, for an agent to progressively draw one coherent
     picture across multiple real updates (e.g. one A2A message per shape)
