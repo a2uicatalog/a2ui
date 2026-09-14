@@ -23579,8 +23579,8 @@ _RENDERERS['freeform_canvas'] = _render_freeform_canvas
 # A deterministic, AI-free masonry wall elevation diagram: courses, bond
 # pattern, and cost/weight/build-time estimates computed entirely by real
 # formulas -- no LLM anywhere in this render path. Ported faithfully from
-# wall-builder-agent (a real Gemini Enterprise A2A demo, found in
-# static-hangout-500821-d3's Cloud Run sources) -- the math/constants/SVG
+# wall-builder-agent (a real Gemini Enterprise A2A demo, found in a
+# sibling Cloud Run project's sources) -- the math/constants/SVG
 # algorithm below are that agent's own tested logic, not reinvented here.
 # The original also carried a `country` field purely for a cosmetic
 # France/UK label in a two-country demo; dropped here, it doesn't affect

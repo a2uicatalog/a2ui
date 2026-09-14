@@ -1,8 +1,8 @@
 // atoms_wall.gs — wall_elevation: a deterministic, AI-free masonry wall
 // elevation diagram (courses, running/stack bond, cost/weight/build-time
 // estimates). Ported from a real prior agent's tested math
-// (wall-builder-agent, a Gemini Enterprise A2A demo, found in the
-// static-hangout-500821-d3 GCP project's Cloud Run sources, 2026-08-25) --
+// (wall-builder-agent, a Gemini Enterprise A2A demo, found in a sibling
+// Cloud Run project's sources, 2026-08-25) --
 // see renderers/web_article.py's own wall_elevation section for the
 // Python mirror; the two must produce identical numbers for identical
 // inputs, not just a similar-looking diagram.
