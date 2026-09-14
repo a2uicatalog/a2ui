@@ -1,0 +1,48 @@
+{
+  "title": "seat_map layout generator — cinema vs flight",
+  "theme": "light",
+  "blocks": [
+    { "type": "heading", "text": "Cinema — no aisle, one premium row", "level": 2 },
+    {
+      "type": "seat_map",
+      "name": "cinema_seat",
+      "layout": {
+        "rows": 5,
+        "cols": 8,
+        "premium_rows": [4],
+        "occupied": ["1C", "1D", "3F"],
+        "price_default": 10,
+        "price_premium": 16
+      },
+      "legend": [
+        { "status": "available", "label": "Available" },
+        { "status": "occupied", "label": "Occupied" },
+        { "status": "premium", "label": "Premium (back row)" }
+      ],
+      "summary_template": "Selected seat {label}"
+    },
+
+    { "type": "divider" },
+
+    { "type": "heading", "text": "Flight — 3+3 aisle, front two rows premium", "level": 2 },
+    {
+      "type": "seat_map",
+      "name": "flight_seat",
+      "layout": {
+        "rows": 10,
+        "cols": 6,
+        "aisle_after_cols": [2],
+        "premium_rows": [0, 1],
+        "occupied": ["3A", "5D"],
+        "price_default": 0,
+        "price_premium": 45
+      },
+      "legend": [
+        { "status": "available", "label": "Available" },
+        { "status": "occupied", "label": "Occupied" },
+        { "status": "premium", "label": "Premium (+€45)" }
+      ],
+      "summary_template": "Selected seat {label}"
+    }
+  ]
+}

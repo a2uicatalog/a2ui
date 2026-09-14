@@ -23769,6 +23769,45 @@ def _render_wall_elevation(b: dict) -> str:
 _RENDERERS['wall_elevation'] = _render_wall_elevation
 
 
+def _expand_seat_layout(layout: dict) -> list:
+    """Generic rows x cols seat-grid generator for seat_map's `layout` field.
+
+    Carries no domain data (no aircraft/venue presets) — a flight layout and
+    a cinema layout are the same generator with different numbers: an
+    aisle_after_cols gap is what makes a 3+3 flight grid, omitting it makes a
+    plain cinema grid. Gap cells are represented as {"gap": True} entries so
+    the row-rendering loop can space them without a second code path.
+    """
+    n_rows = int(layout.get("rows", 0))
+    n_cols = int(layout.get("cols", 0))
+    row_labels = layout.get("row_labels") or [str(i + 1) for i in range(n_rows)]
+    col_labels = layout.get("col_labels") or [chr(ord("A") + i) for i in range(n_cols)]
+    aisle_after = set(layout.get("aisle_after_cols", []))
+    premium_rows = set(layout.get("premium_rows", []))
+    occupied = set(layout.get("occupied", []))
+    price_default = layout.get("price_default")
+    price_premium = layout.get("price_premium")
+
+    grid = []
+    for r in range(n_rows):
+        rlabel = row_labels[r] if r < len(row_labels) else str(r + 1)
+        is_premium = r in premium_rows
+        row = []
+        for c in range(n_cols):
+            clabel = col_labels[c] if c < len(col_labels) else chr(ord("A") + c)
+            sid = f"{rlabel}{clabel}"
+            status = "occupied" if sid in occupied else ("premium" if is_premium else "available")
+            seat = {"id": sid, "label": sid, "status": status}
+            price = price_premium if (is_premium and price_premium is not None) else price_default
+            if price is not None:
+                seat["price"] = price
+            row.append(seat)
+            if c in aisle_after:
+                row.append({"gap": True})
+        grid.append(row)
+    return grid
+
+
 def _render_seat_map(b: dict) -> str:
     """Spatial grid seat/venue picker. CSS-only status colouring + selection
     highlight; a small inline script resolves summary_template against the
@@ -23779,7 +23818,7 @@ def _render_seat_map(b: dict) -> str:
     import hashlib
     name = _esc(b.get("name", "seat"))
     gid = "sm_" + hashlib.md5(name.encode()).hexdigest()[:6]
-    rows = b.get("rows", [])
+    rows = b.get("rows") or _expand_seat_layout(b.get("layout") or {})
     legend = b.get("legend", [])
     summary_template = b.get("summary_template", "")
 
@@ -23794,6 +23833,9 @@ def _render_seat_map(b: dict) -> str:
     for row in rows:
         seats_html = ""
         for seat in row:
+            if seat.get("gap"):
+                seats_html += '<span style="width:14px;"></span>'
+                continue
             sid = _esc(seat.get("id", ""))
             label = _esc(seat.get("label", sid))
             status = seat.get("status", "available")

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "type": "a2ui_wired_surface",
+  "title": "Plan builder — Computed-wired demo",
+  "theme": "light",
+
+  "state_primitives": [
+    { "id": "storage_mem",  "primitive": "ValueStore", "props": { "initialValue": false } },
+    { "id": "priority_mem", "primitive": "ValueStore", "props": { "initialValue": false } },
+    { "id": "seats_mem",    "primitive": "ValueStore", "props": { "initialValue": false } },
+    {
+      "id": "plan_total",
+      "primitive": "Computed",
+      "props": {
+        "inputs": {
+          "storage": "#storage_mem.value",
+          "priority": "#priority_mem.value",
+          "seats": "#seats_mem.value"
+        },
+        "expr": "20 + storage * 5 + priority * 8 + seats * 15",
+        "format": "currency:EUR"
+      }
+    },
+    {
+      "id": "plan_summary",
+      "primitive": "StringTemplate",
+      "props": {
+        "template": "Plan total: {total}/mo",
+        "inputs": { "total": "#plan_total.display" }
+      }
+    }
+  ],
+
+  "layout": [
+    { "atom": "heading", "props": { "text": "Build your plan", "level": 2 } },
+    { "atom": "text_block", "props": { "text": "Base plan — €20/mo (always included)" } },
+
+    {
+      "atom": "toggle_switch",
+      "id": "storage-toggle",
+      "props": { "label": "+50GB storage (+€5/mo)" },
+      "wire": { "onToggle": "#storage_mem.setValue", "checked": "#storage_mem.value" }
+    },
+    {
+      "atom": "toggle_switch",
+      "id": "priority-toggle",
+      "props": { "label": "Priority support (+€8/mo)" },
+      "wire": { "onToggle": "#priority_mem.setValue", "checked": "#priority_mem.value" }
+    },
+    {
+      "atom": "toggle_switch",
+      "id": "seats-toggle",
+      "props": { "label": "3 extra team seats (+€15/mo)" },
+      "wire": { "onToggle": "#seats_mem.setValue", "checked": "#seats_mem.value" }
+    },
+
+    {
+      "atom": "inline_feedback_message",
+      "id": "total-display",
+      "props": { "type": "info", "text": "€20.00" },
+      "wire": { "text": "#plan_total.display" }
+    },
+    {
+      "atom": "inline_feedback_message",
+      "id": "summary-display",
+      "props": { "type": "success", "text": "Plan total: €20.00/mo" },
+      "wire": { "text": "#plan_summary.value" }
+    }
+  ]
+}

@@ -4630,10 +4630,49 @@ _RENDERERS['article_journey'] = function(b) {
 // spec/interaction-record-v0.1.md for the summary_template / total_expr
 // conventions these three follow.
 
+function _expandSeatLayout(layout) {
+  // Generic rows x cols seat-grid generator, mirrors Python's
+  // _expand_seat_layout in renderers/web_article.py field-for-field. No
+  // domain data: a flight grid and a cinema grid are the same generator with
+  // different numbers — aisle_after_cols is what makes a 3+3 flight layout,
+  // omitting it makes a plain cinema grid.
+  var nRows = parseInt(layout.rows, 10) || 0;
+  var nCols = parseInt(layout.cols, 10) || 0;
+  var rowLabels = layout.row_labels || [];
+  var colLabels = layout.col_labels || [];
+  var aisleAfter = {};
+  (layout.aisle_after_cols || []).forEach(function(c) { aisleAfter[c] = true; });
+  var premiumRows = {};
+  (layout.premium_rows || []).forEach(function(r) { premiumRows[r] = true; });
+  var occupied = {};
+  (layout.occupied || []).forEach(function(id) { occupied[id] = true; });
+  var priceDefault = layout.price_default;
+  var pricePremium = layout.price_premium;
+
+  var grid = [];
+  for (var r = 0; r < nRows; r++) {
+    var rLabel = rowLabels[r] || String(r + 1);
+    var isPremium = !!premiumRows[r];
+    var row = [];
+    for (var c = 0; c < nCols; c++) {
+      var cLabel = colLabels[c] || String.fromCharCode(65 + c);
+      var sid = rLabel + cLabel;
+      var status = occupied[sid] ? 'occupied' : (isPremium ? 'premium' : 'available');
+      var seat = { id: sid, label: sid, status: status };
+      var price = (isPremium && pricePremium !== undefined) ? pricePremium : priceDefault;
+      if (price !== undefined) seat.price = price;
+      row.push(seat);
+      if (aisleAfter[c]) row.push({ gap: true });
+    }
+    grid.push(row);
+  }
+  return grid;
+}
+
 _RENDERERS['seat_map'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var name = b.name || 'seat';
-  var rows = b.rows || [];
+  var rows = (b.rows && b.rows.length) ? b.rows : _expandSeatLayout(b.layout || {});
   var legend = b.legend || [];
   var summaryTemplate = b.summary_template || '';
   var statusStyle = {
@@ -4649,6 +4688,7 @@ _RENDERERS['seat_map'] = function(b) {
     var row = rows[r] || [];
     for (var s = 0; s < row.length; s++) {
       var seat = row[s];
+      if (seat.gap) { seatsHtml += '<span style="width:14px;"></span>'; continue; }
       var sid = seat.id || '';
       var label = seat.label || sid;
       var status = seat.status || 'available';
