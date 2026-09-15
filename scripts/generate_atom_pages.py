@@ -1243,6 +1243,15 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .spotlight-guardrails span{font-size:11.5px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:5px 11px}
 .spotlight-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--accent);color:var(--accent-contrast);border-radius:8px;font-size:13.5px;font-weight:700;letter-spacing:.02em}
 .spotlight-cta:hover{filter:brightness(1.08);box-shadow:var(--glow);text-decoration:none}
+.spotlight-try{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.spotlight-try-label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.spotlight-try-row{display:flex;gap:8px;flex-wrap:wrap}
+.spotlight-try-row input{flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13.5px;color:var(--text);outline:none}
+.spotlight-try-row input:focus{border-color:var(--accent);box-shadow:var(--glow)}
+.spotlight-try-row button{padding:9px 16px;background:var(--text);color:var(--surface);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.spotlight-try-row button:hover{filter:brightness(1.15)}
+.spotlight-try-row button:disabled{opacity:.5;cursor:default}
+.spotlight-try-status{min-height:1.4em;margin-top:8px;font-size:12.5px;color:var(--muted)}
 @media(max-width:640px){.spotlight{grid-template-columns:1fr}}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
 #search{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;font-size:14px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
@@ -1528,8 +1537,67 @@ def _atom_spotlight_html():
           <span>Fails safe, not loud</span>
         </div>
         <a class="spotlight-cta" href="/atoms/agent_sketchpad">See the atom &rarr;</a>
+        <div class="spotlight-try">
+          <label for="sketch-demo-prompt" class="spotlight-try-label">Or try it yourself &mdash; describe something to draw</label>
+          <div class="spotlight-try-row">
+            <input type="text" id="sketch-demo-prompt" maxlength="150" placeholder="a cat wearing sunglasses" autocomplete="off">
+            <button type="button" id="sketch-demo-submit">Draw it</button>
+          </div>
+          <div class="spotlight-try-status" id="sketch-demo-status" aria-live="polite"></div>
+        </div>
       </div>
-    </div>'''
+    </div>
+    <script>(function(){{
+      var btn = document.getElementById('sketch-demo-submit');
+      var input = document.getElementById('sketch-demo-prompt');
+      var status = document.getElementById('sketch-demo-status');
+      var visual = document.querySelector('.spotlight-visual');
+      if (!btn || !input || !status || !visual) return;
+      var fallbackHtml = visual.innerHTML;   // the baked robot-painting default, restored on failure
+
+      function playFrames(frames, delayMs) {{
+        var host = document.createElement('div');
+        visual.innerHTML = '';
+        visual.appendChild(host);
+        var i = 0;
+        function step() {{
+          if (i >= frames.length) return;
+          host.innerHTML = frames[i];
+          i++;
+          setTimeout(step, delayMs);
+        }}
+        step();
+      }}
+
+      function submit() {{
+        var prompt = input.value.trim();
+        if (!prompt) return;
+        btn.disabled = true;
+        status.textContent = 'Drawing…';
+        fetch('/api/sketch-demo', {{
+          method: 'POST',
+          headers: {{'Content-Type': 'application/json'}},
+          body: JSON.stringify({{prompt: prompt}}),
+        }})
+          .then(function (res) {{ return res.json().then(function (data) {{ return {{res: res, data: data}}; }}); }})
+          .then(function (r) {{
+            if (!r.res.ok || !r.data.ok) {{
+              status.textContent = r.data.error || "today's live demos are used up — here's a real one:";
+              visual.innerHTML = fallbackHtml;
+              return;
+            }}
+            status.textContent = 'Drew: “' + r.data.prompt + '”';
+            playFrames(r.data.frames, 550);
+          }})
+          .catch(function () {{
+            status.textContent = "couldn't reach the demo — here's a real one:";
+            visual.innerHTML = fallbackHtml;
+          }})
+          .finally(function () {{ btn.disabled = false; }});
+      }}
+      btn.addEventListener('click', submit);
+      input.addEventListener('keydown', function (e) {{ if (e.key === 'Enter') submit(); }});
+    }})();</script>'''
 
 
 def generate_index(atoms):
@@ -1616,12 +1684,6 @@ def generate_index(atoms):
     # spotlight_cursor) that attach to document/window and would either fight
     # the page's own live cursor_glow or leak outside a clipped preview box.
     _SHOWCASE_BLOCKS = [
-        ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
-        ("kinetic_headline", {"type": "kinetic_headline", "text": "Declarative for agents, useful for humans.", "style": "up", "size": "clamp(1.2rem,2.6vw,1.7rem)"}),
-        ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
-        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{atom_count_rounded} atoms, every surface"}),
-        ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
-        ("animated_counter", {"type": "animated_counter", "counters": [{"value": len(atoms), "label": "atoms", "color": "#f4f4f5"}]}),
         # The catalog's own orbit mark, sketched stroke by stroke via
         # agent_sketchpad -- an atom drawing an atom. Geometry lifted directly
         # from the header wordmark's inline SVG (.logo-atom, scaled x10 from
@@ -1631,13 +1693,21 @@ def generate_index(atoms):
         # already-complete nucleus+electron+two-orbit base. Shared with the
         # Atom Spotlight section below (_ATOM_LOGO_SKETCH_STROKES) so both
         # uses draw the exact same mark from one source, not two copies that
-        # could drift apart.
+        # could drift apart. Leads the showcase (freshly promoted out of
+        # preview) rather than closing it, since dot 0 is the slide shown by
+        # default before the carousel ever advances.
         ("agent_sketchpad", {
             "type": "agent_sketchpad",
             "viewBox": "0 0 240 240",
             "label": "An agent draws this, one real stroke at a time",
             "strokes": _ATOM_LOGO_SKETCH_STROKES,
         }),
+        ("glowing_stat", {"type": "glowing_stat", "value": "99.98%", "label": "Uptime", "colour": "#22d3ee"}),
+        ("kinetic_headline", {"type": "kinetic_headline", "text": "Declarative for agents, useful for humans.", "style": "up", "size": "clamp(1.2rem,2.6vw,1.7rem)"}),
+        ("terminal_boot", {"type": "terminal_boot", "title": "deploy.sh", "lines": ["$ a2ui deploy", "✓ schema validated", "✓ renderer live"]}),
+        ("mesh_gradient", {"type": "mesh_gradient", "title": "One vocabulary", "text": f"{atom_count_rounded} atoms, every surface"}),
+        ("github_activity_grid", {"type": "github_activity_grid", "title": "Shipping daily"}),
+        ("animated_counter", {"type": "animated_counter", "counters": [{"value": len(atoms), "label": "atoms", "color": "#f4f4f5"}]}),
     ]
     showcase_slides = []
     for name, block in _SHOWCASE_BLOCKS:
@@ -1853,6 +1923,7 @@ def generate_index(atoms):
         <p>Apps Script web app, 4 commands — you own the URL.</p>
       </a>
     </div>
+    {_atom_spotlight_html()}
     <!-- Paired with the .announce pill above the headline, deliberately NOT a
          second announcement of the same thing: the pill carries the news and
          links to the write-up, this one is the do-it path into the surface
@@ -1874,7 +1945,6 @@ def generate_index(atoms):
       </div>
     </div>
     {_showcase_html(showcase_slides)}
-    {_atom_spotlight_html()}
     <div class="controls">
       <input id="search" type="search" placeholder="Search atoms…" autocomplete="off" aria-label="Search atoms">
       <div class="filters">{filter_pills}</div>
