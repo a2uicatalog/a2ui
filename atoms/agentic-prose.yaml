@@ -347,6 +347,25 @@ atoms:
       Routine single-click actions with no blocking gate (cta_button).
     answers: ["what do you need me to approve", "what action is required to proceed", "why is the workflow waiting"]
 
+  code_diff:
+    use_when: >-
+      Presenting a unified code or text modification, showing exact insertions
+      and deletions before and after an agent edit or patch.
+    not_when: >-
+      Displaying a single unmodified snippet (code_block) or an inline token
+      (inline_code). Explaining a conceptual change in running prose (body).
+    answers: ["what changed in the code", "show the file diff", "what did this patch modify"]
+
+  json_tree_viewer:
+    use_when: >-
+      Displaying a nested, expandable JSON data structure or payload tree that
+      the reader needs to explore hierarchically.
+    not_when: >-
+      Flat key-value properties or short status summaries (key_value). Structured
+      rows with uniform columns (data_table_sortable). A brief textual summary
+      (body).
+    answers: ["show the raw JSON payload", "explore the structured response data", "what did the API return"]
+
   info_card:
     use_when: >-
       Presenting something for the reader to consider and act on — a proposal,
