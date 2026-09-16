@@ -150,7 +150,7 @@ _EXAMPLE_BLOCKS = {
         "accent": "#47643F", "header_theme": "dark",
         "blocks": [{"type": "body", "text": "Each step is independently addressable by ComponentId — an agent can flip one step's status without resending the whole surface."}]},
     "columns": {"type": "columns", "gap": "24px",
-        "columns": [
+        "items": [
             {"blocks": [{"type": "body", "text": "**Public** — 473 stable atoms, no auth required."}]},
             {"blocks": [{"type": "body", "text": "**Full** — 508 atoms, gated behind Cloudflare Access."}]}]},
     "blur_fade_in": {"type": "blur_fade_in", "title": "Fades in on load", "delay": "0.1s", "direction": "up",

@@ -12069,22 +12069,19 @@ def _render_color_swatch_grid(b: dict) -> str:
 
 _RENDERERS['color_swatch_grid'] = _render_color_swatch_grid
 
-
-def _render_columns(b: dict) -> str:
-    cols = b.get('columns', [])
-    gap = b.get('gap', '24px')
-    col_count = len(cols) or 2
-    blocks_html = ''
-    for col in cols:
-        inner = ''
-        for blk in (col if isinstance(col, list) else col.get('blocks', [])):
-            fn = _RENDERERS.get(blk.get('type') or blk.get('component', ''))
-            inner += fn(blk) if fn else ''
-        blocks_html += f'<div style="flex:1;min-width:0;">{inner}</div>'
-    return (f'<div style="display:flex;gap:{_esc(gap)};margin:1.5rem 0;flex-wrap:wrap;">'
-            f'{blocks_html}</div>')
-
-_RENDERERS['columns'] = _render_columns
+# NOTE: a second _render_columns used to be defined here, reading b.get('columns', [])
+# for the content array instead of 'items' -- disagreeing with atoms/schema.yaml (items,
+# required), the GAS ground-truth renderer (atom.gs:4021, b.items), AND the ORIGINAL
+# _render_columns at line ~2086 in this same file (which already read 'items' correctly).
+# Python silently let the second definition win by rebinding the name, so real payloads
+# (which correctly send 'items' per the schema) rendered a valid-looking but EMPTY
+# columns container -- no error, no fallback-to-unknown, nothing to signal the mismatch.
+# Removed 2026-09-16 (Curtis, live-site bug report) rather than fixed in place: the
+# original definition at line ~2086 was already correct AND more complete (respects
+# cols/align, which this duplicate ignored entirely), so there was nothing worth keeping
+# from this version. See ROAST-2026-05-03.md-style incident writeups' own convention for
+# the class of bug this is: a recognized atom type failing silently, not routing through
+# _render_unknown, so nothing in the render pipeline itself could have caught it.
 
 # ── NEW WEB RENDERERS — Batch 2 (comparison_table → faq_accordion, ~36 atoms) ─
 
