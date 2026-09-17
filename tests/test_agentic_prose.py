@@ -111,6 +111,8 @@ def test_agentic_realtime_atoms_covered(prose):
         "task_list",
         "gemini_handoff",
         "code_diff",
+        "code_block",
+        "file_tree",
         "json_tree_viewer",
     ]
     for atom in required:
