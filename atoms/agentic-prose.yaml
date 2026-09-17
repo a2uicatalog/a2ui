@@ -356,6 +356,26 @@ atoms:
       (inline_code). Explaining a conceptual change in running prose (body).
     answers: ["what changed in the code", "show the file diff", "what did this patch modify"]
 
+  code_block:
+    use_when: >-
+      Rendering a complete syntax-highlighted code snippet, script, or
+      configuration file in a specified language.
+    not_when: >-
+      Showing differences between two versions of code (code_diff). Single
+      inline code keywords or identifiers in prose (inline_code). Structured
+      expandable JSON objects (json_tree_viewer).
+    answers: ["show the code", "display the script", "what is the configuration"]
+
+  file_tree:
+    use_when: >-
+      Presenting a hierarchical directory structure, file tree, or project layout
+      with nested folder nodes.
+    not_when: >-
+      Showing arbitrary nested key-value or JSON payload data (json_tree_viewer).
+      A flat unordered list of files (icon_list). Inspecting the contents or diff
+      of a single file (code_diff or code_block).
+    answers: ["show the directory structure", "what files are in the repository", "display the project tree"]
+
   json_tree_viewer:
     use_when: >-
       Displaying a nested, expandable JSON data structure or payload tree that
