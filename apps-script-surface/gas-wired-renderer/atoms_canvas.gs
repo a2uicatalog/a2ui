@@ -2832,3 +2832,129 @@ _RENDERERS['globe_3d'] = function(b) {
     '})();<\/script>'
   );
 };
+
+// ── flow_field ────────────────────────────────────────────────────────────────
+// Luminous flow field: hundreds of streams ride a time-evolving value-noise
+// vector field, leave additive long-exposure trails and converge on a glowing
+// focus. Pointer bends the field. Optional text overlay with a readability
+// veil (Cloudflare-hero layout: copy on one side, the light on the other).
+// Built 2026-09-18 as the catalogue's answer to try.cloudflare.com's hero
+// tunnel — same ingredients (dark ground, convergence, packets of light,
+// radial glow, prefers-reduced-motion still frame, pause when offscreen),
+// original mechanics.
+// Every option is an ENUM or a clamped int ON PURPOSE: the config is baked
+// straight into inline JS, so nothing free-form ever reaches the script
+// (colours must match #rrggbb; anything else falls back to the default).
+// Python twin: renderers/web_article.py _render_flow_field — identical output
+// modulo uid; tests/test_flow_field.py holds the two together. Edit BOTH.
+// Fields:
+//   title / eyebrow / body — overlaid text (body: inline markdown)
+//   align       — "left" | "center" | "right" (default left) — where the text sits
+//   focus       — "right" | "center" | "left" | "none" (default right) — the glowing sink
+//   colors      — 1–4 #rrggbb strings (default sky/indigo/pink); first tints the glow
+//   background  — #rrggbb (default #070a12); dark only, trails are additive
+//   density     — "low" | "normal" | "high"
+//   speed       — "slow" | "normal" | "fast"
+//   trail       — "short" | "normal" | "long"
+//   scale       — "fine" | "normal" | "broad" (swirl size)
+//   height      — px, 200–900 (default 360)
+//   interactive — bool (default true): pointer bends the field
+var _FLOW_FIELD_JS =
+  '(function(){' +
+  'var c=document.getElementById("ff-%%UID%%");if(!c)return;' +
+  'var C=%%CFG%%;' +
+  'var ctx=c.getContext("2d");if(!ctx)return;' +
+  'var box=c.parentNode,dpr=Math.min(window.devicePixelRatio||1,2),W=0,H=0,t=0,mx=null,my=null,raf=0,vis=true;' +
+  'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;' +
+  'var P=new Uint8Array(512);' +
+  '(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();' +
+  'function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}' +
+  'function fd(v){return v*v*(3-2*v);}' +
+  'function L(a,b,v){return a+(b-a)*v;}' +
+  'function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);' +
+  'return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}' +
+  'var pts=[],N=0,fx=0,fy=0,FR=0;' +
+  'function focus(){if(C.focus==="none"){FR=0;return;}fx=W*(C.focus==="left"?0.26:C.focus==="center"?0.5:0.74);fy=H*0.5;FR=Math.min(W,H)*0.11;}' +
+  'function spawn(p){p.x=Math.random()*W;p.y=Math.random()*H;p.px=p.x;p.py=p.y;p.life=90+Math.random()*180;p.sv=0.7+Math.random()*0.6;' +
+  'p.ci=Math.floor(noise(p.x*C.sc*0.6,p.y*C.sc*0.6,7.3)*C.pal.length*1.3)%C.pal.length;return p;}' +
+  'function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===W&&h===H)return;W=w;H=h;c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);' +
+  'ctx.setTransform(dpr,0,0,dpr,0,0);ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);focus();' +
+  'N=Math.round(C.n*Math.min(2,Math.max(0.35,(W*H)/288000)));while(pts.length<N)pts.push(spawn({}));pts.length=N;}' +
+  'function step(){' +
+  't+=0.0028*C.spd;' +
+  'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);' +
+  'ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.15;ctx.lineCap="round";' +
+  'var i,p,a,dx,dy,d,vx,vy,k,ca,sa,nx;' +
+  'for(i=0;i<N;i++){p=pts[i];p.px=p.x;p.py=p.y;' +
+  'a=noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);' +
+  'if(FR){dx=fx-p.x;dy=fy-p.y;d=Math.sqrt(dx*dx+dy*dy)||1;if(d<FR*0.35){spawn(p);continue;}k=0.22+0.5*Math.max(0,1-d/(FR*4));vx+=dx/d*k;vy+=dy/d*k;}' +
+  'if(mx!==null){dx=p.x-mx;dy=p.y-my;d=Math.sqrt(dx*dx+dy*dy);if(d<140&&d>0.5){k=(1-d/140)*1.4;ca=Math.cos(k);sa=Math.sin(k);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx+dx/d*k*0.6;vy+=dy/d*k*0.6;}}' +
+  'd=Math.sqrt(vx*vx+vy*vy)||1;k=C.spd*1.25*p.sv/d;p.x+=vx*k;p.y+=vy*k;' +
+  'if(--p.life<0||p.x<-2||p.x>W+2||p.y<-2||p.y>H+2)spawn(p);}' +
+  'for(var ci=0;ci<C.pal.length;ci++){ctx.strokeStyle="rgba("+C.pal[ci]+",0.55)";ctx.beginPath();' +
+  'for(i=0;i<N;i++){p=pts[i];if(p.ci!==ci||(p.px===p.x&&p.py===p.y))continue;ctx.moveTo(p.px,p.py);ctx.lineTo(p.x,p.y);}ctx.stroke();}' +
+  'if(FR){var g=ctx.createRadialGradient(fx,fy,0,fx,fy,FR*2.2);g.addColorStop(0,"rgba("+C.pal[0]+","+(0.5*C.trail)+")");g.addColorStop(0.35,"rgba("+C.pal[0]+","+(0.12*C.trail)+")");g.addColorStop(1,"rgba("+C.pal[0]+",0)");' +
+  'ctx.fillStyle=g;ctx.beginPath();ctx.arc(fx,fy,FR*2.2,0,6.2832);ctx.fill();}}' +
+  'function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}' +
+  'resize();' +
+  'if(RM){for(var i=0;i<220;i++)step();return;}' +
+  'window.addEventListener("resize",resize);' +
+  'if(C.inter){box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){mx=null;my=null;});}' +
+  'if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}' +
+  'raf=requestAnimationFrame(loop);' +
+  '})();';
+function _ffHex(v, dflt) {
+  return (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v)) ? v.toLowerCase() : dflt;
+}
+function _ffRgb(hex) {
+  return parseInt(hex.slice(1, 3), 16) + ',' + parseInt(hex.slice(3, 5), 16) + ',' + parseInt(hex.slice(5, 7), 16);
+}
+function _ffPick(v, table, dflt) {
+  return (typeof v === 'string' && Object.prototype.hasOwnProperty.call(table, v)) ? table[v] : table[dflt];
+}
+_RENDERERS['flow_field'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var bg = _ffHex(b.background, '#070a12');
+  var pal = [];
+  var cols = Array.isArray(b.colors) ? b.colors : [];
+  for (var i = 0; i < cols.length && pal.length < 4; i++) {
+    var h = _ffHex(cols[i], null);
+    if (h) pal.push(_ffRgb(h));
+  }
+  if (!pal.length) pal = ['56,189,248', '129,140,248', '244,114,182'];
+  var n     = _ffPick(b.density, {low: '350', normal: '650', high: '1100'}, 'normal');
+  var spd   = _ffPick(b.speed,   {slow: '0.6', normal: '1', fast: '1.6'}, 'normal');
+  var trail = _ffPick(b.trail,   {short: '0.16', normal: '0.07', long: '0.035'}, 'normal');
+  var sc    = _ffPick(b.scale,   {fine: '0.006', normal: '0.0034', broad: '0.0019'}, 'normal');
+  var focus = _ffPick(b.focus,   {right: 'right', center: 'center', left: 'left', none: 'none'}, 'right');
+  var align = _ffPick(b.align,   {left: 'left', center: 'center', right: 'right'}, 'left');
+  var height = parseInt(b.height, 10);
+  if (isNaN(height)) height = 360;
+  height = Math.max(200, Math.min(900, height));
+  var inter = b.interactive === false ? 'false' : 'true';
+  var title = b.title || '', eyebrow = b.eyebrow || '', body = b.body || '';
+  var bgRgb = _ffRgb(bg);
+  var cfg = '{n:' + n + ',spd:' + spd + ',trail:' + trail + ',sc:' + sc
+    + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",bgRgb:"' + bgRgb
+    + '",focus:"' + focus + '",inter:' + inter + '}';
+  var veil = align === 'center'
+    ? 'radial-gradient(ellipse at center,rgba(' + bgRgb + ',0.75) 0%,rgba(' + bgRgb + ',0.25) 45%,rgba(' + bgRgb + ',0) 75%)'
+    : 'linear-gradient(to ' + (align === 'left' ? 'right' : 'left') + ',rgba(' + bgRgb + ',0.92) 0%,rgba(' + bgRgb + ',0.55) 38%,rgba(' + bgRgb + ',0) 68%)';
+  var text = '';
+  if (title || eyebrow || body) {
+    text = '<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:' + veil + ';"></div>'
+      + '<div style="position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:'
+      + (align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start')
+      + ';text-align:' + align + ';padding:32px 40px;pointer-events:none;">'
+      + '<div style="max-width:' + (align === 'center' ? '80%' : '58%') + ';">'
+      + (eyebrow ? '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb(' + pal[0] + ');margin-bottom:12px;">' + _esc(eyebrow) + '</div>' : '')
+      + (title ? '<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
+      + (body ? '<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">' + _markdownToHtml(body) + '</div>' : '')
+      + '</div></div>';
+  }
+  return '<div style="position:relative;height:' + height + 'px;margin:1rem 0;border-radius:16px;overflow:hidden;background:' + bg + ';">'
+    + '<canvas id="ff-' + uid + '" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas>'
+    + text
+    + '<script>' + _FLOW_FIELD_JS.replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, cfg) + '<\/script>'
+    + '</div>';
+};

@@ -18165,6 +18165,139 @@ def _render_canvas_plexus(b: dict) -> str:
 _RENDERERS["canvas_plexus"] = _render_canvas_plexus
 
 
+# ─── flow_field ───────────────────────────────────────────────────────────────
+# 1:1 twin of apps-script-surface/gas-wired-renderer/atoms_canvas.gs's
+# _RENDERERS['flow_field'] (2026-09-18) — the design rationale and field
+# reference live there. Output is byte-identical modulo the uid;
+# tests/test_flow_field.py holds the two together. Edit BOTH.
+_FLOW_FIELD_JS = (
+    '(function(){'
+    'var c=document.getElementById("ff-%%UID%%");if(!c)return;'
+    'var C=%%CFG%%;'
+    'var ctx=c.getContext("2d");if(!ctx)return;'
+    'var box=c.parentNode,dpr=Math.min(window.devicePixelRatio||1,2),W=0,H=0,t=0,mx=null,my=null,raf=0,vis=true;'
+    'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+    'var P=new Uint8Array(512);'
+    '(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();'
+    'function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}'
+    'function fd(v){return v*v*(3-2*v);}'
+    'function L(a,b,v){return a+(b-a)*v;}'
+    'function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);'
+    'return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}'
+    'var pts=[],N=0,fx=0,fy=0,FR=0;'
+    'function focus(){if(C.focus==="none"){FR=0;return;}fx=W*(C.focus==="left"?0.26:C.focus==="center"?0.5:0.74);fy=H*0.5;FR=Math.min(W,H)*0.11;}'
+    'function spawn(p){p.x=Math.random()*W;p.y=Math.random()*H;p.px=p.x;p.py=p.y;p.life=90+Math.random()*180;p.sv=0.7+Math.random()*0.6;'
+    'p.ci=Math.floor(noise(p.x*C.sc*0.6,p.y*C.sc*0.6,7.3)*C.pal.length*1.3)%C.pal.length;return p;}'
+    'function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===W&&h===H)return;W=w;H=h;c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);'
+    'ctx.setTransform(dpr,0,0,dpr,0,0);ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);focus();'
+    'N=Math.round(C.n*Math.min(2,Math.max(0.35,(W*H)/288000)));while(pts.length<N)pts.push(spawn({}));pts.length=N;}'
+    'function step(){'
+    't+=0.0028*C.spd;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);'
+    'ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.15;ctx.lineCap="round";'
+    'var i,p,a,dx,dy,d,vx,vy,k,ca,sa,nx;'
+    'for(i=0;i<N;i++){p=pts[i];p.px=p.x;p.py=p.y;'
+    'a=noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);'
+    'if(FR){dx=fx-p.x;dy=fy-p.y;d=Math.sqrt(dx*dx+dy*dy)||1;if(d<FR*0.35){spawn(p);continue;}k=0.22+0.5*Math.max(0,1-d/(FR*4));vx+=dx/d*k;vy+=dy/d*k;}'
+    'if(mx!==null){dx=p.x-mx;dy=p.y-my;d=Math.sqrt(dx*dx+dy*dy);if(d<140&&d>0.5){k=(1-d/140)*1.4;ca=Math.cos(k);sa=Math.sin(k);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx+dx/d*k*0.6;vy+=dy/d*k*0.6;}}'
+    'd=Math.sqrt(vx*vx+vy*vy)||1;k=C.spd*1.25*p.sv/d;p.x+=vx*k;p.y+=vy*k;'
+    'if(--p.life<0||p.x<-2||p.x>W+2||p.y<-2||p.y>H+2)spawn(p);}'
+    'for(var ci=0;ci<C.pal.length;ci++){ctx.strokeStyle="rgba("+C.pal[ci]+",0.55)";ctx.beginPath();'
+    'for(i=0;i<N;i++){p=pts[i];if(p.ci!==ci||(p.px===p.x&&p.py===p.y))continue;ctx.moveTo(p.px,p.py);ctx.lineTo(p.x,p.y);}ctx.stroke();}'
+    'if(FR){var g=ctx.createRadialGradient(fx,fy,0,fx,fy,FR*2.2);g.addColorStop(0,"rgba("+C.pal[0]+","+(0.5*C.trail)+")");g.addColorStop(0.35,"rgba("+C.pal[0]+","+(0.12*C.trail)+")");g.addColorStop(1,"rgba("+C.pal[0]+",0)");'
+    'ctx.fillStyle=g;ctx.beginPath();ctx.arc(fx,fy,FR*2.2,0,6.2832);ctx.fill();}}'
+    'function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}'
+    'resize();'
+    'if(RM){for(var i=0;i<220;i++)step();return;}'
+    'window.addEventListener("resize",resize);'
+    'if(C.inter){box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){mx=null;my=null;});}'
+    'if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}'
+    'raf=requestAnimationFrame(loop);'
+    '})();'
+)
+_FF_DEFAULT_PAL = ['56,189,248', '129,140,248', '244,114,182']
+
+
+def _ff_hex(v, dflt):
+    return v.lower() if isinstance(v, str) and re.fullmatch(r'#[0-9a-fA-F]{6}', v) else dflt
+
+
+def _ff_rgb(h):
+    return f'{int(h[1:3], 16)},{int(h[3:5], 16)},{int(h[5:7], 16)}'
+
+
+def _ff_pick(v, table, dflt):
+    return table[v] if isinstance(v, str) and v in table else table[dflt]
+
+
+def _ff_int(v, dflt):
+    """Mirror of JS parseInt(v, 10) for the shapes that matter here."""
+    if isinstance(v, bool) or v is None:
+        return dflt
+    if isinstance(v, (int, float)):
+        return int(v)
+    m = re.match(r'^\s*(-?\d+)', v) if isinstance(v, str) else None
+    return int(m.group(1)) if m else dflt
+
+
+def _render_flow_field(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    cols = b.get('colors') if isinstance(b.get('colors'), list) else []
+    pal = []
+    for c in cols:
+        if len(pal) >= 4:
+            break
+        h = _ff_hex(c, None)
+        if h:
+            pal.append(_ff_rgb(h))
+    if not pal:
+        pal = list(_FF_DEFAULT_PAL)
+    n = _ff_pick(b.get('density'), {'low': '350', 'normal': '650', 'high': '1100'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.6', 'normal': '1', 'fast': '1.6'}, 'normal')
+    trail = _ff_pick(b.get('trail'), {'short': '0.16', 'normal': '0.07', 'long': '0.035'}, 'normal')
+    sc = _ff_pick(b.get('scale'), {'fine': '0.006', 'normal': '0.0034', 'broad': '0.0019'}, 'normal')
+    focus = _ff_pick(b.get('focus'), {'right': 'right', 'center': 'center', 'left': 'left', 'none': 'none'}, 'right')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = max(200, min(900, _ff_int(b.get('height'), 360)))
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or ''
+    eyebrow = b.get('eyebrow') or ''
+    body = b.get('body') or ''
+    bg_rgb = _ff_rgb(bg)
+    cfg = ('{n:' + n + ',spd:' + spd + ',trail:' + trail + ',sc:' + sc
+           + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",bgRgb:"' + bg_rgb
+           + '",focus:"' + focus + '",inter:' + inter + '}')
+    if align == 'center':
+        veil = (f'radial-gradient(ellipse at center,rgba({bg_rgb},0.75) 0%,'
+                f'rgba({bg_rgb},0.25) 45%,rgba({bg_rgb},0) 75%)')
+    else:
+        veil = (f'linear-gradient(to {"right" if align == "left" else "left"},'
+                f'rgba({bg_rgb},0.92) 0%,rgba({bg_rgb},0.55) 38%,rgba({bg_rgb},0) 68%)')
+    text = ''
+    if title or eyebrow or body:
+        items = 'center' if align == 'center' else ('flex-end' if align == 'right' else 'flex-start')
+        text = (
+            f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:{veil};"></div>'
+            f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:{items};text-align:{align};padding:32px 40px;pointer-events:none;">'
+            f'<div style="max-width:{"80%" if align == "center" else "58%"};">'
+            + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_esc(eyebrow)}</div>' if eyebrow else '')
+            + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">{_esc(title)}</div>' if title else '')
+            + (f'<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">{_md_inline(_esc(body))}</div>' if body else '')
+            + '</div></div>'
+        )
+    return (
+        f'<div style="position:relative;height:{height}px;margin:1rem 0;border-radius:16px;overflow:hidden;background:{bg};">'
+        f'<canvas id="ff-{uid}" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas>'
+        + text
+        + '<script>' + _FLOW_FIELD_JS.replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script>'
+        + '</div>'
+    )
+
+
+_RENDERERS["flow_field"] = _render_flow_field
+
+
 def _render_isometric_mesh(b: dict) -> str:
     uid = 'iso' + _wa_uid(b)[:6]
     colour = b.get('colour', '#6366f1')

@@ -6927,6 +6927,57 @@ blocks:
     name: Aceternity UI — Aurora Background
     url: https://ui.aceternity.com/components/aurora-background
     note: Pattern inspiration only — renderer is an original Python implementation
+- type: flow_field
+  stage: preview
+  description: 'Full-bleed animated hero background: hundreds of luminous streams
+    ride a slowly evolving noise vector field on a dark canvas, leave additive
+    long-exposure light trails, and converge on a soft glowing focus point. The
+    pointer bends the field around it. Optional eyebrow/title/body copy sits on
+    the opposite side behind a readability veil -- the try.cloudflare.com hero
+    layout (copy left, light right) as one atom. Honours prefers-reduced-motion
+    (renders one pre-simulated long-exposure frame, no loop), pauses when
+    scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame,
+    zero dependencies. Every option is an enum or a clamped integer and colours
+    must be #rrggbb: the config is baked into inline script, so nothing
+    free-form ever reaches it (bad values fall back to defaults). Dark
+    backgrounds only -- trails are drawn additively and vanish on white.'
+  compact_description: luminous noise-field streams converging on a glowing focus, hero background
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid dark panel with the copy
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    title: string (optional). Headline overlaid on the field.
+    eyebrow: string (optional). Small uppercase label above the title, tinted with the first palette colour.
+    body: string (optional). Supporting copy under the title (markdown inline supported).
+    align: '"left" | "center" | "right"  (optional, default "left"). Where the overlaid copy sits; the veil that keeps it readable follows it.'
+    focus: '"right" | "center" | "left" | "none"  (optional, default "right"). Where the glowing sink is that every stream converges on. Put it opposite the copy.'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"]. Streams take a colour by region so the field reads as coloured ribbons; the first colour also tints the focus glow. Invalid entries are dropped.
+    background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
+    density: '"low" | "normal" | "high"  (optional, default "normal"). Stream count, scaled to the panel area.'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+    trail: '"short" | "normal" | "long"  (optional, default "normal"). How long each stream''s light trail lingers.'
+    scale: '"fine" | "normal" | "broad"  (optional, default "normal"). Size of the swirls.'
+    height: integer (optional). Panel height in px, clamped 200-900. Default 360.
+    interactive: bool (optional). Pointer bends the field. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+  source_inspiration:
+    name: try.cloudflare.com hero canvas
+    url: https://try.cloudflare.com
+    note: Layout and mood inspiration only (dark ground, convergence, light packets, glow, reduced-motion still) -- the flow-field mechanics and renderer are original
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

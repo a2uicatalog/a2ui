@@ -328,6 +328,7 @@ a2ui-effects-v1:
 - floating_badge
 - floating_orbs
 - floating_particles
+- flow_field
 - flow_connector
 - focus_lens
 - glitch_text
