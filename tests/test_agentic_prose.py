@@ -114,6 +114,8 @@ def test_agentic_realtime_atoms_covered(prose):
         "code_block",
         "file_tree",
         "json_tree_viewer",
+        "token_budget_meter",
+        "ai_build_trace",
     ]
     for atom in required:
         assert atom in prose["atoms"], f"missing agentic selection guidance for {atom}"
