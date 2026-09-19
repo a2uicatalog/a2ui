@@ -18249,9 +18249,10 @@ def _ff_canvas(cid):
     return f'<canvas id="{cid}" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas>'
 
 
-def _ff_overlay(align, bg_rgb, pal, eyebrow, title, body):
+def _ff_overlay(align, bg_rgb, pal, eyebrow, title, body, ink='#ffffff'):
     if not (title or eyebrow or body):
         return ''
+    ink_rgb = _ff_rgb(ink)
     if align == 'center':
         veil = (f'radial-gradient(ellipse at center,rgba({bg_rgb},0.75) 0%,'
                 f'rgba({bg_rgb},0.25) 45%,rgba({bg_rgb},0) 75%)')
@@ -18264,8 +18265,8 @@ def _ff_overlay(align, bg_rgb, pal, eyebrow, title, body):
         f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:{items};text-align:{align};padding:32px 40px;pointer-events:none;">'
         f'<div style="max-width:{"80%" if align == "center" else "58%"};">'
         + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_cv_esc(eyebrow)}</div>' if eyebrow else '')
-        + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else '')
-        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">{_md_inline(_cv_esc(body))}</div>' if body else '')
+        + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:{ink};letter-spacing:-0.02em;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else '')
+        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba({ink_rgb},0.78);">{_md_inline(_cv_esc(body))}</div>' if body else '')
         + '</div></div>'
     )
 
@@ -18730,6 +18731,154 @@ _RENDERERS["floating_particles"] = _render_floating_particles
 _RENDERERS["parallax_section"] = _render_parallax_section
 _RENDERERS["meteor_shower"] = _render_meteor_shower
 _RENDERERS["effect_overlay"] = _render_effect_overlay
+
+
+# ─── halftone_wave / message_lanes ───────────────────────────────────────────
+# 1:1 twins of atoms_canvas.gs (2026-09-19); tests/test_hero_atoms_b.py. Edit BOTH.
+_HALFTONE_WAVE_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var fx=0,fy=0;'
+    'function init(k){fx=k.W*(C.focus==="left"?0.25:C.focus==="right"?0.75:0.5);fy=k.H*0.5;}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t*C.spd,S=C.sp,R=S*0.48,D=Math.sqrt(W*W+H*H);'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.paper;ctx.fillRect(0,0,W,H);'
+    'var ink=[],acc=[],x,y,v,d,r,dx,dy;'
+    'for(y=S*0.5;y<H;y+=S){for(x=S*0.5;x<W;x+=S){'
+    'if(C.wave==="ripple"){dx=x-fx;dy=y-fy;d=Math.sqrt(dx*dx+dy*dy);v=0.5+0.5*Math.sin(d*0.045-t*9)*(1-Math.min(1,d/D));v=v*0.8+k.noise(x*0.006,y*0.006,t*0.7)*0.2;}'
+    'else if(C.wave==="sweep"){v=0.5+0.5*Math.sin((x+y)*0.018-t*10);v=v*0.7+k.noise(x*0.008,y*0.008,t)*0.3;}'
+    'else{v=k.noise(x*C.sc,y*C.sc,t*1.5);v=Math.max(0,Math.min(1,(v-0.25)*1.8));}'
+    'if(k.mx!==null){dx=x-k.mx;dy=y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<140)v=Math.min(1,v+(1-d/140)*0.6);}'
+    'r=v*v*R;if(r<0.35)continue;(v>0.72&&C.hasAcc?acc:ink).push(x,y,r);}}'
+    'ctx.fillStyle=C.ink;ctx.beginPath();for(var i=0;i<ink.length;i+=3){ctx.moveTo(ink[i]+ink[i+2],ink[i+1]);ctx.arc(ink[i],ink[i+1],ink[i+2],0,6.2832);}ctx.fill();'
+    'if(acc.length){ctx.fillStyle=C.acc;ctx.beginPath();for(var j=0;j<acc.length;j+=3){ctx.moveTo(acc[j]+acc[j+2],acc[j+1]);ctx.arc(acc[j],acc[j+1],acc[j+2],0,6.2832);}ctx.fill();}}'
+    '_a2uiCK.mount("hw-%%UID%%",{init:init,draw:draw,speed:1,interactive:C.inter,still:1});'
+    '})();'
+)
+_MESSAGE_LANES_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var lanes=[],pk=[],cards=[],ax=0,ay=0,ar=0,sx=0,sy=0,sw=0,sh=0,flash=0;'
+    'function spawn(p){p.l=Math.floor(Math.random()*lanes.length);p.u=-Math.random()*0.3;p.v=(0.0035+Math.random()*0.004)*C.rate;p.ci=Math.floor(Math.random()*C.pal.length);p.w=10+Math.random()*8;return p;}'
+    'function pt(l,u){var L=lanes[l],a=1-u;return [a*a*L.x0+2*a*u*L.cx+u*u*L.x1,a*a*L.y0+2*a*u*L.cy+u*u*L.y1];}'
+    'function init(k){var W=k.W,H=k.H;ar=Math.min(H*0.12,34);ax=W*0.14;ay=H*0.5;sw=Math.min(W*0.22,170);sh=H*0.56;sx=W*0.86-sw/2;sy=H*0.5-sh/2;'
+    'lanes=[];for(var i=0;i<C.lanes;i++){var f=C.lanes===1?0.5:i/(C.lanes-1);lanes.push({x0:ax+ar,y0:ay+(f-0.5)*ar*1.4,x1:sx,y1:sy+sh*(0.15+0.7*f),cx:(ax+sx)/2,cy:ay+(f-0.5)*H*0.55});}'
+    'pk=[];var n=C.lanes*3;for(var j=0;j<n;j++)pk.push(spawn({}));cards=[];'
+    'var ctx=k.ctx;ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);}'
+    'function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,i,p,q,q2,a;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+",0.28)";ctx.fillRect(0,0,W,H);'
+    'ctx.lineWidth=1;for(i=0;i<lanes.length;i++){var L=lanes[i];ctx.strokeStyle="rgba("+C.pal[0]+",0.14)";ctx.beginPath();ctx.moveTo(L.x0,L.y0);ctx.quadraticCurveTo(L.cx,L.cy,L.x1,L.y1);ctx.stroke();}'
+    'ctx.globalCompositeOperation="lighter";ctx.lineCap="round";'
+    'for(i=0;i<pk.length;i++){p=pk[i];p.u+=p.v;if(p.u>=1){flash=1;cards.unshift({age:0,ci:p.ci});if(cards.length>3)cards.length=3;spawn(p);continue;}if(p.u<0)continue;'
+    'q=pt(p.l,p.u);q2=pt(p.l,Math.max(0,p.u-0.02));a=Math.atan2(q[1]-q2[1],q[0]-q2[0]);'
+    'ctx.save();ctx.translate(q[0],q[1]);ctx.rotate(a);ctx.fillStyle="rgba("+C.pal[p.ci]+",0.95)";rr(ctx,-p.w/2,-3,p.w,6,3);ctx.fill();'
+    'ctx.fillStyle="rgba("+C.bgRgb+",0.9)";ctx.fillRect(-p.w/2+3,-1,p.w*0.35,2);ctx.fillRect(-p.w/2+3+p.w*0.42,-1,p.w*0.22,2);ctx.restore();}'
+    'ctx.globalCompositeOperation="source-over";'
+    'var g=ctx.createRadialGradient(ax,ay,ar*0.2,ax,ay,ar*2.2);g.addColorStop(0,"rgba("+C.pal[0]+",0.35)");g.addColorStop(1,"rgba("+C.pal[0]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(ax,ay,ar*2.2,0,6.2832);ctx.fill();'
+    'ctx.fillStyle=C.bg;ctx.beginPath();ctx.arc(ax,ay,ar,0,6.2832);ctx.fill();ctx.strokeStyle="rgb("+C.pal[0]+")";ctx.lineWidth=2;ctx.stroke();'
+    'ctx.beginPath();ctx.arc(ax,ay,ar*0.32,0,6.2832);ctx.fillStyle="rgb("+C.pal[0]+")";ctx.fill();'
+    'flash*=0.9;ctx.strokeStyle="rgba("+C.pal[1]+","+(0.35+flash*0.65)+")";ctx.lineWidth=1.5+flash*2;rr(ctx,sx,sy,sw,sh,10);ctx.fillStyle="rgba("+C.bgRgb+",0.85)";ctx.fill();ctx.stroke();'
+    'var cy=sy+12;for(i=0;i<cards.length;i++){var c=cards[i];c.age++;var grow=Math.min(1,c.age/18),ch=(sh-24-8*2)/3,al=i===2?Math.max(0,1-(c.age-160)/60):1;if(al<=0)continue;'
+    'ctx.globalAlpha=al;ctx.fillStyle="rgba("+C.pal[c.ci]+",0.18)";ctx.strokeStyle="rgba("+C.pal[c.ci]+",0.8)";ctx.lineWidth=1;rr(ctx,sx+10,cy,sw-20,ch*grow,5);ctx.fill();ctx.stroke();'
+    'if(grow>0.6){ctx.fillStyle="rgba("+C.pal[c.ci]+",0.9)";ctx.fillRect(sx+18,cy+8,(sw-36)*0.55,3);ctx.fillRect(sx+18,cy+15,(sw-36)*0.8,2);ctx.fillRect(sx+18,cy+20,(sw-36)*0.4,2);}'
+    'ctx.globalAlpha=1;cy+=ch+8;}'
+    'ctx.fillStyle="rgba(255,255,255,0.8)";ctx.font="600 11px system-ui,sans-serif";ctx.textAlign="center";ctx.textBaseline="top";ctx.fillText(C.from,ax,ay+ar+8);ctx.fillText(C.to,sx+sw/2,sy+sh+8);}'
+    '_a2uiCK.mount("ml-%%UID%%",{init:init,draw:draw,speed:1,interactive:false,still:260});'
+    '})();'
+)
+
+
+def _render_halftone_wave(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    paper = _ff_hex(b.get('paper'), '#f7f7f5')
+    ink = _ff_hex(b.get('ink'), '#0f172a')
+    acc = _ff_hex(b.get('accent'), None)
+    sp = _ff_pick(b.get('spacing'), {'fine': '10', 'normal': '14', 'coarse': '20'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '1', 'fast': '1.8'}, 'normal')
+    wave = _ff_pick(b.get('wave'), {'noise': 'noise', 'ripple': 'ripple', 'sweep': 'sweep'}, 'noise')
+    focus = _ff_pick(b.get('focus'), {'center': 'center', 'left': 'left', 'right': 'right'}, 'center')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = _ff_int(b.get('height'), 320, 160, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    cfg = ('{sp:' + sp + ',sc:0.0045,spd:' + spd + ',wave:"' + wave + '",focus:"' + focus + '",ink:"' + ink
+           + '",paper:"' + paper + '",acc:"' + (acc or ink) + '",hasAcc:' + ('true' if acc else 'false') + ',inter:' + inter + '}')
+    pal = [_ff_rgb(acc or ink)]
+    text = _ff_overlay(align, _ff_rgb(paper), pal, b.get('eyebrow') or '', b.get('title') or '', b.get('body') or '', ink)
+    return _ff_panel(height, paper, _ff_canvas('hw-' + uid) + text + _ff_script(_HALFTONE_WAVE_JS, uid, cfg))
+
+
+def _render_message_lanes(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), ['56,189,248', '167,139,250', '244,114,182'])
+    if len(pal) < 2:
+        pal.append(pal[0])
+    lanes = _ff_int(b.get('lanes'), 4, 1, 6)
+    rate = _ff_pick(b.get('rate'), {'slow': '0.6', 'normal': '1', 'fast': '1.7'}, 'normal')
+    height = _ff_int(b.get('height'), 320, 200, 900)
+    fl = b.get('from_label') if isinstance(b.get('from_label'), str) else 'agent'
+    tl = b.get('to_label') if isinstance(b.get('to_label'), str) else 'surface'
+    frm = _ff_lines_js([fl.strip()[:24] or 'agent'])[1:-1]
+    to = _ff_lines_js([tl.strip()[:24] or 'surface'])[1:-1]
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'center')
+    cfg = ('{lanes:' + str(lanes) + ',rate:' + rate + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",bgRgb:"' + _ff_rgb(bg)
+           + '",from:' + frm + ',to:' + to + '}')
+    text = _ff_overlay(align, _ff_rgb(bg), pal, b.get('eyebrow') or '', b.get('title') or '', b.get('body') or '')
+    return _ff_panel(height, bg, _ff_canvas('ml-' + uid) + text + _ff_script(_MESSAGE_LANES_JS, uid, cfg))
+
+
+_RENDERERS["halftone_wave"] = _render_halftone_wave
+_RENDERERS["message_lanes"] = _render_message_lanes
+
+
+# ─── agent_narrator ──────────────────────────────────────────────────────────
+# 1:1 twin of atoms_typography.gs's agent_narrator (rationale there).
+# tests/test_agent_narrator.py. Edit BOTH.
+_AGENT_NARRATOR_JS = (
+    '(function(){var el=document.getElementById("an-%%UID%%");if(!el)return;var full=el.innerHTML;'
+    'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;'
+    'var cur=document.getElementById("anc-%%UID%%"),i=0,out="";el.innerHTML="";'
+    'function tick(){if(i>=full.length){if(cur)cur.style.display="none";return;}'
+    'var ch=full.charAt(i);if(ch==="<"){var j=full.indexOf(">",i);out+=full.slice(i,j+1);i=j+1;}else if(ch==="&"){var k=full.indexOf(";",i);out+=full.slice(i,k+1);i=k+1;}else{out+=ch;i++;}'
+    'el.innerHTML=out;setTimeout(tick,ch===" "?26:18);}'
+    'tick();})();'
+)
+
+
+def _an_md(text):
+    s = _cv_esc(text)
+    s = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', s)
+    s = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', s)
+    return re.sub(r'`([^`]+)`', r'<code>\1</code>', s)
+
+
+def _render_agent_narrator(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    beats = b.get('beats') if isinstance(b.get('beats'), list) else []
+    title = b.get('title').strip() if isinstance(b.get('title'), str) else ''
+    kept, skipped = [], 0
+    for bt in beats:
+        t = bt.get('text').strip() if isinstance(bt, dict) and isinstance(bt.get('text'), str) else ''
+        if not t:
+            continue
+        if len(kept) >= 100 or len(t) > 2000:
+            skipped += 1
+            continue
+        kept.append(t)
+    out = ''
+    for j, t in enumerate(kept):
+        last = j == len(kept) - 1
+        body = (f'<span id="an-{uid}">{_an_md(t)}</span><span id="anc-{uid}" style="display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:text-bottom;margin-left:2px;animation:an-blink-{uid} 0.8s step-end infinite;"></span>'
+                if last else _an_md(t))
+        out += f'<p style="margin:0 0 0.9em;font-size:1.05rem;line-height:1.7;">{body}</p>'
+    return ('<div style="margin:1rem 0;">'
+            + (f'<div style="font-size:1.25rem;font-weight:800;letter-spacing:-0.01em;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else '')
+            + (f'<!-- agent_narrator: {skipped} beat(s) skipped, over the 100-beat / 2000-char cap -->' if skipped else '')
+            + (out or '<p style="margin:0;color:#9ca3af;font-style:italic;">(no beats yet)</p>')
+            + ((f'<style>@keyframes an-blink-{uid}{{0%,100%{{opacity:1;}}50%{{opacity:0;}}}}</style><script>' + _AGENT_NARRATOR_JS.replace('%%UID%%', uid)
+                + (f'console.warn("agent_narrator: {skipped} beat(s) skipped, over cap");' if skipped else '') + '</script>') if kept else '')
+            + '</div>')
+
+
+_RENDERERS["agent_narrator"] = _render_agent_narrator
 
 
 def _render_isometric_mesh(b: dict) -> str:

@@ -522,3 +522,52 @@ _RENDERERS['changed_mind'] = function(b) {
     + (since ? '<div style="margin-top:18px;padding-left:12px;border-left:2px solid ' + accent + ';font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;line-height:1.5;color:' + th.mute + ';">' + _esc(since) + '</div>' : '');
   return css + _cvCard(th, inner);
 };
+
+
+// ── agent_narrator ────────────────────────────────────────────────────────────
+// Renderer for the schema entry authored alongside streaming-testbench's
+// demos/story (the text-domain sibling of agent_sketchpad). Every beat except
+// the LAST renders as already-shown; only the last types itself in -- the
+// same stateless full-rerender rule as agent_sketchpad. Beat text is escaped
+// first, then ONLY the declared markdown subset (**bold**, *italic*, `code`)
+// is applied; raw HTML never survives. Over-cap beats (100 beats, 2000 chars
+// each) are skipped with an HTML comment and a console warning, not a crash.
+// The typing script walks the already-rendered HTML so tags and entities are
+// emitted whole; under prefers-reduced-motion the beat shows in full at once.
+// Python twin in renderers/web_article.py; tests/test_agent_narrator.py.
+var _AGENT_NARRATOR_JS =
+  '(function(){var el=document.getElementById("an-%%UID%%");if(!el)return;var full=el.innerHTML;' +
+  'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;' +
+  'var cur=document.getElementById("anc-%%UID%%"),i=0,out="";el.innerHTML="";' +
+  'function tick(){if(i>=full.length){if(cur)cur.style.display="none";return;}' +
+  'var ch=full.charAt(i);if(ch==="<"){var j=full.indexOf(">",i);out+=full.slice(i,j+1);i=j+1;}else if(ch==="&"){var k=full.indexOf(";",i);out+=full.slice(i,k+1);i=k+1;}else{out+=ch;i++;}' +
+  'el.innerHTML=out;setTimeout(tick,ch===" "?26:18);}' +
+  'tick();})();';
+function _anMd(text) {
+  return _esc(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+_RENDERERS['agent_narrator'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var beats = Array.isArray(b.beats) ? b.beats : [];
+  var title = typeof b.title === 'string' ? b.title.trim() : '';
+  var kept = [], skipped = 0;
+  for (var i = 0; i < beats.length; i++) {
+    var t = beats[i] && typeof beats[i].text === 'string' ? beats[i].text.trim() : '';
+    if (!t) continue;
+    if (kept.length >= 100 || t.length > 2000) { skipped++; continue; }
+    kept.push(t);
+  }
+  var out = '';
+  for (var j = 0; j < kept.length; j++) {
+    var last = j === kept.length - 1;
+    out += '<p style="margin:0 0 0.9em;font-size:1.05rem;line-height:1.7;">'
+      + (last ? '<span id="an-' + uid + '">' + _anMd(kept[j]) + '</span><span id="anc-' + uid + '" style="display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:text-bottom;margin-left:2px;animation:an-blink-' + uid + ' 0.8s step-end infinite;"></span>' : _anMd(kept[j]))
+      + '</p>';
+  }
+  return '<div style="margin:1rem 0;">'
+    + (title ? '<div style="font-size:1.25rem;font-weight:800;letter-spacing:-0.01em;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
+    + (skipped ? '<!-- agent_narrator: ' + skipped + ' beat(s) skipped, over the 100-beat / 2000-char cap -->' : '')
+    + (out || '<p style="margin:0;color:#9ca3af;font-style:italic;">(no beats yet)</p>')
+    + (kept.length ? '<style>@keyframes an-blink-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}</style><script>' + _AGENT_NARRATOR_JS.replace(/%%UID%%/g, uid) + (skipped ? 'console.warn("agent_narrator: ' + skipped + ' beat(s) skipped, over cap");' : '') + '<\/script>' : '')
+    + '</div>';
+};

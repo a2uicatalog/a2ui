@@ -7294,6 +7294,92 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: halftone_wave
+  stage: preview
+  description: 'The canvas hero that works on a white page. A grid of dots whose
+    size follows a travelling wave -- organic noise, a ripple spreading from a
+    focus point, or a diagonal sweep -- like print halftone brought to life;
+    wave peaks tint to the accent colour, and the pointer swells the dots around
+    it. Ink on paper by default, so it sits inside a light document; flip ink and
+    paper for a dark version. Optional eyebrow/title/body copy behind a veil.
+    Honours prefers-reduced-motion (one static frame), pauses offscreen,
+    DPR-aware. Same kit and hardening as flow_field: every option is an enum or a
+    clamped int; colours must be #rrggbb.'
+  compact_description: animated halftone dot grid riding a wave, works on light backgrounds
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a plain panel with the copy; the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid panel with the copy
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    title: string (optional). Headline overlaid on the grid.
+    eyebrow: string (optional). Small uppercase label above the title.
+    body: string (optional). Copy under the title (markdown inline supported).
+    align: '"left" | "center" | "right"  (optional, default "left")'
+    wave: '"noise" | "ripple" | "sweep"  (optional, default "noise"). Organic field, concentric ripple from the focus, or a diagonal front.'
+    focus: '"center" | "left" | "right"  (optional, default "center"). Ripple origin.'
+    ink: '"#rrggbb" (optional). Dot colour. Default "#0f172a".'
+    paper: '"#rrggbb" (optional). Ground colour. Default "#f7f7f5".'
+    accent: '"#rrggbb" (optional). Colour of the wave peaks; when absent, peaks stay in ink.'
+    spacing: '"fine" | "normal" | "coarse"  (optional, default "normal"). Dot pitch 10 / 14 / 20 px.'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+    height: integer (optional). Panel height in px, clamped 160-900. Default 320.
+    interactive: bool (optional). Pointer swells nearby dots. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: message_lanes
+  stage: preview
+  description: 'The A2UI pitch, drawn: small packets stream from an agent node
+    on the left down curved lanes into a surface node on the right, leaving light
+    trails; every arrival makes the surface flash and unfolds a small card
+    outline inside it, the newest on top, older ones fading. Labels for both
+    nodes are agent-supplied (up to 24 characters each). Optional
+    eyebrow/title/body copy. Honours prefers-reduced-motion (one pre-simulated
+    frame with packets mid-flight), pauses offscreen, DPR-aware. Dark
+    backgrounds only. Every option is an enum or a clamped int; colours must be
+    #rrggbb.'
+  compact_description: packets streaming from an agent node into a surface node that unfolds cards on arrival
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a plain panel with the copy; the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid panel with the copy
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    from_label: string (optional). Label under the left node. Default "agent".
+    to_label: string (optional). Label under the right node. Default "surface".
+    lanes: integer (optional). Number of lanes, clamped 1-6. Default 4.
+    rate: '"slow" | "normal" | "fast"  (optional, default "normal"). Packet speed.'
+    title: string (optional). Headline overlaid on the scene.
+    eyebrow: string (optional). Small uppercase label above the title.
+    body: string (optional). Copy under the title (markdown inline supported).
+    align: '"left" | "center" | "right"  (optional, default "center")'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default sky/violet/pink; the first colours the agent node, the second the surface.
+    background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
+    height: integer (optional). Panel height in px, clamped 200-900. Default 320.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.
@@ -7968,6 +8054,54 @@ blocks:
       "0 0 400 200" -- pick a canvas shape that fits what's being drawn,
       unlike svg_path_draw's fixed 400x80 box.
     label: string (optional). Caption below the canvas.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: agent_narrator
+  stage: preview
+  description: 'The text-domain sibling of agent_sketchpad: an ORDERED list of
+    validated prose beats, for an agent to progressively tell one coherent
+    story across multiple real updates (e.g. one A2A message per beat) rather
+    than a single one-shot block of text. Every re-render shows all beats
+    except the last as already-complete (no animation); only the LAST beat in
+    the list gets a typewriter reveal -- the same stateless full-rerender rule
+    agent_sketchpad uses, applied to text instead of SVG strokes. Origin
+    demo: streaming-testbench''s demos/story/story_agent.py, the first
+    Claude-backed (Fable 5.1) demo agent in that testbench -- this schema
+    entry was written first as its contract, same order as agent_sketchpad:
+    schema, then the demo agent that proves it. No interaction-record wiring:
+    unlike seat_map/slot_scheduler/
+    option_plan_builder, nothing here is selected or committed -- see
+    spec/interaction-record-v0.1.md''s own scope note.'
+  compact_description: composite prose canvas, newest beat types itself in
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as all beats fully-shown, no animation
+    - surface: google-chat
+      note: CSS keyframe animation not supported; renders as a static list of beats
+    incompatible_on:
+    - surface: email
+      reason: CSS keyframe animations not supported in email clients
+  fields:
+    beats: 'array of {text, label?} (required). ORDERED -- text is plain prose
+      with the same lightweight markdown subset as the body atom (**bold**,
+      *italic*, `inline code`), no other formatting or raw HTML. label is an
+      optional short phrase describing that one beat (e.g. "opening scene"),
+      not rendered, useful for an agent-facing tool-call log. Resend the FULL,
+      growing array on every update (A2UI messages carry full values, not
+      deltas) -- only the LAST item in the array types itself in; everything
+      before it renders as already-shown. Capped defensively at 100 beats and
+      2000 characters per beat by the renderer (over-cap beats are skipped
+      with a console warning, not a crash) -- provisional figures, to be
+      retuned once the real demo agent shows typical beat length.'
+    title: string (optional). Heading shown once above the beats.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

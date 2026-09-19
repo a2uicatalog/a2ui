@@ -337,6 +337,8 @@ a2ui-effects-v1:
 - light_type
 - living_type
 - orbit_mark
+- halftone_wave
+- message_lanes
 - flow_connector
 - focus_lens
 - glitch_text
@@ -393,6 +395,7 @@ a2ui-effects-v1:
 - surface_unlocked
 - svg_path_draw
 - agent_sketchpad
+- agent_narrator
 - terminal_boot
 - text_reveal_mask
 - tilt_card

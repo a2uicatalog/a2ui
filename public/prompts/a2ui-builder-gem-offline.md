@@ -751,8 +751,8 @@ does not exist.
 - `neon_glow` — pulsing neon-glow text on dark card
 - `magnetic_button` — magnetic cursor-following button
 - `confetti_trigger` — click-to-trigger confetti button
-- `floating_particles` — floating particles background (canvas placeholder)
-- `parallax_section` — parallax scroll section (canvas placeholder)
+- `floating_particles` — soft glowing bokeh particles drifting upward on canvas, optional centred copy
+- `parallax_section` — pointer-parallax depth layers of soft colour orbs on canvas, optional centred copy
 - `scroll_progress` — fixed scroll-progress bar at page top
 - `live_clock` — live ticking clock widget
 - `decision_tree` — interactive collapsible decision tree

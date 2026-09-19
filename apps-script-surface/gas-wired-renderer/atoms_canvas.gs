@@ -3051,8 +3051,10 @@ function _ffCanvas(id) {
 
 // Copy overlay shared by flow_field and orbit_mark: a readability veil on the
 // copy's side plus eyebrow/title/body; empty string when there is no copy.
-function _ffOverlay(align, bgRgb, pal, eyebrow, title, body) {
+function _ffOverlay(align, bgRgb, pal, eyebrow, title, body, ink) {
   if (!(title || eyebrow || body)) return '';
+  ink = ink || '#ffffff';
+  var inkRgb = _ffRgb(ink);
   var veil = align === 'center'
     ? 'radial-gradient(ellipse at center,rgba(' + bgRgb + ',0.75) 0%,rgba(' + bgRgb + ',0.25) 45%,rgba(' + bgRgb + ',0) 75%)'
     : 'linear-gradient(to ' + (align === 'left' ? 'right' : 'left') + ',rgba(' + bgRgb + ',0.92) 0%,rgba(' + bgRgb + ',0.55) 38%,rgba(' + bgRgb + ',0) 68%)';
@@ -3062,8 +3064,8 @@ function _ffOverlay(align, bgRgb, pal, eyebrow, title, body) {
     + ';text-align:' + align + ';padding:32px 40px;pointer-events:none;">'
     + '<div style="max-width:' + (align === 'center' ? '80%' : '58%') + ';">'
     + (eyebrow ? '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb(' + pal[0] + ');margin-bottom:12px;">' + _esc(eyebrow) + '</div>' : '')
-    + (title ? '<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
-    + (body ? '<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">' + _markdownToHtml(body) + '</div>' : '')
+    + (title ? '<div style="font-size:2rem;line-height:1.1;font-weight:800;color:' + ink + ';letter-spacing:-0.02em;margin-bottom:12px;">' + _esc(title) + '</div>' : '')
+    + (body ? '<div style="font-size:1rem;line-height:1.6;color:rgba(' + inkRgb + ',0.78);">' + _markdownToHtml(body) + '</div>' : '')
     + '</div></div>';
 }
 
@@ -3213,4 +3215,89 @@ _RENDERERS['parallax_section'] = function(b) {
   var cfg = '{n:[3,6,14],depth:' + depth + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",inter:' + inter + '}';
   var text = _ffOverlay('center', _ffRgb(bg), pal, b.eyebrow || '', title, b.body || '');
   return _ffPanel(height, bg, _ffCanvas('px-' + uid) + text + _ffScript(_PARALLAX_SECTION_JS, uid, cfg));
+};
+
+// ── halftone_wave / message_lanes (2026-09-19) ────────────────────────────────
+// halftone_wave: the one canvas hero that works on a WHITE page -- a dot grid
+// whose dot size follows a travelling wave (noise, ripple from a focus, or a
+// diagonal sweep), like animated print halftone; peaks tint to the accent.
+// message_lanes: the A2UI pitch drawn -- packets stream from an agent node down
+// curved lanes into a surface node, and every arrival unfolds a small card.
+var _HALFTONE_WAVE_JS =
+  '(function(){' +
+  'var C=%%CFG%%;var fx=0,fy=0;' +
+  'function init(k){fx=k.W*(C.focus==="left"?0.25:C.focus==="right"?0.75:0.5);fy=k.H*0.5;}' +
+  'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t*C.spd,S=C.sp,R=S*0.48,D=Math.sqrt(W*W+H*H);' +
+  'ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.paper;ctx.fillRect(0,0,W,H);' +
+  'var ink=[],acc=[],x,y,v,d,r,dx,dy;' +
+  'for(y=S*0.5;y<H;y+=S){for(x=S*0.5;x<W;x+=S){' +
+  'if(C.wave==="ripple"){dx=x-fx;dy=y-fy;d=Math.sqrt(dx*dx+dy*dy);v=0.5+0.5*Math.sin(d*0.045-t*9)*(1-Math.min(1,d/D));v=v*0.8+k.noise(x*0.006,y*0.006,t*0.7)*0.2;}' +
+  'else if(C.wave==="sweep"){v=0.5+0.5*Math.sin((x+y)*0.018-t*10);v=v*0.7+k.noise(x*0.008,y*0.008,t)*0.3;}' +
+  'else{v=k.noise(x*C.sc,y*C.sc,t*1.5);v=Math.max(0,Math.min(1,(v-0.25)*1.8));}' +
+  'if(k.mx!==null){dx=x-k.mx;dy=y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<140)v=Math.min(1,v+(1-d/140)*0.6);}' +
+  'r=v*v*R;if(r<0.35)continue;(v>0.72&&C.hasAcc?acc:ink).push(x,y,r);}}' +
+  'ctx.fillStyle=C.ink;ctx.beginPath();for(var i=0;i<ink.length;i+=3){ctx.moveTo(ink[i]+ink[i+2],ink[i+1]);ctx.arc(ink[i],ink[i+1],ink[i+2],0,6.2832);}ctx.fill();' +
+  'if(acc.length){ctx.fillStyle=C.acc;ctx.beginPath();for(var j=0;j<acc.length;j+=3){ctx.moveTo(acc[j]+acc[j+2],acc[j+1]);ctx.arc(acc[j],acc[j+1],acc[j+2],0,6.2832);}ctx.fill();}}' +
+  '_a2uiCK.mount("hw-%%UID%%",{init:init,draw:draw,speed:1,interactive:C.inter,still:1});' +
+  '})();';
+var _MESSAGE_LANES_JS =
+  '(function(){' +
+  'var C=%%CFG%%;var lanes=[],pk=[],cards=[],ax=0,ay=0,ar=0,sx=0,sy=0,sw=0,sh=0,flash=0;' +
+  'function spawn(p){p.l=Math.floor(Math.random()*lanes.length);p.u=-Math.random()*0.3;p.v=(0.0035+Math.random()*0.004)*C.rate;p.ci=Math.floor(Math.random()*C.pal.length);p.w=10+Math.random()*8;return p;}' +
+  'function pt(l,u){var L=lanes[l],a=1-u;return [a*a*L.x0+2*a*u*L.cx+u*u*L.x1,a*a*L.y0+2*a*u*L.cy+u*u*L.y1];}' +
+  'function init(k){var W=k.W,H=k.H;ar=Math.min(H*0.12,34);ax=W*0.14;ay=H*0.5;sw=Math.min(W*0.22,170);sh=H*0.56;sx=W*0.86-sw/2;sy=H*0.5-sh/2;' +
+  'lanes=[];for(var i=0;i<C.lanes;i++){var f=C.lanes===1?0.5:i/(C.lanes-1);lanes.push({x0:ax+ar,y0:ay+(f-0.5)*ar*1.4,x1:sx,y1:sy+sh*(0.15+0.7*f),cx:(ax+sx)/2,cy:ay+(f-0.5)*H*0.55});}' +
+  'pk=[];var n=C.lanes*3;for(var j=0;j<n;j++)pk.push(spawn({}));cards=[];' +
+  'var ctx=k.ctx;ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);}' +
+  'function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}' +
+  'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,i,p,q,q2,a;' +
+  'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+",0.28)";ctx.fillRect(0,0,W,H);' +
+  'ctx.lineWidth=1;for(i=0;i<lanes.length;i++){var L=lanes[i];ctx.strokeStyle="rgba("+C.pal[0]+",0.14)";ctx.beginPath();ctx.moveTo(L.x0,L.y0);ctx.quadraticCurveTo(L.cx,L.cy,L.x1,L.y1);ctx.stroke();}' +
+  'ctx.globalCompositeOperation="lighter";ctx.lineCap="round";' +
+  'for(i=0;i<pk.length;i++){p=pk[i];p.u+=p.v;if(p.u>=1){flash=1;cards.unshift({age:0,ci:p.ci});if(cards.length>3)cards.length=3;spawn(p);continue;}if(p.u<0)continue;' +
+  'q=pt(p.l,p.u);q2=pt(p.l,Math.max(0,p.u-0.02));a=Math.atan2(q[1]-q2[1],q[0]-q2[0]);' +
+  'ctx.save();ctx.translate(q[0],q[1]);ctx.rotate(a);ctx.fillStyle="rgba("+C.pal[p.ci]+",0.95)";rr(ctx,-p.w/2,-3,p.w,6,3);ctx.fill();' +
+  'ctx.fillStyle="rgba("+C.bgRgb+",0.9)";ctx.fillRect(-p.w/2+3,-1,p.w*0.35,2);ctx.fillRect(-p.w/2+3+p.w*0.42,-1,p.w*0.22,2);ctx.restore();}' +
+  'ctx.globalCompositeOperation="source-over";' +
+  'var g=ctx.createRadialGradient(ax,ay,ar*0.2,ax,ay,ar*2.2);g.addColorStop(0,"rgba("+C.pal[0]+",0.35)");g.addColorStop(1,"rgba("+C.pal[0]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(ax,ay,ar*2.2,0,6.2832);ctx.fill();' +
+  'ctx.fillStyle=C.bg;ctx.beginPath();ctx.arc(ax,ay,ar,0,6.2832);ctx.fill();ctx.strokeStyle="rgb("+C.pal[0]+")";ctx.lineWidth=2;ctx.stroke();' +
+  'ctx.beginPath();ctx.arc(ax,ay,ar*0.32,0,6.2832);ctx.fillStyle="rgb("+C.pal[0]+")";ctx.fill();' +
+  'flash*=0.9;ctx.strokeStyle="rgba("+C.pal[1]+","+(0.35+flash*0.65)+")";ctx.lineWidth=1.5+flash*2;rr(ctx,sx,sy,sw,sh,10);ctx.fillStyle="rgba("+C.bgRgb+",0.85)";ctx.fill();ctx.stroke();' +
+  'var cy=sy+12;for(i=0;i<cards.length;i++){var c=cards[i];c.age++;var grow=Math.min(1,c.age/18),ch=(sh-24-8*2)/3,al=i===2?Math.max(0,1-(c.age-160)/60):1;if(al<=0)continue;' +
+  'ctx.globalAlpha=al;ctx.fillStyle="rgba("+C.pal[c.ci]+",0.18)";ctx.strokeStyle="rgba("+C.pal[c.ci]+",0.8)";ctx.lineWidth=1;rr(ctx,sx+10,cy,sw-20,ch*grow,5);ctx.fill();ctx.stroke();' +
+  'if(grow>0.6){ctx.fillStyle="rgba("+C.pal[c.ci]+",0.9)";ctx.fillRect(sx+18,cy+8,(sw-36)*0.55,3);ctx.fillRect(sx+18,cy+15,(sw-36)*0.8,2);ctx.fillRect(sx+18,cy+20,(sw-36)*0.4,2);}' +
+  'ctx.globalAlpha=1;cy+=ch+8;}' +
+  'ctx.fillStyle="rgba(255,255,255,0.8)";ctx.font="600 11px system-ui,sans-serif";ctx.textAlign="center";ctx.textBaseline="top";ctx.fillText(C.from,ax,ay+ar+8);ctx.fillText(C.to,sx+sw/2,sy+sh+8);}' +
+  '_a2uiCK.mount("ml-%%UID%%",{init:init,draw:draw,speed:1,interactive:false,still:260});' +
+  '})();';
+_RENDERERS['halftone_wave'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var paper = _ffHex(b.paper, '#f7f7f5'), ink = _ffHex(b.ink, '#0f172a');
+  var acc = _ffHex(b.accent, null);
+  var sp = _ffPick(b.spacing, {fine: '10', normal: '14', coarse: '20'}, 'normal');
+  var spd = _ffPick(b.speed, {slow: '0.5', normal: '1', fast: '1.8'}, 'normal');
+  var wave = _ffPick(b.wave, {noise: 'noise', ripple: 'ripple', sweep: 'sweep'}, 'noise');
+  var focus = _ffPick(b.focus, {center: 'center', left: 'left', right: 'right'}, 'center');
+  var align = _ffPick(b.align, {left: 'left', center: 'center', right: 'right'}, 'left');
+  var height = _ffInt(b.height, 320, 160, 900);
+  var inter = b.interactive === false ? 'false' : 'true';
+  var cfg = '{sp:' + sp + ',sc:0.0045,spd:' + spd + ',wave:"' + wave + '",focus:"' + focus + '",ink:"' + ink + '",paper:"' + paper + '",acc:"' + (acc || ink) + '",hasAcc:' + (acc ? 'true' : 'false') + ',inter:' + inter + '}';
+  var pal = [_ffRgb(acc || ink)];
+  var text = _ffOverlay(align, _ffRgb(paper), pal, b.eyebrow || '', b.title || '', b.body || '', ink);
+  return _ffPanel(height, paper, _ffCanvas('hw-' + uid) + text + _ffScript(_HALFTONE_WAVE_JS, uid, cfg));
+};
+_RENDERERS['message_lanes'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var bg = _ffHex(b.background, '#070a12');
+  var pal = _ffPal(b.colors, ['56,189,248', '167,139,250', '244,114,182']);
+  if (pal.length < 2) pal.push(pal[0]);
+  var lanes = _ffInt(b.lanes, 4, 1, 6);
+  var rate = _ffPick(b.rate, {slow: '0.6', normal: '1', fast: '1.7'}, 'normal');
+  var height = _ffInt(b.height, 320, 200, 900);
+  var from = _ffLinesJs([(typeof b.from_label === 'string' ? b.from_label : 'agent').trim().slice(0, 24) || 'agent']).slice(1, -1);
+  var to = _ffLinesJs([(typeof b.to_label === 'string' ? b.to_label : 'surface').trim().slice(0, 24) || 'surface']).slice(1, -1);
+  var align = _ffPick(b.align, {left: 'left', center: 'center', right: 'right'}, 'center');
+  var cfg = '{lanes:' + lanes + ',rate:' + rate + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",bgRgb:"' + _ffRgb(bg) + '",from:' + from + ',to:' + to + '}';
+  var text = _ffOverlay(align, _ffRgb(bg), pal, b.eyebrow || '', b.title || '', b.body || '');
+  return _ffPanel(height, bg, _ffCanvas('ml-' + uid) + text + _ffScript(_MESSAGE_LANES_JS, uid, cfg));
 };
