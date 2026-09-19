@@ -528,7 +528,7 @@ def _components():
     }
 
 
-LLMS_TXT = """# A2UI Atomic Catalog
+LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 
 > Open-source, typed UI vocabulary ({n_atoms} atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, and MCP Apps — from one JSON schema payload, instead of generating HTML.
 
