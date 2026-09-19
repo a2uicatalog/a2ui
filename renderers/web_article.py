@@ -18847,6 +18847,34 @@ _WAVE_TERRAIN_JS = (
     '})();'
 )
 
+_ORBIT_RINGS_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var cx=0,cy=0,R=0,tv=0.42,yw=0,SA=[],RR=[];'
+    'function init(k){var W=k.W,H=k.H,i,j,it,n=C.rings.length;cx=W*(C.pos==="left"?0.3:C.pos==="right"?0.7:0.5);cy=H*0.5;R=Math.min(W*(C.pos==="center"?0.34:0.2),H*0.8);RR=[];SA=[];'
+    'for(i=0;i<n;i++){RR.push(n>1?R*(0.55+0.45*i/(n-1)):R*0.8);it=C.rings[i].i;for(j=0;j<it.length;j++)SA.push({r:i,l:it[j],ph:j/it.length*6.2832+i*0.9,a:0,dp:0,x:0,y:0});}}'
+    'function pt(i,a){var e=RR[i],ex=e*Math.cos(a),ey=e*tv*Math.sin(a),ra=-0.32+i*0.32+yw,c=Math.cos(ra),s=Math.sin(ra);return [cx+ex*c-ey*s,cy+ex*s+ey*c];}'
+    'function sat(ctx,s){var i=s.r,dn=s.dp*0.5+0.5,col=C.pal[i%C.pal.length],dr=i%2?-1:1,t,p,q=[s.x,s.y];'
+    'ctx.lineWidth=1.6;ctx.lineCap="round";for(t=1;t<=10;t++){p=pt(i,s.a-dr*t*0.05);ctx.strokeStyle="rgba("+col+","+((1-t/10)*(0.15+0.4*dn)).toFixed(3)+")";ctx.beginPath();ctx.moveTo(q[0],q[1]);ctx.lineTo(p[0],p[1]);ctx.stroke();q=p;}'
+    'ctx.fillStyle="rgba("+col+","+(0.18+0.12*dn).toFixed(3)+")";ctx.beginPath();ctx.arc(s.x,s.y,(3+1.8*dn)*2.4,0,6.2832);ctx.fill();'
+    'ctx.fillStyle="rgba("+col+","+(0.6+0.4*dn).toFixed(3)+")";ctx.beginPath();ctx.arc(s.x,s.y,3+1.8*dn,0,6.2832);ctx.fill();'
+    'ctx.font="600 "+(10+1.6*dn).toFixed(1)+"px system-ui,sans-serif";ctx.textBaseline="middle";ctx.textAlign=s.x>=cx?"left":"right";ctx.fillStyle="rgba(255,255,255,"+(0.3+0.62*dn).toFixed(3)+")";ctx.fillText(s.l,s.x+(s.x>=cx?1:-1)*(9+2*dn),s.y);}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t,i,p,s,n=C.rings.length,tt,ty;'
+    'tt=0.42+(k.my===null?0:(k.my/H-0.5)*0.36);tv+=(tt-tv)*0.06;ty=k.mx===null?0:(k.mx/W-0.5)*0.5;yw+=(ty-yw)*0.06;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);'
+    'var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.6);g.addColorStop(0,"rgba("+C.pal[0]+",0.32)");g.addColorStop(1,"rgba("+C.pal[0]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*0.6,0,6.2832);ctx.fill();'
+    'for(i=0;i<n;i++){ctx.beginPath();ctx.ellipse(cx,cy,RR[i],RR[i]*tv,-0.32+i*0.32+yw,0,6.2832);ctx.strokeStyle="rgba("+C.pal[i%C.pal.length]+",0.3)";ctx.lineWidth=1;ctx.stroke();}'
+    'for(i=0;i<SA.length;i++){s=SA[i];s.a=s.ph+t*3.2/Math.pow(s.r+1,1.3)*(s.r%2?-1:1);p=pt(s.r,s.a);s.x=p[0];s.y=p[1];s.dp=Math.sin(s.a);}'
+    'SA.sort(function(a,b){return a.dp-b.dp;});'
+    'for(i=0;i<SA.length;i++)if(SA[i].dp<0)sat(ctx,SA[i]);'
+    'var nr=R*0.07,ng=ctx.createRadialGradient(cx,cy,0,cx,cy,nr*3.2);ng.addColorStop(0,"rgba("+C.pal[0]+",0.55)");ng.addColorStop(1,"rgba("+C.pal[0]+",0)");ctx.fillStyle=ng;ctx.beginPath();ctx.arc(cx,cy,nr*3.2,0,6.2832);ctx.fill();'
+    'ctx.fillStyle="rgb("+C.pal[0]+")";ctx.beginPath();ctx.arc(cx,cy,nr,0,6.2832);ctx.fill();'
+    'ctx.font="700 12px system-ui,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="rgba(255,255,255,0.92)";ctx.fillText(C.c,cx,cy+nr+11);'
+    'for(i=0;i<SA.length;i++)if(SA[i].dp>=0)sat(ctx,SA[i]);'
+    'ctx.font="700 9px system-ui,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";for(i=0;i<n;i++){p=pt(i,1.5708);ctx.fillStyle="rgba("+C.pal[i%C.pal.length]+",0.8)";ctx.fillText(C.rings[i].l.toUpperCase(),p[0],p[1]+11);}}'
+    '_a2uiCK.mount("rg-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});'
+    '})();'
+)
+
 
 def _render_halftone_wave(b: dict) -> str:
     uid = _wa_uid(b)[:6]
@@ -18951,11 +18979,63 @@ def _render_wave_terrain(b: dict) -> str:
     return _ff_panel(height, bg, _ff_canvas('wt-' + uid) + text + _ff_script(_WAVE_TERRAIN_JS, uid, cfg))
 
 
+_OR_DEFAULT_RINGS = [
+    {'l': 'tools', 'i': ['search', 'code', 'browser']},
+    {'l': 'data', 'i': ['docs', 'sheets', 'crm', 'mail']},
+    {'l': 'surfaces', 'i': ['web', 'chat', 'slides', 'email', 'pdf']},
+]
+
+
+def _or_rings(v):
+    out = []
+    for g in (v if isinstance(v, list) else []):
+        if len(out) >= 3:
+            break
+        if not isinstance(g, dict):
+            continue
+        its = []
+        src = g.get('items') if isinstance(g.get('items'), list) else []
+        for x in src:
+            if len(its) >= 6:
+                break
+            if isinstance(x, str):
+                s = x.strip()[:24]
+                if s:
+                    its.append(s)
+        if not its:
+            continue
+        out.append({'l': (g['label'].strip()[:24] if isinstance(g.get('label'), str) else ''), 'i': its})
+    return out or _OR_DEFAULT_RINGS
+
+
+def _render_orbit_rings(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), _FF_DEFAULT_PAL)
+    spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '1', 'fast': '1.8'}, 'normal')
+    pos = _ff_pick(b.get('position'), {'right': 'right', 'center': 'center', 'left': 'left'}, 'right')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = _ff_int(b.get('height'), 420, 240, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or ''
+    eyebrow = b.get('eyebrow') or ''
+    body = b.get('body') or ''
+    ctr = b.get('center') if isinstance(b.get('center'), str) else ''
+    center = _ff_lines_js([ctr.strip()[:24] or 'agent'])[1:-1]
+    rings = _ff_lines_js(_or_rings(b.get('rings')))
+    bg_rgb = _ff_rgb(bg)
+    cfg = ('{c:' + center + ',rings:' + rings + ',spd:' + spd
+           + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",pos:"' + pos + '",inter:' + inter + '}')
+    text = _ff_overlay(align, bg_rgb, pal, eyebrow, title, body)
+    return _ff_panel(height, bg, _ff_canvas('rg-' + uid) + text + _ff_script(_ORBIT_RINGS_JS, uid, cfg))
+
+
 _RENDERERS["halftone_wave"] = _render_halftone_wave
 _RENDERERS["message_lanes"] = _render_message_lanes
 _RENDERERS["signal_tunnel"] = _render_signal_tunnel
 _RENDERERS["gradient_mesh_live"] = _render_gradient_mesh_live
 _RENDERERS["wave_terrain"] = _render_wave_terrain
+_RENDERERS["orbit_rings"] = _render_orbit_rings
 
 
 # ─── computed typography & colour: type_scale / readability_card / drop_cap / contrast_audit ─
