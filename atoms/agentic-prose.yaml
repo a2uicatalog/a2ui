@@ -432,3 +432,24 @@ atoms:
       One conclusion (body or callout). The takeaways ARE the whole answer —
       then they are just the answer, and the framing is decoration.
     answers: ["so what does this mean", "what should I take from this"]
+
+  token_budget_meter:
+    use_when: >-
+      Tracking active LLM context window consumption against maximum capacity
+      with threshold warnings (amber/red) during autonomous agent execution.
+    not_when: >-
+      A general progress bar for task completion (progress_bar). A detailed token
+      breakdown across prompt, thinking, and completion counts (ai_build_trace).
+      A single unconstrained metric stat (stat_card).
+    answers: ["how much context window is left", "are we running out of tokens", "what is the token budget status"]
+
+  ai_build_trace:
+    use_when: >-
+      Inspecting granular model invocation telemetry and token usage breakdown
+      (prompt, thinking, output, and total tokens) for a specific agent execution turn.
+    not_when: >-
+      Context window capacity percentage with warning bands (token_budget_meter).
+      Tool execution parameters, status, and returned outputs (tool_call_card).
+      A high-level task status without token telemetry (stat_card or status_pill).
+    answers: ["how many tokens did this turn consume", "show model telemetry breakdown", "what was the LLM token usage"]
+
