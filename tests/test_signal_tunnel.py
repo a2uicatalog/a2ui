@@ -100,14 +100,14 @@ def test_every_field_is_baked_as_declared():
     cfg = _cfg(_render_signal_tunnel(FULL))
     assert cfg == ('{n:750,spd:1.7,trail:0.035,'
                    'pal:["56,189,248","129,140,248","244,114,182"],'
-                   'bg:"#070a12",bgRgb:"7,10,18",dir:"out",inter:false}')
+                   'bg:"#070a12",bgRgb:"7,10,18",dir:"out",pos:"right",inter:false}')
 
 
 def test_defaults_when_nothing_is_set():
     html = _render_signal_tunnel({})
     assert _cfg(html) == ('{n:450,spd:1,trail:0.07,'
                           'pal:["56,189,248","129,140,248","244,114,182"],'
-                          'bg:"#070a12",bgRgb:"7,10,18",dir:"in",inter:true}')
+                          'bg:"#070a12",bgRgb:"7,10,18",dir:"in",pos:"right",inter:true}')
     assert "height:360px" in html
     # no copy -> no veil, no overlay
     assert "linear-gradient" not in html and "radial-gradient" not in html
@@ -153,6 +153,16 @@ def test_direction_falls_back_to_default(core_js, value, expected):
     for html in (_render_signal_tunnel(block),
                  _render_via_gas(core_js, dict(block, type="signal_tunnel"))):
         assert f'dir:"{expected}"' in _cfg(html)
+
+
+@pytest.mark.parametrize("value,expected", [
+    ("top", "right"), (None, "right"), (7, "right"), (["left"], "right"), ("left", "left"), ("center", "center"),
+])
+def test_position_falls_back_to_default(core_js, value, expected):
+    block = {"position": value}
+    for html in (_render_signal_tunnel(block),
+                 _render_via_gas(core_js, dict(block, type="signal_tunnel"))):
+        assert f'pos:"{expected}"' in _cfg(html)
 
 
 @pytest.mark.parametrize("value,expected", [

@@ -7525,7 +7525,7 @@ blocks:
 - type: signal_tunnel
   stage: preview
   description: 'Full-bleed animated hero background: light streaks travel along
-    fixed radial lanes through a central vanishing point, converging into it by
+    fixed radial lanes through a vanishing point (right, centre or left), converging into it by
     default (signals arriving) or, in "out" mode, radiating away from it
     (signals broadcasting). Each streak accelerates as it nears the vanishing
     point and is coloured by its lane angle, so the tunnel reads as many
@@ -7539,7 +7539,7 @@ blocks:
     option is an enum or a clamped integer and colours must be #rrggbb: the
     config is baked into inline script, so nothing free-form ever reaches it.
     Dark backgrounds only -- streaks are additive and vanish on white.'
-  compact_description: radial light streaks converging on (or radiating from) a central vanishing point, hero background
+  compact_description: radial light streaks converging on (or radiating from) a vanishing point, hero background
   surfaces:
     works_on:
     - web
@@ -7560,6 +7560,7 @@ blocks:
     body: string (optional). Supporting copy under the title (markdown inline supported).
     align: '"left" | "center" | "right"  (optional, default "left"). Where the overlaid copy sits; the veil that keeps it readable follows it.'
     direction: '"in" | "out"  (optional, default "in"). "in" -- streaks converge on the vanishing point. "out" -- streaks radiate away from it.'
+    position: '"right" | "center" | "left"  (optional, default "right"). Where the vanishing point sits; put it opposite the copy.'
     colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"]. Streaks take a colour by lane angle so the tunnel reads as coloured bands; the first colour also tints the vanishing-point glow. Invalid entries are dropped.
     background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
     density: '"low" | "normal" | "high"  (optional, default "normal"). Streak count, scaled to the panel area.'

@@ -3313,7 +3313,7 @@ var _SIGNAL_TUNNEL_JS =
   'function spawn(p,k){var a=Math.random()*6.2832;p.a=a;p.r=DIR<0?maxR*(0.5+Math.random()*0.5):maxR*0.02*(0.2+Math.random());' +
   'p.ci=Math.floor(((a/6.2832)%1)*C.pal.length);p.sv=0.7+Math.random()*0.6;return p;}' +
   'function init(k){var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,k.W,k.H);' +
-  'cx=k.W*0.5;cy=k.H*0.5;maxR=Math.sqrt(cx*cx+cy*cy)*1.05;' +
+  'cx=k.W*(C.pos==="left"?0.26:C.pos==="center"?0.5:0.74);cy=k.H*0.5;maxR=Math.sqrt(Math.pow(Math.max(cx,k.W-cx),2)+cy*cy)*1.05;' +
   'N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];while(pts.length<N)pts.push(spawn({},k));}' +
   'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,i,p,x,y,px,py,f,pf,dx,dy,d;' +
   'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);' +
@@ -3338,6 +3338,7 @@ _RENDERERS['signal_tunnel'] = function(b) {
   var spd   = _ffPick(b.speed,   {slow: '0.6', normal: '1', fast: '1.7'}, 'normal');
   var trail = _ffPick(b.trail,   {short: '0.16', normal: '0.07', long: '0.035'}, 'normal');
   var dir   = _ffPick(b.direction, {'in': 'in', out: 'out'}, 'in');
+  var pos   = _ffPick(b.position, {right: 'right', center: 'center', left: 'left'}, 'right');
   var align = _ffPick(b.align,   {left: 'left', center: 'center', right: 'right'}, 'left');
   var height = _ffInt(b.height, 360, 200, 900);
   var inter = b.interactive === false ? 'false' : 'true';
@@ -3345,7 +3346,7 @@ _RENDERERS['signal_tunnel'] = function(b) {
   var bgRgb = _ffRgb(bg);
   var cfg = '{n:' + n + ',spd:' + spd + ',trail:' + trail
     + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",bgRgb:"' + bgRgb
-    + '",dir:"' + dir + '",inter:' + inter + '}';
+    + '",dir:"' + dir + '",pos:"' + pos + '",inter:' + inter + '}';
   var text = _ffOverlay(align, bgRgb, pal, eyebrow, title, body);
   return _ffPanel(height, bg, _ffCanvas('st-' + uid) + text + _ffScript(_SIGNAL_TUNNEL_JS, uid, cfg));
 };
