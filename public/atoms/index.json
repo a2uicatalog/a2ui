@@ -1518,7 +1518,7 @@
   },
   {
    "type": "weighted_words",
-   "compact": "headline where the agent sets each word''s emphasis 1-5; heavy words land bigger",
+   "compact": "headline where the agent sets each word's emphasis 1-5; heavy words land bigger",
    "surfaces": [
     "web",
     "google-meet-stage",

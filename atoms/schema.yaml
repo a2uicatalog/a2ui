@@ -3773,7 +3773,7 @@ blocks:
     argument before reading it. Give it "words" as [{text, weight}] to typeset
     deliberately, or plain "text" for an even setting. Screenshot-ready, light
     or dark. Capped at 40 words of 24 characters; weights clamp to 1-5.'
-  compact_description: headline where the agent sets each word''s emphasis 1-5; heavy words land bigger
+  compact_description: headline where the agent sets each word's emphasis 1-5; heavy words land bigger
   surfaces:
     works_on:
     - web

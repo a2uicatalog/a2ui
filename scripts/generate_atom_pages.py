@@ -1230,8 +1230,11 @@ h1{position:relative;font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;marg
 .showcase-dot.active{background:var(--accent);transform:scale(1.3)}
 @media(prefers-reduced-motion:reduce){.showcase-slide{transition:none}}
 .spotlight{display:grid;grid-template-columns:280px 1fr;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:32px}
-.spotlight-visual{background:#0b0f1a;padding:20px;display:flex;align-items:center;justify-content:center}
+.spotlight-visual{background:#0b0f1a;padding:20px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .spotlight-visual svg{max-width:100%}
+.spotlight-flow{position:absolute;inset:0;opacity:.6;pointer-events:none}
+.spotlight-flow>div{height:100%!important;margin:0!important;border-radius:0!important}
+.spotlight-stage{position:relative;z-index:1;width:100%;display:flex;align-items:center;justify-content:center}
 .spotlight-body{padding:26px 28px}
 .spotlight-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
 .spotlight-kicker .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--positive);margin-right:7px;box-shadow:0 0 0 3px oklch(58% 0.15 146 / .18)}
@@ -1564,8 +1567,23 @@ def _atom_spotlight_html():
     just stale -- check it stayed true if those change."""
     visual = _agent_sketchpad_sequence_html(
         _ROBOT_PAINTING_STROKES, "0 0 400 300", "", delay_ms=550)
+    # The dark ground behind the sketch is the real flow_field atom, not a
+    # mock: same renderer the catalogue ships, dialled down (low density,
+    # slow, broad swirls, converging behind the drawing) and dimmed in CSS so
+    # the strokes stay the subject. The sketch SVG has no background fill, so
+    # it shows through. The layer is a SIBLING of the stage below because the
+    # try-it script below rewrites the stage's innerHTML.
+    flow = _web_renderer._render_flow_field({
+        "focus": "center", "density": "normal", "speed": "slow", "scale": "broad",
+        "trail": "long", "interactive": False, "background": "#0b0f1a", "height": 300,
+    })
+    # The atom sizes its canvas when its script first runs, and only re-measures
+    # on a window resize. Here that first run happens before the (much taller)
+    # text column has laid out, so the canvas would be measured short and then
+    # stretched. Nudge it once the page has laid out.
+    flow += '<script>window.addEventListener("load",function(){window.dispatchEvent(new Event("resize"));});</script>'
     return f'''<div class="spotlight">
-      <div class="spotlight-visual">{visual}</div>
+      <div class="spotlight-visual"><div class="spotlight-flow" aria-hidden="true">{flow}</div><div class="spotlight-stage" id="spotlight-stage">{visual}</div></div>
       <div class="spotlight-body">
         <div class="spotlight-kicker"><span class="dot"></span>ATOM SPOTLIGHT &middot; LATEST</div>
         <h2>Give your agent a paintbrush.</h2>
@@ -1603,7 +1621,7 @@ def _atom_spotlight_html():
       var btn = document.getElementById('sketch-demo-submit');
       var input = document.getElementById('sketch-demo-prompt');
       var status = document.getElementById('sketch-demo-status');
-      var visual = document.querySelector('.spotlight-visual');
+      var visual = document.getElementById('spotlight-stage');
       if (!btn || !input || !status || !visual) return;
       var fallbackHtml = visual.innerHTML;   // the baked robot-painting default, restored on failure
 

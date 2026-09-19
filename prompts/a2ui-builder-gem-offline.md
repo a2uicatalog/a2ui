@@ -528,7 +528,7 @@ does not exist.
 - `series_overview_card` — navigation index for multi-part article series parts
 - `reaction_group` — emoji reaction counters collecting reader sentiment feedback
 - `linkedin_post_image` — LinkedIn post image preview — conviction_card, stat_card, or carousel_slide mode
-- `weighted_words` — headline where the agent sets each word''s emphasis 1-5; heavy words land bigger
+- `weighted_words` — headline where the agent sets each word's emphasis 1-5; heavy words land bigger
 - `stance` — claim set in type whose weight, size and tracking encode the stated confidence
 - `receipt` — claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in
 - `changed_mind` — struck-through old belief, new belief lands beneath; optional what-changed-it line

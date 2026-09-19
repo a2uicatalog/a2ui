@@ -1146,7 +1146,7 @@
         },
         {
           "type": "weighted_words",
-          "description": "headline where the agent sets each word''s emphasis 1-5; heavy words land bigger"
+          "description": "headline where the agent sets each word's emphasis 1-5; heavy words land bigger"
         }
       ]
     },
