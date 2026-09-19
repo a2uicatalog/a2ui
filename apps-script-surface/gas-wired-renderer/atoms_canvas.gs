@@ -3302,6 +3302,95 @@ _RENDERERS['message_lanes'] = function(b) {
   return _ffPanel(height, bg, _ffCanvas('ml-' + uid) + text + _ffScript(_MESSAGE_LANES_JS, uid, cfg));
 };
 
+// signal_tunnel (2026-09-19) — radial light streaks through a fixed vanishing
+// point, converging ("in") or radiating ("out"). Sibling of flow_field on the
+// same kit; streaks travel purely along their spawn angle (no 2D noise
+// wander) and accelerate as they near the vanishing point, giving the tunnel
+// its depth cue without any real 3D projection.
+var _SIGNAL_TUNNEL_JS =
+  '(function(){' +
+  'var C=%%CFG%%;var pts=[],N=0,cx=0,cy=0,maxR=0,DIR=C.dir==="out"?1:-1;' +
+  'function spawn(p,k){var a=Math.random()*6.2832;p.a=a;p.r=DIR<0?maxR*(0.5+Math.random()*0.5):maxR*0.02*(0.2+Math.random());' +
+  'p.ci=Math.floor(((a/6.2832)%1)*C.pal.length);p.sv=0.7+Math.random()*0.6;return p;}' +
+  'function init(k){var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,k.W,k.H);' +
+  'cx=k.W*0.5;cy=k.H*0.5;maxR=Math.sqrt(cx*cx+cy*cy)*1.05;' +
+  'N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];while(pts.length<N)pts.push(spawn({},k));}' +
+  'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,i,p,x,y,px,py,f,pf,dx,dy,d;' +
+  'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);' +
+  'ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.3;ctx.lineCap="round";' +
+  'for(i=0;i<N;i++){p=pts[i];px=cx+Math.cos(p.a)*p.r;py=cy+Math.sin(p.a)*p.r;' +
+  'f=1-p.r/maxR;f=0.6+f*f*3.2;p.r+=DIR*C.spd*f*p.sv*2.2;' +
+  'if(p.r<maxR*0.015||p.r>maxR){spawn(p,k);continue;}' +
+  'x=cx+Math.cos(p.a)*p.r;y=cy+Math.sin(p.a)*p.r;' +
+  'if(k.mx!==null){dx=x-k.mx;dy=y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){pf=(1-d/120)*4;x+=dx/d*pf;y+=dy/d*pf;}}' +
+  'ctx.strokeStyle="rgba("+C.pal[p.ci]+","+(0.35+0.55*(p.r/maxR)).toFixed(3)+")";' +
+  'ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();}' +
+  'var g=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*0.16);g.addColorStop(0,"rgba("+C.pal[0]+",0.85)");g.addColorStop(1,"rgba("+C.pal[0]+",0)");' +
+  'ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,maxR*0.16,0,6.2832);ctx.fill();' +
+  'ctx.globalCompositeOperation="source-over";}' +
+  '_a2uiCK.mount("st-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:220});' +
+  '})();';
+_RENDERERS['signal_tunnel'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var bg = _ffHex(b.background, '#070a12');
+  var pal = _ffPal(b.colors, _FF_DEFAULT_PAL);
+  var n     = _ffPick(b.density, {low: '250', normal: '450', high: '750'}, 'normal');
+  var spd   = _ffPick(b.speed,   {slow: '0.6', normal: '1', fast: '1.7'}, 'normal');
+  var trail = _ffPick(b.trail,   {short: '0.16', normal: '0.07', long: '0.035'}, 'normal');
+  var dir   = _ffPick(b.direction, {'in': 'in', out: 'out'}, 'in');
+  var align = _ffPick(b.align,   {left: 'left', center: 'center', right: 'right'}, 'left');
+  var height = _ffInt(b.height, 360, 200, 900);
+  var inter = b.interactive === false ? 'false' : 'true';
+  var title = b.title || '', eyebrow = b.eyebrow || '', body = b.body || '';
+  var bgRgb = _ffRgb(bg);
+  var cfg = '{n:' + n + ',spd:' + spd + ',trail:' + trail
+    + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",bgRgb:"' + bgRgb
+    + '",dir:"' + dir + '",inter:' + inter + '}';
+  var text = _ffOverlay(align, bgRgb, pal, eyebrow, title, body);
+  return _ffPanel(height, bg, _ffCanvas('st-' + uid) + text + _ffScript(_SIGNAL_TUNNEL_JS, uid, cfg));
+};
+
+// gradient_mesh_live (2026-09-19) — soft colour blobs on a Vogel-disk layout,
+// drifting on the shared value-noise field (never loops, unlike a CSS
+// @keyframes mesh gradient). Animated sibling of the static mesh_gradient
+// atom and the CSS-only aurora_background.
+var _GRADIENT_MESH_LIVE_JS =
+  '(function(){' +
+  'var C=%%CFG%%;var bx=[],by=[],R=0,amp=0;' +
+  'function init(k){var W=k.W,H=k.H,i,ang,rad;bx=[];by=[];' +
+  'R=Math.max(W,H)*0.42;amp=Math.min(W,H)*C.amp;' +
+  'for(i=0;i<C.n;i++){ang=i*2.399963;rad=Math.sqrt((i+0.5)/C.n);bx.push(W*0.5+Math.cos(ang)*rad*W*0.42);by.push(H*0.5+Math.sin(ang)*rad*H*0.42);}' +
+  'var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);}' +
+  'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t,i,x,y,rr,dx,dy,d,f,g;' +
+  'ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);' +
+  'ctx.globalCompositeOperation="lighter";' +
+  'for(i=0;i<C.n;i++){' +
+  'x=bx[i]+(k.noise(i*11.3,0,t)-0.5)*2*amp;y=by[i]+(k.noise(i*11.3+50,0,t)-0.5)*2*amp;' +
+  'rr=R*(0.82+0.32*k.noise(i*7.1,3.3,t));' +
+  'if(k.mx!==null){dx=k.mx-x;dy=k.my-y;d=Math.sqrt(dx*dx+dy*dy);if(d<rr*0.9&&d>0.5){f=(1-d/(rr*0.9))*amp;x+=dx/d*f;y+=dy/d*f;}}' +
+  'g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,"rgba("+C.pal[i%C.pal.length]+",0.85)");g.addColorStop(1,"rgba("+C.pal[i%C.pal.length]+",0)");' +
+  'ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,6.2832);ctx.fill();}' +
+  'ctx.globalCompositeOperation="source-over";}' +
+  '_a2uiCK.mount("gm-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:180});' +
+  '})();';
+_RENDERERS['gradient_mesh_live'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var bg = _ffHex(b.background, '#070a12');
+  var pal = _ffPal(b.colors, _FF_DEFAULT_PAL);
+  var n     = _ffPick(b.density, {low: '3', normal: '4', high: '6'}, 'normal');
+  var spd   = _ffPick(b.speed,   {slow: '0.5', normal: '1', fast: '1.8'}, 'normal');
+  var amp   = _ffPick(b.motion,  {subtle: '0.14', normal: '0.22', wild: '0.34'}, 'normal');
+  var align = _ffPick(b.align,   {left: 'left', center: 'center', right: 'right'}, 'left');
+  var height = _ffInt(b.height, 360, 200, 900);
+  var inter = b.interactive === false ? 'false' : 'true';
+  var title = b.title || '', eyebrow = b.eyebrow || '', body = b.body || '';
+  var bgRgb = _ffRgb(bg);
+  var cfg = '{n:' + n + ',spd:' + spd + ',amp:' + amp
+    + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",inter:' + inter + '}';
+  var text = _ffOverlay(align, bgRgb, pal, eyebrow, title, body);
+  return _ffPanel(height, bg, _ffCanvas('gm-' + uid) + text + _ffScript(_GRADIENT_MESH_LIVE_JS, uid, cfg));
+};
+
 
 // ── computed canvas tools: sun_path / great_circle / bezier_easing / tonal_scale ──
 // 2026-09-19. Calcs baked into the atom's own script (NOAA solar position,

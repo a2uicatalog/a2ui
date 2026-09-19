@@ -7522,6 +7522,106 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: signal_tunnel
+  stage: preview
+  description: 'Full-bleed animated hero background: light streaks travel along
+    fixed radial lanes through a central vanishing point, converging into it by
+    default (signals arriving) or, in "out" mode, radiating away from it
+    (signals broadcasting). Each streak accelerates as it nears the vanishing
+    point and is coloured by its lane angle, so the tunnel reads as many
+    distinct signals rather than one; an additive glow marks the vanishing
+    point itself. Optional eyebrow/title/body copy sits opposite the tunnel
+    behind a readability veil, the same flow_field/try.cloudflare.com hero
+    layout (copy on one side, motion on the other). Honours
+    prefers-reduced-motion (renders one pre-simulated frame, no loop), pauses
+    when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame,
+    zero dependencies, on the same shared kit as flow_field/orbit_mark. Every
+    option is an enum or a clamped integer and colours must be #rrggbb: the
+    config is baked into inline script, so nothing free-form ever reaches it.
+    Dark backgrounds only -- streaks are additive and vanish on white.'
+  compact_description: radial light streaks converging on (or radiating from) a central vanishing point, hero background
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid dark panel with the copy
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    title: string (optional). Headline overlaid opposite the tunnel.
+    eyebrow: string (optional). Small uppercase label above the title, tinted with the first palette colour.
+    body: string (optional). Supporting copy under the title (markdown inline supported).
+    align: '"left" | "center" | "right"  (optional, default "left"). Where the overlaid copy sits; the veil that keeps it readable follows it.'
+    direction: '"in" | "out"  (optional, default "in"). "in" -- streaks converge on the vanishing point. "out" -- streaks radiate away from it.'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"]. Streaks take a colour by lane angle so the tunnel reads as coloured bands; the first colour also tints the vanishing-point glow. Invalid entries are dropped.
+    background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
+    density: '"low" | "normal" | "high"  (optional, default "normal"). Streak count, scaled to the panel area.'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+    trail: '"short" | "normal" | "long"  (optional, default "normal"). How long each streak''s light trail lingers.'
+    height: integer (optional). Panel height in px, clamped 200-900. Default 360.
+    interactive: bool (optional). Pointer nudges nearby streaks. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+  source_inspiration:
+    name: data-in-motion hero imagery (Cloudflare Radar-style live network visuals, hyperspace-tunnel convention)
+    url: https://radar.cloudflare.com
+    note: Mood and convention inspiration only (dark ground, radial motion, vanishing point, additive glow) -- the tunnel mechanics and renderer are original
+- type: gradient_mesh_live
+  stage: preview
+  description: 'Full-bleed animated hero background: a handful of soft colour blobs,
+    laid out over the panel with an even (Vogel-disk) spread, drift and breathe
+    forever on the same value-noise field that drives flow_field -- never looping
+    on a fixed timeline the way a CSS @keyframes mesh gradient must. The nearest
+    blob leans toward the pointer. This is the animated, canvas-driven sibling of
+    the static mesh_gradient atom and the CSS-keyframe aurora_background: pick
+    this one when the motion itself, not just the colour, needs to feel alive.
+    Optional eyebrow/title/body copy sits opposite a readability veil. Honours
+    prefers-reduced-motion (one pre-simulated frame, no loop), pauses when
+    scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero
+    dependencies, on the same shared kit as flow_field/signal_tunnel. Every
+    option is an enum or a clamped integer and colours must be #rrggbb: the
+    config is baked into inline script, so nothing free-form ever reaches it.
+    Dark backgrounds only -- blobs blend additively and vanish on white.'
+  compact_description: soft colour blobs drifting on a noise field, pointer-reactive, hero background
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid dark panel with the copy
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    title: string (optional). Headline overlaid opposite the blobs.
+    eyebrow: string (optional). Small uppercase label above the title, tinted with the first palette colour.
+    body: string (optional). Supporting copy under the title (markdown inline supported).
+    align: '"left" | "center" | "right"  (optional, default "left"). Where the overlaid copy sits; the veil that keeps it readable follows it.'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"]. Blobs cycle through these colours. Invalid entries are dropped.
+    background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
+    density: '"low" | "normal" | "high"  (optional, default "normal"). Blob count: 3 / 4 / 6.'
+    motion: '"subtle" | "normal" | "wild"  (optional, default "normal"). Drift amplitude.'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+    height: integer (optional). Panel height in px, clamped 200-900. Default 360.
+    interactive: bool (optional). Nearest blob leans toward the pointer. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: sun_path
   stage: preview
   description: 'The day''s sun, computed in the atom: give it a latitude, longitude,

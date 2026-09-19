@@ -18784,6 +18784,50 @@ _MESSAGE_LANES_JS = (
     '_a2uiCK.mount("ml-%%UID%%",{init:init,draw:draw,speed:1,interactive:false,still:260});'
     '})();'
 )
+_SIGNAL_TUNNEL_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var pts=[],N=0,cx=0,cy=0,maxR=0,DIR=C.dir==="out"?1:-1;'
+    'function spawn(p,k){var a=Math.random()*6.2832;p.a=a;p.r=DIR<0?maxR*(0.5+Math.random()*0.5):maxR*0.02*(0.2+Math.random());'
+    'p.ci=Math.floor(((a/6.2832)%1)*C.pal.length);p.sv=0.7+Math.random()*0.6;return p;}'
+    'function init(k){var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,k.W,k.H);'
+    'cx=k.W*0.5;cy=k.H*0.5;maxR=Math.sqrt(cx*cx+cy*cy)*1.05;'
+    'N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];while(pts.length<N)pts.push(spawn({},k));}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,i,p,x,y,px,py,f,pf,dx,dy,d;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);'
+    'ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.3;ctx.lineCap="round";'
+    'for(i=0;i<N;i++){p=pts[i];px=cx+Math.cos(p.a)*p.r;py=cy+Math.sin(p.a)*p.r;'
+    'f=1-p.r/maxR;f=0.6+f*f*3.2;p.r+=DIR*C.spd*f*p.sv*2.2;'
+    'if(p.r<maxR*0.015||p.r>maxR){spawn(p,k);continue;}'
+    'x=cx+Math.cos(p.a)*p.r;y=cy+Math.sin(p.a)*p.r;'
+    'if(k.mx!==null){dx=x-k.mx;dy=y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){pf=(1-d/120)*4;x+=dx/d*pf;y+=dy/d*pf;}}'
+    'ctx.strokeStyle="rgba("+C.pal[p.ci]+","+(0.35+0.55*(p.r/maxR)).toFixed(3)+")";'
+    'ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();}'
+    'var g=ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*0.16);g.addColorStop(0,"rgba("+C.pal[0]+",0.85)");g.addColorStop(1,"rgba("+C.pal[0]+",0)");'
+    'ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,maxR*0.16,0,6.2832);ctx.fill();'
+    'ctx.globalCompositeOperation="source-over";}'
+    '_a2uiCK.mount("st-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:220});'
+    '})();'
+)
+_GRADIENT_MESH_LIVE_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var bx=[],by=[],R=0,amp=0;'
+    'function init(k){var W=k.W,H=k.H,i,ang,rad;bx=[];by=[];'
+    'R=Math.max(W,H)*0.42;amp=Math.min(W,H)*C.amp;'
+    'for(i=0;i<C.n;i++){ang=i*2.399963;rad=Math.sqrt((i+0.5)/C.n);bx.push(W*0.5+Math.cos(ang)*rad*W*0.42);by.push(H*0.5+Math.sin(ang)*rad*H*0.42);}'
+    'var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t,i,x,y,rr,dx,dy,d,f,g;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);'
+    'ctx.globalCompositeOperation="lighter";'
+    'for(i=0;i<C.n;i++){'
+    'x=bx[i]+(k.noise(i*11.3,0,t)-0.5)*2*amp;y=by[i]+(k.noise(i*11.3+50,0,t)-0.5)*2*amp;'
+    'rr=R*(0.82+0.32*k.noise(i*7.1,3.3,t));'
+    'if(k.mx!==null){dx=k.mx-x;dy=k.my-y;d=Math.sqrt(dx*dx+dy*dy);if(d<rr*0.9&&d>0.5){f=(1-d/(rr*0.9))*amp;x+=dx/d*f;y+=dy/d*f;}}'
+    'g=ctx.createRadialGradient(x,y,0,x,y,rr);g.addColorStop(0,"rgba("+C.pal[i%C.pal.length]+",0.85)");g.addColorStop(1,"rgba("+C.pal[i%C.pal.length]+",0)");'
+    'ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,6.2832);ctx.fill();}'
+    'ctx.globalCompositeOperation="source-over";}'
+    '_a2uiCK.mount("gm-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:180});'
+    '})();'
+)
 
 
 def _render_halftone_wave(b: dict) -> str:
@@ -18825,8 +18869,52 @@ def _render_message_lanes(b: dict) -> str:
     return _ff_panel(height, bg, _ff_canvas('ml-' + uid) + text + _ff_script(_MESSAGE_LANES_JS, uid, cfg))
 
 
+def _render_signal_tunnel(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), _FF_DEFAULT_PAL)
+    n = _ff_pick(b.get('density'), {'low': '250', 'normal': '450', 'high': '750'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.6', 'normal': '1', 'fast': '1.7'}, 'normal')
+    trail = _ff_pick(b.get('trail'), {'short': '0.16', 'normal': '0.07', 'long': '0.035'}, 'normal')
+    direction = _ff_pick(b.get('direction'), {'in': 'in', 'out': 'out'}, 'in')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = _ff_int(b.get('height'), 360, 200, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or ''
+    eyebrow = b.get('eyebrow') or ''
+    body = b.get('body') or ''
+    bg_rgb = _ff_rgb(bg)
+    cfg = ('{n:' + n + ',spd:' + spd + ',trail:' + trail
+           + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",bgRgb:"' + bg_rgb
+           + '",dir:"' + direction + '",inter:' + inter + '}')
+    text = _ff_overlay(align, bg_rgb, pal, eyebrow, title, body)
+    return _ff_panel(height, bg, _ff_canvas('st-' + uid) + text + _ff_script(_SIGNAL_TUNNEL_JS, uid, cfg))
+
+
+def _render_gradient_mesh_live(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), _FF_DEFAULT_PAL)
+    n = _ff_pick(b.get('density'), {'low': '3', 'normal': '4', 'high': '6'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '1', 'fast': '1.8'}, 'normal')
+    amp = _ff_pick(b.get('motion'), {'subtle': '0.14', 'normal': '0.22', 'wild': '0.34'}, 'normal')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = _ff_int(b.get('height'), 360, 200, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or ''
+    eyebrow = b.get('eyebrow') or ''
+    body = b.get('body') or ''
+    bg_rgb = _ff_rgb(bg)
+    cfg = ('{n:' + n + ',spd:' + spd + ',amp:' + amp
+           + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",inter:' + inter + '}')
+    text = _ff_overlay(align, bg_rgb, pal, eyebrow, title, body)
+    return _ff_panel(height, bg, _ff_canvas('gm-' + uid) + text + _ff_script(_GRADIENT_MESH_LIVE_JS, uid, cfg))
+
+
 _RENDERERS["halftone_wave"] = _render_halftone_wave
 _RENDERERS["message_lanes"] = _render_message_lanes
+_RENDERERS["signal_tunnel"] = _render_signal_tunnel
+_RENDERERS["gradient_mesh_live"] = _render_gradient_mesh_live
 
 
 # ─── computed typography & colour: type_scale / readability_card / drop_cap / contrast_audit ─

@@ -352,6 +352,7 @@ a2ui-effects-v1:
 - glowing_stat
 - gradient_border_card
 - gradient_heading
+- gradient_mesh_live
 - gradient_text
 - highlight_sweep
 - hint_reveal
@@ -389,6 +390,7 @@ a2ui-effects-v1:
 - scroll_trigger
 - shimmer_button
 - shimmer_text
+- signal_tunnel
 - skeleton_stage_card
 - sonar_pulse
 - speed_counter
