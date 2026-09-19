@@ -1131,7 +1131,7 @@
       "slug": "a2ui-effects-v1",
       "title": "Motion & decorative",
       "alwaysResolved": false,
-      "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw). Presentation polish, not data.",
+      "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
       "atomCount": 87,
       "atoms": [
         {

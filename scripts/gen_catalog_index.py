@@ -68,7 +68,9 @@ CATALOG_META = {
     "a2ui-effects-v1": ("Motion & decorative",
         "Use for animation and decorative flourish — reveals, gradients, cursor effects, "
         "meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves "
-        "in stroke by stroke (agent_sketchpad, svg_path_draw). Presentation polish, not data."),
+        "in stroke by stroke (agent_sketchpad, svg_path_draw), full-bleed canvas hero "
+        "backgrounds and living typography set from agent-supplied words. Presentation "
+        "polish, not data."),
     "a2ui-meta-v1": ("Catalog & AI meta",
         "Use for surfaces ABOUT the catalog or AI tooling — atom anatomy, schema reveal, "
         "prompt-to-schema, Gemini handoff, model cards."),

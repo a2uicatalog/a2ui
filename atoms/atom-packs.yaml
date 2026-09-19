@@ -329,6 +329,10 @@ a2ui-effects-v1:
 - floating_orbs
 - floating_particles
 - flow_field
+- particle_type
+- light_type
+- living_type
+- orbit_mark
 - flow_connector
 - focus_lens
 - glitch_text

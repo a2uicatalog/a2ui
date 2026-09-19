@@ -18165,18 +18165,14 @@ def _render_canvas_plexus(b: dict) -> str:
 _RENDERERS["canvas_plexus"] = _render_canvas_plexus
 
 
-# ─── flow_field ───────────────────────────────────────────────────────────────
+# ─── canvas hero kit + the flow_field / *_type family ────────────────────────
 # 1:1 twin of apps-script-surface/gas-wired-renderer/atoms_canvas.gs's
-# _RENDERERS['flow_field'] (2026-09-18) — the design rationale and field
+# "canvas hero kit" section (2026-09-18) — design rationale and the field
 # reference live there. Output is byte-identical modulo the uid;
-# tests/test_flow_field.py holds the two together. Edit BOTH.
-_FLOW_FIELD_JS = (
-    '(function(){'
-    'var c=document.getElementById("ff-%%UID%%");if(!c)return;'
-    'var C=%%CFG%%;'
-    'var ctx=c.getContext("2d");if(!ctx)return;'
-    'var box=c.parentNode,dpr=Math.min(window.devicePixelRatio||1,2),W=0,H=0,t=0,mx=null,my=null,raf=0,vis=true;'
-    'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+# tests/test_flow_field.py and tests/test_agentic_type.py hold the two
+# sides together. Edit BOTH.
+_A2UI_CANVAS_KIT_JS = (
+    'window._a2uiCK=window._a2uiCK||(function(){'
     'var P=new Uint8Array(512);'
     '(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();'
     'function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}'
@@ -18184,38 +18180,150 @@ _FLOW_FIELD_JS = (
     'function L(a,b,v){return a+(b-a)*v;}'
     'function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);'
     'return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}'
-    'var pts=[],N=0,fx=0,fy=0,FR=0;'
-    'function focus(){if(C.focus==="none"){FR=0;return;}fx=W*(C.focus==="left"?0.26:C.focus==="center"?0.5:0.74);fy=H*0.5;FR=Math.min(W,H)*0.11;}'
-    'function spawn(p){p.x=Math.random()*W;p.y=Math.random()*H;p.px=p.x;p.py=p.y;p.life=90+Math.random()*180;p.sv=0.7+Math.random()*0.6;'
-    'p.ci=Math.floor(noise(p.x*C.sc*0.6,p.y*C.sc*0.6,7.3)*C.pal.length*1.3)%C.pal.length;return p;}'
-    'function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===W&&h===H)return;W=w;H=h;c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);'
-    'ctx.setTransform(dpr,0,0,dpr,0,0);ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);focus();'
-    'N=Math.round(C.n*Math.min(2,Math.max(0.35,(W*H)/288000)));while(pts.length<N)pts.push(spawn({}));pts.length=N;}'
-    'function step(){'
-    't+=0.0028*C.spd;'
+    'function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}'
+    'function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;'
+    'var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;'
+    'var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+    'function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}'
+    'function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}'
+    'function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}'
+    'resize();'
+    'if(RM){var n=o.still||220;for(var i=0;i<n;i++)step();return;}'
+    'window.addEventListener("resize",resize);'
+    'if(o.interactive!==false){var box=c.parentNode;box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();k.mx=e.clientX-r.left;k.my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){k.mx=null;k.my=null;});}'
+    'if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}'
+    'raf=requestAnimationFrame(loop);}'
+    'return {noise:noise,mount:mount,fitText:fitText};'
+    '})();'
+)
+_FLOW_FIELD_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var pts=[],N=0,fx=0,fy=0,FR=0;'
+    'function focus(k){if(C.focus==="none"){FR=0;return;}fx=k.W*(C.focus==="left"?0.26:C.focus==="center"?0.5:0.74);fy=k.H*0.5;FR=Math.min(k.W,k.H)*0.11;}'
+    'function spawn(p,k){p.x=Math.random()*k.W;p.y=Math.random()*k.H;p.px=p.x;p.py=p.y;p.life=90+Math.random()*180;p.sv=0.7+Math.random()*0.6;'
+    'p.ci=Math.floor(k.noise(p.x*C.sc*0.6,p.y*C.sc*0.6,7.3)*C.pal.length*1.3)%C.pal.length;return p;}'
+    'function init(k){var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,k.W,k.H);focus(k);'
+    'N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));while(pts.length<N)pts.push(spawn({},k));pts.length=N;}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;'
     'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);'
     'ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.15;ctx.lineCap="round";'
-    'var i,p,a,dx,dy,d,vx,vy,k,ca,sa,nx;'
+    'var i,p,a,dx,dy,d,vx,vy,f,ca,sa,nx;'
     'for(i=0;i<N;i++){p=pts[i];p.px=p.x;p.py=p.y;'
-    'a=noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);'
-    'if(FR){dx=fx-p.x;dy=fy-p.y;d=Math.sqrt(dx*dx+dy*dy)||1;if(d<FR*0.35){spawn(p);continue;}k=0.22+0.5*Math.max(0,1-d/(FR*4));vx+=dx/d*k;vy+=dy/d*k;}'
-    'if(mx!==null){dx=p.x-mx;dy=p.y-my;d=Math.sqrt(dx*dx+dy*dy);if(d<140&&d>0.5){k=(1-d/140)*1.4;ca=Math.cos(k);sa=Math.sin(k);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx+dx/d*k*0.6;vy+=dy/d*k*0.6;}}'
-    'd=Math.sqrt(vx*vx+vy*vy)||1;k=C.spd*1.25*p.sv/d;p.x+=vx*k;p.y+=vy*k;'
-    'if(--p.life<0||p.x<-2||p.x>W+2||p.y<-2||p.y>H+2)spawn(p);}'
+    'a=k.noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);'
+    'if(FR){dx=fx-p.x;dy=fy-p.y;d=Math.sqrt(dx*dx+dy*dy)||1;if(d<FR*0.35){spawn(p,k);continue;}f=0.22+0.5*Math.max(0,1-d/(FR*4));vx+=dx/d*f;vy+=dy/d*f;}'
+    'if(k.mx!==null){dx=p.x-k.mx;dy=p.y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<140&&d>0.5){f=(1-d/140)*1.4;ca=Math.cos(f);sa=Math.sin(f);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx+dx/d*f*0.6;vy+=dy/d*f*0.6;}}'
+    'd=Math.sqrt(vx*vx+vy*vy)||1;f=C.spd*1.25*p.sv/d;p.x+=vx*f;p.y+=vy*f;'
+    'if(--p.life<0||p.x<-2||p.x>W+2||p.y<-2||p.y>H+2)spawn(p,k);}'
     'for(var ci=0;ci<C.pal.length;ci++){ctx.strokeStyle="rgba("+C.pal[ci]+",0.55)";ctx.beginPath();'
     'for(i=0;i<N;i++){p=pts[i];if(p.ci!==ci||(p.px===p.x&&p.py===p.y))continue;ctx.moveTo(p.px,p.py);ctx.lineTo(p.x,p.y);}ctx.stroke();}'
     'if(FR){var g=ctx.createRadialGradient(fx,fy,0,fx,fy,FR*2.2);g.addColorStop(0,"rgba("+C.pal[0]+","+(0.5*C.trail)+")");g.addColorStop(0.35,"rgba("+C.pal[0]+","+(0.12*C.trail)+")");g.addColorStop(1,"rgba("+C.pal[0]+",0)");'
     'ctx.fillStyle=g;ctx.beginPath();ctx.arc(fx,fy,FR*2.2,0,6.2832);ctx.fill();}}'
-    'function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}'
-    'resize();'
-    'if(RM){for(var i=0;i<220;i++)step();return;}'
-    'window.addEventListener("resize",resize);'
-    'if(C.inter){box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){mx=null;my=null;});}'
-    'if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}'
-    'raf=requestAnimationFrame(loop);'
+    '_a2uiCK.mount("ff-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:220});'
     '})();'
 )
+_PARTICLE_TYPE_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var pts=[],pal=C.pal;'
+    'function build(k){var W=k.W,H=k.H,oc=document.createElement("canvas");oc.width=W;oc.height=H;var o=oc.getContext("2d");'
+    'var fs=_a2uiCK.fitText(o,C.lines,W*0.86,H*0.72,C.font,C.weight);o.font=C.weight+" "+fs+"px "+C.font;o.textAlign="center";o.textBaseline="middle";o.fillStyle="#fff";'
+    'var lh=fs*1.1,y0=H/2-lh*(C.lines.length-1)/2;for(var i=0;i<C.lines.length;i++)o.fillText(C.lines[i],W/2,y0+i*lh);'
+    'var d=o.getImageData(0,0,W,H).data,gap=2,tg;'
+    'do{tg=[];for(var y=0;y<H;y+=gap)for(var x=0;x<W;x+=gap){if(d[(y*W+x)*4+3]>120)tg.push([x,y]);}gap++;}while(tg.length>C.cap&&gap<10);'
+    'var old=pts;pts=[];for(var j=0;j<tg.length;j++){var q=old[j]||{x:Math.random()*W,y:Math.random()*H,vx:0,vy:0};q.tx=tg[j][0];q.ty=tg[j][1];'
+    'q.ci=Math.max(0,Math.min(pal.length-1,Math.floor((q.tx/W+(k.noise(q.tx*0.02,q.ty*0.02,1.5)-0.5)*0.18)*pal.length)));pts.push(q);}}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,i,p,dx,dy,d,f,ax,ay;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+",0.4)";ctx.fillRect(0,0,W,H);'
+    'for(i=0;i<pts.length;i++){p=pts[i];ax=(p.tx-p.x)*0.06;ay=(p.ty-p.y)*0.06;'
+    'if(k.mx!==null){dx=p.x-k.mx;dy=p.y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<110&&d>0.5){f=(1-d/110)*5;ax+=dx/d*f;ay+=dy/d*f;}}'
+    'p.vx=(p.vx+ax)*0.82;p.vy=(p.vy+ay)*0.82;p.x+=p.vx;p.y+=p.vy;}'
+    'for(var ci=0;ci<pal.length;ci++){ctx.fillStyle="rgb("+pal[ci]+")";ctx.beginPath();for(i=0;i<pts.length;i++){p=pts[i];if(p.ci!==ci)continue;ctx.moveTo(p.x+C.dot,p.y);ctx.arc(p.x,p.y,C.dot,0,6.2832);}ctx.fill();}}'
+    '_a2uiCK.mount("pt-%%UID%%",{init:build,draw:draw,speed:1,interactive:C.inter,still:200});'
+    '})();'
+)
+_LIGHT_TYPE_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var pts=[],mask=null,N=0,fc=null,fx=null,MW=0,MH=0;'
+    'function text(o,W,H){var fs=_a2uiCK.fitText(o,C.lines,W*0.86,H*0.72,C.font,C.weight);o.font=C.weight+" "+fs+"px "+C.font;o.textAlign="center";o.textBaseline="middle";var lh=fs*1.1,y0=H/2-lh*(C.lines.length-1)/2;for(var i=0;i<C.lines.length;i++)o.fillText(C.lines[i],W/2,y0+i*lh);}'
+    'function spawn(p){var tries=0;do{p.x=Math.random()*MW;p.y=Math.random()*MH;tries++;}while(tries<40&&!mask[Math.floor(p.y)*MW+Math.floor(p.x)]);'
+    'p.px=p.x;p.py=p.y;p.life=60+Math.random()*140;p.sv=0.6+Math.random()*0.7;p.ci=Math.floor(Math.min(0.999,p.x/MW)*C.pal.length);return p;}'
+    'function init(k){var W=k.W,H=k.H;MW=W;MH=H;var oc=document.createElement("canvas");oc.width=W;oc.height=H;var o=oc.getContext("2d");o.fillStyle="#fff";text(o,W,H);'
+    'var d=o.getImageData(0,0,W,H).data;mask=new Uint8Array(W*H);var on=0;for(var i=0;i<W*H;i++){if(d[i*4+3]>100){mask[i]=1;on++;}}'
+    'fc=document.createElement("canvas");fc.width=k.c.width;fc.height=k.c.height;fx=fc.getContext("2d");fx.setTransform(k.dpr,0,0,k.dpr,0,0);fx.fillStyle=C.bg;fx.fillRect(0,0,W,H);'
+    'N=Math.min(C.cap,Math.max(40,Math.round(on/C.per)));pts=[];for(var j=0;j<N;j++)pts.push(spawn({}));}'
+    'function draw(k){var W=k.W,H=k.H,ctx=k.ctx,t=k.t,i,p,a,vx,vy,d,dx,dy,f,ca,sa,nx;'
+    'fx.globalCompositeOperation="source-over";fx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";fx.fillRect(0,0,W,H);'
+    'fx.globalCompositeOperation="lighter";fx.lineWidth=1.2;fx.lineCap="round";'
+    'for(i=0;i<N;i++){p=pts[i];p.px=p.x;p.py=p.y;a=k.noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);'
+    'if(k.mx!==null){dx=p.x-k.mx;dy=p.y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){f=(1-d/120)*1.3;ca=Math.cos(f);sa=Math.sin(f);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx;}}'
+    'p.x+=vx*C.spd*p.sv;p.y+=vy*C.spd*p.sv;'
+    'if(--p.life<0||p.x<0||p.y<0||p.x>=W||p.y>=H||!mask[Math.floor(p.y)*W+Math.floor(p.x)])spawn(p);}'
+    'for(var ci=0;ci<C.pal.length;ci++){fx.strokeStyle="rgba("+C.pal[ci]+",0.7)";fx.beginPath();for(i=0;i<N;i++){p=pts[i];if(p.ci!==ci||(p.px===p.x&&p.py===p.y))continue;fx.moveTo(p.px,p.py);fx.lineTo(p.x,p.y);}fx.stroke();}'
+    'ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation="source-over";ctx.clearRect(0,0,k.c.width,k.c.height);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);'
+    'ctx.fillStyle="#fff";text(ctx,W,H);ctx.globalCompositeOperation="source-in";ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(fc,0,0);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);'
+    'ctx.globalCompositeOperation="destination-over";'
+    'if(C.glow){ctx.save();ctx.shadowColor="rgba("+C.pal[0]+",0.6)";ctx.shadowBlur=30;ctx.fillStyle="rgba("+C.pal[0]+",0.1)";text(ctx,W,H);ctx.restore();}'
+    'ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="source-over";}'
+    '_a2uiCK.mount("lt-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:220});'
+    '})();'
+)
+_LIVING_TYPE_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var G=[],fs=0;'
+    'function layout(k){var ctx=k.ctx,W=k.W,H=k.H;fs=_a2uiCK.fitText(ctx,C.lines,W*0.84,H*0.6,C.font,C.weight);ctx.font=C.weight+" "+fs+"px "+C.font;G=[];var lh=fs*1.15,y0=H/2-lh*(C.lines.length-1)/2;'
+    'for(var li=0;li<C.lines.length;li++){var s=C.lines[li],w=ctx.measureText(s).width,x=W/2-w/2,y=y0+li*lh;for(var i=0;i<s.length;i++){var ch=s.charAt(i),cw=ctx.measureText(ch).width;G.push({ch:ch,x:x+cw/2,y:y,i:G.length,ci:0});x+=cw;}}'
+    'for(var j=0;j<G.length;j++)G[j].ci=Math.floor(Math.min(0.999,G[j].x/W)*C.pal.length);}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t*4;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.font=C.weight+" "+fs+"px "+C.font;ctx.textAlign="center";ctx.textBaseline="middle";'
+    'for(var i=0;i<G.length;i++){var g=G[i];if(g.ch===" ")continue;var n1=k.noise(g.i*0.35,t,3.1)-0.5,n2=k.noise(g.i*0.35,t,9.7)-0.5,n3=k.noise(g.i*0.35,t,5.5)-0.5;'
+    'var ox=n1*C.amp*0.6,oy=n2*C.amp*1.2,rot=n3*C.amp*0.005,sc=1+n3*C.amp*0.004;'
+    'if(k.mx!==null){var dx=k.mx-g.x,dy=k.my-g.y,d=Math.sqrt(dx*dx+dy*dy);if(d<170&&d>0.5){var f=1-d/170;ox+=dx/d*f*C.amp;oy+=dy/d*f*C.amp;sc+=f*0.22;}}'
+    'ctx.save();ctx.translate(g.x+ox,g.y+oy);ctx.rotate(rot);ctx.scale(sc,sc);ctx.fillStyle="rgb("+C.pal[g.ci]+")";ctx.fillText(g.ch,0,0);ctx.restore();}}'
+    '_a2uiCK.mount("lv-%%UID%%",{init:layout,draw:draw,speed:C.spd,interactive:C.inter,still:1});'
+    '})();'
+)
+_ORBIT_MARK_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var pts=[],N=0,cx=0,cy=0,R=0,band=0,P1=C.pal[1]||C.pal[0];'
+    'var rings=[{a:-0.5585,d:1},{a:0.5585,d:-1},{a:1.5708,d:1}];'
+    'for(var q=0;q<3;q++){rings[q].c=Math.cos(rings[q].a);rings[q].s=Math.sin(rings[q].a);}'
+    'function spawn(p,k){p.x=Math.random()*k.W;p.y=Math.random()*k.H;p.px=p.x;p.py=p.y;p.life=120+Math.random()*240;p.sv=0.7+Math.random()*0.6;'
+    'p.ci=Math.floor(k.noise(p.x*C.sc*0.6,p.y*C.sc*0.6,7.3)*C.pal.length*1.3)%C.pal.length;return p;}'
+    'function init(k){var W=k.W,H=k.H;R=Math.min(W,H)*C.size*0.5;cx=W*(C.pos==="left"?0.28:C.pos==="right"?0.72:0.5);cy=H*0.5;band=R*0.16;'
+    'var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);'
+    'N=Math.round(C.n*Math.min(2,Math.max(0.35,(W*H)/288000)));while(pts.length<N)pts.push(spawn({},k));pts.length=N;}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t,rx=R,ry=R*0.44;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);'
+    'ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.15;ctx.lineCap="round";'
+    'var i,p,a,dx,dy,d,vx,vy,f,j,rg,lx,ly,nr,dd,w,ph,tx,ty,tl,gx,gy,px,py,pl,ca,sa,nx;'
+    'for(i=0;i<N;i++){p=pts[i];p.px=p.x;p.py=p.y;a=k.noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);'
+    'dx=p.x-cx;dy=p.y-cy;d=Math.sqrt(dx*dx+dy*dy);if(d<R*0.16){spawn(p,k);continue;}'
+    'for(j=0;j<3;j++){rg=rings[j];lx=dx*rg.c+dy*rg.s;ly=-dx*rg.s+dy*rg.c;nr=Math.sqrt((lx*lx)/(rx*rx)+(ly*ly)/(ry*ry));dd=(nr-1)*(rx+ry)*0.5;'
+    'if(dd>-band&&dd<band){w=1-Math.abs(dd)/band;ph=Math.atan2(ly/ry,lx/rx);tx=-rx*Math.sin(ph)*rg.d;ty=ry*Math.cos(ph)*rg.d;tl=Math.sqrt(tx*tx+ty*ty)||1;tx/=tl;ty/=tl;'
+    'px=lx/(rx*rx);py=ly/(ry*ry);pl=Math.sqrt(px*px+py*py)||1;px=-px/pl*dd/band*0.8;py=-py/pl*dd/band*0.8;'
+    'gx=(tx+px)*rg.c-(ty+py)*rg.s;gy=(tx+px)*rg.s+(ty+py)*rg.c;vx=vx*(1-w*0.9)+gx*w*1.4;vy=vy*(1-w*0.9)+gy*w*1.4;}}'
+    'if(k.mx!==null){dx=p.x-k.mx;dy=p.y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<140&&d>0.5){f=(1-d/140)*1.4;ca=Math.cos(f);sa=Math.sin(f);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx+dx/d*f*0.6;vy+=dy/d*f*0.6;}}'
+    'f=Math.sqrt(vx*vx+vy*vy)||1;f=C.spd*1.2*p.sv/f;p.x+=vx*f;p.y+=vy*f;'
+    'if(--p.life<0||p.x<-2||p.x>W+2||p.y<-2||p.y>H+2)spawn(p,k);}'
+    'for(var ci=0;ci<C.pal.length;ci++){ctx.strokeStyle="rgba("+C.pal[ci]+",0.55)";ctx.beginPath();'
+    'for(i=0;i<N;i++){p=pts[i];if(p.ci!==ci||(p.px===p.x&&p.py===p.y))continue;ctx.moveTo(p.px,p.py);ctx.lineTo(p.x,p.y);}ctx.stroke();}'
+    'var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.55);g.addColorStop(0,"rgba("+C.pal[0]+","+(0.7*C.trail)+")");g.addColorStop(1,"rgba("+C.pal[0]+",0)");'
+    'ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*0.55,0,6.2832);ctx.fill();'
+    'ctx.globalCompositeOperation="source-over";'
+    'for(j=0;j<3;j++){rg=rings[j];ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,rg.a,0,6.2832);ctx.strokeStyle="rgba("+(j===1?P1:C.pal[0])+","+(j===2?0.3:0.85)+")";ctx.lineWidth=j===2?1.2:1.8;ctx.stroke();}'
+    'ctx.beginPath();ctx.arc(cx,cy,R*0.27,0,6.2832);ctx.fillStyle="rgb("+C.pal[0]+")";ctx.fill();'
+    'if(C.el){ph=t*12;lx=rx*Math.cos(ph);ly=ry*Math.sin(ph);rg=rings[0];var ex=cx+lx*rg.c-ly*rg.s,ey=cy+lx*rg.s+ly*rg.c;'
+    'ctx.beginPath();ctx.arc(ex,ey,R*0.125,0,6.2832);ctx.fillStyle="rgb("+P1+")";ctx.fill();}}'
+    '_a2uiCK.mount("om-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:220});'
+    '})();'
+)
+
 _FF_DEFAULT_PAL = ['56,189,248', '129,140,248', '244,114,182']
+_FF_FONTS = {
+    'sans': 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif',
+    'serif': 'Georgia,Times New Roman,serif',
+    'mono': 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+    'display': 'Arial Black,Impact,Helvetica Neue,Arial,sans-serif',
+}
+_FF_WEIGHTS = {'regular': '400', 'bold': '700', 'black': '900'}
 
 
 def _ff_hex(v, dflt):
@@ -18230,20 +18338,20 @@ def _ff_pick(v, table, dflt):
     return table[v] if isinstance(v, str) and v in table else table[dflt]
 
 
-def _ff_int(v, dflt):
-    """Mirror of JS parseInt(v, 10) for the shapes that matter here."""
+def _ff_int(v, dflt, lo, hi):
+    """Mirror of JS parseInt(v, 10) + clamp, for the shapes that matter here."""
     if isinstance(v, bool) or v is None:
-        return dflt
-    if isinstance(v, (int, float)):
-        return int(v)
-    m = re.match(r'^\s*(-?\d+)', v) if isinstance(v, str) else None
-    return int(m.group(1)) if m else dflt
+        n = dflt
+    elif isinstance(v, (int, float)):
+        n = int(v)
+    else:
+        m = re.match(r'^\s*(-?\d+)', v) if isinstance(v, str) else None
+        n = int(m.group(1)) if m else dflt
+    return max(lo, min(hi, n))
 
 
-def _render_flow_field(b: dict) -> str:
-    uid = _wa_uid(b)[:6]
-    bg = _ff_hex(b.get('background'), '#070a12')
-    cols = b.get('colors') if isinstance(b.get('colors'), list) else []
+def _ff_pal(colors, dflt):
+    cols = colors if isinstance(colors, list) else []
     pal = []
     for c in cols:
         if len(pal) >= 4:
@@ -18251,15 +18359,74 @@ def _render_flow_field(b: dict) -> str:
         h = _ff_hex(c, None)
         if h:
             pal.append(_ff_rgb(h))
-    if not pal:
-        pal = list(_FF_DEFAULT_PAL)
+    return pal or list(dflt)
+
+
+def _ff_lines(text, dflt):
+    out = []
+    for raw in (text if isinstance(text, str) else '').split('\n'):
+        if len(out) >= 3:
+            break
+        s = raw.strip()
+        if s:
+            out.append(s[:40])
+    return out or [dflt]
+
+
+def _ff_lines_js(lines):
+    return _wa_json.dumps(lines, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
+
+
+def _ff_script(js, uid, cfg):
+    return '<script>' + _A2UI_CANVAS_KIT_JS + js.replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script>'
+
+
+def _ff_sr_text(lines):
+    return ('<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">'
+            + _esc(' '.join(lines)) + '</span>')
+
+
+def _ff_panel(height, bg, inner):
+    return (f'<div style="position:relative;height:{height}px;margin:1rem 0;border-radius:16px;overflow:hidden;background:{bg};">'
+            + inner + '</div>')
+
+
+def _ff_canvas(cid):
+    return f'<canvas id="{cid}" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas>'
+
+
+def _ff_overlay(align, bg_rgb, pal, eyebrow, title, body):
+    if not (title or eyebrow or body):
+        return ''
+    if align == 'center':
+        veil = (f'radial-gradient(ellipse at center,rgba({bg_rgb},0.75) 0%,'
+                f'rgba({bg_rgb},0.25) 45%,rgba({bg_rgb},0) 75%)')
+    else:
+        veil = (f'linear-gradient(to {"right" if align == "left" else "left"},'
+                f'rgba({bg_rgb},0.92) 0%,rgba({bg_rgb},0.55) 38%,rgba({bg_rgb},0) 68%)')
+    items = 'center' if align == 'center' else ('flex-end' if align == 'right' else 'flex-start')
+    return (
+        f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:{veil};"></div>'
+        f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:{items};text-align:{align};padding:32px 40px;pointer-events:none;">'
+        f'<div style="max-width:{"80%" if align == "center" else "58%"};">'
+        + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_esc(eyebrow)}</div>' if eyebrow else '')
+        + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">{_esc(title)}</div>' if title else '')
+        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">{_md_inline(_esc(body))}</div>' if body else '')
+        + '</div></div>'
+    )
+
+
+def _render_flow_field(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), _FF_DEFAULT_PAL)
     n = _ff_pick(b.get('density'), {'low': '350', 'normal': '650', 'high': '1100'}, 'normal')
     spd = _ff_pick(b.get('speed'), {'slow': '0.6', 'normal': '1', 'fast': '1.6'}, 'normal')
     trail = _ff_pick(b.get('trail'), {'short': '0.16', 'normal': '0.07', 'long': '0.035'}, 'normal')
     sc = _ff_pick(b.get('scale'), {'fine': '0.006', 'normal': '0.0034', 'broad': '0.0019'}, 'normal')
     focus = _ff_pick(b.get('focus'), {'right': 'right', 'center': 'center', 'left': 'left', 'none': 'none'}, 'right')
     align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
-    height = max(200, min(900, _ff_int(b.get('height'), 360)))
+    height = _ff_int(b.get('height'), 360, 200, 900)
     inter = 'false' if b.get('interactive') is False else 'true'
     title = b.get('title') or ''
     eyebrow = b.get('eyebrow') or ''
@@ -18268,34 +18435,86 @@ def _render_flow_field(b: dict) -> str:
     cfg = ('{n:' + n + ',spd:' + spd + ',trail:' + trail + ',sc:' + sc
            + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",bgRgb:"' + bg_rgb
            + '",focus:"' + focus + '",inter:' + inter + '}')
-    if align == 'center':
-        veil = (f'radial-gradient(ellipse at center,rgba({bg_rgb},0.75) 0%,'
-                f'rgba({bg_rgb},0.25) 45%,rgba({bg_rgb},0) 75%)')
-    else:
-        veil = (f'linear-gradient(to {"right" if align == "left" else "left"},'
-                f'rgba({bg_rgb},0.92) 0%,rgba({bg_rgb},0.55) 38%,rgba({bg_rgb},0) 68%)')
-    text = ''
-    if title or eyebrow or body:
-        items = 'center' if align == 'center' else ('flex-end' if align == 'right' else 'flex-start')
-        text = (
-            f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:{veil};"></div>'
-            f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:{items};text-align:{align};padding:32px 40px;pointer-events:none;">'
-            f'<div style="max-width:{"80%" if align == "center" else "58%"};">'
-            + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_esc(eyebrow)}</div>' if eyebrow else '')
-            + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">{_esc(title)}</div>' if title else '')
-            + (f'<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">{_md_inline(_esc(body))}</div>' if body else '')
-            + '</div></div>'
-        )
-    return (
-        f'<div style="position:relative;height:{height}px;margin:1rem 0;border-radius:16px;overflow:hidden;background:{bg};">'
-        f'<canvas id="ff-{uid}" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas>'
-        + text
-        + '<script>' + _FLOW_FIELD_JS.replace('%%UID%%', uid).replace('%%CFG%%', cfg) + '</script>'
-        + '</div>'
-    )
+    text = _ff_overlay(align, bg_rgb, pal, eyebrow, title, body)
+    return _ff_panel(height, bg, _ff_canvas('ff-' + uid) + text + _ff_script(_FLOW_FIELD_JS, uid, cfg))
+
+
+def _ff_type_base(b: dict, dflt_height: int) -> dict:
+    bg = _ff_hex(b.get('background'), '#070a12')
+    return {
+        'lines': _ff_lines(b.get('text'), 'A2UI'),
+        'font': _ff_pick(b.get('font'), _FF_FONTS, 'sans'),
+        'weight': _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'),
+        'pal': _ff_pal(b.get('colors'), _FF_DEFAULT_PAL),
+        'bg': bg, 'bgRgb': _ff_rgb(bg),
+        'height': _ff_int(b.get('height'), dflt_height, 160, 900),
+        'inter': 'false' if b.get('interactive') is False else 'true',
+    }
+
+
+def _ff_type_cfg_head(t: dict) -> str:
+    return ('{lines:' + _ff_lines_js(t['lines']) + ',font:"' + t['font'] + '",weight:"' + t['weight']
+            + '",pal:["' + '","'.join(t['pal']) + '"],bg:"' + t['bg'] + '",bgRgb:"' + t['bgRgb'] + '"')
+
+
+def _render_particle_type(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    t = _ff_type_base(b, 320)
+    cap = _ff_pick(b.get('density'), {'low': '1200', 'normal': '2400', 'high': '4200'}, 'normal')
+    dot = _ff_pick(b.get('dot'), {'fine': '1.1', 'normal': '1.5', 'bold': '2.1'}, 'normal')
+    cfg = _ff_type_cfg_head(t) + ',cap:' + cap + ',dot:' + dot + ',inter:' + t['inter'] + '}'
+    return _ff_panel(t['height'], t['bg'], _ff_canvas('pt-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_PARTICLE_TYPE_JS, uid, cfg))
+
+
+def _render_light_type(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    t = _ff_type_base(b, 320)
+    per = _ff_pick(b.get('density'), {'low': '220', 'normal': '120', 'high': '70'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '0.9', 'fast': '1.5'}, 'normal')
+    trail = _ff_pick(b.get('trail'), {'short': '0.16', 'normal': '0.07', 'long': '0.035'}, 'normal')
+    sc = _ff_pick(b.get('scale'), {'fine': '0.012', 'normal': '0.006', 'broad': '0.003'}, 'normal')
+    glow = 'false' if b.get('glow') is False else 'true'
+    cfg = (_ff_type_cfg_head(t) + ',cap:3000,per:' + per + ',spd:' + spd + ',trail:' + trail
+           + ',sc:' + sc + ',glow:' + glow + ',inter:' + t['inter'] + '}')
+    return _ff_panel(t['height'], t['bg'], _ff_canvas('lt-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_LIGHT_TYPE_JS, uid, cfg))
+
+
+def _render_living_type(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    t = _ff_type_base(b, 240)
+    amp = _ff_pick(b.get('motion'), {'subtle': '8', 'normal': '16', 'wild': '32'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '1', 'fast': '1.8'}, 'normal')
+    cfg = _ff_type_cfg_head(t) + ',amp:' + amp + ',spd:' + spd + ',inter:' + t['inter'] + '}'
+    return _ff_panel(t['height'], t['bg'], _ff_canvas('lv-' + uid) + _ff_sr_text(t['lines']) + _ff_script(_LIVING_TYPE_JS, uid, cfg))
 
 
 _RENDERERS["flow_field"] = _render_flow_field
+_RENDERERS["particle_type"] = _render_particle_type
+_RENDERERS["light_type"] = _render_light_type
+_RENDERERS["living_type"] = _render_living_type
+
+
+def _render_orbit_mark(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), ['99,102,241', '168,85,247', '34,211,238'])
+    n = _ff_pick(b.get('density'), {'low': '260', 'normal': '500', 'high': '900'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.6', 'normal': '1', 'fast': '1.6'}, 'normal')
+    trail = _ff_pick(b.get('trail'), {'short': '0.16', 'normal': '0.07', 'long': '0.035'}, 'normal')
+    size = _ff_pick(b.get('size'), {'small': '0.5', 'normal': '0.78', 'large': '0.95'}, 'normal')
+    pos = _ff_pick(b.get('mark_position'), {'center': 'center', 'right': 'right', 'left': 'left'}, 'center')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = _ff_int(b.get('height'), 360, 200, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    el = 'false' if b.get('electron') is False else 'true'
+    bg_rgb = _ff_rgb(bg)
+    cfg = ('{n:' + n + ',spd:' + spd + ',trail:' + trail + ',sc:0.0034,pal:["' + '","'.join(pal) + '"],bg:"' + bg
+           + '",bgRgb:"' + bg_rgb + '",pos:"' + pos + '",size:' + size + ',el:' + el + ',inter:' + inter + '}')
+    text = _ff_overlay(align, bg_rgb, pal, b.get('eyebrow') or '', b.get('title') or '', b.get('body') or '')
+    return _ff_panel(height, bg, _ff_canvas('om-' + uid) + text + _ff_script(_ORBIT_MARK_JS, uid, cfg))
+
+
+_RENDERERS["orbit_mark"] = _render_orbit_mark
 
 
 def _render_isometric_mesh(b: dict) -> str:

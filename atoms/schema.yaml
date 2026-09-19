@@ -6978,6 +6978,177 @@ blocks:
     name: try.cloudflare.com hero canvas
     url: https://try.cloudflare.com
     note: Layout and mood inspiration only (dark ground, convergence, light packets, glow, reduced-motion still) -- the flow-field mechanics and renderer are original
+- type: particle_type
+  stage: preview
+  description: 'Agentic typeface: the words an agent supplies assemble out of thousands
+    of coloured particles that fly in from random positions and settle into the
+    letterforms; the pointer scatters them and they reform. Text is rasterised on an
+    offscreen canvas and sampled into particle targets, so any string works, at
+    any panel size, in a system font. Honours prefers-reduced-motion (renders the
+    settled word), pauses offscreen, DPR-aware. The words are also emitted as
+    visually-hidden text so they stay readable and selectable. Sibling of
+    light_type (words as flowing light) and living_type (letters that breathe).
+    Every option is an enum or a clamped int; text is JSON-encoded into the
+    script with "<" escaped, so it can never break out.'
+  compact_description: agent-supplied words assemble from particles; pointer scatters them
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a dark panel; the words remain as visually-hidden text, the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid panel
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    text: string (required). The words to set, up to 3 lines separated by "\n", each trimmed to 40 characters. Short and bold reads best. Default "A2UI".
+    font: '"sans" | "serif" | "mono" | "display"  (optional, default "sans"). System font stacks; no webfont is loaded.'
+    weight: '"regular" | "bold" | "black"  (optional, default "black")'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"], applied left to right across the words. Invalid entries are dropped.
+    background: '"#rrggbb" (optional). Default "#070a12".'
+    height: integer (optional). Panel height in px, clamped 160-900.
+    interactive: bool (optional). Pointer affects the letters. Default true.
+    density: '"low" | "normal" | "high"  (optional, default "normal"). Particle count cap 1200 / 2400 / 4200.'
+    dot: '"fine" | "normal" | "bold"  (optional, default "normal"). Particle radius.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: light_type
+  stage: preview
+  description: 'Agentic typeface: the words an agent supplies are rendered as flowing
+    light -- luminous streams ride a noise field inside the letterforms only
+    (particles spawn on the glyph mask and respawn when they leave it), drawn with
+    additive long-exposure trails and composited through the text as a mask, with a
+    soft glow halo behind. Reads as a headline made of moving liquid light. Pointer
+    swirls the flow. Honours prefers-reduced-motion (one pre-simulated frame),
+    pauses offscreen, DPR-aware; the words are also emitted as visually-hidden
+    text. Dark backgrounds only -- trails are additive. Sibling of particle_type
+    and living_type. Every option is an enum or a clamped int; text is JSON-encoded
+    into the script with "<" escaped.'
+  compact_description: agent-supplied words made of flowing light, streams masked to the glyphs
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a dark panel; the words remain as visually-hidden text, the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid panel
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    text: string (required). The words to set, up to 3 lines separated by "\n", each trimmed to 40 characters. Short and bold reads best. Default "A2UI".
+    font: '"sans" | "serif" | "mono" | "display"  (optional, default "sans"). System font stacks; no webfont is loaded.'
+    weight: '"regular" | "bold" | "black"  (optional, default "black")'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"], applied left to right across the words. Invalid entries are dropped.
+    background: '"#rrggbb" (optional). Default "#070a12".'
+    height: integer (optional). Panel height in px, clamped 160-900.
+    interactive: bool (optional). Pointer affects the letters. Default true.
+    density: '"low" | "normal" | "high"  (optional, default "normal"). Streams per glyph area.'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+    trail: '"short" | "normal" | "long"  (optional, default "normal")'
+    scale: '"fine" | "normal" | "broad"  (optional, default "normal"). Swirl size inside the letters.'
+    glow: bool (optional). Soft halo behind the letters in the first colour. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: living_type
+  stage: preview
+  description: 'Agentic typeface: the words an agent supplies are set glyph by glyph
+    on canvas and every letter breathes on its own noise track -- drifting,
+    tilting and scaling a little, so the headline feels alive rather than
+    animated. Letters lean toward the pointer and swell as it passes. Works on
+    light or dark backgrounds (set background and colors). Honours
+    prefers-reduced-motion (renders one static frame), pauses offscreen,
+    DPR-aware; the words are also emitted as visually-hidden text. Sibling of
+    particle_type and light_type. Every option is an enum or a clamped int; text
+    is JSON-encoded into the script with "<" escaped.'
+  compact_description: agent-supplied headline whose letters breathe and lean toward the pointer
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a dark panel; the words remain as visually-hidden text, the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid panel
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    text: string (required). The words to set, up to 3 lines separated by "\n", each trimmed to 40 characters. Short and bold reads best. Default "A2UI".
+    font: '"sans" | "serif" | "mono" | "display"  (optional, default "sans"). System font stacks; no webfont is loaded.'
+    weight: '"regular" | "bold" | "black"  (optional, default "black")'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#38bdf8","#818cf8","#f472b6"], applied left to right across the words. Invalid entries are dropped.
+    background: '"#rrggbb" (optional). Default "#070a12".'
+    height: integer (optional). Panel height in px, clamped 160-900.
+    interactive: bool (optional). Pointer affects the letters. Default true.
+    motion: '"subtle" | "normal" | "wild"  (optional, default "normal"). Drift amplitude.'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: orbit_mark
+  stage: preview
+  description: 'The catalogue''s own orbit mark, alive: the header logo (three orbit
+    ellipses, nucleus, electron) drawn on canvas with a flow field around it --
+    hundreds of luminous streams ride a noise field and, when they pass near an
+    orbit, get captured into it and circle the nucleus like electrons before
+    drifting off again; the nucleus glows as a sink and a real electron runs the
+    first orbit. Optional eyebrow/title/body copy sits beside the mark behind a
+    readability veil, so it works as a brand hero or a cover slide. Pointer bends
+    the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses
+    offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as
+    flow_field: every option is an enum or a clamped int, colours must be #rrggbb.'
+  compact_description: the a2ui orbit-mark logo with flow-field streams captured into its orbits
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Renders as a plain dark panel with the copy; the canvas is empty without JavaScript
+    - surface: google-chat
+      note: Inline script not supported; renders as a solid dark panel with the copy
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    title: string (optional). Headline beside the mark.
+    eyebrow: string (optional). Small uppercase label above the title, tinted with the first colour.
+    body: string (optional). Supporting copy under the title (markdown inline supported).
+    align: '"left" | "center" | "right"  (optional, default "left"). Where the copy sits.'
+    mark_position: '"center" | "right" | "left"  (optional, default "center"). Where the mark sits; put it opposite the copy.'
+    size: '"small" | "normal" | "large"  (optional, default "normal"). Mark diameter relative to the panel.'
+    colors: array of 1-4 "#rrggbb" strings (optional). Default ["#6366f1","#a855f7","#22d3ee"]. First colour is the orbits and nucleus, second the electron, all of them the streams.
+    background: '"#rrggbb" (optional). Default "#070a12". Keep it dark.'
+    density: '"low" | "normal" | "high"  (optional, default "normal")'
+    speed: '"slow" | "normal" | "fast"  (optional, default "normal")'
+    trail: '"short" | "normal" | "long"  (optional, default "normal")'
+    electron: bool (optional). Animate an electron along the first orbit. Default true.
+    height: integer (optional). Panel height in px, clamped 200-900. Default 360.
+    interactive: bool (optional). Pointer bends the field. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.
