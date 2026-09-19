@@ -132,6 +132,7 @@ a2ui-atoms-v1:
 - tree_view
 - wall_elevation
 a2ui-aviation-v1:
+- great_circle
 - adsb_feed
 - airspace_command_deck
 - atc_vectoring
@@ -174,6 +175,8 @@ a2ui-charts-v1:
 - word_cloud
 a2ui-display-v1:
 - contrast_audit
+- bezier_easing
+- tonal_scale
 - action_required_card
 - annotated_code
 - annotation_highlight
@@ -553,6 +556,7 @@ a2ui-meta-v1:
 - tool_call_card
 - url_anatomy
 a2ui-ops-v1:
+- sun_path
 - api_param_table
 - api_reference
 - breaking_banner

@@ -7522,6 +7522,157 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: sun_path
+  stage: preview
+  description: 'The day''s sun, computed in the atom: give it a latitude, longitude,
+    date and UTC offset and it runs the NOAA solar-position algorithm in its own
+    script -- declination, equation of time, sunrise, solar noon, sunset, civil
+    twilight and golden hour -- then draws the sun''s altitude arc across the 24
+    hours, shades twilight and golden-hour bands, marks rise / noon / set with
+    times, prints the day length, and (live) shows where the sun is right now,
+    refreshed each minute. Polar night and midnight sun are labelled, not
+    crashed. Both renderers emit the same script; the maths runs on the client.
+    Sibling of great_circle and the wall_elevation "calcs baked in" idea.'
+  compact_description: sunrise, noon, sunset and live sun position computed from lat/lon/date and drawn
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: The drawing needs JavaScript; renders as an empty panel (tonal_scale shows the accent swatch only)
+    - surface: google-chat
+      note: Inline script not supported
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    lat: number (optional). Latitude -90..90. Default 48.8566 (Paris).
+    lon: number (optional). Longitude -180..180. Default 2.3522.
+    date: string (optional). "YYYY-MM-DD"; defaults to today on the client.
+    tz: 'number | "local"  (optional). UTC offset in hours, -12..14; "local" uses the viewer''s clock. Default "local".'
+    label: string (optional). Place name drawn in the corner. Default "Sun".
+    live: bool (optional). Draw the current sun position and tick each minute. Default true.
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    height: integer (optional). Panel height in px, clamped 200-600. Default 300.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: great_circle
+  stage: preview
+  description: 'Great-circle route between two points, computed in the atom:
+    haversine distance in nm, km or mi, initial and final bearings, midpoint,
+    all worked out in its own script and drawn on an equirectangular world panel
+    with a 30-degree graticule, the route sampled along the sphere (split cleanly
+    at the antimeridian), labelled endpoints, and a small compass rose showing the
+    initial bearing. Defaults to LHR-JFK. Both renderers emit the same script.'
+  compact_description: haversine distance and bearings between two points, drawn as a great-circle route
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: The drawing needs JavaScript; renders as an empty panel (tonal_scale shows the accent swatch only)
+    - surface: google-chat
+      note: Inline script not supported
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    from: object (optional). {lat, lon, label}. Default London Heathrow.
+    to: object (optional). {lat, lon, label}. Default New York JFK.
+    units: '"nm" | "km" | "mi"  (optional, default "nm")'
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    height: integer (optional). Panel height in px, clamped 240-600. Default 320.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: bezier_easing
+  stage: preview
+  description: 'A cubic-bezier easing curve you can feel: the curve drawn on a
+    progress-over-time grid with its two control handles, a dot riding the
+    curve in real time, and a ball on a track below moving with the same
+    easing, looping at the declared duration. Drag the handles (editable by
+    default) and the CSS string under it updates live, ready to paste. Presets
+    for ease, ease-in, ease-out, ease-in-out, overshoot and anticipate, or four
+    raw control values. The one motion-design tool an agent composing UI
+    should have to hand. Honours prefers-reduced-motion (static curve).'
+  compact_description: draggable cubic-bezier easing editor with a live preview and the CSS string
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: The drawing needs JavaScript; renders as an empty panel (tonal_scale shows the accent swatch only)
+    - surface: google-chat
+      note: Inline script not supported
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    preset: '"ease" | "ease-in" | "ease-out" | "ease-in-out" | "overshoot" | "anticipate"  (optional). Overrides x1..y2 when given.'
+    x1: number (optional). Control point 1 x, 0..1. Default 0.25.
+    y1: number (optional). Control point 1 y, -1..2. Default 0.1.
+    x2: number (optional). Control point 2 x, 0..1. Default 0.25.
+    y2: number (optional). Control point 2 y, -1..2. Default 1.
+    duration: integer (optional). Loop duration in ms, clamped 200-4000. Default 1200.
+    editable: bool (optional). Allow dragging the handles. Default true.
+    label: string (optional). Caption next to the CSS string.
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    height: integer (optional). Curve panel height in px, clamped 200-500. Default 300.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: tonal_scale
+  stage: preview
+  description: 'A perceptual tonal ramp from one accent colour, computed in the
+    atom: the accent is converted to OKLab, its hue and chroma kept, lightness
+    spread evenly from near-white to near-black with chroma eased down at the
+    ends, each tone gamut-mapped back to sRGB, and rendered as swatches with tone
+    number, hex, and (optionally) the contrast ratio of the best text colour on
+    it; the tone nearest the original accent is outlined. A CSS custom-property
+    block is written underneath, ready to paste. The design-token generator an
+    agent needs before it picks colours by hand.'
+  compact_description: OKLCH tonal ramp of 5-13 swatches from one accent, with contrast and CSS variables
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: The drawing needs JavaScript; renders as an empty panel (tonal_scale shows the accent swatch only)
+    - surface: google-chat
+      note: Inline script not supported
+    incompatible_on:
+    - surface: email
+      reason: Canvas and inline JavaScript are not supported in email clients
+  fields:
+    accent: '"#rrggbb" (optional). The seed colour. Default "#0e7bb8".'
+    steps: integer (optional). Number of tones, clamped 5-13. Default 11.
+    name: string (optional). Token prefix, lowercase [a-z0-9-], up to 20 characters. Default "accent".
+    show_contrast: bool (optional). Show the best text contrast per tone. Default true.
+    show_code: bool (optional). Append the CSS custom properties block. Default true.
+    theme: '"dark" | "light"  (optional, default "dark")'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.
