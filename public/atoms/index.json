@@ -3681,18 +3681,20 @@
   },
   {
    "type": "floating_particles",
-   "compact": "floating particles background (canvas placeholder)",
+   "compact": "soft glowing bokeh particles drifting upward on canvas, optional centred copy",
    "surfaces": [
     "web",
+    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
    ]
   },
   {
    "type": "parallax_section",
-   "compact": "parallax scroll section (canvas placeholder)",
+   "compact": "pointer-parallax depth layers of soft colour orbs on canvas, optional centred copy",
    "surfaces": [
     "web",
+    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
    ]

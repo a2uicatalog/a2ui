@@ -1234,7 +1234,7 @@
         },
         {
           "type": "floating_particles",
-          "description": "floating particles background (canvas placeholder)"
+          "description": "soft glowing bokeh particles drifting upward on canvas, optional centred copy"
         },
         {
           "type": "flow_connector",
@@ -1342,7 +1342,7 @@
         },
         {
           "type": "parallax_section",
-          "description": "parallax scroll section (canvas placeholder)"
+          "description": "pointer-parallax depth layers of soft colour orbs on canvas, optional centred copy"
         },
         {
           "type": "pattern_background",

@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Parallax Section — A2UI Atomic Catalog</title>
-  <meta name="description" content="Parallax scroll section (canvas fallback placeholder)">
+  <meta name="description" content="Depth-layered background on canvas: three layers of soft colour orbs, large and faint at the back, small and sharp at the front, each layer shifting with the pointer by an amount proportional to its depth, plus a slow ambient drift when the pointer is away. Optional eyebrow/title/body copy centred on top. Pointer-driven rather than scroll-driven on purpose: MCP Apps hosts size the iframe to its content, so there is often no scroll to drive. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a "canvas fallback placeholder" until 2026-09-19; now a real atom on the flow_field kit, identical on every renderer.">
   <link rel="alternate" type="text/markdown" href="/atoms/parallax_section.md">
   <script type="application/ld+json">
   {
@@ -175,26 +175,30 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </nav>
 
   <h1>Parallax Section</h1>
-  <p class="desc">Parallax scroll section (canvas fallback placeholder)</p>
+  <p class="desc">Depth-layered background on canvas: three layers of soft colour orbs, large and faint at the back, small and sharp at the front, each layer shifting with the pointer by an amount proportional to its depth, plus a slow ambient drift when the pointer is away. Optional eyebrow/title/body copy centred on top. Pointer-driven rather than scroll-driven on purpose: MCP Apps hosts size the iframe to its content, so there is often no scroll to drive. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a "canvas fallback placeholder" until 2026-09-19; now a real atom on the flow_field kit, identical on every renderer.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Renders as a plain dark panel with the copy; the canvas is empty without JavaScript</td></tr><tr><td>google-chat</td><td>Inline script not supported; renders as a solid dark panel with the copy</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of parallax_section"><div style="margin:1rem 0;padding:40px 28px;border-radius:14px;overflow:hidden;position:relative;background:linear-gradient(135deg,#0f172a,#1e1b4b);"><div style="position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,#6366f155 0%,transparent 50%),radial-gradient(circle at 80% 50%,#ec489955 0%,transparent 50%);"></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of parallax_section"><div style="position:relative;height:300px;margin:1rem 0;border-radius:16px;overflow:hidden;background:#0f172a;"><canvas id="px-c7420d" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas><script>window._a2uiCK=window._a2uiCK||(function(){var P=new Uint8Array(512);(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}function fd(v){return v*v*(3-2*v);}function L(a,b,v){return a+(b-a)*v;}function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}resize();if(RM){var n=o.still||220;for(var i=0;i<n;i++)step();return;}window.addEventListener("resize",resize);if(o.interactive!==false){var box=c.parentNode;box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();k.mx=e.clientX-r.left;k.my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){k.mx=null;k.my=null;});}if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}raf=requestAnimationFrame(loop);}return {noise:noise,mount:mount,fitText:fitText};})();(function(){var C={n:[3,6,14],depth:0.08,pal:["99,102,241","236,72,153","6,182,212"],bg:"#0f172a",inter:true};var L=[];function init(k){L=[];for(var li=0;li<3;li++){var items=[],n=C.n[li],base=li===0?0.22:li===1?0.12:0.05;for(var i=0;i<n;i++)items.push({x:Math.random(),y:Math.random(),r:base*(0.6+Math.random()*0.8),ci:Math.floor(Math.random()*C.pal.length)});L.push(items);}}function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);var px=k.mx===null?0:(k.mx/W-0.5),py=k.my===null?0:(k.my/H-0.5),ax=Math.sin(t*3)*0.02,ay=Math.cos(t*2.3)*0.02;for(var li=0;li<3;li++){var depth=(li+1)/3,sh=C.depth*depth,items=L[li],ox=-(px+ax)*sh*W,oy=-(py+ay)*sh*H,al=li===0?0.22:li===1?0.32:0.55,bl=li===0?0.9:li===1?0.7:0.35;for(var i=0;i<items.length;i++){var o=items[i],x=o.x*W+ox,y=o.y*H+oy,r=o.r*Math.min(W,H);var g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,"rgba("+C.pal[o.ci]+","+al+")");g.addColorStop(bl,"rgba("+C.pal[o.ci]+","+(al*0.4)+")");g.addColorStop(1,"rgba("+C.pal[o.ci]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,6.2832);ctx.fill();}}}_a2uiCK.mount("px-c7420d",{init:init,draw:draw,speed:1,interactive:C.inter,still:1});})();</script></div></div>
 </div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, alias: label, text)</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, alias: label, text). Heading centred over the layers.</td><td>optional</td></tr><tr><td>eyebrow</td><td>string. Small uppercase label above the title.</td><td>optional</td></tr><tr><td>body</td><td>string. Copy under the title (markdown inline supported).</td><td>optional</td></tr><tr><td>colors</td><td>array of 1-4 "#rrggbb" strings. Default indigo/pink/cyan.</td><td>optional</td></tr><tr><td>background</td><td>"#rrggbb". Default "#0f172a". Keep it dark.</td><td>optional</td></tr><tr><td>depth</td><td>"subtle" | "normal" | "deep"  (optional, default "normal"). How far the layers shift with the pointer.</td><td>optional</td></tr><tr><td>height</td><td>integer. Panel height in px, clamped 160-900. Default 300.</td><td>optional</td></tr><tr><td>interactive</td><td>bool. Pointer drives the parallax. Default true.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
@@ -213,13 +217,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "url": "https://a2uicatalog.ai/atoms/parallax_section",
   "capabilities": [
     "web",
+    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "Parallax scroll section (canvas fallback placeholder)",
+  "description": "Depth-layered background on canvas: three layers of soft colour orbs, large and faint at the back, small and sharp at the front, each layer shifting with the pointer by an amount proportional to its depth, plus a slow ambient drift when the pointer is away. Optional eyebrow/title/body copy centred on top. Pointer-driven rather than scroll-driven on purpose: MCP Apps hosts size the iframe to its content, so there is often no scroll to drive. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a \"canvas fallback placeholder\" until 2026-09-19; now a real atom on the flow_field kit, identical on every renderer.",
   "representativeQueries": [
-    "show a parallax scroll section (canvas placeholder)",
-    "parallax scroll section (canvas fallback placeholder)",
+    "show a pointer-parallax depth layers of soft colour orbs on canvas, optional centred copy",
+    "depth-layered background on canvas: three layers of soft colour orbs, large and faint at the back, s",
     "render a parallax section"
   ]
 }</code></pre>

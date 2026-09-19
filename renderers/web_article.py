@@ -6273,67 +6273,6 @@ def _render_card_stack(b: dict) -> str:
     )
 
 
-def _render_meteor_shower(b: dict) -> str:
-    import hashlib
-    mid   = "met_" + hashlib.md5(str(b.get("count",20)).encode()).hexdigest()[:6]
-    count = min(int(b.get("count", 20)), 40)
-    color = b.get("color", "#38bdf8")
-    speed = b.get("speed", "normal")
-    title = b.get("title", "")
-    body  = b.get("body", "")
-    background = b.get("background", "#0a0f1d")
-
-    base = {"slow": 2.2, "normal": 1.2, "fast": 0.6}.get(speed, 1.2)
-
-    meteors = []
-    for i in range(count):
-        left   = (i * 41 + 11) % 100
-        delay  = round((i * 0.21) % 4.0, 2)
-        dur    = round(base + (i % 7) * 0.18, 2)
-        length = 40 + (i % 5) * 20
-        thick  = 1 + (i % 2)
-        meteors.append(
-            f'<span style="position:absolute;left:{left}%;top:-{length}px;'
-            f'width:{thick}px;height:{length}px;border-radius:9999px;'
-            f'background:linear-gradient(transparent,{color});'
-            f'transform:rotate(35deg);'
-            f'animation:{mid}-fall {dur}s linear {delay}s infinite;"></span>'
-        )
-
-    title_html = (
-        f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">'
-        f'{title}</div>'
-    ) if title else ""
-    body_html = (
-        f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">'
-        f'{_md_inline(body)}</div>'
-    ) if body else ""
-    has_content = bool(title or body)
-
-    padding    = "40px 36px" if has_content else "60px 0"
-    min_h      = 140 if has_content else 120
-    meteors_str = "".join(meteors)
-    content_div = (
-        f'<div style="position:relative;z-index:1;">{title_html}{body_html}</div>'
-    ) if has_content else ""
-
-    return (
-        f'<style>'
-        f'@keyframes {mid}-fall{{'
-        f'0%{{opacity:0;transform:translateX(0) translateY(-80px) rotate(35deg)}}'
-        f'10%{{opacity:1}}'
-        f'90%{{opacity:1}}'
-        f'100%{{opacity:0;transform:translateX(160px) translateY(420px) rotate(35deg)}}'
-        f'}}</style>'
-        f'<div style="position:relative;overflow:hidden;border-radius:16px;'
-        f'background:{background};padding:{padding};'
-        f'margin:1rem 0;min-height:{min_h}px;">'
-        f'{meteors_str}'
-        f'{content_div}'
-        f'</div>'
-    )
-
-
 def _render_entity_list(b: dict) -> str:
     """Named resource rows: avatar/icon + title + subtitle + status badge + trailing meta."""
     STATUS_COLORS = {
@@ -7777,7 +7716,6 @@ _RENDERERS = {
     "dot_grid_background":   _render_dot_grid_background,
     "shimmer_button":        _render_shimmer_button,
     "card_stack":            _render_card_stack,
-    "meteor_shower":         _render_meteor_shower,
     # AI-native & original atoms — v201
     "entity_list":          _render_entity_list,
     "prompt_template":      _render_prompt_template,
@@ -8599,87 +8537,6 @@ def _render_vote_button_group(b: dict) -> str:
     )
 
 
-def _render_effect_overlay(b: dict) -> str:
-    import html as _h
-    trigger = b.get("trigger", "confetti")
-    status  = b.get("status", "")
-    message = b.get("message", "")
-    color   = b.get("color", "#00f2ff")
-    uid     = abs(_wa_shash(trigger + status + message)) % 100000
-
-    status_html = (
-        f'<div style="font-size:0.68rem;color:#64748b;text-align:center;padding:6px 0 0;'
-        f'text-transform:uppercase;letter-spacing:.09em;">{_h.escape(status)}</div>'
-    ) if status else ""
-
-    msg_html = (
-        f'<div style="font-size:0.95rem;font-weight:700;color:#fff;z-index:1;margin-top:6px;">'
-        f'{_h.escape(message)}</div>'
-    ) if message else ""
-
-    if trigger == "pulse":
-        css = (
-            f'<style>'
-            f'@keyframes ep_pulse{uid}{{0%,100%{{transform:scale(1);box-shadow:0 0 0 0 {color}50}}'
-            f'50%{{transform:scale(1.06);box-shadow:0 0 0 18px {color}00}}}}'
-            f'</style>'
-        )
-        content = (
-            f'<div style="display:flex;align-items:center;justify-content:center;gap:14px;padding:28px 0;">'
-            f'<div style="width:44px;height:44px;border-radius:50%;background:{color};flex-shrink:0;'
-            f'animation:ep_pulse{uid} 1.6s ease-in-out infinite;"></div>'
-            f'{msg_html}'
-            f'</div>'
-        )
-    else:
-        _confetti_colors = ["#ff6b6b","#ffd93d","#6bcb77","#4d96ff","#ff6bd6","#00f2ff","#ff8c00","#c084fc"]
-        icon = {"trophy": "🏆", "fireworks": "🎆"}.get(trigger, "🎉")
-        trophy_anim = (
-            f'animation:ep_trophy{uid} 0.5s cubic-bezier(.34,1.56,.64,1) forwards;'
-            if trigger == "trophy" else ""
-        )
-        css = (
-            f'<style>'
-            f'@keyframes ep_fall{uid}{{0%{{transform:translateY(-10px) rotate(0deg);opacity:1}}'
-            f'100%{{transform:translateY(220px) rotate(540deg);opacity:0}}}}'
-            f'@keyframes ep_trophy{uid}{{0%{{transform:scale(0) rotate(-12deg);opacity:0}}'
-            f'60%{{transform:scale(1.15) rotate(4deg);opacity:1}}'
-            f'100%{{transform:scale(1) rotate(0);opacity:1}}}}'
-            f'.ep_p{uid}{{position:absolute;border-radius:2px;'
-            f'animation:ep_fall{uid} var(--d,1.4s) var(--dl,0s) ease-in forwards;}}'
-            f'</style>'
-        )
-        particles = ""
-        for i in range(26):
-            c  = _confetti_colors[i % len(_confetti_colors)]
-            lp = (i * 37 + 5) % 96
-            dl = round((i * 0.07) % 1.1, 2)
-            d  = round(1.1 + (i * 0.06) % 0.9, 1)
-            w  = 7 if i % 3 == 0 else 9
-            h  = 11 if i % 4 == 0 else 7
-            r  = (i * 21) % 360
-            particles += (
-                f'<div class="ep_p{uid}" style="left:{lp}%;background:{c};'
-                f'width:{w}px;height:{h}px;--d:{d}s;--dl:{dl}s;'
-                f'transform:rotate({r}deg);"></div>'
-            )
-        content = (
-            f'<div style="position:relative;overflow:hidden;height:160px;'
-            f'display:flex;align-items:center;justify-content:center;flex-direction:column;">'
-            f'<div style="position:absolute;inset:0;pointer-events:none;">{particles}</div>'
-            f'<div style="font-size:3.2rem;z-index:1;{trophy_anim}">{icon}</div>'
-            f'{msg_html}'
-            f'</div>'
-        )
-
-    return (
-        f'{css}'
-        f'<div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;'
-        f'border-radius:14px;overflow:hidden;">'
-        f'{status_html}'
-        f'{content}'
-        f'</div>'
-    )
 
 
 def _render_skeleton_stage_card(b: dict) -> str:
@@ -9061,7 +8918,6 @@ _RENDERERS.update({
     "media_stream_card":    _render_media_stream_card,
     "live_aggregator":      _render_live_aggregator,
     "vote_button_group":    _render_vote_button_group,
-    "effect_overlay":       _render_effect_overlay,
     "skeleton_stage_card":  _render_skeleton_stage_card,
 })
 
@@ -16092,7 +15948,6 @@ _RENDERERS["aurora_background"] = _render_aurora_background
 _RENDERERS["dot_grid_background"] = _render_dot_grid_background
 _RENDERERS["shimmer_button"] = _render_shimmer_button
 _RENDERERS["card_stack"] = _render_card_stack
-_RENDERERS["meteor_shower"] = _render_meteor_shower
 _RENDERERS["entity_list"] = _render_entity_list
 _RENDERERS["prompt_template"] = _render_prompt_template
 _RENDERERS["model_card"] = _render_model_card
@@ -16132,7 +15987,6 @@ _RENDERERS["heatmap_calendar"] = _render_heatmap_calendar
 _RENDERERS["media_stream_card"] = _render_media_stream_card
 _RENDERERS["live_aggregator"] = _render_live_aggregator
 _RENDERERS["vote_button_group"] = _render_vote_button_group
-_RENDERERS["effect_overlay"] = _render_effect_overlay
 _RENDERERS["skeleton_stage_card"] = _render_skeleton_stage_card
 _RENDERERS["word_flip"] = _render_word_flip
 _RENDERERS["sonar_pulse"] = _render_sonar_pulse
@@ -18409,9 +18263,9 @@ def _ff_overlay(align, bg_rgb, pal, eyebrow, title, body):
         f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:{veil};"></div>'
         f'<div style="position:absolute;top:0;left:0;width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:{items};text-align:{align};padding:32px 40px;pointer-events:none;">'
         f'<div style="max-width:{"80%" if align == "center" else "58%"};">'
-        + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_esc(eyebrow)}</div>' if eyebrow else '')
-        + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">{_esc(title)}</div>' if title else '')
-        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">{_md_inline(_esc(body))}</div>' if body else '')
+        + (f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgb({pal[0]});margin-bottom:12px;">{_cv_esc(eyebrow)}</div>' if eyebrow else '')
+        + (f'<div style="font-size:2rem;line-height:1.1;font-weight:800;color:#ffffff;letter-spacing:-0.02em;margin-bottom:12px;">{_cv_esc(title)}</div>' if title else '')
+        + (f'<div style="font-size:1rem;line-height:1.6;color:rgba(255,255,255,0.78);">{_md_inline(_cv_esc(body))}</div>' if body else '')
         + '</div></div>'
     )
 
@@ -18758,6 +18612,124 @@ _RENDERERS["weighted_words"] = _render_weighted_words
 _RENDERERS["stance"] = _render_stance
 _RENDERERS["receipt"] = _render_receipt
 _RENDERERS["changed_mind"] = _render_changed_mind
+
+
+# ─── formerly placeholders: floating_particles / parallax_section / meteor_shower / effect_overlay ─
+# 1:1 twins of the GAS renderers (atoms_canvas.gs, atoms_charts.gs), 2026-09-19.
+# tests/test_placeholders_made_real.py. Edit BOTH.
+_FLOATING_PARTICLES_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var pts=[],N=0;'
+    'function spawn(p,k,fresh){p.x=Math.random()*k.W;p.y=fresh?Math.random()*k.H:k.H+10;p.z=0.3+Math.random()*0.7;p.r=(1.5+Math.random()*3.5)*p.z;p.v=(0.15+Math.random()*0.35)*p.z;p.ci=Math.floor(Math.random()*C.pal.length);p.a=0.25+p.z*0.55;return p;}'
+    'function init(k){N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];for(var i=0;i<N;i++)pts.push(spawn({},k,true));}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="lighter";'
+    'for(var i=0;i<N;i++){var p=pts[i],sway=(k.noise(p.x*0.004,p.y*0.004,t*2)-0.5)*1.6*p.z;p.x+=sway*C.spd;p.y-=p.v*C.spd;'
+    'if(k.mx!==null){var dx=p.x-k.mx,dy=p.y-k.my,d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){var f=(1-d/120)*2.2*p.z;p.x+=dx/d*f;p.y+=dy/d*f;}}'
+    'if(p.y<-12||p.x<-12||p.x>W+12)spawn(p,k,false);'
+    'var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,"rgba("+C.pal[p.ci]+","+p.a+")");g.addColorStop(0.5,"rgba("+C.pal[p.ci]+","+(p.a*0.35)+")");g.addColorStop(1,"rgba("+C.pal[p.ci]+",0)");'
+    'ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,6.2832);ctx.fill();}}'
+    '_a2uiCK.mount("fp-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});'
+    '})();'
+)
+_PARALLAX_SECTION_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var L=[];'
+    'function init(k){L=[];for(var li=0;li<3;li++){var items=[],n=C.n[li],base=li===0?0.22:li===1?0.12:0.05;for(var i=0;i<n;i++)items.push({x:Math.random(),y:Math.random(),r:base*(0.6+Math.random()*0.8),ci:Math.floor(Math.random()*C.pal.length)});L.push(items);}}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);'
+    'var px=k.mx===null?0:(k.mx/W-0.5),py=k.my===null?0:(k.my/H-0.5),ax=Math.sin(t*3)*0.02,ay=Math.cos(t*2.3)*0.02;'
+    'for(var li=0;li<3;li++){var depth=(li+1)/3,sh=C.depth*depth,items=L[li],ox=-(px+ax)*sh*W,oy=-(py+ay)*sh*H,al=li===0?0.22:li===1?0.32:0.55,bl=li===0?0.9:li===1?0.7:0.35;'
+    'for(var i=0;i<items.length;i++){var o=items[i],x=o.x*W+ox,y=o.y*H+oy,r=o.r*Math.min(W,H);var g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,"rgba("+C.pal[o.ci]+","+al+")");g.addColorStop(bl,"rgba("+C.pal[o.ci]+","+(al*0.4)+")");g.addColorStop(1,"rgba("+C.pal[o.ci]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,6.2832);ctx.fill();}}}'
+    '_a2uiCK.mount("px-%%UID%%",{init:init,draw:draw,speed:1,interactive:C.inter,still:1});'
+    '})();'
+)
+
+
+def _ff_hund(h):
+    s = f'{h // 100}.{"0" if h % 100 < 10 else ""}{h % 100}'
+    return re.sub(r'\.$', '', re.sub(r'0+$', '', s))
+
+
+def _render_floating_particles(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#0f172a')
+    pal = _ff_pal(b.get('colors'), ['99,102,241', '139,92,246', '236,72,153', '6,182,212'])
+    n = _ff_pick(b.get('density'), {'low': '60', 'normal': '120', 'high': '220'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.6', 'normal': '1', 'fast': '1.7'}, 'normal')
+    height = _ff_int(b.get('height'), 240, 120, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or b.get('label') or b.get('text') or ''
+    cfg = '{n:' + n + ',spd:' + spd + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",inter:' + inter + '}'
+    text = _ff_overlay('center', _ff_rgb(bg), pal, b.get('eyebrow') or '', title, b.get('body') or '')
+    return _ff_panel(height, bg, _ff_canvas('fp-' + uid) + text + _ff_script(_FLOATING_PARTICLES_JS, uid, cfg))
+
+
+def _render_parallax_section(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#0f172a')
+    pal = _ff_pal(b.get('colors'), ['99,102,241', '236,72,153', '6,182,212'])
+    depth = _ff_pick(b.get('depth'), {'subtle': '0.04', 'normal': '0.08', 'deep': '0.14'}, 'normal')
+    height = _ff_int(b.get('height'), 300, 160, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or b.get('label') or b.get('text') or ''
+    cfg = '{n:[3,6,14],depth:' + depth + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",inter:' + inter + '}'
+    text = _ff_overlay('center', _ff_rgb(bg), pal, b.get('eyebrow') or '', title, b.get('body') or '')
+    return _ff_panel(height, bg, _ff_canvas('px-' + uid) + text + _ff_script(_PARALLAX_SECTION_JS, uid, cfg))
+
+
+def _render_meteor_shower(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    count = _ff_int(b.get('count'), 20, 0, 40)
+    color = _ff_hex(b.get('color'), '#38bdf8')
+    bg = _ff_hex(b.get('background'), '#0a0f1d')
+    base = _ff_pick(b.get('speed'), {'slow': 220, 'normal': 120, 'fast': 60}, 'normal')
+    title = b.get('title') or ''
+    body = b.get('body') or ''
+    meteors = ''
+    for i in range(count):
+        left, delay, dur, ln, thick = (i * 41 + 11) % 100, (i * 21) % 400, base + (i % 7) * 18, 40 + (i % 5) * 20, 1 + (i % 2)
+        meteors += (f'<span style="position:absolute;left:{left}%;top:-{ln}px;width:{thick}px;height:{ln}px;border-radius:9999px;'
+                    f'background:linear-gradient(transparent,{color});transform:rotate(35deg);'
+                    f'animation:met-{uid}-fall {_ff_hund(dur)}s linear {_ff_hund(delay)}s infinite;"></span>')
+    has = bool(title or body)
+    content = ('<div style="position:relative;z-index:1;">'
+               + (f'<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">{_cv_esc(title)}</div>' if title else '')
+               + (f'<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">{_md_inline(_cv_esc(body))}</div>' if body else '')
+               + '</div>') if has else ''
+    return (f'<style>@keyframes met-{uid}-fall{{0%{{opacity:0;transform:translateX(0) translateY(-80px) rotate(35deg)}}10%{{opacity:1}}90%{{opacity:1}}100%{{opacity:0;transform:translateX(160px) translateY(420px) rotate(35deg)}}}}</style>'
+            f'<div style="position:relative;overflow:hidden;border-radius:16px;background:{bg};padding:{"40px 36px" if has else "60px 0"};margin:1rem 0;min-height:{140 if has else 120}px;">{meteors}{content}</div>')
+
+
+def _render_effect_overlay(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    trigger = _ff_pick(b.get('trigger'), {'confetti': 'confetti', 'trophy': 'trophy', 'pulse': 'pulse', 'fireworks': 'fireworks'}, 'confetti')
+    status = b.get('status') or ''
+    message = b.get('message') or ''
+    color = _ff_hex(b.get('color'), '#00f2ff')
+    status_html = (f'<div style="font-size:0.68rem;color:#64748b;text-align:center;padding:6px 0 0;text-transform:uppercase;letter-spacing:.09em;">{_cv_esc(status)}</div>' if status else '')
+    msg_html = (f'<div style="font-size:0.95rem;font-weight:700;color:#fff;z-index:1;margin-top:6px;">{_cv_esc(message)}</div>' if message else '')
+    if trigger == 'pulse':
+        css = (f'<style>@keyframes ep-pulse-{uid}{{0%,100%{{transform:scale(1);box-shadow:0 0 0 0 {color}50}}50%{{transform:scale(1.06);box-shadow:0 0 0 18px {color}00}}}}</style>')
+        content = (f'<div style="display:flex;align-items:center;justify-content:center;gap:14px;padding:28px 0;"><div style="width:44px;height:44px;border-radius:50%;background:{color};flex-shrink:0;animation:ep-pulse-{uid} 1.6s ease-in-out infinite;"></div>{msg_html}</div>')
+    else:
+        cols = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6', '#00f2ff', '#ff8c00', '#c084fc']
+        icon = '🏆' if trigger == 'trophy' else ('🎆' if trigger == 'fireworks' else '🎉')
+        trophy_anim = f'animation:ep-trophy-{uid} 0.5s cubic-bezier(.34,1.56,.64,1) forwards;' if trigger == 'trophy' else ''
+        css = (f'<style>@keyframes ep-fall-{uid}{{0%{{transform:translateY(-10px) rotate(0deg);opacity:1}}100%{{transform:translateY(220px) rotate(540deg);opacity:0}}}}'
+               f'@keyframes ep-trophy-{uid}{{0%{{transform:scale(0) rotate(-12deg);opacity:0}}60%{{transform:scale(1.15) rotate(4deg);opacity:1}}100%{{transform:scale(1) rotate(0);opacity:1}}}}'
+               f'.ep-p-{uid}{{position:absolute;border-radius:2px;animation:ep-fall-{uid} var(--d,1.4s) var(--dl,0s) ease-in forwards;}}</style>')
+        particles = ''
+        for i in range(26):
+            c, lp, dl, d = cols[i % 8], (i * 37 + 5) % 96, (i * 7) % 110, 110 + (i * 6) % 90
+            w, h, r = (7 if i % 3 == 0 else 9), (11 if i % 4 == 0 else 7), (i * 21) % 360
+            particles += (f'<div class="ep-p-{uid}" style="left:{lp}%;background:{c};width:{w}px;height:{h}px;--d:{_ff_hund(d)}s;--dl:{_ff_hund(dl)}s;transform:rotate({r}deg);"></div>')
+        content = (f'<div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;">{particles}</div><div style="font-size:3.2rem;z-index:1;{trophy_anim}">{icon}</div>{msg_html}</div>')
+    return css + f'<div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;">{status_html}{content}</div>'
+
+
+_RENDERERS["floating_particles"] = _render_floating_particles
+_RENDERERS["parallax_section"] = _render_parallax_section
+_RENDERERS["meteor_shower"] = _render_meteor_shower
+_RENDERERS["effect_overlay"] = _render_effect_overlay
 
 
 def _render_isometric_mesh(b: dict) -> str:
@@ -20498,44 +20470,8 @@ def _render_glitch_text(b: dict) -> str:
 _RENDERERS["glitch_text"] = _render_glitch_text
 
 
-def _render_floating_particles(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    import hashlib
-    uid = 'fp' + hashlib.md5(title.encode()).hexdigest()[:5]
-    kf = '@keyframes ' + uid + '{0%{transform:translateY(0) scale(1);opacity:0.6;}100%{transform:translateY(-120px) scale(0.3);opacity:0;}}'
-    particles = ''
-    for i in range(12):
-        left = (i * 8 + 4) % 100
-        dur = 3 + (i % 5) * 0.8
-        dly = (i * 0.4) % 4
-        size = 4 + (i % 4) * 2
-        colors = ['#6366f1', '#8b5cf6', '#ec4899', '#06b6d4']
-        col = colors[i % 4]
-        particles += ('<div style="position:absolute;left:' + str(left) + '%;bottom:0;width:' + str(size)
-                      + 'px;height:' + str(size) + 'px;border-radius:50%;background:' + col + ';'
-                      'opacity:0.6;animation:' + uid + ' ' + f'{dur:.1f}' + 's ' + f'{dly:.1f}' + 's ease-in infinite;"></div>')
-    return ('<style>' + kf + '</style>'
-            '<div style="position:relative;height:120px;overflow:hidden;border-radius:12px;background:#0f172a;">'
-            + particles
-            + ('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
-               'font-weight:700;font-size:1.2rem;color:#fff;">' + title + '</div>' if title else '')
-            + '</div>')
-_RENDERERS["floating_particles"] = _render_floating_particles
 
 
-def _render_parallax_section(b: dict) -> str:
-    title = _esc(b.get('title', ''))
-    return ('<div style="margin:1rem 0;padding:40px 28px;border-radius:14px;overflow:hidden;position:relative;'
-            'background:linear-gradient(135deg,#0f172a,#1e1b4b);">'
-            '<div style="position:absolute;inset:0;background-image:'
-            'radial-gradient(circle at 20% 50%,#6366f155 0%,transparent 50%),'
-            'radial-gradient(circle at 80% 50%,#ec489955 0%,transparent 50%);"></div>'
-            + ('<div style="position:relative;font-size:clamp(1.5rem,4vw,2.5rem);font-weight:900;'
-               'text-align:center;background:linear-gradient(135deg,#6366f1,#ec4899);'
-               '-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">'
-               + title + '</div>' if title else '')
-            + '</div>')
-_RENDERERS["parallax_section"] = _render_parallax_section
 
 
 def _render_depth_stack(b: dict) -> str:

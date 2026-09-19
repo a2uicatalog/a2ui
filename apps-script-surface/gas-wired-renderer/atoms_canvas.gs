@@ -3158,3 +3158,59 @@ _RENDERERS['orbit_mark'] = function(b) {
   var text = _ffOverlay(align, bgRgb, pal, b.eyebrow || '', b.title || '', b.body || '');
   return _ffPanel(height, bg, _ffCanvas('om-' + uid) + text + _ffScript(_ORBIT_MARK_JS, uid, cfg));
 };
+
+// floating_particles and parallax_section were schema-declared "canvas fallback
+// placeholders" until 2026-09-19: a dashed box on GAS/MCP Apps, a 12-div CSS
+// stand-in on the web. Both are now real canvas atoms on the hero kit.
+var _FLOATING_PARTICLES_JS =
+  '(function(){' +
+  'var C=%%CFG%%;var pts=[],N=0;' +
+  'function spawn(p,k,fresh){p.x=Math.random()*k.W;p.y=fresh?Math.random()*k.H:k.H+10;p.z=0.3+Math.random()*0.7;p.r=(1.5+Math.random()*3.5)*p.z;p.v=(0.15+Math.random()*0.35)*p.z;p.ci=Math.floor(Math.random()*C.pal.length);p.a=0.25+p.z*0.55;return p;}' +
+  'function init(k){N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];for(var i=0;i<N;i++)pts.push(spawn({},k,true));}' +
+  'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="lighter";' +
+  'for(var i=0;i<N;i++){var p=pts[i],sway=(k.noise(p.x*0.004,p.y*0.004,t*2)-0.5)*1.6*p.z;p.x+=sway*C.spd;p.y-=p.v*C.spd;' +
+  'if(k.mx!==null){var dx=p.x-k.mx,dy=p.y-k.my,d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){var f=(1-d/120)*2.2*p.z;p.x+=dx/d*f;p.y+=dy/d*f;}}' +
+  'if(p.y<-12||p.x<-12||p.x>W+12)spawn(p,k,false);' +
+  'var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,"rgba("+C.pal[p.ci]+","+p.a+")");g.addColorStop(0.5,"rgba("+C.pal[p.ci]+","+(p.a*0.35)+")");g.addColorStop(1,"rgba("+C.pal[p.ci]+",0)");' +
+  'ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,6.2832);ctx.fill();}}' +
+  '_a2uiCK.mount("fp-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});' +
+  '})();';
+var _PARALLAX_SECTION_JS =
+  '(function(){' +
+  'var C=%%CFG%%;var L=[];' +
+  'function init(k){L=[];for(var li=0;li<3;li++){var items=[],n=C.n[li],base=li===0?0.22:li===1?0.12:0.05;for(var i=0;i<n;i++)items.push({x:Math.random(),y:Math.random(),r:base*(0.6+Math.random()*0.8),ci:Math.floor(Math.random()*C.pal.length)});L.push(items);}}' +
+  'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);' +
+  'var px=k.mx===null?0:(k.mx/W-0.5),py=k.my===null?0:(k.my/H-0.5),ax=Math.sin(t*3)*0.02,ay=Math.cos(t*2.3)*0.02;' +
+  'for(var li=0;li<3;li++){var depth=(li+1)/3,sh=C.depth*depth,items=L[li],ox=-(px+ax)*sh*W,oy=-(py+ay)*sh*H,al=li===0?0.22:li===1?0.32:0.55,bl=li===0?0.9:li===1?0.7:0.35;' +
+  'for(var i=0;i<items.length;i++){var o=items[i],x=o.x*W+ox,y=o.y*H+oy,r=o.r*Math.min(W,H);var g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,"rgba("+C.pal[o.ci]+","+al+")");g.addColorStop(bl,"rgba("+C.pal[o.ci]+","+(al*0.4)+")");g.addColorStop(1,"rgba("+C.pal[o.ci]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,6.2832);ctx.fill();}}}' +
+  '_a2uiCK.mount("px-%%UID%%",{init:init,draw:draw,speed:1,interactive:C.inter,still:1});' +
+  '})();';
+function _ffHund(h) {
+  var s = Math.floor(h / 100) + '.' + (h % 100 < 10 ? '0' : '') + (h % 100);
+  return s.replace(/0+$/, '').replace(/\.$/, '');
+}
+_RENDERERS['floating_particles'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var bg = _ffHex(b.background, '#0f172a');
+  var pal = _ffPal(b.colors, ['99,102,241', '139,92,246', '236,72,153', '6,182,212']);
+  var n = _ffPick(b.density, {low: '60', normal: '120', high: '220'}, 'normal');
+  var spd = _ffPick(b.speed, {slow: '0.6', normal: '1', fast: '1.7'}, 'normal');
+  var height = _ffInt(b.height, 240, 120, 900);
+  var inter = b.interactive === false ? 'false' : 'true';
+  var title = b.title || b.label || b.text || '';
+  var cfg = '{n:' + n + ',spd:' + spd + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",inter:' + inter + '}';
+  var text = _ffOverlay('center', _ffRgb(bg), pal, b.eyebrow || '', title, b.body || '');
+  return _ffPanel(height, bg, _ffCanvas('fp-' + uid) + text + _ffScript(_FLOATING_PARTICLES_JS, uid, cfg));
+};
+_RENDERERS['parallax_section'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var bg = _ffHex(b.background, '#0f172a');
+  var pal = _ffPal(b.colors, ['99,102,241', '236,72,153', '6,182,212']);
+  var depth = _ffPick(b.depth, {subtle: '0.04', normal: '0.08', deep: '0.14'}, 'normal');
+  var height = _ffInt(b.height, 300, 160, 900);
+  var inter = b.interactive === false ? 'false' : 'true';
+  var title = b.title || b.label || b.text || '';
+  var cfg = '{n:[3,6,14],depth:' + depth + ',pal:["' + pal.join('","') + '"],bg:"' + bg + '",inter:' + inter + '}';
+  var text = _ffOverlay('center', _ffRgb(bg), pal, b.eyebrow || '', title, b.body || '');
+  return _ffPanel(height, bg, _ffCanvas('px-' + uid) + text + _ffScript(_PARALLAX_SECTION_JS, uid, cfg));
+};

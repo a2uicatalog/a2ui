@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Floating Particles — A2UI Atomic Catalog</title>
-  <meta name="description" content="Floating particle field background (canvas fallback placeholder)">
+  <meta name="description" content="Soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a slow noise field, drawn additively so they glow where they overlap; the pointer nudges them aside. Optional eyebrow/title/body copy centred over the field behind a readability veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a "canvas fallback placeholder" until 2026-09-19 (a grey box on GAS and MCP Apps); now a real atom on the same kit as flow_field, identical on every renderer. Every option is an enum or a clamped int; colours must be #rrggbb.">
   <link rel="alternate" type="text/markdown" href="/atoms/floating_particles.md">
   <script type="application/ld+json">
   {
@@ -175,26 +175,30 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </nav>
 
   <h1>Floating Particles</h1>
-  <p class="desc">Floating particle field background (canvas fallback placeholder)</p>
+  <p class="desc">Soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a slow noise field, drawn additively so they glow where they overlap; the pointer nudges them aside. Optional eyebrow/title/body copy centred over the field behind a readability veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a "canvas fallback placeholder" until 2026-09-19 (a grey box on GAS and MCP Apps); now a real atom on the same kit as flow_field, identical on every renderer. Every option is an enum or a clamped int; colours must be #rrggbb.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
   </div>
 
   
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Renders as a plain dark panel with the copy; the canvas is empty without JavaScript</td></tr><tr><td>google-chat</td><td>Inline script not supported; renders as a solid dark panel with the copy</td></tr></tbody></table>
+</div>
 
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of floating_particles"><style>@keyframes fpd41d8{0%{transform:translateY(0) scale(1);opacity:0.6;}100%{transform:translateY(-120px) scale(0.3);opacity:0;}}</style><div style="position:relative;height:120px;overflow:hidden;border-radius:12px;background:#0f172a;"><div style="position:absolute;left:4%;bottom:0;width:4px;height:4px;border-radius:50%;background:#6366f1;opacity:0.6;animation:fpd41d8 3.0s 0.0s ease-in infinite;"></div><div style="position:absolute;left:12%;bottom:0;width:6px;height:6px;border-radius:50%;background:#8b5cf6;opacity:0.6;animation:fpd41d8 3.8s 0.4s ease-in infinite;"></div><div style="position:absolute;left:20%;bottom:0;width:8px;height:8px;border-radius:50%;background:#ec4899;opacity:0.6;animation:fpd41d8 4.6s 0.8s ease-in infinite;"></div><div style="position:absolute;left:28%;bottom:0;width:10px;height:10px;border-radius:50%;background:#06b6d4;opacity:0.6;animation:fpd41d8 5.4s 1.2s ease-in infinite;"></div><div style="position:absolute;left:36%;bottom:0;width:4px;height:4px;border-radius:50%;background:#6366f1;opacity:0.6;animation:fpd41d8 6.2s 1.6s ease-in infinite;"></div><div style="position:absolute;left:44%;bottom:0;width:6px;height:6px;border-radius:50%;background:#8b5cf6;opacity:0.6;animation:fpd41d8 3.0s 2.0s ease-in infinite;"></div><div style="position:absolute;left:52%;bottom:0;width:8px;height:8px;border-radius:50%;background:#ec4899;opacity:0.6;animation:fpd41d8 3.8s 2.4s ease-in infinite;"></div><div style="position:absolute;left:60%;bottom:0;width:10px;height:10px;border-radius:50%;background:#06b6d4;opacity:0.6;animation:fpd41d8 4.6s 2.8s ease-in infinite;"></div><div style="position:absolute;left:68%;bottom:0;width:4px;height:4px;border-radius:50%;background:#6366f1;opacity:0.6;animation:fpd41d8 5.4s 3.2s ease-in infinite;"></div><div style="position:absolute;left:76%;bottom:0;width:6px;height:6px;border-radius:50%;background:#8b5cf6;opacity:0.6;animation:fpd41d8 6.2s 3.6s ease-in infinite;"></div><div style="position:absolute;left:84%;bottom:0;width:8px;height:8px;border-radius:50%;background:#ec4899;opacity:0.6;animation:fpd41d8 3.0s 0.0s ease-in infinite;"></div><div style="position:absolute;left:92%;bottom:0;width:10px;height:10px;border-radius:50%;background:#06b6d4;opacity:0.6;animation:fpd41d8 3.8s 0.4s ease-in infinite;"></div></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of floating_particles"><div style="position:relative;height:240px;margin:1rem 0;border-radius:16px;overflow:hidden;background:#0f172a;"><canvas id="fp-15bdf4" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas><script>window._a2uiCK=window._a2uiCK||(function(){var P=new Uint8Array(512);(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}function fd(v){return v*v*(3-2*v);}function L(a,b,v){return a+(b-a)*v;}function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}resize();if(RM){var n=o.still||220;for(var i=0;i<n;i++)step();return;}window.addEventListener("resize",resize);if(o.interactive!==false){var box=c.parentNode;box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();k.mx=e.clientX-r.left;k.my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){k.mx=null;k.my=null;});}if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}raf=requestAnimationFrame(loop);}return {noise:noise,mount:mount,fitText:fitText};})();(function(){var C={n:120,spd:1,pal:["99,102,241","139,92,246","236,72,153","6,182,212"],bg:"#0f172a",inter:true};var pts=[],N=0;function spawn(p,k,fresh){p.x=Math.random()*k.W;p.y=fresh?Math.random()*k.H:k.H+10;p.z=0.3+Math.random()*0.7;p.r=(1.5+Math.random()*3.5)*p.z;p.v=(0.15+Math.random()*0.35)*p.z;p.ci=Math.floor(Math.random()*C.pal.length);p.a=0.25+p.z*0.55;return p;}function init(k){N=Math.round(C.n*Math.min(2,Math.max(0.35,(k.W*k.H)/288000)));pts=[];for(var i=0;i<N;i++)pts.push(spawn({},k,true));}function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="lighter";for(var i=0;i<N;i++){var p=pts[i],sway=(k.noise(p.x*0.004,p.y*0.004,t*2)-0.5)*1.6*p.z;p.x+=sway*C.spd;p.y-=p.v*C.spd;if(k.mx!==null){var dx=p.x-k.mx,dy=p.y-k.my,d=Math.sqrt(dx*dx+dy*dy);if(d<120&&d>0.5){var f=(1-d/120)*2.2*p.z;p.x+=dx/d*f;p.y+=dy/d*f;}}if(p.y<-12||p.x<-12||p.x>W+12)spawn(p,k,false);var g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);g.addColorStop(0,"rgba("+C.pal[p.ci]+","+p.a+")");g.addColorStop(0.5,"rgba("+C.pal[p.ci]+","+(p.a*0.35)+")");g.addColorStop(1,"rgba("+C.pal[p.ci]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,6.2832);ctx.fill();}}_a2uiCK.mount("fp-15bdf4",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});})();</script></div></div>
 </div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, alias: label, text)</td><td>optional</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, alias: label, text). Heading centred over the field.</td><td>optional</td></tr><tr><td>eyebrow</td><td>string. Small uppercase label above the title.</td><td>optional</td></tr><tr><td>body</td><td>string. Copy under the title (markdown inline supported).</td><td>optional</td></tr><tr><td>colors</td><td>array of 1-4 "#rrggbb" strings. Default indigo/violet/pink/cyan.</td><td>optional</td></tr><tr><td>background</td><td>"#rrggbb". Default "#0f172a". Keep it dark.</td><td>optional</td></tr><tr><td>density</td><td>"low" | "normal" | "high"  (optional, default "normal")</td><td>optional</td></tr><tr><td>speed</td><td>"slow" | "normal" | "fast"  (optional, default "normal")</td><td>optional</td></tr><tr><td>height</td><td>integer. Panel height in px, clamped 120-900. Default 240.</td><td>optional</td></tr><tr><td>interactive</td><td>bool. Pointer nudges the particles. Default true.</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
@@ -213,13 +217,14 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   "url": "https://a2uicatalog.ai/atoms/floating_particles",
   "capabilities": [
     "web",
+    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
   ],
-  "description": "Floating particle field background (canvas fallback placeholder)",
+  "description": "Soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a slow noise field, drawn additively so they glow where they overlap; the pointer nudges them aside. Optional eyebrow/title/body copy centred over the field behind a readability veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a \"canvas fallback placeholder\" until 2026-09-19 (a grey box on GAS and MCP Apps); now a real atom on the same kit as flow_field, identical on every renderer. Every option is an enum or a clamped int; colours must be #rrggbb.",
   "representativeQueries": [
-    "show a floating particles background (canvas placeholder)",
-    "floating particle field background (canvas fallback placeholder)",
+    "show a soft glowing bokeh particles drifting upward on canvas, optional centred copy",
+    "soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a",
     "render a floating particles"
   ]
 }</code></pre>

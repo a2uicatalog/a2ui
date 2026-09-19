@@ -2521,17 +2521,59 @@ _RENDERERS['confetti_trigger'] = function(b) {
 };
 
 // Atoms that genuinely require canvas or physics — kept as informational placeholders
+
+// meteor_shower and effect_overlay were _animFallback placeholders here until
+// 2026-09-19 (a dashed "requires canvas/physics engine" box on GAS and MCP Apps
+// while the Python web renderer drew the real thing). Now 1:1 twins of
+// renderers/web_article.py; timings are integer hundredths of a second formatted
+// by _ffHund on both sides so the markup is identical. tests/test_placeholders_made_real.py.
 _RENDERERS['meteor_shower'] = function(b) {
-  return _animFallback('meteor shower', b.title || b.label || b.text || '');
+  var uid = Math.random().toString(36).substr(2, 6);
+  var count = _ffInt(b.count, 20, 0, 40);
+  var color = _ffHex(b.color, '#38bdf8');
+  var bg = _ffHex(b.background, '#0a0f1d');
+  var base = _ffPick(b.speed, {slow: 220, normal: 120, fast: 60}, 'normal');
+  var title = b.title || '', body = b.body || '';
+  var meteors = '';
+  for (var i = 0; i < count; i++) {
+    var left = (i * 41 + 11) % 100, delay = (i * 21) % 400, dur = base + (i % 7) * 18, len = 40 + (i % 5) * 20, thick = 1 + (i % 2);
+    meteors += '<span style="position:absolute;left:' + left + '%;top:-' + len + 'px;width:' + thick + 'px;height:' + len + 'px;border-radius:9999px;background:linear-gradient(transparent,' + color + ');transform:rotate(35deg);animation:met-' + uid + '-fall ' + _ffHund(dur) + 's linear ' + _ffHund(delay) + 's infinite;"></span>';
+  }
+  var has = !!(title || body);
+  var content = has ? '<div style="position:relative;z-index:1;">'
+    + (title ? '<div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px;">' + _esc(title) + '</div>' : '')
+    + (body ? '<div style="font-size:0.9rem;color:#94a3b8;line-height:1.65;">' + _markdownToHtml(body) + '</div>' : '')
+    + '</div>' : '';
+  return '<style>@keyframes met-' + uid + '-fall{0%{opacity:0;transform:translateX(0) translateY(-80px) rotate(35deg)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateX(160px) translateY(420px) rotate(35deg)}}</style>'
+    + '<div style="position:relative;overflow:hidden;border-radius:16px;background:' + bg + ';padding:' + (has ? '40px 36px' : '60px 0') + ';margin:1rem 0;min-height:' + (has ? 140 : 120) + 'px;">' + meteors + content + '</div>';
 };
-_RENDERERS['floating_particles'] = function(b) {
-  return _animFallback('floating particles', b.title || b.label || b.text || '');
-};
-_RENDERERS['parallax_section'] = function(b) {
-  return _animFallback('parallax section', b.title || b.label || b.text || '');
-};
+
 _RENDERERS['effect_overlay'] = function(b) {
-  return _animFallback('effect overlay', b.title || b.label || b.text || '');
+  var uid = Math.random().toString(36).substr(2, 6);
+  var trigger = _ffPick(b.trigger, {confetti: 'confetti', trophy: 'trophy', pulse: 'pulse', fireworks: 'fireworks'}, 'confetti');
+  var status = b.status || '', message = b.message || '';
+  var color = _ffHex(b.color, '#00f2ff');
+  var statusHtml = status ? '<div style="font-size:0.68rem;color:#64748b;text-align:center;padding:6px 0 0;text-transform:uppercase;letter-spacing:.09em;">' + _esc(status) + '</div>' : '';
+  var msgHtml = message ? '<div style="font-size:0.95rem;font-weight:700;color:#fff;z-index:1;margin-top:6px;">' + _esc(message) + '</div>' : '';
+  var css, content;
+  if (trigger === 'pulse') {
+    css = '<style>@keyframes ep-pulse-' + uid + '{0%,100%{transform:scale(1);box-shadow:0 0 0 0 ' + color + '50}50%{transform:scale(1.06);box-shadow:0 0 0 18px ' + color + '00}}</style>';
+    content = '<div style="display:flex;align-items:center;justify-content:center;gap:14px;padding:28px 0;"><div style="width:44px;height:44px;border-radius:50%;background:' + color + ';flex-shrink:0;animation:ep-pulse-' + uid + ' 1.6s ease-in-out infinite;"></div>' + msgHtml + '</div>';
+  } else {
+    var cols = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bd6', '#00f2ff', '#ff8c00', '#c084fc'];
+    var icon = trigger === 'trophy' ? '🏆' : trigger === 'fireworks' ? '🎆' : '🎉';
+    var trophyAnim = trigger === 'trophy' ? 'animation:ep-trophy-' + uid + ' 0.5s cubic-bezier(.34,1.56,.64,1) forwards;' : '';
+    css = '<style>@keyframes ep-fall-' + uid + '{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(220px) rotate(540deg);opacity:0}}'
+      + '@keyframes ep-trophy-' + uid + '{0%{transform:scale(0) rotate(-12deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}'
+      + '.ep-p-' + uid + '{position:absolute;border-radius:2px;animation:ep-fall-' + uid + ' var(--d,1.4s) var(--dl,0s) ease-in forwards;}</style>';
+    var particles = '';
+    for (var i = 0; i < 26; i++) {
+      var c = cols[i % 8], lp = (i * 37 + 5) % 96, dl = (i * 7) % 110, d = 110 + (i * 6) % 90, w = i % 3 === 0 ? 7 : 9, h = i % 4 === 0 ? 11 : 7, r = (i * 21) % 360;
+      particles += '<div class="ep-p-' + uid + '" style="left:' + lp + '%;background:' + c + ';width:' + w + 'px;height:' + h + 'px;--d:' + _ffHund(d) + 's;--dl:' + _ffHund(dl) + 's;transform:rotate(' + r + 'deg);"></div>';
+    }
+    content = '<div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;">' + particles + '</div><div style="font-size:3.2rem;z-index:1;' + trophyAnim + '">' + icon + '</div>' + msgHtml + '</div>';
+  }
+  return css + '<div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;">' + statusHtml + content + '</div>';
 };
 
 // ── New GAS-native atoms ─────────────────────────────────────────────────────

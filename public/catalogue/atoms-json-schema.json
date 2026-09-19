@@ -12322,6 +12322,46 @@
           },
           "title": {
             "type": "string"
+          },
+          "eyebrow": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\")"
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -12338,6 +12378,38 @@
           },
           "title": {
             "type": "string"
+          },
+          "eyebrow": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "depth": {
+            "type": "string",
+            "enum": [
+              "subtle",
+              "normal",
+              "deep\"  (optional, default \"normal\"). How far the layers shift with the pointer."
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
           }
         },
         "required": [

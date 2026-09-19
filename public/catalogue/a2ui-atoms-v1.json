@@ -15372,7 +15372,7 @@
   },
   "floating_particles": {
    "type": "object",
-   "description": "Floating particle field background (canvas fallback placeholder)",
+   "description": "Soft bokeh particle field on canvas: dozens of luminous, depth-sized orbs drift upward, swaying on a slow noise field, drawn additively so they glow where they overlap; the pointer nudges them aside. Optional eyebrow/title/body copy centred over the field behind a readability veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a \"canvas fallback placeholder\" until 2026-09-19 (a grey box on GAS and MCP Apps); now a real atom on the same kit as flow_field, identical on every renderer. Every option is an enum or a clamped int; colours must be #rrggbb.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -15385,7 +15385,36 @@
       },
       "title": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, alias: label, text)"
+       "description": "string (optional, alias: label, text). Heading centred over the field."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Copy under the title (markdown inline supported)."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default indigo/violet/pink/cyan.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#0f172a\". Keep it dark."
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\")"
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 120-900. Default 240.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer nudges the particles. Default true.",
+       "type": "boolean"
       }
      },
      "required": [
@@ -15396,13 +15425,14 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
+    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
    ]
   },
   "parallax_section": {
    "type": "object",
-   "description": "Parallax scroll section (canvas fallback placeholder)",
+   "description": "Depth-layered background on canvas: three layers of soft colour orbs, large and faint at the back, small and sharp at the front, each layer shifting with the pointer by an amount proportional to its depth, plus a slow ambient drift when the pointer is away. Optional eyebrow/title/body copy centred on top. Pointer-driven rather than scroll-driven on purpose: MCP Apps hosts size the iframe to its content, so there is often no scroll to drive. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Was a \"canvas fallback placeholder\" until 2026-09-19; now a real atom on the flow_field kit, identical on every renderer.",
    "allOf": [
     {
      "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
@@ -15415,7 +15445,33 @@
       },
       "title": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional, alias: label, text)"
+       "description": "string (optional, alias: label, text). Heading centred over the layers."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Copy under the title (markdown inline supported)."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default indigo/pink/cyan.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#0f172a\". Keep it dark."
+      },
+      "depth": {
+       "description": "\"subtle\" | \"normal\" | \"deep\"  (optional, default \"normal\"). How far the layers shift with the pointer."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 160-900. Default 300.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer drives the parallax. Default true.",
+       "type": "boolean"
       }
      },
      "required": [
@@ -15426,6 +15482,7 @@
    "unevaluatedProperties": false,
    "x-surfaces": [
     "web",
+    "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
    ]
