@@ -136,7 +136,6 @@ a2ui-aviation-v1:
 - adsb_feed
 - airspace_command_deck
 - atc_vectoring
-- canvas_plexus
 - fids_board
 - geo_contour_waves
 - geo_europe_airspace
@@ -146,7 +145,6 @@ a2ui-aviation-v1:
 - geo_iso_takeoff
 - geo_mercator_radar
 - globe_3d
-- isometric_mesh
 - metar_feed
 - orbit_diagram
 - skill_radar
@@ -326,6 +324,7 @@ a2ui-effects-v1:
 - badge_showcase
 - big_reveal
 - blur_fade_in
+- canvas_plexus
 - card_stack
 - confetti_burst
 - confetti_trigger
@@ -357,6 +356,7 @@ a2ui-effects-v1:
 - highlight_sweep
 - hint_reveal
 - icon_liftoff
+- isometric_mesh
 - kinetic_headline
 - liquid_button
 - loading_dots

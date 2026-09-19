@@ -513,7 +513,7 @@
       "title": "Aviation, ATC & geo",
       "alwaysResolved": false,
       "whenToUse": "Use for air-traffic / geospatial surfaces — radar, ADS-B feeds, airspace maps, isometric fleet and 3-D geo views.",
-      "atomCount": 15,
+      "atomCount": 13,
       "atoms": [
         {
           "type": "adsb_feed",
@@ -525,10 +525,6 @@
         {
           "type": "airspace_command_deck",
           "description": "Toulouse TMA radar canvas with animated flights, HUD overlay, and live METAR ticker"
-        },
-        {
-          "type": "canvas_plexus",
-          "description": "animated particle plexus with proximity lines and mouse repulsion"
         },
         {
           "type": "geo_contour_waves",
@@ -561,10 +557,6 @@
         {
           "type": "globe_3d",
           "description": "interactive spinning 3-D globe (wire or earth)"
-        },
-        {
-          "type": "isometric_mesh",
-          "description": "rotating 3D isometric mesh with height-colour mapping and drag-rotate"
         },
         {
           "type": "metar_feed",
@@ -1132,7 +1124,7 @@
       "title": "Motion & decorative",
       "alwaysResolved": false,
       "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
-      "atomCount": 87,
+      "atomCount": 89,
       "atoms": [
         {
           "type": "agent_sketchpad",
@@ -1183,6 +1175,10 @@
               "shape": "simple"
             }
           }
+        },
+        {
+          "type": "canvas_plexus",
+          "description": "animated particle plexus with proximity lines and mouse repulsion"
         },
         {
           "type": "card_stack",
@@ -1275,6 +1271,10 @@
         {
           "type": "hint_reveal",
           "description": "show/hide hint disclosure using HTML details/summary — no JS"
+        },
+        {
+          "type": "isometric_mesh",
+          "description": "rotating 3D isometric mesh with height-colour mapping and drag-rotate"
         },
         {
           "type": "kinetic_headline",
