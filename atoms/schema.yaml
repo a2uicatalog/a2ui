@@ -3765,6 +3765,151 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: weighted_words
+  stage: preview
+  description: 'Agentic typesetting: the agent decides how much each WORD weighs. A
+    headline where every word carries an emphasis 1-5 that sets its size, weight
+    and opacity, with the heaviest words in the accent colour; words land in
+    sequence, heavier ones from higher up. The reader sees the shape of the
+    argument before reading it. Give it "words" as [{text, weight}] to typeset
+    deliberately, or plain "text" for an even setting. Screenshot-ready, light
+    or dark. Capped at 40 words of 24 characters; weights clamp to 1-5.'
+  compact_description: headline where the agent sets each word''s emphasis 1-5; heavy words land bigger
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; typographic weighting and animation are lost
+    incompatible_on:
+    - surface: email
+      reason: CSS animation and inline styling not reliably supported in email clients
+  fields:
+    words: array of {text, weight} (optional). weight is an integer 1-5; 5 is set in the accent colour. Strings are accepted as weight 2.
+    text: string (optional). Fallback when words is absent; every word set at weight 2.
+    voice: '"display" | "serif" | "mono"  (optional, default "display"). System font stacks.'
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    align: '"left" | "center"  (optional, default "left")'
+    animate: bool (optional). Words land in sequence on load. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: stance
+  stage: preview
+  description: 'A claim whose typography IS its calibration. The agent states a
+    claim and a confidence 0-1; the type sets itself from it -- weight from 300
+    (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening
+    and opacity rising with confidence -- under a thin confidence rail. Optional
+    "because" (the reason) and "unless" (what would change the agent''s mind, the
+    line most opinion cards forget). A small slider lets the reader drag the
+    confidence and watch the claim reset, which makes the mapping legible and
+    honest. Same integer arithmetic on the server and in the slider script.'
+  compact_description: claim set in type whose weight, size and tracking encode the stated confidence
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; typographic weighting and animation are lost
+    incompatible_on:
+    - surface: email
+      reason: CSS animation and inline styling not reliably supported in email clients
+  fields:
+    claim: string (required). The claim, up to 200 characters.
+    confidence: number (optional). 0-1 (values above 1 are read as percent). Default 0.5.
+    because: string (optional). The reason, one or two sentences.
+    unless: string (optional). What would change the agent''s mind; rendered as "I would change my mind if ...".
+    voice: '"display" | "serif" | "mono"  (optional, default "display"). System font stacks.'
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    interactive: bool (optional). Show the try-it slider. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: receipt
+  stage: preview
+  description: 'Show your receipts: a claim printed at the top of a till receipt,
+    then the evidence as numbered receipt lines with a source per line (linked
+    when a URL is given), a dashed tear line, a CONFIDENCE total, a barcode
+    derived deterministically from the claim, and a perforated bottom edge.
+    Built for the "no unsourced stats" rule and for AG-UI-style runs where
+    evidence arrives one tool result at a time: resend the FULL items list on
+    every update and only the LAST line prints in (same stateless rule as
+    agent_sketchpad). Always paper-white, so it reads as an object on any
+    ground. Capped at 24 items.'
+  compact_description: claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; typographic weighting and animation are lost
+    incompatible_on:
+    - surface: email
+      reason: CSS animation and inline styling not reliably supported in email clients
+  fields:
+    claim: string (required). Printed in display type at the top.
+    items: array of {text, source?, url?} (optional). Evidence lines in order; source is a short label, url must be http(s). Strings are accepted.
+    total: number (optional). Confidence 0-1 shown as the receipt total; when absent the item count is shown.
+    total_label: string (optional). Default "CONFIDENCE".
+    merchant: string (optional). Top label. Default "EVIDENCE RECEIPT".
+    issued: string (optional). Date or context line under the merchant.
+    footer: string (optional). Default "Sources listed. No unsourced stats."
+    accent: '"#rrggbb" (optional). Links and total colour. Default "#4338ca".'
+    print_last: bool (optional). Animate the last line printing in. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: changed_mind
+  stage: preview
+  description: 'A belief change as a typographic object: "I used to think" in muted
+    serif italic, struck through by a line that draws itself, then "Now I think" in
+    heavy display type landing beneath it, and an optional "since" line naming what
+    changed it. The most honest opinion format there is, and the most shared. For
+    an agent it records a revision after new evidence rather than pretending it
+    always knew. Light or dark.'
+  compact_description: struck-through old belief, new belief lands beneath; optional what-changed-it line
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; typographic weighting and animation are lost
+    incompatible_on:
+    - surface: email
+      reason: CSS animation and inline styling not reliably supported in email clients
+  fields:
+    before: string (required). The old belief.
+    after: string (required). The new belief.
+    since: string (optional). What changed it, e.g. "since running it against a real host".
+    voice: '"display" | "serif" | "mono"  (optional, default "display"). System font stacks.'
+    theme: '"dark" | "light"  (optional, default "dark")'
+    accent: '"#rrggbb" (optional). Default "#38bdf8".'
+    animate: bool (optional). Strike and land on load. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: share_quote
   description: Displays a visually distinct callout showcasing a key phrase designed
     for social clipping.

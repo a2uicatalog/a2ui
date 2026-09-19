@@ -344,3 +344,181 @@ _RENDERERS['math_block'] = function(b) {
     numHtml + capHtml +
     '</div>';
 };
+
+
+// ── conviction typography: weighted_words / stance / receipt / changed_mind ──
+// Built 2026-09-19 for sharing a point of view (posts, cover slides, chat
+// cards) rather than decorating one. Each is a typographic OBJECT an agent can
+// fill: the agent chooses per-word emphasis (weighted_words), states a claim
+// with calibrated confidence that the type itself encodes (stance), prints
+// evidence lines under a claim like a till receipt with the newest line
+// printing in (receipt -- same stateless "resend the full list, only the last
+// item animates" rule as agent_sketchpad), or records a belief it changed
+// (changed_mind). CSS + at most one tiny inline script; no canvas; light or
+// dark via the theme enum. All copy is escaped; every option is an enum or a
+// clamped number. Python twins in renderers/web_article.py emit identical
+// markup modulo uid -- tests/test_conviction_type.py. Edit BOTH.
+var _CV_STANCE_JS =
+  '(function(){var s=document.getElementById("st-s-%%UID%%"),t=document.getElementById("st-t-%%UID%%"),r=document.getElementById("st-r-%%UID%%"),l=document.getElementById("st-l-%%UID%%");if(!s||!t)return;' +
+  'function pad(n){return n<10?"0"+n:""+n;}' +
+  'function ap(p){var w=300+Math.floor((p*6+50)/100)*100,sh=140+Math.floor(p*16/10),ls=2-Math.floor(p*5/100),op=60+Math.floor(p*4/10);' +
+  't.style.fontWeight=w;t.style.fontSize=Math.floor(sh/100)+"."+pad(sh%100)+"rem";t.style.letterSpacing=(ls<0?"-0."+pad(-ls):"0."+pad(ls))+"em";t.style.opacity=op>=100?"1":"0."+pad(op);' +
+  'if(r)r.style.width=p+"%";if(l)l.textContent="confidence "+p+"%";}' +
+  's.addEventListener("input",function(){ap(parseInt(s.value,10)||0);});})();';
+var _CV_VOICES = {
+  display: 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif',
+  serif: 'Georgia,Times New Roman,serif',
+  mono: 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'
+};
+var _CV_THEMES = {
+  dark:  {bg: '#0b0d12', ink: '#f1f5f9', mute: '#94a3b8', line: '#1f2430', soft: '#12151c'},
+  light: {bg: '#ffffff', ink: '#0f172a', mute: '#64748b', line: '#e2e8f0', soft: '#f8fafc'}
+};
+function _cvStr(v, max) { return (typeof v === 'string' ? v : (typeof v === 'number' ? String(v) : '')).trim().slice(0, max); }
+function _cvPad(n) { return n < 10 ? '0' + n : '' + n; }
+function _cvCard(th, inner, extra) {
+  return '<div style="margin:1rem 0;border-radius:16px;padding:32px 36px;background:' + th.bg + ';color:' + th.ink + ';border:1px solid ' + th.line + ';' + (extra || '') + '">' + inner + '</div>';
+}
+// djb2 over UTF-16 code units, then an LCG -- deterministic on both renderers.
+function _cvHash(s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) h = (Math.imul(h, 33) + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+function _cvNext(h) { return (Math.imul(h, 1103515245) + 12345) >>> 0; }
+
+_RENDERERS['weighted_words'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var th = _ffPick(b.theme, _CV_THEMES, 'dark');
+  var font = _ffPick(b.voice, _CV_VOICES, 'display');
+  var accent = _ffHex(b.accent, '#38bdf8');
+  var align = _ffPick(b.align, {left: 'left', center: 'center'}, 'left');
+  var animate = b.animate === false ? false : true;
+  var src = Array.isArray(b.words) ? b.words : _cvStr(b.text, 600).split(/\s+/).filter(function(w) { return w; }).map(function(w) { return {text: w, weight: 2}; });
+  var words = [];
+  for (var i = 0; i < src.length && words.length < 40; i++) {
+    var w = src[i], txt = _cvStr(typeof w === 'string' ? w : (w && w.text), 24);
+    if (!txt) continue;
+    words.push({text: txt, weight: _ffInt(typeof w === 'string' ? 2 : (w && w.weight), 2, 1, 5)});
+  }
+  if (!words.length) words = [{text: 'A2UI', weight: 5}];
+  var scale = {1: '0.75em', 2: '1em', 3: '1.35em', 4: '1.8em', 5: '2.4em'};
+  var fw = {1: '400', 2: '500', 3: '700', 4: '800', 5: '900'};
+  var op = {1: '0.55', 2: '0.8', 3: '1', 4: '1', 5: '1'};
+  var out = '';
+  for (var j = 0; j < words.length; j++) {
+    var x = words[j];
+    out += '<span title="weight ' + x.weight + '/5" style="display:inline-block;vertical-align:baseline;margin:0 0.28em 0.1em 0;font-size:' + scale[x.weight] + ';font-weight:' + fw[x.weight] + ';opacity:' + op[x.weight]
+      + (x.weight === 5 ? ';color:' + accent : '')
+      + (animate ? ';animation:ww-' + uid + ' 0.6s cubic-bezier(0.2,0.8,0.2,1) ' + (j * 9) + 'ms both;--ww-d:' + (x.weight * 0.35) + 'em' : '')
+      + ';">' + _esc(x.text) + '</span>';
+  }
+  return (animate ? '<style>@keyframes ww-' + uid + '{from{opacity:0;transform:translateY(calc(var(--ww-d) * -1));}to{transform:none;}}</style>' : '')
+    + _cvCard(th, '<div style="font-family:' + font + ';font-size:clamp(1.3rem,3.2vw,2.2rem);line-height:1.15;letter-spacing:-0.01em;text-align:' + align + ';">' + out + '</div>');
+};
+
+function _cvConfidence(v) {
+  var c = typeof v === 'number' ? v : parseFloat(v);
+  if (isNaN(c)) c = 0.5;
+  if (c > 1) c = c / 100;
+  c = Math.max(0, Math.min(1, c));
+  return Math.floor(c * 100 + 0.5);
+}
+_RENDERERS['stance'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var th = _ffPick(b.theme, _CV_THEMES, 'dark');
+  var font = _ffPick(b.voice, _CV_VOICES, 'display');
+  var accent = _ffHex(b.accent, '#38bdf8');
+  var claim = _cvStr(b.claim, 200) || 'A2UI';
+  var because = _cvStr(b.because, 300), unless = _cvStr(b.unless, 300);
+  var inter = b.interactive === false ? false : true;
+  var p = _cvConfidence(b.confidence);
+  var w = 300 + Math.floor((p * 6 + 50) / 100) * 100, sh = 140 + Math.floor(p * 16 / 10), ls = 2 - Math.floor(p * 5 / 100), op = 60 + Math.floor(p * 4 / 10);
+  var size = Math.floor(sh / 100) + '.' + _cvPad(sh % 100) + 'rem';
+  var spacing = (ls < 0 ? '-0.' + _cvPad(-ls) : '0.' + _cvPad(ls)) + 'em';
+  var opacity = op >= 100 ? '1' : '0.' + _cvPad(op);
+  var inner = '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';margin-bottom:14px;">stance</div>'
+    + '<div id="st-t-' + uid + '" style="font-family:' + font + ';font-weight:' + w + ';font-size:' + size + ';letter-spacing:' + spacing + ';opacity:' + opacity + ';line-height:1.12;transition:font-size 0.25s,letter-spacing 0.25s,opacity 0.25s,font-weight 0.25s;">' + _esc(claim) + '</div>'
+    + '<div style="margin-top:18px;height:3px;background:' + th.line + ';border-radius:2px;overflow:hidden;"><div id="st-r-' + uid + '" style="height:100%;width:' + p + '%;background:' + accent + ';transition:width 0.25s;"></div></div>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:' + th.mute + ';">'
+    + '<span id="st-l-' + uid + '">confidence ' + p + '%</span>'
+    + (inter ? '<label style="display:flex;align-items:center;gap:8px;"><span>try it</span><input id="st-s-' + uid + '" type="range" min="0" max="100" value="' + p + '" aria-label="confidence" style="width:120px;accent-color:' + accent + ';"></label>' : '')
+    + '</div>'
+    + (because ? '<div style="margin-top:18px;font-size:0.98rem;line-height:1.55;color:' + th.ink + ';"><span style="color:' + th.mute + ';">because</span> ' + _esc(because) + '</div>' : '')
+    + (unless ? '<div style="margin-top:10px;font-size:0.9rem;line-height:1.5;font-style:italic;color:' + th.mute + ';">I would change my mind if ' + _esc(unless) + '</div>' : '')
+    + (inter ? '<script>' + _CV_STANCE_JS.replace(/%%UID%%/g, uid) + '<\/script>' : '');
+  return _cvCard(th, inner);
+};
+
+_RENDERERS['receipt'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var accent = _ffHex(b.accent, '#4338ca');
+  var claim = _cvStr(b.claim, 200) || 'A2UI';
+  var merchant = _cvStr(b.merchant, 40) || 'EVIDENCE RECEIPT';
+  var issued = _cvStr(b.issued, 40);
+  var footer = _cvStr(b.footer, 120) || 'Sources listed. No unsourced stats.';
+  var totalLabel = _cvStr(b.total_label, 30) || 'CONFIDENCE';
+  var printLast = b.print_last === false ? false : true;
+  var src = Array.isArray(b.items) ? b.items : [];
+  var items = [];
+  for (var i = 0; i < src.length && items.length < 24; i++) {
+    var it = src[i], txt = _cvStr(typeof it === 'string' ? it : (it && it.text), 160);
+    if (!txt) continue;
+    items.push({text: txt, source: _cvStr(it && it.source, 60), url: (it && typeof it.url === 'string' && /^https?:\/\//.test(it.url)) ? it.url.slice(0, 300) : ''});
+  }
+  var total = b.total === undefined || b.total === null ? (items.length + (items.length === 1 ? ' ITEM' : ' ITEMS')) : _cvConfidence(b.total) + '%';
+  var mono = _CV_VOICES.mono;
+  var rows = '';
+  for (var j = 0; j < items.length; j++) {
+    var x = items[j], last = printLast && j === items.length - 1;
+    var srcHtml = x.source ? (x.url ? '<a href="' + _esc(x.url) + '" target="_blank" rel="noopener" style="color:' + accent + ';text-decoration:none;">' + _esc(x.source) + '</a>' : '<span style="color:#475569;">' + _esc(x.source) + '</span>') : '';
+    rows += '<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;' + (last ? 'animation:rc-' + uid + ' 0.7s steps(7) both;' : '') + '">'
+      + '<span style="flex:0 0 auto;color:#94a3b8;">' + _cvPad(j + 1) + '</span>'
+      + '<span style="flex:1 1 auto;min-width:0;">' + _esc(x.text) + '</span>'
+      + (srcHtml ? '<span style="flex:0 0 auto;max-width:38%;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + srcHtml + '</span>' : '')
+      + '</div>';
+  }
+  // barcode: deterministic from the claim, 48 bars
+  var h = _cvHash(claim), x0 = 0, bars = '';
+  for (var k = 0; k < 48; k++) {
+    h = _cvNext(h);
+    var bw = 1 + (h >>> 8) % 3, gap = 1 + (h >>> 16) % 2;
+    bars += '<rect x="' + x0 + '" y="0" width="' + bw + '" height="30"/>';
+    x0 += bw + gap;
+  }
+  var inner = '<div style="font-size:0.72rem;letter-spacing:0.16em;text-align:center;color:#475569;">' + _esc(merchant) + '</div>'
+    + (issued ? '<div style="font-size:0.7rem;text-align:center;color:#94a3b8;margin-top:2px;">' + _esc(issued) + '</div>' : '')
+    + '<div style="margin:16px 0 12px;font-family:' + _CV_VOICES.display + ';font-weight:900;font-size:clamp(1.25rem,2.8vw,1.8rem);line-height:1.15;letter-spacing:-0.02em;color:#0f172a;">' + _esc(claim) + '</div>'
+    + '<div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div>'
+    + (rows || '<div style="color:#94a3b8;padding:5px 0;">(no evidence yet)</div>')
+    + '<div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div>'
+    + '<div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;"><span>' + _esc(totalLabel) + '</span><span style="color:' + accent + ';">' + _esc(total) + '</span></div>'
+    + '<div style="margin:16px auto 6px;max-width:260px;"><svg viewBox="0 0 ' + x0 + ' 30" width="100%" height="30" preserveAspectRatio="none" fill="#0f172a" aria-hidden="true">' + bars + '</svg></div>'
+    + '<div style="font-size:0.68rem;text-align:center;color:#94a3b8;">' + _esc(footer) + '</div>';
+  return '<style>@keyframes rc-' + uid + '{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}</style>'
+    + '<div style="margin:1rem auto;max-width:420px;background:#fdfdfb;color:#1e293b;font-family:' + mono + ';font-size:0.82rem;line-height:1.45;padding:26px 24px 22px;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,0.18);position:relative;">'
+    + inner
+    + '<div style="position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(-45deg,transparent 7px,#fdfdfb 0) 0 0/14px 10px repeat-x,linear-gradient(45deg,transparent 7px,#fdfdfb 0) 7px 0/14px 10px repeat-x;"></div>'
+    + '</div>';
+};
+
+_RENDERERS['changed_mind'] = function(b) {
+  var uid = Math.random().toString(36).substr(2, 6);
+  var th = _ffPick(b.theme, _CV_THEMES, 'dark');
+  var font = _ffPick(b.voice, _CV_VOICES, 'display');
+  var accent = _ffHex(b.accent, '#38bdf8');
+  var animate = b.animate === false ? false : true;
+  var before = _cvStr(b.before, 200) || 'A2UI is a Google thing';
+  var after = _cvStr(b.after, 200) || 'A2UI is a document contract';
+  var since = _cvStr(b.since, 200);
+  var css = animate
+    ? '<style>@keyframes cm-s-' + uid + '{from{transform:scaleX(0);}to{transform:scaleX(1);}}@keyframes cm-a-' + uid + '{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}</style>'
+    : '';
+  var inner = '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';">I used to think</div>'
+    + '<div style="position:relative;display:inline-block;margin:8px 0 22px;font-family:' + _CV_VOICES.serif + ';font-style:italic;font-size:clamp(1.1rem,2.4vw,1.5rem);line-height:1.3;color:' + th.mute + ';">' + _esc(before)
+    + '<span style="position:absolute;left:0;right:0;top:55%;height:2px;background:' + th.mute + ';transform-origin:left center;' + (animate ? 'animation:cm-s-' + uid + ' 0.5s ease-out 0.5s both;' : '') + '"></span></div>'
+    + '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + accent + ';">Now I think</div>'
+    + '<div style="margin-top:8px;font-family:' + font + ';font-weight:900;font-size:clamp(1.5rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;' + (animate ? 'animation:cm-a-' + uid + ' 0.6s cubic-bezier(0.2,0.8,0.2,1) 1.1s both;' : '') + '">' + _esc(after) + '</div>'
+    + (since ? '<div style="margin-top:18px;padding-left:12px;border-left:2px solid ' + accent + ';font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;line-height:1.5;color:' + th.mute + ';">' + _esc(since) + '</div>' : '');
+  return css + _cvCard(th, inner);
+};

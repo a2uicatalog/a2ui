@@ -7,7 +7,7 @@ No markdown conversion. No Quill. No stripping surprises.
 """
 
 from typing import List, Dict, Any
-import re, base64, urllib.request, urllib.error, json as _json
+import re, math, base64, urllib.request, urllib.error, json as _json
 from datetime import datetime, timezone
 from pathlib import Path
 import markdown as _md
@@ -18515,6 +18515,249 @@ def _render_orbit_mark(b: dict) -> str:
 
 
 _RENDERERS["orbit_mark"] = _render_orbit_mark
+
+
+# ─── conviction typography: weighted_words / stance / receipt / changed_mind ─
+# 1:1 twin of apps-script-surface/gas-wired-renderer/atoms_typography.gs's
+# conviction section (2026-09-19) — rationale there. Identical markup modulo
+# uid; tests/test_conviction_type.py. Edit BOTH. Escaping uses _cv_esc, a
+# byte-for-byte mirror of the GAS _esc (html.escape differs on the apostrophe).
+_CV_STANCE_JS = (
+    '(function(){var s=document.getElementById("st-s-%%UID%%"),t=document.getElementById("st-t-%%UID%%"),r=document.getElementById("st-r-%%UID%%"),l=document.getElementById("st-l-%%UID%%");if(!s||!t)return;'
+    'function pad(n){return n<10?"0"+n:""+n;}'
+    'function ap(p){var w=300+Math.floor((p*6+50)/100)*100,sh=140+Math.floor(p*16/10),ls=2-Math.floor(p*5/100),op=60+Math.floor(p*4/10);'
+    't.style.fontWeight=w;t.style.fontSize=Math.floor(sh/100)+"."+pad(sh%100)+"rem";t.style.letterSpacing=(ls<0?"-0."+pad(-ls):"0."+pad(ls))+"em";t.style.opacity=op>=100?"1":"0."+pad(op);'
+    'if(r)r.style.width=p+"%";if(l)l.textContent="confidence "+p+"%";}'
+    's.addEventListener("input",function(){ap(parseInt(s.value,10)||0);});})();'
+)
+_CV_VOICES = {
+    'display': 'system-ui,-apple-system,Segoe UI,Helvetica Neue,Arial,sans-serif',
+    'serif': 'Georgia,Times New Roman,serif',
+    'mono': 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace',
+}
+_CV_THEMES = {
+    'dark': {'bg': '#0b0d12', 'ink': '#f1f5f9', 'mute': '#94a3b8', 'line': '#1f2430', 'soft': '#12151c'},
+    'light': {'bg': '#ffffff', 'ink': '#0f172a', 'mute': '#64748b', 'line': '#e2e8f0', 'soft': '#f8fafc'},
+}
+
+
+def _cv_esc(v):
+    if v is None:
+        return ''
+    return (str(v).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            .replace('"', '&quot;').replace("'", '&#39;'))
+
+
+def _cv_str(v, mx):
+    s = v if isinstance(v, str) else (str(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else '')
+    return s.strip()[:mx]
+
+
+def _cv_pad(n):
+    return f'0{n}' if n < 10 else str(n)
+
+
+def _cv_card(th, inner, extra=''):
+    return (f'<div style="margin:1rem 0;border-radius:16px;padding:32px 36px;background:{th["bg"]};color:{th["ink"]};'
+            f'border:1px solid {th["line"]};{extra}">{inner}</div>')
+
+
+def _cv_hash(s):
+    h = 5381
+    data = s.encode('utf-16-le')
+    for i in range(0, len(data), 2):
+        h = (h * 33 + (data[i] | (data[i + 1] << 8))) & 0xFFFFFFFF
+    return h
+
+
+def _cv_next(h):
+    return (h * 1103515245 + 12345) & 0xFFFFFFFF
+
+
+def _render_weighted_words(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'dark')
+    font = _ff_pick(b.get('voice'), _CV_VOICES, 'display')
+    accent = _ff_hex(b.get('accent'), '#38bdf8')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center'}, 'left')
+    animate = b.get('animate') is not False
+    if isinstance(b.get('words'), list):
+        src = b['words']
+    else:
+        src = [{'text': w, 'weight': 2} for w in re.split(r'\s+', _cv_str(b.get('text'), 600)) if w]
+    words = []
+    for w in src:
+        if len(words) >= 40:
+            break
+        txt = _cv_str(w if isinstance(w, str) else (w.get('text') if isinstance(w, dict) else None), 24)
+        if not txt:
+            continue
+        words.append({'text': txt, 'weight': _ff_int(2 if isinstance(w, str) else (w.get('weight') if isinstance(w, dict) else None), 2, 1, 5)})
+    if not words:
+        words = [{'text': 'A2UI', 'weight': 5}]
+    scale = {1: '0.75em', 2: '1em', 3: '1.35em', 4: '1.8em', 5: '2.4em'}
+    fw = {1: '400', 2: '500', 3: '700', 4: '800', 5: '900'}
+    op = {1: '0.55', 2: '0.8', 3: '1', 4: '1', 5: '1'}
+    out = ''
+    for j, x in enumerate(words):
+        wt = x['weight']
+        out += (f'<span title="weight {wt}/5" style="display:inline-block;vertical-align:baseline;margin:0 0.28em 0.1em 0;'
+                f'font-size:{scale[wt]};font-weight:{fw[wt]};opacity:{op[wt]}'
+                + (f';color:{accent}' if wt == 5 else '')
+                + (f';animation:ww-{uid} 0.6s cubic-bezier(0.2,0.8,0.2,1) {j * 9}ms both;--ww-d:{_js_num(wt * 0.35)}em' if animate else '')
+                + f';">{_cv_esc(x["text"])}</span>')
+    css = (f'<style>@keyframes ww-{uid}{{from{{opacity:0;transform:translateY(calc(var(--ww-d) * -1));}}to{{transform:none;}}}}</style>'
+           if animate else '')
+    return css + _cv_card(th, f'<div style="font-family:{font};font-size:clamp(1.3rem,3.2vw,2.2rem);line-height:1.15;letter-spacing:-0.01em;text-align:{align};">{out}</div>')
+
+
+def _js_num(x):
+    """Format a float the way JS string-concatenation does for the values used here."""
+    s = repr(float(x))
+    return s[:-2] if s.endswith('.0') else s
+
+
+def _cv_confidence(v):
+    if isinstance(v, bool):
+        c = 0.5
+    elif isinstance(v, (int, float)):
+        c = float(v)
+    else:
+        try:
+            c = float(re.match(r'^\s*[-+]?(\d+\.?\d*|\.\d+)', v).group(0)) if isinstance(v, str) else 0.5
+        except (AttributeError, ValueError):
+            c = 0.5
+    if c > 1:
+        c = c / 100
+    c = max(0.0, min(1.0, c))
+    return math.floor(c * 100 + 0.5)
+
+
+def _render_stance(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'dark')
+    font = _ff_pick(b.get('voice'), _CV_VOICES, 'display')
+    accent = _ff_hex(b.get('accent'), '#38bdf8')
+    claim = _cv_str(b.get('claim'), 200) or 'A2UI'
+    because = _cv_str(b.get('because'), 300)
+    unless = _cv_str(b.get('unless'), 300)
+    inter = b.get('interactive') is not False
+    p = _cv_confidence(b.get('confidence'))
+    w = 300 + ((p * 6 + 50) // 100) * 100
+    sh = 140 + (p * 16) // 10
+    ls = 2 - (p * 5) // 100
+    op = 60 + (p * 4) // 10
+    size = f'{sh // 100}.{_cv_pad(sh % 100)}rem'
+    spacing = ('-0.' + _cv_pad(-ls) if ls < 0 else '0.' + _cv_pad(ls)) + 'em'
+    opacity = '1' if op >= 100 else '0.' + _cv_pad(op)
+    mono = _CV_VOICES['mono']
+    inner = (
+        f'<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};margin-bottom:14px;">stance</div>'
+        f'<div id="st-t-{uid}" style="font-family:{font};font-weight:{w};font-size:{size};letter-spacing:{spacing};opacity:{opacity};line-height:1.12;transition:font-size 0.25s,letter-spacing 0.25s,opacity 0.25s,font-weight 0.25s;">{_cv_esc(claim)}</div>'
+        f'<div style="margin-top:18px;height:3px;background:{th["line"]};border-radius:2px;overflow:hidden;"><div id="st-r-{uid}" style="height:100%;width:{p}%;background:{accent};transition:width 0.25s;"></div></div>'
+        f'<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;font-family:{mono};font-size:0.72rem;color:{th["mute"]};">'
+        f'<span id="st-l-{uid}">confidence {p}%</span>'
+        + (f'<label style="display:flex;align-items:center;gap:8px;"><span>try it</span><input id="st-s-{uid}" type="range" min="0" max="100" value="{p}" aria-label="confidence" style="width:120px;accent-color:{accent};"></label>' if inter else '')
+        + '</div>'
+        + (f'<div style="margin-top:18px;font-size:0.98rem;line-height:1.55;color:{th["ink"]};"><span style="color:{th["mute"]};">because</span> {_cv_esc(because)}</div>' if because else '')
+        + (f'<div style="margin-top:10px;font-size:0.9rem;line-height:1.5;font-style:italic;color:{th["mute"]};">I would change my mind if {_cv_esc(unless)}</div>' if unless else '')
+        + ('<script>' + _CV_STANCE_JS.replace('%%UID%%', uid) + '</script>' if inter else '')
+    )
+    return _cv_card(th, inner)
+
+
+def _render_receipt(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    accent = _ff_hex(b.get('accent'), '#4338ca')
+    claim = _cv_str(b.get('claim'), 200) or 'A2UI'
+    merchant = _cv_str(b.get('merchant'), 40) or 'EVIDENCE RECEIPT'
+    issued = _cv_str(b.get('issued'), 40)
+    footer = _cv_str(b.get('footer'), 120) or 'Sources listed. No unsourced stats.'
+    total_label = _cv_str(b.get('total_label'), 30) or 'CONFIDENCE'
+    print_last = b.get('print_last') is not False
+    src = b.get('items') if isinstance(b.get('items'), list) else []
+    items = []
+    for it in src:
+        if len(items) >= 24:
+            break
+        txt = _cv_str(it if isinstance(it, str) else (it.get('text') if isinstance(it, dict) else None), 160)
+        if not txt:
+            continue
+        url = it.get('url') if isinstance(it, dict) else None
+        items.append({'text': txt,
+                      'source': _cv_str(it.get('source') if isinstance(it, dict) else None, 60),
+                      'url': url[:300] if isinstance(url, str) and re.match(r'^https?://', url) else ''})
+    if b.get('total') is None:
+        total = f'{len(items)} ITEM' if len(items) == 1 else f'{len(items)} ITEMS'
+    else:
+        total = f'{_cv_confidence(b.get("total"))}%'
+    mono = _CV_VOICES['mono']
+    rows = ''
+    for j, x in enumerate(items):
+        last = print_last and j == len(items) - 1
+        if x['source']:
+            src_html = (f'<a href="{_cv_esc(x["url"])}" target="_blank" rel="noopener" style="color:{accent};text-decoration:none;">{_cv_esc(x["source"])}</a>'
+                        if x['url'] else f'<span style="color:#475569;">{_cv_esc(x["source"])}</span>')
+        else:
+            src_html = ''
+        rows += (f'<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;{("animation:rc-" + uid + " 0.7s steps(7) both;") if last else ""}">'
+                 f'<span style="flex:0 0 auto;color:#94a3b8;">{_cv_pad(j + 1)}</span>'
+                 f'<span style="flex:1 1 auto;min-width:0;">{_cv_esc(x["text"])}</span>'
+                 + (f'<span style="flex:0 0 auto;max-width:38%;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{src_html}</span>' if src_html else '')
+                 + '</div>')
+    h = _cv_hash(claim)
+    x0 = 0
+    bars = ''
+    for _ in range(48):
+        h = _cv_next(h)
+        bw = 1 + (h >> 8) % 3
+        gap = 1 + (h >> 16) % 2
+        bars += f'<rect x="{x0}" y="0" width="{bw}" height="30"/>'
+        x0 += bw + gap
+    inner = (
+        f'<div style="font-size:0.72rem;letter-spacing:0.16em;text-align:center;color:#475569;">{_cv_esc(merchant)}</div>'
+        + (f'<div style="font-size:0.7rem;text-align:center;color:#94a3b8;margin-top:2px;">{_cv_esc(issued)}</div>' if issued else '')
+        + f'<div style="margin:16px 0 12px;font-family:{_CV_VOICES["display"]};font-weight:900;font-size:clamp(1.25rem,2.8vw,1.8rem);line-height:1.15;letter-spacing:-0.02em;color:#0f172a;">{_cv_esc(claim)}</div>'
+        + '<div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div>'
+        + (rows or '<div style="color:#94a3b8;padding:5px 0;">(no evidence yet)</div>')
+        + '<div style="border-top:1px dashed #94a3b8;margin:10px 0;"></div>'
+        + f'<div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;"><span>{_cv_esc(total_label)}</span><span style="color:{accent};">{_cv_esc(total)}</span></div>'
+        + f'<div style="margin:16px auto 6px;max-width:260px;"><svg viewBox="0 0 {x0} 30" width="100%" height="30" preserveAspectRatio="none" fill="#0f172a" aria-hidden="true">{bars}</svg></div>'
+        + f'<div style="font-size:0.68rem;text-align:center;color:#94a3b8;">{_cv_esc(footer)}</div>'
+    )
+    return (f'<style>@keyframes rc-{uid}{{from{{opacity:0;transform:translateY(-10px);}}to{{opacity:1;transform:none;}}}}</style>'
+            f'<div style="margin:1rem auto;max-width:420px;background:#fdfdfb;color:#1e293b;font-family:{mono};font-size:0.82rem;line-height:1.45;padding:26px 24px 22px;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,0.18);position:relative;">'
+            + inner
+            + '<div style="position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(-45deg,transparent 7px,#fdfdfb 0) 0 0/14px 10px repeat-x,linear-gradient(45deg,transparent 7px,#fdfdfb 0) 7px 0/14px 10px repeat-x;"></div>'
+            + '</div>')
+
+
+def _render_changed_mind(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'dark')
+    font = _ff_pick(b.get('voice'), _CV_VOICES, 'display')
+    accent = _ff_hex(b.get('accent'), '#38bdf8')
+    animate = b.get('animate') is not False
+    before = _cv_str(b.get('before'), 200) or 'A2UI is a Google thing'
+    after = _cv_str(b.get('after'), 200) or 'A2UI is a document contract'
+    since = _cv_str(b.get('since'), 200)
+    css = (f'<style>@keyframes cm-s-{uid}{{from{{transform:scaleX(0);}}to{{transform:scaleX(1);}}}}'
+           f'@keyframes cm-a-{uid}{{from{{opacity:0;transform:translateY(14px);}}to{{opacity:1;transform:none;}}}}</style>') if animate else ''
+    inner = (
+        f'<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};">I used to think</div>'
+        f'<div style="position:relative;display:inline-block;margin:8px 0 22px;font-family:{_CV_VOICES["serif"]};font-style:italic;font-size:clamp(1.1rem,2.4vw,1.5rem);line-height:1.3;color:{th["mute"]};">{_cv_esc(before)}'
+        f'<span style="position:absolute;left:0;right:0;top:55%;height:2px;background:{th["mute"]};transform-origin:left center;{("animation:cm-s-" + uid + " 0.5s ease-out 0.5s both;") if animate else ""}"></span></div>'
+        f'<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{accent};">Now I think</div>'
+        f'<div style="margin-top:8px;font-family:{font};font-weight:900;font-size:clamp(1.5rem,3.6vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;{("animation:cm-a-" + uid + " 0.6s cubic-bezier(0.2,0.8,0.2,1) 1.1s both;") if animate else ""}">{_cv_esc(after)}</div>'
+        + (f'<div style="margin-top:18px;padding-left:12px;border-left:2px solid {accent};font-family:{_CV_VOICES["mono"]};font-size:0.78rem;line-height:1.5;color:{th["mute"]};">{_cv_esc(since)}</div>' if since else '')
+    )
+    return css + _cv_card(th, inner)
+
+
+_RENDERERS["weighted_words"] = _render_weighted_words
+_RENDERERS["stance"] = _render_stance
+_RENDERERS["receipt"] = _render_receipt
+_RENDERERS["changed_mind"] = _render_changed_mind
 
 
 def _render_isometric_mesh(b: dict) -> str:

@@ -300,6 +300,10 @@ a2ui-editorial-v1:
 - search_result_card
 - series_overview_card
 - share_quote
+- weighted_words
+- stance
+- receipt
+- changed_mind
 - social_share_bar
 - source_citation
 - table_of_contents
