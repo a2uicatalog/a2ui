@@ -18829,6 +18829,250 @@ _RENDERERS["halftone_wave"] = _render_halftone_wave
 _RENDERERS["message_lanes"] = _render_message_lanes
 
 
+# ─── computed typography & colour: type_scale / readability_card / drop_cap / contrast_audit ─
+# 1:1 twins of atoms_typography.gs (2026-09-19). tests/test_computed_type.py. Edit BOTH.
+_TS_RATIOS = {'minor_second': 1.067, 'major_second': 1.125, 'minor_third': 1.2, 'major_third': 1.25,
+              'perfect_fourth': 1.333, 'augmented_fourth': 1.414, 'perfect_fifth': 1.5, 'golden': 1.618}
+_TS_RATIO_NAMES = {'minor_second': 'Minor second', 'major_second': 'Major second', 'minor_third': 'Minor third',
+                   'major_third': 'Major third', 'perfect_fourth': 'Perfect fourth', 'augmented_fourth': 'Augmented fourth',
+                   'perfect_fifth': 'Perfect fifth', 'golden': 'Golden ratio'}
+
+
+def _cv_fix(x, places):
+    m = 1000 if places == 3 else 100
+    v = math.floor(x * m + 0.5)
+    ip, fp = v // m, v % m
+    return f'{ip}.{str(fp).zfill(3 if places == 3 else 2)}'
+
+
+def _ts_pow(r, n):
+    v = 1.0
+    if n >= 0:
+        for _ in range(n):
+            v = v * r
+    else:
+        for _ in range(-n):
+            v = v / r
+    return v
+
+
+def _js_ratio(r):
+    s = repr(r)
+    return s[:-2] if s.endswith('.0') else s
+
+
+def _render_type_scale(b: dict) -> str:
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'light')
+    font = _ff_pick(b.get('voice'), _CV_VOICES, 'display')
+    accent = _ff_hex(b.get('accent'), '#0e7bb8')
+    base = _ff_int(b.get('base'), 16, 10, 32)
+    ratio_key = _ff_pick(b.get('ratio'), {k: k for k in _TS_RATIOS}, 'major_third')
+    ratio = _TS_RATIOS[ratio_key]
+    up = _ff_int(b.get('steps_up'), 6, 1, 8)
+    down = _ff_int(b.get('steps_down'), 2, 0, 3)
+    sample = _cv_str(b.get('sample'), 60) or 'The quick brown fox'
+    show_code = b.get('show_code') is not False
+    mono = _CV_VOICES['mono']
+    rows, vars_ = '', ''
+    max_px = base * _ts_pow(ratio, up)
+    for n in range(up, -down - 1, -1):
+        px = base * _ts_pow(ratio, n)
+        px_s, rem_s, pct = _cv_fix(px, 2), _cv_fix(px / base, 3), math.floor(px / max_px * 100 + 0.5)
+        rows += (f'<div style="display:grid;grid-template-columns:64px 1fr 150px;align-items:baseline;gap:14px;padding:8px 0;border-bottom:1px solid {th["line"]};">'
+                 f'<div style="font-family:{mono};font-size:0.72rem;color:{accent if n == 0 else th["mute"]};">{"+" if n > 0 else ""}{n}</div>'
+                 f'<div style="font-family:{font};font-size:{px_s}px;line-height:1.05;font-weight:{"800" if n > 2 else "600" if n > 0 else "400"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{th["ink"]};">{_cv_esc(sample)}</div>'
+                 f'<div style="font-family:{mono};font-size:0.72rem;color:{th["mute"]};text-align:right;">{px_s}px <span style="color:{th["line"]};">/</span> {rem_s}rem<div style="height:3px;margin-top:4px;background:{th["line"]};border-radius:2px;"><div style="height:100%;width:{pct}%;background:{accent};border-radius:2px;"></div></div></div>'
+                 f'</div>')
+        vars_ += f'  --step-{"n" + str(-n) if n < 0 else n}: {rem_s}rem; /* {px_s}px */\n'
+    head = (f'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px;">'
+            f'<div><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};">type scale</div>'
+            f'<div style="font-family:{font};font-size:1.3rem;font-weight:800;color:{th["ink"]};">{_TS_RATIO_NAMES[ratio_key]} <span style="color:{accent};">{_js_ratio(ratio)}</span></div></div>'
+            f'<div style="font-family:{mono};font-size:0.72rem;color:{th["mute"]};">base {base}px · {up + down + 1} steps</div></div>')
+    code = (f'<pre style="margin:16px 0 0;padding:12px 14px;border-radius:8px;background:{th["soft"]};border:1px solid {th["line"]};font-family:{mono};font-size:0.72rem;line-height:1.5;color:{th["ink"]};overflow-x:auto;">:root {{\n{vars_}}}</pre>'
+            if show_code else '')
+    return _cv_card(th, head + rows + code)
+
+
+def _rd_syllables(w):
+    s = re.sub(r'[^a-z]', '', w.lower())
+    if not s:
+        return 0
+    if len(s) <= 3:
+        return 1
+    n, prev = 0, False
+    for ch in s:
+        v = ch in 'aeiouy'
+        if v and not prev:
+            n += 1
+        prev = v
+    if s[-1] == 'e' and len(s) > 2 and s[-2] not in 'aeiouy':
+        n -= 1
+    return max(1, n)
+
+
+def _rd_sentences(text):
+    out, cur = [], ''
+    for i, ch in enumerate(text):
+        cur += ch
+        if ch in '.!?':
+            nx = text[i + 1] if i + 1 < len(text) else ''
+            if nx in ('', ' ', '\n', '\t', '\r'):
+                if cur.strip():
+                    out.append(cur.strip())
+                cur = ''
+    if cur.strip():
+        out.append(cur.strip())
+    return out
+
+
+def _render_readability_card(b: dict) -> str:
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'light')
+    accent = _ff_hex(b.get('accent'), '#0e7bb8')
+    text = _cv_str(b.get('text'), 5000)
+    title = _cv_str(b.get('title'), 80)
+    wpm = _ff_int(b.get('wpm'), 230, 100, 500)
+    hl = b.get('highlight_longest') is not False
+    sents = _rd_sentences(text)
+    words = syl = 0
+    longest, longest_n = -1, 0
+    for i, s in enumerate(sents):
+        ws = [w for w in re.split(r'\s+', s) if w]
+        words += len(ws)
+        for w in ws:
+            syl += _rd_syllables(w)
+        if len(ws) > longest_n:
+            longest_n, longest = len(ws), i
+    S, W = (len(sents) or 1), (words or 1)
+    flesch = 206.835 - 1.015 * (W / S) - 84.6 * (syl / W)
+    f10 = max(-1000, min(1300, math.floor(flesch * 10 + 0.5)))   # Flesch tops out at 121.22, can go negative
+    f_s = ('-' if f10 < 0 else '') + f'{abs(f10) // 10}.{abs(f10) % 10}'
+    grade = ('very easy' if f10 >= 900 else 'easy' if f10 >= 800 else 'fairly easy' if f10 >= 700 else 'plain English' if f10 >= 600
+             else 'fairly hard' if f10 >= 500 else 'hard' if f10 >= 300 else 'very hard')
+    mins = math.ceil(words / wpm)
+    asl, spw = _cv_fix(W / S, 2), _cv_fix(syl / W, 2)
+    mono = _CV_VOICES['mono']
+    excerpt = ''
+    for k, s in enumerate(sents):
+        seg = _cv_esc(s)
+        if hl and k == longest and len(sents) > 1:
+            seg = f'<mark style="background:{accent}22;color:inherit;border-bottom:2px solid {accent};padding:0 2px;">{seg}</mark>'
+        excerpt += seg + ' '
+    def stat(v, l):
+        return (f'<div><div style="font-family:{mono};font-size:1.05rem;font-weight:700;color:{th["ink"]};">{v}</div>'
+                f'<div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:{th["mute"]};">{l}</div></div>')
+    inner = (f'<div style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;">'
+             f'<div style="flex:0 0 auto;"><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};">{_cv_esc(title) if title else "readability"}</div>'
+             f'<div style="font-family:{_CV_VOICES["display"]};font-size:4rem;line-height:1;font-weight:900;letter-spacing:-0.04em;color:{accent};">{f_s}</div>'
+             f'<div style="font-size:0.85rem;color:{th["mute"]};">Flesch reading ease · {grade}</div></div>'
+             f'<div style="flex:1 1 260px;display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px 18px;padding-top:6px;">'
+             + stat(words, 'words') + stat(len(sents), 'sentences') + stat(f'{mins} min', 'to read') + stat(asl, 'words / sentence')
+             + stat(spw, 'syllables / word') + stat(longest_n, 'longest sentence') + '</div></div>'
+             + (f'<div style="margin-top:20px;padding-top:16px;border-top:1px solid {th["line"]};font-family:{_CV_VOICES["serif"]};font-size:0.98rem;line-height:1.7;color:{th["ink"]};max-height:220px;overflow:auto;">{excerpt.strip()}</div>' if text else ''))
+    return _cv_card(th, inner)
+
+
+def _render_drop_cap(b: dict) -> str:
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'light')
+    accent = _ff_hex(b.get('accent'), '#0e7bb8')
+    style = _ff_pick(b.get('style'), {'dropped': 'dropped', 'raised': 'raised', 'boxed': 'boxed', 'ornament': 'ornament'}, 'dropped')
+    cap_font = _ff_pick(b.get('voice'), _CV_VOICES, 'serif')
+    lines = _ff_int(b.get('lines'), 3, 2, 4)
+    text = _cv_str(b.get('text'), 2000) or 'A2UI'
+    i = 0
+    while i < len(text) and text[i] in ' \t\n"“‘\'(':
+        i += 1
+    cap = text[i] if i < len(text) else 'A'
+    rest = text[:i] + text[i + 1:]
+    if style == 'raised':
+        cap_css = f'font-size:2.6em;line-height:1;vertical-align:baseline;margin-right:0.06em;color:{accent};'
+    elif style == 'boxed':
+        cap_css = f'font-size:{_js_num(lines * 1.05)}em;line-height:1;padding:0.12em 0.2em;margin:0.08em 0.28em 0 0;background:{accent};color:{th["bg"]};border-radius:0.08em;'
+        cap_css = 'float:left;' + cap_css
+    elif style == 'ornament':
+        cap_css = f'float:left;font-size:{_js_num(lines * 1.25)}em;line-height:0.82;padding:0.06em 0.3em 0.05em 0;margin:0.06em 0.34em 0 0;font-style:italic;color:{accent};border-right:1px solid {accent};'
+    else:
+        cap_css = f'float:left;font-size:{_js_num(lines * 1.25)}em;line-height:0.82;padding-top:0.08em;margin:0 0.14em 0 0;color:{accent};'
+    return _cv_card(th, f'<p style="margin:0;font-family:{_CV_VOICES["serif"]};font-size:1.05rem;line-height:1.65;color:{th["ink"]};"><span style="font-family:{cap_font};font-weight:700;{cap_css}">{_cv_esc(cap)}</span>{_cv_esc(rest)}</p>')
+
+
+def _ca_lum(h):
+    out = []
+    for i in range(3):
+        c = int(h[1 + i * 2:3 + i * 2], 16) / 255
+        out.append(c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2]
+
+
+def _ca_ratio(fg, bg):
+    a, c = _ca_lum(fg), _ca_lum(bg)
+    hi, lo = (a, c) if a > c else (c, a)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _ca_mix(h, toward, t):
+    s = '#'
+    for i in range(3):
+        c = int(h[1 + i * 2:3 + i * 2], 16)
+        v = math.floor(c + (toward - c) * t + 0.5)
+        s += f'{v:02x}'
+    return s
+
+
+def _ca_fix(fg, bg):
+    toward = 0 if _ca_lum(bg) > 0.5 else 255
+    for t in range(5, 101, 5):
+        c = _ca_mix(fg, toward, t / 100)
+        if _ca_ratio(c, bg) >= 4.5:
+            return c
+    return '#000000' if toward == 0 else '#ffffff'
+
+
+def _render_contrast_audit(b: dict) -> str:
+    th = _ff_pick(b.get('theme'), _CV_THEMES, 'light')
+    show_fix = b.get('show_fix') is not False
+    src = b.get('pairs') if isinstance(b.get('pairs'), list) else [{'fg': b.get('fg'), 'bg': b.get('bg'), 'label': b.get('label')}]
+    pairs = []
+    for p in src:
+        if len(pairs) >= 12:
+            break
+        p = p if isinstance(p, dict) else {}
+        fg, bg = _ff_hex(p.get('fg'), None), _ff_hex(p.get('bg'), None)
+        if not fg or not bg:
+            continue
+        pairs.append({'fg': fg, 'bg': bg, 'label': _cv_str(p.get('label'), 40)})
+    if not pairs:
+        pairs = [{'fg': '#767676', 'bg': '#ffffff', 'label': 'example'}]
+    mono = _CV_VOICES['mono']
+    def badge(ok, l):
+        return ('<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:0.66rem;font-weight:700;letter-spacing:0.04em;'
+                + ('background:#16a34a22;color:#15803d;' if ok else 'background:#dc262622;color:#b91c1c;') + f'">{l} {"pass" if ok else "fail"}</span>')
+    pass_aa, rows = 0, ''
+    for q in pairs:
+        r = _ca_ratio(q['fg'], q['bg'])
+        r_s, aa, aa_l, aaa = _cv_fix(r, 2), r >= 4.5, r >= 3, r >= 7
+        if aa:
+            pass_aa += 1
+        fix = _ca_fix(q['fg'], q['bg']) if (not aa and show_fix) else None
+        rows += (f'<div style="display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid {th["line"]};">'
+                 f'<div style="background:{q["bg"]};color:{q["fg"]};border:1px solid {th["line"]};border-radius:8px;padding:10px 12px;font-weight:700;font-size:1.1rem;line-height:1;">Aa <span style="font-weight:400;font-size:0.8rem;">Text</span></div>'
+                 f'<div><div style="font-weight:600;color:{th["ink"]};font-size:0.9rem;">{(_cv_esc(q["label"]) + " · ") if q["label"] else ""}<span style="font-family:{mono};color:{th["mute"]};font-weight:400;font-size:0.78rem;">{q["fg"]} on {q["bg"]}</span></div>'
+                 f'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">{badge(aa, "AA")}{badge(aa_l, "AA large")}{badge(aaa, "AAA")}</div>'
+                 + (f'<div style="margin-top:6px;font-size:0.76rem;color:{th["mute"]};">nearest pass: <span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:{fix};border:1px solid {th["line"]};"></span> <span style="font-family:{mono};">{fix}</span> ({_cv_fix(_ca_ratio(fix, q["bg"]), 2)}:1)</div>' if fix else '')
+                 + '</div>'
+                 f'<div style="font-family:{mono};font-size:1.3rem;font-weight:700;color:{th["ink"] if aa else "#b91c1c"};text-align:right;">{r_s}:1</div>'
+                 '</div>')
+    head = (f'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;">'
+            f'<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:{th["mute"]};">contrast audit · WCAG 2.1</div>'
+            f'<div style="font-family:{mono};font-size:0.78rem;color:{"#15803d" if pass_aa == len(pairs) else th["mute"]};">{pass_aa} of {len(pairs)} pass AA</div></div>')
+    return _cv_card(th, head + rows)
+
+
+_RENDERERS["type_scale"] = _render_type_scale
+_RENDERERS["readability_card"] = _render_readability_card
+_RENDERERS["drop_cap"] = _render_drop_cap
+_RENDERERS["contrast_audit"] = _render_contrast_audit
+
+
 # ─── agent_narrator ──────────────────────────────────────────────────────────
 # 1:1 twin of atoms_typography.gs's agent_narrator (rationale there).
 # tests/test_agent_narrator.py. Edit BOTH.

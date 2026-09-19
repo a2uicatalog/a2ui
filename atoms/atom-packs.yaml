@@ -173,6 +173,7 @@ a2ui-charts-v1:
 - uptime_timeline
 - word_cloud
 a2ui-display-v1:
+- contrast_audit
 - action_required_card
 - annotated_code
 - annotation_highlight
@@ -304,6 +305,9 @@ a2ui-editorial-v1:
 - stance
 - receipt
 - changed_mind
+- type_scale
+- readability_card
+- drop_cap
 - social_share_bar
 - source_citation
 - table_of_contents

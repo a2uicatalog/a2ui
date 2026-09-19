@@ -3910,6 +3910,148 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: type_scale
+  stage: preview
+  description: 'A modular type scale, computed and shown as a specimen sheet.
+    Declare a base size and a musical ratio (minor second through golden ratio)
+    and the atom calculates every step -- px and rem to the hundredth, computed
+    with the same integer-safe arithmetic on every renderer -- and sets the sample
+    line at each size with a proportion bar, plus a ready-to-paste block of CSS
+    custom properties. Calcs baked in, the way wall_elevation bakes in wall
+    maths: an agent declares intent (base, ratio, steps), the atom does the
+    typography. Light or dark, no JavaScript.'
+  compact_description: computed modular type scale as a specimen sheet with CSS custom properties
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; the typographic layout is lost
+    incompatible_on:
+    - surface: email
+      reason: Inline styling and layout not reliably supported in email clients
+  fields:
+    base: integer (optional). Base size in px, clamped 10-32. Default 16.
+    ratio: '"minor_second" | "major_second" | "minor_third" | "major_third" | "perfect_fourth" | "augmented_fourth" | "perfect_fifth" | "golden"  (optional, default "major_third")'
+    steps_up: integer (optional). Steps above the base, clamped 1-8. Default 6.
+    steps_down: integer (optional). Steps below the base, clamped 0-3. Default 2.
+    sample: string (optional). Sample line set at each size. Default "The quick brown fox".
+    voice: '"display" | "serif" | "mono"  (optional, default "display")'
+    theme: '"dark" | "light"  (optional, default "light")'
+    accent: '"#rrggbb" (optional). Default "#0e7bb8".'
+    show_code: bool (optional). Append the CSS custom properties block. Default true.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: readability_card
+  stage: preview
+  description: 'Prose metrics as a typographic card: the Flesch reading-ease
+    score set huge, its plain-language grade, and a stat row -- words,
+    sentences, minutes to read at a declared words-per-minute, words per
+    sentence, syllables per word, longest sentence -- all computed by the
+    renderer from the text with identical arithmetic on every renderer
+    (syllables by a vowel-group heuristic, sentences on . ! ? followed by
+    space). The excerpt is shown underneath with the longest sentence
+    highlighted, which is usually the one to cut. Built for the writing
+    workflow; give it a draft and it tells you what a reader will feel.'
+  compact_description: Flesch score, reading time and sentence stats computed from prose, longest sentence highlighted
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; the typographic layout is lost
+    incompatible_on:
+    - surface: email
+      reason: Inline styling and layout not reliably supported in email clients
+  fields:
+    text: string (required). The prose to measure, up to 5000 characters.
+    title: string (optional). Label above the score. Default "readability".
+    wpm: integer (optional). Reading speed for the time estimate, clamped 100-500. Default 230.
+    highlight_longest: bool (optional). Mark the longest sentence in the excerpt. Default true.
+    theme: '"dark" | "light"  (optional, default "light")'
+    accent: '"#rrggbb" (optional). Default "#0e7bb8".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: drop_cap
+  stage: preview
+  description: 'An editorial paragraph with an initial letter set four ways:
+    dropped (the classic, sunk across 2-4 lines), raised (standing on the
+    baseline), boxed (reversed out of an accent block), or ornament (italic,
+    with a hairline rule). Leading quotation marks and brackets are skipped so
+    the real first letter is the cap. Light or dark, no JavaScript. The
+    smallest atom in the family and the one every long read wants.'
+  compact_description: paragraph with a dropped, raised, boxed or ornamental initial letter
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; the typographic layout is lost
+    incompatible_on:
+    - surface: email
+      reason: Inline styling and layout not reliably supported in email clients
+  fields:
+    text: string (required). The paragraph, up to 2000 characters.
+    style: '"dropped" | "raised" | "boxed" | "ornament"  (optional, default "dropped")'
+    lines: integer (optional). Lines the dropped cap spans, clamped 2-4. Default 3.
+    voice: '"display" | "serif" | "mono"  (optional, default "serif"). Face of the initial.'
+    theme: '"dark" | "light"  (optional, default "light")'
+    accent: '"#rrggbb" (optional). Colour of the initial. Default "#0e7bb8".'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: contrast_audit
+  stage: preview
+  description: 'WCAG 2.1 contrast audit with the maths baked in: for each
+    foreground/background pair the renderer computes the relative luminance
+    and contrast ratio, shows a live sample swatch, and badges AA (4.5:1), AA
+    large (3:1) and AAA (7:1) as pass or fail. Failing pairs get the nearest
+    passing colour, found by mixing the foreground toward black or white in
+    5% steps until it clears AA. A summary line counts the passes. For an
+    agent composing a surface this is the difference between "looks fine"
+    and "is readable". No JavaScript; light or dark.'
+  compact_description: WCAG contrast ratios for colour pairs with AA/AAA badges and a nearest-passing fix
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    - pdf
+    degraded_on:
+    - surface: google-chat
+      note: Renders as a plain text card; the typographic layout is lost
+    incompatible_on:
+    - surface: email
+      reason: Inline styling and layout not reliably supported in email clients
+  fields:
+    pairs: array of {fg, bg, label?} (optional). Up to 12 pairs of "#rrggbb" colours; invalid pairs are dropped.
+    fg: '"#rrggbb" (optional). Single-pair shorthand when pairs is absent.'
+    bg: '"#rrggbb" (optional). Single-pair shorthand when pairs is absent.'
+    label: string (optional). Label for the single-pair shorthand.
+    show_fix: bool (optional). Suggest the nearest passing foreground for failures. Default true.
+    theme: '"dark" | "light"  (optional, default "light")'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: share_quote
   description: Displays a visually distinct callout showcasing a key phrase designed
     for social clipping.

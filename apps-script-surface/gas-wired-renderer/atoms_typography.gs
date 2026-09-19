@@ -571,3 +571,180 @@ _RENDERERS['agent_narrator'] = function(b) {
     + (kept.length ? '<style>@keyframes an-blink-' + uid + '{0%,100%{opacity:1;}50%{opacity:0;}}</style><script>' + _AGENT_NARRATOR_JS.replace(/%%UID%%/g, uid) + (skipped ? 'console.warn("agent_narrator: ' + skipped + ' beat(s) skipped, over cap");' : '') + '<\/script>' : '')
     + '</div>';
 };
+
+
+// ── computed typography & colour: type_scale / readability_card / drop_cap / contrast_audit ──
+// 2026-09-19. "Calcs baked in", the wall_elevation idea applied to type and
+// colour: every number on the page is computed by the renderer from a few
+// declared inputs, with the SAME integer-safe arithmetic on GAS and Python
+// (products by repeated multiplication, results fixed to hundredths with
+// floor(x*100+0.5)) so the markup is identical. Escaping via _esc / _cv_esc.
+// tests/test_computed_type.py. Edit BOTH.
+var _TS_RATIOS = {minor_second: 1.067, major_second: 1.125, minor_third: 1.2, major_third: 1.25, perfect_fourth: 1.333, augmented_fourth: 1.414, perfect_fifth: 1.5, golden: 1.618};
+var _TS_RATIO_NAMES = {minor_second: 'Minor second', major_second: 'Major second', minor_third: 'Minor third', major_third: 'Major third', perfect_fourth: 'Perfect fourth', augmented_fourth: 'Augmented fourth', perfect_fifth: 'Perfect fifth', golden: 'Golden ratio'};
+function _cvFix(x, places) {
+  var m = places === 3 ? 1000 : 100, v = Math.floor(x * m + 0.5), ip = Math.floor(v / m), fp = v % m;
+  var s = '' + fp; while (s.length < (places === 3 ? 3 : 2)) s = '0' + s;
+  return ip + '.' + s;
+}
+function _tsPow(r, n) { var v = 1; if (n >= 0) { for (var i = 0; i < n; i++) v = v * r; } else { for (var j = 0; j < -n; j++) v = v / r; } return v; }
+_RENDERERS['type_scale'] = function(b) {
+  var th = _ffPick(b.theme, _CV_THEMES, 'light');
+  var font = _ffPick(b.voice, _CV_VOICES, 'display');
+  var accent = _ffHex(b.accent, '#0e7bb8');
+  var base = _ffInt(b.base, 16, 10, 32);
+  var ratioKey = _ffPick(b.ratio, {minor_second: 'minor_second', major_second: 'major_second', minor_third: 'minor_third', major_third: 'major_third', perfect_fourth: 'perfect_fourth', augmented_fourth: 'augmented_fourth', perfect_fifth: 'perfect_fifth', golden: 'golden'}, 'major_third');
+  var ratio = _TS_RATIOS[ratioKey];
+  var up = _ffInt(b.steps_up, 6, 1, 8), down = _ffInt(b.steps_down, 2, 0, 3);
+  var sample = _cvStr(b.sample, 60) || 'The quick brown fox';
+  var showCode = b.show_code === false ? false : true;
+  var rows = '', vars = '', maxPx = base * _tsPow(ratio, up);
+  for (var n = up; n >= -down; n--) {
+    var px = base * _tsPow(ratio, n), pxS = _cvFix(px, 2), remS = _cvFix(px / base, 3), pct = Math.floor(px / maxPx * 100 + 0.5);
+    rows += '<div style="display:grid;grid-template-columns:64px 1fr 150px;align-items:baseline;gap:14px;padding:8px 0;border-bottom:1px solid ' + th.line + ';">'
+      + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:' + (n === 0 ? accent : th.mute) + ';">' + (n > 0 ? '+' : '') + n + '</div>'
+      + '<div style="font-family:' + font + ';font-size:' + pxS + 'px;line-height:1.05;font-weight:' + (n > 2 ? '800' : n > 0 ? '600' : '400') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + th.ink + ';">' + _esc(sample) + '</div>'
+      + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:' + th.mute + ';text-align:right;">' + pxS + 'px <span style="color:' + th.line + ';">/</span> ' + remS + 'rem<div style="height:3px;margin-top:4px;background:' + th.line + ';border-radius:2px;"><div style="height:100%;width:' + pct + '%;background:' + accent + ';border-radius:2px;"></div></div></div>'
+      + '</div>';
+    vars += '  --step-' + (n < 0 ? 'n' + (-n) : n) + ': ' + remS + 'rem; /* ' + pxS + 'px */\n';
+  }
+  var head = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px;">'
+    + '<div><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';">type scale</div>'
+    + '<div style="font-family:' + font + ';font-size:1.3rem;font-weight:800;color:' + th.ink + ';">' + _TS_RATIO_NAMES[ratioKey] + ' <span style="color:' + accent + ';">' + ratio + '</span></div></div>'
+    + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;color:' + th.mute + ';">base ' + base + 'px · ' + (up + down + 1) + ' steps</div></div>';
+  var code = showCode ? '<pre style="margin:16px 0 0;padding:12px 14px;border-radius:8px;background:' + th.soft + ';border:1px solid ' + th.line + ';font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;line-height:1.5;color:' + th.ink + ';overflow-x:auto;">:root {\n' + vars + '}</pre>' : '';
+  return _cvCard(th, head + rows + code);
+};
+
+function _rdSyllables(w) {
+  var s = w.toLowerCase().replace(/[^a-z]/g, '');
+  if (!s) return 0;
+  if (s.length <= 3) return 1;
+  var n = 0, prev = false;
+  for (var i = 0; i < s.length; i++) {
+    var v = 'aeiouy'.indexOf(s.charAt(i)) >= 0;
+    if (v && !prev) n++;
+    prev = v;
+  }
+  if (s.charAt(s.length - 1) === 'e' && s.length > 2 && 'aeiouy'.indexOf(s.charAt(s.length - 2)) < 0) n--;
+  return n < 1 ? 1 : n;
+}
+function _rdSentences(text) {
+  var out = [], cur = '';
+  for (var i = 0; i < text.length; i++) {
+    var ch = text.charAt(i);
+    cur += ch;
+    if (ch === '.' || ch === '!' || ch === '?') {
+      var nx = i + 1 < text.length ? text.charAt(i + 1) : '';
+      if (nx === '' || nx === ' ' || nx === '\n' || nx === '\t' || nx === '\r') { if (cur.trim()) out.push(cur.trim()); cur = ''; }
+    }
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+_RENDERERS['readability_card'] = function(b) {
+  var th = _ffPick(b.theme, _CV_THEMES, 'light');
+  var accent = _ffHex(b.accent, '#0e7bb8');
+  var text = _cvStr(b.text, 5000);
+  var title = _cvStr(b.title, 80);
+  var wpm = _ffInt(b.wpm, 230, 100, 500);
+  var hl = b.highlight_longest === false ? false : true;
+  var sents = _rdSentences(text), words = 0, syl = 0, longest = -1, longestN = 0;
+  for (var i = 0; i < sents.length; i++) {
+    var ws = sents[i].split(/\s+/).filter(function(w) { return w; });
+    words += ws.length;
+    for (var j = 0; j < ws.length; j++) syl += _rdSyllables(ws[j]);
+    if (ws.length > longestN) { longestN = ws.length; longest = i; }
+  }
+  var S = sents.length || 1, W = words || 1;
+  var flesch = 206.835 - 1.015 * (W / S) - 84.6 * (syl / W);
+  var f10 = Math.floor(flesch * 10 + 0.5); if (f10 > 1300) f10 = 1300; if (f10 < -1000) f10 = -1000;
+  var fS = (f10 < 0 ? '-' : '') + Math.floor(Math.abs(f10) / 10) + '.' + (Math.abs(f10) % 10);
+  var grade = f10 >= 900 ? 'very easy' : f10 >= 800 ? 'easy' : f10 >= 700 ? 'fairly easy' : f10 >= 600 ? 'plain English' : f10 >= 500 ? 'fairly hard' : f10 >= 300 ? 'hard' : 'very hard';
+  var mins = Math.ceil(words / wpm), asl = _cvFix(W / S, 2), spw = _cvFix(syl / W, 2);
+  var excerpt = '';
+  for (var k = 0; k < sents.length; k++) {
+    var seg = _esc(sents[k]);
+    excerpt += (hl && k === longest && sents.length > 1 ? '<mark style="background:' + accent + '22;color:inherit;border-bottom:2px solid ' + accent + ';padding:0 2px;">' + seg + '</mark>' : seg) + ' ';
+  }
+  var stat = function(v, l) { return '<div><div style="font-family:' + _CV_VOICES.mono + ';font-size:1.05rem;font-weight:700;color:' + th.ink + ';">' + v + '</div><div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:' + th.mute + ';">' + l + '</div></div>'; };
+  var inner = '<div style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;">'
+    + '<div style="flex:0 0 auto;"><div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';">' + (title ? _esc(title) : 'readability') + '</div>'
+    + '<div style="font-family:' + _CV_VOICES.display + ';font-size:4rem;line-height:1;font-weight:900;letter-spacing:-0.04em;color:' + accent + ';">' + fS + '</div>'
+    + '<div style="font-size:0.85rem;color:' + th.mute + ';">Flesch reading ease · ' + grade + '</div></div>'
+    + '<div style="flex:1 1 260px;display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px 18px;padding-top:6px;">'
+    + stat(words, 'words') + stat(sents.length, 'sentences') + stat(mins + ' min', 'to read') + stat(asl, 'words / sentence') + stat(spw, 'syllables / word') + stat(longestN, 'longest sentence') + '</div></div>'
+    + (text ? '<div style="margin-top:20px;padding-top:16px;border-top:1px solid ' + th.line + ';font-family:' + _CV_VOICES.serif + ';font-size:0.98rem;line-height:1.7;color:' + th.ink + ';max-height:220px;overflow:auto;">' + excerpt.trim() + '</div>' : '');
+  return _cvCard(th, inner);
+};
+
+_RENDERERS['drop_cap'] = function(b) {
+  var th = _ffPick(b.theme, _CV_THEMES, 'light');
+  var accent = _ffHex(b.accent, '#0e7bb8');
+  var style = _ffPick(b.style, {dropped: 'dropped', raised: 'raised', boxed: 'boxed', ornament: 'ornament'}, 'dropped');
+  var capFont = _ffPick(b.voice, _CV_VOICES, 'serif');
+  var lines = _ffInt(b.lines, 3, 2, 4);
+  var text = _cvStr(b.text, 2000) || 'A2UI';
+  var i = 0; while (i < text.length && ' \t\n"“‘\'('.indexOf(text.charAt(i)) >= 0) i++;
+  var cap = text.charAt(i) || 'A', rest = text.slice(0, i) + text.slice(i + 1);
+  var capCss;
+  if (style === 'raised') capCss = 'font-size:2.6em;line-height:1;vertical-align:baseline;margin-right:0.06em;color:' + accent + ';';
+  else if (style === 'boxed') capCss = 'float:left;font-size:' + (lines * 1.05) + 'em;line-height:1;padding:0.12em 0.2em;margin:0.08em 0.28em 0 0;background:' + accent + ';color:' + th.bg + ';border-radius:0.08em;';
+  else if (style === 'ornament') capCss = 'float:left;font-size:' + (lines * 1.25) + 'em;line-height:0.82;padding:0.06em 0.3em 0.05em 0;margin:0.06em 0.34em 0 0;font-style:italic;color:' + accent + ';border-right:1px solid ' + accent + ';';
+  else capCss = 'float:left;font-size:' + (lines * 1.25) + 'em;line-height:0.82;padding-top:0.08em;margin:0 0.14em 0 0;color:' + accent + ';';
+  return _cvCard(th, '<p style="margin:0;font-family:' + _CV_VOICES.serif + ';font-size:1.05rem;line-height:1.65;color:' + th.ink + ';"><span style="font-family:' + capFont + ';font-weight:700;' + capCss + '">' + _esc(cap) + '</span>' + _esc(rest) + '</p>');
+};
+
+function _caLum(hex) {
+  var out = [];
+  for (var i = 0; i < 3; i++) {
+    var c = parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16) / 255;
+    out.push(c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  }
+  return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2];
+}
+function _caRatio(fg, bg) { var a = _caLum(fg), c = _caLum(bg), hi = a > c ? a : c, lo = a > c ? c : a; return (hi + 0.05) / (lo + 0.05); }
+function _caMix(hex, toward, t) {
+  var s = '#';
+  for (var i = 0; i < 3; i++) {
+    var c = parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16), v = Math.floor(c + (toward - c) * t + 0.5);
+    s += (v < 16 ? '0' : '') + v.toString(16);
+  }
+  return s;
+}
+function _caFix(fg, bg) {
+  var toward = _caLum(bg) > 0.5 ? 0 : 255;
+  for (var t = 5; t <= 100; t += 5) { var c = _caMix(fg, toward, t / 100); if (_caRatio(c, bg) >= 4.5) return c; }
+  return toward === 0 ? '#000000' : '#ffffff';
+}
+_RENDERERS['contrast_audit'] = function(b) {
+  var th = _ffPick(b.theme, _CV_THEMES, 'light');
+  var showFix = b.show_fix === false ? false : true;
+  var src = Array.isArray(b.pairs) ? b.pairs : [{fg: b.fg, bg: b.bg, label: b.label}];
+  var pairs = [];
+  for (var i = 0; i < src.length && pairs.length < 12; i++) {
+    var p = src[i] || {}, fg = _ffHex(p.fg, null), bg = _ffHex(p.bg, null);
+    if (!fg || !bg) continue;
+    pairs.push({fg: fg, bg: bg, label: _cvStr(p.label, 40)});
+  }
+  if (!pairs.length) pairs = [{fg: '#767676', bg: '#ffffff', label: 'example'}];
+  var passAA = 0, rows = '';
+  var badge = function(ok, l) { return '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:0.66rem;font-weight:700;letter-spacing:0.04em;' + (ok ? 'background:#16a34a22;color:#15803d;' : 'background:#dc262622;color:#b91c1c;') + '">' + l + ' ' + (ok ? 'pass' : 'fail') + '</span>'; };
+  for (var j = 0; j < pairs.length; j++) {
+    var q = pairs[j], r = _caRatio(q.fg, q.bg), rS = _cvFix(r, 2), aa = r >= 4.5, aaL = r >= 3, aaa = r >= 7;
+    if (aa) passAA++;
+    var fix = (!aa && showFix) ? _caFix(q.fg, q.bg) : null;
+    rows += '<div style="display:grid;grid-template-columns:120px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid ' + th.line + ';">'
+      + '<div style="background:' + q.bg + ';color:' + q.fg + ';border:1px solid ' + th.line + ';border-radius:8px;padding:10px 12px;font-weight:700;font-size:1.1rem;line-height:1;">Aa <span style="font-weight:400;font-size:0.8rem;">Text</span></div>'
+      + '<div><div style="font-weight:600;color:' + th.ink + ';font-size:0.9rem;">' + (q.label ? _esc(q.label) + ' · ' : '') + '<span style="font-family:' + _CV_VOICES.mono + ';color:' + th.mute + ';font-weight:400;font-size:0.78rem;">' + q.fg + ' on ' + q.bg + '</span></div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">' + badge(aa, 'AA') + badge(aaL, 'AA large') + badge(aaa, 'AAA') + '</div>'
+      + (fix ? '<div style="margin-top:6px;font-size:0.76rem;color:' + th.mute + ';">nearest pass: <span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:' + fix + ';border:1px solid ' + th.line + ';"></span> <span style="font-family:' + _CV_VOICES.mono + ';">' + fix + '</span> (' + _cvFix(_caRatio(fix, q.bg), 2) + ':1)</div>' : '')
+      + '</div>'
+      + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:1.3rem;font-weight:700;color:' + (aa ? th.ink : '#b91c1c') + ';text-align:right;">' + rS + ':1</div>'
+      + '</div>';
+  }
+  var head = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;">'
+    + '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';">contrast audit · WCAG 2.1</div>'
+    + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;color:' + (passAA === pairs.length ? '#15803d' : th.mute) + ';">' + passAA + ' of ' + pairs.length + ' pass AA</div></div>';
+  return _cvCard(th, head + rows);
+};
