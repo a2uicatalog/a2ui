@@ -4447,6 +4447,474 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "weighted_words"
+          },
+          "words": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "text",
+                "weight"
+              ]
+            }
+          },
+          "text": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string",
+            "enum": [
+              "display",
+              "serif",
+              "mono\"  (optional, default \"display\"). System font stacks."
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"dark\")"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center\"  (optional, default \"left\")"
+            ]
+          },
+          "animate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "stance"
+          },
+          "claim": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number"
+          },
+          "because": {
+            "type": "string"
+          },
+          "unless": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string",
+            "enum": [
+              "display",
+              "serif",
+              "mono\"  (optional, default \"display\"). System font stacks."
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"dark\")"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "claim"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "receipt"
+          },
+          "claim": {
+            "type": "integer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "text"
+              ]
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "total_label": {
+            "type": "string"
+          },
+          "merchant": {
+            "type": "string"
+          },
+          "issued": {
+            "type": "string",
+            "enum": [
+              "string . Date",
+              "context line under the merchant."
+            ]
+          },
+          "footer": {
+            "type": "string"
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "print_last": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "claim"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "changed_mind"
+          },
+          "before": {
+            "type": "string"
+          },
+          "after": {
+            "type": "string"
+          },
+          "since": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string",
+            "enum": [
+              "display",
+              "serif",
+              "mono\"  (optional, default \"display\"). System font stacks."
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"dark\")"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "animate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "before",
+          "after"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "type_scale"
+          },
+          "base": {
+            "type": "integer"
+          },
+          "ratio": {
+            "type": "string",
+            "enum": [
+              "minor_second",
+              "major_second",
+              "minor_third",
+              "major_third",
+              "perfect_fourth",
+              "augmented_fourth",
+              "perfect_fifth",
+              "golden\"  (optional, default \"major_third\")"
+            ]
+          },
+          "steps_up": {
+            "type": "integer"
+          },
+          "steps_down": {
+            "type": "integer"
+          },
+          "sample": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string",
+            "enum": [
+              "display",
+              "serif",
+              "mono\"  (optional, default \"display\")"
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"light\")"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "show_code": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "readability_card"
+          },
+          "text": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "wpm": {
+            "type": "integer"
+          },
+          "highlight_longest": {
+            "type": "boolean"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"light\")"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "drop_cap"
+          },
+          "text": {
+            "type": "string"
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "dropped",
+              "raised",
+              "boxed",
+              "ornament\"  (optional, default \"dropped\")"
+            ]
+          },
+          "lines": {
+            "type": "integer"
+          },
+          "voice": {
+            "type": "string",
+            "enum": [
+              "display",
+              "serif",
+              "mono\"  (optional, default \"serif\"). Face of the initial."
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"light\")"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "contrast_audit"
+          },
+          "pairs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fg": {
+                  "type": "string"
+                },
+                "bg": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "fg",
+                "bg"
+              ]
+            }
+          },
+          "fg": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "bg": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "show_fix": {
+            "type": "boolean"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light\"  (optional, default \"light\")"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "share_quote"
           },
           "text": {
@@ -8836,6 +9304,888 @@
           },
           "body": {
             "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "flow_field"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+            ]
+          },
+          "focus": {
+            "type": "string",
+            "enum": [
+              "right",
+              "center",
+              "left",
+              "none\"  (optional, default \"right\"). Where the glowing sink is that every stream converges on. Put it opposite the copy."
+            ]
+          },
+          "colors": {
+            "type": "integer"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). Stream count, scaled to the panel area."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "trail": {
+            "type": "string",
+            "enum": [
+              "short",
+              "normal",
+              "long\"  (optional, default \"normal\"). How long each stream's light trail lingers."
+            ]
+          },
+          "scale": {
+            "type": "string",
+            "enum": [
+              "fine",
+              "normal",
+              "broad\"  (optional, default \"normal\"). Size of the swirls."
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "particle_type"
+          },
+          "text": {
+            "type": "string"
+          },
+          "font": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "serif",
+              "mono",
+              "display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded."
+            ]
+          },
+          "weight": {
+            "type": "string",
+            "enum": [
+              "regular",
+              "bold",
+              "black\"  (optional, default \"black\")"
+            ]
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). Particle count cap 1200 / 2400 / 4200."
+            ]
+          },
+          "dot": {
+            "type": "string",
+            "enum": [
+              "fine",
+              "normal",
+              "bold\"  (optional, default \"normal\"). Particle radius."
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "light_type"
+          },
+          "text": {
+            "type": "string"
+          },
+          "font": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "serif",
+              "mono",
+              "display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded."
+            ]
+          },
+          "weight": {
+            "type": "string",
+            "enum": [
+              "regular",
+              "bold",
+              "black\"  (optional, default \"black\")"
+            ]
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). Streams per glyph area."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "trail": {
+            "type": "string",
+            "enum": [
+              "short",
+              "normal",
+              "long\"  (optional, default \"normal\")"
+            ]
+          },
+          "scale": {
+            "type": "string",
+            "enum": [
+              "fine",
+              "normal",
+              "broad\"  (optional, default \"normal\"). Swirl size inside the letters."
+            ]
+          },
+          "glow": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "living_type"
+          },
+          "text": {
+            "type": "string"
+          },
+          "font": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "serif",
+              "mono",
+              "display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded."
+            ]
+          },
+          "weight": {
+            "type": "string",
+            "enum": [
+              "regular",
+              "bold",
+              "black\"  (optional, default \"black\")"
+            ]
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          },
+          "motion": {
+            "type": "string",
+            "enum": [
+              "subtle",
+              "normal",
+              "wild\"  (optional, default \"normal\"). Drift amplitude."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "orbit_mark"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\"). Where the copy sits."
+            ]
+          },
+          "mark_position": {
+            "type": "string",
+            "enum": [
+              "center",
+              "right",
+              "left\"  (optional, default \"center\"). Where the mark sits; put it opposite the copy."
+            ]
+          },
+          "size": {
+            "type": "string",
+            "enum": [
+              "small",
+              "normal",
+              "large\"  (optional, default \"normal\"). Mark diameter relative to the panel."
+            ]
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\")"
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "trail": {
+            "type": "string",
+            "enum": [
+              "short",
+              "normal",
+              "long\"  (optional, default \"normal\")"
+            ]
+          },
+          "electron": {
+            "type": "boolean"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "halftone_wave"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\")"
+            ]
+          },
+          "wave": {
+            "type": "string",
+            "enum": [
+              "noise",
+              "ripple",
+              "sweep\"  (optional, default \"noise\"). Organic field, concentric ripple from the focus, or a diagonal front."
+            ]
+          },
+          "focus": {
+            "type": "string",
+            "enum": [
+              "center",
+              "left",
+              "right\"  (optional, default \"center\"). Ripple origin."
+            ]
+          },
+          "ink": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "paper": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "accent": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "spacing": {
+            "type": "string",
+            "enum": [
+              "fine",
+              "normal",
+              "coarse\"  (optional, default \"normal\"). Dot pitch 10 / 14 / 20 px."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "message_lanes"
+          },
+          "from_label": {
+            "type": "string"
+          },
+          "to_label": {
+            "type": "string"
+          },
+          "lanes": {
+            "type": "integer"
+          },
+          "rate": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\"). Packet speed."
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"center\")"
+            ]
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "signal_tunnel"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "in",
+              "out\"  (optional, default \"in\"). \"in\" -- streaks converge on the vanishing point. \"out\" -- streaks radiate away from it."
+            ]
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "right",
+              "center",
+              "left\"  (optional, default \"right\"). Where the vanishing point sits; put it opposite the copy."
+            ]
+          },
+          "colors": {
+            "type": "integer"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). Streak count, scaled to the panel area."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "trail": {
+            "type": "string",
+            "enum": [
+              "short",
+              "normal",
+              "long\"  (optional, default \"normal\"). How long each streak's light trail lingers."
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "gradient_mesh_live"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+            ]
+          },
+          "colors": {
+            "type": "string"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). Blob count: 3 / 4 / 6."
+            ]
+          },
+          "motion": {
+            "type": "string",
+            "enum": [
+              "subtle",
+              "normal",
+              "wild\"  (optional, default \"normal\"). Drift amplitude."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "wave_terrain"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+            ]
+          },
+          "colors": {
+            "type": "integer"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "density": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). Number of ridgeline rows: 22 / 34 / 48."
+            ]
+          },
+          "relief": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high\"  (optional, default \"normal\"). How tall the hills are."
+            ]
+          },
+          "scale": {
+            "type": "string",
+            "enum": [
+              "fine",
+              "normal",
+              "broad\"  (optional, default \"normal\"). Width of the hills across the terrain."
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\"). Flyover speed."
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "orbit_rings"
+          },
+          "center": {
+            "type": "string"
+          },
+          "rings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "items": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "items"
+              ]
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "eyebrow": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "align": {
+            "type": "string",
+            "enum": [
+              "left",
+              "center",
+              "right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+            ]
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "right",
+              "center",
+              "left\"  (optional, default \"right\"). Where the rings sit; put them opposite the copy."
+            ]
+          },
+          "colors": {
+            "type": "integer"
+          },
+          "background": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "speed": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "normal",
+              "fast\"  (optional, default \"normal\")"
+            ]
+          },
+          "height": {
+            "type": "integer"
+          },
+          "interactive": {
+            "type": "boolean"
           }
         },
         "required": [

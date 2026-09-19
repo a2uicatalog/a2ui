@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Orbit Mark — A2UI Atomic Catalog</title>
+  <meta name="description" content="The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, when they pass near an orbit, get captured into it and circle the nucleus like electrons before drifting off again; the nucleus glows as a sink and a real electron runs the first orbit. Optional eyebrow/title/body copy sits beside the mark behind a readability veil, so it works as a brand hero or a cover slide. Pointer bends the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as flow_field: every option is an enum or a clamped int, colours must be #rrggbb.">
+  <link rel="alternate" type="text/markdown" href="/atoms/orbit_mark.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Orbit Mark", "item": "https://a2uicatalog.ai/atoms/orbit_mark/" }
+    ]
+  }
+  </script>
+  <script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  
+<style>
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
+  --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
+  --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);
+  --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
+  --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);
+  --warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
+  --glow:0 4px 24px oklch(58% 0.19 277 / .14);
+  --header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
+  --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
+  --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);
+  --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
+  --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);
+  --warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);
+  --header-glass:oklch(33% 0.025 255 / .72);
+  --grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.wrap{max-width:860px}
+nav.crumb{font-size:12px;color:var(--muted);margin-bottom:28px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+nav.crumb a{color:var(--accent-2);text-decoration:none}
+nav.crumb a:hover{text-decoration:underline}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.desc{font-size:1.1rem;color:var(--muted);margin-bottom:32px;line-height:1.7}
+.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section{margin-bottom:40px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;margin:2px}
+.bs{background:var(--accent-soft-bg);color:var(--accent)}
+.bd{background:color-mix(in oklch,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklch,var(--warn) 40%,var(--surface));color:var(--warn)}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0 24px}
+pre code{color:var(--text);font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:14px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.back{display:inline-block;margin-top:32px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none;background:var(--surface)}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.try-btn{display:inline-block;margin-top:32px;margin-left:12px;font-size:13px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:8px;padding:9px 18px;text-decoration:none;letter-spacing:.03em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+.try-btn:hover{filter:brightness(1.08);box-shadow:var(--glow)}
+.preview-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-top:8px;color:#1a1a1a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+.preview-box *{max-width:100%}
+.preview-box p,.preview-box li,.preview-box td,.preview-box th,.preview-box td:first-child{color:#333;font-family:inherit}
+.preview-box pre{background:#f4f4f4;border:1px solid #e0e0e0}
+.preview-box pre code{color:#333}
+.preview-box h2,.preview-box h3{color:#111}
+.preview-box a{color:#0969da}
+.preview-box ul{color:#333}
+.deploy-box{margin-top:40px;padding:20px 24px;background:var(--accent-soft-bg);border:1px solid var(--border);border-radius:var(--radius)}
+.deploy-box .label{margin-bottom:10px}
+.deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+</style>
+
+</head>
+<body>
+  <header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/" aria-current="page">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="wrap">
+  <nav class="crumb">
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / orbit_mark
+  </nav>
+
+  <h1>Orbit Mark</h1>
+  <p class="desc">The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, when they pass near an orbit, get captured into it and circle the nucleus like electrons before drifting off again; the nucleus glows as a sink and a real electron runs the first orbit. Optional eyebrow/title/body copy sits beside the mark behind a readability veil, so it works as a brand hero or a cover slide. Pointer bends the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as flow_field: every option is an enum or a clamped int, colours must be #rrggbb.</p>
+
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+  </div>
+
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>pdf</td><td>Renders as a plain dark panel with the copy; the canvas is empty without JavaScript</td></tr><tr><td>google-chat</td><td>Inline script not supported; renders as a solid dark panel with the copy</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of orbit_mark"><div style="position:relative;height:360px;margin:1rem 0;border-radius:16px;overflow:hidden;background:#070a12;"><canvas id="om-cee3c6" aria-hidden="true" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"></canvas><script>window._a2uiCK=window._a2uiCK||(function(){var P=new Uint8Array(512);(function(){var s=1337,i,j,k;for(i=0;i<256;i++)P[i]=i;for(i=255;i>0;i--){s=(s*16807)%2147483647;j=s%(i+1);k=P[i];P[i]=P[j];P[j]=k;}for(i=0;i<256;i++)P[i+256]=P[i];})();function hs(x,y,z){return P[(P[(P[x&255]+y)&255]+z)&255]/255;}function fd(v){return v*v*(3-2*v);}function L(a,b,v){return a+(b-a)*v;}function noise(x,y,z){var X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z);x-=X;y-=Y;z-=Z;var u=fd(x),v=fd(y),w=fd(z);return L(L(L(hs(X,Y,Z),hs(X+1,Y,Z),u),L(hs(X,Y+1,Z),hs(X+1,Y+1,Z),u),v),L(L(hs(X,Y,Z+1),hs(X+1,Y,Z+1),u),L(hs(X,Y+1,Z+1),hs(X+1,Y+1,Z+1),u),v),w);}function fitText(ctx,lines,maxW,maxH,font,weight){var lo=8,hi=400;while(hi-lo>1){var m=(lo+hi)/2;ctx.font=weight+" "+m+"px "+font;var w=0;for(var i=0;i<lines.length;i++)w=Math.max(w,ctx.measureText(lines[i]).width);if(w<=maxW&&m*1.1*lines.length<=maxH)lo=m;else hi=m;}return lo;}function mount(id,o){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext("2d");if(!ctx)return;var k={c:c,ctx:ctx,W:0,H:0,t:0,mx:null,my:null,noise:noise,dpr:Math.min(window.devicePixelRatio||1,2)},raf=0,vis=true;var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function resize(){var w=c.clientWidth||600,h=c.clientHeight||360;if(w===k.W&&h===k.H)return;k.W=w;k.H=h;c.width=Math.round(w*k.dpr);c.height=Math.round(h*k.dpr);ctx.setTransform(k.dpr,0,0,k.dpr,0,0);if(o.init)o.init(k);}function step(){k.t+=0.0028*(o.speed||1);o.draw(k);}function loop(){if(!vis){raf=0;return;}step();raf=requestAnimationFrame(loop);}resize();if(RM){var n=o.still||220;for(var i=0;i<n;i++)step();return;}window.addEventListener("resize",resize);if(o.interactive!==false){var box=c.parentNode;box.addEventListener("pointermove",function(e){var r=c.getBoundingClientRect();k.mx=e.clientX-r.left;k.my=e.clientY-r.top;});box.addEventListener("pointerleave",function(){k.mx=null;k.my=null;});}if(window.IntersectionObserver){new IntersectionObserver(function(es){vis=es[0].isIntersecting;if(vis&&!raf)loop();}).observe(c);}raf=requestAnimationFrame(loop);}return {noise:noise,mount:mount,fitText:fitText};})();(function(){var C={n:500,spd:1,trail:0.07,sc:0.0034,pal:["99,102,241","168,85,247","34,211,238"],bg:"#070a12",bgRgb:"7,10,18",pos:"center",size:0.78,el:true,inter:true};var pts=[],N=0,cx=0,cy=0,R=0,band=0,P1=C.pal[1]||C.pal[0];var rings=[{a:-0.5585,d:1},{a:0.5585,d:-1},{a:1.5708,d:1}];for(var q=0;q<3;q++){rings[q].c=Math.cos(rings[q].a);rings[q].s=Math.sin(rings[q].a);}function spawn(p,k){p.x=Math.random()*k.W;p.y=Math.random()*k.H;p.px=p.x;p.py=p.y;p.life=120+Math.random()*240;p.sv=0.7+Math.random()*0.6;p.ci=Math.floor(k.noise(p.x*C.sc*0.6,p.y*C.sc*0.6,7.3)*C.pal.length*1.3)%C.pal.length;return p;}function init(k){var W=k.W,H=k.H;R=Math.min(W,H)*C.size*0.5;cx=W*(C.pos==="left"?0.28:C.pos==="right"?0.72:0.5);cy=H*0.5;band=R*0.16;var ctx=k.ctx;ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);N=Math.round(C.n*Math.min(2,Math.max(0.35,(W*H)/288000)));while(pts.length<N)pts.push(spawn({},k));pts.length=N;}function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t,rx=R,ry=R*0.44;ctx.globalCompositeOperation="source-over";ctx.fillStyle="rgba("+C.bgRgb+","+C.trail+")";ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation="lighter";ctx.lineWidth=1.15;ctx.lineCap="round";var i,p,a,dx,dy,d,vx,vy,f,j,rg,lx,ly,nr,dd,w,ph,tx,ty,tl,gx,gy,px,py,pl,ca,sa,nx;for(i=0;i<N;i++){p=pts[i];p.px=p.x;p.py=p.y;a=k.noise(p.x*C.sc,p.y*C.sc,t)*12.566;vx=Math.cos(a);vy=Math.sin(a);dx=p.x-cx;dy=p.y-cy;d=Math.sqrt(dx*dx+dy*dy);if(d<R*0.16){spawn(p,k);continue;}for(j=0;j<3;j++){rg=rings[j];lx=dx*rg.c+dy*rg.s;ly=-dx*rg.s+dy*rg.c;nr=Math.sqrt((lx*lx)/(rx*rx)+(ly*ly)/(ry*ry));dd=(nr-1)*(rx+ry)*0.5;if(dd>-band&&dd<band){w=1-Math.abs(dd)/band;ph=Math.atan2(ly/ry,lx/rx);tx=-rx*Math.sin(ph)*rg.d;ty=ry*Math.cos(ph)*rg.d;tl=Math.sqrt(tx*tx+ty*ty)||1;tx/=tl;ty/=tl;px=lx/(rx*rx);py=ly/(ry*ry);pl=Math.sqrt(px*px+py*py)||1;px=-px/pl*dd/band*0.8;py=-py/pl*dd/band*0.8;gx=(tx+px)*rg.c-(ty+py)*rg.s;gy=(tx+px)*rg.s+(ty+py)*rg.c;vx=vx*(1-w*0.9)+gx*w*1.4;vy=vy*(1-w*0.9)+gy*w*1.4;}}if(k.mx!==null){dx=p.x-k.mx;dy=p.y-k.my;d=Math.sqrt(dx*dx+dy*dy);if(d<140&&d>0.5){f=(1-d/140)*1.4;ca=Math.cos(f);sa=Math.sin(f);nx=vx*ca-vy*sa;vy=vx*sa+vy*ca;vx=nx+dx/d*f*0.6;vy+=dy/d*f*0.6;}}f=Math.sqrt(vx*vx+vy*vy)||1;f=C.spd*1.2*p.sv/f;p.x+=vx*f;p.y+=vy*f;if(--p.life<0||p.x<-2||p.x>W+2||p.y<-2||p.y>H+2)spawn(p,k);}for(var ci=0;ci<C.pal.length;ci++){ctx.strokeStyle="rgba("+C.pal[ci]+",0.55)";ctx.beginPath();for(i=0;i<N;i++){p=pts[i];if(p.ci!==ci||(p.px===p.x&&p.py===p.y))continue;ctx.moveTo(p.px,p.py);ctx.lineTo(p.x,p.y);}ctx.stroke();}var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.55);g.addColorStop(0,"rgba("+C.pal[0]+","+(0.7*C.trail)+")");g.addColorStop(1,"rgba("+C.pal[0]+",0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*0.55,0,6.2832);ctx.fill();ctx.globalCompositeOperation="source-over";for(j=0;j<3;j++){rg=rings[j];ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,rg.a,0,6.2832);ctx.strokeStyle="rgba("+(j===1?P1:C.pal[0])+","+(j===2?0.3:0.85)+")";ctx.lineWidth=j===2?1.2:1.8;ctx.stroke();}ctx.beginPath();ctx.arc(cx,cy,R*0.27,0,6.2832);ctx.fillStyle="rgb("+C.pal[0]+")";ctx.fill();if(C.el){ph=t*12;lx=rx*Math.cos(ph);ly=ry*Math.sin(ph);rg=rings[0];var ex=cx+lx*rg.c-ly*rg.s,ey=cy+lx*rg.s+ly*rg.c;ctx.beginPath();ctx.arc(ex,ey,R*0.125,0,6.2832);ctx.fillStyle="rgb("+P1+")";ctx.fill();}}_a2uiCK.mount("om-cee3c6",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:220});})();</script></div></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string. Headline beside the mark.</td><td>optional</td></tr><tr><td>eyebrow</td><td>string. Small uppercase label above the title, tinted with the first colour.</td><td>optional</td></tr><tr><td>body</td><td>string. Supporting copy under the title (markdown inline supported).</td><td>optional</td></tr><tr><td>align</td><td>"left" | "center" | "right"  (optional, default "left"). Where the copy sits.</td><td>optional</td></tr><tr><td>mark_position</td><td>"center" | "right" | "left"  (optional, default "center"). Where the mark sits; put it opposite the copy.</td><td>optional</td></tr><tr><td>size</td><td>"small" | "normal" | "large"  (optional, default "normal"). Mark diameter relative to the panel.</td><td>optional</td></tr><tr><td>colors</td><td>array of 1-4 "#rrggbb" strings. Default ["#6366f1","#a855f7","#22d3ee"]. First colour is the orbits and nucleus, second the electron, all of them the streams.</td><td>optional</td></tr><tr><td>background</td><td>"#rrggbb". Default "#070a12". Keep it dark.</td><td>optional</td></tr><tr><td>density</td><td>"low" | "normal" | "high"  (optional, default "normal")</td><td>optional</td></tr><tr><td>speed</td><td>"slow" | "normal" | "fast"  (optional, default "normal")</td><td>optional</td></tr><tr><td>trail</td><td>"short" | "normal" | "long"  (optional, default "normal")</td><td>optional</td></tr><tr><td>electron</td><td>bool. Animate an electron along the first orbit. Default true.</td><td>optional</td></tr><tr><td>height</td><td>integer. Panel height in px, clamped 200-900. Default 360.</td><td>optional</td></tr><tr><td>interactive</td><td>bool. Pointer bends the field. Default true.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "orbit_mark"
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:orbit_mark",
+  "displayName": "Orbit Mark",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/orbit_mark",
+  "capabilities": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+  ],
+  "description": "The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, when they pass near an orbit, get captured into it and circle the nucleus like electrons before drifting off again; the nucleus glows as a sink and a real electron runs the first orbit. Optional eyebrow/title/body copy sits beside the mark behind a readability veil, so it works as a brand hero or a cover slide. Pointer bends the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as flow_field: every option is an enum or a clamped int, colours must be #rrggbb.",
+  "representativeQueries": [
+    "show a the a2ui orbit-mark logo with flow-field streams captured into its orbits",
+    "the catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) dra",
+    "render a orbit mark"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
+
+  <footer>
+    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
+    <span>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google, Anthropic or OpenAI. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>. MCP is Anthropic's protocol; Claude, the Claude logo and Anthropic are trademarks of Anthropic PBC. ChatGPT and OpenAI are trademarks of OpenAI, L.L.C. All other marks belong to their respective owners.</span>
+    <span>MIT License</span>
+    <!-- Registry backlink. Smithery verifies a listing by finding a link to it
+         on the site or in the README, so this is the reciprocal half of that
+         listing, not decoration — remove it and the verification lapses. -->
+    <span><a href="https://smithery.ai/servers/a2uicatalog/a2uicatalog" rel="noopener">MCP server on Smithery</a></span>
+  </footer>
+  </div>
+  <script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
+</body>
+</html>

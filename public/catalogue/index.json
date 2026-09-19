@@ -685,7 +685,7 @@
       "title": "General UI & content",
       "alwaysResolved": false,
       "whenToUse": "Use for general content/UI beyond the base primitives — richer cards, media, tags, comparison and steppers not in core.",
-      "atomCount": 73,
+      "atomCount": 74,
       "atoms": [
         {
           "type": "action_required_card",
@@ -746,6 +746,10 @@
         {
           "type": "comparison_morph",
           "description": "draggable before/after comparison slider"
+        },
+        {
+          "type": "contrast_audit",
+          "description": "WCAG contrast ratios for colour pairs with AA/AAA badges and a nearest-passing fix"
         },
         {
           "type": "copy_code_button",
@@ -992,7 +996,7 @@
       "title": "Editorial & long-form",
       "alwaysResolved": false,
       "whenToUse": "Use for articles/blog posts — intros, footnotes, table of contents, series navigation, further reading, social share.",
-      "atomCount": 28,
+      "atomCount": 35,
       "atoms": [
         {
           "type": "abbr_tooltip",
@@ -1009,6 +1013,10 @@
         {
           "type": "author_bio_card",
           "description": "profile block displaying content creator biographical details"
+        },
+        {
+          "type": "changed_mind",
+          "description": "struck-through old belief, new belief lands beneath; optional what-changed-it line"
         },
         {
           "type": "closing",
@@ -1030,6 +1038,10 @@
         {
           "type": "display_quote",
           "description": "typographic pull quote with decorative mark and attribution"
+        },
+        {
+          "type": "drop_cap",
+          "description": "paragraph with a dropped, raised, boxed or ornamental initial letter"
         },
         {
           "type": "footnote",
@@ -1073,8 +1085,16 @@
           "description": "article metadata bar with author date read time"
         },
         {
+          "type": "readability_card",
+          "description": "Flesch score, reading time and sentence stats computed from prose, longest sentence highlighted"
+        },
+        {
           "type": "reading_progress_bar",
           "description": "track and display article reading progress completion status"
+        },
+        {
+          "type": "receipt",
+          "description": "claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in"
         },
         {
           "type": "related_posts_grid",
@@ -1105,6 +1125,10 @@
           "description": "one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack"
         },
         {
+          "type": "stance",
+          "description": "claim set in type whose weight, size and tracking encode the stated confidence"
+        },
+        {
           "type": "table_of_contents",
           "description": "navigate article sections using structured heading directory links"
         },
@@ -1115,6 +1139,14 @@
         {
           "type": "tooltip_glossary",
           "description": "glossary with hover tooltips"
+        },
+        {
+          "type": "type_scale",
+          "description": "computed modular type scale as a specimen sheet with CSS custom properties"
+        },
+        {
+          "type": "weighted_words",
+          "description": "headline where the agent sets each word''s emphasis 1-5; heavy words land bigger"
         }
       ]
     },
@@ -1124,7 +1156,7 @@
       "title": "Motion & decorative",
       "alwaysResolved": false,
       "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
-      "atomCount": 89,
+      "atomCount": 100,
       "atoms": [
         {
           "type": "agent_sketchpad",
@@ -1237,6 +1269,10 @@
           "description": "animated beam connector between two or more nodes"
         },
         {
+          "type": "flow_field",
+          "description": "luminous noise-field streams converging on a glowing focus, hero background"
+        },
+        {
           "type": "focus_lens",
           "description": "spotlight focus lens on blurred background"
         },
@@ -1261,8 +1297,16 @@
           "description": "gradient-fill standalone heading"
         },
         {
+          "type": "gradient_mesh_live",
+          "description": "soft colour blobs drifting on a noise field, pointer-reactive, hero background"
+        },
+        {
           "type": "gradient_text",
           "description": "Animated gradient-fill heading text via CSS background-clip"
+        },
+        {
+          "type": "halftone_wave",
+          "description": "animated halftone dot grid riding a wave, works on light backgrounds"
         },
         {
           "type": "highlight_sweep",
@@ -1281,8 +1325,16 @@
           "description": "word-by-word kinetic headline animation"
         },
         {
+          "type": "light_type",
+          "description": "agent-supplied words made of flowing light, streams masked to the glyphs"
+        },
+        {
           "type": "liquid_button",
           "description": "liquid morphing hover button"
+        },
+        {
+          "type": "living_type",
+          "description": "agent-supplied headline whose letters breathe and lean toward the pointer"
         },
         {
           "type": "loading_dots",
@@ -1313,6 +1365,10 @@
           "description": "dark card with radial mesh gradient background"
         },
         {
+          "type": "message_lanes",
+          "description": "packets streaming from an agent node into a surface node that unfolds cards on arrival"
+        },
+        {
           "type": "meteor_shower",
           "description": "CSS-animated diagonal falling meteor streaks on a dark panel"
         },
@@ -1337,12 +1393,24 @@
           "description": "Slot-machine digit-column flip to target number"
         },
         {
+          "type": "orbit_mark",
+          "description": "the a2ui orbit-mark logo with flow-field streams captured into its orbits"
+        },
+        {
+          "type": "orbit_rings",
+          "description": "tilted orbit rings, each a tier of labelled satellites around a centre node"
+        },
+        {
           "type": "parallax_card",
           "description": "3D CSS perspective tilt card with mousemove parallax depth"
         },
         {
           "type": "parallax_section",
           "description": "pointer-parallax depth layers of soft colour orbs on canvas, optional centred copy"
+        },
+        {
+          "type": "particle_type",
+          "description": "agent-supplied words assemble from particles; pointer scatters them"
         },
         {
           "type": "pattern_background",
@@ -1408,6 +1476,10 @@
         {
           "type": "shimmer_text",
           "description": "headline text with shimmer gloss sweep"
+        },
+        {
+          "type": "signal_tunnel",
+          "description": "radial light streaks converging on (or radiating from) a vanishing point, hero background"
         },
         {
           "type": "skeleton_stage_card",
@@ -1489,6 +1561,10 @@
         {
           "type": "wave_divider",
           "description": "animated wave section separator"
+        },
+        {
+          "type": "wave_terrain",
+          "description": "live flyover of noise-shaped ridgelines scrolling toward the viewer, hero background"
         },
         {
           "type": "word_flip",

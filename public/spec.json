@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 501,
+ "atomCount": 520,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -5132,6 +5132,328 @@
    }
   },
   {
+   "type": "weighted_words",
+   "description": "Agentic typesetting: the agent decides how much each WORD weighs. A headline where every word carries an emphasis 1-5 that sets its size, weight and opacity, with the heaviest words in the accent colour; words land in sequence, heavier ones from higher up. The reader sees the shape of the argument before reading it. Give it \"words\" as [{text, weight}] to typeset deliberately, or plain \"text\" for an even setting. Screenshot-ready, light or dark. Capped at 40 words of 24 characters; weights clamp to 1-5.",
+   "compact_description": "headline where the agent sets each word''s emphasis 1-5; heavy words land bigger",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; typographic weighting and animation are lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS animation and inline styling not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "words": "array of {text, weight} (optional). weight is an integer 1-5; 5 is set in the accent colour. Strings are accepted as weight 2.",
+    "text": "string (optional). Fallback when words is absent; every word set at weight 2.",
+    "voice": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\"). System font stacks.",
+    "theme": "\"dark\" | \"light\"  (optional, default \"dark\")",
+    "accent": "\"#rrggbb\" (optional). Default \"#38bdf8\".",
+    "align": "\"left\" | \"center\"  (optional, default \"left\")",
+    "animate": "bool (optional). Words land in sequence on load. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "stance",
+   "description": "A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening and opacity rising with confidence -- under a thin confidence rail. Optional \"because\" (the reason) and \"unless\" (what would change the agent's mind, the line most opinion cards forget). A small slider lets the reader drag the confidence and watch the claim reset, which makes the mapping legible and honest. Same integer arithmetic on the server and in the slider script.",
+   "compact_description": "claim set in type whose weight, size and tracking encode the stated confidence",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; typographic weighting and animation are lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS animation and inline styling not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "claim": "string (required). The claim, up to 200 characters.",
+    "confidence": "number (optional). 0-1 (values above 1 are read as percent). Default 0.5.",
+    "because": "string (optional). The reason, one or two sentences.",
+    "unless": "string (optional). What would change the agent''s mind; rendered as \"I would change my mind if ...\".",
+    "voice": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\"). System font stacks.",
+    "theme": "\"dark\" | \"light\"  (optional, default \"dark\")",
+    "accent": "\"#rrggbb\" (optional). Default \"#38bdf8\".",
+    "interactive": "bool (optional). Show the try-it slider. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "receipt",
+   "description": "Show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a source per line (linked when a URL is given), a dashed tear line, a CONFIDENCE total, a barcode derived deterministically from the claim, and a perforated bottom edge. Built for the \"no unsourced stats\" rule and for AG-UI-style runs where evidence arrives one tool result at a time: resend the FULL items list on every update and only the LAST line prints in (same stateless rule as agent_sketchpad). Always paper-white, so it reads as an object on any ground. Capped at 24 items.",
+   "compact_description": "claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; typographic weighting and animation are lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS animation and inline styling not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "claim": "string (required). Printed in display type at the top.",
+    "items": "array of {text, source?, url?} (optional). Evidence lines in order; source is a short label, url must be http(s). Strings are accepted.",
+    "total": "number (optional). Confidence 0-1 shown as the receipt total; when absent the item count is shown.",
+    "total_label": "string (optional). Default \"CONFIDENCE\".",
+    "merchant": "string (optional). Top label. Default \"EVIDENCE RECEIPT\".",
+    "issued": "string (optional). Date or context line under the merchant.",
+    "footer": "string (optional). Default \"Sources listed. No unsourced stats.\"",
+    "accent": "\"#rrggbb\" (optional). Links and total colour. Default \"#4338ca\".",
+    "print_last": "bool (optional). Animate the last line printing in. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "changed_mind",
+   "description": "A belief change as a typographic object: \"I used to think\" in muted serif italic, struck through by a line that draws itself, then \"Now I think\" in heavy display type landing beneath it, and an optional \"since\" line naming what changed it. The most honest opinion format there is, and the most shared. For an agent it records a revision after new evidence rather than pretending it always knew. Light or dark.",
+   "compact_description": "struck-through old belief, new belief lands beneath; optional what-changed-it line",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; typographic weighting and animation are lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "CSS animation and inline styling not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "before": "string (required). The old belief.",
+    "after": "string (required). The new belief.",
+    "since": "string (optional). What changed it, e.g. \"since running it against a real host\".",
+    "voice": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\"). System font stacks.",
+    "theme": "\"dark\" | \"light\"  (optional, default \"dark\")",
+    "accent": "\"#rrggbb\" (optional). Default \"#38bdf8\".",
+    "animate": "bool (optional). Strike and land on load. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "type_scale",
+   "description": "A modular type scale, computed and shown as a specimen sheet. Declare a base size and a musical ratio (minor second through golden ratio) and the atom calculates every step -- px and rem to the hundredth, computed with the same integer-safe arithmetic on every renderer -- and sets the sample line at each size with a proportion bar, plus a ready-to-paste block of CSS custom properties. Calcs baked in, the way wall_elevation bakes in wall maths: an agent declares intent (base, ratio, steps), the atom does the typography. Light or dark, no JavaScript.",
+   "compact_description": "computed modular type scale as a specimen sheet with CSS custom properties",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; the typographic layout is lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Inline styling and layout not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "base": "integer (optional). Base size in px, clamped 10-32. Default 16.",
+    "ratio": "\"minor_second\" | \"major_second\" | \"minor_third\" | \"major_third\" | \"perfect_fourth\" | \"augmented_fourth\" | \"perfect_fifth\" | \"golden\"  (optional, default \"major_third\")",
+    "steps_up": "integer (optional). Steps above the base, clamped 1-8. Default 6.",
+    "steps_down": "integer (optional). Steps below the base, clamped 0-3. Default 2.",
+    "sample": "string (optional). Sample line set at each size. Default \"The quick brown fox\".",
+    "voice": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\")",
+    "theme": "\"dark\" | \"light\"  (optional, default \"light\")",
+    "accent": "\"#rrggbb\" (optional). Default \"#0e7bb8\".",
+    "show_code": "bool (optional). Append the CSS custom properties block. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "readability_card",
+   "description": "Prose metrics as a typographic card: the Flesch reading-ease score set huge, its plain-language grade, and a stat row -- words, sentences, minutes to read at a declared words-per-minute, words per sentence, syllables per word, longest sentence -- all computed by the renderer from the text with identical arithmetic on every renderer (syllables by a vowel-group heuristic, sentences on . ! ? followed by space). The excerpt is shown underneath with the longest sentence highlighted, which is usually the one to cut. Built for the writing workflow; give it a draft and it tells you what a reader will feel.",
+   "compact_description": "Flesch score, reading time and sentence stats computed from prose, longest sentence highlighted",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; the typographic layout is lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Inline styling and layout not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "text": "string (required). The prose to measure, up to 5000 characters.",
+    "title": "string (optional). Label above the score. Default \"readability\".",
+    "wpm": "integer (optional). Reading speed for the time estimate, clamped 100-500. Default 230.",
+    "highlight_longest": "bool (optional). Mark the longest sentence in the excerpt. Default true.",
+    "theme": "\"dark\" | \"light\"  (optional, default \"light\")",
+    "accent": "\"#rrggbb\" (optional). Default \"#0e7bb8\"."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "drop_cap",
+   "description": "An editorial paragraph with an initial letter set four ways: dropped (the classic, sunk across 2-4 lines), raised (standing on the baseline), boxed (reversed out of an accent block), or ornament (italic, with a hairline rule). Leading quotation marks and brackets are skipped so the real first letter is the cap. Light or dark, no JavaScript. The smallest atom in the family and the one every long read wants.",
+   "compact_description": "paragraph with a dropped, raised, boxed or ornamental initial letter",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; the typographic layout is lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Inline styling and layout not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "text": "string (required). The paragraph, up to 2000 characters.",
+    "style": "\"dropped\" | \"raised\" | \"boxed\" | \"ornament\"  (optional, default \"dropped\")",
+    "lines": "integer (optional). Lines the dropped cap spans, clamped 2-4. Default 3.",
+    "voice": "\"display\" | \"serif\" | \"mono\"  (optional, default \"serif\"). Face of the initial.",
+    "theme": "\"dark\" | \"light\"  (optional, default \"light\")",
+    "accent": "\"#rrggbb\" (optional). Colour of the initial. Default \"#0e7bb8\"."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "contrast_audit",
+   "description": "WCAG 2.1 contrast audit with the maths baked in: for each foreground/background pair the renderer computes the relative luminance and contrast ratio, shows a live sample swatch, and badges AA (4.5:1), AA large (3:1) and AAA (7:1) as pass or fail. Failing pairs get the nearest passing colour, found by mixing the foreground toward black or white in 5% steps until it clears AA. A summary line counts the passes. For an agent composing a surface this is the difference between \"looks fine\" and \"is readable\". No JavaScript; light or dark.",
+   "compact_description": "WCAG contrast ratios for colour pairs with AA/AAA badges and a nearest-passing fix",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps",
+     "pdf"
+    ],
+    "degraded_on": [
+     {
+      "surface": "google-chat",
+      "note": "Renders as a plain text card; the typographic layout is lost"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Inline styling and layout not reliably supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "pairs": "array of {fg, bg, label?} (optional). Up to 12 pairs of \"#rrggbb\" colours; invalid pairs are dropped.",
+    "fg": "\"#rrggbb\" (optional). Single-pair shorthand when pairs is absent.",
+    "bg": "\"#rrggbb\" (optional). Single-pair shorthand when pairs is absent.",
+    "label": "string (optional). Label for the single-pair shorthand.",
+    "show_fix": "bool (optional). Suggest the nearest passing foreground for failures. Default true.",
+    "theme": "\"dark\" | \"light\"  (optional, default \"light\")"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
    "type": "share_quote",
    "description": "Displays a visually distinct callout showcasing a key phrase designed for social clipping.",
    "compact_description": "prominent blockquote optimised for social media sharing",
@@ -9143,6 +9465,546 @@
     "name": "Aceternity UI — Aurora Background",
     "url": "https://ui.aceternity.com/components/aurora-background",
     "note": "Pattern inspiration only — renderer is an original Python implementation"
+   }
+  },
+  {
+   "type": "flow_field",
+   "description": "Full-bleed animated hero background: hundreds of luminous streams ride a slowly evolving noise vector field on a dark canvas, leave additive long-exposure light trails, and converge on a soft glowing focus point. The pointer bends the field around it. Optional eyebrow/title/body copy sits on the opposite side behind a readability veil -- the try.cloudflare.com hero layout (copy left, light right) as one atom. Honours prefers-reduced-motion (renders one pre-simulated long-exposure frame, no loop), pauses when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it (bad values fall back to defaults). Dark backgrounds only -- trails are drawn additively and vanish on white.",
+   "compact_description": "luminous noise-field streams converging on a glowing focus, hero background",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid dark panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional). Headline overlaid on the field.",
+    "eyebrow": "string (optional). Small uppercase label above the title, tinted with the first palette colour.",
+    "body": "string (optional). Supporting copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it.",
+    "focus": "\"right\" | \"center\" | \"left\" | \"none\"  (optional, default \"right\"). Where the glowing sink is that every stream converges on. Put it opposite the copy.",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Streams take a colour by region so the field reads as coloured ribbons; the first colour also tints the focus glow. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Stream count, scaled to the panel area.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "trail": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\"). How long each stream's light trail lingers.",
+    "scale": "\"fine\" | \"normal\" | \"broad\"  (optional, default \"normal\"). Size of the swirls.",
+    "height": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+    "interactive": "bool (optional). Pointer bends the field. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "source_inspiration": {
+    "name": "try.cloudflare.com hero canvas",
+    "url": "https://try.cloudflare.com",
+    "note": "Layout and mood inspiration only (dark ground, convergence, light packets, glow, reduced-motion still) -- the flow-field mechanics and renderer are original"
+   }
+  },
+  {
+   "type": "particle_type",
+   "description": "Agentic typeface: the words an agent supplies assemble out of thousands of coloured particles that fly in from random positions and settle into the letterforms; the pointer scatters them and they reform. Text is rasterised on an offscreen canvas and sampled into particle targets, so any string works, at any panel size, in a system font. Honours prefers-reduced-motion (renders the settled word), pauses offscreen, DPR-aware. The words are also emitted as visually-hidden text so they stay readable and selectable. Sibling of light_type (words as flowing light) and living_type (letters that breathe). Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped, so it can never break out.",
+   "compact_description": "agent-supplied words assemble from particles; pointer scatters them",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a dark panel; the words remain as visually-hidden text, the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid panel"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "text": "string (required). The words to set, up to 3 lines separated by \"\\n\", each trimmed to 40 characters. Short and bold reads best. Default \"A2UI\".",
+    "font": "\"sans\" | \"serif\" | \"mono\" | \"display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded.",
+    "weight": "\"regular\" | \"bold\" | \"black\"  (optional, default \"black\")",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"], applied left to right across the words. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\".",
+    "height": "integer (optional). Panel height in px, clamped 160-900.",
+    "interactive": "bool (optional). Pointer affects the letters. Default true.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Particle count cap 1200 / 2400 / 4200.",
+    "dot": "\"fine\" | \"normal\" | \"bold\"  (optional, default \"normal\"). Particle radius."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "light_type",
+   "description": "Agentic typeface: the words an agent supplies are rendered as flowing light -- luminous streams ride a noise field inside the letterforms only (particles spawn on the glyph mask and respawn when they leave it), drawn with additive long-exposure trails and composited through the text as a mask, with a soft glow halo behind. Reads as a headline made of moving liquid light. Pointer swirls the flow. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware; the words are also emitted as visually-hidden text. Dark backgrounds only -- trails are additive. Sibling of particle_type and living_type. Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped.",
+   "compact_description": "agent-supplied words made of flowing light, streams masked to the glyphs",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a dark panel; the words remain as visually-hidden text, the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid panel"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "text": "string (required). The words to set, up to 3 lines separated by \"\\n\", each trimmed to 40 characters. Short and bold reads best. Default \"A2UI\".",
+    "font": "\"sans\" | \"serif\" | \"mono\" | \"display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded.",
+    "weight": "\"regular\" | \"bold\" | \"black\"  (optional, default \"black\")",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"], applied left to right across the words. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\".",
+    "height": "integer (optional). Panel height in px, clamped 160-900.",
+    "interactive": "bool (optional). Pointer affects the letters. Default true.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Streams per glyph area.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "trail": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\")",
+    "scale": "\"fine\" | \"normal\" | \"broad\"  (optional, default \"normal\"). Swirl size inside the letters.",
+    "glow": "bool (optional). Soft halo behind the letters in the first colour. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "living_type",
+   "description": "Agentic typeface: the words an agent supplies are set glyph by glyph on canvas and every letter breathes on its own noise track -- drifting, tilting and scaling a little, so the headline feels alive rather than animated. Letters lean toward the pointer and swell as it passes. Works on light or dark backgrounds (set background and colors). Honours prefers-reduced-motion (renders one static frame), pauses offscreen, DPR-aware; the words are also emitted as visually-hidden text. Sibling of particle_type and light_type. Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped.",
+   "compact_description": "agent-supplied headline whose letters breathe and lean toward the pointer",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a dark panel; the words remain as visually-hidden text, the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid panel"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "text": "string (required). The words to set, up to 3 lines separated by \"\\n\", each trimmed to 40 characters. Short and bold reads best. Default \"A2UI\".",
+    "font": "\"sans\" | \"serif\" | \"mono\" | \"display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded.",
+    "weight": "\"regular\" | \"bold\" | \"black\"  (optional, default \"black\")",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"], applied left to right across the words. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\".",
+    "height": "integer (optional). Panel height in px, clamped 160-900.",
+    "interactive": "bool (optional). Pointer affects the letters. Default true.",
+    "motion": "\"subtle\" | \"normal\" | \"wild\"  (optional, default \"normal\"). Drift amplitude.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "orbit_mark",
+   "description": "The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, when they pass near an orbit, get captured into it and circle the nucleus like electrons before drifting off again; the nucleus glows as a sink and a real electron runs the first orbit. Optional eyebrow/title/body copy sits beside the mark behind a readability veil, so it works as a brand hero or a cover slide. Pointer bends the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as flow_field: every option is an enum or a clamped int, colours must be #rrggbb.",
+   "compact_description": "the a2ui orbit-mark logo with flow-field streams captured into its orbits",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain dark panel with the copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid dark panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional). Headline beside the mark.",
+    "eyebrow": "string (optional). Small uppercase label above the title, tinted with the first colour.",
+    "body": "string (optional). Supporting copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the copy sits.",
+    "mark_position": "\"center\" | \"right\" | \"left\"  (optional, default \"center\"). Where the mark sits; put it opposite the copy.",
+    "size": "\"small\" | \"normal\" | \"large\"  (optional, default \"normal\"). Mark diameter relative to the panel.",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#6366f1\",\"#a855f7\",\"#22d3ee\"]. First colour is the orbits and nucleus, second the electron, all of them the streams.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\")",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "trail": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\")",
+    "electron": "bool (optional). Animate an electron along the first orbit. Default true.",
+    "height": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+    "interactive": "bool (optional). Pointer bends the field. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "halftone_wave",
+   "description": "The canvas hero that works on a white page. A grid of dots whose size follows a travelling wave -- organic noise, a ripple spreading from a focus point, or a diagonal sweep -- like print halftone brought to life; wave peaks tint to the accent colour, and the pointer swells the dots around it. Ink on paper by default, so it sits inside a light document; flip ink and paper for a dark version. Optional eyebrow/title/body copy behind a veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Same kit and hardening as flow_field: every option is an enum or a clamped int; colours must be #rrggbb.",
+   "compact_description": "animated halftone dot grid riding a wave, works on light backgrounds",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain panel with the copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional). Headline overlaid on the grid.",
+    "eyebrow": "string (optional). Small uppercase label above the title.",
+    "body": "string (optional). Copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\")",
+    "wave": "\"noise\" | \"ripple\" | \"sweep\"  (optional, default \"noise\"). Organic field, concentric ripple from the focus, or a diagonal front.",
+    "focus": "\"center\" | \"left\" | \"right\"  (optional, default \"center\"). Ripple origin.",
+    "ink": "\"#rrggbb\" (optional). Dot colour. Default \"#0f172a\".",
+    "paper": "\"#rrggbb\" (optional). Ground colour. Default \"#f7f7f5\".",
+    "accent": "\"#rrggbb\" (optional). Colour of the wave peaks; when absent, peaks stay in ink.",
+    "spacing": "\"fine\" | \"normal\" | \"coarse\"  (optional, default \"normal\"). Dot pitch 10 / 14 / 20 px.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "height": "integer (optional). Panel height in px, clamped 160-900. Default 320.",
+    "interactive": "bool (optional). Pointer swells nearby dots. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "message_lanes",
+   "description": "The A2UI pitch, drawn: small packets stream from an agent node on the left down curved lanes into a surface node on the right, leaving light trails; every arrival makes the surface flash and unfolds a small card outline inside it, the newest on top, older ones fading. Labels for both nodes are agent-supplied (up to 24 characters each). Optional eyebrow/title/body copy. Honours prefers-reduced-motion (one pre-simulated frame with packets mid-flight), pauses offscreen, DPR-aware. Dark backgrounds only. Every option is an enum or a clamped int; colours must be #rrggbb.",
+   "compact_description": "packets streaming from an agent node into a surface node that unfolds cards on arrival",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain panel with the copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "from_label": "string (optional). Label under the left node. Default \"agent\".",
+    "to_label": "string (optional). Label under the right node. Default \"surface\".",
+    "lanes": "integer (optional). Number of lanes, clamped 1-6. Default 4.",
+    "rate": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\"). Packet speed.",
+    "title": "string (optional). Headline overlaid on the scene.",
+    "eyebrow": "string (optional). Small uppercase label above the title.",
+    "body": "string (optional). Copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"center\")",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default sky/violet/pink; the first colours the agent node, the second the surface.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "height": "integer (optional). Panel height in px, clamped 200-900. Default 320."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "signal_tunnel",
+   "description": "Full-bleed animated hero background: light streaks travel along fixed radial lanes through a vanishing point (right, centre or left), converging into it by default (signals arriving) or, in \"out\" mode, radiating away from it (signals broadcasting). Each streak accelerates as it nears the vanishing point and is coloured by its lane angle, so the tunnel reads as many distinct signals rather than one; an additive glow marks the vanishing point itself. Optional eyebrow/title/body copy sits opposite the tunnel behind a readability veil, the same flow_field/try.cloudflare.com hero layout (copy on one side, motion on the other). Honours prefers-reduced-motion (renders one pre-simulated frame, no loop), pauses when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field/orbit_mark. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only -- streaks are additive and vanish on white.",
+   "compact_description": "radial light streaks converging on (or radiating from) a vanishing point, hero background",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid dark panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional). Headline overlaid opposite the tunnel.",
+    "eyebrow": "string (optional). Small uppercase label above the title, tinted with the first palette colour.",
+    "body": "string (optional). Supporting copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it.",
+    "direction": "\"in\" | \"out\"  (optional, default \"in\"). \"in\" -- streaks converge on the vanishing point. \"out\" -- streaks radiate away from it.",
+    "position": "\"right\" | \"center\" | \"left\"  (optional, default \"right\"). Where the vanishing point sits; put it opposite the copy.",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Streaks take a colour by lane angle so the tunnel reads as coloured bands; the first colour also tints the vanishing-point glow. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Streak count, scaled to the panel area.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "trail": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\"). How long each streak's light trail lingers.",
+    "height": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+    "interactive": "bool (optional). Pointer nudges nearby streaks. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "source_inspiration": {
+    "name": "data-in-motion hero imagery (Cloudflare Radar-style live network visuals, hyperspace-tunnel convention)",
+    "url": "https://radar.cloudflare.com",
+    "note": "Mood and convention inspiration only (dark ground, radial motion, vanishing point, additive glow) -- the tunnel mechanics and renderer are original"
+   }
+  },
+  {
+   "type": "gradient_mesh_live",
+   "description": "Full-bleed animated hero background: a handful of soft colour blobs, laid out over the panel with an even (Vogel-disk) spread, drift and breathe forever on the same value-noise field that drives flow_field -- never looping on a fixed timeline the way a CSS @keyframes mesh gradient must. The nearest blob leans toward the pointer. This is the animated, canvas-driven sibling of the static mesh_gradient atom and the CSS-keyframe aurora_background: pick this one when the motion itself, not just the colour, needs to feel alive. Optional eyebrow/title/body copy sits opposite a readability veil. Honours prefers-reduced-motion (one pre-simulated frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field/signal_tunnel. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only -- blobs blend additively and vanish on white.",
+   "compact_description": "soft colour blobs drifting on a noise field, pointer-reactive, hero background",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid dark panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional). Headline overlaid opposite the blobs.",
+    "eyebrow": "string (optional). Small uppercase label above the title, tinted with the first palette colour.",
+    "body": "string (optional). Supporting copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it.",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Blobs cycle through these colours. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Blob count: 3 / 4 / 6.",
+    "motion": "\"subtle\" | \"normal\" | \"wild\"  (optional, default \"normal\"). Drift amplitude.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "height": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+    "interactive": "bool (optional). Nearest blob leans toward the pointer. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "wave_terrain",
+   "description": "Full-bleed animated hero background: a live terrain flyover drawn as receding ridgelines. Rows of noise-shaped hills scroll toward the viewer while their heights keep evolving on the same value-noise field that drives flow_field, so the landscape never repeats; each row is filled with the background so nearer ridges occlude farther ones, and colour shifts along the palette from the horizon to the foreground. A calm valley runs down the middle with relief rising toward the edges. The pointer steers the camera sideways with a gentle parallax. The live sibling of the static, drag-to-rotate isometric_mesh. Optional eyebrow/title/body copy sits behind a readability veil. Honours prefers-reduced-motion (one still frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only.",
+   "compact_description": "live flyover of noise-shaped ridgelines scrolling toward the viewer, hero background",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid dark panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "title": "string (optional). Headline overlaid on the scene.",
+    "eyebrow": "string (optional). Small uppercase label above the title, tinted with the first palette colour.",
+    "body": "string (optional). Supporting copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it.",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Ridgelines blend from the first colour at the horizon to the last in the foreground; the first also tints the horizon glow. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "density": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Number of ridgeline rows: 22 / 34 / 48.",
+    "relief": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). How tall the hills are.",
+    "scale": "\"fine\" | \"normal\" | \"broad\"  (optional, default \"normal\"). Width of the hills across the terrain.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\"). Flyover speed.",
+    "height": "integer (optional). Panel height in px, clamped 200-900. Default 380.",
+    "interactive": "bool (optional). Pointer steers the camera sideways. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   },
+   "source_inspiration": {
+    "name": "ridgeline / terrain-flyover convention (Joy Division-style stacked lines, synthwave grids)",
+    "url": "https://en.wikipedia.org/wiki/Unknown_Pleasures",
+    "note": "Convention inspiration only (stacked receding lines with occlusion) -- the noise-field terrain, colour blend and renderer are original"
+   }
+  },
+  {
+   "type": "orbit_rings",
+   "description": "A system map that moves: up to three tilted orbit rings around a centre node, where each ring is a TIER of agent-supplied labelled items (for example tools / data / surfaces) and every item is a satellite with a light trail and its own label. Inner rings turn faster than outer ones, satellites are larger and brighter on the near side of their ring and dimmer behind the centre, and each ring carries its tier name, so the rings encode structure rather than decoration. The pointer tilts and turns the whole view. This is the hero-class sibling of the single-ring orbit_diagram; orbit_mark remains the fixed brand logo. Optional eyebrow/title/body copy sits behind a readability veil. Honours prefers-reduced-motion (one still frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field. Every option is an enum or a clamped integer and colours must be #rrggbb; agent-supplied labels are trimmed, length-capped and JSON-encoded with \"<\" escaped, so they can never break out of the script. Dark backgrounds only.",
+   "compact_description": "tilted orbit rings, each a tier of labelled satellites around a centre node",
+   "surfaces": {
+    "works_on": [
+     "web",
+     "google-meet-stage",
+     "google-apps-script-web",
+     "mcp-apps"
+    ],
+    "degraded_on": [
+     {
+      "surface": "pdf",
+      "note": "Renders as a plain dark panel with the overlaid copy; the canvas is empty without JavaScript"
+     },
+     {
+      "surface": "google-chat",
+      "note": "Inline script not supported; renders as a solid dark panel with the copy"
+     }
+    ],
+    "incompatible_on": [
+     {
+      "surface": "email",
+      "reason": "Canvas and inline JavaScript are not supported in email clients"
+     }
+    ]
+   },
+   "fields": {
+    "center": "string (optional). Label under the centre node, trimmed to 24 characters. Default \"agent\".",
+    "rings": "array of 1-3 {label, items} objects (optional). Each ring is a tier: label is the tier name (up to 24 characters), items is an array of 1-6 strings (up to 24 characters each) orbiting on that ring. Entries that are not objects, and items that are not strings, are dropped. Default three rings: tools, data, surfaces.",
+    "title": "string (optional). Headline overlaid opposite the rings.",
+    "eyebrow": "string (optional). Small uppercase label above the title, tinted with the first palette colour.",
+    "body": "string (optional). Supporting copy under the title (markdown inline supported).",
+    "align": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it.",
+    "position": "\"right\" | \"center\" | \"left\"  (optional, default \"right\"). Where the rings sit; put them opposite the copy.",
+    "colors": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Ring i takes colour i (cycling); the first colour also tints the centre node. Invalid entries are dropped.",
+    "background": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark.",
+    "speed": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")",
+    "height": "integer (optional). Panel height in px, clamped 240-900. Default 420.",
+    "interactive": "bool (optional). Pointer tilts and turns the view. Default true."
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
    }
   },
   {

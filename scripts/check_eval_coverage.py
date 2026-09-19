@@ -49,6 +49,27 @@ EVAL_PATH = os.path.join(ROOT, "..", "a2ui-private", "mcp-worker", "test", "comp
 KNOWN_UNCOVERED_BASELINE = frozenset({
     "agent_sketchpad",  # promoted 2026-09-13; rerun atom-multirep-onboard
                         # after this push deploys, then remove this line.
+    # Canvas hero / typography sprint, promoted 2026-09-19. Same rule: rerun
+    # atom-multirep-onboard after this push deploys, then remove these lines.
+    "weighted_words",
+    "stance",
+    "receipt",
+    "changed_mind",
+    "particle_type",
+    "light_type",
+    "living_type",
+    "flow_field",
+    "orbit_mark",
+    "halftone_wave",
+    "message_lanes",
+    "signal_tunnel",
+    "gradient_mesh_live",
+    "wave_terrain",
+    "orbit_rings",
+    "type_scale",
+    "readability_card",
+    "drop_cap",
+    "contrast_audit",
 })
 
 

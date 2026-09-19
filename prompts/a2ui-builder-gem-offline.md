@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 501 atoms.** One line each:
+1. **Compact index — all 520 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 501 atoms)
+### Compact index (all 520 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -528,6 +528,14 @@ does not exist.
 - `series_overview_card` — navigation index for multi-part article series parts
 - `reaction_group` — emoji reaction counters collecting reader sentiment feedback
 - `linkedin_post_image` — LinkedIn post image preview — conviction_card, stat_card, or carousel_slide mode
+- `weighted_words` — headline where the agent sets each word''s emphasis 1-5; heavy words land bigger
+- `stance` — claim set in type whose weight, size and tracking encode the stated confidence
+- `receipt` — claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in
+- `changed_mind` — struck-through old belief, new belief lands beneath; optional what-changed-it line
+- `type_scale` — computed modular type scale as a specimen sheet with CSS custom properties
+- `readability_card` — Flesch score, reading time and sentence stats computed from prose, longest sentence highlighted
+- `drop_cap` — paragraph with a dropped, raised, boxed or ornamental initial letter
+- `contrast_audit` — WCAG contrast ratios for colour pairs with AA/AAA badges and a nearest-passing fix
 - `share_quote` — prominent blockquote optimised for social media sharing
 - `follow_cta` — call to action driving social media community expansion
 - `follow_button` — direct profile subscription button for social platforms
@@ -646,6 +654,17 @@ does not exist.
 - `typewriter_text` — CSS typewriter animation that reveals text character by character
 - `animated_border_card` — card with CSS rotating gradient animated border
 - `aurora_background` — animated aurora borealis gradient blob background, CSS-only
+- `flow_field` — luminous noise-field streams converging on a glowing focus, hero background
+- `particle_type` — agent-supplied words assemble from particles; pointer scatters them
+- `light_type` — agent-supplied words made of flowing light, streams masked to the glyphs
+- `living_type` — agent-supplied headline whose letters breathe and lean toward the pointer
+- `orbit_mark` — the a2ui orbit-mark logo with flow-field streams captured into its orbits
+- `halftone_wave` — animated halftone dot grid riding a wave, works on light backgrounds
+- `message_lanes` — packets streaming from an agent node into a surface node that unfolds cards on arrival
+- `signal_tunnel` — radial light streaks converging on (or radiating from) a vanishing point, hero background
+- `gradient_mesh_live` — soft colour blobs drifting on a noise field, pointer-reactive, hero background
+- `wave_terrain` — live flyover of noise-shaped ridgelines scrolling toward the viewer, hero background
+- `orbit_rings` — tilted orbit rings, each a tier of labelled satellites around a centre node
 - `dot_grid_background` — CSS repeating dot or grid pattern panel background
 - `shimmer_button` — button with CSS background-position shimmer sweep animation
 - `card_stack` — CSS-fanned stack of 2–4 cards with rotation and opacity tiers

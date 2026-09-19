@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (501 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (520 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -5749,6 +5749,444 @@
     "mcp-apps"
    ]
   },
+  "weighted_words": {
+   "type": "object",
+   "description": "Agentic typesetting: the agent decides how much each WORD weighs. A headline where every word carries an emphasis 1-5 that sets its size, weight and opacity, with the heaviest words in the accent colour; words land in sequence, heavier ones from higher up. The reader sees the shape of the argument before reading it. Give it \"words\" as [{text, weight}] to typeset deliberately, or plain \"text\" for an even setting. Screenshot-ready, light or dark. Capped at 40 words of 24 characters; weights clamp to 1-5.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "weighted_words"
+      },
+      "words": {
+       "description": "array of {text, weight} (optional). weight is an integer 1-5; 5 is set in the accent colour. Strings are accepted as weight 2.",
+       "type": "array"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Fallback when words is absent; every word set at weight 2."
+      },
+      "voice": {
+       "description": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\"). System font stacks."
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"dark\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default \"#38bdf8\"."
+      },
+      "align": {
+       "description": "\"left\" | \"center\"  (optional, default \"left\")"
+      },
+      "animate": {
+       "description": "bool (optional). Words land in sequence on load. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "stance": {
+   "type": "object",
+   "description": "A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening and opacity rising with confidence -- under a thin confidence rail. Optional \"because\" (the reason) and \"unless\" (what would change the agent's mind, the line most opinion cards forget). A small slider lets the reader drag the confidence and watch the claim reset, which makes the mapping legible and honest. Same integer arithmetic on the server and in the slider script.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "stance"
+      },
+      "claim": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The claim, up to 200 characters."
+      },
+      "confidence": {
+       "description": "number (optional). 0-1 (values above 1 are read as percent). Default 0.5.",
+       "type": "number"
+      },
+      "because": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). The reason, one or two sentences."
+      },
+      "unless": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). What would change the agent''s mind; rendered as \"I would change my mind if ...\"."
+      },
+      "voice": {
+       "description": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\"). System font stacks."
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"dark\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default \"#38bdf8\"."
+      },
+      "interactive": {
+       "description": "bool (optional). Show the try-it slider. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component",
+      "claim"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "receipt": {
+   "type": "object",
+   "description": "Show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a source per line (linked when a URL is given), a dashed tear line, a CONFIDENCE total, a barcode derived deterministically from the claim, and a perforated bottom edge. Built for the \"no unsourced stats\" rule and for AG-UI-style runs where evidence arrives one tool result at a time: resend the FULL items list on every update and only the LAST line prints in (same stateless rule as agent_sketchpad). Always paper-white, so it reads as an object on any ground. Capped at 24 items.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "receipt"
+      },
+      "claim": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). Printed in display type at the top."
+      },
+      "items": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array of {text, source?, url?} (optional). Evidence lines in order; source is a short label, url must be http(s). Strings are accepted."
+      },
+      "total": {
+       "description": "number (optional). Confidence 0-1 shown as the receipt total; when absent the item count is shown.",
+       "type": "number"
+      },
+      "total_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Default \"CONFIDENCE\"."
+      },
+      "merchant": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Top label. Default \"EVIDENCE RECEIPT\"."
+      },
+      "issued": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Date or context line under the merchant."
+      },
+      "footer": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Default \"Sources listed. No unsourced stats.\""
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Links and total colour. Default \"#4338ca\"."
+      },
+      "print_last": {
+       "description": "bool (optional). Animate the last line printing in. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component",
+      "claim"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "changed_mind": {
+   "type": "object",
+   "description": "A belief change as a typographic object: \"I used to think\" in muted serif italic, struck through by a line that draws itself, then \"Now I think\" in heavy display type landing beneath it, and an optional \"since\" line naming what changed it. The most honest opinion format there is, and the most shared. For an agent it records a revision after new evidence rather than pretending it always knew. Light or dark.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "changed_mind"
+      },
+      "before": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The old belief."
+      },
+      "after": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The new belief."
+      },
+      "since": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). What changed it, e.g. \"since running it against a real host\"."
+      },
+      "voice": {
+       "description": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\"). System font stacks."
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"dark\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default \"#38bdf8\"."
+      },
+      "animate": {
+       "description": "bool (optional). Strike and land on load. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component",
+      "before",
+      "after"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "type_scale": {
+   "type": "object",
+   "description": "A modular type scale, computed and shown as a specimen sheet. Declare a base size and a musical ratio (minor second through golden ratio) and the atom calculates every step -- px and rem to the hundredth, computed with the same integer-safe arithmetic on every renderer -- and sets the sample line at each size with a proportion bar, plus a ready-to-paste block of CSS custom properties. Calcs baked in, the way wall_elevation bakes in wall maths: an agent declares intent (base, ratio, steps), the atom does the typography. Light or dark, no JavaScript.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "type_scale"
+      },
+      "base": {
+       "description": "integer (optional). Base size in px, clamped 10-32. Default 16.",
+       "type": "number"
+      },
+      "ratio": {
+       "description": "\"minor_second\" | \"major_second\" | \"minor_third\" | \"major_third\" | \"perfect_fourth\" | \"augmented_fourth\" | \"perfect_fifth\" | \"golden\"  (optional, default \"major_third\")"
+      },
+      "steps_up": {
+       "description": "integer (optional). Steps above the base, clamped 1-8. Default 6.",
+       "type": "number"
+      },
+      "steps_down": {
+       "description": "integer (optional). Steps below the base, clamped 0-3. Default 2.",
+       "type": "number"
+      },
+      "sample": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Sample line set at each size. Default \"The quick brown fox\"."
+      },
+      "voice": {
+       "description": "\"display\" | \"serif\" | \"mono\"  (optional, default \"display\")"
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"light\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default \"#0e7bb8\"."
+      },
+      "show_code": {
+       "description": "bool (optional). Append the CSS custom properties block. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "readability_card": {
+   "type": "object",
+   "description": "Prose metrics as a typographic card: the Flesch reading-ease score set huge, its plain-language grade, and a stat row -- words, sentences, minutes to read at a declared words-per-minute, words per sentence, syllables per word, longest sentence -- all computed by the renderer from the text with identical arithmetic on every renderer (syllables by a vowel-group heuristic, sentences on . ! ? followed by space). The excerpt is shown underneath with the longest sentence highlighted, which is usually the one to cut. Built for the writing workflow; give it a draft and it tells you what a reader will feel.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "readability_card"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The prose to measure, up to 5000 characters."
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Label above the score. Default \"readability\"."
+      },
+      "wpm": {
+       "description": "integer (optional). Reading speed for the time estimate, clamped 100-500. Default 230.",
+       "type": "number"
+      },
+      "highlight_longest": {
+       "description": "bool (optional). Mark the longest sentence in the excerpt. Default true.",
+       "type": "boolean"
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"light\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Default \"#0e7bb8\"."
+      }
+     },
+     "required": [
+      "component",
+      "text"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "drop_cap": {
+   "type": "object",
+   "description": "An editorial paragraph with an initial letter set four ways: dropped (the classic, sunk across 2-4 lines), raised (standing on the baseline), boxed (reversed out of an accent block), or ornament (italic, with a hairline rule). Leading quotation marks and brackets are skipped so the real first letter is the cap. Light or dark, no JavaScript. The smallest atom in the family and the one every long read wants.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "drop_cap"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The paragraph, up to 2000 characters."
+      },
+      "style": {
+       "description": "\"dropped\" | \"raised\" | \"boxed\" | \"ornament\"  (optional, default \"dropped\")"
+      },
+      "lines": {
+       "description": "integer (optional). Lines the dropped cap spans, clamped 2-4. Default 3.",
+       "type": "number"
+      },
+      "voice": {
+       "description": "\"display\" | \"serif\" | \"mono\"  (optional, default \"serif\"). Face of the initial."
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"light\")"
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Colour of the initial. Default \"#0e7bb8\"."
+      }
+     },
+     "required": [
+      "component",
+      "text"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  "contrast_audit": {
+   "type": "object",
+   "description": "WCAG 2.1 contrast audit with the maths baked in: for each foreground/background pair the renderer computes the relative luminance and contrast ratio, shows a live sample swatch, and badges AA (4.5:1), AA large (3:1) and AAA (7:1) as pass or fail. Failing pairs get the nearest passing colour, found by mixing the foreground toward black or white in 5% steps until it clears AA. A summary line counts the passes. For an agent composing a surface this is the difference between \"looks fine\" and \"is readable\". No JavaScript; light or dark.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "contrast_audit"
+      },
+      "pairs": {
+       "description": "array of {fg, bg, label?} (optional). Up to 12 pairs of \"#rrggbb\" colours; invalid pairs are dropped.",
+       "type": "array"
+      },
+      "fg": {
+       "description": "\"#rrggbb\" (optional). Single-pair shorthand when pairs is absent."
+      },
+      "bg": {
+       "description": "\"#rrggbb\" (optional). Single-pair shorthand when pairs is absent."
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Label for the single-pair shorthand."
+      },
+      "show_fix": {
+       "description": "bool (optional). Suggest the nearest passing foreground for failures. Default true.",
+       "type": "boolean"
+      },
+      "theme": {
+       "description": "\"dark\" | \"light\"  (optional, default \"light\")"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
   "share_quote": {
    "type": "object",
    "description": "Displays a visually distinct callout showcasing a key phrase designed for social clipping.",
@@ -10667,6 +11105,758 @@
       "body": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
        "description": "string (optional). Body text overlaid on the aurora (markdown inline supported)."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "flow_field": {
+   "type": "object",
+   "description": "Full-bleed animated hero background: hundreds of luminous streams ride a slowly evolving noise vector field on a dark canvas, leave additive long-exposure light trails, and converge on a soft glowing focus point. The pointer bends the field around it. Optional eyebrow/title/body copy sits on the opposite side behind a readability veil -- the try.cloudflare.com hero layout (copy left, light right) as one atom. Honours prefers-reduced-motion (renders one pre-simulated long-exposure frame, no loop), pauses when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it (bad values fall back to defaults). Dark backgrounds only -- trails are drawn additively and vanish on white.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "flow_field"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid on the field."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title, tinted with the first palette colour."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Supporting copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+      },
+      "focus": {
+       "description": "\"right\" | \"center\" | \"left\" | \"none\"  (optional, default \"right\"). Where the glowing sink is that every stream converges on. Put it opposite the copy."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Streams take a colour by region so the field reads as coloured ribbons; the first colour also tints the focus glow. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Stream count, scaled to the panel area."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "trail": {
+       "description": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\"). How long each stream's light trail lingers."
+      },
+      "scale": {
+       "description": "\"fine\" | \"normal\" | \"broad\"  (optional, default \"normal\"). Size of the swirls."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer bends the field. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "particle_type": {
+   "type": "object",
+   "description": "Agentic typeface: the words an agent supplies assemble out of thousands of coloured particles that fly in from random positions and settle into the letterforms; the pointer scatters them and they reform. Text is rasterised on an offscreen canvas and sampled into particle targets, so any string works, at any panel size, in a system font. Honours prefers-reduced-motion (renders the settled word), pauses offscreen, DPR-aware. The words are also emitted as visually-hidden text so they stay readable and selectable. Sibling of light_type (words as flowing light) and living_type (letters that breathe). Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped, so it can never break out.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "particle_type"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The words to set, up to 3 lines separated by \"\\n\", each trimmed to 40 characters. Short and bold reads best. Default \"A2UI\"."
+      },
+      "font": {
+       "description": "\"sans\" | \"serif\" | \"mono\" | \"display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded."
+      },
+      "weight": {
+       "description": "\"regular\" | \"bold\" | \"black\"  (optional, default \"black\")"
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"], applied left to right across the words. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\"."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 160-900.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer affects the letters. Default true.",
+       "type": "boolean"
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Particle count cap 1200 / 2400 / 4200."
+      },
+      "dot": {
+       "description": "\"fine\" | \"normal\" | \"bold\"  (optional, default \"normal\"). Particle radius."
+      }
+     },
+     "required": [
+      "component",
+      "text"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "light_type": {
+   "type": "object",
+   "description": "Agentic typeface: the words an agent supplies are rendered as flowing light -- luminous streams ride a noise field inside the letterforms only (particles spawn on the glyph mask and respawn when they leave it), drawn with additive long-exposure trails and composited through the text as a mask, with a soft glow halo behind. Reads as a headline made of moving liquid light. Pointer swirls the flow. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware; the words are also emitted as visually-hidden text. Dark backgrounds only -- trails are additive. Sibling of particle_type and living_type. Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "light_type"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The words to set, up to 3 lines separated by \"\\n\", each trimmed to 40 characters. Short and bold reads best. Default \"A2UI\"."
+      },
+      "font": {
+       "description": "\"sans\" | \"serif\" | \"mono\" | \"display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded."
+      },
+      "weight": {
+       "description": "\"regular\" | \"bold\" | \"black\"  (optional, default \"black\")"
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"], applied left to right across the words. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\"."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 160-900.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer affects the letters. Default true.",
+       "type": "boolean"
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Streams per glyph area."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "trail": {
+       "description": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\")"
+      },
+      "scale": {
+       "description": "\"fine\" | \"normal\" | \"broad\"  (optional, default \"normal\"). Swirl size inside the letters."
+      },
+      "glow": {
+       "description": "bool (optional). Soft halo behind the letters in the first colour. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component",
+      "text"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "living_type": {
+   "type": "object",
+   "description": "Agentic typeface: the words an agent supplies are set glyph by glyph on canvas and every letter breathes on its own noise track -- drifting, tilting and scaling a little, so the headline feels alive rather than animated. Letters lean toward the pointer and swell as it passes. Works on light or dark backgrounds (set background and colors). Honours prefers-reduced-motion (renders one static frame), pauses offscreen, DPR-aware; the words are also emitted as visually-hidden text. Sibling of particle_type and light_type. Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "living_type"
+      },
+      "text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (required). The words to set, up to 3 lines separated by \"\\n\", each trimmed to 40 characters. Short and bold reads best. Default \"A2UI\"."
+      },
+      "font": {
+       "description": "\"sans\" | \"serif\" | \"mono\" | \"display\"  (optional, default \"sans\"). System font stacks; no webfont is loaded."
+      },
+      "weight": {
+       "description": "\"regular\" | \"bold\" | \"black\"  (optional, default \"black\")"
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"], applied left to right across the words. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\"."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 160-900.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer affects the letters. Default true.",
+       "type": "boolean"
+      },
+      "motion": {
+       "description": "\"subtle\" | \"normal\" | \"wild\"  (optional, default \"normal\"). Drift amplitude."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      }
+     },
+     "required": [
+      "component",
+      "text"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "orbit_mark": {
+   "type": "object",
+   "description": "The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, when they pass near an orbit, get captured into it and circle the nucleus like electrons before drifting off again; the nucleus glows as a sink and a real electron runs the first orbit. Optional eyebrow/title/body copy sits beside the mark behind a readability veil, so it works as a brand hero or a cover slide. Pointer bends the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as flow_field: every option is an enum or a clamped int, colours must be #rrggbb.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "orbit_mark"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline beside the mark."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title, tinted with the first colour."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Supporting copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the copy sits."
+      },
+      "mark_position": {
+       "description": "\"center\" | \"right\" | \"left\"  (optional, default \"center\"). Where the mark sits; put it opposite the copy."
+      },
+      "size": {
+       "description": "\"small\" | \"normal\" | \"large\"  (optional, default \"normal\"). Mark diameter relative to the panel."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#6366f1\",\"#a855f7\",\"#22d3ee\"]. First colour is the orbits and nucleus, second the electron, all of them the streams.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\")"
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "trail": {
+       "description": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\")"
+      },
+      "electron": {
+       "description": "bool (optional). Animate an electron along the first orbit. Default true.",
+       "type": "boolean"
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer bends the field. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "halftone_wave": {
+   "type": "object",
+   "description": "The canvas hero that works on a white page. A grid of dots whose size follows a travelling wave -- organic noise, a ripple spreading from a focus point, or a diagonal sweep -- like print halftone brought to life; wave peaks tint to the accent colour, and the pointer swells the dots around it. Ink on paper by default, so it sits inside a light document; flip ink and paper for a dark version. Optional eyebrow/title/body copy behind a veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Same kit and hardening as flow_field: every option is an enum or a clamped int; colours must be #rrggbb.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "halftone_wave"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid on the grid."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\")"
+      },
+      "wave": {
+       "description": "\"noise\" | \"ripple\" | \"sweep\"  (optional, default \"noise\"). Organic field, concentric ripple from the focus, or a diagonal front."
+      },
+      "focus": {
+       "description": "\"center\" | \"left\" | \"right\"  (optional, default \"center\"). Ripple origin."
+      },
+      "ink": {
+       "description": "\"#rrggbb\" (optional). Dot colour. Default \"#0f172a\"."
+      },
+      "paper": {
+       "description": "\"#rrggbb\" (optional). Ground colour. Default \"#f7f7f5\"."
+      },
+      "accent": {
+       "description": "\"#rrggbb\" (optional). Colour of the wave peaks; when absent, peaks stay in ink."
+      },
+      "spacing": {
+       "description": "\"fine\" | \"normal\" | \"coarse\"  (optional, default \"normal\"). Dot pitch 10 / 14 / 20 px."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 160-900. Default 320.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer swells nearby dots. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "message_lanes": {
+   "type": "object",
+   "description": "The A2UI pitch, drawn: small packets stream from an agent node on the left down curved lanes into a surface node on the right, leaving light trails; every arrival makes the surface flash and unfolds a small card outline inside it, the newest on top, older ones fading. Labels for both nodes are agent-supplied (up to 24 characters each). Optional eyebrow/title/body copy. Honours prefers-reduced-motion (one pre-simulated frame with packets mid-flight), pauses offscreen, DPR-aware. Dark backgrounds only. Every option is an enum or a clamped int; colours must be #rrggbb.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "message_lanes"
+      },
+      "from_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Label under the left node. Default \"agent\"."
+      },
+      "to_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Label under the right node. Default \"surface\"."
+      },
+      "lanes": {
+       "description": "integer (optional). Number of lanes, clamped 1-6. Default 4.",
+       "type": "number"
+      },
+      "rate": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\"). Packet speed."
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid on the scene."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"center\")"
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default sky/violet/pink; the first colours the agent node, the second the surface.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 200-900. Default 320.",
+       "type": "number"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "signal_tunnel": {
+   "type": "object",
+   "description": "Full-bleed animated hero background: light streaks travel along fixed radial lanes through a vanishing point (right, centre or left), converging into it by default (signals arriving) or, in \"out\" mode, radiating away from it (signals broadcasting). Each streak accelerates as it nears the vanishing point and is coloured by its lane angle, so the tunnel reads as many distinct signals rather than one; an additive glow marks the vanishing point itself. Optional eyebrow/title/body copy sits opposite the tunnel behind a readability veil, the same flow_field/try.cloudflare.com hero layout (copy on one side, motion on the other). Honours prefers-reduced-motion (renders one pre-simulated frame, no loop), pauses when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field/orbit_mark. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only -- streaks are additive and vanish on white.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "signal_tunnel"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid opposite the tunnel."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title, tinted with the first palette colour."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Supporting copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+      },
+      "direction": {
+       "description": "\"in\" | \"out\"  (optional, default \"in\"). \"in\" -- streaks converge on the vanishing point. \"out\" -- streaks radiate away from it."
+      },
+      "position": {
+       "description": "\"right\" | \"center\" | \"left\"  (optional, default \"right\"). Where the vanishing point sits; put it opposite the copy."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Streaks take a colour by lane angle so the tunnel reads as coloured bands; the first colour also tints the vanishing-point glow. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Streak count, scaled to the panel area."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "trail": {
+       "description": "\"short\" | \"normal\" | \"long\"  (optional, default \"normal\"). How long each streak's light trail lingers."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer nudges nearby streaks. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "gradient_mesh_live": {
+   "type": "object",
+   "description": "Full-bleed animated hero background: a handful of soft colour blobs, laid out over the panel with an even (Vogel-disk) spread, drift and breathe forever on the same value-noise field that drives flow_field -- never looping on a fixed timeline the way a CSS @keyframes mesh gradient must. The nearest blob leans toward the pointer. This is the animated, canvas-driven sibling of the static mesh_gradient atom and the CSS-keyframe aurora_background: pick this one when the motion itself, not just the colour, needs to feel alive. Optional eyebrow/title/body copy sits opposite a readability veil. Honours prefers-reduced-motion (one pre-simulated frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field/signal_tunnel. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only -- blobs blend additively and vanish on white.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "gradient_mesh_live"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid opposite the blobs."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title, tinted with the first palette colour."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Supporting copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Blobs cycle through these colours. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Blob count: 3 / 4 / 6."
+      },
+      "motion": {
+       "description": "\"subtle\" | \"normal\" | \"wild\"  (optional, default \"normal\"). Drift amplitude."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 200-900. Default 360.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Nearest blob leans toward the pointer. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "wave_terrain": {
+   "type": "object",
+   "description": "Full-bleed animated hero background: a live terrain flyover drawn as receding ridgelines. Rows of noise-shaped hills scroll toward the viewer while their heights keep evolving on the same value-noise field that drives flow_field, so the landscape never repeats; each row is filled with the background so nearer ridges occlude farther ones, and colour shifts along the palette from the horizon to the foreground. A calm valley runs down the middle with relief rising toward the edges. The pointer steers the camera sideways with a gentle parallax. The live sibling of the static, drag-to-rotate isometric_mesh. Optional eyebrow/title/body copy sits behind a readability veil. Honours prefers-reduced-motion (one still frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "wave_terrain"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid on the scene."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title, tinted with the first palette colour."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Supporting copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Ridgelines blend from the first colour at the horizon to the last in the foreground; the first also tints the horizon glow. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "density": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). Number of ridgeline rows: 22 / 34 / 48."
+      },
+      "relief": {
+       "description": "\"low\" | \"normal\" | \"high\"  (optional, default \"normal\"). How tall the hills are."
+      },
+      "scale": {
+       "description": "\"fine\" | \"normal\" | \"broad\"  (optional, default \"normal\"). Width of the hills across the terrain."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\"). Flyover speed."
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 200-900. Default 380.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer steers the camera sideways. Default true.",
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "orbit_rings": {
+   "type": "object",
+   "description": "A system map that moves: up to three tilted orbit rings around a centre node, where each ring is a TIER of agent-supplied labelled items (for example tools / data / surfaces) and every item is a satellite with a light trail and its own label. Inner rings turn faster than outer ones, satellites are larger and brighter on the near side of their ring and dimmer behind the centre, and each ring carries its tier name, so the rings encode structure rather than decoration. The pointer tilts and turns the whole view. This is the hero-class sibling of the single-ring orbit_diagram; orbit_mark remains the fixed brand logo. Optional eyebrow/title/body copy sits behind a readability veil. Honours prefers-reduced-motion (one still frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field. Every option is an enum or a clamped integer and colours must be #rrggbb; agent-supplied labels are trimmed, length-capped and JSON-encoded with \"<\" escaped, so they can never break out of the script. Dark backgrounds only.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "orbit_rings"
+      },
+      "center": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Label under the centre node, trimmed to 24 characters. Default \"agent\"."
+      },
+      "rings": {
+       "description": "array of 1-3 {label, items} objects (optional). Each ring is a tier: label is the tier name (up to 24 characters), items is an array of 1-6 strings (up to 24 characters each) orbiting on that ring. Entries that are not objects, and items that are not strings, are dropped. Default three rings: tools, data, surfaces.",
+       "type": "array"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Headline overlaid opposite the rings."
+      },
+      "eyebrow": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Small uppercase label above the title, tinted with the first palette colour."
+      },
+      "body": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Supporting copy under the title (markdown inline supported)."
+      },
+      "align": {
+       "description": "\"left\" | \"center\" | \"right\"  (optional, default \"left\"). Where the overlaid copy sits; the veil that keeps it readable follows it."
+      },
+      "position": {
+       "description": "\"right\" | \"center\" | \"left\"  (optional, default \"right\"). Where the rings sit; put them opposite the copy."
+      },
+      "colors": {
+       "description": "array of 1-4 \"#rrggbb\" strings (optional). Default [\"#38bdf8\",\"#818cf8\",\"#f472b6\"]. Ring i takes colour i (cycling); the first colour also tints the centre node. Invalid entries are dropped.",
+       "type": "array"
+      },
+      "background": {
+       "description": "\"#rrggbb\" (optional). Default \"#070a12\". Keep it dark."
+      },
+      "speed": {
+       "description": "\"slow\" | \"normal\" | \"fast\"  (optional, default \"normal\")"
+      },
+      "height": {
+       "description": "integer (optional). Panel height in px, clamped 240-900. Default 420.",
+       "type": "number"
+      },
+      "interactive": {
+       "description": "bool (optional). Pointer tilts and turns the view. Default true.",
+       "type": "boolean"
       }
      },
      "required": [

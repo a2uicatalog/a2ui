@@ -3766,7 +3766,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: weighted_words
-  stage: preview
   description: 'Agentic typesetting: the agent decides how much each WORD weighs. A
     headline where every word carries an emphasis 1-5 that sets its size, weight
     and opacity, with the heaviest words in the accent colour; words land in
@@ -3801,7 +3800,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: stance
-  stage: preview
   description: 'A claim whose typography IS its calibration. The agent states a
     claim and a confidence 0-1; the type sets itself from it -- weight from 300
     (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening
@@ -3838,7 +3836,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: receipt
-  stage: preview
   description: 'Show your receipts: a claim printed at the top of a till receipt,
     then the evidence as numbered receipt lines with a source per line (linked
     when a URL is given), a dashed tear line, a CONFIDENCE total, a barcode
@@ -3877,7 +3874,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: changed_mind
-  stage: preview
   description: 'A belief change as a typographic object: "I used to think" in muted
     serif italic, struck through by a line that draws itself, then "Now I think" in
     heavy display type landing beneath it, and an optional "since" line naming what
@@ -3911,7 +3907,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: type_scale
-  stage: preview
   description: 'A modular type scale, computed and shown as a specimen sheet.
     Declare a base size and a musical ratio (minor second through golden ratio)
     and the atom calculates every step -- px and rem to the hundredth, computed
@@ -3949,7 +3944,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: readability_card
-  stage: preview
   description: 'Prose metrics as a typographic card: the Flesch reading-ease
     score set huge, its plain-language grade, and a stat row -- words,
     sentences, minutes to read at a declared words-per-minute, words per
@@ -3985,7 +3979,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: drop_cap
-  stage: preview
   description: 'An editorial paragraph with an initial letter set four ways:
     dropped (the classic, sunk across 2-4 lines), raised (standing on the
     baseline), boxed (reversed out of an accent block), or ornament (italic,
@@ -4018,7 +4011,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: contrast_audit
-  stage: preview
   description: 'WCAG 2.1 contrast audit with the maths baked in: for each
     foreground/background pair the renderer computes the relative luminance
     and contrast ratio, shows a live sample swatch, and badges AA (4.5:1), AA
@@ -7215,7 +7207,6 @@ blocks:
     url: https://ui.aceternity.com/components/aurora-background
     note: Pattern inspiration only — renderer is an original Python implementation
 - type: flow_field
-  stage: preview
   description: 'Full-bleed animated hero background: hundreds of luminous streams
     ride a slowly evolving noise vector field on a dark canvas, leave additive
     long-exposure light trails, and converge on a soft glowing focus point. The
@@ -7266,7 +7257,6 @@ blocks:
     url: https://try.cloudflare.com
     note: Layout and mood inspiration only (dark ground, convergence, light packets, glow, reduced-motion still) -- the flow-field mechanics and renderer are original
 - type: particle_type
-  stage: preview
   description: 'Agentic typeface: the words an agent supplies assemble out of thousands
     of coloured particles that fly in from random positions and settle into the
     letterforms; the pointer scatters them and they reform. Text is rasterised on an
@@ -7307,7 +7297,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: light_type
-  stage: preview
   description: 'Agentic typeface: the words an agent supplies are rendered as flowing
     light -- luminous streams ride a noise field inside the letterforms only
     (particles spawn on the glyph mask and respawn when they leave it), drawn with
@@ -7351,7 +7340,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: living_type
-  stage: preview
   description: 'Agentic typeface: the words an agent supplies are set glyph by glyph
     on canvas and every letter breathes on its own noise track -- drifting,
     tilting and scaling a little, so the headline feels alive rather than
@@ -7391,7 +7379,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: orbit_mark
-  stage: preview
   description: 'The catalogue''s own orbit mark, alive: the header logo (three orbit
     ellipses, nucleus, electron) drawn on canvas with a flow field around it --
     hundreds of luminous streams ride a noise field and, when they pass near an
@@ -7437,7 +7424,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: halftone_wave
-  stage: preview
   description: 'The canvas hero that works on a white page. A grid of dots whose
     size follows a travelling wave -- organic noise, a ripple spreading from a
     focus point, or a diagonal sweep -- like print halftone brought to life;
@@ -7481,7 +7467,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: message_lanes
-  stage: preview
   description: 'The A2UI pitch, drawn: small packets stream from an agent node
     on the left down curved lanes into a surface node on the right, leaving light
     trails; every arrival makes the surface flash and unfolds a small card
@@ -7523,7 +7508,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: signal_tunnel
-  stage: preview
   description: 'Full-bleed animated hero background: light streaks travel along
     fixed radial lanes through a vanishing point (right, centre or left), converging into it by
     default (signals arriving) or, in "out" mode, radiating away from it
@@ -7577,7 +7561,6 @@ blocks:
     url: https://radar.cloudflare.com
     note: Mood and convention inspiration only (dark ground, radial motion, vanishing point, additive glow) -- the tunnel mechanics and renderer are original
 - type: gradient_mesh_live
-  stage: preview
   description: 'Full-bleed animated hero background: a handful of soft colour blobs,
     laid out over the panel with an even (Vogel-disk) spread, drift and breathe
     forever on the same value-noise field that drives flow_field -- never looping
@@ -7624,7 +7607,6 @@ blocks:
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
 - type: wave_terrain
-  stage: preview
   description: 'Full-bleed animated hero background: a live terrain flyover drawn
     as receding ridgelines. Rows of noise-shaped hills scroll toward the viewer
     while their heights keep evolving on the same value-noise field that drives
@@ -7676,7 +7658,6 @@ blocks:
     url: https://en.wikipedia.org/wiki/Unknown_Pleasures
     note: Convention inspiration only (stacked receding lines with occlusion) -- the noise-field terrain, colour blend and renderer are original
 - type: orbit_rings
-  stage: preview
   description: 'A system map that moves: up to three tilted orbit rings around a
     centre node, where each ring is a TIER of agent-supplied labelled items (for
     example tools / data / surfaces) and every item is a satellite with a light

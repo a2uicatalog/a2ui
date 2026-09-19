@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 501 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 520 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -2752,6 +2752,158 @@
       ]
     },
     {
+      "identifier": "urn:air:a2uicatalog.ai:atom:weighted_words",
+      "displayName": "Weighted Words",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/weighted_words",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "Agentic typesetting: the agent decides how much each WORD weighs. A headline where every word carries an emphasis 1-5 that sets its size, weight and opacity, with the heaviest words in the accent colour; words land in sequence, heavier ones from higher up. The reader sees the shape of the argument before reading it. Give it \"words\" as [{text, weight}] to typeset deliberately, or plain \"text\" for an even setting. Screenshot-ready, light or dark. Capped at 40 words of 24 characters; weights clamp to 1-5.",
+      "representativeQueries": [
+        "show a headline where the agent sets each word''s emphasis 1-5; heavy words land bigger",
+        "agentic typesetting: the agent decides how much each word weighs. a headline where every word carries an emphasis 1-5",
+        "render a weighted words"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:stance",
+      "displayName": "Stance",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/stance",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "A claim whose typography IS its calibration. The agent states a claim and a confidence 0-1; the type sets itself from it -- weight from 300 (a hunch) to 900 (a conviction), size from 1.4rem to 3rem, tracking tightening and opacity rising with confidence -- under a thin confidence rail. Optional \"because\" (the reason) and \"unless\" (what would change the agent's mind, the line most opinion cards forget). A small slider lets the reader drag the confidence and watch the claim reset, which makes the mapping legible and honest. Same integer arithmetic on the server and in the slider script.",
+      "representativeQueries": [
+        "show a claim set in type whose weight, size and tracking encode the stated confidence",
+        "a claim whose typography is its calibration. the agent states a claim and a confidence 0-1; the type sets itself from",
+        "render a stance"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:receipt",
+      "displayName": "Receipt",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/receipt",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "Show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a source per line (linked when a URL is given), a dashed tear line, a CONFIDENCE total, a barcode derived deterministically from the claim, and a perforated bottom edge. Built for the \"no unsourced stats\" rule and for AG-UI-style runs where evidence arrives one tool result at a time: resend the FULL items list on every update and only the LAST line prints in (same stateless rule as agent_sketchpad). Always paper-white, so it reads as an object on any ground. Capped at 24 items.",
+      "representativeQueries": [
+        "show a claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in",
+        "show your receipts: a claim printed at the top of a till receipt, then the evidence as numbered receipt lines with a",
+        "render a receipt"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:changed_mind",
+      "displayName": "Changed Mind",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/changed_mind",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "A belief change as a typographic object: \"I used to think\" in muted serif italic, struck through by a line that draws itself, then \"Now I think\" in heavy display type landing beneath it, and an optional \"since\" line naming what changed it. The most honest opinion format there is, and the most shared. For an agent it records a revision after new evidence rather than pretending it always knew. Light or dark.",
+      "representativeQueries": [
+        "show a struck-through old belief, new belief lands beneath; optional what-changed-it line",
+        "a belief change as a typographic object: \"i used to think\" in muted serif italic, struck through by a line that draws",
+        "render a changed mind"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:type_scale",
+      "displayName": "Type Scale",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/type_scale",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "A modular type scale, computed and shown as a specimen sheet. Declare a base size and a musical ratio (minor second through golden ratio) and the atom calculates every step -- px and rem to the hundredth, computed with the same integer-safe arithmetic on every renderer -- and sets the sample line at each size with a proportion bar, plus a ready-to-paste block of CSS custom properties. Calcs baked in, the way wall_elevation bakes in wall maths: an agent declares intent (base, ratio, steps), the atom does the typography. Light or dark, no JavaScript.",
+      "representativeQueries": [
+        "show a computed modular type scale as a specimen sheet with CSS custom properties",
+        "a modular type scale, computed and shown as a specimen sheet. declare a base size and a musical ratio (minor second",
+        "render a type scale"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:readability_card",
+      "displayName": "Readability Card",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/readability_card",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "Prose metrics as a typographic card: the Flesch reading-ease score set huge, its plain-language grade, and a stat row -- words, sentences, minutes to read at a declared words-per-minute, words per sentence, syllables per word, longest sentence -- all computed by the renderer from the text with identical arithmetic on every renderer (syllables by a vowel-group heuristic, sentences on . ! ? followed by space). The excerpt is shown underneath with the longest sentence highlighted, which is usually the one to cut. Built for the writing workflow; give it a draft and it tells you what a reader will feel.",
+      "representativeQueries": [
+        "show a Flesch score, reading time and sentence stats computed from prose, longest sentence highlighted",
+        "prose metrics as a typographic card: the flesch reading-ease score set huge, its plain-language grade, and a stat row",
+        "render a readability card"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:drop_cap",
+      "displayName": "Drop Cap",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/drop_cap",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "An editorial paragraph with an initial letter set four ways: dropped (the classic, sunk across 2-4 lines), raised (standing on the baseline), boxed (reversed out of an accent block), or ornament (italic, with a hairline rule). Leading quotation marks and brackets are skipped so the real first letter is the cap. Light or dark, no JavaScript. The smallest atom in the family and the one every long read wants.",
+      "representativeQueries": [
+        "show a paragraph with a dropped, raised, boxed or ornamental initial letter",
+        "an editorial paragraph with an initial letter set four ways: dropped (the classic, sunk across 2-4 lines), raised",
+        "render a drop cap"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:contrast_audit",
+      "displayName": "Contrast Audit",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/contrast_audit",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps",
+        "pdf"
+      ],
+      "description": "WCAG 2.1 contrast audit with the maths baked in: for each foreground/background pair the renderer computes the relative luminance and contrast ratio, shows a live sample swatch, and badges AA (4.5:1), AA large (3:1) and AAA (7:1) as pass or fail. Failing pairs get the nearest passing colour, found by mixing the foreground toward black or white in 5% steps until it clears AA. A summary line counts the passes. For an agent composing a surface this is the difference between \"looks fine\" and \"is readable\". No JavaScript; light or dark.",
+      "representativeQueries": [
+        "show a WCAG contrast ratios for colour pairs with AA/AAA badges and a nearest-passing fix",
+        "wcag 2.1 contrast audit with the maths baked in: for each foreground/background pair the renderer computes the",
+        "render a contrast audit"
+      ]
+    },
+    {
       "identifier": "urn:air:a2uicatalog.ai:atom:share_quote",
       "displayName": "Share Quote",
       "type": "application/vnd.a2ui.atom+json",
@@ -4884,6 +5036,204 @@
         "show a animated aurora borealis gradient blob background, CSS-only",
         "dark panel with three independently-animating radial gradient blobs that drift and scale using css @keyframes \u2014",
         "render a aurora background"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:flow_field",
+      "displayName": "Flow Field",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/flow_field",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Full-bleed animated hero background: hundreds of luminous streams ride a slowly evolving noise vector field on a dark canvas, leave additive long-exposure light trails, and converge on a soft glowing focus point. The pointer bends the field around it. Optional eyebrow/title/body copy sits on the opposite side behind a readability veil -- the try.cloudflare.com hero layout (copy left, light right) as one atom. Honours prefers-reduced-motion (renders one pre-simulated long-exposure frame, no loop), pauses when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it (bad values fall back to defaults). Dark backgrounds only -- trails are drawn additively and vanish on white.",
+      "representativeQueries": [
+        "show a luminous noise-field streams converging on a glowing focus, hero background",
+        "full-bleed animated hero background: hundreds of luminous streams ride a slowly evolving noise vector field on a dark",
+        "render a flow field"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:particle_type",
+      "displayName": "Particle Type",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/particle_type",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Agentic typeface: the words an agent supplies assemble out of thousands of coloured particles that fly in from random positions and settle into the letterforms; the pointer scatters them and they reform. Text is rasterised on an offscreen canvas and sampled into particle targets, so any string works, at any panel size, in a system font. Honours prefers-reduced-motion (renders the settled word), pauses offscreen, DPR-aware. The words are also emitted as visually-hidden text so they stay readable and selectable. Sibling of light_type (words as flowing light) and living_type (letters that breathe). Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped, so it can never break out.",
+      "representativeQueries": [
+        "show a agent-supplied words assemble from particles; pointer scatters them",
+        "agentic typeface: the words an agent supplies assemble out of thousands of coloured particles that fly in from random",
+        "render a particle type"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:light_type",
+      "displayName": "Light Type",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/light_type",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Agentic typeface: the words an agent supplies are rendered as flowing light -- luminous streams ride a noise field inside the letterforms only (particles spawn on the glyph mask and respawn when they leave it), drawn with additive long-exposure trails and composited through the text as a mask, with a soft glow halo behind. Reads as a headline made of moving liquid light. Pointer swirls the flow. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware; the words are also emitted as visually-hidden text. Dark backgrounds only -- trails are additive. Sibling of particle_type and living_type. Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped.",
+      "representativeQueries": [
+        "show a agent-supplied words made of flowing light, streams masked to the glyphs",
+        "agentic typeface: the words an agent supplies are rendered as flowing light -- luminous streams ride a noise field",
+        "render a light type"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:living_type",
+      "displayName": "Living Type",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/living_type",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Agentic typeface: the words an agent supplies are set glyph by glyph on canvas and every letter breathes on its own noise track -- drifting, tilting and scaling a little, so the headline feels alive rather than animated. Letters lean toward the pointer and swell as it passes. Works on light or dark backgrounds (set background and colors). Honours prefers-reduced-motion (renders one static frame), pauses offscreen, DPR-aware; the words are also emitted as visually-hidden text. Sibling of particle_type and light_type. Every option is an enum or a clamped int; text is JSON-encoded into the script with \"<\" escaped.",
+      "representativeQueries": [
+        "show a agent-supplied headline whose letters breathe and lean toward the pointer",
+        "agentic typeface: the words an agent supplies are set glyph by glyph on canvas and every letter breathes on its own",
+        "render a living type"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:orbit_mark",
+      "displayName": "Orbit Mark",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/orbit_mark",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "The catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with a flow field around it -- hundreds of luminous streams ride a noise field and, when they pass near an orbit, get captured into it and circle the nucleus like electrons before drifting off again; the nucleus glows as a sink and a real electron runs the first orbit. Optional eyebrow/title/body copy sits beside the mark behind a readability veil, so it works as a brand hero or a cover slide. Pointer bends the field. Honours prefers-reduced-motion (one pre-simulated frame), pauses offscreen, DPR-aware. Dark backgrounds only. Same kit and hardening as flow_field: every option is an enum or a clamped int, colours must be #rrggbb.",
+      "representativeQueries": [
+        "show a the a2ui orbit-mark logo with flow-field streams captured into its orbits",
+        "the catalogue's own orbit mark, alive: the header logo (three orbit ellipses, nucleus, electron) drawn on canvas with",
+        "render a orbit mark"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:halftone_wave",
+      "displayName": "Halftone Wave",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/halftone_wave",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "The canvas hero that works on a white page. A grid of dots whose size follows a travelling wave -- organic noise, a ripple spreading from a focus point, or a diagonal sweep -- like print halftone brought to life; wave peaks tint to the accent colour, and the pointer swells the dots around it. Ink on paper by default, so it sits inside a light document; flip ink and paper for a dark version. Optional eyebrow/title/body copy behind a veil. Honours prefers-reduced-motion (one static frame), pauses offscreen, DPR-aware. Same kit and hardening as flow_field: every option is an enum or a clamped int; colours must be #rrggbb.",
+      "representativeQueries": [
+        "show a animated halftone dot grid riding a wave, works on light backgrounds",
+        "the canvas hero that works on a white page. a grid of dots whose size follows a travelling wave -- organic noise, a",
+        "render a halftone wave"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:message_lanes",
+      "displayName": "Message Lanes",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/message_lanes",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "The A2UI pitch, drawn: small packets stream from an agent node on the left down curved lanes into a surface node on the right, leaving light trails; every arrival makes the surface flash and unfolds a small card outline inside it, the newest on top, older ones fading. Labels for both nodes are agent-supplied (up to 24 characters each). Optional eyebrow/title/body copy. Honours prefers-reduced-motion (one pre-simulated frame with packets mid-flight), pauses offscreen, DPR-aware. Dark backgrounds only. Every option is an enum or a clamped int; colours must be #rrggbb.",
+      "representativeQueries": [
+        "show a packets streaming from an agent node into a surface node that unfolds cards on arrival",
+        "the a2ui pitch, drawn: small packets stream from an agent node on the left down curved lanes into a surface node on",
+        "render a message lanes"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:signal_tunnel",
+      "displayName": "Signal Tunnel",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/signal_tunnel",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Full-bleed animated hero background: light streaks travel along fixed radial lanes through a vanishing point (right, centre or left), converging into it by default (signals arriving) or, in \"out\" mode, radiating away from it (signals broadcasting). Each streak accelerates as it nears the vanishing point and is coloured by its lane angle, so the tunnel reads as many distinct signals rather than one; an additive glow marks the vanishing point itself. Optional eyebrow/title/body copy sits opposite the tunnel behind a readability veil, the same flow_field/try.cloudflare.com hero layout (copy on one side, motion on the other). Honours prefers-reduced-motion (renders one pre-simulated frame, no loop), pauses when scrolled offscreen, and is DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field/orbit_mark. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only -- streaks are additive and vanish on white.",
+      "representativeQueries": [
+        "show a radial light streaks converging on (or radiating from) a vanishing point, hero background",
+        "full-bleed animated hero background: light streaks travel along fixed radial lanes through a vanishing point (right,",
+        "render a signal tunnel"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:gradient_mesh_live",
+      "displayName": "Gradient Mesh Live",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/gradient_mesh_live",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Full-bleed animated hero background: a handful of soft colour blobs, laid out over the panel with an even (Vogel-disk) spread, drift and breathe forever on the same value-noise field that drives flow_field -- never looping on a fixed timeline the way a CSS @keyframes mesh gradient must. The nearest blob leans toward the pointer. This is the animated, canvas-driven sibling of the static mesh_gradient atom and the CSS-keyframe aurora_background: pick this one when the motion itself, not just the colour, needs to feel alive. Optional eyebrow/title/body copy sits opposite a readability veil. Honours prefers-reduced-motion (one pre-simulated frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field/signal_tunnel. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only -- blobs blend additively and vanish on white.",
+      "representativeQueries": [
+        "show a soft colour blobs drifting on a noise field, pointer-reactive, hero background",
+        "full-bleed animated hero background: a handful of soft colour blobs, laid out over the panel with an even (vogel-disk)",
+        "render a gradient mesh live"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:wave_terrain",
+      "displayName": "Wave Terrain",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/wave_terrain",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "Full-bleed animated hero background: a live terrain flyover drawn as receding ridgelines. Rows of noise-shaped hills scroll toward the viewer while their heights keep evolving on the same value-noise field that drives flow_field, so the landscape never repeats; each row is filled with the background so nearer ridges occlude farther ones, and colour shifts along the palette from the horizon to the foreground. A calm valley runs down the middle with relief rising toward the edges. The pointer steers the camera sideways with a gentle parallax. The live sibling of the static, drag-to-rotate isometric_mesh. Optional eyebrow/title/body copy sits behind a readability veil. Honours prefers-reduced-motion (one still frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field. Every option is an enum or a clamped integer and colours must be #rrggbb: the config is baked into inline script, so nothing free-form ever reaches it. Dark backgrounds only.",
+      "representativeQueries": [
+        "show a live flyover of noise-shaped ridgelines scrolling toward the viewer, hero background",
+        "full-bleed animated hero background: a live terrain flyover drawn as receding ridgelines. rows of noise-shaped hills",
+        "render a wave terrain"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:orbit_rings",
+      "displayName": "Orbit Rings",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/orbit_rings",
+      "capabilities": [
+        "web",
+        "google-meet-stage",
+        "google-apps-script-web",
+        "mcp-apps"
+      ],
+      "description": "A system map that moves: up to three tilted orbit rings around a centre node, where each ring is a TIER of agent-supplied labelled items (for example tools / data / surfaces) and every item is a satellite with a light trail and its own label. Inner rings turn faster than outer ones, satellites are larger and brighter on the near side of their ring and dimmer behind the centre, and each ring carries its tier name, so the rings encode structure rather than decoration. The pointer tilts and turns the whole view. This is the hero-class sibling of the single-ring orbit_diagram; orbit_mark remains the fixed brand logo. Optional eyebrow/title/body copy sits behind a readability veil. Honours prefers-reduced-motion (one still frame, no loop), pauses when scrolled offscreen, DPR-aware. Pure canvas + requestAnimationFrame, zero dependencies, on the same shared kit as flow_field. Every option is an enum or a clamped integer and colours must be #rrggbb; agent-supplied labels are trimmed, length-capped and JSON-encoded with \"<\" escaped, so they can never break out of the script. Dark backgrounds only.",
+      "representativeQueries": [
+        "show a tilted orbit rings, each a tier of labelled satellites around a centre node",
+        "a system map that moves: up to three tilted orbit rings around a centre node, where each ring is a tier of",
+        "render a orbit rings"
       ]
     },
     {

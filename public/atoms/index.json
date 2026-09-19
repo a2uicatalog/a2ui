@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 501,
+ "atomCount": 520,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -1517,6 +1517,94 @@
    ]
   },
   {
+   "type": "weighted_words",
+   "compact": "headline where the agent sets each word''s emphasis 1-5; heavy words land bigger",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "stance",
+   "compact": "claim set in type whose weight, size and tracking encode the stated confidence",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "receipt",
+   "compact": "claim plus numbered, sourced evidence lines printed as a till receipt; newest line prints in",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "changed_mind",
+   "compact": "struck-through old belief, new belief lands beneath; optional what-changed-it line",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "type_scale",
+   "compact": "computed modular type scale as a specimen sheet with CSS custom properties",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "readability_card",
+   "compact": "Flesch score, reading time and sentence stats computed from prose, longest sentence highlighted",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "drop_cap",
+   "compact": "paragraph with a dropped, raised, boxed or ornamental initial letter",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
+   "type": "contrast_audit",
+   "compact": "WCAG contrast ratios for colour pairs with AA/AAA badges and a nearest-passing fix",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps",
+    "pdf"
+   ]
+  },
+  {
    "type": "share_quote",
    "compact": "prominent blockquote optimised for social media sharing",
    "surfaces": [
@@ -2706,6 +2794,116 @@
   {
    "type": "aurora_background",
    "compact": "animated aurora borealis gradient blob background, CSS-only",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "flow_field",
+   "compact": "luminous noise-field streams converging on a glowing focus, hero background",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "particle_type",
+   "compact": "agent-supplied words assemble from particles; pointer scatters them",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "light_type",
+   "compact": "agent-supplied words made of flowing light, streams masked to the glyphs",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "living_type",
+   "compact": "agent-supplied headline whose letters breathe and lean toward the pointer",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "orbit_mark",
+   "compact": "the a2ui orbit-mark logo with flow-field streams captured into its orbits",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "halftone_wave",
+   "compact": "animated halftone dot grid riding a wave, works on light backgrounds",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "message_lanes",
+   "compact": "packets streaming from an agent node into a surface node that unfolds cards on arrival",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "signal_tunnel",
+   "compact": "radial light streaks converging on (or radiating from) a vanishing point, hero background",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "gradient_mesh_live",
+   "compact": "soft colour blobs drifting on a noise field, pointer-reactive, hero background",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "wave_terrain",
+   "compact": "live flyover of noise-shaped ridgelines scrolling toward the viewer, hero background",
+   "surfaces": [
+    "web",
+    "google-meet-stage",
+    "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "orbit_rings",
+   "compact": "tilted orbit rings, each a tier of labelled satellites around a centre node",
    "surfaces": [
     "web",
     "google-meet-stage",
