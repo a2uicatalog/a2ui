@@ -412,6 +412,7 @@ a2ui-effects-v1:
 - typewriter_text
 - typing_indicator
 - wave_divider
+- wave_terrain
 - word_flip
 - word_reveal
 - word_scramble

@@ -18828,6 +18828,24 @@ _GRADIENT_MESH_LIVE_JS = (
     '_a2uiCK.mount("gm-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:180});'
     '})();'
 )
+_WAVE_TERRAIN_JS = (
+    '(function(){'
+    'var C=%%CFG%%;var M=64,PN=[],PX=[],PY=[],sh=0;'
+    'function init(k){PN=[];PX=[];PY=[];var i,s;for(i=0;i<C.pal.length;i++){s=C.pal[i].split(",");PN.push([+s[0],+s[1],+s[2]]);}for(i=0;i<=M;i++){PX.push(0);PY.push(0);}}'
+    'function col(q,al){var L=PN.length,f=q*(L-1),a=Math.floor(f),b=Math.min(L-1,a+1),m=f-a,A=PN[a],B=PN[b];return "rgba("+Math.round(A[0]+(B[0]-A[0])*m)+","+Math.round(A[1]+(B[1]-A[1])*m)+","+Math.round(A[2]+(B[2]-A[2])*m)+","+al.toFixed(3)+")";}'
+    'function draw(k){var ctx=k.ctx,W=k.W,H=k.H,t=k.t,s=t*24,i0=Math.floor(s),fr=s-i0,hy=H*0.36,j,i,d,q,gy,sc,u,e,h,m,tg;'
+    'tg=k.mx===null?0:k.mx/W-0.5;sh+=(tg-sh)*0.06;'
+    'ctx.globalCompositeOperation="source-over";ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);'
+    'var g=ctx.createLinearGradient(0,hy-H*0.3,0,hy+H*0.04);g.addColorStop(0,"rgba("+C.pal[0]+",0)");g.addColorStop(1,"rgba("+C.pal[0]+",0.22)");ctx.fillStyle=g;ctx.fillRect(0,hy-H*0.3,W,H*0.34);'
+    'ctx.lineJoin="round";'
+    'for(j=C.n;j>=0;j--){i=i0+j;d=(j-fr)/C.n;q=Math.max(0,Math.min(1,1-d));gy=hy+(H*1.02-hy)*q*q;sc=0.2+1.5*q;'
+    'for(m=0;m<=M;m++){u=m/M;e=Math.min(1,Math.abs(u-0.5)*2.4);e=0.1+0.9*Math.pow(e,1.4);h=k.noise(u*C.fx,i*0.21,t*0.6+3.7);'
+    'PX[m]=W*0.5+(u-0.5)*W*sc+sh*W*0.35*(1-q);PY[m]=gy-h*C.amp*H*e*(0.25+q*1.1);}'
+    'ctx.beginPath();ctx.moveTo(PX[0],PY[0]);for(m=1;m<=M;m++)ctx.lineTo(PX[m],PY[m]);ctx.lineTo(PX[M],H+2);ctx.lineTo(PX[0],H+2);ctx.closePath();ctx.fillStyle=C.bg;ctx.fill();'
+    'ctx.beginPath();ctx.moveTo(PX[0],PY[0]);for(m=1;m<=M;m++)ctx.lineTo(PX[m],PY[m]);ctx.strokeStyle=col(q,0.25+0.7*q);ctx.lineWidth=0.7+1.5*q;ctx.stroke();}}'
+    '_a2uiCK.mount("wt-%%UID%%",{init:init,draw:draw,speed:C.spd,interactive:C.inter,still:1});'
+    '})();'
+)
 
 
 def _render_halftone_wave(b: dict) -> str:
@@ -18912,10 +18930,32 @@ def _render_gradient_mesh_live(b: dict) -> str:
     return _ff_panel(height, bg, _ff_canvas('gm-' + uid) + text + _ff_script(_GRADIENT_MESH_LIVE_JS, uid, cfg))
 
 
+def _render_wave_terrain(b: dict) -> str:
+    uid = _wa_uid(b)[:6]
+    bg = _ff_hex(b.get('background'), '#070a12')
+    pal = _ff_pal(b.get('colors'), _FF_DEFAULT_PAL)
+    n = _ff_pick(b.get('density'), {'low': '22', 'normal': '34', 'high': '48'}, 'normal')
+    spd = _ff_pick(b.get('speed'), {'slow': '0.5', 'normal': '1', 'fast': '1.8'}, 'normal')
+    amp = _ff_pick(b.get('relief'), {'low': '0.18', 'normal': '0.3', 'high': '0.46'}, 'normal')
+    fx = _ff_pick(b.get('scale'), {'fine': '5', 'normal': '3.2', 'broad': '2'}, 'normal')
+    align = _ff_pick(b.get('align'), {'left': 'left', 'center': 'center', 'right': 'right'}, 'left')
+    height = _ff_int(b.get('height'), 380, 200, 900)
+    inter = 'false' if b.get('interactive') is False else 'true'
+    title = b.get('title') or ''
+    eyebrow = b.get('eyebrow') or ''
+    body = b.get('body') or ''
+    bg_rgb = _ff_rgb(bg)
+    cfg = ('{n:' + n + ',spd:' + spd + ',amp:' + amp + ',fx:' + fx
+           + ',pal:["' + '","'.join(pal) + '"],bg:"' + bg + '",inter:' + inter + '}')
+    text = _ff_overlay(align, bg_rgb, pal, eyebrow, title, body)
+    return _ff_panel(height, bg, _ff_canvas('wt-' + uid) + text + _ff_script(_WAVE_TERRAIN_JS, uid, cfg))
+
+
 _RENDERERS["halftone_wave"] = _render_halftone_wave
 _RENDERERS["message_lanes"] = _render_message_lanes
 _RENDERERS["signal_tunnel"] = _render_signal_tunnel
 _RENDERERS["gradient_mesh_live"] = _render_gradient_mesh_live
+_RENDERERS["wave_terrain"] = _render_wave_terrain
 
 
 # ─── computed typography & colour: type_scale / readability_card / drop_cap / contrast_audit ─
