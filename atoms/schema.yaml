@@ -14817,12 +14817,13 @@ blocks:
       conventions.sketch_style. LABEL: give `label` (a plain string, 1..4 lines split on ''\n'', 1..40 characters each, 160 total)
       instead of `prop`/`sketch` for REAL text, drawn by trusted code, never agent-authored markup, so it needs no allowlist at all.
       `size` 8..80 (default 26), `colour` #rrggbb or @name (default @dark), `align` start|middle|end (default middle), `bold` true/false;
-      y is the text''s own baseline (multiple lines stack upward). See conventions.labels in the asset index for worked examples.
+      y is the text''s own baseline (multiple lines stack upward). A label may also carry `anim` (see ANIMATION below) to blink/bob/etc,
+      same generated SMIL as a prop or sketch, never hand-authored markup. See conventions.labels in the asset index for worked examples.
       HOUSE STYLE: dark rounded outlines are applied for you; colour with palette names written @name (dark, light, livery, glass, wood,
       brown, cream, skin, red, yellow ... listed with worked examples under conventions.sketch_style in the asset index) so the sketch matches
       the props and follows day and night; props are 40 to 150 units wide, so draw at that size. ANIMATION: give the item
       anim {kind: sway|bob|spin|pulse|blink|drift, period 0.3..30, amount, cx, cy} for a quick idle motion with no hand-authored
-      SVG at all -- this works on a plain prop item directly, not only a sketch -- or put animateTransform / animate (numbers only; targets
+      SVG at all -- this works on a plain prop or label item directly, not only a sketch -- or put animateTransform / animate (numbers only; targets
       transform, opacity, stroke-width, cx, cy, r and similar, never href or fill; at most 12 per element) inside a group to move a part. Props by id from the
       asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); the strict JSON Schema
       of this block is https://a2uicatalog.ai/catalogue/scene-spec.schema.json.

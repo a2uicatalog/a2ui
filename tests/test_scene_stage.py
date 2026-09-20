@@ -324,9 +324,12 @@ def test_the_mcp_apps_bundle_reuses_a_real_prop_via_use_once_the_worker_attaches
 
 
 @pytest.mark.skipif(NODE is None, reason="node is not installed")
-def test_the_mcp_apps_bundle_animates_a_plain_prop_directly_not_only_a_sketch():
+def test_the_mcp_apps_bundle_animates_a_plain_prop_or_label_directly_not_only_a_sketch():
     """Found live 2026-09-20: a model tried anim on a placed prop, got 'anim only applies to a sketch item', and worked around it by
-    wrapping the prop in a throwaway <use> sketch. anim now applies directly to a plain prop or actor item too."""
+    wrapping the prop in a throwaway <use> sketch. anim now applies directly to a plain prop or actor item too. Extended the same day,
+    also live: a user's own follow-up prompt combined a blinking label with anim and hit 'a label item takes no prop, variant, sketch
+    or anim' -- real text may carry anim too now (same trusted <text>, wrapped in the same generated SMIL); prop/variant/sketch on a
+    label item is still refused."""
     import sys
     import tempfile
     sys.path.insert(0, str(ROOT / "scripts"))
@@ -335,12 +338,17 @@ def test_the_mcp_apps_bundle_animates_a_plain_prop_directly_not_only_a_sketch():
     blocks = [{"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"prop": "wind-turbine", "x": 900, "anim": {"kind": "bob", "amount": 8}}]},
               {"type": "scene_stage", "preset": "wind-farm", "actors_add": [{"prop": "wind-turbine", "motion": "walk", "x0": 100, "x1": 500, "y": 60, "period": 8, "phase": 0, "anim": {"kind": "spin"}}]},
               {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"prop": "wind-turbine", "x": 900}]},
-              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "hi", "anim": {"kind": "bob"}}]}]
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "hi", "anim": {"kind": "blink", "amount": 0.2}}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "hi"}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "hi", "prop": "wind-turbine"}]}]
     with tempfile.TemporaryDirectory() as td:
         d = Path(td) / "d.js"
         d.write_text("global.window = global;\n" + core + "\nvar b = " + json.dumps(blocks) + ";\nconsole.log(JSON.stringify(b.map(function (x) { return renderAtoms([x], {theme: 'light'}); })));\n")
-        prop_bob, actor_spin, no_anim, label_anim = json.loads(subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
+        prop_bob, actor_spin, no_anim, label_blink, label_no_anim, label_with_prop = json.loads(
+            subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
     assert 'type="translate" values="0 0;0 -8;0 0"' in prop_bob and 'href="#a-wind-turbine"' in prop_bob, "a plain prop's anim wraps its <use> in the same generated SMIL a sketch would get"
     assert 'type="rotate" values="0 0 0;360 0 0"' in actor_spin, "an actor's anim layers on top of its own engine motion"
     assert 'href="#a-wind-turbine" transform="translate(900 0) scale(1 1)"' in no_anim, "a prop with no anim renders exactly as before"
-    assert "anim" in label_anim.lower() and "label item takes no prop, variant, sketch or anim" in label_anim, "anim still conflicts with label"
+    assert 'attributeName="opacity" values="1;0.2;1"' in label_blink and ">hi<" in label_blink, "real text may carry anim too, same generated SMIL"
+    assert '<g transform="translate(900 0) scale(1)"><text' in label_no_anim and ">hi<" in label_no_anim, "a label with no anim renders exactly as before"
+    assert "label item takes no prop, variant or sketch" in label_with_prop, "prop/variant/sketch on a label item is still refused"

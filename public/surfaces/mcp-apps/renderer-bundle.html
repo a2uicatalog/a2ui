@@ -24154,7 +24154,8 @@ function validateStage(input, atom) {
     });
   };
   const checkLabel = (it, path) => {
-    if (it.prop !== undefined || it.variant !== undefined || it.sketch !== undefined || it.anim !== undefined) errors.push(`${path}: a label item takes no prop, variant, sketch or anim`);
+    if (it.prop !== undefined || it.variant !== undefined || it.sketch !== undefined) errors.push(`${path}: a label item takes no prop, variant or sketch`);
+    if (it.anim !== undefined) checkAnim(it.anim, path);   // real text may idle-animate too, same generated SMIL as a prop or sketch
     const text = it.label;
     if (typeof text !== 'string' || text.length < 1 || text.length > 160) errors.push(`${path}.label must be a string of 1..160 characters`);
     else {
@@ -24734,7 +24735,7 @@ function buildStage(spec, atom) {
     if (it.label !== undefined) {                              // real text, drawn by trusted code -- never agent-authored markup
       const sc = it.scale === undefined ? 1 : it.scale;
       usedLabel = true;
-      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(sc)})">${labelMarkup(it, P)}</g>`;
+      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(sc)})">${sketchAnim(it.anim, labelMarkup(it, P))}</g>`;
       continue;
     }
     if (it.sketch) {                                            // agent-drawn: validated primitives, origin at the ground point like a prop
@@ -24761,7 +24762,7 @@ function buildStage(spec, atom) {
     const skMarks = a.sketch ? sketchMarkup(a.sketch, a.anim) : '';
     if (a.label !== undefined) usedLabel = true;
     const sc = a.scale === undefined ? 1 : a.scale, dir = a.x1 < a.x0 ? -1 : 1, rep = `dur="${dur}" begin="${begin}" repeatCount="indefinite"`;
-    const inner = (flip) => a.label !== undefined ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${labelMarkup(a, P)}</g>`
+    const inner = (flip) => a.label !== undefined ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${sketchAnim(a.anim, labelMarkup(a, P))}</g>`
       : a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>`
       : a.anim ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${sketchAnim(a.anim, `<use href="#${id}"/>`)}</g>`
       : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
