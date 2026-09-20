@@ -535,12 +535,12 @@ function sketchAnim(an, inner) {
   if (!an) return inner;
   const per = an.period === undefined ? 3 : an.period, cx = an.cx === undefined ? 0 : an.cx, cy = an.cy === undefined ? 0 : an.cy, amt = an.amount;
   const rep = `dur="${fmt2(per)}s" repeatCount="indefinite"`, at = (type, values) => `<animateTransform attributeName="transform" type="${type}" values="${values}" ${rep}/>`;
-  if (an.type === 'sway') { const a = amt === undefined ? 3 : amt; return `<g>${at('rotate', `${fmt2(-a)} ${fmt(cx)} ${fmt(cy)};${fmt2(a)} ${fmt(cx)} ${fmt(cy)};${fmt2(-a)} ${fmt(cx)} ${fmt(cy)}`)}${inner}</g>`; }
-  if (an.type === 'bob') { const a = amt === undefined ? 6 : amt; return `<g>${at('translate', `0 0;0 ${fmt2(-a)};0 0`)}${inner}</g>`; }
-  if (an.type === 'drift') { const a = amt === undefined ? 20 : amt; return `<g>${at('translate', `${fmt2(-a)} 0;${fmt2(a)} 0;${fmt2(-a)} 0`)}${inner}</g>`; }
-  if (an.type === 'spin') return `<g>${at('rotate', `0 ${fmt(cx)} ${fmt(cy)};360 ${fmt(cx)} ${fmt(cy)}`)}${inner}</g>`;
-  if (an.type === 'pulse') { const a = amt === undefined ? 0.08 : amt; return `<g transform="translate(${fmt(cx)} ${fmt(cy)})"><g>${at('scale', `1;${fmt2(1 + a)};1`)}<g transform="translate(${fmt(-cx)} ${fmt(-cy)})">${inner}</g></g></g>`; }
-  if (an.type === 'blink') { const m = amt === undefined ? 0.25 : amt; return `<g><animate attributeName="opacity" values="1;${fmt2(m)};1" ${rep}/>${inner}</g>`; }
+  if (an.kind === 'sway') { const a = amt === undefined ? 3 : amt; return `<g>${at('rotate', `${fmt2(-a)} ${fmt(cx)} ${fmt(cy)};${fmt2(a)} ${fmt(cx)} ${fmt(cy)};${fmt2(-a)} ${fmt(cx)} ${fmt(cy)}`)}${inner}</g>`; }
+  if (an.kind === 'bob') { const a = amt === undefined ? 6 : amt; return `<g>${at('translate', `0 0;0 ${fmt2(-a)};0 0`)}${inner}</g>`; }
+  if (an.kind === 'drift') { const a = amt === undefined ? 20 : amt; return `<g>${at('translate', `${fmt2(-a)} 0;${fmt2(a)} 0;${fmt2(-a)} 0`)}${inner}</g>`; }
+  if (an.kind === 'spin') return `<g>${at('rotate', `0 ${fmt(cx)} ${fmt(cy)};360 ${fmt(cx)} ${fmt(cy)}`)}${inner}</g>`;
+  if (an.kind === 'pulse') { const a = amt === undefined ? 0.08 : amt; return `<g transform="translate(${fmt(cx)} ${fmt(cy)})"><g>${at('scale', `1;${fmt2(1 + a)};1`)}<g transform="translate(${fmt(-cx)} ${fmt(-cy)})">${inner}</g></g></g>`; }
+  if (an.kind === 'blink') { const m = amt === undefined ? 0.25 : amt; return `<g><animate attributeName="opacity" values="1;${fmt2(m)};1" ${rep}/>${inner}</g>`; }
   return inner;
 }
 
@@ -599,12 +599,12 @@ function validateStage(input, atom) {
   const didYouMean = (v) => { const s = typeof v === 'string' ? suggestProps(atom, v) : []; return s.length ? ` Did you mean: ${s.join(', ')}?` : ' See the asset index for valid ids.'; };
   let sketchCount = 0, sketchChars = 0;
   const checkAnim = (an, path) => {
-    if (!only(an, ['type', 'period', 'amount', 'cx', 'cy'], `${path}.anim`)) return;
-    if (!SKETCH_ANIMS.includes(an.type)) { errors.push(`${path}.anim.type must be one of ${SKETCH_ANIMS.join('|')}`); return; }
+    if (!only(an, ['kind', 'period', 'amount', 'cx', 'cy'], `${path}.anim`)) return;   // `kind`, not `type`: platform code treats any nested {type} object as an atom
+    if (!SKETCH_ANIMS.includes(an.kind)) { errors.push(`${path}.anim.kind must be one of ${SKETCH_ANIMS.join('|')}`); return; }
     if (an.period !== undefined && !num(an.period, 0.3, 30)) errors.push(`${path}.anim.period must be 0.3..30 seconds`);
     if (an.amount !== undefined) {
-      const r = SKETCH_ANIM_AMOUNT[an.type];
-      if (!r) errors.push(`${path}.anim.amount does not apply to ${an.type}`); else if (!num(an.amount, r[0], r[1])) errors.push(`${path}.anim.amount for ${an.type} must be ${r[0]}..${r[1]}`);
+      const r = SKETCH_ANIM_AMOUNT[an.kind];
+      if (!r) errors.push(`${path}.anim.amount does not apply to ${an.kind}`); else if (!num(an.amount, r[0], r[1])) errors.push(`${path}.anim.amount for ${an.kind} must be ${r[0]}..${r[1]}`);
     }
     for (const k of ['cx', 'cy']) if (an[k] !== undefined && !num(an[k], -400, 400)) errors.push(`${path}.anim.${k} must be -400..400`);
   };
@@ -1169,7 +1169,7 @@ function buildStage(spec, atom) {
   const sketches = [];
   // house style: the kit's outline defaults, so an unstyled sketch already reads like a prop; explicit attributes on an element override them
   const skStyle = `fill="none" stroke="${P.dark}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
-  const sketchMarkup = (list, anim) => { const marks = list.map((e) => sketchElement(e, P)); sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')), ...(anim ? { anim: anim.type } : {}) }); return sketchAnim(anim, `<g ${skStyle}>${marks.join('')}</g>`); };
+  const sketchMarkup = (list, anim) => { const marks = list.map((e) => sketchElement(e, P)); sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')), ...(anim ? { anim: anim.kind } : {}) }); return sketchAnim(anim, `<g ${skStyle}>${marks.join('')}</g>`); };
   for (const it of spec.scenery) {
     if (it.sketch) {                                            // agent-drawn: validated primitives, origin at the ground point like a prop
       const sc = it.scale === undefined ? 1 : it.scale;

@@ -248,7 +248,7 @@ def test_the_mcp_apps_bundle_draws_house_style_sketches_with_animation_and_refus
     import gen_mcp_apps_bundle as g
     core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", g.build_bundle(), re.S) if "a2ui-core" in b[:300]][0]
     wag = '<g><animateTransform attributeName="transform" type="rotate" values="-14 0 0;14 0 0;-14 0 0" dur="0.5s" repeatCount="indefinite"/><rect x="-4" y="-30" width="8" height="30" fill="@wood"/></g>'
-    blocks = [{"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": [wag], "anim": {"type": "sway", "amount": 4}, "x": 900}]},
+    blocks = [{"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": [wag], "anim": {"kind": "sway", "amount": 4}, "x": 900}]},
               {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": ['<g><animate attributeName="href" values="a;b" dur="1s"/></g>'], "x": 900}]},
               {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": ['<rect fill="@nonsense" width="1" height="1"/>'], "x": 900}]},
               {"type": "scene_stage", "preset": "airfield"}]

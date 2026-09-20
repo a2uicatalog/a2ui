@@ -849,10 +849,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-       "type"
+       "kind"
       ],
       "properties": {
-       "type": {
+       "kind": {
         "enum": [
          "sway",
          "bob",
@@ -1586,10 +1586,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-       "type"
+       "kind"
       ],
       "properties": {
-       "type": {
+       "kind": {
         "enum": [
          "sway",
          "bob",
@@ -2347,10 +2347,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-       "type"
+       "kind"
       ],
       "properties": {
-       "type": {
+       "kind": {
         "enum": [
          "sway",
          "bob",
@@ -3084,10 +3084,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-       "type"
+       "kind"
       ],
       "properties": {
-       "type": {
+       "kind": {
         "enum": [
          "sway",
          "bob",
