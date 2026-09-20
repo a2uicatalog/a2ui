@@ -10,7 +10,7 @@ mcp-apps
 
 | Field | Type |
 |---|---|
-| asset | string. A stable prop id from the asset index (the kit has 569 props, 291 of them stable; preview props are refused). |
+| asset | string. A prop id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); only stable props are listed and preview props are refused. |
 | variant | string (optional). A variant of that prop, for example scrubs, hard-hat or doctor on person-standing. |
 | scale | number (optional, 0.2..5). Default 1. |
 | flip | boolean (optional). Mirror horizontally. |
@@ -23,7 +23,7 @@ mcp-apps
 ```json
 {
   "type": "clipart",
-  "asset": "Asset"
+  "asset": []
 }
 ```
 

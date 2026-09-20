@@ -154,6 +154,7 @@ function verifyRegistry(reg, allow, { skipSvgStructure = false } = {}) {
     if (!allow.categories.includes(e.category)) errs.push(`${tag}: category ${e.category} is not allowed`);
     if (!Array.isArray(e.tags) || e.tags.length < 1 || e.tags.length > 10 || new Set(e.tags).size !== e.tags.length || !e.tags.every((t) => typeof t === 'string' && /^[a-z0-9-]{2,24}$/.test(t))) errs.push(`${tag}: tags must be 1-10 distinct lowercase words`);
     if ('library' in e && e.library !== true) errs.push(`${tag}: library, when present, must be true`);
+    if ('promoted' in e && (e.promoted !== true || e.library !== true)) errs.push(`${tag}: promoted, when present, must be true and only applies to library props`);
     tokenMap(e.tokens, 'tokens');
     for (const [name, map] of Object.entries(e.variants || {})) {
       if (!/^[a-z0-9-]+$/.test(name)) errs.push(`${tag}: bad variant name ${name}`);
@@ -385,14 +386,25 @@ function interpretPrompt(text, layoutsFile) {
 const ENUMS = { time: ['dawn', 'day', 'dusk', 'night'], weather: ['clear', 'cloudy', 'overcast'], setting: ['countryside', 'coast'], mode: [...MODES.aircraft, ...MODES.interior], scene: SCENES };
 const SPEC_VOCAB = { time: ENUMS.time, weather: ENUMS.weather, setting: ENUMS.setting, stage_cameras: MODES.interior, backdrops: STAGE_BACKDROPS, grounds: STAGE_GROUNDS, motions: STAGE_MOTIONS, limits: STAGE_LIMITS };
 
+/** scenery_add / actors_add append to whatever the layout (preset or explicit) provides, so a spec can extend a preset without rewriting it. */
+function addExtras(spec) {
+  const out = { ...spec };
+  for (const [add, base] of [['scenery_add', 'scenery'], ['actors_add', 'actors']]) {
+    if (out[add] === undefined) continue;
+    if (Array.isArray(out[add])) out[base] = (Array.isArray(out[base]) ? out[base] : []).concat(out[add]);
+    delete out[add];
+  }
+  return out;
+}
+
 /** Fill a stage spec's missing layout fields from its named preset. Explicit fields always win. */
 function expandPreset(spec, atom) {
   const L = spec && spec.preset && atom.layouts && atom.layouts.layouts && atom.layouts.layouts[spec.preset];
-  if (!L) return spec;
+  if (!L) return addExtras(spec);
   const out = { ...spec };
   for (const k of ['backdrop', 'ground', 'stage', 'scenery', 'actors']) if (out[k] === undefined) out[k] = JSON.parse(JSON.stringify(L[k]));
   if (out.camera === undefined) out.camera = { mode: L.camera };
-  return out;
+  return addExtras(out);
 }
 
 function validateStage(input, atom) {
@@ -402,6 +414,7 @@ function validateStage(input, atom) {
   const num = (v, a, b) => typeof v === 'number' && Number.isFinite(v) && v >= a && v <= b;
   const Lm = STAGE_LIMITS, rng2 = ([a, b]) => `${a}..${b}`;
   if (input.preset !== undefined && !(atom.layouts && atom.layouts.layouts && atom.layouts.layouts[input.preset])) errors.push(`spec.preset must be one of: ${Object.keys((atom.layouts || {}).layouts || {}).join(', ')}`);
+  for (const k of ['scenery_add', 'actors_add']) if (input[k] !== undefined && !Array.isArray(input[k])) errors.push(`spec.${k} must be an array`);
   const s = expandPreset(input, atom);
   if (!only(s, ['version', 'scene', 'preset', 'title', 'seed', 'theme', 'accent', 'motion', 'camera', 'backdrop', 'ground', 'stage', 'scenery', 'actors'], 'spec')) return { ok: false, errors, spec: null };
   if (s.version !== 1) errors.push('spec.version must be 1');

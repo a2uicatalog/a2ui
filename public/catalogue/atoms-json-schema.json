@@ -19756,6 +19756,24 @@
                 "phase 0..1"
               ]
             }
+          },
+          "scenery_add": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          "actors_add": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array"
+            ]
           }
         },
         "required": [

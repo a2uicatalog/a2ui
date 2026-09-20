@@ -22325,7 +22325,7 @@
       },
       "preset": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). A ready-made place; supplies backdrop, ground, stage, camera, scenery and actors. One of: arctic-station, boardroom-meeting, call-centre, ci-cd-factory, city-skyline, construction-site, container-port, data-centre, desert-oasis, drone-delivery, factory-assembly-line, farm-harvest, fire-station-response, forest-campfire, highway-interchange, hospital-helipad, hospital-ward, hydro-dam, kanban-war-room, keynote-stage, laboratory-bench, library-archive, lighthouse-coast, message-post-office, metro-station, mine-quarry, mission-control, museum-gallery, observatory-night, offshore-platform, open-office, railway-station, restaurant-kitchen, river-ferry, school-classroom, ski-resort, solar-farm, space-station-orbit, street-market, substation-grid, trading-floor, vertical-farm, warehouse-logistics, water-treatment, wind-farm."
+       "description": "string (optional). A ready-made place; supplies backdrop, ground, stage, camera, scenery and actors. PREFER a preset when one fits (it is a tested layout), and extend it with scenery_add / actors_add instead of rewriting it. One of: arctic-station, boardroom-meeting, call-centre, ci-cd-factory, city-skyline, construction-site, container-port, data-centre, desert-oasis, drone-delivery, factory-assembly-line, farm-harvest, fire-station-response, forest-campfire, highway-interchange, hospital-helipad, hospital-ward, hydro-dam, kanban-war-room, keynote-stage, laboratory-bench, library-archive, lighthouse-coast, message-post-office, metro-station, mine-quarry, mission-control, museum-gallery, observatory-night, offshore-platform, open-office, railway-station, restaurant-kitchen, river-ferry, school-classroom, ski-resort, solar-farm, space-station-orbit, street-market, substation-grid, trading-floor, vertical-farm, warehouse-logistics, water-treatment, wind-farm."
       },
       "title": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -22336,7 +22336,7 @@
        "type": "number"
       },
       "theme": {
-       "description": "{time: \"dawn\"|\"day\"|\"dusk\"|\"night\", weather: \"clear\"|\"cloudy\"|\"overcast\", setting: \"countryside\"|\"coast\"} (optional). Default day, clear, countryside. Interiors dim with the time of day.",
+       "description": "{time: \"dawn\"|\"day\"|\"dusk\"|\"night\", weather: \"clear\"|\"cloudy\"|\"overcast\", setting: \"countryside\"|\"coast\"} (optional). Default day, clear, countryside. time: dawn = early morning, day = midday and afternoon, dusk = evening, night. Interiors dim with the time of day.",
        "type": "object"
       },
       "motion": {
@@ -22358,15 +22358,23 @@
        "description": "\"grass\"|\"road\"|\"sand\"|\"snow\"|\"concrete\"|\"water\"|\"none\" (required when there is no preset)."
       },
       "stage": {
-       "description": "{width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset). Scene units: the ground line is y=0 and up is negative.",
+       "description": "{width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset). Scene units: x runs left to right from 0 to stage.width; the ground line is y=0, up is negative and positive y is toward the viewer.",
        "type": "object"
       },
       "scenery": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
-       "description": "array (optional, default empty; max 80) of {prop, x, y?, scale? 0.2..5, flip?, variant?}. Props by id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); the strict JSON Schema of this block is https://a2uicatalog.ai/catalogue/scene-spec.schema.json. The default y is the prop's ground line."
+       "description": "array (optional, default empty; max 80) of {prop, x, y?, scale? 0.2..5, flip?, variant?}. Props by id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); the strict JSON Schema of this block is https://a2uicatalog.ai/catalogue/scene-spec.schema.json. A ground prop needs no y (it stands on y=0); wall items need a negative y and interior ceiling lights use y=-620. Each prop's mount, scale, moves and size are in the asset index (\"conventions\" explains x, y and lanes)."
       },
       "actors": {
-       "description": "array (optional, default empty; max 30) of {prop, motion: \"walk\"|\"ride\"|\"drive\"|\"fly\"|\"hover\"|\"orbit\", x0, x1, y, period 3..120, phase 0..1, scale?, variant?, ry?}. Movers that loop.",
+       "description": "array (optional, default empty; max 30) of {prop, motion: \"walk\"|\"ride\"|\"drive\"|\"fly\"|\"hover\"|\"orbit\", x0, x1, y, period 3..120, phase 0..1, scale?, variant?, ry?}. Movers that loop; y is a lane, 40..120 passes in front of props standing on the ground. A prop's suitable motions are its \"moves\" in the asset index.",
+       "type": "array"
+      },
+      "scenery_add": {
+       "description": "array (optional, max 80 in total with the preset) of the same items as scenery. Appended to the preset's scenery instead of replacing it, e.g. add a cow and a chicken to farm-harvest.",
+       "type": "array"
+      },
+      "actors_add": {
+       "description": "array (optional, max 30 in total with the preset) of the same items as actors. Appended to the preset's actors instead of replacing them.",
        "type": "array"
       }
      },
@@ -22398,7 +22406,7 @@
       },
       "asset": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string. A stable prop id from the asset index (the kit has 569 props, 291 of them stable; preview props are refused)."
+       "description": "string. A prop id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); only stable props are listed and preview props are refused."
       },
       "variant": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
