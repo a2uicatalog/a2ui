@@ -9306,7 +9306,7 @@
       ],
       "description": "An animated, looping pan/zoom SVG scene composed from a provenance-verified prop kit (original MIT artwork, each asset pinned by sha256 and restricted to an allowlist of SVG elements). Give a preset and the layout, backdrop, props and motion come from it; or write the layout in full. Props are referenced by id and never as SVG, so the agent cannot introduce script or external references. For a one-off shape use agent_sketchpad; for a diagram use a chart or d2 atom.",
       "representativeQueries": [
-        "show a animated looping SVG scene of a place (45 ready presets) from verified clipart",
+        "show a animated looping SVG scene of a place (53 ready presets) from verified clipart",
         "an animated, looping pan/zoom svg scene composed from a provenance-verified prop kit (original mit artwork, each asset",
         "render a scene stage"
       ]

@@ -22325,7 +22325,7 @@
       },
       "preset": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional). A ready-made place; supplies backdrop, ground, stage, camera, scenery and actors. PREFER a preset when one fits (it is a tested layout), and extend it with scenery_add / actors_add instead of rewriting it. One of: arctic-station, boardroom-meeting, call-centre, ci-cd-factory, city-skyline, construction-site, container-port, data-centre, desert-oasis, drone-delivery, factory-assembly-line, farm-harvest, fire-station-response, forest-campfire, highway-interchange, hospital-helipad, hospital-ward, hydro-dam, kanban-war-room, keynote-stage, laboratory-bench, library-archive, lighthouse-coast, message-post-office, metro-station, mine-quarry, mission-control, museum-gallery, observatory-night, offshore-platform, open-office, railway-station, restaurant-kitchen, river-ferry, school-classroom, ski-resort, solar-farm, space-station-orbit, street-market, substation-grid, trading-floor, vertical-farm, warehouse-logistics, water-treatment, wind-farm."
+       "description": "string (optional). A ready-made place; supplies backdrop, ground, stage, camera, scenery and actors. PREFER a preset when one fits (it is a tested layout), and extend it with scenery_add / actors_add instead of rewriting it. One of: airfield, arctic-station, bedroom, boardroom-meeting, bus-stop, cafe, call-centre, ci-cd-factory, city-skyline, construction-site, container-port, corner-shop, data-centre, desert-oasis, drone-delivery, factory-assembly-line, farm-harvest, fire-station-response, forest-campfire, highway-interchange, home-kitchen, hospital-helipad, hospital-ward, hydro-dam, kanban-war-room, keynote-stage, laboratory-bench, library-archive, lighthouse-coast, living-room, message-post-office, metro-station, mine-quarry, mission-control, museum-gallery, observatory-night, offshore-platform, open-office, railway-station, restaurant-kitchen, river-ferry, school-classroom, school-yard, ski-resort, solar-farm, space-station-orbit, street-market, substation-grid, trading-floor, vertical-farm, warehouse-logistics, water-treatment, wind-farm."
       },
       "title": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
@@ -22352,10 +22352,10 @@
        "description": "string (optional, #rrggbb). Tints props that take an accent colour."
       },
       "backdrop": {
-       "description": "\"sky-city\"|\"sky-hills\"|\"sky-sea\"|\"sky-mountains\"|\"sky-desert\"|\"sky-arctic\"|\"sky-flat\"|\"space\"|\"interior-office\"|\"interior-industrial\"|\"interior-lab\"|\"interior-civic\"|\"interior-dark\" (required when there is no preset)."
+       "description": "\"sky-city\"|\"sky-hills\"|\"sky-sea\"|\"sky-mountains\"|\"sky-desert\"|\"sky-arctic\"|\"sky-flat\"|\"space\"|\"interior-office\"|\"interior-industrial\"|\"interior-lab\"|\"interior-civic\"|\"interior-home\"|\"interior-dark\" (required when there is no preset)."
       },
       "ground": {
-       "description": "\"grass\"|\"road\"|\"sand\"|\"snow\"|\"concrete\"|\"water\"|\"none\" (required when there is no preset)."
+       "description": "\"grass\"|\"road\"|\"sand\"|\"snow\"|\"concrete\"|\"wood\"|\"water\"|\"none\" (required when there is no preset)."
       },
       "stage": {
        "description": "{width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset). Scene units: x runs left to right from 0 to stage.width; the ground line is y=0, up is negative and positive y is toward the viewer.",

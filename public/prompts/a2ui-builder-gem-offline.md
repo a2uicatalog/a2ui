@@ -901,7 +901,7 @@ does not exist.
 - `layer_stack` — labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow
 - `stack_layer` — one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack
 - `tool_call_card` — structured agent tool call card with status, inputs, result, and latency
-- `scene_stage` — animated looping SVG scene of a place (45 ready presets) from verified clipart
+- `scene_stage` — animated looping SVG scene of a place (53 ready presets) from verified clipart
 - `clipart` — one verified vector clipart image by id
 ## Payload envelope (renderer contract — not in the catalog)
 

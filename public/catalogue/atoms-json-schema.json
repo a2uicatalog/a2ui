@@ -19639,6 +19639,7 @@
               "interior-industrial",
               "interior-lab",
               "interior-civic",
+              "interior-home",
               "interior-dark\" (required when there is no preset)."
             ]
           },
@@ -19650,6 +19651,7 @@
               "sand",
               "snow",
               "concrete",
+              "wood",
               "water",
               "none\" (required when there is no preset)."
             ]

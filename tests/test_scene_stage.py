@@ -261,3 +261,18 @@ def test_the_mcp_apps_bundle_draws_house_style_sketches_with_animation_and_refus
     assert "not an allowed sketch element" in href and 'attributeName="href"' not in href.split("not an allowed")[0]
     assert "not an allowed sketch element" in token
     assert "not embedded" in airfield or "jet-airliner" in airfield or 'class="a2ui-scene"' in airfield, "the airfield preset is known to the bundle"
+
+
+def test_the_scene_stage_atom_lists_are_generated_from_the_kit_not_typed_by_hand():
+    """The preset list once stayed at 45 long after there were 53 (no airfield, no interior-home), so a model was told the preset did not exist.
+    scripts/sync_scene_stage_docs.py rewrites the lists from public/catalogue/scene-spec.schema.json; this fails if they drift."""
+    import sys
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import sync_scene_stage_docs as s
+    text = (ROOT / "atoms" / "schema.yaml").read_text(encoding="utf-8")
+    assert s.synced(text) == text, "run python3 scripts/sync_scene_stage_docs.py"
+    spec = json.loads((ROOT / "public" / "catalogue" / "scene-spec.schema.json").read_text())["properties"]
+    blocks = {b["type"]: b for b in yaml.safe_load(text)["blocks"] if isinstance(b, dict)}
+    f = blocks["scene_stage"]["fields"]
+    assert all(p in f["preset"] for p in spec["preset"]["enum"]) and f"({len(spec['preset']['enum'])} ready presets)" in blocks["scene_stage"]["compact_description"]
+    assert all(b in f["backdrop"] for b in spec["backdrop"]["enum"]) and all(g in f["ground"] for g in spec["ground"]["enum"])
