@@ -24091,7 +24091,16 @@ function validateStage(input, atom) {
     sk.forEach((el, j) => {
       if (typeof el !== 'string' || el.length > Lm.sketch_chars) { errors.push(`${path}.sketch[${j}] must be a string of at most ${Lm.sketch_chars} characters`); return; }
       sketchChars += el.length;
-      if (!sketchElement(el)) errors.push(`${path}.sketch[${j}] is not an allowed sketch element (one element per string; tags ${[...SKETCH_TAGS].join(', ')}; attributes ${[...SKETCH_ATTRS].join(', ')}; values only letters, digits and # . , - ( ) %; no text, style or href)`);
+      if (!sketchElement(el)) {
+        // The single most common mistake: an animate/animateTransform given as its OWN array entry, with nothing to animate. It must be a
+        // CHILD, nested inside the same <g> as the shape it moves, in the SAME string -- name that explicitly rather than let the shape-only
+        // tag/attribute list read as "no animation allowed at all" (found live 2026-09-20: a model concluded SMIL was unsupported entirely).
+        const bareAnimMatch = /^\s*<(animate(?:transform)?)\b/i.exec(el);
+        const hint = bareAnimMatch
+          ? ` THIS ELEMENT is a bare <${bareAnimMatch[1]}> with no shape to move: wrap it and the shape together in one <g>...</g> and give that whole group as a single sketch string, e.g. '<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -20;0 0" dur="1s" repeatCount="indefinite"/><circle cx="0" cy="0" r="10" fill="@red"/></g>'.`
+          : ' animate and animateTransform ARE allowed, nested inside a <g> together with the shape(s) they animate (never as a sketch entry on their own; numeric values only, no href, no fill/style targets).';
+        errors.push(`${path}.sketch[${j}] is not an allowed sketch element (one shape or group per string; shape tags ${[...SKETCH_TAGS].join(', ')}; attributes ${[...SKETCH_ATTRS].join(', ')}; values only letters, digits and # . , - ( ) %; no text, style or href.${hint}`);
+      }
     });
   };
   if (!Array.isArray(s.scenery) || s.scenery.length > Lm.scenery) errors.push(`spec.scenery must be an array of at most ${Lm.scenery} items`);

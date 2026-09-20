@@ -14806,7 +14806,11 @@ blocks:
       Same rules as agent_sketchpad: tags rect, circle, ellipse, line, polyline, polygon, path, g; attributes cx, cy, r, rx, ry, x, y,
       width, height, x1, y1, x2, y2, points, d, fill, stroke, stroke-width, opacity, fill-opacity, stroke-opacity, stroke-linecap,
       stroke-linejoin, transform; values only letters, digits and # . , - ( ) %; no text, style, href or id; at most 8 sketches per
-      scene; an invalid element refuses the scene with an error. Prefer a listed prop when one fits.
+      scene; an invalid element refuses the scene with an error. Prefer a listed prop when one fits. A hand-written animate or
+      animateTransform is NEVER its own sketch array entry (it has nothing to animate alone): nest it as a CHILD inside the same
+      <g> as the shape(s) it moves, in the SAME string, e.g. ''<g><animateTransform attributeName="transform" type="translate"
+      values="0 0;0 -20;0 0" dur="1s" repeatCount="indefinite"/><circle cx="0" cy="0" r="10" fill="@red"/></g>''; see the
+      bouncing-ball example under conventions.sketch_style in the asset index for a full squash-and-stretch built this way.
       HOUSE STYLE: dark rounded outlines are applied for you; colour with palette names written @name (dark, light, livery, glass, wood,
       brown, cream, skin, red, yellow ... listed with worked examples under conventions.sketch_style in the asset index) so the sketch matches
       the props and follows day and night; props are 40 to 150 units wide, so draw at that size. ANIMATION: give the item
