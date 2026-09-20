@@ -100,6 +100,11 @@ CATALOG_META = {
         "Use for article_playbook views that go beyond the source article itself — similar "
         "reading suggestions and background context. Highest-risk tier: resolve only when a "
         "reader explicitly wants model speculation, not by default."),
+    "a2ui-scenes-v1": ("Scenes & clipart",
+        "Use when a surface should SHOW a place or an illustration instead of describing it — an "
+        "animated looping scene (hospital helipad, data centre, wind farm, warehouse, observatory: "
+        "45 ready places) or one piece of verified vector clipart. Props are referenced by id from "
+        "a provenance-checked kit; never write SVG."),
 }
 
 

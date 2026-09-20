@@ -43,7 +43,12 @@ PDFJS_PATH = RENDERER_DIR / "vendor" / "pdfjs" / "pdf.min.mjs"
 QRCODEGEN_PATH = RENDERER_DIR / "vendor" / "qrcodegen" / "qrcodegen.js"
 
 # atoms_schema_snapshot.gs: 124 KB of docs, zero _RENDERERS entries.
-EXCLUDE_FILES = {"atoms_schema_snapshot.gs"}
+# atoms_scene_data.gs (2026-09-20): the scene kit's generated data, ~677 KB raw. Left out of THIS bundle on purpose so the
+# bundle stays inside test_bundle_size_guard's ceiling (nobody has established what a ui:// template this size costs on
+# claude.ai / ChatGPT). scene_stage / clipart still register here (atoms_scene.gs) and answer with a readable "kit data is not
+# bundled on this surface" card; they render fully on Apps Script web and in the Worker. Decide before release whether to
+# raise the guard and include it (see a2ui-private/scene-stage-draft/BRIEF.md).
+EXCLUDE_FILES = {"atoms_schema_snapshot.gs", "atoms_scene_data.gs"}
 
 # Class C — real, unguarded render-time server calls (UrlFetchApp / Vertex /
 # Firestore / CacheService). Everything else in the catalog either has no

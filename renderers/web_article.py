@@ -25424,3 +25424,23 @@ def _render_option_plan_builder(b: dict) -> str:
 _RENDERERS['seat_map'] = _render_seat_map
 _RENDERERS['slot_scheduler'] = _render_slot_scheduler
 _RENDERERS['option_plan_builder'] = _render_option_plan_builder
+
+
+def _render_scene_stage(b: dict) -> str:
+    """Static surface: the scene engine is a JS renderer (mcp-apps / google-apps-script-web), so here the block degrades to a
+    labelled placeholder instead of rendering nothing. Preset and title are escaped: they come from the payload."""
+    title = b.get("title") or b.get("preset") or "Scene"
+    preset = b.get("preset")
+    extra = f' ({_esc(preset)})' if preset and preset != title else ''
+    return ('<figure class="a2ui-scene" style="margin:1rem 0;padding:14px 16px;border:1px dashed #94a3b8;border-radius:8px;color:#475569;'
+            f'font-size:0.9rem;"><strong>{_esc(title)}</strong>{extra}<br>Animated scene: open this page in an MCP Apps or Apps Script surface to play it.</figure>')
+
+
+def _render_clipart(b: dict) -> str:
+    """Static surface: the clipart kit is embedded in the JS renderers only; show the caption text instead of nothing."""
+    text = b.get("alt") or b.get("label") or b.get("asset") or "clipart"
+    return f'<figure class="a2ui-clipart" style="margin:0.5rem 0;display:inline-block;color:#64748b;font-size:0.85rem;">[ {_esc(text)} ]</figure>'
+
+
+_RENDERERS['scene_stage'] = _render_scene_stage
+_RENDERERS['clipart'] = _render_clipart

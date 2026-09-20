@@ -645,3 +645,9 @@ a2ui-booking-v1:
 - seat_map
 - slot_scheduler
 - option_plan_builder
+
+# scene_stage / clipart (scene-atom kit; schema blocks are visibility:private in a2ui-private/private-atoms/, renderer is
+# apps-script-surface/gas-wired-renderer/atoms_scene.gs + atoms_scene_data.gs, generated from the kit's gen_scene_gs.py).
+a2ui-scenes-v1:
+- clipart
+- scene_stage

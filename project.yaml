@@ -189,6 +189,10 @@ known_debt:
                           # for check_core.py's atom-packs.yaml coverage check, not
                           # test_unregistered_atoms_match_declared_debt's GAS-drift
                           # check (which correctly ignores it, see that test's docstring).
+    - scene_stage        # visibility:private (a2ui-private/private-atoms/), added 2026-09-20.
+    - clipart            # Renderers are gas-wired-renderer/atoms_scene.gs (+ atoms_scene_data.gs)
+                          # and stubs in renderers/web_article.py; same reason (a) as
+                          # article_journey. Pack: a2ui-scenes-v1.
 
   frozen_renderer_copies:  # declared 2026-08-14, while fixing form_radio_group's
                         # output binding "catalogue-wide" and needing an honest
