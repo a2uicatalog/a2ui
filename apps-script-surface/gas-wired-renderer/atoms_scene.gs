@@ -1179,6 +1179,11 @@ function buildScene(specIn, atom) {
     s.theme = { time: th.time || 'day', weather: th.weather || 'clear', setting: th.setting || 'countryside' };
     s.motion = { duration: (b.motion && b.motion.duration) || 20 };
     for (k in b) if (Object.prototype.hasOwnProperty.call(b, k) && !Object.prototype.hasOwnProperty.call(s, k) && k !== 'type') s[k] = b[k];
+    if (s.preset === undefined) {                       // a layout written in full: a model may reasonably leave these out
+      if (s.camera === undefined) s.camera = { mode: 'static' };
+      if (s.scenery === undefined) s.scenery = [];
+      if (s.actors === undefined) s.actors = [];
+    }
     return s;
   }
   function figure(svg, title, extra) {

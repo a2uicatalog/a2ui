@@ -94,3 +94,21 @@ def test_the_mcp_apps_bundle_carries_the_engine_but_not_the_data():
     names = {f.name for f in g.renderer_files()}
     assert "atoms_scene.gs" in names and "atoms_scene_data.gs" not in names
     assert "not bundled on this surface" in (GAS / "atoms_scene.gs").read_text()
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not installed")
+def test_a_layout_without_scenery_actors_or_camera_still_renders_and_a_bad_one_says_what_is_wrong():
+    """Found by a blind LLM-style test: a model writing a layout in full may leave out actors/scenery/camera; those default."""
+    js = r"""
+    const vm = require('vm'), fs = require('fs'); const ctx = vm.createContext({}); vm.runInContext('var _RENDERERS = {};', ctx);
+    for (const f of JSON.parse(process.argv[1])) vm.runInContext(fs.readFileSync(f, 'utf8'), ctx);
+    ctx.ok = {type: 'scene_stage', backdrop: 'interior-office', ground: 'concrete', stage: {width: 1400, zoom: 1300, focus_y: -260}, scenery: [{prop: 'desk', x: 600}]};
+    ctx.bare = {type: 'scene_stage', backdrop: 'sky-hills', ground: 'grass', stage: {width: 1400, zoom: 1300, focus_y: -260}};
+    ctx.bad = {type: 'scene_stage', backdrop: 'sky-hills', stage: {width: 1400, zoom: 1300, focus_y: -260}};
+    console.log(JSON.stringify(['ok', 'bare', 'bad'].map(k => vm.runInContext('_RENDERERS.scene_stage(' + k + ')', ctx))));
+    """
+    r = subprocess.run([NODE, "-e", js, json.dumps([str(f) for f in FILES])], capture_output=True, text=True, timeout=120)
+    assert r.returncode == 0, r.stderr
+    ok, bare, bad = json.loads(r.stdout)
+    assert ok.startswith("<figure") and bare.startswith("<figure") and "<animate" in ok
+    assert "spec.ground must be one of" in bad
