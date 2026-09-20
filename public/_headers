@@ -85,3 +85,10 @@
 
 /
   Link: <https://a2uicatalog.ai/index.md>; rel="alternate"; type="text/markdown"
+
+# Diagram Studio MCP App (2026-09-20): the view is fetched by the MCP Worker, and its D2 engine (a gzip, since Cloudflare static
+# assets cap one file at 25 MiB) is fetched by the view itself from inside a host's sandboxed iframe, a different origin, so it
+# needs CORS. Public, unauthenticated, read-only static files.
+/surfaces/diagram-studio/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
