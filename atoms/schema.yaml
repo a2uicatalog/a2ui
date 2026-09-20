@@ -14800,7 +14800,7 @@ blocks:
     stage: '{width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset).
       Scene units: x runs left to right from 0 to stage.width; the ground line is y=0,
       up is negative and positive y is toward the viewer.'
-    scenery: 'array (optional, default empty; max 80) of {prop, x, y?, scale? 0.2..5, flip?, variant?}, or of {sketch, x, y?, scale?, flip?}
+    scenery: 'array (optional, default empty; max 80) of {prop, x, y?, scale? 0.2..5, flip?, variant?, anim?}, or of {sketch, x, y?, scale?, flip?, anim?}
       when no prop fits, or of {label, x, y?, scale?, size?, colour?, align?, bold?} for real text (see LABEL below). THE ESCAPE HATCH:
       give `sketch` instead of `prop`, an array of 1..40 SVG element strings
       (one element per string, origin at the ground point, up negative), e.g. ["<rect x=\"-30\" y=\"-24\" width=\"60\" height=\"24\" fill=\"#a9784a\"/>"].
@@ -14821,7 +14821,8 @@ blocks:
       HOUSE STYLE: dark rounded outlines are applied for you; colour with palette names written @name (dark, light, livery, glass, wood,
       brown, cream, skin, red, yellow ... listed with worked examples under conventions.sketch_style in the asset index) so the sketch matches
       the props and follows day and night; props are 40 to 150 units wide, so draw at that size. ANIMATION: give the item
-      anim {kind: sway|bob|spin|pulse|blink|drift, period 0.3..30, amount, cx, cy}, or put animateTransform / animate (numbers only; targets
+      anim {kind: sway|bob|spin|pulse|blink|drift, period 0.3..30, amount, cx, cy} for a quick idle motion with no hand-authored
+      SVG at all -- this works on a plain prop item directly, not only a sketch -- or put animateTransform / animate (numbers only; targets
       transform, opacity, stroke-width, cx, cy, r and similar, never href or fill; at most 12 per element) inside a group to move a part. Props by id from the
       asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); the strict JSON Schema
       of this block is https://a2uicatalog.ai/catalogue/scene-spec.schema.json.
@@ -14829,9 +14830,10 @@ blocks:
       interior ceiling lights use y=-620. Each prop''s mount, scale, moves and size are in the asset
       index ("conventions" explains x, y and lanes).'
     actors: 'array (optional, default empty; max 30) of {prop, motion: "walk"|"ride"|"drive"|"fly"|"hover"|"orbit"|"takeoff"|"land", x0, x1, y,
-      period 3..120, phase 0..1, scale?, variant?, ry?, size?, colour?, align?, bold?}. Movers that loop; y is a lane, 40..120
+      period 3..120, phase 0..1, scale?, variant?, ry?, anim?, size?, colour?, align?, bold?}. Movers that loop; y is a lane, 40..120
       passes in front of props standing on the ground. takeoff rolls a plane along the ground, rotates and climbs away (ry = climb
-      height, default 260); land descends, flares and rolls out. A sketch (see scenery''s field docs, including REUSE) or a label
+      height, default 260); land descends, flares and rolls out. anim (see scenery''s ANIMATION docs) layers an idle motion on top
+      of the actor''s own engine motion. A sketch (see scenery''s field docs, including REUSE) or a label
       (see scenery''s field docs) can be an actor too, moving on the same motion, instead of prop. A prop''s suitable motions are
       its "moves" in the asset index.'
     scenery_add: 'array (optional, max 80 in total with the preset) of the same items as scenery. Appended to

@@ -24175,8 +24175,10 @@ function validateStage(input, atom) {
     const p = (isSketch || isLabel) ? null : atom.byId[it.prop];
     if (isSketch) checkSketch(it, `spec.scenery[${i}]`);
     else if (isLabel) checkLabel(it, `spec.scenery[${i}]`);
-    else if (it.anim !== undefined) errors.push(`spec.scenery[${i}]: anim only applies to a sketch item`);
-    else if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch or label).${didYouMean(it.prop)}`);
+    else {
+      if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch or label).${didYouMean(it.prop)}`);
+      if (it.anim !== undefined) checkAnim(it.anim, `spec.scenery[${i}]`);   // a plain prop may carry anim too, for a quick idle motion with no hand-authored SMIL
+    }
     if (!num(it.x, ...Lm.scenery_x)) errors.push(`spec.scenery[${i}].x must be ${rng2(Lm.scenery_x)}`);
     if (it.y !== undefined && !num(it.y, ...Lm.scenery_y)) errors.push(`spec.scenery[${i}].y must be ${rng2(Lm.scenery_y)}`);
     if (it.scale !== undefined && !num(it.scale, ...Lm.scale)) errors.push(`spec.scenery[${i}].scale must be ${rng2(Lm.scale)}`);
@@ -24190,8 +24192,10 @@ function validateStage(input, atom) {
     const p = (isSketch || isLabel) ? null : atom.byId[a.prop];
     if (isSketch) checkSketch(a, `spec.actors[${i}]`);
     else if (isLabel) checkLabel(a, `spec.actors[${i}]`);
-    else if (a.anim !== undefined) errors.push(`spec.actors[${i}]: anim only applies to a sketch item`);
-    else if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch or label).${didYouMean(a.prop)}`);
+    else {
+      if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch or label).${didYouMean(a.prop)}`);
+      if (a.anim !== undefined) checkAnim(a.anim, `spec.actors[${i}]`);   // an idle motion layered on top of the actor's own engine motion (walk/hover/...)
+    }
     if (!STAGE_MOTIONS.includes(a.motion)) errors.push(`spec.actors[${i}].motion must be one of ${STAGE_MOTIONS.join('|')}`);
     for (const k of ['x0', 'x1']) if (!num(a[k], ...Lm.actor_x)) errors.push(`spec.actors[${i}].${k} must be ${rng2(Lm.actor_x)}`);
     if (!num(a.y, ...Lm.actor_y)) errors.push(`spec.actors[${i}].y must be ${rng2(Lm.actor_y)}`);
@@ -24742,7 +24746,11 @@ function buildStage(spec, atom) {
     const y = it.y !== undefined ? it.y : a.base_y !== undefined ? a.base_y : 0;
     const sc = it.scale === undefined ? 1 : it.scale, sx = it.flip ? -sc : sc;
     if (it.prop === 'ceiling-light') cones += `<path d="M${fmt(it.x - 14)},${fmt(y)} L${fmt(it.x - 170)},0 L${fmt(it.x + 170)},0 L${fmt(it.x + 14)},${fmt(y)} Z" fill="${P.window}" fill-opacity="${glow}"/>`;
-    scenery += `<use href="#${defOf(it.prop, it.variant)}" transform="translate(${fmt(it.x)} ${fmt(y)}) scale(${fmt2(sx)} ${fmt2(sc)})"/>`;
+    if (it.anim) {                                             // a plain prop may idle-animate too, no throwaway sketch wrapper needed
+      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(y)}) scale(${fmt2(sx)} ${fmt2(sc)})">${sketchAnim(it.anim, `<use href="#${defOf(it.prop, it.variant)}"/>`)}</g>`;
+    } else {
+      scenery += `<use href="#${defOf(it.prop, it.variant)}" transform="translate(${fmt(it.x)} ${fmt(y)}) scale(${fmt2(sx)} ${fmt2(sc)})"/>`;
+    }
   }
   if (cones) procedural.push('light cones');
 
@@ -24754,7 +24762,9 @@ function buildStage(spec, atom) {
     if (a.label !== undefined) usedLabel = true;
     const sc = a.scale === undefined ? 1 : a.scale, dir = a.x1 < a.x0 ? -1 : 1, rep = `dur="${dur}" begin="${begin}" repeatCount="indefinite"`;
     const inner = (flip) => a.label !== undefined ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${labelMarkup(a, P)}</g>`
-      : a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>` : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
+      : a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>`
+      : a.anim ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${sketchAnim(a.anim, `<use href="#${id}"/>`)}</g>`
+      : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
     if (a.motion === 'walk') {
       actors += `<g><animateTransform attributeName="transform" type="translate" values="${fmt(a.x0)} ${fmt(a.y)};${fmt(a.x1)} ${fmt(a.y)};${fmt(a.x0)} ${fmt(a.y)}" keyTimes="0;0.5;1" ${rep}/>` +
         `<g><animateTransform attributeName="transform" type="scale" values="${dir} 1;${-dir} 1" keyTimes="0;0.5" calcMode="discrete" ${rep}/>${inner(1)}</g></g>`;

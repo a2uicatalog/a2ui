@@ -19701,6 +19701,9 @@
                 },
                 "variant": {
                   "type": "string"
+                },
+                "anim": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false,
@@ -19744,6 +19747,9 @@
                   "type": "string"
                 },
                 "ry": {
+                  "type": "string"
+                },
+                "anim": {
                   "type": "string"
                 },
                 "size": {

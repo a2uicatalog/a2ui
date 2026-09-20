@@ -321,3 +321,26 @@ def test_the_mcp_apps_bundle_reuses_a_real_prop_via_use_once_the_worker_attaches
         no_attach, with_attach = json.loads(subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
     assert "border:1px solid #fca5a5" in no_attach, "without attachment, a non-core reused prop is refused readably, same as a normal prop reference"
     assert 'id="a-cow"' in with_attach and 'href="#a-cow"' in with_attach and "border:1px solid #fca5a5" not in with_attach
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not installed")
+def test_the_mcp_apps_bundle_animates_a_plain_prop_directly_not_only_a_sketch():
+    """Found live 2026-09-20: a model tried anim on a placed prop, got 'anim only applies to a sketch item', and worked around it by
+    wrapping the prop in a throwaway <use> sketch. anim now applies directly to a plain prop or actor item too."""
+    import sys
+    import tempfile
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle as g
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", g.build_bundle(), re.S) if "a2ui-core" in b[:300]][0]
+    blocks = [{"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"prop": "wind-turbine", "x": 900, "anim": {"kind": "bob", "amount": 8}}]},
+              {"type": "scene_stage", "preset": "wind-farm", "actors_add": [{"prop": "wind-turbine", "motion": "walk", "x0": 100, "x1": 500, "y": 60, "period": 8, "phase": 0, "anim": {"kind": "spin"}}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"prop": "wind-turbine", "x": 900}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "hi", "anim": {"kind": "bob"}}]}]
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core + "\nvar b = " + json.dumps(blocks) + ";\nconsole.log(JSON.stringify(b.map(function (x) { return renderAtoms([x], {theme: 'light'}); })));\n")
+        prop_bob, actor_spin, no_anim, label_anim = json.loads(subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
+    assert 'type="translate" values="0 0;0 -8;0 0"' in prop_bob and 'href="#a-wind-turbine"' in prop_bob, "a plain prop's anim wraps its <use> in the same generated SMIL a sketch would get"
+    assert 'type="rotate" values="0 0 0;360 0 0"' in actor_spin, "an actor's anim layers on top of its own engine motion"
+    assert 'href="#a-wind-turbine" transform="translate(900 0) scale(1 1)"' in no_anim, "a prop with no anim renders exactly as before"
+    assert "anim" in label_anim.lower() and "label item takes no prop, variant, sketch or anim" in label_anim, "anim still conflicts with label"
