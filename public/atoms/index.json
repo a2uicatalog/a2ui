@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 520,
+ "atomCount": 522,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -5082,6 +5082,20 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "scene_stage",
+   "compact": "animated looping SVG scene of a place (45 ready presets) from verified clipart",
+   "surfaces": [
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "clipart",
+   "compact": "one verified vector clipart image by id",
+   "surfaces": [
     "mcp-apps"
    ]
   }

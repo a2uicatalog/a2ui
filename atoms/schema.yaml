@@ -14749,3 +14749,104 @@ blocks:
       placeholder, wired to a StringTemplate primitive per
       spec/interaction-record-v0.1.md.'
   source: *id001
+- type: scene_stage
+  description: An animated, looping pan/zoom SVG scene composed from a provenance-verified
+    prop kit (original MIT artwork, each asset pinned by sha256 and restricted to
+    an allowlist of SVG elements). Give a preset and the layout, backdrop, props
+    and motion come from it; or write the layout in full. Props are referenced by
+    id and never as SVG, so the agent cannot introduce script or external references.
+    For a one-off shape use agent_sketchpad; for a diagram use a chart or d2 atom.
+  compact_description: animated looping SVG scene of a place (45 ready presets) from verified clipart
+  surfaces:
+    works_on:
+    - mcp-apps
+    degraded_on:
+    - surface: google-apps-script-web
+      note: The renderer source is in the repo, but the deployed Apps Script project
+        predates the scene kit (it is at the 200-version cap), so a ?p= link there
+        does not draw the scene until that project is migrated.
+    - surface: web
+      note: The Python static renderer (renderers/web_article.py) cannot run the engine;
+        it shows the title and a link instead. Use mcp-apps or google-apps-script-web
+        for the animation.
+    - surface: google-meet-stage
+      note: Animated SVG (SMIL) should play, but this has not been verified on the
+        Meet stage runtime.
+    - surface: google-chat
+      note: No inline SVG in Chat cards; falls back to a still image rendered by
+        the headless-Chromium fallback.
+    - surface: pdf
+      note: Renders the first frame as a still image.
+    incompatible_on:
+    - surface: email
+      reason: Mail clients strip inline SVG and SMIL, and a hosted still image is
+        needed for the fallback.
+  fields:
+    preset: 'string (optional). A ready-made place; supplies backdrop, ground, stage,
+      camera, scenery and actors. One of: arctic-station, boardroom-meeting, call-centre, ci-cd-factory, city-skyline, construction-site, container-port, data-centre, desert-oasis, drone-delivery, factory-assembly-line, farm-harvest, fire-station-response, forest-campfire, highway-interchange, hospital-helipad, hospital-ward, hydro-dam, kanban-war-room, keynote-stage, laboratory-bench, library-archive, lighthouse-coast, message-post-office, metro-station, mine-quarry, mission-control, museum-gallery, observatory-night, offshore-platform, open-office, railway-station, restaurant-kitchen, river-ferry, school-classroom, ski-resort, solar-farm, space-station-orbit, street-market, substation-grid, trading-floor, vertical-farm, warehouse-logistics, water-treatment, wind-farm.'
+    title: string (optional, max 80 chars). Accessible name and caption. Default is the preset id.
+    seed: integer (optional, 0..4294967295). Varies cloud and star placement. Default derives from the preset.
+    theme: '{time: "dawn"|"day"|"dusk"|"night", weather: "clear"|"cloudy"|"overcast",
+      setting: "countryside"|"coast"} (optional). Default day, clear, countryside.
+      Interiors dim with the time of day.'
+    motion: '{duration: number 6..40} (optional, seconds per loop). Default 20.'
+    camera: '{mode: "static"|"pan"|"push-in"} (optional). The preset has a default; without a preset the default is static.'
+    accent: string (optional, #rrggbb). Tints props that take an accent colour.
+    backdrop: '"sky-city"|"sky-hills"|"sky-sea"|"sky-mountains"|"sky-desert"|"sky-arctic"|"sky-flat"|"space"|"interior-office"|"interior-industrial"|"interior-lab"|"interior-civic"|"interior-dark"
+      (required when there is no preset).'
+    ground: '"grass"|"road"|"sand"|"snow"|"concrete"|"water"|"none" (required when there is no preset).'
+    stage: '{width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset).
+      Scene units: the ground line is y=0 and up is negative.'
+    scenery: 'array (optional, default empty; max 80) of {prop, x, y?, scale? 0.2..5, flip?, variant?}. Props by id from the
+      asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); the strict JSON Schema
+      of this block is https://a2uicatalog.ai/catalogue/scene-spec.schema.json.
+      The default y is the prop''s ground line.'
+    actors: 'array (optional, default empty; max 30) of {prop, motion: "walk"|"ride"|"drive"|"fly"|"hover"|"orbit", x0, x1, y,
+      period 3..120, phase 0..1, scale?, variant?, ry?}. Movers that loop.'
+  source:
+    name: a2uicatalog scene kit
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: clipart
+  description: One piece of verified vector clipart from the scene kit, by id, drawn
+    at its own size with an optional variant (for example a person in a hard hat),
+    scale and flip. Themeable colours, original MIT artwork, no external references.
+    Use it as an illustration inside an article, card or slide; use scene_stage
+    when several props should be composed into a moving picture.
+  compact_description: one verified vector clipart image by id
+  surfaces:
+    works_on:
+    - mcp-apps
+    degraded_on:
+    - surface: google-apps-script-web
+      note: The renderer source is in the repo, but the deployed Apps Script project
+        predates the scene kit (it is at the 200-version cap), so a ?p= link there
+        does not draw the scene until that project is migrated.
+    - surface: web
+      note: The Python static renderer (renderers/web_article.py) does not embed the kit;
+        it shows the label or alt text instead.
+    - surface: google-meet-stage
+      note: Inline SVG should render, but this has not been verified on the Meet
+        stage runtime.
+    - surface: google-chat
+      note: No inline SVG in Chat cards; falls back to a still image rendered by
+        the headless-Chromium fallback.
+    - surface: pdf
+      note: Renders as a still image.
+    incompatible_on:
+    - surface: email
+      reason: Mail clients strip inline SVG and SMIL, and a hosted still image is
+        needed for the fallback.
+  fields:
+    asset: 'string. A stable prop id from the asset index (the kit has 569 props,
+      291 of them stable; preview props are refused).'
+    variant: 'string (optional). A variant of that prop, for example scrubs, hard-hat or doctor on person-standing.'
+    scale: number (optional, 0.2..5). Default 1.
+    flip: boolean (optional). Mirror horizontally.
+    time: '"dawn"|"day"|"dusk"|"night" (optional). Palette the artwork is drawn in. Default day.'
+    label: string (optional). Caption under the image.
+    alt: string (optional). Accessible name. Default is the prop name.
+  source:
+    name: a2uicatalog scene kit
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT

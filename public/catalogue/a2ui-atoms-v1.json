@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (520 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (522 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -22307,6 +22307,130 @@
    "x-surfaces": [
     "web",
     "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  "scene_stage": {
+   "type": "object",
+   "description": "An animated, looping pan/zoom SVG scene composed from a provenance-verified prop kit (original MIT artwork, each asset pinned by sha256 and restricted to an allowlist of SVG elements). Give a preset and the layout, backdrop, props and motion come from it; or write the layout in full. Props are referenced by id and never as SVG, so the agent cannot introduce script or external references. For a one-off shape use agent_sketchpad; for a diagram use a chart or d2 atom.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "scene_stage"
+      },
+      "preset": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). A ready-made place; supplies backdrop, ground, stage, camera, scenery and actors. One of: arctic-station, boardroom-meeting, call-centre, ci-cd-factory, city-skyline, construction-site, container-port, data-centre, desert-oasis, drone-delivery, factory-assembly-line, farm-harvest, fire-station-response, forest-campfire, highway-interchange, hospital-helipad, hospital-ward, hydro-dam, kanban-war-room, keynote-stage, laboratory-bench, library-archive, lighthouse-coast, message-post-office, metro-station, mine-quarry, mission-control, museum-gallery, observatory-night, offshore-platform, open-office, railway-station, restaurant-kitchen, river-ferry, school-classroom, ski-resort, solar-farm, space-station-orbit, street-market, substation-grid, trading-floor, vertical-farm, warehouse-logistics, water-treatment, wind-farm."
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, max 80 chars). Accessible name and caption. Default is the preset id."
+      },
+      "seed": {
+       "description": "integer (optional, 0..4294967295). Varies cloud and star placement. Default derives from the preset.",
+       "type": "number"
+      },
+      "theme": {
+       "description": "{time: \"dawn\"|\"day\"|\"dusk\"|\"night\", weather: \"clear\"|\"cloudy\"|\"overcast\", setting: \"countryside\"|\"coast\"} (optional). Default day, clear, countryside. Interiors dim with the time of day.",
+       "type": "object"
+      },
+      "motion": {
+       "description": "{duration: number 6..40} (optional, seconds per loop). Default 20.",
+       "type": "object"
+      },
+      "camera": {
+       "description": "{mode: \"static\"|\"pan\"|\"push-in\"} (optional). The preset has a default; without a preset the default is static.",
+       "type": "object"
+      },
+      "accent": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional,"
+      },
+      "backdrop": {
+       "description": "\"sky-city\"|\"sky-hills\"|\"sky-sea\"|\"sky-mountains\"|\"sky-desert\"|\"sky-arctic\"|\"sky-flat\"|\"space\"|\"interior-office\"|\"interior-industrial\"|\"interior-lab\"|\"interior-civic\"|\"interior-dark\" (required when there is no preset)."
+      },
+      "ground": {
+       "description": "\"grass\"|\"road\"|\"sand\"|\"snow\"|\"concrete\"|\"water\"|\"none\" (required when there is no preset)."
+      },
+      "stage": {
+       "description": "{width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset). Scene units: the ground line is y=0 and up is negative.",
+       "type": "object"
+      },
+      "scenery": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (optional, default empty; max 80) of {prop, x, y?, scale? 0.2..5, flip?, variant?}. Props by id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); the strict JSON Schema of this block is https://a2uicatalog.ai/catalogue/scene-spec.schema.json. The default y is the prop's ground line."
+      },
+      "actors": {
+       "description": "array (optional, default empty; max 30) of {prop, motion: \"walk\"|\"ride\"|\"drive\"|\"fly\"|\"hover\"|\"orbit\", x0, x1, y, period 3..120, phase 0..1, scale?, variant?, ry?}. Movers that loop.",
+       "type": "array"
+      }
+     },
+     "required": [
+      "component",
+      "backdrop",
+      "ground",
+      "stage"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "mcp-apps"
+   ]
+  },
+  "clipart": {
+   "type": "object",
+   "description": "One piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for example a person in a hard hat), scale and flip. Themeable colours, original MIT artwork, no external references. Use it as an illustration inside an article, card or slide; use scene_stage when several props should be composed into a moving picture.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "clipart"
+      },
+      "asset": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string. A stable prop id from the asset index (the kit has 569 props, 291 of them stable; preview props are refused)."
+      },
+      "variant": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). A variant of that prop, for example scrubs, hard-hat or doctor on person-standing."
+      },
+      "scale": {
+       "description": "number (optional, 0.2..5). Default 1.",
+       "type": "number"
+      },
+      "flip": {
+       "description": "boolean (optional). Mirror horizontally.",
+       "type": "boolean"
+      },
+      "time": {
+       "description": "\"dawn\"|\"day\"|\"dusk\"|\"night\" (optional). Palette the artwork is drawn in. Default day."
+      },
+      "label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Caption under the image."
+      },
+      "alt": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Accessible name. Default is the prop name."
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
     "mcp-apps"
    ]
   }

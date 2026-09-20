@@ -7,9 +7,20 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Try it — A2UI Atomic Catalog</title>
-  <meta name="description" content="Type a plain-English UI request and watch the free-tier Cloudflare Workers AI router pick real atoms from the A2UI catalog.">
-  <meta name="robots" content="noindex, nofollow">
+  <title>Clipart — A2UI Atomic Catalog</title>
+  <meta name="description" content="One piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for example a person in a hard hat), scale and flip. Themeable colours, original MIT artwork, no external references. Use it as an illustration inside an article, card or slide; use scene_stage when several props should be composed into a moving picture.">
+  <link rel="alternate" type="text/markdown" href="/atoms/clipart.md">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
+      { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
+      { "@type": "ListItem", "position": 3, "name": "Clipart", "item": "https://a2uicatalog.ai/atoms/clipart/" }
+    ]
+  }
+  </script>
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -140,35 +151,12 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .deploy-box a{display:inline-block;margin-top:12px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
 </style>
 
-  
-<style>
-.try-form{margin:20px 0 8px}
-#try-prompt{width:100%;min-height:84px;resize:vertical;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;font:inherit;font-size:15px;color:var(--text);outline:none;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
-#try-prompt:focus{border-color:var(--accent);box-shadow:var(--glow)}
-.try-row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
-#try-submit{font:inherit;font-size:14px;font-weight:700;color:var(--accent-contrast);background:var(--accent);border:none;border-radius:9px;padding:11px 22px;cursor:pointer;letter-spacing:.02em;transition:filter .15s,box-shadow .15s}
-#try-submit:hover{filter:brightness(1.08);box-shadow:var(--glow)}
-#try-submit:disabled{opacity:.55;cursor:default;filter:none;box-shadow:none}
-.try-render-btn{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft-bg);border:none;border-radius:8px;padding:8px 16px;cursor:pointer;letter-spacing:.02em;margin-bottom:14px}
-.try-render-btn:hover{filter:brightness(1.05)}
-.try-hint{font-size:12px;color:var(--muted)}
-.try-examples{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 26px}
-.try-example{font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s}
-.try-example:hover{border-color:var(--accent);color:var(--accent)}
-#try-result{margin-top:8px}
-.try-status{font-size:13px;color:var(--muted);margin-bottom:12px}
-.try-status.err{color:var(--negative)}
-.try-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.try-chip{font-size:13px;font-weight:650;padding:5px 13px;border-radius:8px;background:var(--accent-soft-bg);color:var(--accent);text-decoration:none}
-.try-chip:hover{filter:brightness(1.05)}
-.try-empty{color:var(--muted);font-size:14px;padding:20px 0}
-</style>
 </head>
 <body>
   <header class="site-header"><div class="hdr-in">
     <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
-      <a href="/">Atoms</a>
+      <a href="/" aria-current="page">Atoms</a>
       
       <a href="/surfaces/mcp-apps">MCP Playground</a>
       <a href="/docs">Docs</a>
@@ -181,31 +169,76 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   </div></header>
   <div class="wrap">
   <nav class="crumb">
-    <a href="/">A2UI Catalog</a> / try
+    <a href="/">A2UI Catalog</a> /
+    <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
+    atoms / clipart
   </nav>
 
-  <h1>Try it</h1>
-  <p class="desc">Type what you want in plain English. A free-tier Cloudflare Workers AI model
-  (embedding-based, no chat call) routes it against this catalog's 522 atoms
-  and shows you which ones matched — live, against the real deployed catalog.</p>
+  <h1>Clipart</h1>
+  <p class="desc">One piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for example a person in a hard hat), scale and flip. Themeable colours, original MIT artwork, no external references. Use it as an illustration inside an article, card or slide; use scene_stage when several props should be composed into a moving picture.</p>
 
-  <form class="try-form" id="try-form" toolname="route_ui_request"
-        tooldescription="Given a plain-English description of a UI need, return the A2UI atoms from this 522-atom catalog that best match it — embedding-based routing against the real deployed catalog, free tier 20 requests/day per IP.">
-    <textarea id="try-prompt" placeholder="e.g. a status indicator badge" maxlength="500"></textarea>
-    <div class="try-row">
-      <button id="try-submit" type="submit">Route it →</button>
-      <span class="try-hint">Free tier — 20 requests/day per IP</span>
-    </div>
-  </form>
-  <div class="try-examples" id="try-examples">
-    <button class="try-example" type="button">a status indicator badge</button>
-    <button class="try-example" type="button">setup wizard for new users</button>
-    <button class="try-example" type="button">live flight tracker for a specific area</button>
-    <button class="try-example" type="button">a box to hold extra information</button>
-    <button class="try-example" type="button">play me a song</button>
+  <div class="section">
+    <div class="label">Surfaces</div>
+    <span class="badge bs">mcp-apps</span>
   </div>
 
-  <div id="try-result"><p class="try-empty">Results appear here.</p></div>
+  
+<div class="section">
+  <div class="label">Degraded on</div>
+  <table><thead><tr><th>Surface</th><th>Note</th></tr></thead><tbody><tr><td>google-apps-script-web</td><td>The renderer source is in the repo, but the deployed Apps Script project predates the scene kit (it is at the 200-version cap), so a ?p= link there does not draw the scene until that project is migrated.</td></tr><tr><td>web</td><td>The Python static renderer (renderers/web_article.py) does not embed the kit; it shows the label or alt text instead.</td></tr><tr><td>google-meet-stage</td><td>Inline SVG should render, but this has not been verified on the Meet stage runtime.</td></tr><tr><td>google-chat</td><td>No inline SVG in Chat cards; falls back to a still image rendered by the headless-Chromium fallback.</td></tr><tr><td>pdf</td><td>Renders as a still image.</td></tr></tbody></table>
+</div>
+
+  
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of clipart"><figure class="a2ui-clipart" style="margin:0.5rem 0;display:inline-block;color:#64748b;font-size:0.85rem;">[ A wind turbine ]</figure></div>
+</div>
+
+  
+
+  <div class="section">
+    <div class="label">Fields</div>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>asset</td><td>string. A stable prop id from the asset index (the kit has 569 props, 291 of them stable; preview props are refused).</td><td>required</td></tr><tr><td>variant</td><td>string. A variant of that prop, for example scrubs, hard-hat or doctor on person-standing.</td><td>optional</td></tr><tr><td>scale</td><td>number (optional, 0.2..5). Default 1.</td><td>optional</td></tr><tr><td>flip</td><td>boolean. Mirror horizontally.</td><td>optional</td></tr><tr><td>time</td><td>"dawn"|"day"|"dusk"|"night". Palette the artwork is drawn in. Default day.</td><td>optional</td></tr><tr><td>label</td><td>string. Caption under the image.</td><td>optional</td></tr><tr><td>alt</td><td>string. Accessible name. Default is the prop name.</td><td>optional</td></tr></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="label">Example payload</div>
+    <pre><code>{
+  "type": "clipart",
+  "asset": "Asset"
+}</code></pre>
+  </div>
+
+  <div class="section">
+    <div class="label">ARD catalog entry</div>
+    <pre><code>{
+  "identifier": "urn:air:a2uicatalog.ai:atom:clipart",
+  "displayName": "Clipart",
+  "type": "application/vnd.a2ui.atom+json",
+  "url": "https://a2uicatalog.ai/atoms/clipart",
+  "capabilities": [
+    "mcp-apps"
+  ],
+  "description": "One piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for example a person in a hard hat), scale and flip. Themeable colours, original MIT artwork, no external references. Use it as an illustration inside an article, card or slide; use scene_stage when several props should be composed into a moving picture.",
+  "representativeQueries": [
+    "show a one verified vector clipart image by id",
+    "one piece of verified vector clipart from the scene kit, by id, drawn at its own size with an option",
+    "render a clipart"
+  ]
+}</code></pre>
+  </div>
+
+  <a class="back" href="/.well-known/ai-catalog.json">← Full ARD catalog</a>
+  
+
+  <div class="deploy-box">
+    <div class="label">Deploy your own Google Apps Script renderer</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px;">The renderer is an open-source Google Apps Script web app. Deploy your own instance in 4 commands — you own the URL, no dependency on the demo endpoint.</p>
+    <pre style="margin:0;font-size:12px;"><code>git clone https://github.com/a2uicatalog/a2ui
+cd a2ui/apps-script-surface/gas-wired-renderer
+clasp push &amp;&amp; clasp deploy</code></pre>
+    <a href="/renderer">Full deploy guide →</a>
+  </div>
 
   <footer>
     <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a> · Maintained by <a href="https://www.linkedin.com/in/curtiskrygier" rel="me author">Curtis Krygier</a></span>
@@ -250,115 +283,6 @@ document.addEventListener('click',function(e){
   });
 })();
 </script>
-  <script>
-(function(){
-  var form = document.getElementById('try-form');
-  var input = document.getElementById('try-prompt');
-  var submit = document.getElementById('try-submit');
-  var result = document.getElementById('try-result');
-  var examples = document.getElementById('try-examples');
-  var lastBlocks = null;
-
-  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
-
-  // Same gzip+base64url #p= encoding already used by the MCP Apps playground
-  // (scripts/generate_atom_pages.py's MCP_APPS_PLAY_HTML) — reusing the real
-  // renderer instead of building a second one here.
-  function openInPlayground(blocks){
-    if (typeof CompressionStream === 'undefined') {
-      alert('Rendering needs a newer browser (CompressionStream API not available).');
-      return;
-    }
-    // Open the tab SYNCHRONOUSLY, inside the click handler, before any async work —
-    // encoding via CompressionStream is async, and window.open() called after an
-    // await/.then() loses the user-gesture context in most browsers, which either
-    // silently blocks the popup or leaves a blank about:blank tab (reads as a white
-    // screen). Opening first and navigating it once the payload is ready avoids that.
-    var win = window.open('about:blank', '_blank');
-    var stream = new Blob([JSON.stringify(blocks)]).stream().pipeThrough(new CompressionStream('gzip'));
-    new Response(stream).arrayBuffer().then(function(buf){
-      var bytes = new Uint8Array(buf);
-      var bin = '';
-      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-      var enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      var url = 'https://a2uicatalog.ai/surfaces/mcp-apps/play/#p=' + enc;
-      if (win && !win.closed) {
-        win.location.href = url;
-      } else {
-        // popup was blocked outright — fall back to same-tab navigation rather
-        // than leaving the user with nothing
-        window.location.href = url;
-      }
-    });
-  }
-
-  function render(data, status){
-    if (status === 429) {
-      result.innerHTML = '<p class="try-status err">Daily free-tier limit reached (20/IP) — try again tomorrow.</p>';
-      return;
-    }
-    if (!data || data.ok === false) {
-      result.innerHTML = '<p class="try-status err">' + esc((data && data.error) || 'request failed') + '</p>';
-      return;
-    }
-    var parts = [];
-    var scoreSuffix = (typeof data.topScore === 'number') ? (' &middot; top score: ' + data.topScore.toFixed(3)) : '';
-    parts.push('<p class="try-status">routing: ' + esc(data.routing || '?') + scoreSuffix +
-      (data.degraded ? ' &middot; degraded (single-atom retry)' : '') + '</p>');
-    if (!data.matched || data.matched.length === 0) {
-      lastBlocks = null;
-      parts.push('<p class="try-empty">' + esc(data.note || 'no confident match found in the catalog for this request') + '</p>');
-    } else {
-      lastBlocks = (data.blocks && data.blocks.length) ? data.blocks : null;
-      parts.push('<div class="try-chips">' + data.matched.map(function(t){
-        return '<a class="try-chip" href="/atoms/' + encodeURIComponent(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
-      }).join('') + '</div>');
-      if (lastBlocks) {
-        parts.push('<button class="try-render-btn" id="try-render" type="button">Render it →</button>');
-      }
-      parts.push('<pre><code>' + esc(JSON.stringify(data.blocks || [], null, 2)) + '</code></pre>');
-    }
-    result.innerHTML = parts.join('\n');
-  }
-
-  function submitPrompt(prompt){
-    prompt = prompt.trim();
-    if (!prompt) return;
-    submit.disabled = true;
-    submit.textContent = 'Routing…';
-    result.innerHTML = '<p class="try-empty">Routing…</p>';
-    fetch('https://a2uicatalog.ai/api/compose', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt })
-    }).then(function(res){
-      var status = res.status;
-      return res.json().catch(function(){ return null; }).then(function(data){ render(data, status); });
-    }).catch(function(e){
-      result.innerHTML = '<p class="try-status err">network error: ' + esc(e.message || e) + '</p>';
-    }).finally(function(){
-      submit.disabled = false;
-      submit.textContent = 'Route it →';
-    });
-  }
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    submitPrompt(input.value);
-  });
-  examples.addEventListener('click', function(e){
-    var b = e.target.closest('.try-example');
-    if (!b) return;
-    input.value = b.textContent;
-    submitPrompt(b.textContent);
-  });
-  result.addEventListener('click', function(e){
-    var b = e.target.closest('#try-render');
-    if (!b || !lastBlocks) return;
-    openInPlayground(lastBlocks);
-  });
-})();
-  </script>
 <script>(function(){if(window.__a2uiCursorGlow)return;window.__a2uiCursorGlow=true;var el=document.createElement("div");el.style.cssText="position:fixed;pointer-events:none;z-index:9000;border-radius:50%;width:460px;height:460px;background:radial-gradient(circle at 38% 38%,#6366f1 0%,transparent 68%);opacity:0.12;mix-blend-mode:screen;will-change:transform;transform:translate(-50%,-50%);top:-600px;left:-600px;";document.body.appendChild(el);var tx=-600,ty=-600,mx=tx,my=ty;window.addEventListener("mousemove",function(e){mx=e.clientX;my=e.clientY;});(function loop(){tx+=(mx-tx)*0.1;ty+=(my-ty)*0.1;el.style.left=tx.toFixed(1)+"px";el.style.top=ty.toFixed(1)+"px";requestAnimationFrame(loop);})();})();</script>
 </body>
 </html>

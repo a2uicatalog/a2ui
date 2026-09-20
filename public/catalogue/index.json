@@ -1155,8 +1155,8 @@
       "slug": "a2ui-effects-v1",
       "title": "Motion & decorative",
       "alwaysResolved": false,
-      "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
-      "atomCount": 100,
+      "whenToUse": "Use for animation and decorative flourish — reveals, gradients, cursor effects, meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves in stroke by stroke (agent_sketchpad, svg_path_draw), ready-made animated scenes of places and single verified clipart images from a provenance-checked kit (scene_stage, clipart: hospital helipad, data centre, wind farm and 42 more places; props by id, never SVG), full-bleed canvas hero backgrounds and living typography set from agent-supplied words. Presentation polish, not data.",
+      "atomCount": 102,
       "atoms": [
         {
           "type": "agent_sketchpad",
@@ -1215,6 +1215,10 @@
         {
           "type": "card_stack",
           "description": "CSS-fanned stack of 2–4 cards with rotation and opacity tiers"
+        },
+        {
+          "type": "clipart",
+          "description": "one verified vector clipart image by id"
         },
         {
           "type": "confetti_burst",
@@ -1448,6 +1452,10 @@
         {
           "type": "ripple_button",
           "description": "CTA button with ripple click effect"
+        },
+        {
+          "type": "scene_stage",
+          "description": "animated looping SVG scene of a place (45 ready presets) from verified clipart"
         },
         {
           "type": "schema_reveal",

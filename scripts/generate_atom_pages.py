@@ -63,6 +63,10 @@ except Exception as e:
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
 _EXAMPLE_BLOCKS = {
+    # scene kit atoms (2026-09-20): the auto-generator would put placeholder words in `preset` / `asset`, which the renderer
+    # (correctly) refuses; use real ids so the atom pages and the every-atom render sweep show the atoms working.
+    "scene_stage": {"type": "scene_stage", "preset": "wind-farm", "theme": {"time": "dusk"}},
+    "clipart": {"type": "clipart", "asset": "wind-turbine", "scale": 1.5, "label": "A wind turbine"},
     # The generic auto-example generator (example_payload/_infer_string) only
     # produces plain display text — fine for prose fields, but math_block's
     # `mathml` field is inserted as raw markup, not escaped text. A plain

@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 520 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 522 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -9294,6 +9294,36 @@
         "show a structured agent tool call card with status, inputs, result, and latency",
         "a structured card displaying an ai agent tool invocation \u2014 in-flight, completed, or failed. shows the tool name,",
         "render a tool call card"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:scene_stage",
+      "displayName": "Scene Stage",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/scene_stage",
+      "capabilities": [
+        "mcp-apps"
+      ],
+      "description": "An animated, looping pan/zoom SVG scene composed from a provenance-verified prop kit (original MIT artwork, each asset pinned by sha256 and restricted to an allowlist of SVG elements). Give a preset and the layout, backdrop, props and motion come from it; or write the layout in full. Props are referenced by id and never as SVG, so the agent cannot introduce script or external references. For a one-off shape use agent_sketchpad; for a diagram use a chart or d2 atom.",
+      "representativeQueries": [
+        "show a animated looping SVG scene of a place (45 ready presets) from verified clipart",
+        "an animated, looping pan/zoom svg scene composed from a provenance-verified prop kit (original mit artwork, each asset",
+        "render a scene stage"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:clipart",
+      "displayName": "Clipart",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/clipart",
+      "capabilities": [
+        "mcp-apps"
+      ],
+      "description": "One piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for example a person in a hard hat), scale and flip. Themeable colours, original MIT artwork, no external references. Use it as an illustration inside an article, card or slide; use scene_stage when several props should be composed into a moving picture.",
+      "representativeQueries": [
+        "show a one verified vector clipart image by id",
+        "one piece of verified vector clipart from the scene kit, by id, drawn at its own size with an optional variant (for",
+        "render a clipart"
       ]
     }
   ]

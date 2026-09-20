@@ -19551,6 +19551,261 @@
           "tool_name"
         ],
         "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "scene_stage"
+          },
+          "preset": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "theme": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time": {
+                  "type": "string"
+                },
+                "weather": {
+                  "type": "string"
+                },
+                "setting": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "time",
+                "weather",
+                "setting"
+              ]
+            }
+          },
+          "motion": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "duration": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "duration"
+              ]
+            }
+          },
+          "camera": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ]
+            }
+          },
+          "accent": {
+            "type": "string"
+          },
+          "backdrop": {
+            "type": "string",
+            "enum": [
+              "sky-city",
+              "sky-hills",
+              "sky-sea",
+              "sky-mountains",
+              "sky-desert",
+              "sky-arctic",
+              "sky-flat",
+              "space",
+              "interior-office",
+              "interior-industrial",
+              "interior-lab",
+              "interior-civic",
+              "interior-dark\" (required when there is no preset)."
+            ]
+          },
+          "ground": {
+            "type": "string",
+            "enum": [
+              "grass",
+              "road",
+              "sand",
+              "snow",
+              "concrete",
+              "water",
+              "none\" (required when there is no preset)."
+            ]
+          },
+          "stage": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "string"
+                },
+                "zoom": {
+                  "type": "string"
+                },
+                "focus_y": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "width",
+                "zoom",
+                "focus_y"
+              ]
+            }
+          },
+          "scenery": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "prop": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "scale? 0.2..5": {
+                  "type": "string"
+                },
+                "flip": {
+                  "type": "string"
+                },
+                "variant": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "prop",
+                "x",
+                "scale? 0.2..5"
+              ]
+            }
+          },
+          "actors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "prop": {
+                  "type": "string"
+                },
+                "motion": {
+                  "type": "string"
+                },
+                "x0": {
+                  "type": "string"
+                },
+                "x1": {
+                  "type": "string"
+                },
+                "y": {
+                  "type": "string"
+                },
+                "period 3..120": {
+                  "type": "string"
+                },
+                "phase 0..1": {
+                  "type": "string"
+                },
+                "scale": {
+                  "type": "string"
+                },
+                "variant": {
+                  "type": "string"
+                },
+                "ry": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "prop",
+                "motion",
+                "x0",
+                "x1",
+                "y",
+                "period 3..120",
+                "phase 0..1"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type",
+          "backdrop",
+          "ground",
+          "stage"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "clipart"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "scale": {
+            "type": "number"
+          },
+          "flip": {
+            "type": "boolean"
+          },
+          "time": {
+            "type": "string",
+            "enum": [
+              "dawn",
+              "day",
+              "dusk",
+              "night\" (optional). Palette the artwork is drawn in. Default day."
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "alt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "asset"
+        ],
+        "additionalProperties": false
       }
     ]
   }

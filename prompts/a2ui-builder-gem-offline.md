@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 520 atoms.** One line each:
+1. **Compact index — all 522 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 520 atoms)
+### Compact index (all 522 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -901,6 +901,8 @@ does not exist.
 - `layer_stack` — labelled layer bands — field/note per layer, optional side-by-side columns, absent layers render hollow
 - `stack_layer` — one layer band (badge, name, field/note or per-column cells) — normally used inside layer_stack
 - `tool_call_card` — structured agent tool call card with status, inputs, result, and latency
+- `scene_stage` — animated looping SVG scene of a place (45 ready presets) from verified clipart
+- `clipart` — one verified vector clipart image by id
 ## Payload envelope (renderer contract — not in the catalog)
 
 Simple page:

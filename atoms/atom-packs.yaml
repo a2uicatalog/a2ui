@@ -417,6 +417,9 @@ a2ui-effects-v1:
 - word_flip
 - word_reveal
 - word_scramble
+# scene kit (2026-09-20): animated SVG scenes and verified clipart, rendered from a provenance-checked prop kit
+- clipart
+- scene_stage
 a2ui-embeds-v1:
 - embed_codepen
 - embed_gist
@@ -645,9 +648,3 @@ a2ui-booking-v1:
 - seat_map
 - slot_scheduler
 - option_plan_builder
-
-# scene_stage / clipart (scene-atom kit; schema blocks are visibility:private in a2ui-private/private-atoms/, renderer is
-# apps-script-surface/gas-wired-renderer/atoms_scene.gs + atoms_scene_data.gs, generated from the kit's gen_scene_gs.py).
-a2ui-scenes-v1:
-- clipart
-- scene_stage

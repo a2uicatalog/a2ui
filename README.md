@@ -9,7 +9,7 @@
 The model names an atom. The renderer compiles the HTML, CSS, SVG, and animation.
 
 <!-- readme-badges:start -->
-[![Atoms](https://img.shields.io/badge/atoms-520-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
+[![Atoms](https://img.shields.io/badge/atoms-522-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/)
 [![Surfaces](https://img.shields.io/badge/surfaces-9-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/spec.json)
 [![MCP](https://img.shields.io/badge/MCP_server-a2uicatalog.ai%2Fmcp-7c9cff?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/mcp)
 [![ARD](https://img.shields.io/badge/ARD-ard.json-38bdf8?style=flat-square&labelColor=0a0e17)](https://a2uicatalog.ai/.well-known/ard.json)
@@ -174,7 +174,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 <summary><strong>View full compatibility matrix (all atoms × 8 surfaces)</strong></summary>
 
 <!-- compat-matrix:start -->
-520 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
+522 atoms · generated from `public/spec.json` by `scripts/gen_compat_matrix.py` — do not edit by hand.
 
 | Atom | web | gas-web | gas-panel | meet | chat | mcp-apps | email | pdf | Source · license |
 |---|---|---|---|---|---|---|---|---|---|
@@ -245,6 +245,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `chip_group` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `choicebox_group` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `cli_command` | ✅ | ✅ | — | ⚠️ | ⚠️ | ✅ | ⚠️ | — | [UIverse.io community](https://uiverse.io/) · MIT |
+| `clipart` | ⚠️ | ⚠️ | — | ⚠️ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog scene kit](https://github.com/a2uicatalog/a2ui) · MIT |
 | `closing` | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `code` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `code_block` | ✅ | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
@@ -563,6 +564,7 @@ Every atom declares, at the schema level, which of the **8 surfaces** it works o
 | `sankey_flow` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `scatter_trend` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `scenario_branch` | ✅ | ✅ | — | ✅ | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
+| `scene_stage` | ⚠️ | ⚠️ | — | ⚠️ | ⚠️ | ✅ | — | ⚠️ | [a2uicatalog scene kit](https://github.com/a2uicatalog/a2ui) · MIT |
 | `schema_qr` | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | [QR-Code-generator (Project Nayuki)](https://www.nayuki.io/page/qr-code-generator-library) · MIT |
 | `schema_reveal` | — | ✅ | — | — | — | ✅ | — | — | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |
 | `score_summary` | ✅ | ✅ | — | ✅ | ⚠️ | ✅ | ⚠️ | ✅ | [a2uicatalog](https://github.com/a2uicatalog/a2ui) · MIT |

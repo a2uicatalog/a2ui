@@ -68,7 +68,7 @@ CATALOG_META = {
     "a2ui-effects-v1": ("Motion & decorative",
         "Use for animation and decorative flourish — reveals, gradients, cursor effects, "
         "meteors/confetti, kinetic text, agent-drawn SVG illustrations that draw themselves "
-        "in stroke by stroke (agent_sketchpad, svg_path_draw), full-bleed canvas hero "
+        "in stroke by stroke (agent_sketchpad, svg_path_draw), ready-made animated scenes of places and single verified clipart images from a provenance-checked kit (scene_stage, clipart: hospital helipad, data centre, wind farm and 42 more places; props by id, never SVG), full-bleed canvas hero "
         "backgrounds and living typography set from agent-supplied words. Presentation "
         "polish, not data."),
     "a2ui-meta-v1": ("Catalog & AI meta",
@@ -100,11 +100,6 @@ CATALOG_META = {
         "Use for article_playbook views that go beyond the source article itself — similar "
         "reading suggestions and background context. Highest-risk tier: resolve only when a "
         "reader explicitly wants model speculation, not by default."),
-    "a2ui-scenes-v1": ("Scenes & clipart",
-        "Use when a surface should SHOW a place or an illustration instead of describing it — an "
-        "animated looping scene (hospital helipad, data centre, wind farm, warehouse, observatory: "
-        "45 ready places) or one piece of verified vector clipart. Props are referenced by id from "
-        "a provenance-checked kit; never write SVG."),
 }
 
 
