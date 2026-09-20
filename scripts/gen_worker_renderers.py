@@ -71,6 +71,10 @@ var Utilities = {
 def gs_load_order():
     files = [RENDERER_DIR / "PackMap.gs", RENDERER_DIR / "atom.gs"]
     files += sorted(p for p in RENDERER_DIR.glob("atoms_*.gs") if p.name not in EXCLUDE)
+    # The scene kit's WHOLE prop set (~1.1 MB). Worker module only: it lives outside RENDERER_DIR so neither the MCP Apps bundle
+    # (size guard) nor the Apps Script project (clasp pushes that directory) carries it. The Worker attaches the props a block
+    # needs to the payload it hands the view (mcp-worker/src/scene-kit.js).
+    files += sorted((RENDERER_DIR.parent / "scene-kit").glob("atoms_*.gs"))
     missing = [f for f in files if not f.exists()]
     if missing:
         print(f"✗ missing renderer sources: {[m.name for m in missing]}", file=sys.stderr)
@@ -173,7 +177,7 @@ def main():
         # never exported, so the Worker held the v1.0 decoder and could not reach
         # it — and emit_runbook_surface returns v1.0 envelopes, so every stamped
         # reading was un-exportable to HTML for want of one word.
-        "export { renderAtoms, _RENDERERS, _rehydrateV1Surface };\n"
+        "export { renderAtoms, _RENDERERS, _rehydrateV1Surface, SceneStage };\n"
     )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

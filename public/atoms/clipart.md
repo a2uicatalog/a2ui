@@ -10,7 +10,7 @@ mcp-apps
 
 | Field | Type |
 |---|---|
-| asset | string. A prop id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); only stable props are listed and preview props are refused. |
+| asset | string. A prop id from the asset index (https://a2uicatalog.ai/catalogue/assets-index-v1.json); every prop in the kit is listed. Ask for any of them: the server attaches what the view needs. |
 | variant | string (optional). A variant of that prop, for example scrubs, hard-hat or doctor on person-standing. |
 | scale | number (optional, 0.2..5). Default 1. |
 | flip | boolean (optional). Mirror horizontally. |

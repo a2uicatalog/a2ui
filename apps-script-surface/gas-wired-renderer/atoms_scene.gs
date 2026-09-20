@@ -229,8 +229,8 @@ function paletteFor(spec) {
 const COLOURS = { red: '#d64541', orange: '#ee7b30', yellow: '#f2c230', green: '#3f9b5a', teal: '#1f9d9a', blue: '#2f6fd6', navy: '#23366b', purple: '#7a4fc4', pink: '#e85d9b', black: '#2b2f36', gold: '#d4a72c' };
 const NOUN = '(?:jet|plane|airliner|aircraft|airplane|rocket|robot|workshop|machine)';
 const SCENES = ['takeoff', 'landing', 'orchestrator', 'launch', 'workshop', 'stage'];
-const STAGE_BACKDROPS = ['sky-city', 'sky-hills', 'sky-sea', 'sky-mountains', 'sky-desert', 'sky-arctic', 'sky-flat', 'space', 'interior-office', 'interior-industrial', 'interior-lab', 'interior-civic', 'interior-dark'];
-const STAGE_GROUNDS = ['grass', 'road', 'sand', 'snow', 'concrete', 'water', 'none'];
+const STAGE_BACKDROPS = ['sky-city', 'sky-hills', 'sky-sea', 'sky-mountains', 'sky-desert', 'sky-arctic', 'sky-flat', 'space', 'interior-office', 'interior-industrial', 'interior-lab', 'interior-civic', 'interior-home', 'interior-dark'];
+const STAGE_GROUNDS = ['grass', 'road', 'sand', 'snow', 'concrete', 'wood', 'water', 'none'];
 const STAGE_MOTIONS = ['walk', 'ride', 'drive', 'fly', 'hover', 'orbit'];
 /* Numeric limits of the stage spec: the validator, the JSON Schema (gen_spec_schema.mjs) and the LLM prompt all read this, so they cannot drift. */
 const STAGE_LIMITS = {
@@ -238,6 +238,7 @@ const STAGE_LIMITS = {
   width: [600, 4000], zoom: [500, 3200], focus_y: [-800, 200],
   scenery_x: [-600, 4600], scenery_y: [-1000, 300], scale: [0.2, 5],
   actor_x: [-800, 4800], actor_y: [-1000, 300], period: [3, 120], phase: [0, 1], ry: [0, 800],
+  sketch_elements: 40, sketches: 8, sketch_chars: 4096, sketch_total: 24000,
 };
 const INTERIOR = ['workshop'];                       // scenes with no aircraft: an actors list instead
 const MODES = { aircraft: ['follow', 'cinematic', 'wide'], interior: ['static', 'pan', 'push-in'] };
@@ -386,6 +387,62 @@ function interpretPrompt(text, layoutsFile) {
 const ENUMS = { time: ['dawn', 'day', 'dusk', 'night'], weather: ['clear', 'cloudy', 'overcast'], setting: ['countryside', 'coast'], mode: [...MODES.aircraft, ...MODES.interior], scene: SCENES };
 const SPEC_VOCAB = { time: ENUMS.time, weather: ENUMS.weather, setting: ENUMS.setting, stage_cameras: MODES.interior, backdrops: STAGE_BACKDROPS, grounds: STAGE_GROUNDS, motions: STAGE_MOTIONS, limits: STAGE_LIMITS };
 
+/* ------------------------------------------------------------------ sketch: the escape hatch inside a scene
+ * When no prop in the kit fits, a scene item may carry `sketch`: an array of SVG element strings. They are checked by the SAME rules as the
+ * catalogue's agent_sketchpad atom (a port of its validator, see atoms_charts.gs): allowlisted tags and attributes only, values limited to
+ * letters, digits and  # . , - ( ) %  (so no ':' means no javascript: and no external url, and no quotes or '<'), no style, no href, no id,
+ * no text content, one element per string. Anything else is REFUSED with an error, never silently skipped. */
+const SKETCH_TAGS = new Set(['circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon', 'path', 'g']);
+const SKETCH_ATTRS = new Set(['cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'width', 'height', 'x1', 'y1', 'x2', 'y2', 'points', 'd', 'fill', 'stroke', 'stroke-width',
+  'opacity', 'fill-opacity', 'stroke-opacity', 'stroke-linecap', 'stroke-linejoin', 'transform']);
+const SKETCH_SAFE = /^[A-Za-z0-9#.,\-\s()%]*$/;
+
+function sketchParse(s, pos, depth) {
+  if (depth > 6) return null;
+  while (pos < s.length && /\s/.test(s[pos])) pos++;
+  const m = /^<([a-zA-Z][a-zA-Z0-9]*)/.exec(s.slice(pos));
+  if (!m) return null;
+  const tag = m[1];
+  pos += m[0].length;
+  const attrs = {};
+  for (;;) {
+    while (pos < s.length && /\s/.test(s[pos])) pos++;
+    if (s.slice(pos, pos + 2) === '/>') return { tag, attrs, children: [], pos: pos + 2 };
+    if (s[pos] === '>') { pos++; break; }
+    const am = /^([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*"([^"]*)"|^([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*'([^']*)'/.exec(s.slice(pos));
+    if (!am) return null;                                      // stray, unquoted or malformed attribute text
+    attrs[(am[1] || am[3]).toLowerCase()] = am[2] !== undefined ? am[2] : am[4];
+    pos += am[0].length;
+  }
+  const close = '</' + tag + '>', children = [];
+  for (;;) {
+    while (pos < s.length && /\s/.test(s[pos])) pos++;
+    if (s.slice(pos, pos + close.length) === close) return { tag, attrs, children, pos: pos + close.length };
+    if (s[pos] !== '<') return null;                           // real text content is never valid here
+    const child = sketchParse(s, pos, depth + 1);
+    if (!child) return null;
+    children.push(child);
+    pos = child.pos;
+  }
+}
+function sketchValid(el) {
+  if (!SKETCH_TAGS.has(el.tag)) return false;
+  for (const name of Object.keys(el.attrs)) if (!SKETCH_ATTRS.has(name) || !SKETCH_SAFE.test(el.attrs[name])) return false;
+  return el.children.every(sketchValid);
+}
+function sketchSerialize(el) {
+  let out = '<' + el.tag;
+  for (const name of Object.keys(el.attrs)) out += ` ${name}="${esc(el.attrs[name])}"`;
+  return el.children.length ? out + '>' + el.children.map(sketchSerialize).join('') + '</' + el.tag + '>' : out + '/>';
+}
+/** One SVG element string -> its re-serialised, validated markup, or null if it breaks any rule. */
+function sketchElement(fragment) {
+  if (typeof fragment !== 'string' || fragment.length > STAGE_LIMITS.sketch_chars) return null;
+  const parsed = sketchParse(fragment, 0, 0);
+  if (!parsed || /\S/.test(fragment.slice(parsed.pos)) || !sketchValid(parsed)) return null;
+  return sketchSerialize(parsed);
+}
+
 /** scenery_add / actors_add append to whatever the layout (preset or explicit) provides, so a spec can extend a preset without rewriting it. */
 function addExtras(spec) {
   const out = { ...spec };
@@ -438,22 +495,38 @@ function validateStage(input, atom) {
     const names = p && p.variants ? Object.keys(p.variants) : [];
     if (!names.includes(it.variant)) errors.push(`${path}.variant must be one of: ${names.join(', ') || '(this prop has no variants)'}`);
   };
+  let sketchCount = 0, sketchChars = 0;
+  const checkSketch = (it, path) => {
+    if (it.prop !== undefined || it.variant !== undefined) errors.push(`${path}: a sketch item takes no prop or variant`);
+    const sk = it.sketch;
+    sketchCount++;
+    if (!Array.isArray(sk) || sk.length < 1 || sk.length > Lm.sketch_elements) { errors.push(`${path}.sketch must be an array of 1..${Lm.sketch_elements} SVG element strings`); return; }
+    sk.forEach((el, j) => {
+      if (typeof el !== 'string' || el.length > Lm.sketch_chars) { errors.push(`${path}.sketch[${j}] must be a string of at most ${Lm.sketch_chars} characters`); return; }
+      sketchChars += el.length;
+      if (!sketchElement(el)) errors.push(`${path}.sketch[${j}] is not an allowed sketch element (one element per string; tags ${[...SKETCH_TAGS].join(', ')}; attributes ${[...SKETCH_ATTRS].join(', ')}; values only letters, digits and # . , - ( ) %; no text, style or href)`);
+    });
+  };
   if (!Array.isArray(s.scenery) || s.scenery.length > Lm.scenery) errors.push(`spec.scenery must be an array of at most ${Lm.scenery} items`);
   else s.scenery.forEach((it, i) => {
-    if (!only(it, ['prop', 'x', 'y', 'variant', 'scale', 'flip'], `spec.scenery[${i}]`)) return;
-    const p = atom.byId[it.prop];
-    if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop`);
+    if (!only(it, ['prop', 'x', 'y', 'variant', 'scale', 'flip', 'sketch'], `spec.scenery[${i}]`)) return;
+    const isSketch = it.sketch !== undefined;
+    const p = isSketch ? null : atom.byId[it.prop];
+    if (isSketch) checkSketch(it, `spec.scenery[${i}]`);
+    else if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch)`);
     if (!num(it.x, ...Lm.scenery_x)) errors.push(`spec.scenery[${i}].x must be ${rng2(Lm.scenery_x)}`);
     if (it.y !== undefined && !num(it.y, ...Lm.scenery_y)) errors.push(`spec.scenery[${i}].y must be ${rng2(Lm.scenery_y)}`);
     if (it.scale !== undefined && !num(it.scale, ...Lm.scale)) errors.push(`spec.scenery[${i}].scale must be ${rng2(Lm.scale)}`);
     if (it.flip !== undefined && typeof it.flip !== 'boolean') errors.push(`spec.scenery[${i}].flip must be true or false`);
-    checkVariant(it, p, `spec.scenery[${i}]`);
+    if (!isSketch) checkVariant(it, p, `spec.scenery[${i}]`);
   });
   if (!Array.isArray(s.actors) || s.actors.length > Lm.actors) errors.push(`spec.actors must be an array of at most ${Lm.actors} items`);
   else s.actors.forEach((a, i) => {
-    if (!only(a, ['prop', 'motion', 'x0', 'x1', 'y', 'period', 'phase', 'variant', 'scale', 'ry'], `spec.actors[${i}]`)) return;
-    const p = atom.byId[a.prop];
-    if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop`);
+    if (!only(a, ['prop', 'motion', 'x0', 'x1', 'y', 'period', 'phase', 'variant', 'scale', 'ry', 'sketch'], `spec.actors[${i}]`)) return;
+    const isSketch = a.sketch !== undefined;
+    const p = isSketch ? null : atom.byId[a.prop];
+    if (isSketch) checkSketch(a, `spec.actors[${i}]`);
+    else if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch)`);
     if (!STAGE_MOTIONS.includes(a.motion)) errors.push(`spec.actors[${i}].motion must be one of ${STAGE_MOTIONS.join('|')}`);
     for (const k of ['x0', 'x1']) if (!num(a[k], ...Lm.actor_x)) errors.push(`spec.actors[${i}].${k} must be ${rng2(Lm.actor_x)}`);
     if (!num(a.y, ...Lm.actor_y)) errors.push(`spec.actors[${i}].y must be ${rng2(Lm.actor_y)}`);
@@ -461,8 +534,10 @@ function validateStage(input, atom) {
     if (!num(a.phase, ...Lm.phase)) errors.push(`spec.actors[${i}].phase must be ${rng2(Lm.phase)}`);
     if (a.scale !== undefined && !num(a.scale, ...Lm.scale)) errors.push(`spec.actors[${i}].scale must be ${rng2(Lm.scale)}`);
     if (a.ry !== undefined && !num(a.ry, ...Lm.ry)) errors.push(`spec.actors[${i}].ry must be ${rng2(Lm.ry)}`);
-    checkVariant(a, p, `spec.actors[${i}]`);
+    if (!isSketch) checkVariant(a, p, `spec.actors[${i}]`);
   });
+  if (sketchCount > Lm.sketches) errors.push(`a scene may hold at most ${Lm.sketches} sketches (scenery and actors together)`);
+  if (sketchChars > Lm.sketch_total) errors.push(`the sketches of one scene may total at most ${Lm.sketch_total} characters`);
   if (errors.length) return { ok: false, errors, spec: null };
   const spec = JSON.parse(JSON.stringify(s));
   if (spec.accent === undefined) spec.accent = '#2f6fd6';
@@ -744,7 +819,7 @@ function hills(rand, x0, x1, base, hMin, hMax, colour) {
 }
 
 /* Shared by every scene type: provenance record, metadata and the standalone SVG shell. */
-function wrapScene({ spec, atom, used, usedVariants = {}, procedural, cam, kt, D, defs, S, body, extra }) {
+function wrapScene({ spec, atom, used, usedVariants = {}, procedural, cam, kt, D, defs, S, body, extra, sketches = [] }) {
   const assets = [...used].sort().map((id) => {
     const e = atom.byId[id];
     return { id, name: e.name, kind: e.kind, ...(usedVariants[id] ? { variants: [...usedVariants[id]].sort() } : {}), origin: e.origin.type, author: e.origin.author, license: e.origin.license, source_url: e.origin.source_url, attribution: e.origin.attribution, sha256: e.sha256 };
@@ -755,6 +830,7 @@ function wrapScene({ spec, atom, used, usedVariants = {}, procedural, cam, kt, D
     registry_sha256: atom.registrySha256,
     assets,
     procedural: [...new Set(procedural)],
+    ...(sketches.length ? { sketches } : {}),                    // agent-authored geometry that did NOT come from the kit
     attributions: [...new Set(assets.filter((a) => atom.allow.attribution_required.includes(a.license)).map((a) => a.attribution))],
   };
   const vb0 = cam[0];
@@ -855,8 +931,8 @@ function buildInterior(spec, atom) {
 }
 
 /* ------------------------------------------------------------ stage scene (data-driven layouts) */
-const STAGE_INTERIOR_TINT = { 'interior-office': '#8a97a8', 'interior-industrial': '#7d766c', 'interior-lab': '#c9d3d9', 'interior-civic': '#b8a78a', 'interior-dark': '#2a2f3a' };
-const STAGE_GROUND_COLOUR = { sand: '#d9c28a', snow: '#eef3f8', concrete: '#9aa0a8' };
+const STAGE_INTERIOR_TINT = { 'interior-office': '#8a97a8', 'interior-industrial': '#7d766c', 'interior-lab': '#c9d3d9', 'interior-civic': '#b8a78a', 'interior-home': '#cdb08f', 'interior-dark': '#2a2f3a' };
+const STAGE_GROUND_COLOUR = { sand: '#d9c28a', snow: '#eef3f8', concrete: '#9aa0a8', wood: '#b28a5e' };
 
 function stageCamera(spec, samples) {
   const { width, zoom, focus_y } = spec.stage, mode = spec.camera.mode;
@@ -924,6 +1000,10 @@ function buildStage(spec, atom) {
     else if (spec.backdrop === 'interior-industrial') for (let x = 0; x < width; x += 220) back += `<path d="M${x},${-H} L${x + 110},-440 L${x + 220},${-H} M${x},-440 H${x + 220}" ${line}/>`;
     else if (spec.backdrop === 'interior-lab') for (let x = 0; x < width; x += 120) back += `<path d="M${x},${-H} V0" ${line}/>`;
     else if (spec.backdrop === 'interior-civic') for (let x = 120; x < width; x += 340) back += `<path d="M${x},0 V-380 A60,60 0 0 1 ${x + 120},-380 V0" ${line}/><rect x="${x - 14}" y="-420" width="148" height="18" fill="${P.dark}" fill-opacity="0.14"/>`;
+    else if (spec.backdrop === 'interior-home') {                       // wallpaper stripes, picture rail, skirting board
+      for (let x = 0; x < width; x += 90) back += `<rect x="${x}" y="${-H}" width="45" height="${H}" fill="${P.dark}" fill-opacity="0.045"/>`;
+      back += `<path d="M0,-470 H${width}" ${line}/><rect x="0" y="-46" width="${width}" height="46" fill="${P.dark}" fill-opacity="0.14"/><path d="M0,-46 H${width}" fill="none" stroke="${P.dark}" stroke-opacity="0.3" stroke-width="3"/>`;
+    }
     else for (let x = 200; x < width; x += 520) back += `<path d="M${x - 40},${-H} L${x - 260},0 L${x + 180},0 L${x + 40},${-H} Z" fill="${P.window}" fill-opacity="0.06"/>`;
     back += `<rect x="0" y="${-H}" width="${width}" height="70" fill="${P.dark}" fill-opacity="0.35"/>`;
   } else {
@@ -971,7 +1051,14 @@ function buildStage(spec, atom) {
   /* placed props */
   let scenery = '', cones = '';
   const glow = time === 'night' ? 0.17 : time === 'day' ? 0.06 : 0.11;
+  const sketches = [];
+  const sketchMarkup = (list) => { const marks = list.map(sketchElement); sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')) }); return marks.join(''); };
   for (const it of spec.scenery) {
+    if (it.sketch) {                                            // agent-drawn: validated primitives, origin at the ground point like a prop
+      const sc = it.scale === undefined ? 1 : it.scale;
+      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(it.flip ? -sc : sc)} ${fmt2(sc)})">${sketchMarkup(it.sketch)}</g>`;
+      continue;
+    }
     const a = atom.byId[it.prop].anchors || {};
     const y = it.y !== undefined ? it.y : a.base_y !== undefined ? a.base_y : 0;
     const sc = it.scale === undefined ? 1 : it.scale, sx = it.flip ? -sc : sc;
@@ -983,9 +1070,10 @@ function buildStage(spec, atom) {
   /* actors */
   let actors = '';
   for (const a of spec.actors) {
-    const id = defOf(a.prop, a.variant), begin = `-${fmt2(a.phase * a.period)}s`, dur = `${a.period}s`;
+    const id = a.sketch ? null : defOf(a.prop, a.variant), begin = `-${fmt2(a.phase * a.period)}s`, dur = `${a.period}s`;
+    const skMarks = a.sketch ? sketchMarkup(a.sketch) : '';
     const sc = a.scale === undefined ? 1 : a.scale, dir = a.x1 < a.x0 ? -1 : 1, rep = `dur="${dur}" begin="${begin}" repeatCount="indefinite"`;
-    const inner = (flip) => `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
+    const inner = (flip) => a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>` : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
     if (a.motion === 'walk') {
       actors += `<g><animateTransform attributeName="transform" type="translate" values="${fmt(a.x0)} ${fmt(a.y)};${fmt(a.x1)} ${fmt(a.y)};${fmt(a.x0)} ${fmt(a.y)}" keyTimes="0;0.5;1" ${rep}/>` +
         `<g><animateTransform attributeName="transform" type="scale" values="${dir} 1;${-dir} 1" keyTimes="0;0.5" calcMode="discrete" ${rep}/>${inner(1)}</g></g>`;
@@ -1002,9 +1090,10 @@ function buildStage(spec, atom) {
     }
   }
   procedural.push('actor motion');
+  if (sketches.length) procedural.push('agent-drawn sketches (validated SVG primitives)');
 
   const shade = interior && ROOM_SHADE[time] ? `<rect x="0" y="-620" width="${width}" height="1020" fill="${P.dark}" fill-opacity="${ROOM_SHADE[time]}"/>` : '';
-  return wrapScene({ spec, atom, used, usedVariants, procedural, cam, kt, D, defs, S, body: `<g id="world">${back}${ground}${scenery}${actors}${shade}${cones}</g>`, extra: { preset: spec.preset || null } });
+  return wrapScene({ spec, atom, used, usedVariants, procedural, cam, kt, D, defs, S, body: `<g id="world">${back}${ground}${scenery}${actors}${shade}${cones}</g>`, extra: { preset: spec.preset || null }, sketches });
 }
 
 function buildScene(specIn, atom) {
@@ -1175,14 +1264,65 @@ function buildScene(specIn, atom) {
   });
 }
 
-  var ATOM = null;
-  function atom() {
+  var ATOM = null, ATOM_FULL = null, CORE = null;
+  function hx(h) { return typeof h === 'string' ? h.replace('.', '') : h; }        // digests are stored as two 32-hex halves joined by '.', see gen_scene_gs.split_hex
+  function fixEntry(e) { var c = {}, k; for (k in e) c[k] = e[k]; c.sha256 = hx(e.sha256); return c; }
+  function unpack(b) {
+    var o = {}, k, t = {};
+    for (k in b) o[k] = b[k];
+    o.registry_sha256 = hx(b.registry_sha256);
+    o.entries = b.entries.map(fixEntry);
+    if (b.trusted_sha256) { for (k in b.trusted_sha256) t[k] = hx(b.trusted_sha256[k]); o.trusted_sha256 = t; }
+    return o;
+  }
+  function core() {
     // SCENE_STAGE_DATA lives in atoms_scene_data.gs, read lazily so file load order does not matter. Some bundles leave it out
-    // on purpose (the MCP Apps bundle, for its size guard): say so instead of throwing a bare ReferenceError.
+    // on purpose: say so instead of throwing a bare ReferenceError.
     if (typeof SCENE_STAGE_DATA === 'undefined') throw new Error('the scene kit data is not bundled on this surface (scenes render on Apps Script web and in the Worker)');
-    if (!ATOM) ATOM = atomFromBundle(SCENE_STAGE_DATA, { skipSvgStructure: true });
-    return ATOM;
-  }   // hashes were verified when the data was minted, and are re-checked here
+    if (!CORE) CORE = unpack(SCENE_STAGE_DATA);
+    return CORE;
+  }
+  function hasFull() { return typeof SCENE_STAGE_FULL !== 'undefined'; }   // atoms_scene_full.gs: the whole kit, Worker module only
+  function atom() {
+    if (!ATOM) ATOM = atomFromBundle(core(), { skipSvgStructure: true });
+    return ATOM;                                             // hashes were verified when the data was minted, and are re-checked here
+  }
+  function fullAtom() {
+    if (!ATOM_FULL) ATOM_FULL = atomFromBundle({ schema: 1, registry_sha256: core().registry_sha256, allow: core().allow, layouts: core().layouts, entries: SCENE_STAGE_FULL.entries.map(fixEntry) }, { skipSvgStructure: true });
+    return ATOM_FULL;
+  }
+  /* The bundle carries only the core props. A server (the Worker) attaches the further props one block needs as block._kit; each
+   * must hash to the TRUSTED table baked into this file, so a payload cannot introduce SVG that was never vetted. */
+  function kitAtom(kit) {
+    var C = core(), trusted = C.trusted_sha256 || {}, have = {}, entries = C.entries.slice(), total = 0, i, e;
+    if (!kit || !Array.isArray(kit.entries) || kit.entries.length > 300) throw new Error('the scene kit attachment is malformed');
+    for (i = 0; i < C.entries.length; i++) have[C.entries[i].id] = true;
+    for (i = 0; i < kit.entries.length; i++) {
+      e = kit.entries[i];
+      if (!e || typeof e.id !== 'string' || typeof e.svg !== 'string' || !trusted[e.id]) throw new Error('the scene kit attachment names a prop that is not in the kit');
+      e = fixEntry(e);
+      total += e.svg.length;
+      if (total > 600000) throw new Error('the scene kit attachment is too large');
+      if (sha256Hex(e.svg) !== trusted[e.id] || e.sha256 !== trusted[e.id]) throw new Error('scene kit prop ' + e.id + ' failed verification against the trusted hash table');
+      if (!have[e.id]) { entries.push(e); have[e.id] = true; }
+    }
+    return atomFromBundle({ schema: 1, registry_sha256: C.registry_sha256, allow: C.allow, layouts: C.layouts, entries: entries }, { skipSvgStructure: true });
+  }
+  function atomFor(b) { if (b && b._kit) return kitAtom(b._kit); return hasFull() ? fullAtom() : atom(); }
+  /** Worker side: the props this block needs that the bundle core does not carry, as an attachment (or null). Needs the full kit. */
+  function kitFor(b) {
+    if (!hasFull() || !b || typeof b !== 'object') return null;
+    var want = {}, have = {}, byId = {}, out = [], seen = {}, C = core(), L = b.preset && C.layouts.layouts[b.preset];
+    function add1(it) { if (it && typeof it.prop === 'string') want[it.prop] = true; }
+    if (typeof b.asset === 'string') want[b.asset] = true;
+    ['scenery', 'actors', 'scenery_add', 'actors_add'].forEach(function (k) { if (Array.isArray(b[k])) b[k].forEach(add1); });
+    if (L) { if (b.scenery === undefined) L.scenery.forEach(add1); if (b.actors === undefined) L.actors.forEach(add1); }
+    C.entries.forEach(function (e) { have[e.id] = true; });
+    SCENE_STAGE_FULL.entries.forEach(function (e) { byId[e.id] = e; });
+    function need(id) { if (seen[id] || !byId[id]) return; seen[id] = true; if (!have[id]) out.push(byId[id]); (byId[id].requires || []).forEach(need); }
+    Object.keys(want).forEach(need);
+    return out.length ? { schema: 1, entries: out } : null;
+  }
   function specFromBlock(b) {
     // canonical key order, so the same logical spec always has the same spec_sha256 in its provenance
     var th = b.theme || {}, s = { version: 1, scene: 'stage' }, k;
@@ -1191,7 +1331,7 @@ function buildScene(specIn, atom) {
     s.seed = b.seed !== undefined ? b.seed : parseInt(sha256Hex(String(b.preset || s.title)).slice(0, 8), 16);
     s.theme = { time: th.time || 'day', weather: th.weather || 'clear', setting: th.setting || 'countryside' };
     s.motion = { duration: (b.motion && b.motion.duration) || 20 };
-    for (k in b) if (Object.prototype.hasOwnProperty.call(b, k) && !Object.prototype.hasOwnProperty.call(s, k) && k !== 'type') s[k] = b[k];
+    for (k in b) if (Object.prototype.hasOwnProperty.call(b, k) && !Object.prototype.hasOwnProperty.call(s, k) && k !== 'type' && k !== '_kit') s[k] = b[k];
     if (s.preset === undefined) {                       // a layout written in full: a model may reasonably leave these out
       if (s.camera === undefined) s.camera = { mode: 'static' };
       if (s.scenery === undefined) s.scenery = [];
@@ -1209,13 +1349,13 @@ function buildScene(specIn, atom) {
   }
   /** scene_stage block -> HTML string (an animated SVG figure). */
   function render(b) {
-    try { var r = buildScene(specFromBlock(b), atom()); return figure(r.svg, r.spec.title); } catch (e) { return failure(e); }
+    try { var r = buildScene(specFromBlock(b), atomFor(b)); return figure(r.svg, r.spec.title); } catch (e) { return failure(e); }
   }
   /** clipart block -> HTML string: one prop drawn on a transparent stage, at its own size. */
   function renderClipart(b) {
     try {
-      var a = atom(), e = a.byId[b.asset];
-      if (!e) throw new Error('clipart.asset must be one of the stable registry ids (got ' + esc(b.asset) + ')');
+      var a = atomFor(b), e = a.byId[b.asset];
+      if (!e) throw new Error(core().trusted_sha256[b.asset] ? 'clipart.asset ' + esc(b.asset) + ' is in the kit but not embedded on this surface: the server attaches it (render_surface and the Worker do)' : 'clipart.asset must be an id from the asset index (got ' + esc(b.asset) + ')');
       var r = renderPropPreview(a, b.asset, b.variant, b.time || 'day');
       var sc = b.scale === undefined ? 1 : Math.max(0.2, Math.min(5, Number(b.scale) || 1));
       var vb = r.viewBox.split(/\s+/).map(Number), w = Math.round(vb[2] * sc), flip = b.flip ? ' transform="scale(-1 1)" transform-origin="center"' : '';
@@ -1224,7 +1364,7 @@ function buildScene(specIn, atom) {
         (b.label ? '<figcaption style="font-size:0.8rem;color:#64748b;text-align:center;">' + esc(b.label) + '</figcaption>' : '') + '</figure>';
     } catch (err) { return failure(err); }
   }
-  return { render: render, renderClipart: renderClipart, buildScene: buildScene, atom: atom, sha256Hex: sha256Hex, version: RENDERER_VERSION };
+  return { render: render, renderClipart: renderClipart, buildScene: buildScene, atom: atom, kitFor: kitFor, hasFull: hasFull, sha256Hex: sha256Hex, version: RENDERER_VERSION };
 })();
 
 _RENDERERS['scene_stage'] = function (b) { return SceneStage.render(b); };
