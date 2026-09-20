@@ -19745,6 +19745,18 @@
                 },
                 "ry": {
                   "type": "string"
+                },
+                "size": {
+                  "type": "string"
+                },
+                "colour": {
+                  "type": "string"
+                },
+                "align": {
+                  "type": "string"
+                },
+                "bold": {
+                  "type": "string"
                 }
               },
               "additionalProperties": false,

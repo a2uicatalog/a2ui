@@ -23898,9 +23898,14 @@ function suggestProps(atom, query, limit = 5) {
 /* ------------------------------------------------------------------ sketch: the escape hatch inside a scene
  * When no prop in the kit fits, a scene item may carry `sketch`: an array of SVG element strings. They are checked by the SAME rules as the
  * catalogue's agent_sketchpad atom (a port of its validator, see atoms_charts.gs): allowlisted tags and attributes only, values limited to
- * letters, digits and  # . , - ( ) %  (so no ':' means no javascript: and no external url, and no quotes or '<'), no style, no href, no id,
- * no text content, one element per string. Anything else is REFUSED with an error, never silently skipped. */
+ * letters, digits and  # . , - ( ) %  (so no ':' means no javascript: and no external url, and no quotes or '<'), no style, no id, no text
+ * content, one element per string. The ONE exception is `<use href="#a-<id>">`: a sketch may reuse a prop ALREADY in this kit (never an
+ * external resource -- the href is checked against a strict `#a-<id>[--<variant>]` pattern, structurally here and against the real registry
+ * in the validator below), so a model can choreograph real verified art instead of only drawing primitives. Anything else is REFUSED with an
+ * error, never silently skipped. */
 const SKETCH_TAGS = new Set(['circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon', 'path', 'g']);
+const USE_ATTRS = new Set(['href', 'transform', 'opacity']);
+const USE_HREF_RE = /^#a-[a-z0-9-]+$/;
 const SKETCH_ATTRS = new Set(['cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'width', 'height', 'x1', 'y1', 'x2', 'y2', 'points', 'd', 'fill', 'stroke', 'stroke-width',
   'opacity', 'fill-opacity', 'stroke-opacity', 'stroke-linecap', 'stroke-linejoin', 'transform']);
 const SKETCH_SAFE = /^[A-Za-z0-9#.,\-\s()%]*$/;
@@ -23973,6 +23978,15 @@ function sketchParse(s, pos, depth) {
 }
 function sketchValid(el, isRoot, budget) {
   if (el.tag === 'animate' || el.tag === 'animateTransform') return !isRoot && --budget.n >= 0 && sketchAnimValid(el);
+  if (el.tag === 'use') {
+    if (el.children.length) return false;
+    for (const name of Object.keys(el.attrs)) {
+      const v = el.attrs[name];
+      if (!USE_ATTRS.has(name)) return false;
+      if (name === 'href') { if (!USE_HREF_RE.test(v)) return false; } else if (!SKETCH_SAFE.test(v)) return false;
+    }
+    return true;
+  }
   if (!SKETCH_TAGS.has(el.tag)) return false;
   for (const name of Object.keys(el.attrs)) {
     const v = el.attrs[name];
@@ -24000,6 +24014,17 @@ function sketchElement(fragment, pal) {
   if (!parsed || /\S/.test(fragment.slice(parsed.pos)) || !sketchValid(parsed, true, { n: SKETCH_MAX_ANIMS })) return null;
   return sketchSerialize(parsed, pal);
 }
+/** Every `<use href="#a-<id>[--<variant>]">` a (structurally already-valid) sketch fragment reuses, as [id, variant|undefined] pairs. Ids never
+ * contain '--' (that is reserved as the id/variant separator, the same convention defOf's own key naming already relies on), so splitting on
+ * the FIRST '--' is unambiguous. */
+function usedPropRefs(fragment) {
+  const out = [];
+  for (const m of fragment.matchAll(/href="#a-([a-z0-9-]+)"/g)) {
+    const i = m[1].indexOf('--');
+    out.push(i < 0 ? [m[1], undefined] : [m[1].slice(0, i), m[1].slice(i + 2)]);
+  }
+  return out;
+}
 
 /* Hand-rolled animation, tier 1: a sketch item's `anim` field. We generate the SMIL ourselves, so a model only chooses a preset and two numbers. */
 const SKETCH_ANIMS = ['sway', 'bob', 'spin', 'pulse', 'blink', 'drift'];
@@ -24016,6 +24041,20 @@ function sketchAnim(an, inner) {
   if (an.kind === 'pulse') { const a = amt === undefined ? 0.08 : amt; return `<g transform="translate(${fmt(cx)} ${fmt(cy)})"><g>${at('scale', `1;${fmt2(1 + a)};1`)}<g transform="translate(${fmt(-cx)} ${fmt(-cy)})">${inner}</g></g></g>`; }
   if (an.kind === 'blink') { const m = amt === undefined ? 0.25 : amt; return `<g><animate attributeName="opacity" values="1;${fmt2(m)};1" ${rep}/>${inner}</g>`; }
   return inner;
+}
+
+/* ------------------------------------------------------------------ label: real text inside a scene
+ * A scenery or actors item may carry `label` instead of `prop`/`sketch`: a plain string, drawn as real SVG <text> by THIS trusted code, never
+ * by the agent. There is no parser to fool here (no markup ever reaches this from the spec) -- the string is escaped like any other title text
+ * (see esc()) and every other field (size, colour, align, bold) is a checked number/enum/palette-name, not agent-authored markup. Multi-line
+ * text (split on the item's own '\n') stacks UPWARD from y, so a label's anchor is its own baseline, the same "origin is the ground/attach
+ * point" convention every prop already uses. */
+function labelMarkup(item, pal) {
+  const size = item.size === undefined ? 26 : item.size, align = item.align || 'middle', bold = item.bold ? 700 : 400;
+  const colour = item.colour === undefined ? pal.dark : item.colour.startsWith('@') ? sketchColour(item.colour.slice(1), pal) : item.colour;
+  const lines = item.label.split('\n'), lh = size * 1.2;
+  const tspans = lines.map((line, i) => `<tspan x="0" dy="${i === 0 ? fmt2(-(lines.length - 1) * lh) : fmt2(lh)}">${esc(line)}</tspan>`).join('');
+  return `<text text-anchor="${align}" font-family="system-ui, sans-serif" font-size="${fmt2(size)}" font-weight="${bold}" fill="${colour}">${tspans}</text>`;
 }
 
 /** scenery_add / actors_add append to whatever the layout (preset or explicit) provides, so a spec can extend a preset without rewriting it. */
@@ -24083,7 +24122,7 @@ function validateStage(input, atom) {
     for (const k of ['cx', 'cy']) if (an[k] !== undefined && !num(an[k], -400, 400)) errors.push(`${path}.anim.${k} must be -400..400`);
   };
   const checkSketch = (it, path) => {
-    if (it.prop !== undefined || it.variant !== undefined) errors.push(`${path}: a sketch item takes no prop or variant`);
+    if (it.prop !== undefined || it.variant !== undefined || it.label !== undefined) errors.push(`${path}: a sketch item takes no prop, variant or label`);
     if (it.anim !== undefined) checkAnim(it.anim, path);
     const sk = it.sketch;
     sketchCount++;
@@ -24098,33 +24137,61 @@ function validateStage(input, atom) {
         const bareAnimMatch = /^\s*<(animate(?:transform)?)\b/i.exec(el);
         const hint = bareAnimMatch
           ? ` THIS ELEMENT is a bare <${bareAnimMatch[1]}> with no shape to move: wrap it and the shape together in one <g>...</g> and give that whole group as a single sketch string, e.g. '<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -20;0 0" dur="1s" repeatCount="indefinite"/><circle cx="0" cy="0" r="10" fill="@red"/></g>'.`
-          : ' animate and animateTransform ARE allowed, nested inside a <g> together with the shape(s) they animate (never as a sketch entry on their own; numeric values only, no href, no fill/style targets).';
-        errors.push(`${path}.sketch[${j}] is not an allowed sketch element (one shape or group per string; shape tags ${[...SKETCH_TAGS].join(', ')}; attributes ${[...SKETCH_ATTRS].join(', ')}; values only letters, digits and # . , - ( ) %; no text, style or href.${hint}`);
+          : ` animate and animateTransform ARE allowed, nested inside a <g> together with the shape(s) they animate (never as a sketch entry on their own; numeric values only, no fill/style targets). <use href="#a-<id>"/> IS allowed, to reuse an existing kit prop by id (see below); no other href.`;
+        errors.push(`${path}.sketch[${j}] is not an allowed sketch element (one shape or group per string; shape tags ${[...SKETCH_TAGS].join(', ')}; attributes ${[...SKETCH_ATTRS].join(', ')}; values only letters, digits and # . , - ( ) %; no text or style.${hint}`);
+        return;
+      }
+      for (const [pid, variant] of usedPropRefs(el)) {
+        if (variant === '') { errors.push(`${path}.sketch[${j}] has a malformed prop reference (trailing "--" with no variant name)`); continue; }
+        const p2 = atom.byId[pid];
+        if (!p2) {
+          const guess = suggestProps(atom, pid);
+          errors.push(`${path}.sketch[${j}] reuses prop "${pid}", which is not in the registry.${guess.length ? ` Did you mean: ${guess.join(', ')}?` : ' See the asset index for valid ids.'}`);
+        } else if (variant && !(p2.variants && p2.variants[variant])) {
+          errors.push(`${path}.sketch[${j}] reuses prop "${pid}" with variant "${variant}", which it does not have. Valid variants: ${p2.variants && Object.keys(p2.variants).length ? Object.keys(p2.variants).join(', ') : '(none)'}`);
+        }
       }
     });
   };
+  const checkLabel = (it, path) => {
+    if (it.prop !== undefined || it.variant !== undefined || it.sketch !== undefined || it.anim !== undefined) errors.push(`${path}: a label item takes no prop, variant, sketch or anim`);
+    const text = it.label;
+    if (typeof text !== 'string' || text.length < 1 || text.length > 160) errors.push(`${path}.label must be a string of 1..160 characters`);
+    else {
+      const lines = text.split('\n');   // '\n' is the line separator, never itself a forbidden control character
+      if (lines.length > 4 || lines.some((l) => l.length < 1 || l.length > 40)) errors.push(`${path}.label must be 1..4 lines (split on \\n), each 1..40 characters`);
+      else if (lines.some((l) => /[\x00-\x1f\x7f]/.test(l))) errors.push(`${path}.label must not contain control characters`);
+    }
+    if (it.size !== undefined && !num(it.size, 8, 80)) errors.push(`${path}.size must be 8..80`);
+    if (it.colour !== undefined && !(/^#[0-9a-fA-F]{6}$/.test(it.colour) || (it.colour.startsWith('@') && SKETCH_COLOURS.includes(it.colour.slice(1)))))
+      errors.push(`${path}.colour must be #rrggbb or one of ${SKETCH_COLOURS.map((c) => '@' + c).join(', ')}`);
+    if (it.align !== undefined && !['start', 'middle', 'end'].includes(it.align)) errors.push(`${path}.align must be start, middle or end`);
+    if (it.bold !== undefined && typeof it.bold !== 'boolean') errors.push(`${path}.bold must be true or false`);
+  };
   if (!Array.isArray(s.scenery) || s.scenery.length > Lm.scenery) errors.push(`spec.scenery must be an array of at most ${Lm.scenery} items`);
   else s.scenery.forEach((it, i) => {
-    if (!only(it, ['prop', 'x', 'y', 'variant', 'scale', 'flip', 'sketch', 'anim'], `spec.scenery[${i}]`)) return;
-    const isSketch = it.sketch !== undefined;
-    const p = isSketch ? null : atom.byId[it.prop];
+    if (!only(it, ['prop', 'x', 'y', 'variant', 'scale', 'flip', 'sketch', 'anim', 'label', 'size', 'colour', 'align', 'bold'], `spec.scenery[${i}]`)) return;
+    const isSketch = it.sketch !== undefined, isLabel = it.label !== undefined;
+    const p = (isSketch || isLabel) ? null : atom.byId[it.prop];
     if (isSketch) checkSketch(it, `spec.scenery[${i}]`);
+    else if (isLabel) checkLabel(it, `spec.scenery[${i}]`);
     else if (it.anim !== undefined) errors.push(`spec.scenery[${i}]: anim only applies to a sketch item`);
-    else if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch).${didYouMean(it.prop)}`);
+    else if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch or label).${didYouMean(it.prop)}`);
     if (!num(it.x, ...Lm.scenery_x)) errors.push(`spec.scenery[${i}].x must be ${rng2(Lm.scenery_x)}`);
     if (it.y !== undefined && !num(it.y, ...Lm.scenery_y)) errors.push(`spec.scenery[${i}].y must be ${rng2(Lm.scenery_y)}`);
     if (it.scale !== undefined && !num(it.scale, ...Lm.scale)) errors.push(`spec.scenery[${i}].scale must be ${rng2(Lm.scale)}`);
     if (it.flip !== undefined && typeof it.flip !== 'boolean') errors.push(`spec.scenery[${i}].flip must be true or false`);
-    if (!isSketch) checkVariant(it, p, `spec.scenery[${i}]`);
+    if (!isSketch && !isLabel) checkVariant(it, p, `spec.scenery[${i}]`);
   });
   if (!Array.isArray(s.actors) || s.actors.length > Lm.actors) errors.push(`spec.actors must be an array of at most ${Lm.actors} items`);
   else s.actors.forEach((a, i) => {
-    if (!only(a, ['prop', 'motion', 'x0', 'x1', 'y', 'period', 'phase', 'variant', 'scale', 'ry', 'sketch', 'anim'], `spec.actors[${i}]`)) return;
-    const isSketch = a.sketch !== undefined;
-    const p = isSketch ? null : atom.byId[a.prop];
+    if (!only(a, ['prop', 'motion', 'x0', 'x1', 'y', 'period', 'phase', 'variant', 'scale', 'ry', 'sketch', 'anim', 'label', 'size', 'colour', 'align', 'bold'], `spec.actors[${i}]`)) return;
+    const isSketch = a.sketch !== undefined, isLabel = a.label !== undefined;
+    const p = (isSketch || isLabel) ? null : atom.byId[a.prop];
     if (isSketch) checkSketch(a, `spec.actors[${i}]`);
+    else if (isLabel) checkLabel(a, `spec.actors[${i}]`);
     else if (a.anim !== undefined) errors.push(`spec.actors[${i}]: anim only applies to a sketch item`);
-    else if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch).${didYouMean(a.prop)}`);
+    else if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch or label).${didYouMean(a.prop)}`);
     if (!STAGE_MOTIONS.includes(a.motion)) errors.push(`spec.actors[${i}].motion must be one of ${STAGE_MOTIONS.join('|')}`);
     for (const k of ['x0', 'x1']) if (!num(a[k], ...Lm.actor_x)) errors.push(`spec.actors[${i}].${k} must be ${rng2(Lm.actor_x)}`);
     if (!num(a.y, ...Lm.actor_y)) errors.push(`spec.actors[${i}].y must be ${rng2(Lm.actor_y)}`);
@@ -24132,7 +24199,7 @@ function validateStage(input, atom) {
     if (!num(a.phase, ...Lm.phase)) errors.push(`spec.actors[${i}].phase must be ${rng2(Lm.phase)}`);
     if (a.scale !== undefined && !num(a.scale, ...Lm.scale)) errors.push(`spec.actors[${i}].scale must be ${rng2(Lm.scale)}`);
     if (a.ry !== undefined && !num(a.ry, ...Lm.ry)) errors.push(`spec.actors[${i}].ry must be ${rng2(Lm.ry)}`);
-    if (!isSketch) checkVariant(a, p, `spec.actors[${i}]`);
+    if (!isSketch && !isLabel) checkVariant(a, p, `spec.actors[${i}]`);
   });
   if (sketchCount > Lm.sketches) errors.push(`a scene may hold at most ${Lm.sketches} sketches (scenery and actors together)`);
   if (sketchChars > Lm.sketch_total) errors.push(`the sketches of one scene may total at most ${Lm.sketch_total} characters`);
@@ -24650,10 +24717,22 @@ function buildStage(spec, atom) {
   let scenery = '', cones = '';
   const glow = time === 'night' ? 0.17 : time === 'day' ? 0.06 : 0.11;
   const sketches = [];
+  let usedLabel = false;
   // house style: the kit's outline defaults, so an unstyled sketch already reads like a prop; explicit attributes on an element override them
   const skStyle = `fill="none" stroke="${P.dark}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
-  const sketchMarkup = (list, anim) => { const marks = list.map((e) => sketchElement(e, P)); sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')), ...(anim ? { anim: anim.kind } : {}) }); return sketchAnim(anim, `<g ${skStyle}>${marks.join('')}</g>`); };
+  const sketchMarkup = (list, anim) => {
+    for (const raw of list) for (const [pid, variant] of usedPropRefs(raw)) defOf(pid, variant);   // a reused prop counts exactly like a placed one: its def is emitted and it is listed in provenance
+    const marks = list.map((e) => sketchElement(e, P));
+    sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')), ...(anim ? { anim: anim.kind } : {}) });
+    return sketchAnim(anim, `<g ${skStyle}>${marks.join('')}</g>`);
+  };
   for (const it of spec.scenery) {
+    if (it.label !== undefined) {                              // real text, drawn by trusted code -- never agent-authored markup
+      const sc = it.scale === undefined ? 1 : it.scale;
+      usedLabel = true;
+      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(sc)})">${labelMarkup(it, P)}</g>`;
+      continue;
+    }
     if (it.sketch) {                                            // agent-drawn: validated primitives, origin at the ground point like a prop
       const sc = it.scale === undefined ? 1 : it.scale;
       scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(it.flip ? -sc : sc)} ${fmt2(sc)})">${sketchMarkup(it.sketch, it.anim)}</g>`;
@@ -24670,10 +24749,12 @@ function buildStage(spec, atom) {
   /* actors */
   let actors = '';
   for (const a of spec.actors) {
-    const id = a.sketch ? null : defOf(a.prop, a.variant), begin = `-${fmt2(a.phase * a.period)}s`, dur = `${a.period}s`;
+    const id = (a.sketch || a.label !== undefined) ? null : defOf(a.prop, a.variant), begin = `-${fmt2(a.phase * a.period)}s`, dur = `${a.period}s`;
     const skMarks = a.sketch ? sketchMarkup(a.sketch, a.anim) : '';
+    if (a.label !== undefined) usedLabel = true;
     const sc = a.scale === undefined ? 1 : a.scale, dir = a.x1 < a.x0 ? -1 : 1, rep = `dur="${dur}" begin="${begin}" repeatCount="indefinite"`;
-    const inner = (flip) => a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>` : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
+    const inner = (flip) => a.label !== undefined ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${labelMarkup(a, P)}</g>`
+      : a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>` : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
     if (a.motion === 'walk') {
       actors += `<g><animateTransform attributeName="transform" type="translate" values="${fmt(a.x0)} ${fmt(a.y)};${fmt(a.x1)} ${fmt(a.y)};${fmt(a.x0)} ${fmt(a.y)}" keyTimes="0;0.5;1" ${rep}/>` +
         `<g><animateTransform attributeName="transform" type="scale" values="${dir} 1;${-dir} 1" keyTimes="0;0.5" calcMode="discrete" ${rep}/>${inner(1)}</g></g>`;
@@ -24699,6 +24780,7 @@ function buildStage(spec, atom) {
   }
   procedural.push('actor motion');
   if (sketches.length) procedural.push('agent-drawn sketches (validated SVG primitives)');
+  if (usedLabel) procedural.push('text label');
 
   const shade = interior && ROOM_SHADE[time] ? `<rect x="0" y="-620" width="${width}" height="1020" fill="${P.dark}" fill-opacity="${ROOM_SHADE[time]}"/>` : '';
   return wrapScene({ spec, atom, used, usedVariants, procedural, cam, kt, D, defs, S, body: `<g id="world">${back}${ground}${scenery}${actors}${shade}${cones}</g>`, extra: { preset: spec.preset || null }, sketches });
@@ -24928,7 +25010,11 @@ function buildScene(specIn, atom) {
   function kitFor(b) {
     if (!hasFull() || !b || typeof b !== 'object') return null;
     var want = {}, have = {}, byId = {}, out = [], seen = {}, C = core(), L = b.preset && C.layouts.layouts[b.preset];
-    function add1(it) { if (it && typeof it.prop === 'string') want[it.prop] = true; }
+    function add1(it) {
+      if (!it || typeof it !== 'object') return;
+      if (typeof it.prop === 'string') want[it.prop] = true;
+      if (Array.isArray(it.sketch)) it.sketch.forEach(function (frag) { usedPropRefs(frag).forEach(function (pair) { want[pair[0]] = true; }); });   // a <use href="#a-<id>"> reuses a prop too
+    }
     if (typeof b.asset === 'string') want[b.asset] = true;
     ['scenery', 'actors', 'scenery_add', 'actors_add'].forEach(function (k) { if (Array.isArray(b[k])) b[k].forEach(add1); });
     if (L) { if (b.scenery === undefined) L.scenery.forEach(add1); if (b.actors === undefined) L.actors.forEach(add1); }

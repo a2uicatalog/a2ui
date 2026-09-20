@@ -227,6 +227,11 @@
       "required": [
        "sketch"
       ]
+     },
+     {
+      "required": [
+       "label"
+      ]
      }
     ],
     "properties": {
@@ -883,6 +888,30 @@
         "maximum": 400
        }
       }
+     },
+     "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+     },
+     "size": {
+      "type": "number",
+      "minimum": 8,
+      "maximum": 80
+     },
+     "colour": {
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{6}|@(dark|light|roof|glass|window|livery|trunk|leaf|body|wing|beacon|sun|cloud|skin|hair|wood|metal|cream|red|yellow|green|blue|pink|white|brown|grey|orange|purple))$"
+     },
+     "align": {
+      "enum": [
+       "start",
+       "middle",
+       "end"
+      ]
+     },
+     "bold": {
+      "type": "boolean"
      },
      "x": {
       "type": "number",
@@ -964,6 +993,11 @@
       "required": [
        "sketch"
       ]
+     },
+     {
+      "required": [
+       "label"
+      ]
      }
     ],
     "properties": {
@@ -1620,6 +1654,30 @@
         "maximum": 400
        }
       }
+     },
+     "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+     },
+     "size": {
+      "type": "number",
+      "minimum": 8,
+      "maximum": 80
+     },
+     "colour": {
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{6}|@(dark|light|roof|glass|window|livery|trunk|leaf|body|wing|beacon|sun|cloud|skin|hair|wood|metal|cream|red|yellow|green|blue|pink|white|brown|grey|orange|purple))$"
+     },
+     "align": {
+      "enum": [
+       "start",
+       "middle",
+       "end"
+      ]
+     },
+     "bold": {
+      "type": "boolean"
      },
      "motion": {
       "enum": [
@@ -1725,6 +1783,11 @@
       "required": [
        "sketch"
       ]
+     },
+     {
+      "required": [
+       "label"
+      ]
      }
     ],
     "properties": {
@@ -2381,6 +2444,30 @@
         "maximum": 400
        }
       }
+     },
+     "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+     },
+     "size": {
+      "type": "number",
+      "minimum": 8,
+      "maximum": 80
+     },
+     "colour": {
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{6}|@(dark|light|roof|glass|window|livery|trunk|leaf|body|wing|beacon|sun|cloud|skin|hair|wood|metal|cream|red|yellow|green|blue|pink|white|brown|grey|orange|purple))$"
+     },
+     "align": {
+      "enum": [
+       "start",
+       "middle",
+       "end"
+      ]
+     },
+     "bold": {
+      "type": "boolean"
      },
      "x": {
       "type": "number",
@@ -2462,6 +2549,11 @@
       "required": [
        "sketch"
       ]
+     },
+     {
+      "required": [
+       "label"
+      ]
      }
     ],
     "properties": {
@@ -3118,6 +3210,30 @@
         "maximum": 400
        }
       }
+     },
+     "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+     },
+     "size": {
+      "type": "number",
+      "minimum": 8,
+      "maximum": 80
+     },
+     "colour": {
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{6}|@(dark|light|roof|glass|window|livery|trunk|leaf|body|wing|beacon|sun|cloud|skin|hair|wood|metal|cream|red|yellow|green|blue|pink|white|brown|grey|orange|purple))$"
+     },
+     "align": {
+      "enum": [
+       "start",
+       "middle",
+       "end"
+      ]
+     },
+     "bold": {
+      "type": "boolean"
      },
      "motion": {
       "enum": [

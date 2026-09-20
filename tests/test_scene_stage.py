@@ -276,3 +276,48 @@ def test_the_scene_stage_atom_lists_are_generated_from_the_kit_not_typed_by_hand
     f = blocks["scene_stage"]["fields"]
     assert all(p in f["preset"] for p in spec["preset"]["enum"]) and f"({len(spec['preset']['enum'])} ready presets)" in blocks["scene_stage"]["compact_description"]
     assert all(b in f["backdrop"] for b in spec["backdrop"]["enum"]) and all(g in f["ground"] for g in spec["ground"]["enum"])
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not installed")
+def test_the_mcp_apps_bundle_draws_real_text_labels_and_refuses_bad_ones():
+    import sys
+    import tempfile
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle as g
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", g.build_bundle(), re.S) if "a2ui-core" in b[:300]][0]
+    blocks = [{"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "Site 4\nOpen", "colour": "@red", "bold": True}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "<script>alert(1)</script>"}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "label": "hi", "colour": "not-a-colour"}]}]
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core + "\nvar b = " + json.dumps(blocks) + ";\nconsole.log(JSON.stringify(b.map(function (x) { return renderAtoms([x], {theme: 'light'}); })));\n")
+        ok, script, badColour = json.loads(subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
+    assert "<text" in ok and ">Site 4<" in ok and ">Open<" in ok and 'class="a2ui-scene"' in ok, ok[:300]
+    assert "&lt;script&gt;" in script and "<script>alert" not in script.replace("&lt;script&gt;", "")
+    assert "spec.scenery" in badColour and "colour must be" in badColour
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not installed")
+def test_the_mcp_apps_bundle_reuses_a_real_prop_via_use_once_the_worker_attaches_it():
+    """A non-core prop reused via <use> needs the SAME Worker-attaches-then-bundle-renders path as a normal `prop` reference. kitFor (the
+    Worker's per-block attachment scanner) must scan sketch fragments for these references too, not only the plain `prop` field -- this is
+    the gap a first version of the feature had, found by testing the real attachment path end to end rather than only local calls."""
+    import sys
+    import tempfile
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle as g
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", g.build_bundle(), re.S) if "a2ui-core" in b[:300]][0]
+    full_src = (ROOT / "apps-script-surface" / "scene-kit" / "atoms_scene_full.gs").read_text()
+    block = {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"x": 900, "sketch": ['<use href="#a-cow" transform="scale(0.5)"/>']}]}
+    with tempfile.TemporaryDirectory() as td:
+        js_kit = Path(td) / "kit.js"
+        js_kit.write_text("global.window = global;\n" + core + "\n" + full_src + "\nconsole.log(JSON.stringify(SceneStage.kitFor(" + json.dumps(block) + ")));\n")
+        kit = json.loads(subprocess.run([NODE, str(js_kit)], capture_output=True, text=True, timeout=120, check=True).stdout)
+        assert kit and any(e["id"] == "cow" for e in kit["entries"]), "kitFor must find 'cow' inside the sketch's <use>, not only in a plain `prop` field"
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core + "\nvar noAttach = renderAtoms([" + json.dumps(block) + "], {theme: 'light'});\n"
+                     "var withAttach = renderAtoms([" + json.dumps({**block, "_kit": kit}) + "], {theme: 'light'});\n"
+                     "console.log(JSON.stringify([noAttach, withAttach]));\n")
+        no_attach, with_attach = json.loads(subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
+    assert "border:1px solid #fca5a5" in no_attach, "without attachment, a non-core reused prop is refused readably, same as a normal prop reference"
+    assert 'id="a-cow"' in with_attach and 'href="#a-cow"' in with_attach and "border:1px solid #fca5a5" not in with_attach
