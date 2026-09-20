@@ -238,3 +238,26 @@ def test_the_mcp_apps_bundle_draws_a_valid_sketch_and_refuses_an_invalid_one():
     assert 'fill="#a9784a"' in ok and 'class="a2ui-scene"' in ok and "<script" not in ok.replace("<metadata", "")
     for bad in (script, image):
         assert "not an allowed sketch element" in bad and "evil.example" not in bad.split("not an allowed")[0] and 'class="a2ui-scene"' not in bad
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not installed")
+def test_the_mcp_apps_bundle_draws_house_style_sketches_with_animation_and_refuses_unsafe_animation():
+    import sys
+    import tempfile
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle as g
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", g.build_bundle(), re.S) if "a2ui-core" in b[:300]][0]
+    wag = '<g><animateTransform attributeName="transform" type="rotate" values="-14 0 0;14 0 0;-14 0 0" dur="0.5s" repeatCount="indefinite"/><rect x="-4" y="-30" width="8" height="30" fill="@wood"/></g>'
+    blocks = [{"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": [wag], "anim": {"type": "sway", "amount": 4}, "x": 900}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": ['<g><animate attributeName="href" values="a;b" dur="1s"/></g>'], "x": 900}]},
+              {"type": "scene_stage", "preset": "wind-farm", "scenery_add": [{"sketch": ['<rect fill="@nonsense" width="1" height="1"/>'], "x": 900}]},
+              {"type": "scene_stage", "preset": "airfield"}]
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "d.js"
+        d.write_text("global.window = global;\n" + core + "\nvar b = " + json.dumps(blocks) + ";\nconsole.log(JSON.stringify(b.map(function (x) { return renderAtoms([x], {theme: 'light'}); })));\n")
+        out = json.loads(subprocess.run([NODE, str(d)], capture_output=True, text=True, timeout=120, check=True).stdout)
+    ok, href, token, airfield = out
+    assert 'fill="#b0804f"' in ok and 'type="rotate" values="-14 0 0;14 0 0;-14 0 0"' in ok and 'values="-4 0 0;4 0 0;-4 0 0"' in ok, "palette name resolved; both animation tiers present"
+    assert "not an allowed sketch element" in href and 'attributeName="href"' not in href.split("not an allowed")[0]
+    assert "not an allowed sketch element" in token
+    assert "not embedded" in airfield or "jet-airliner" in airfield or 'class="a2ui-scene"' in airfield, "the airfield preset is known to the bundle"

@@ -22,6 +22,7 @@
   },
   "preset": {
    "enum": [
+    "airfield",
     "arctic-station",
     "bedroom",
     "boardroom-meeting",
@@ -844,6 +845,45 @@
        "maxLength": 4096
       }
      },
+     "anim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "type"
+      ],
+      "properties": {
+       "type": {
+        "enum": [
+         "sway",
+         "bob",
+         "spin",
+         "pulse",
+         "blink",
+         "drift"
+        ]
+       },
+       "period": {
+        "type": "number",
+        "minimum": 0.3,
+        "maximum": 30
+       },
+       "amount": {
+        "type": "number",
+        "minimum": 0.02,
+        "maximum": 300
+       },
+       "cx": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       },
+       "cy": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       }
+      }
+     },
      "x": {
       "type": "number",
       "minimum": -600,
@@ -1542,6 +1582,45 @@
        "maxLength": 4096
       }
      },
+     "anim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "type"
+      ],
+      "properties": {
+       "type": {
+        "enum": [
+         "sway",
+         "bob",
+         "spin",
+         "pulse",
+         "blink",
+         "drift"
+        ]
+       },
+       "period": {
+        "type": "number",
+        "minimum": 0.3,
+        "maximum": 30
+       },
+       "amount": {
+        "type": "number",
+        "minimum": 0.02,
+        "maximum": 300
+       },
+       "cx": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       },
+       "cy": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       }
+      }
+     },
      "motion": {
       "enum": [
        "walk",
@@ -1549,7 +1628,9 @@
        "drive",
        "fly",
        "hover",
-       "orbit"
+       "orbit",
+       "takeoff",
+       "land"
       ]
      },
      "x0": {
@@ -2262,6 +2343,45 @@
        "maxLength": 4096
       }
      },
+     "anim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "type"
+      ],
+      "properties": {
+       "type": {
+        "enum": [
+         "sway",
+         "bob",
+         "spin",
+         "pulse",
+         "blink",
+         "drift"
+        ]
+       },
+       "period": {
+        "type": "number",
+        "minimum": 0.3,
+        "maximum": 30
+       },
+       "amount": {
+        "type": "number",
+        "minimum": 0.02,
+        "maximum": 300
+       },
+       "cx": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       },
+       "cy": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       }
+      }
+     },
      "x": {
       "type": "number",
       "minimum": -600,
@@ -2960,6 +3080,45 @@
        "maxLength": 4096
       }
      },
+     "anim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "type"
+      ],
+      "properties": {
+       "type": {
+        "enum": [
+         "sway",
+         "bob",
+         "spin",
+         "pulse",
+         "blink",
+         "drift"
+        ]
+       },
+       "period": {
+        "type": "number",
+        "minimum": 0.3,
+        "maximum": 30
+       },
+       "amount": {
+        "type": "number",
+        "minimum": 0.02,
+        "maximum": 300
+       },
+       "cx": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       },
+       "cy": {
+        "type": "number",
+        "minimum": -400,
+        "maximum": 400
+       }
+      }
+     },
      "motion": {
       "enum": [
        "walk",
@@ -2967,7 +3126,9 @@
        "drive",
        "fly",
        "hover",
-       "orbit"
+       "orbit",
+       "takeoff",
+       "land"
       ]
      },
      "x0": {

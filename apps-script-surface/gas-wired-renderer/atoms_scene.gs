@@ -231,7 +231,7 @@ const NOUN = '(?:jet|plane|airliner|aircraft|airplane|rocket|robot|workshop|mach
 const SCENES = ['takeoff', 'landing', 'orchestrator', 'launch', 'workshop', 'stage'];
 const STAGE_BACKDROPS = ['sky-city', 'sky-hills', 'sky-sea', 'sky-mountains', 'sky-desert', 'sky-arctic', 'sky-flat', 'space', 'interior-office', 'interior-industrial', 'interior-lab', 'interior-civic', 'interior-home', 'interior-dark'];
 const STAGE_GROUNDS = ['grass', 'road', 'sand', 'snow', 'concrete', 'wood', 'water', 'none'];
-const STAGE_MOTIONS = ['walk', 'ride', 'drive', 'fly', 'hover', 'orbit'];
+const STAGE_MOTIONS = ['walk', 'ride', 'drive', 'fly', 'hover', 'orbit', 'takeoff', 'land'];
 /* Numeric limits of the stage spec: the validator, the JSON Schema (gen_spec_schema.mjs) and the LLM prompt all read this, so they cannot drift. */
 const STAGE_LIMITS = {
   title: 80, seed: [0, 4294967295], duration: [6, 40], scenery: 80, actors: 30,
@@ -387,6 +387,40 @@ function interpretPrompt(text, layoutsFile) {
 const ENUMS = { time: ['dawn', 'day', 'dusk', 'night'], weather: ['clear', 'cloudy', 'overcast'], setting: ['countryside', 'coast'], mode: [...MODES.aircraft, ...MODES.interior], scene: SCENES };
 const SPEC_VOCAB = { time: ENUMS.time, weather: ENUMS.weather, setting: ENUMS.setting, stage_cameras: MODES.interior, backdrops: STAGE_BACKDROPS, grounds: STAGE_GROUNDS, motions: STAGE_MOTIONS, limits: STAGE_LIMITS };
 
+/* "Did you mean": a model that guesses a prop id ('airplane') needs the right ids in the error, not just a refusal. Candidates carry the words
+ * of their id, name and tags; a query word matches exactly, by shared prefix, or within edit distance 2. */
+function editDistance(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function commonPrefix(a, b) { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; }
+function suggestFrom(query, cands, limit = 5) {
+  const q = String(query).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  if (!q) return [];
+  const qs = q.split(' '), joined = qs.join('-'), scored = [];
+  for (const c of cands) {
+    let s = c.id === joined ? 100 : c.id.includes(joined) ? 8 : 0;
+    for (const t of qs) {
+      let best = 0;
+      for (const w of c.words) {
+        if (w === t) best = Math.max(best, 10);
+        else if (t.length > 4 && w.length > 4 && commonPrefix(w, t) >= 5) best = Math.max(best, 5);
+        else if ((t.length >= 4 && w.length >= 3 && t.startsWith(w)) || (w.length >= 4 && t.length >= 3 && w.startsWith(t))) best = Math.max(best, 6);      // 'doggy' -> dog
+        else if (t.length > 3 && w.length > 3 && editDistance(w, t) <= 2) best = Math.max(best, 4);
+      }
+      s += best;
+    }
+    if (s > 0) scored.push([s, c.id]);
+  }
+  return scored.sort((x, y) => y[0] - x[0] || x[1].localeCompare(y[1])).slice(0, limit).map((x) => x[1]);
+}
+/** Prop ids in this atom closest to a guessed id, judged by id, name and tags. */
+function suggestProps(atom, query, limit = 5) {
+  return suggestFrom(query, atom.registry.entries.map((e) => ({ id: e.id, words: [...e.id.split('-'), ...String(e.name).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean), ...(e.tags || [])] })), limit);
+}
+
 /* ------------------------------------------------------------------ sketch: the escape hatch inside a scene
  * When no prop in the kit fits, a scene item may carry `sketch`: an array of SVG element strings. They are checked by the SAME rules as the
  * catalogue's agent_sketchpad atom (a port of its validator, see atoms_charts.gs): allowlisted tags and attributes only, values limited to
@@ -396,6 +430,44 @@ const SKETCH_TAGS = new Set(['circle', 'ellipse', 'rect', 'line', 'polyline', 'p
 const SKETCH_ATTRS = new Set(['cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'width', 'height', 'x1', 'y1', 'x2', 'y2', 'points', 'd', 'fill', 'stroke', 'stroke-width',
   'opacity', 'fill-opacity', 'stroke-opacity', 'stroke-linecap', 'stroke-linejoin', 'transform']);
 const SKETCH_SAFE = /^[A-Za-z0-9#.,\-\s()%]*$/;
+/* House style. Sketches are drawn on top of the kit's outline defaults (see sketchMarkup) and may use palette names in fill and stroke as "@name":
+ * resolved at draw time, so a sketch follows the scene's lighting (night, dusk) and matches the props around it. */
+const SKETCH_PALETTE_KEYS = { dark: 'dark', light: 'structure', roof: 'roof', glass: 'glass', window: 'window', livery: 'livery', trunk: 'trunk', leaf: 'leaf', body: 'body', wing: 'wing', beacon: 'beacon', sun: 'sun', cloud: 'cloud' };
+const SKETCH_FIXED = { skin: '#e0ac82', hair: '#3a2a20', wood: '#b0804f', metal: '#c3c9d0', cream: '#f4ebd8', red: '#d64541', yellow: '#f2c230', green: '#4a9a6a', blue: '#4a6fa5', pink: '#f2a9b7', white: '#ffffff', brown: '#8a5a34', grey: '#9aa0a8', orange: '#e8743b', purple: '#7a4fc4' };
+const SKETCH_COLOURS = [...Object.keys(SKETCH_PALETTE_KEYS), ...Object.keys(SKETCH_FIXED)];
+const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+function sketchColour(name, pal) {
+  if (has(SKETCH_FIXED, name)) return SKETCH_FIXED[name];
+  if (has(SKETCH_PALETTE_KEYS, name)) return pal ? pal[SKETCH_PALETTE_KEYS[name]] : '#000000';
+  return null;
+}
+/* Hand-rolled animation, tier 2: allowlisted SMIL inside a sketch (`animateTransform` / `animate` as children of a shape or group). Numbers only:
+ * no href, no from/to/by, no begin events, no fill/style targets, so an animation can move, rotate, scale or fade a shape and nothing else. */
+const SKETCH_ANIM_CAMEL = { attributename: 'attributeName', keytimes: 'keyTimes', repeatcount: 'repeatCount', calcmode: 'calcMode', keysplines: 'keySplines' };
+const SKETCH_ANIM_ATTRS = new Set(['attributename', 'type', 'values', 'keytimes', 'dur', 'repeatcount', 'begin', 'calcmode', 'keysplines']);
+const SKETCH_ANIMATE_TARGETS = new Set(['opacity', 'fill-opacity', 'stroke-opacity', 'stroke-width', 'r', 'rx', 'ry', 'cx', 'cy', 'x', 'y', 'width', 'height', 'x1', 'y1', 'x2', 'y2', 'stroke-dashoffset']);
+const SKETCH_MAX_ANIMS = 12;
+function sketchAnimValid(el) {
+  if (el.children.length) return false;
+  const a = el.attrs;
+  if (!Object.keys(a).every((k) => SKETCH_ANIM_ATTRS.has(k))) return false;
+  if (el.tag === 'animateTransform') { if (a.attributename !== 'transform' || !['rotate', 'translate', 'scale'].includes(a.type)) return false; }
+  else if (!SKETCH_ANIMATE_TARGETS.has(a.attributename) || a.type !== undefined) return false;
+  if (!/^[0-9.,;\-\s]+$/.test(a.values || '')) return false;
+  const vals = a.values.split(';').map((v) => v.trim());
+  if (vals.length < 2 || vals.length > 20 || vals.some((v) => !v)) return false;
+  if (a.keytimes !== undefined) {
+    const kt = a.keytimes.split(';').map((v) => v.trim());
+    if (!/^[0-9.;\s]+$/.test(a.keytimes) || kt.length !== vals.length || kt.some((v) => !/^\d*\.?\d+$/.test(v) || Number(v) > 1)) return false;
+  }
+  const dur = /^(\d{1,2}(?:\.\d+)?)s$/.exec(a.dur || '');
+  if (!dur || Number(dur[1]) < 0.2 || Number(dur[1]) > 60) return false;
+  if (a.repeatcount !== undefined && a.repeatcount !== 'indefinite' && !(/^\d{1,2}$/.test(a.repeatcount) && Number(a.repeatcount) >= 1)) return false;
+  if (a.begin !== undefined && !/^-?\d{1,2}(\.\d+)?s$/.test(a.begin)) return false;
+  if (a.calcmode !== undefined && !['linear', 'discrete', 'paced', 'spline'].includes(a.calcmode)) return false;
+  if (a.keysplines !== undefined && !/^[0-9.,;\s]+$/.test(a.keysplines)) return false;
+  return true;
+}
 
 function sketchParse(s, pos, depth) {
   if (depth > 6) return null;
@@ -425,22 +497,51 @@ function sketchParse(s, pos, depth) {
     pos = child.pos;
   }
 }
-function sketchValid(el) {
+function sketchValid(el, isRoot, budget) {
+  if (el.tag === 'animate' || el.tag === 'animateTransform') return !isRoot && --budget.n >= 0 && sketchAnimValid(el);
   if (!SKETCH_TAGS.has(el.tag)) return false;
-  for (const name of Object.keys(el.attrs)) if (!SKETCH_ATTRS.has(name) || !SKETCH_SAFE.test(el.attrs[name])) return false;
-  return el.children.every(sketchValid);
+  for (const name of Object.keys(el.attrs)) {
+    const v = el.attrs[name];
+    if (!SKETCH_ATTRS.has(name)) return false;
+    if ((name === 'fill' || name === 'stroke') && v.startsWith('@')) { if (sketchColour(v.slice(1), null) === null) return false; }
+    else if (!SKETCH_SAFE.test(v)) return false;
+  }
+  return el.children.every((c) => sketchValid(c, false, budget));
 }
-function sketchSerialize(el) {
+function sketchSerialize(el, pal) {
+  const anim = el.tag === 'animate' || el.tag === 'animateTransform';
   let out = '<' + el.tag;
-  for (const name of Object.keys(el.attrs)) out += ` ${name}="${esc(el.attrs[name])}"`;
-  return el.children.length ? out + '>' + el.children.map(sketchSerialize).join('') + '</' + el.tag + '>' : out + '/>';
+  for (const name of Object.keys(el.attrs)) {
+    let v = el.attrs[name];
+    if ((name === 'fill' || name === 'stroke') && v.startsWith('@')) v = sketchColour(v.slice(1), pal);
+    out += ` ${anim ? (SKETCH_ANIM_CAMEL[name] || name) : name}="${esc(v)}"`;
+  }
+  if (pal && !anim && !has(el.attrs, 'fill') && ['rect', 'circle', 'ellipse', 'polygon'].includes(el.tag)) out += ` fill="${pal.structure}"`;   // closed shapes default to a light fill
+  return el.children.length ? out + '>' + el.children.map((c) => sketchSerialize(c, pal)).join('') + '</' + el.tag + '>' : out + '/>';
 }
-/** One SVG element string -> its re-serialised, validated markup, or null if it breaks any rule. */
-function sketchElement(fragment) {
+/** One SVG element string -> its re-serialised, validated markup (palette names resolved when `pal` is given), or null if it breaks any rule. */
+function sketchElement(fragment, pal) {
   if (typeof fragment !== 'string' || fragment.length > STAGE_LIMITS.sketch_chars) return null;
   const parsed = sketchParse(fragment, 0, 0);
-  if (!parsed || /\S/.test(fragment.slice(parsed.pos)) || !sketchValid(parsed)) return null;
-  return sketchSerialize(parsed);
+  if (!parsed || /\S/.test(fragment.slice(parsed.pos)) || !sketchValid(parsed, true, { n: SKETCH_MAX_ANIMS })) return null;
+  return sketchSerialize(parsed, pal);
+}
+
+/* Hand-rolled animation, tier 1: a sketch item's `anim` field. We generate the SMIL ourselves, so a model only chooses a preset and two numbers. */
+const SKETCH_ANIMS = ['sway', 'bob', 'spin', 'pulse', 'blink', 'drift'];
+const SKETCH_ANIM_AMOUNT = { sway: [0.5, 40], bob: [1, 80], drift: [2, 300], pulse: [0.02, 0.4], blink: [0.05, 0.9] };
+Object.assign(SPEC_VOCAB, { sketch_anims: SKETCH_ANIMS, sketch_colours: SKETCH_COLOURS, sketch_anim_amount: SKETCH_ANIM_AMOUNT });
+function sketchAnim(an, inner) {
+  if (!an) return inner;
+  const per = an.period === undefined ? 3 : an.period, cx = an.cx === undefined ? 0 : an.cx, cy = an.cy === undefined ? 0 : an.cy, amt = an.amount;
+  const rep = `dur="${fmt2(per)}s" repeatCount="indefinite"`, at = (type, values) => `<animateTransform attributeName="transform" type="${type}" values="${values}" ${rep}/>`;
+  if (an.type === 'sway') { const a = amt === undefined ? 3 : amt; return `<g>${at('rotate', `${fmt2(-a)} ${fmt(cx)} ${fmt(cy)};${fmt2(a)} ${fmt(cx)} ${fmt(cy)};${fmt2(-a)} ${fmt(cx)} ${fmt(cy)}`)}${inner}</g>`; }
+  if (an.type === 'bob') { const a = amt === undefined ? 6 : amt; return `<g>${at('translate', `0 0;0 ${fmt2(-a)};0 0`)}${inner}</g>`; }
+  if (an.type === 'drift') { const a = amt === undefined ? 20 : amt; return `<g>${at('translate', `${fmt2(-a)} 0;${fmt2(a)} 0;${fmt2(-a)} 0`)}${inner}</g>`; }
+  if (an.type === 'spin') return `<g>${at('rotate', `0 ${fmt(cx)} ${fmt(cy)};360 ${fmt(cx)} ${fmt(cy)}`)}${inner}</g>`;
+  if (an.type === 'pulse') { const a = amt === undefined ? 0.08 : amt; return `<g transform="translate(${fmt(cx)} ${fmt(cy)})"><g>${at('scale', `1;${fmt2(1 + a)};1`)}<g transform="translate(${fmt(-cx)} ${fmt(-cy)})">${inner}</g></g></g>`; }
+  if (an.type === 'blink') { const m = amt === undefined ? 0.25 : amt; return `<g><animate attributeName="opacity" values="1;${fmt2(m)};1" ${rep}/>${inner}</g>`; }
+  return inner;
 }
 
 /** scenery_add / actors_add append to whatever the layout (preset or explicit) provides, so a spec can extend a preset without rewriting it. */
@@ -495,9 +596,21 @@ function validateStage(input, atom) {
     const names = p && p.variants ? Object.keys(p.variants) : [];
     if (!names.includes(it.variant)) errors.push(`${path}.variant must be one of: ${names.join(', ') || '(this prop has no variants)'}`);
   };
+  const didYouMean = (v) => { const s = typeof v === 'string' ? suggestProps(atom, v) : []; return s.length ? ` Did you mean: ${s.join(', ')}?` : ' See the asset index for valid ids.'; };
   let sketchCount = 0, sketchChars = 0;
+  const checkAnim = (an, path) => {
+    if (!only(an, ['type', 'period', 'amount', 'cx', 'cy'], `${path}.anim`)) return;
+    if (!SKETCH_ANIMS.includes(an.type)) { errors.push(`${path}.anim.type must be one of ${SKETCH_ANIMS.join('|')}`); return; }
+    if (an.period !== undefined && !num(an.period, 0.3, 30)) errors.push(`${path}.anim.period must be 0.3..30 seconds`);
+    if (an.amount !== undefined) {
+      const r = SKETCH_ANIM_AMOUNT[an.type];
+      if (!r) errors.push(`${path}.anim.amount does not apply to ${an.type}`); else if (!num(an.amount, r[0], r[1])) errors.push(`${path}.anim.amount for ${an.type} must be ${r[0]}..${r[1]}`);
+    }
+    for (const k of ['cx', 'cy']) if (an[k] !== undefined && !num(an[k], -400, 400)) errors.push(`${path}.anim.${k} must be -400..400`);
+  };
   const checkSketch = (it, path) => {
     if (it.prop !== undefined || it.variant !== undefined) errors.push(`${path}: a sketch item takes no prop or variant`);
+    if (it.anim !== undefined) checkAnim(it.anim, path);
     const sk = it.sketch;
     sketchCount++;
     if (!Array.isArray(sk) || sk.length < 1 || sk.length > Lm.sketch_elements) { errors.push(`${path}.sketch must be an array of 1..${Lm.sketch_elements} SVG element strings`); return; }
@@ -509,11 +622,12 @@ function validateStage(input, atom) {
   };
   if (!Array.isArray(s.scenery) || s.scenery.length > Lm.scenery) errors.push(`spec.scenery must be an array of at most ${Lm.scenery} items`);
   else s.scenery.forEach((it, i) => {
-    if (!only(it, ['prop', 'x', 'y', 'variant', 'scale', 'flip', 'sketch'], `spec.scenery[${i}]`)) return;
+    if (!only(it, ['prop', 'x', 'y', 'variant', 'scale', 'flip', 'sketch', 'anim'], `spec.scenery[${i}]`)) return;
     const isSketch = it.sketch !== undefined;
     const p = isSketch ? null : atom.byId[it.prop];
     if (isSketch) checkSketch(it, `spec.scenery[${i}]`);
-    else if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch)`);
+    else if (it.anim !== undefined) errors.push(`spec.scenery[${i}]: anim only applies to a sketch item`);
+    else if (!p) errors.push(`spec.scenery[${i}].prop must be a registry prop (or give a sketch).${didYouMean(it.prop)}`);
     if (!num(it.x, ...Lm.scenery_x)) errors.push(`spec.scenery[${i}].x must be ${rng2(Lm.scenery_x)}`);
     if (it.y !== undefined && !num(it.y, ...Lm.scenery_y)) errors.push(`spec.scenery[${i}].y must be ${rng2(Lm.scenery_y)}`);
     if (it.scale !== undefined && !num(it.scale, ...Lm.scale)) errors.push(`spec.scenery[${i}].scale must be ${rng2(Lm.scale)}`);
@@ -522,11 +636,12 @@ function validateStage(input, atom) {
   });
   if (!Array.isArray(s.actors) || s.actors.length > Lm.actors) errors.push(`spec.actors must be an array of at most ${Lm.actors} items`);
   else s.actors.forEach((a, i) => {
-    if (!only(a, ['prop', 'motion', 'x0', 'x1', 'y', 'period', 'phase', 'variant', 'scale', 'ry', 'sketch'], `spec.actors[${i}]`)) return;
+    if (!only(a, ['prop', 'motion', 'x0', 'x1', 'y', 'period', 'phase', 'variant', 'scale', 'ry', 'sketch', 'anim'], `spec.actors[${i}]`)) return;
     const isSketch = a.sketch !== undefined;
     const p = isSketch ? null : atom.byId[a.prop];
     if (isSketch) checkSketch(a, `spec.actors[${i}]`);
-    else if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch)`);
+    else if (a.anim !== undefined) errors.push(`spec.actors[${i}]: anim only applies to a sketch item`);
+    else if (!p) errors.push(`spec.actors[${i}].prop must be a registry prop (or give a sketch).${didYouMean(a.prop)}`);
     if (!STAGE_MOTIONS.includes(a.motion)) errors.push(`spec.actors[${i}].motion must be one of ${STAGE_MOTIONS.join('|')}`);
     for (const k of ['x0', 'x1']) if (!num(a[k], ...Lm.actor_x)) errors.push(`spec.actors[${i}].${k} must be ${rng2(Lm.actor_x)}`);
     if (!num(a.y, ...Lm.actor_y)) errors.push(`spec.actors[${i}].y must be ${rng2(Lm.actor_y)}`);
@@ -1052,11 +1167,13 @@ function buildStage(spec, atom) {
   let scenery = '', cones = '';
   const glow = time === 'night' ? 0.17 : time === 'day' ? 0.06 : 0.11;
   const sketches = [];
-  const sketchMarkup = (list) => { const marks = list.map(sketchElement); sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')) }); return marks.join(''); };
+  // house style: the kit's outline defaults, so an unstyled sketch already reads like a prop; explicit attributes on an element override them
+  const skStyle = `fill="none" stroke="${P.dark}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+  const sketchMarkup = (list, anim) => { const marks = list.map((e) => sketchElement(e, P)); sketches.push({ elements: list.length, sha256: sha256Hex(list.join('\n')), ...(anim ? { anim: anim.type } : {}) }); return sketchAnim(anim, `<g ${skStyle}>${marks.join('')}</g>`); };
   for (const it of spec.scenery) {
     if (it.sketch) {                                            // agent-drawn: validated primitives, origin at the ground point like a prop
       const sc = it.scale === undefined ? 1 : it.scale;
-      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(it.flip ? -sc : sc)} ${fmt2(sc)})">${sketchMarkup(it.sketch)}</g>`;
+      scenery += `<g transform="translate(${fmt(it.x)} ${fmt(it.y === undefined ? 0 : it.y)}) scale(${fmt2(it.flip ? -sc : sc)} ${fmt2(sc)})">${sketchMarkup(it.sketch, it.anim)}</g>`;
       continue;
     }
     const a = atom.byId[it.prop].anchors || {};
@@ -1071,12 +1188,20 @@ function buildStage(spec, atom) {
   let actors = '';
   for (const a of spec.actors) {
     const id = a.sketch ? null : defOf(a.prop, a.variant), begin = `-${fmt2(a.phase * a.period)}s`, dur = `${a.period}s`;
-    const skMarks = a.sketch ? sketchMarkup(a.sketch) : '';
+    const skMarks = a.sketch ? sketchMarkup(a.sketch, a.anim) : '';
     const sc = a.scale === undefined ? 1 : a.scale, dir = a.x1 < a.x0 ? -1 : 1, rep = `dur="${dur}" begin="${begin}" repeatCount="indefinite"`;
     const inner = (flip) => a.sketch ? `<g transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})">${skMarks}</g>` : `<use href="#${id}" transform="scale(${fmt2(flip * sc)} ${fmt2(sc)})"/>`;
     if (a.motion === 'walk') {
       actors += `<g><animateTransform attributeName="transform" type="translate" values="${fmt(a.x0)} ${fmt(a.y)};${fmt(a.x1)} ${fmt(a.y)};${fmt(a.x0)} ${fmt(a.y)}" keyTimes="0;0.5;1" ${rep}/>` +
         `<g><animateTransform attributeName="transform" type="scale" values="${dir} 1;${-dir} 1" keyTimes="0;0.5" calcMode="discrete" ${rep}/>${inner(1)}</g></g>`;
+    } else if (a.motion === 'takeoff' || a.motion === 'land') {
+      // fixed-wing: roll, rotate and climb (takeoff) or descend, flare and roll out (land). ry is the climb height (default 260).
+      const rise = a.ry === undefined ? 260 : a.ry, dx = a.x1 - a.x0, up = a.motion === 'takeoff', gx = a.x0 + (up ? 0.34 : 0.62) * dx;
+      const pos = up ? [[a.x0, a.y], [gx, a.y], [a.x1, a.y - rise]] : [[a.x0, a.y - rise], [gx, a.y], [a.x1, a.y]];
+      const ang = up ? [0, 0, -14 * dir, -14 * dir] : [4 * dir, -5 * dir, 0, 0];      // nose-up is counter-clockwise for a plane facing +x
+      actors += `<g><animateTransform attributeName="transform" type="translate" values="${pos.map((q) => `${fmt(q[0])} ${fmt(q[1])}`).join(';')}" keyTimes="${up ? '0;0.55;1' : '0;0.42;1'}" ${rep}/>` +
+        `<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1" ${rep}/>` +
+        `<g><animateTransform attributeName="transform" type="rotate" values="${ang.join(';')}" keyTimes="${up ? '0;0.5;0.64;1' : '0;0.36;0.46;1'}" ${rep}/>${inner(dir)}</g></g>`;
     } else if (a.motion === 'ride' || a.motion === 'drive' || a.motion === 'fly') {
       const bob = a.motion === 'fly' ? `<animateTransform attributeName="transform" type="translate" values="0 0;0 ${fmt(-(a.ry === undefined ? 14 : a.ry))};0 0" dur="${fmt(a.period / 3)}s" begin="${begin}" repeatCount="indefinite"/>` : '';
       actors += `<g><animateTransform attributeName="transform" type="translate" values="${fmt(a.x0)} ${fmt(a.y)};${fmt(a.x1)} ${fmt(a.y)}" ${rep}/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1" ${rep}/><g>${bob}${inner(dir)}</g></g>`;
@@ -1308,6 +1433,13 @@ function buildScene(specIn, atom) {
     }
     return atomFromBundle({ schema: 1, registry_sha256: C.registry_sha256, allow: C.allow, layouts: C.layouts, entries: entries }, { skipSvgStructure: true });
   }
+  /* candidates for "did you mean": core props carry their name and tags; the rest of the kit is known by id only */
+  function kitCands() {
+    var C = core(), seenId = {}, out = [];
+    C.entries.forEach(function (e) { seenId[e.id] = true; out.push({ id: e.id, words: e.id.split('-').concat(String(e.name).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean), e.tags || []) }); });
+    Object.keys(C.trusted_sha256).forEach(function (id) { if (!seenId[id]) out.push({ id: id, words: id.split('-') }); });
+    return out;
+  }
   function atomFor(b) { if (b && b._kit) return kitAtom(b._kit); return hasFull() ? fullAtom() : atom(); }
   /** Worker side: the props this block needs that the bundle core does not carry, as an attachment (or null). Needs the full kit. */
   function kitFor(b) {
@@ -1355,7 +1487,7 @@ function buildScene(specIn, atom) {
   function renderClipart(b) {
     try {
       var a = atomFor(b), e = a.byId[b.asset];
-      if (!e) throw new Error(core().trusted_sha256[b.asset] ? 'clipart.asset ' + esc(b.asset) + ' is in the kit but not embedded on this surface: the server attaches it (render_surface and the Worker do)' : 'clipart.asset must be an id from the asset index (got ' + esc(b.asset) + ')');
+      if (!e) throw new Error(core().trusted_sha256[b.asset] ? 'clipart.asset ' + esc(b.asset) + ' is in the kit but not embedded on this surface: the server attaches it (render_surface and the Worker do)' : 'clipart.asset must be an id from the asset index (got ' + esc(b.asset) + ')' + (function () { var s = suggestFrom(b.asset, kitCands()); return s.length ? '. Did you mean: ' + s.join(', ') + '?' : ''; })());
       var r = renderPropPreview(a, b.asset, b.variant, b.time || 'day');
       var sc = b.scale === undefined ? 1 : Math.max(0.2, Math.min(5, Number(b.scale) || 1));
       var vb = r.viewBox.split(/\s+/).map(Number), w = Math.round(vb[2] * sc), flip = b.flip ? ' transform="scale(-1 1)" transform-origin="center"' : '';
