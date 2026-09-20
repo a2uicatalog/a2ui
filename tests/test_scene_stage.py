@@ -86,13 +86,14 @@ def test_gas_files_render_scenes_in_a_bare_runtime_without_a_dom():
     assert "stable registry ids" in o["c2"]
 
 
-def test_the_mcp_apps_bundle_carries_the_engine_but_not_the_data():
-    """Kept out on purpose so the bundle stays inside test_bundle_size_guard; the atoms then answer with a readable card there."""
+def test_the_mcp_apps_bundle_carries_the_engine_and_the_data():
+    """Bundled since 2026-09-20 (size-guard ceiling raised with Curtis's go-ahead). If a host rejects the size, the data file goes back
+    into EXCLUDE_FILES and the atoms answer with a readable card there (the engine still says so, see the other test)."""
     import sys
     sys.path.insert(0, str(ROOT / "scripts"))
     import gen_mcp_apps_bundle as g
     names = {f.name for f in g.renderer_files()}
-    assert "atoms_scene.gs" in names and "atoms_scene_data.gs" not in names
+    assert "atoms_scene.gs" in names and "atoms_scene_data.gs" in names
     assert "not bundled on this surface" in (GAS / "atoms_scene.gs").read_text()
 
 
@@ -112,3 +113,27 @@ def test_a_layout_without_scenery_actors_or_camera_still_renders_and_a_bad_one_s
     ok, bare, bad = json.loads(r.stdout)
     assert ok.startswith("<figure") and bare.startswith("<figure") and "<animate" in ok
     assert "spec.ground must be one of" in bad
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not installed")
+def test_the_mcp_apps_bundle_itself_renders_scenes_and_clipart():
+    """Build the real MCP Apps bundle in memory, run its DOM-free core in Node, and render both atoms through renderAtoms."""
+    import sys
+    import tempfile
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import gen_mcp_apps_bundle as g
+    bundle = g.build_bundle()
+    core = [b for b in re.findall(r"<script>\n(.*?)\n</script>", bundle, re.S) if "a2ui-core" in b[:300]][0]
+    blocks = [{"type": "scene_stage", "preset": "wind-farm", "theme": {"time": "dusk"}}, {"type": "scene_stage", "preset": "no-such"},
+              {"type": "clipart", "asset": "wind-turbine", "scale": 1.5, "label": "A turbine"}]
+    with tempfile.TemporaryDirectory() as td:
+        driver = Path(td) / "driver.js"
+        driver.write_text("global.window = global;\n" + core + "\nvar out = " + json.dumps(blocks) +
+                          ".map(function (b) { return renderAtoms([b], {theme: 'light'}); });\nconsole.log(JSON.stringify(out));\n")
+        proc = subprocess.run([NODE, str(driver)], capture_output=True, text=True, timeout=120)
+    assert proc.returncode == 0, proc.stderr[-2000:]
+    scene, bad, clip = json.loads(proc.stdout)
+    assert 'class="a2ui-scene"' in scene and "<animate" in scene and "scene-atom:provenance" in scene, scene[:300]
+    assert "not bundled on this surface" not in scene and "spec.preset must be one of" in bad
+    assert 'class="a2ui-clipart"' in clip and "A turbine" in clip
+    assert len(bundle) < 3_200_000
