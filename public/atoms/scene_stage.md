@@ -16,7 +16,7 @@ mcp-apps
 | theme | {time: "dawn"|"day"|"dusk"|"night", weather: "clear"|"cloudy"|"overcast", setting: "countryside"|"coast"} (optional). Default day, clear, countryside. Interiors dim with the time of day. |
 | motion | {duration: number 6..40} (optional, seconds per loop). Default 20. |
 | camera | {mode: "static"|"pan"|"push-in"} (optional). The preset has a default; without a preset the default is static. |
-| accent | string (optional, |
+| accent | string (optional, #rrggbb). Tints props that take an accent colour. |
 | backdrop | "sky-city"|"sky-hills"|"sky-sea"|"sky-mountains"|"sky-desert"|"sky-arctic"|"sky-flat"|"space"|"interior-office"|"interior-industrial"|"interior-lab"|"interior-civic"|"interior-dark" (required when there is no preset). |
 | ground | "grass"|"road"|"sand"|"snow"|"concrete"|"water"|"none" (required when there is no preset). |
 | stage | {width: 600..4000, zoom: 500..3200, focus_y: -800..200} (required when there is no preset). Scene units: the ground line is y=0 and up is negative. |

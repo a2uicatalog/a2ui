@@ -159,3 +159,12 @@ def test_published_scene_assets_match_the_data_the_renderer_embeds():
     schema = json.loads((ROOT / "public" / "catalogue" / "scene-spec.schema.json").read_text())
     assert set(schema["properties"]["preset"]["enum"]) == set(data["layouts"]["layouts"])
     assert set(schema["properties"]["scenery"]["items"]["properties"]["prop"]["enum"]) >= {a["id"] for a in idx["assets"]}
+
+
+def test_every_scene_atom_field_description_survived_yaml_parsing():
+    """An unquoted ' #' starts a YAML comment: 'string (optional, #rrggbb)' once lost everything after 'optional,'. Guard the whole block."""
+    blocks = {b["type"]: b for b in yaml.safe_load((ROOT / "atoms" / "schema.yaml").read_text())["blocks"] if isinstance(b, dict)}
+    for t in ("scene_stage", "clipart"):
+        for k, v in blocks[t]["fields"].items():
+            assert isinstance(v, str) and len(v) > 25 and not v.rstrip().endswith((",", "(optional,")), f"{t}.{k} looks truncated: {v!r}"
+    assert "#rrggbb" in blocks["scene_stage"]["fields"]["accent"]

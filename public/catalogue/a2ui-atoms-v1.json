@@ -22349,7 +22349,7 @@
       },
       "accent": {
        "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
-       "description": "string (optional,"
+       "description": "string (optional, #rrggbb). Tints props that take an accent colour."
       },
       "backdrop": {
        "description": "\"sky-city\"|\"sky-hills\"|\"sky-sea\"|\"sky-mountains\"|\"sky-desert\"|\"sky-arctic\"|\"sky-flat\"|\"space\"|\"interior-office\"|\"interior-industrial\"|\"interior-lab\"|\"interior-civic\"|\"interior-dark\" (required when there is no preset)."

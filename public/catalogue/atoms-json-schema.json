@@ -19622,7 +19622,7 @@
             }
           },
           "accent": {
-            "type": "string"
+            "type": "integer"
           },
           "backdrop": {
             "type": "string",

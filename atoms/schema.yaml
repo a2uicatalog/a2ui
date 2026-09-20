@@ -14767,8 +14767,8 @@ blocks:
         does not draw the scene until that project is migrated.
     - surface: web
       note: The Python static renderer (renderers/web_article.py) cannot run the engine;
-        it shows the title and a link instead. Use mcp-apps or google-apps-script-web
-        for the animation.
+        it shows the title and a note instead. Use the MCP Apps surface for the
+        animation.
     - surface: google-meet-stage
       note: Animated SVG (SMIL) should play, but this has not been verified on the
         Meet stage runtime.
@@ -14791,7 +14791,7 @@ blocks:
       Interiors dim with the time of day.'
     motion: '{duration: number 6..40} (optional, seconds per loop). Default 20.'
     camera: '{mode: "static"|"pan"|"push-in"} (optional). The preset has a default; without a preset the default is static.'
-    accent: string (optional, #rrggbb). Tints props that take an accent colour.
+    accent: 'string (optional, #rrggbb). Tints props that take an accent colour.'
     backdrop: '"sky-city"|"sky-hills"|"sky-sea"|"sky-mountains"|"sky-desert"|"sky-arctic"|"sky-flat"|"space"|"interior-office"|"interior-industrial"|"interior-lab"|"interior-civic"|"interior-dark"
       (required when there is no preset).'
     ground: '"grass"|"road"|"sand"|"snow"|"concrete"|"water"|"none" (required when there is no preset).'
