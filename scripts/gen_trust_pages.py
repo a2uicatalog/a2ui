@@ -120,6 +120,7 @@ server so it cannot go stale:</p>
 <li><a href="/openapi.json">OpenAPI Spec (OpenAPI 3.1)</a> — every endpoint, request/response schemas, examples</li>
 <li><a href="/docs/">API Docs</a> — REST endpoints, error models, and rate limits</li>
 <li><a href="/api-docs/">API Reference &amp; Docs</a> — complete endpoint and parameter directory</li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI/MCP package, Python A2A tools, and SDK generators</li>
 <li><a href="/auth/">Auth Docs</a> — authentication overview, rate limits, and enterprise OAuth</li>
 <li><a href="/webhooks/">Webhooks Docs</a> — SSE streaming, event delivery, and chat integrations</li>
 <li><a href="/versioning/">API Versioning Policy</a> — X-API-Version headers, deprecation timelines, and compatibility</li>
@@ -128,6 +129,7 @@ server so it cannot go stale:</p>
 <li><a href="/llms.txt">llms.txt</a> — short overview + entry points</li>
 <li><a href="/.well-known/agent-auth.md">Auth &amp; rate limits</a> — the real per-tool numbers</li>
 <li><a href="/auth.md">Authentication guide</a> — why you probably need no credential, and the optional OAuth path if your platform requires one</li>
+<li><a href="/sdk.md">SDK Documentation</a> — guide to client libraries and packages</li>
 <li><a href="/versioning.md">Versioning &amp; deprecation policy</a> — what changes without notice, and the CI gate that fails a deploy if a response shape changes undeclared</li>
 <li><a href="/.well-known/mcp.json">MCP discovery manifest</a></li>
 </ul>
@@ -180,9 +182,11 @@ unauthenticated, and machine-readable.</p>
 <ul>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — complete machine-readable OpenAPI spec</li>
 <li><a href="/developers/">Developers Guide</a> — integration walkthrough and deployment guide</li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI/MCP package, Python A2A tools, and SDK generators</li>
 <li><a href="/llms.txt">llms.txt</a> and <a href="/docs/llms.txt">docs/llms.txt</a> — LLM-friendly context documents</li>
 <li><a href="/agents.md">agents.md</a> — agent guide with tool contracts and invocation examples</li>
 <li><a href="/auth.md">Authentication Guide</a> — auth requirements and OAuth metadata</li>
+<li><a href="/sdk.md">SDK Documentation</a> — SDKs and client packages</li>
 <li><a href="/.well-known/agent-auth.md">Auth &amp; Rate Limits</a> — real rate limits per tool and endpoint</li>
 <li><a href="/pricing.md">Pricing &amp; Limits</a> — free tier terms and self-hosting runbooks</li>
 <li><a href="/versioning.md">Versioning Policy</a> — API versioning (X-API-Version) and deprecation rules</li>
@@ -206,9 +210,11 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/docs/">API Documentation</a> — complete endpoint and protocol reference</li>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — raw JSON OpenAPI contract</li>
 <li><a href="/developers/">Developers Guide</a> — human integration guide</li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — packages, CLI, and integration libraries</li>
 <li><a href="/llms.txt">llms.txt</a> — LLM overview and quick links</li>
 <li><a href="/spec.json">spec.json</a> — {n} atom definitions and field contracts</li>
 <li><a href="/auth.md">Authentication Guide</a> and <a href="/.well-known/agent-auth.md">Rate Limits</a></li>
+<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
 <li><a href="/webhooks/">Webhooks &amp; Events</a> — real-time event streaming and delivery patterns</li>
 </ul>"""),
         "auth": dict(
@@ -322,6 +328,50 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable endpoint contracts</li>
 <li><a href="/docs/">API Documentation</a> — REST endpoint reference</li>
 <li><a href="/mcp">MCP Server Endpoint</a> — Model Context Protocol endpoint</li>
+</ul>"""),
+        "sdks": dict(
+            title="SDKs &amp; Client Libraries",
+            desc="A2UI Atomic Catalog SDK documentation: npm CLI and MCP server package (@a2uicatalog/mcp), Python client tools, Agent Skills, and REST SDKs.",
+            jsonld=json.dumps({
+                "@context": "https://schema.org", "@type": "APIReference",
+                "url": f"{BASE}/sdks/", "name": "SDKs & Client Libraries — A2UI Atomic Catalog",
+                "publisher": {"@id": f"{BASE}/#org"},
+            }, indent=2),
+            body=f"""
+<p>Official client libraries, SDK packages, CLI tools, and agent integrations for the A2UI Atomic Catalog.</p>
+
+<h2>1. Node.js &amp; CLI SDK (@a2uicatalog/mcp)</h2>
+<p>The official npm package provides a standalone CLI renderer, a local MCP server for desktop editors, and build automation:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code># Render atom payload to HTML directly
+npx -p @a2uicatalog/mcp a2ui render page.json
+
+# Launch local MCP server for Claude Desktop or Cursor
+npx @a2uicatalog/mcp</code></pre>
+<p>Package registry entry: <a href="https://registry.npmjs.org/@a2uicatalog/mcp">@a2uicatalog/mcp on npm</a>.</p>
+
+<h2>2. Agent Skills Integration</h2>
+<p>Installable agent skills for Claude, Cursor, and Agent Skills-compatible clients:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx skills add a2uicatalog/a2ui</code></pre>
+<p>Includes skills for catalog discovery (<code>a2ui-catalog</code>), composition (<code>a2ui-compose</code>), and MCP server connection (<code>a2ui-mcp</code>).</p>
+
+<h2>3. Python &amp; A2A SDK Integration</h2>
+<p>For Python applications using Google's A2A protocol (<code>a2a-sdk</code>), connect over JSON-RPC or use the typed extension wrappers in the open-source repository (<code>renderers/a2a_extension.py</code>).</p>
+
+<h2>4. Generating Typed SDKs from OpenAPI</h2>
+<p>Generate native client SDKs for any language (TypeScript, Python, Go, Java, Swift) using OpenAPI Generator and our OpenAPI 3.1 specification:</p>
+<pre style="background:#0e1116;color:#c7d1e0;padding:14px 16px;border-radius:8px;overflow-x:auto;"><code>npx @openapitools/openapi-generator-cli generate \\
+  -i https://a2uicatalog.ai/openapi.json \\
+  -g typescript-fetch \\
+  -o ./src/a2ui-client</code></pre>
+
+<h2>Developer Resources</h2>
+<ul>
+<li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable REST API schema</li>
+<li><a href="/docs/">API Documentation</a> — REST endpoints and error contracts</li>
+<li><a href="/mcp">MCP Server Endpoint</a> — remote Model Context Protocol endpoint</li>
+<li><a href="/developers/">Developer Portal</a> — full integration guide and self-hosting runbooks</li>
+<li><a href="/sdk.md">SDK Documentation (Markdown)</a> — agent-readable SDK guide</li>
+<li><a href="https://github.com/a2uicatalog/a2ui">GitHub Repository</a> — source code and examples</li>
 </ul>"""),
         "about": dict(
             title="About",
@@ -490,6 +540,7 @@ declared sources), or on hosts that cannot display HTML.
 | Document | URL |
 |---|---|
 | Developer guide & API docs | https://a2uicatalog.ai/developers/ |
+| SDKs & client libraries | https://a2uicatalog.ai/sdks/ |
 | CLI / local MCP server (npm) | https://registry.npmjs.org/@a2uicatalog/mcp |
 | Agent Skills index | https://a2uicatalog.ai/.well-known/agent-skills/index.json |
 | OpenAPI specification | https://a2uicatalog.ai/openapi.json |
@@ -499,6 +550,7 @@ declared sources), or on hosts that cannot display HTML.
 | ARD discovery document | https://a2uicatalog.ai/.well-known/ard.json |
 | Auth & rate limits | https://a2uicatalog.ai/.well-known/agent-auth.md |
 | Authentication guide | https://a2uicatalog.ai/auth.md |
+| SDK documentation | https://a2uicatalog.ai/sdk.md |
 | Pricing & limits | https://a2uicatalog.ai/pricing.md |
 | Versioning policy | https://a2uicatalog.ai/versioning.md |
 | Agent overview | https://a2uicatalog.ai/llms.txt |
@@ -630,6 +682,72 @@ Maintained by Curtis Krygier — {LINKEDIN}
     with open(os.path.join(PUBLIC, "index.md"), "w", encoding="utf-8") as f:
         f.write(index_md)
     print("wrote public/index.md")
+
+    # Markdown SDK guide
+    sdk_md = f"""---
+title: A2UI Atomic Catalog — SDK & Client Libraries
+description: Official SDKs, CLI tools, Agent Skills, and client generators for A2UI Atomic Catalog.
+canonical: {BASE}/sdk.md
+---
+
+# A2UI Atomic Catalog — SDK & Client Libraries
+
+Official client libraries, SDK packages, CLI tools, and agent integrations for the A2UI Atomic Catalog ({n} atoms).
+
+## Official Packages
+
+- **npm CLI / Local MCP Server**: [`@a2uicatalog/mcp`](https://registry.npmjs.org/@a2uicatalog/mcp)
+  - Direct render: `npx -p @a2uicatalog/mcp a2ui render page.json`
+  - Local MCP server: `npx @a2uicatalog/mcp`
+- **Agent Skills**: `npx skills add a2uicatalog/a2ui` (skills index at `{BASE}/.well-known/agent-skills/index.json`)
+- **Python / A2A Extension**: `renderers/a2a_extension.py` in the GitHub repo for A2A SDK interop.
+
+## Generating Native Client SDKs
+
+Generate typed client SDKs in any language from our OpenAPI 3.1 specification:
+
+    npx @openapitools/openapi-generator-cli generate \\
+      -i {BASE}/openapi.json \\
+      -g typescript-fetch \\
+      -o ./src/a2ui-client
+
+## Reference
+
+- Developer Portal: {BASE}/developers/
+- OpenAPI Specification: {BASE}/openapi.json
+- MCP Server Endpoint: {BASE}/mcp
+- Full Atom Vocabulary: {BASE}/spec.json
+- Full documentation: {BASE}/docs/
+"""
+    with open(os.path.join(PUBLIC, "sdk.md"), "w", encoding="utf-8") as f:
+        f.write(sdk_md)
+    print("wrote public/sdk.md")
+
+    with open(os.path.join(PUBLIC, "sdks.md"), "w", encoding="utf-8") as f:
+        f.write(sdk_md)
+    print("wrote public/sdks.md")
+
+    sdk_dir = os.path.join(PUBLIC, "sdks")
+    os.makedirs(sdk_dir, exist_ok=True)
+    sdks_llms_txt = """# A2UI Atomic Catalog — SDKs
+
+> Scoped context for SDKs, CLI tools, and client packages. For the full site overview,
+> see https://a2uicatalog.ai/llms.txt instead.
+
+## Packages
+
+- npm / CLI SDK: `@a2uicatalog/mcp` on npm (`npx -p @a2uicatalog/mcp a2ui render page.json`)
+- Agent Skills: `npx skills add a2uicatalog/a2ui` (https://a2uicatalog.ai/.well-known/agent-skills/index.json)
+- Remote MCP server: https://a2uicatalog.ai/mcp
+- OpenAPI 3.1 specification: https://a2uicatalog.ai/openapi.json
+
+## Terms
+
+Free, MIT licensed, no signup. Source: https://github.com/a2uicatalog/a2ui
+"""
+    with open(os.path.join(sdk_dir, "llms.txt"), "w", encoding="utf-8") as f:
+        f.write(sdks_llms_txt)
+    print("wrote public/sdks/llms.txt")
 
     # Modular llms.txt (2026-07-31): a section-scoped context file so an
     # agent working an integration question fetches ~700 bytes instead of

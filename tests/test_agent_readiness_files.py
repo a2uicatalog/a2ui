@@ -129,6 +129,7 @@ def test_developer_resource_pages_exist_and_include_product_name():
         ("docs", "index.html"),
         ("api-docs", "index.html"),
         ("developers", "index.html"),
+        ("sdks", "index.html"),
         ("auth", "index.html"),
         ("webhooks", "index.html"),
         ("versioning", "index.html"),
@@ -169,6 +170,10 @@ def test_predictable_redirects_route_correctly():
     assert redirect_map.get("/versioning") == "/versioning/"
     assert redirect_map.get("/deprecation") == "/versioning/"
     assert redirect_map.get("/pricing") == "/pricing/"
+    assert redirect_map.get("/sdk") == "/sdks/"
+    assert redirect_map.get("/sdks") == "/sdks/"
+    assert redirect_map.get("/docs/sdk") == "/sdks/"
+    assert redirect_map.get("/docs/sdks") == "/sdks/"
     assert redirect_map.get("/ard.json") == "/.well-known/ard.json"
 
 
@@ -282,6 +287,7 @@ def test_api_catalog_and_llms_advertise_developer_resources():
     assert "/webhooks/" in llms_txt
     assert "/versioning/" in llms_txt or "/versioning.md" in llms_txt
     assert "/pricing/" in llms_txt or "/pricing.md" in llms_txt
+    assert "/sdks/" in llms_txt or "/sdk.md" in llms_txt
 
     api_catalog = json.loads(_load(".well-known", "api-catalog"))
     linkset = api_catalog["linkset"][0]
@@ -291,6 +297,7 @@ def test_api_catalog_and_llms_advertise_developer_resources():
         "https://a2uicatalog.ai/openapi.json",
         "https://a2uicatalog.ai/mcp",
         "https://a2uicatalog.ai/docs/",
+        "https://a2uicatalog.ai/sdks/",
         "https://a2uicatalog.ai/auth/",
         "https://a2uicatalog.ai/webhooks/",
         "https://a2uicatalog.ai/versioning/",
