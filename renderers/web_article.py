@@ -572,7 +572,7 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
         f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
-        f'#{group}_t{i}:checked ~ .tm-tab-panels .tm-tab-panel:nth-child({i})'
+        f'#{group}_t{i}:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
     )
@@ -16873,7 +16873,7 @@ def _render_tabs(b: dict, _tab_counter=[0]) -> str:
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
         f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
-        f'#{group}_t{i}:checked ~ .tm-tab-panels .tm-tab-panel:nth-child({i})'
+        f'#{group}_t{i}:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
     )
@@ -16923,7 +16923,7 @@ def _render_content_tabs(b: dict, _ct_counter=[0]) -> str:
     checked_css = "".join(
         f'#{group}_t{i}:checked ~ .tm-tab-labels .tm-tab-label[for="{group}_t{i}"]'
         f'{{background:var(--surface,#fff);color:{accent};border-bottom-color:{accent};font-weight:700;}}\n'
-        f'#{group}_t{i}:checked ~ .tm-tab-panels .tm-tab-panel:nth-child({i})'
+        f'#{group}_t{i}:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child({i})'
         f'{{display:block;}}\n'
         for i in range(1, len(tabs) + 1)
     )
