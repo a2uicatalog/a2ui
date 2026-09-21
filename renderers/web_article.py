@@ -1641,18 +1641,48 @@ def _render_feature_matrix(b: dict) -> str:
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
 
 def _render_pricing_tier_card(b: dict) -> str:
-    """TODO: Renders a single pricing plan with its name, price, key features, and an optiona"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pricing_tier_card ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
+    """Renders a single pricing plan: name, price, key features, and an optional CTA."""
+    name       = _esc(b.get("plan_name", b.get("name", "")))
+    price      = _esc(str(b.get("price", "")))
+    currency   = _esc(b.get("currency", "$"))
+    frequency  = _esc(b.get("frequency", ""))
+    features   = b.get("features", [])
+    cta_label  = _esc(b.get("call_to_action_label", ""))
+    cta_url    = _esc(b.get("call_to_action_url", "#"))
+    highlighted = bool(b.get("is_highlighted"))
+    border = "2px solid #b5432f" if highlighted else "1px solid #e2e2e2"
+    bg = "#fdf3f0" if highlighted else "#fff"
+    badge = (
+        '<div style="position:absolute;top:-10px;left:16px;background:#b5432f;color:#fff;'
+        'font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;'
+        'border-radius:20px;text-transform:uppercase;">Popular</div>'
+    ) if highlighted else ""
+    freq_html = f'<span style="font-size:0.75rem;font-weight:600;color:#9a9284;">/{frequency}</span>' if frequency else ""
+    feat_html = "".join(
+        f'<li style="margin-bottom:6px;">{_esc(str(f))}</li>' for f in features
+    )
+    cta_html = (
+        f'<a href="{cta_url}" style="display:block;text-align:center;margin-top:14px;'
+        f'padding:9px 14px;border-radius:8px;background:#b5432f;color:#fff;'
+        f'font-size:0.85rem;font-weight:600;text-decoration:none;">{cta_label}</a>'
+    ) if cta_label else ""
+    return (
+        f'<div style="position:relative;flex:1;min-width:180px;border:{border};'
+        f'border-radius:12px;padding:18px 18px 20px;background:{bg};font-family:system-ui,sans-serif;">'
+        f'{badge}'
+        f'<div style="font-weight:700;font-size:0.95rem;">{name}</div>'
+        f'<div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">{currency}{price}{freq_html}</div>'
+        f'<ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;">{feat_html}</ul>'
+        f'{cta_html}</div>'
+    )
 
 def _render_pricing_tier_group(b: dict) -> str:
-    """TODO: Renders a collection of pricing tier cards, typically for comparing different su"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pricing_tier_group ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;">{inner}</div>'
+    """Renders a collection of pricing tier cards side by side."""
+    tiers = b.get("tiers", [])
+    cards = "".join(_render_pricing_tier_card(t) for t in tiers)
+    return (
+        f'<div style="display:flex;gap:12px;flex-wrap:wrap;margin:1rem 0;">{cards}</div>'
+    )
 
 def _render_skill_bars(b: dict) -> str:
     skills  = b.get("skills", b.get("items", []))
@@ -17692,7 +17722,7 @@ def _render_knowledge_check(b: dict) -> str:
     question = _esc(b.get('question', 'Comprehension check'))
     options = b.get('options', [])
     correct = int(b.get('correct', 0))
-    explain = _md(b.get('explanation', ''))
+    explain = _md.markdown(b.get('explanation', '')) if b.get('explanation') else ''
     opts_html = ''.join(
         f'<button onclick="{uid}pick({i})" style="display:block;width:100%;text-align:left;'
         f'padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#f9fafb;'
@@ -19617,7 +19647,7 @@ _RENDERERS["badge_showcase"] = _render_badge_showcase
 
 def _render_case_study_card(b: dict) -> str:
     title = _esc(b.get('title', 'Case Study'))
-    situation = _md(b.get('situation', ''))
+    situation = _md.markdown(b.get('situation', '')) if b.get('situation') else ''
     data_points = b.get('data_points', [])
     questions = b.get('questions', [])
     accent = b.get('accent', '#38bdf8')
@@ -19888,15 +19918,17 @@ _RENDERERS["course_progress_card"] = _render_course_progress_card
 
 def _render_scenario_branch(b: dict) -> str:
     uid = 'sb' + _wa_uid(b)[:6]
-    scene = _md(b.get('scenario') or b.get('situation') or '')
-    context = _md(b.get('context', ''))
+    _scene_src = b.get('scenario') or b.get('situation') or ''
+    scene = _md.markdown(_scene_src) if _scene_src else ''
+    context = _md.markdown(b.get('context', '')) if b.get('context') else ''
     choices = b.get('choices', [])
     accent = b.get('accent', '#f59e0b')
     btns = ''
     results = ''
     for i, c in enumerate(choices):
         label = _esc(c.get('label', c.get('text', f'Option {i+1}')))
-        outcome = _md(c.get('outcome', c.get('result', '')))
+        _outcome_src = c.get('outcome', c.get('result', ''))
+        outcome = _md.markdown(_outcome_src) if _outcome_src else ''
         correct = bool(c.get('correct'))
         col = '#34d399' if correct else '#f87171' if c.get('outcome') else '#6b7280'
         btns += (f'<button id="{uid}c{i}" onclick="{uid}pick({i})" style="display:block;width:100%;'
