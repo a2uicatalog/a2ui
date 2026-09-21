@@ -547,7 +547,7 @@ _TAB_CSS = """
    accent underline, AND a weight shift (500 -> 700) — so it reads without
    relying on colour alone. Hover lifts only part-way (to full text colour),
    never all the way to the selected accent styling. */
-.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;padding:0 4px;}
+.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;overflow-y:hidden;padding:0 4px;}
 .tm-tab-label{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-muted, #5f6368);
   white-space:nowrap;transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease;user-select:none;
   border-bottom:2px solid transparent;margin-bottom:-1px;}
