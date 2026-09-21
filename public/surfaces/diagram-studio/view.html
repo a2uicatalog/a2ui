@@ -99,7 +99,7 @@
   <span class="pill" id="valid" hidden></span>
   <span class="meta" id="meta">waiting for a diagram…</span>
   <span class="status" id="dstatus"></span>
-  <button id="opendraw" class="ghost push" type="button" title="Opens the real draw.io editor with this diagram loaded" hidden>✎ Edit in draw.io</button>
+  <a id="opendraw" class="ghost push" href="#" target="_blank" rel="noopener noreferrer" title="Opens the real draw.io editor with this diagram loaded, in a new tab" hidden>✎ Edit in draw.io</a>
   <button id="fs" class="ghost" type="button" title="Toggle fullscreen">⤢ Fullscreen</button>
 </div>
 
@@ -2963,29 +2963,39 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   /* ------------------------------------------------------------------------------------------------------------------------
    * draw.io: the real editor (a link), a picture (the viewer), and an inline editor where the host allows a frame
    * ---------------------------------------------------------------------------------------------------------------------- */
-  // "Edit in draw.io": app.diagrams.net loads a diagram from the URL fragment: #R + base64(deflate-raw(encodeURIComponent(xml))). Verified
-  // against the live editor. The link is opened through the host (ui/open-link), so it works wherever a view can open a link at all.
+  // "Edit in draw.io": the full editor, self-hosted (see NOTICE.md), so it opens as our own top-level page instead of the third-party
+  // app.diagrams.net — this host's frame-src CSP blocks framing ANY origin, including our own, but does not restrict top-level
+  // navigation, and a genuine user-clicked <a target="_blank"> is that: real navigation, not a frame. It loads a diagram from the
+  // URL fragment: #R + base64(deflate-raw(encodeURIComponent(xml))), the same convention as app.diagrams.net, verified to work
+  // identically when self-hosted. The link itself is a plain anchor the browser opens natively; no host message is involved.
+  var DRAWIO_EDITOR_URL = window.__DRAWIO_EDITOR_URL || "https://a2uicatalog.ai/surfaces/diagram-studio/drawio-editor/index.html";
   async function drawioLink(xml) {
     if (typeof CompressionStream === "undefined") throw new Error("this browser cannot compress the diagram");
     var cs = new CompressionStream("deflate-raw"), w = cs.writable.getWriter();
     w.write(new TextEncoder().encode(encodeURIComponent(xml))); w.close();
     var buf = new Uint8Array(await new Response(cs.readable).arrayBuffer()), bin = "";
     for (var i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
-    return "https://app.diagrams.net/?splash=0#R" + encodeURIComponent(btoa(bin));
+    return DRAWIO_EDITOR_URL + "?splash=0#R" + encodeURIComponent(btoa(bin));
   }
-  async function openInDrawio() {
-    var st = $("dstatus"), xml = state.mode === "graph" ? drawioXml() : "";
-    if (!xml) { st.textContent = "Nothing to draw yet."; return; }
-    var url;
-    st.textContent = "Preparing…";
-    try { url = await drawioLink(xml); } catch (e) { st.textContent = "Could not build the draw.io link: " + ((e && e.message) || e); return; }
-    request("ui/open-link", { url: url }, function (m) {
-      if (!m.error) { st.textContent = "Opened in draw.io."; return; }
-      // Some hosts will not open links for a view: hand over the link itself.
-      copyText(url).then(function () { st.textContent = "The host would not open a link, so the draw.io link is copied: paste it into a new tab."; })
-        .catch(function () { st.textContent = "The host would not open the link (" + ((m.error && m.error.message) || "declined") + ")."; });
-    }, 6000);
+  var drawioLinkSeq = 0;
+  async function refreshDrawioLink() {
+    var a = $("opendraw"), mine = ++drawioLinkSeq;
+    var xml = state.mode === "graph" ? drawioXml() : "";
+    if (!xml) { a.href = "#"; a.setAttribute("aria-disabled", "true"); a.title = "Nothing to draw yet."; return; }
+    try {
+      var url = await drawioLink(xml);
+      if (mine !== drawioLinkSeq) return;   // superseded by a newer graph before this finished
+      a.href = url;
+      a.removeAttribute("aria-disabled");
+      a.title = "Opens the real draw.io editor with this diagram loaded, in a new tab";
+    } catch (e) {
+      if (mine !== drawioLinkSeq) return;
+      a.href = "#"; a.setAttribute("aria-disabled", "true"); a.title = "Could not build the draw.io link: " + ((e && e.message) || e);
+    }
   }
+  // A disabled state (nothing to draw yet, or the link failed to build) still needs the click itself stopped: an <a href="#"> would
+  // otherwise just reload the view.
+  function guardDrawioClick(ev) { if ($("opendraw").getAttribute("aria-disabled") === "true") ev.preventDefault(); }
 
   // The picture: draw.io's own read-only viewer, fetched on first use like D2 (an ~0.9 MB gzip). Its defaults point at viewer.diagrams.net
   // (stencils, styles, MathJax); none is needed for the shapes a graph uses, so they point nowhere, and the build removes its start-up
@@ -3387,6 +3397,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   function touched(structural) {
     state.edited = true;
     dropEdited();
+    refreshDrawioLink();
     updateMetrics();
     if (state.tab === "code") updateCodePane();
     if (structural && state.tab === "edit") size();
@@ -3453,6 +3464,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     if (!g) $("meta").textContent = state.syntax + " · " + state.source.length + " chars";
     updateMetrics();
     syncControls();
+    refreshDrawioLink();
   }
 
   function ingest(sc) {
@@ -3521,12 +3533,13 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
       else setTab(state.tab);
     });
   });
-  $("dir").addEventListener("change", function () { state.direction = $("dir").value; dropEdited(); setTab(state.tab); });
-  $("theme").addEventListener("change", function () { state.theme = $("theme").value; dropEdited(); setTab(state.tab); });
+  $("dir").addEventListener("change", function () { state.direction = $("dir").value; dropEdited(); refreshDrawioLink(); setTab(state.tab); });
+  $("theme").addEventListener("change", function () { state.theme = $("theme").value; dropEdited(); refreshDrawioLink(); setTab(state.tab); });
   var gapTimer = null;
   function gapChanged() {
     state.nodeGap = +$("ngap").value; state.rankGap = +$("rgap").value;
     dropEdited();
+    refreshDrawioLink();
     clearTimeout(gapTimer); gapTimer = setTimeout(function () { setTab(state.tab); }, 200);
   }
   $("ngap").addEventListener("input", gapChanged);
@@ -3547,7 +3560,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
       .catch(function () { selectAll(state.mode === "graph" ? $("codeout") : $("code")); $("copystatus").textContent = "Selected: press Ctrl+C to copy"; });
   });
   $("re").addEventListener("click", function () { state.source = $("code").value; $("meta").textContent = state.syntax + " · " + state.source.length + " chars"; setTab("visual"); });
-  $("opendraw").addEventListener("click", openInDrawio);
+  $("opendraw").addEventListener("click", guardDrawioClick);
   $("probes").addEventListener("click", runHostProbes);
 
   $("addv").addEventListener("click", function () {
