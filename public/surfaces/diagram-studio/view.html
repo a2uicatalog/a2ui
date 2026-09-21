@@ -2994,8 +2994,27 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     }
   }
   // A disabled state (nothing to draw yet, or the link failed to build) still needs the click itself stopped: an <a href="#"> would
-  // otherwise just reload the view.
-  function guardDrawioClick(ev) { if ($("opendraw").getAttribute("aria-disabled") === "true") ev.preventDefault(); }
+  // otherwise just reload the view. Beyond that, we drive the navigation ourselves with an explicit window.open() (always
+  // preventDefault-ing the anchor's own click-through, so a host that DOES allow it never opens two tabs): found live,
+  // 2026-09-21, that claude.ai's MCP Apps view runs in an iframe sandboxed WITHOUT allow-popups, which silently blocks any
+  // script/click-driven new tab or window -- even a genuine user click on a real target="_blank" anchor -- with no error and
+  // no event to catch; window.open()'s return value is the one reliable signal (null when blocked). The person's OWN
+  // right-click "Open link in new tab" / "Copy link" still works there, because that is the browser chrome acting on the
+  // href directly, not the page's script -- so that is the fallback we point them at.
+  function guardDrawioClick(ev) {
+    var a = $("opendraw");
+    if (a.getAttribute("aria-disabled") === "true") { ev.preventDefault(); return; }
+    ev.preventDefault();
+    var opened = null;
+    // getAttribute, not the .href property: the property is the browser's re-resolved/re-serialized form, which can
+    // subtly re-canonicalize percent-encoding in a URL this size (a base64-heavy fragment) -- the attribute is exactly
+    // the string refreshDrawioLink() set, byte for byte, which is what should actually open.
+    try { opened = window.open(a.getAttribute("href"), "_blank", "noopener"); } catch (e) { opened = null; }
+    if (!opened) {
+      $("dstatus").textContent = "This host blocked the tab from opening automatically. Right-click “Edit in draw.io” "
+        + "and choose “Open link in new tab” (or “Copy link” to paste it elsewhere).";
+    }
+  }
 
   // The picture: draw.io's own read-only viewer, fetched on first use like D2 (an ~0.9 MB gzip). Its defaults point at viewer.diagrams.net
   // (stencils, styles, MathJax); none is needed for the shapes a graph uses, so they point nowhere, and the build removes its start-up
