@@ -6,40 +6,149 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Diagram Studio</title>
 <style>
-  :root { --bg:#0f1420; --panel:#161c2b; --line:#263047; --text:#dbe3f0; --dim:#7d8aa3; --accent:#6ea8fe; --err:#f0a3a3; }
+  :root { --bg:#0f1420; --panel:#161c2b; --line:#263047; --text:#dbe3f0; --dim:#7d8aa3; --accent:#6ea8fe; --accent-fg:#fff;
+          --err:#f0a3a3; --ok:#5fd0a0; --warn:#e8b85a; --field:#0f1522; }
   @media (prefers-color-scheme: light) {
-    :root { --bg:#f3f5f9; --panel:#ffffff; --line:#d9e0ec; --text:#1b2433; --dim:#5b6b85; --accent:#2b6cdf; --err:#a83232; }
+    :root { --bg:#f3f5f9; --panel:#ffffff; --line:#d9e0ec; --text:#1b2433; --dim:#5b6b85; --accent:#2b6cdf; --accent-fg:#fff;
+            --err:#a83232; --ok:#1f8a5b; --warn:#9a6a00; --field:#f7f9fc; }
   }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html, body { margin: 0; }
   body { background: var(--bg); color: var(--text); font: 13px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 12px; }
-  .head { display: flex; align-items: baseline; gap: 8px; margin: 0 0 8px; }
-  .head h1 { font-size: 13px; margin: 0; font-weight: 600; }
-  .head .meta { color: var(--dim); font-size: 11px; margin-left: auto; }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+
+  .bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; }
+  .bar h1 { font-size: 13px; margin: 0; font-weight: 600; margin-right: 4px; }
+  .bar .meta { color: var(--dim); font-size: 11px; }
+  .bar .push { margin-left: auto; }
+  .pill { font-size: 11px; padding: 1px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--dim); background: var(--panel); }
+  .pill.ok { color: var(--ok); } .pill.warn { color: var(--warn); }
+  .ghost { padding: 2px 8px; background: transparent; color: var(--dim); border: 1px solid var(--line); border-radius: 6px; font-size: 11px; }
+  .ghost:hover { color: var(--text); }
+  .primary { padding: 5px 12px; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 6px; }
+
+  .tools { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin: 0 0 8px; }
+  .tools label { display: inline-flex; align-items: center; gap: 6px; color: var(--dim); font-size: 11px; }
+  .tools select, .tools input[type=range] { accent-color: var(--accent); }
+  select { background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { background: var(--panel); border: 0; border-right: 1px solid var(--line); padding: 3px 10px; color: var(--dim); font-size: 12px; }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+
+  .tabs { display: flex; align-items: center; gap: 4px; margin: 0 0 8px; border-bottom: 1px solid var(--line); }
+  .tabs .tab { background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 4px 10px; color: var(--dim); }
+  .tabs .tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+  .tabs .zoom { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--dim); padding-bottom: 3px; }
+  .zoom .ghost { padding: 0 7px; }
+
   /* Mermaid's "neutral" theme is drawn for a light ground: keep the diagram on a paper card whatever the host theme is. */
   #stage { background: #fff; color: #1b2433; border-radius: 10px; padding: 16px; overflow: auto; border: 1px solid var(--line); min-height: 60px; }
   #stage svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
   .wait { color: #6b7688; }
-  .err { color: var(--err); }
+  .note { color: #465267; }
+  .note button { margin-top: 8px; }
+  .err { color: #a83232; }
   .err pre { white-space: pre-wrap; margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; }
-  details { margin-top: 10px; }
-  summary { cursor: pointer; color: var(--dim); font-size: 12px; }
-  textarea { width: 100%; box-sizing: border-box; min-height: 140px; margin-top: 8px; padding: 8px; background: var(--panel); color: var(--text);
-             border: 1px solid var(--line); border-radius: 8px; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+  .err button { margin-top: 8px; }
+
+  .pane { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  pre#codeout { margin: 0; max-height: 46vh; overflow: auto; white-space: pre; font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace; }
+  textarea#code { width: 100%; min-height: 200px; padding: 8px; background: var(--field); border: 1px solid var(--line); border-radius: 8px;
+                  font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; resize: vertical; }
+  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .status { color: var(--dim); font-size: 11px; }
+
+  .ed h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 0 0 6px; font-weight: 600; }
+  .ed .rows { display: grid; gap: 6px; margin-bottom: 10px; }
+  .ed .r { display: grid; gap: 6px; align-items: center; }
+  .ed .rv { grid-template-columns: 1fr 110px 28px; }
+  .ed .re { grid-template-columns: 1fr 18px 1fr 1fr 28px; }
+  .ed input[type=text] { width: 100%; background: var(--field); border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; }
+  .ed select { width: 100%; }
+  .ed .arrow { text-align: center; color: var(--dim); }
+  .ed .del { background: transparent; border: 1px solid var(--line); border-radius: 6px; color: var(--dim); padding: 1px 0; }
+  .ed .del:hover { color: var(--err); }
+  .ed .empty { color: var(--dim); font-size: 12px; }
+
+  details#diagwrap { margin-top: 10px; } summary { cursor: pointer; color: var(--dim); font-size: 12px; }
   pre#diag { white-space: pre-wrap; margin: 6px 0 0; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; color: var(--dim); font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; }
-  .head button { margin: 0 0 0 4px; padding: 2px 8px; background: transparent; color: var(--dim); border: 1px solid var(--line); font-size: 11px; }
+
   /* Once a host GRANTS fullscreen it sizes the iframe to the screen whatever height we report, so use the room: centre the diagram
      and let it grow. Applied only on an explicit fullscreen report; inline (and unknown) keep the content-sized layout, because a
      100vh rule inline is circular against a host that grows the iframe to the height we report. */
-  html.fs body { min-height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; }
+  html.fs body { min-height: 100vh; display: flex; flex-direction: column; }
   html.fs #stage { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; }
-  html.fs #stage svg { max-height: calc(100vh - 150px); width: auto; }
-  button { margin-top: 8px; padding: 5px 12px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font: inherit; cursor: pointer; }
+  html.fs #stage svg { max-height: calc(100vh - 210px); width: auto; }
+  html.fs .pane { flex: 1 1 auto; }
+  html.fs pre#codeout { max-height: calc(100vh - 230px); }
 </style>
 </head>
 <body>
-<div class="head"><h1 id="title">Diagram Studio</h1><span class="meta" id="meta">waiting for a diagram…</span><button id="fs" type="button" title="Toggle fullscreen">⤢ Fullscreen</button></div>
+<div class="bar">
+  <h1 id="title">Diagram Studio</h1>
+  <span class="pill" id="metrics" hidden></span>
+  <span class="pill" id="valid" hidden></span>
+  <span class="meta" id="meta">waiting for a diagram…</span>
+  <button id="fs" class="ghost push" type="button" title="Toggle fullscreen">⤢ Fullscreen</button>
+</div>
+
+<div class="tools" id="graphtools" hidden>
+  <div class="seg" id="formats" role="group" aria-label="Output format">
+    <button type="button" data-fmt="mermaid" aria-pressed="true">Mermaid</button>
+    <button type="button" data-fmt="d2" aria-pressed="false">D2</button>
+    <button type="button" data-fmt="plantuml" aria-pressed="false">PlantUML</button>
+    <button type="button" data-fmt="drawio" aria-pressed="false">draw.io</button>
+  </div>
+  <label>Direction
+    <select id="dir"><option value="TB">Top → bottom</option><option value="LR">Left → right</option></select>
+  </label>
+  <label>Theme
+    <select id="theme">
+      <option value="modern_indigo">Modern indigo</option><option value="vibrant_cloud">Vibrant cloud</option>
+      <option value="warm_amber">Warm amber</option><option value="monochrome">Monochrome</option>
+    </select>
+  </label>
+  <label title="Spacing used by the draw.io layout">Node gap <input id="ngap" type="range" min="30" max="160" value="70"></label>
+  <label title="Spacing used by the draw.io layout">Rank gap <input id="rgap" type="range" min="60" max="220" value="110"></label>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tab-visual" role="tab" data-tab="visual" aria-selected="true" type="button">Visual</button>
+  <button class="tab" id="tab-code" role="tab" data-tab="code" aria-selected="false" type="button">Code</button>
+  <button class="tab" id="tab-edit" role="tab" data-tab="edit" aria-selected="false" type="button" hidden>Edit</button>
+  <span class="zoom" id="zoomctl"><button class="ghost" id="zout" type="button" title="Zoom out">−</button><span id="zlabel">Fit</span><button class="ghost" id="zin" type="button" title="Zoom in">+</button><button class="ghost" id="zfit" type="button" title="Fit to width">Fit</button></span>
+</div>
+
 <div id="stage"><div class="wait">Waiting for the model to send a diagram…</div></div>
-<details id="src"><summary>Source</summary><textarea id="code" spellcheck="false" aria-label="Diagram source"></textarea><button id="re" type="button">Re-render</button></details>
+
+<div class="pane" id="codepane" hidden>
+  <pre id="codeout" tabindex="0"></pre>
+  <textarea id="code" spellcheck="false" aria-label="Diagram source" hidden></textarea>
+  <div class="row">
+    <button class="primary" id="copy" type="button">Copy</button>
+    <button class="primary" id="re" type="button" hidden>Re-render</button>
+    <button class="ghost" id="opendio" type="button" hidden title="Opens diagrams.net; paste with Edit ▸ Paste">Open diagrams.net</button>
+    <span class="status" id="copystatus"></span>
+  </div>
+</div>
+
+<div class="pane ed" id="editpane" hidden>
+  <h2>Nodes</h2>
+  <div class="rows" id="vrows"></div>
+  <div class="row" style="margin:0 0 12px"><button class="ghost" id="addv" type="button">+ Node</button></div>
+  <h2>Connections</h2>
+  <div class="rows" id="erows"></div>
+  <div class="row" style="margin:0 0 4px"><button class="ghost" id="adde" type="button">+ Connection</button></div>
+  <div class="row">
+    <button class="primary" id="send" type="button" title="Adds a message to the chat with the edited graph">Send my edits to the chat</button>
+    <button class="ghost" id="reset" type="button">Reset to the model's version</button>
+    <span class="status" id="sendstatus"></span>
+  </div>
+</div>
+
 <details id="diagwrap" hidden><summary>Engine diagnostics</summary><pre id="diag"></pre></details>
 <script>(function(JM,Ag){typeof exports=="object"&&typeof module<"u"?module.exports=Ag():typeof define=="function"&&define.amd?define(Ag):(JM=typeof globalThis<"u"?globalThis:JM||self,JM.mermaid=Ag())})(this,function(){var FWe,RWe;"use strict";function JM(i){for(var s=[],u=1;u<arguments.length;u++)s[u-1]=arguments[u];var d=Array.from(typeof i=="string"?[i]:i);d[d.length-1]=d[d.length-1].replace(/\r?\n([\t ]*)$/,"");var p=d.reduce(function(y,T){var _=T.match(/\n([\t ]+|(?!\s).)/g);return _?y.concat(_.map(function(A){var P,R;return(R=(P=A.match(/[\t ]/g))===null||P===void 0?void 0:P.length)!==null&&R!==void 0?R:0})):y},[]);if(p.length){var v=new RegExp(`
 [	 ]{`+Math.min.apply(Math,p)+"}","g");d=d.map(function(y){return y.replace(v,`
@@ -2071,15 +2180,577 @@ Expecting `+Qe.join(", ")+", got '"+(this.terminals_[Ne]||Ne)+"'":Dt="Parse erro
   }
 `;function NWe(i,s,u=!1){var R,F,j;const d=i;let p="default";(((R=d==null?void 0:d.classes)==null?void 0:R.length)||0)>0&&(p=((d==null?void 0:d.classes)||[]).join(" ")),p=p+" flowchart-label";let v=0,b="",y;switch(d.type){case"round":v=5,b="rect";break;case"composite":v=0,b="composite",y=0;break;case"square":b="rect";break;case"diamond":b="question";break;case"hexagon":b="hexagon";break;case"block_arrow":b="block_arrow";break;case"odd":b="rect_left_inv_arrow";break;case"lean_right":b="lean_right";break;case"lean_left":b="lean_left";break;case"trapezoid":b="trapezoid";break;case"inv_trapezoid":b="inv_trapezoid";break;case"rect_left_inv_arrow":b="rect_left_inv_arrow";break;case"circle":b="circle";break;case"ellipse":b="ellipse";break;case"stadium":b="stadium";break;case"subroutine":b="subroutine";break;case"cylinder":b="cylinder";break;case"group":b="rect";break;case"doublecircle":b="doublecircle";break;default:b="rect"}const T=om((d==null?void 0:d.styles)||[]),_=d.label,A=d.size||{width:0,height:0,x:0,y:0};return{labelStyle:T.labelStyle,shape:b,labelText:_,rx:v,ry:v,class:p,style:T.style,id:d.id,directions:d.directions,width:A.width,height:A.height,x:A.x,y:A.y,positioned:u,intersect:void 0,type:d.type,padding:y??(((j=(F=Vh())==null?void 0:F.block)==null?void 0:j.padding)||0)}}async function ycn(i,s,u){const d=NWe(s,u,!1);if(d.type==="group")return;const p=await tJ(i,d),v=p.node().getBBox(),b=u.getBlock(d.id);b.size={width:v.width,height:v.height,x:0,y:0,node:p},u.setBlock(b),p.remove()}async function xcn(i,s,u){const d=NWe(s,u,!0);u.getBlock(d.id).type!=="space"&&(await tJ(i,d),s.intersect=d==null?void 0:d.intersect,$me(d))}async function dwe(i,s,u,d){for(const p of s)await d(i,p,u),p.children&&await dwe(i,p.children,u,d)}async function kcn(i,s,u){await dwe(i,s,u,ycn)}async function Ecn(i,s,u){await dwe(i,s,u,xcn)}async function Tcn(i,s,u,d,p){const v=new B0({multigraph:!0,compound:!0});v.setGraph({rankdir:"TB",nodesep:10,ranksep:10,marginx:8,marginy:8});for(const b of u)b.size&&v.setNode(b.id,{width:b.size.width,height:b.size.height,intersect:b.intersect});for(const b of s)if(b.start&&b.end){const y=d.getBlock(b.start),T=d.getBlock(b.end);if(y!=null&&y.size&&(T!=null&&T.size)){const _=y.size,A=T.size,P=[{x:_.x,y:_.y},{x:_.x+(A.x-_.x)/2,y:_.y+(A.y-_.y)/2},{x:A.x,y:A.y}];await IUe(i,{v:b.start,w:b.end,name:b.id},{...b,arrowTypeEnd:b.arrowTypeEnd,arrowTypeStart:b.arrowTypeStart,points:P,classes:"edge-thickness-normal edge-pattern-solid flowchart-link LS-a1 LE-b1"},void 0,"block",v,p),b.label&&(await zme(i,{...b,label:b.label,labelStyle:"stroke: #333; stroke-width: 1.5px;fill:none;",arrowTypeEnd:b.arrowTypeEnd,arrowTypeStart:b.arrowTypeStart,points:P,classes:"edge-thickness-normal edge-pattern-solid flowchart-link LS-a1 LE-b1"}),await MUe({...b,x:P[1].x,y:P[1].y},{originalPath:P}))}}}const e0=((RWe=(FWe=qt())==null?void 0:FWe.block)==null?void 0:RWe.padding)||8;function Ccn(i,s){if(i===0||!Number.isInteger(i))throw new Error("Columns must be an integer !== 0.");if(s<0||!Number.isInteger(s))throw new Error("Position must be a non-negative integer."+s);if(i<0)return{px:s,py:0};if(i===1)return{px:0,py:s};const u=s%i,d=Math.floor(s/i);return{px:u,py:d}}const Scn=i=>{let s=0,u=0;for(const d of i.children){const{width:p,height:v,x:b,y}=d.size||{width:0,height:0,x:0,y:0};Xe.debug("getMaxChildSize abc95 child:",d.id,"width:",p,"height:",v,"x:",b,"y:",y,d.type),d.type!=="space"&&(p>s&&(s=p/(i.widthInColumns||1)),v>u&&(u=v))}return{width:s,height:u}};function gwe(i,s,u=0,d=0){var b,y,T,_,A,P,R,F,j,K,ee;Xe.debug("setBlockSizes abc95 (start)",i.id,(b=i==null?void 0:i.size)==null?void 0:b.x,"block width =",i==null?void 0:i.size,"sieblingWidth",u),(y=i==null?void 0:i.size)!=null&&y.width||(i.size={width:u,height:d,x:0,y:0});let p=0,v=0;if(((T=i.children)==null?void 0:T.length)>0){for(const de of i.children)gwe(de,s);const ie=Scn(i);p=ie.width,v=ie.height,Xe.debug("setBlockSizes abc95 maxWidth of",i.id,":s children is ",p,v);for(const de of i.children)de.size&&(Xe.debug(`abc95 Setting size of children of ${i.id} id=${de.id} ${p} ${v} ${de.size}`),de.size.width=p*(de.widthInColumns||1)+e0*((de.widthInColumns||1)-1),de.size.height=v,de.size.x=0,de.size.y=0,Xe.debug(`abc95 updating size of ${i.id} children child:${de.id} maxWidth:${p} maxHeight:${v}`));for(const de of i.children)gwe(de,s,p,v);const oe=i.columns||-1;let pe=0;for(const de of i.children)pe+=de.widthInColumns||1;let be=i.children.length;oe>0&&oe<pe&&(be=oe),i.widthInColumns;const ae=Math.ceil(pe/be);let ne=be*(p+e0)+e0,se=ae*(v+e0)+e0;if(ne<u){Xe.debug(`Detected to small siebling: abc95 ${i.id} sieblingWidth ${u} sieblingHeight ${d} width ${ne}`),ne=u,se=d;const de=(u-be*e0-e0)/be,X=(d-ae*e0-e0)/ae;Xe.debug("Size indata abc88",i.id,"childWidth",de,"maxWidth",p),Xe.debug("Size indata abc88",i.id,"childHeight",X,"maxHeight",v),Xe.debug("Size indata abc88 xSize",be,"padding",e0);for(const ge of i.children)ge.size&&(ge.size.width=de,ge.size.height=X,ge.size.x=0,ge.size.y=0)}if(Xe.debug(`abc95 (finale calc) ${i.id} xSize ${be} ySize ${ae} columns ${oe}${i.children.length} width=${Math.max(ne,((_=i.size)==null?void 0:_.width)||0)}`),ne<(((A=i==null?void 0:i.size)==null?void 0:A.width)||0)){ne=((P=i==null?void 0:i.size)==null?void 0:P.width)||0;const de=oe>0?Math.min(i.children.length,oe):i.children.length;if(de>0){const X=(ne-de*e0-e0)/de;Xe.debug("abc95 (growing to fit) width",i.id,ne,(R=i.size)==null?void 0:R.width,X);for(const ge of i.children)ge.size&&(ge.size.width=X)}}i.size={width:ne,height:se,x:0,y:0}}Xe.debug("setBlockSizes abc94 (done)",i.id,(F=i==null?void 0:i.size)==null?void 0:F.x,(j=i==null?void 0:i.size)==null?void 0:j.width,(K=i==null?void 0:i.size)==null?void 0:K.y,(ee=i==null?void 0:i.size)==null?void 0:ee.height)}function PWe(i,s){var d,p,v,b,y,T,_,A,P,R,F,j,K,ee,ie,oe,pe;Xe.debug(`abc85 layout blocks (=>layoutBlocks) ${i.id} x: ${(d=i==null?void 0:i.size)==null?void 0:d.x} y: ${(p=i==null?void 0:i.size)==null?void 0:p.y} width: ${(v=i==null?void 0:i.size)==null?void 0:v.width}`);const u=i.columns||-1;if(Xe.debug("layoutBlocks columns abc95",i.id,"=>",u,i),i.children&&i.children.length>0){const be=((y=(b=i==null?void 0:i.children[0])==null?void 0:b.size)==null?void 0:y.width)||0,ae=i.children.length*be+(i.children.length-1)*e0;Xe.debug("widthOfChildren 88",ae,"posX");let ne=0;Xe.debug("abc91 block?.size?.x",i.id,(T=i==null?void 0:i.size)==null?void 0:T.x);let se=(_=i==null?void 0:i.size)!=null&&_.x?((A=i==null?void 0:i.size)==null?void 0:A.x)+(-((P=i==null?void 0:i.size)==null?void 0:P.width)/2||0):-e0,de=0;for(const X of i.children){const ge=i;if(!X.size)continue;const{width:W,height:xe}=X.size,{px:U,py:Fe}=Ccn(u,ne);if(Fe!=de&&(de=Fe,se=(R=i==null?void 0:i.size)!=null&&R.x?((F=i==null?void 0:i.size)==null?void 0:F.x)+(-((j=i==null?void 0:i.size)==null?void 0:j.width)/2||0):-e0,Xe.debug("New row in layout for block",i.id," and child ",X.id,de)),Xe.debug(`abc89 layout blocks (child) id: ${X.id} Pos: ${ne} (px, py) ${U},${Fe} (${(K=ge==null?void 0:ge.size)==null?void 0:K.x},${(ee=ge==null?void 0:ge.size)==null?void 0:ee.y}) parent: ${ge.id} width: ${W}${e0}`),ge.size){const Pe=W/2;X.size.x=se+e0+Pe,Xe.debug(`abc91 layout blocks (calc) px, pyid:${X.id} startingPos=X${se} new startingPosX${X.size.x} ${Pe} padding=${e0} width=${W} halfWidth=${Pe} => x:${X.size.x} y:${X.size.y} ${X.widthInColumns} (width * (child?.w || 1)) / 2 ${W*((X==null?void 0:X.widthInColumns)||1)/2}`),se=X.size.x+Pe,X.size.y=ge.size.y-ge.size.height/2+Fe*(xe+e0)+xe/2+e0,Xe.debug(`abc88 layout blocks (calc) px, pyid:${X.id}startingPosX${se}${e0}${Pe}=>x:${X.size.x}y:${X.size.y}${X.widthInColumns}(width * (child?.w || 1)) / 2${W*((X==null?void 0:X.widthInColumns)||1)/2}`)}X.children&&PWe(X),ne+=(X==null?void 0:X.widthInColumns)||1,Xe.debug("abc88 columnsPos",X,ne)}}Xe.debug(`layout blocks (<==layoutBlocks) ${i.id} x: ${(ie=i==null?void 0:i.size)==null?void 0:ie.x} y: ${(oe=i==null?void 0:i.size)==null?void 0:oe.y} width: ${(pe=i==null?void 0:i.size)==null?void 0:pe.width}`)}function BWe(i,{minX:s,minY:u,maxX:d,maxY:p}={minX:0,minY:0,maxX:0,maxY:0}){if(i.size&&i.id!=="root"){const{x:v,y:b,width:y,height:T}=i.size;v-y/2<s&&(s=v-y/2),b-T/2<u&&(u=b-T/2),v+y/2>d&&(d=v+y/2),b+T/2>p&&(p=b+T/2)}if(i.children)for(const v of i.children)({minX:s,minY:u,maxX:d,maxY:p}=BWe(v,{minX:s,minY:u,maxX:d,maxY:p}));return{minX:s,minY:u,maxX:d,maxY:p}}function _cn(i){const s=i.getBlock("root");if(!s)return;gwe(s,i,0,0),PWe(s),Xe.debug("getBlocks",JSON.stringify(s,null,2));const{minX:u,minY:d,maxX:p,maxY:v}=BWe(s),b=v-d,y=p-u;return{x:u,y:d,width:y,height:b}}const Acn=Object.freeze(Object.defineProperty({__proto__:null,diagram:{parser:ucn,db:vcn,renderer:{draw:async function(i,s,u,d){const{securityLevel:p,block:v}=Vh(),b=d.db;let y;p==="sandbox"&&(y=Ir("#i"+s));const T=Ir(p==="sandbox"?y.nodes()[0].contentDocument.body:"body"),_=p==="sandbox"?T.select(`[id="${s}"]`):Ir(`[id="${s}"]`);Sme(_,["point","circle","cross"],d.type,s);const P=b.getBlocks(),R=b.getBlocksFlat(),F=b.getEdges(),j=_.insert("g").attr("class","block");await kcn(j,P,b);const K=_cn(b);if(await Ecn(j,P,b),await Tcn(j,F,R,b,s),K){const ee=K,ie=Math.max(1,Math.round(.125*(ee.width/ee.height))),oe=ee.height+ie+10,pe=ee.width+10,{useMaxWidth:be}=v;Ng(_,oe,pe,!!be),Xe.debug("Here Bounds",K,ee),_.attr("viewBox",`${ee.x-5} ${ee.y-5} ${ee.width+10} ${ee.height+10}`)}_F(zFe)},getClasses:function(i,s){return s.db.getClasses()}},styles:wcn}},Symbol.toStringTag,{value:"Module"}));return um});
 </script>
-<script>
+<script>var GraphKit = (function () {
+/* Visual Color Palettes */
+    const PALETTES = {
+      modern_indigo: {
+        start: { fill: '#e0e7ff', stroke: '#6366f1', font: '#1e1b4b' },
+        process: { fill: '#f1f5f9', stroke: '#64748b', font: '#0f172a' },
+        decision: { fill: '#fef3c7', stroke: '#d97706', font: '#451a03' },
+        database: { fill: '#dbeafe', stroke: '#3b82f6', font: '#172554' },
+        cloud: { fill: '#ede9fe', stroke: '#8b5cf6', font: '#2e1065' },
+        end: { fill: '#dcfce7', stroke: '#10b981', font: '#064e3b' },
+        edge: '#64748b'
+      },
+      vibrant_cloud: {
+        start: { fill: '#ccfbf1', stroke: '#14b8a6', font: '#134e4a' },
+        process: { fill: '#e0f2fe', stroke: '#0284c7', font: '#0c4a6e' },
+        decision: { fill: '#ffedd5', stroke: '#f97316', font: '#7c2d12' },
+        database: { fill: '#ede9fe', stroke: '#7c3aed', font: '#3b0764' },
+        cloud: { fill: '#dbeafe', stroke: '#2563eb', font: '#1e3a8a' },
+        end: { fill: '#d1fae5', stroke: '#059669', font: '#064e3b' },
+        edge: '#0284c7'
+      },
+      warm_amber: {
+        start: { fill: '#fef9c3', stroke: '#ca8a04', font: '#713f12' },
+        process: { fill: '#fef3c7', stroke: '#d97706', font: '#451a03' },
+        decision: { fill: '#fee2e2', stroke: '#ef4444', font: '#7f1d1d' },
+        database: { fill: '#dcfce7', stroke: '#16a34a', font: '#14532d' },
+        cloud: { fill: '#ffedd5', stroke: '#ea580c', font: '#7c2d12' },
+        end: { fill: '#ecfdf5', stroke: '#10b981', font: '#064e3b' },
+        edge: '#b45309'
+      },
+      monochrome: {
+        start: { fill: '#f8fafc', stroke: '#334155', font: '#0f172a' },
+        process: { fill: '#ffffff', stroke: '#475569', font: '#0f172a' },
+        decision: { fill: '#f1f5f9', stroke: '#0f172a', font: '#0f172a' },
+        database: { fill: '#f8fafc', stroke: '#334155', font: '#0f172a' },
+        cloud: { fill: '#ffffff', stroke: '#64748b', font: '#0f172a' },
+        end: { fill: '#e2e8f0', stroke: '#0f172a', font: '#0f172a' },
+        edge: '#475569'
+      }
+    };
+
+    /* ==========================================================================
+       2. NATURAL LANGUAGE TO GRAPH SYNTHESIZER
+       Robust client-side heuristics & fallback graph extraction.
+       ========================================================================== */
+    class GraphSynthesizer {
+      static parseText(text) {
+        if (!text || !text.trim()) {
+          text = PROMPT_PRESETS.signup_flow;
+        }
+
+        const clean = text.replace(/\r\n/g, '\n');
+        const sentences = clean.split(/(?<=[.?!])\s+|\n+/).map(s => s.trim()).filter(s => s.length > 0);
+
+        const nodesMap = new Map();
+        const edges = [];
+        let nodeCounter = 1;
+
+        function getOrCreateNode(label, typeHint = 'process') {
+          // Normalize key
+          const key = label.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim().slice(0, 32);
+          for (const [existingKey, node] of nodesMap.entries()) {
+            if (existingKey === key || (key.length > 5 && existingKey.includes(key)) || (existingKey.length > 5 && key.includes(existingKey))) {
+              return node;
+            }
+          }
+
+          let shapeType = typeHint;
+          const lowerLabel = label.toLowerCase();
+          if (/^(start|begin|initiator|user|developer|client)/.test(lowerLabel)) shapeType = 'start';
+          else if (/^(if|whether|check|validate|verify|branch|decision|is |test)/.test(lowerLabel)) shapeType = 'decision';
+          else if (/(database|db|postgres|mysql|storage|redis|kafka|cluster|queue)/.test(lowerLabel)) shapeType = 'database';
+          else if (/(cloud|aws|gateway|service|k8s|kubernetes|api)/.test(lowerLabel)) shapeType = 'cloud';
+          else if (/(complete|done|active|onboarding|support|abort|end|finish)/.test(lowerLabel)) shapeType = 'end';
+
+          const id = `node_${nodeCounter++}`;
+          const newNode = {
+            id,
+            label: label.charAt(0).toUpperCase() + label.slice(1),
+            type: shapeType,
+            width: shapeType === 'decision' ? 140 : 160,
+            height: shapeType === 'decision' ? 70 : 60,
+            rank: 0,
+            order: 0,
+            x: 0,
+            y: 0
+          };
+          nodesMap.set(key, newNode);
+          return newNode;
+        }
+
+        // Parse sequences and causal conjunctions
+        let previousNode = null;
+        let lastDecisionNode = null;
+
+        sentences.forEach((sentence) => {
+          const lower = sentence.toLowerCase();
+
+          // Check if sentence describes a conditional branch
+          if (lower.startsWith('if ') || lower.includes('otherwise') || lower.includes('if not') || lower.includes('when ')) {
+            // Conditional clause
+            const parts = sentence.split(/,\s*then\s*|,\s*|\s+then\s+/i);
+            const condition = parts[0].replace(/^if\s+/i, '').trim();
+            const action = parts[1] || 'Proceed';
+
+            const condNode = lastDecisionNode || getOrCreateNode(condition, 'decision');
+            const targetNode = getOrCreateNode(action, /abort|end|support|active/.test(action.toLowerCase()) ? 'end' : 'process');
+
+            let edgeLabel = condition.length > 25 ? condition.slice(0, 22) + '...' : condition;
+            if (/invalid|fail|expire|not|abort/.test(condition.toLowerCase())) {
+              edgeLabel = 'No / Expired';
+            } else if (/valid|success|verified|pass/.test(condition.toLowerCase())) {
+              edgeLabel = 'Yes / Valid';
+            }
+
+            edges.push({
+              id: `edge_${edges.length + 1}`,
+              source: condNode.id,
+              target: targetNode.id,
+              label: edgeLabel
+            });
+
+            // If it is a retry loop, link back to previous step
+            if (/retry|resend|loop|again/.test(sentence.toLowerCase()) && previousNode) {
+              edges.push({
+                id: `edge_${edges.length + 1}`,
+                source: targetNode.id,
+                target: previousNode.id,
+                label: 'Retry Loop'
+              });
+            }
+
+            previousNode = targetNode;
+            return;
+          }
+
+          // Check for multi-clause conjunctions: "X dispatches to A, B, and C"
+          if (lower.includes('dispatches to') || lower.includes('splits into') || lower.includes('triggers')) {
+            const splitMatch = sentence.match(/(.+?)\s+(?:dispatches to|splits into|triggers)\s+(.+)/i);
+            if (splitMatch) {
+              const src = getOrCreateNode(splitMatch[1].trim(), 'process');
+              const targets = splitMatch[2].split(/,\s*and\s*|,\s*|\s+and\s+/i);
+              targets.forEach(t => {
+                const trg = getOrCreateNode(t.trim().replace(/\.$/, ''), 'process');
+                edges.push({
+                  id: `edge_${edges.length + 1}`,
+                  source: src.id,
+                  target: trg.id,
+                  label: ''
+                });
+              });
+              previousNode = src;
+              return;
+            }
+          }
+
+          // Direct step: "A -> B" or "Subject does Action"
+          const tokens = sentence.split(/\s*->\s*|\s*leads to\s*|\s*triggers\s*|\s*routes to\s*|\s*redirects to\s*/i);
+          if (tokens.length >= 2) {
+            let current = getOrCreateNode(tokens[0].trim(), previousNode ? 'process' : 'start');
+            if (previousNode && current.id !== previousNode.id) {
+              edges.push({
+                id: `edge_${edges.length + 1}`,
+                source: previousNode.id,
+                target: current.id,
+                label: ''
+              });
+            }
+            for (let i = 1; i < tokens.length; i++) {
+              const next = getOrCreateNode(tokens[i].trim().replace(/\.$/, ''), 'process');
+              edges.push({
+                id: `edge_${edges.length + 1}`,
+                source: current.id,
+                target: next.id,
+                label: ''
+              });
+              current = next;
+            }
+            previousNode = current;
+            return;
+          }
+
+          // Default sequential flow from sentence
+          const nodeLabel = sentence.replace(/\.$/, '').trim();
+          const isDecision = /check|validate|verify|is |test/i.test(sentence);
+          const currentNode = getOrCreateNode(nodeLabel, isDecision ? 'decision' : (previousNode ? 'process' : 'start'));
+
+          if (isDecision) {
+            lastDecisionNode = currentNode;
+          }
+
+          if (previousNode && previousNode.id !== currentNode.id) {
+            edges.push({
+              id: `edge_${edges.length + 1}`,
+              source: previousNode.id,
+              target: currentNode.id,
+              label: ''
+            });
+          }
+
+          previousNode = currentNode;
+        });
+
+        const vertices = Array.from(nodesMap.values());
+
+        // Guarantee minimal fallback if prompt was very sparse
+        if (vertices.length < 2) {
+          const v1 = getOrCreateNode("User Request", "start");
+          const v2 = getOrCreateNode("Process & Execute", "process");
+          const v3 = getOrCreateNode("Success Response", "end");
+          edges.push({ id: "edge_1", source: v1.id, target: v2.id, label: "invoke" });
+          edges.push({ id: "edge_2", source: v2.id, target: v3.id, label: "result" });
+        }
+
+        return {
+          vertices: Array.from(nodesMap.values()),
+          edges
+        };
+      }
+    }
+
+    /* ==========================================================================
+       3. SUGIYAMA-STYLE LAYERED GRAPH AUTO-LAYOUT ENGINE
+       - Cycle removal (identifying back-edges)
+       - Layer assignment (longest path ranking)
+       - Vertex ordering (barycenter heuristic for crossing minimization)
+       - Coordinate assignment (respecting margins and direction)
+       ========================================================================== */
+    class SugiyamaLayoutEngine {
+      static layout(graph, options = {}) {
+        const direction = options.direction || 'TB'; // 'TB' or 'LR'
+        const rankGap = options.rankGap || 110;
+        const nodeGap = options.nodeGap || 70;
+
+        const vertices = graph.vertices.map(v => ({ ...v }));
+        const edges = graph.edges.map(e => ({ ...e }));
+        const nodeMap = new Map(vertices.map(v => [v.id, v]));
+
+        // 1. Filter edges: ensure valid references
+        const validEdges = edges.filter(e => nodeMap.has(e.source) && nodeMap.has(e.target));
+
+        // 2. Identify cycle back-edges using DFS
+        const visited = new Set();
+        const recStack = new Set();
+        const forwardEdges = [];
+        const backEdges = [];
+
+        function dfs(nodeId) {
+          visited.add(nodeId);
+          recStack.add(nodeId);
+
+          const outgoing = validEdges.filter(e => e.source === nodeId);
+          for (const edge of outgoing) {
+            if (recStack.has(edge.target)) {
+              backEdges.push(edge);
+            } else {
+              forwardEdges.push(edge);
+              if (!visited.has(edge.target)) {
+                dfs(edge.target);
+              }
+            }
+          }
+          recStack.delete(nodeId);
+        }
+
+        vertices.forEach(v => {
+          if (!visited.has(v.id)) dfs(v.id);
+        });
+
+        // 3. Layer Assignment: Longest Path Ranking on DAG
+        // In-degree from forward edges
+        const inDegree = new Map(vertices.map(v => [v.id, 0]));
+        forwardEdges.forEach(e => {
+          inDegree.set(e.target, (inDegree.get(e.target) || 0) + 1);
+        });
+
+        const queue = vertices.filter(v => inDegree.get(v.id) === 0);
+        vertices.forEach(v => v.rank = 0);
+
+        // Topological relaxation
+        const adj = new Map(vertices.map(v => [v.id, []]));
+        forwardEdges.forEach(e => {
+          adj.get(e.source).push(e.target);
+        });
+
+        const topoOrder = [];
+        const inDegreeCopy = new Map(inDegree);
+        const q = [...queue];
+
+        while (q.length > 0) {
+          const u = q.shift();
+          topoOrder.push(u.id);
+          for (const targetId of adj.get(u.id)) {
+            inDegreeCopy.set(targetId, inDegreeCopy.get(targetId) - 1);
+            if (inDegreeCopy.get(targetId) === 0) {
+              q.push(nodeMap.get(targetId));
+            }
+          }
+        }
+
+        // Compute longest path rank
+        topoOrder.forEach(uId => {
+          const uNode = nodeMap.get(uId);
+          for (const targetId of adj.get(uId)) {
+            const tNode = nodeMap.get(targetId);
+            if (tNode.rank < uNode.rank + 1) {
+              tNode.rank = uNode.rank + 1;
+            }
+          }
+        });
+
+        // 4. Group vertices by rank layer
+        const maxRank = Math.max(0, ...vertices.map(v => v.rank));
+        const layers = Array.from({ length: maxRank + 1 }, () => []);
+        vertices.forEach(v => {
+          layers[v.rank].push(v);
+        });
+
+        // 5. Crossing minimization: Barycenter heuristic
+        for (let r = 1; r <= maxRank; r++) {
+          const currentLayer = layers[r];
+          currentLayer.forEach(v => {
+            const incoming = forwardEdges.filter(e => e.target === v.id);
+            if (incoming.length > 0) {
+              const sumPositions = incoming.reduce((sum, e) => {
+                const srcNode = nodeMap.get(e.source);
+                return sum + (srcNode.order || 0);
+              }, 0);
+              v.barycenter = sumPositions / incoming.length;
+            } else {
+              v.barycenter = v.order || 0;
+            }
+          });
+
+          // Sort layer by barycenter
+          currentLayer.sort((a, b) => (a.barycenter || 0) - (b.barycenter || 0));
+          currentLayer.forEach((v, idx) => v.order = idx);
+        }
+
+        // 6. Coordinate Assignment (x, y)
+        const canvasPadding = 80;
+        if (direction === 'TB') {
+          // Top-to-Bottom
+          layers.forEach((layer, rankIndex) => {
+            const layerHeight = Math.max(...layer.map(v => v.height), 60);
+            const totalWidth = layer.reduce((acc, v) => acc + v.width, 0) + (layer.length - 1) * nodeGap;
+            let currentX = Math.max(canvasPadding, 450 - totalWidth / 2);
+
+            layer.forEach(v => {
+              v.x = Math.round(currentX);
+              v.y = Math.round(canvasPadding + rankIndex * (layerHeight + rankGap));
+              currentX += v.width + nodeGap;
+            });
+          });
+        } else {
+          // Left-to-Right
+          layers.forEach((layer, rankIndex) => {
+            const layerWidth = Math.max(...layer.map(v => v.width), 140);
+            const totalHeight = layer.reduce((acc, v) => acc + v.height, 0) + (layer.length - 1) * nodeGap;
+            let currentY = Math.max(canvasPadding, 350 - totalHeight / 2);
+
+            layer.forEach(v => {
+              v.x = Math.round(canvasPadding + rankIndex * (layerWidth + rankGap));
+              v.y = Math.round(currentY);
+              currentY += v.height + nodeGap;
+            });
+          });
+        }
+
+        return {
+          vertices,
+          edges: validEdges
+        };
+      }
+    }
+
+    /* ==========================================================================
+       4. FORMAT EMITTERS & DRAW.IO SPEC COMPLIANCE
+       Guarantees 100% plain, uncompressed, editable mxGraphModel XML
+       ========================================================================== */
+    class DiagramEmitters {
+
+      /**
+       * Emits plain, uncompressed <mxGraphModel> XML.
+       * Can be copied directly and pasted via Edit > Paste into app.diagrams.net.
+       */
+      static toDrawioXML(graph, themeKey = 'modern_indigo', direction = 'TB') {
+        const theme = PALETTES[themeKey] || PALETTES.modern_indigo;
+        const escapeXml = (str) => String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;');
+
+        let cellsXml = '';
+        // Mandatory root cells
+        cellsXml += '    <mxCell id="0"/>\n';
+        cellsXml += '    <mxCell id="1" parent="0"/>\n';
+
+        // Emit vertices
+        graph.vertices.forEach(v => {
+          let style = '';
+          const escapedLabel = escapeXml(v.label);
+
+          switch (v.type) {
+            case 'start':
+              style = `rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=${theme.start.fill};strokeColor=${theme.start.stroke};fontColor=${theme.start.font};strokeWidth=2;fontSize=13;fontStyle=1;`;
+              break;
+            case 'decision':
+              style = `rhombus;whiteSpace=wrap;html=1;fillColor=${theme.decision.fill};strokeColor=${theme.decision.stroke};fontColor=${theme.decision.font};strokeWidth=2;fontSize=12;fontStyle=1;`;
+              break;
+            case 'database':
+              style = `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=${theme.database.fill};strokeColor=${theme.database.stroke};fontColor=${theme.database.font};strokeWidth=2;fontSize=12;fontStyle=1;`;
+              break;
+            case 'cloud':
+              style = `ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=${theme.cloud.fill};strokeColor=${theme.cloud.stroke};fontColor=${theme.cloud.font};strokeWidth=2;fontSize=12;fontStyle=1;`;
+              break;
+            case 'end':
+              style = `rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=${theme.end.fill};strokeColor=${theme.end.stroke};fontColor=${theme.end.font};strokeWidth=2;fontSize=13;fontStyle=1;`;
+              break;
+            default: // process
+              style = `rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=8;fillColor=${theme.process.fill};strokeColor=${theme.process.stroke};fontColor=${theme.process.font};strokeWidth=2;fontSize=12;fontStyle=0;`;
+              break;
+          }
+
+          cellsXml += `    <mxCell id="${escapeXml(v.id)}" value="${escapedLabel}" style="${style}" vertex="1" parent="1">\n`;
+          cellsXml += `      <mxGeometry x="${v.x}" y="${v.y}" width="${v.width}" height="${v.height}" as="geometry"/>\n`;
+          cellsXml += `    </mxCell>\n`;
+        });
+
+        // Emit edges
+        graph.edges.forEach((e, idx) => {
+          const edgeId = escapeXml(e.id || `edge_${idx + 1}`);
+          const sourceId = escapeXml(e.source);
+          const targetId = escapeXml(e.target);
+          const escapedLabel = escapeXml(e.label || '');
+
+          const edgeStyle = `edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=${theme.edge};strokeWidth=2;fontSize=11;fontColor=#334155;`;
+
+          cellsXml += `    <mxCell id="${edgeId}" value="${escapedLabel}" style="${edgeStyle}" edge="1" parent="1" source="${sourceId}" target="${targetId}">\n`;
+          cellsXml += `      <mxGeometry relative="1" as="geometry"/>\n`;
+          cellsXml += `    </mxCell>\n`;
+        });
+
+        // Plain, fully uncompressed mxGraphModel structure
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
+  <root>
+${cellsXml}  </root>
+</mxGraphModel>`;
+      }
+
+      /**
+       * Emits Mermaid flowchart code
+       */
+      static toMermaid(graph, direction = 'TB') {
+        let out = `flowchart ${direction}\n`;
+        graph.vertices.forEach(v => {
+          const cleanLabel = (v.label || '').replace(/["\n]/g, ' ');
+          if (v.type === 'decision') {
+            out += `  ${v.id}{"${cleanLabel}"}\n`;
+          } else if (v.type === 'database') {
+            out += `  ${v.id}[("${cleanLabel}")]\n`;
+          } else if (v.type === 'start' || v.type === 'end') {
+            out += `  ${v.id}(["${cleanLabel}"])\n`;
+          } else {
+            out += `  ${v.id}["${cleanLabel}"]\n`;
+          }
+        });
+
+        graph.edges.forEach(e => {
+          if (e.label && e.label.trim()) {
+            out += `  ${e.source} -->|"${e.label.trim()}"| ${e.target}\n`;
+          } else {
+            out += `  ${e.source} --> ${e.target}\n`;
+          }
+        });
+
+        return out;
+      }
+
+      /**
+       * Emits PlantUML syntax
+       */
+      static toPlantUML(graph) {
+        let out = `@startuml\n!theme plain\nskinparam defaultFontName Inter\nskinparam roundcorner 12\n\n`;
+        graph.vertices.forEach(v => {
+          const clean = (v.label || '').replace(/["\n]/g, ' ');
+          if (v.type === 'database') {
+            out += `database "${clean}" as ${v.id}\n`;
+          } else if (v.type === 'cloud') {
+            out += `cloud "${clean}" as ${v.id}\n`;
+          } else {
+            out += `rectangle "${clean}" as ${v.id}\n`;
+          }
+        });
+        out += `\n`;
+        graph.edges.forEach(e => {
+          if (e.label && e.label.trim()) {
+            out += `${e.source} --> ${e.target} : ${e.label.trim()}\n`;
+          } else {
+            out += `${e.source} --> ${e.target}\n`;
+          }
+        });
+        out += `\n@enduml`;
+        return out;
+      }
+
+      /**
+       * Emits D2 declarative language
+       */
+      static toD2(graph) {
+        let out = `# Naturally Clear - D2 Export\nvars: {\n  d2-config: {\n    theme-id: 0\n  }\n}\n\n`;
+        graph.vertices.forEach(v => {
+          const clean = (v.label || '').replace(/["\n]/g, ' ');
+          let shape = 'rectangle';
+          if (v.type === 'decision') shape = 'diamond';
+          else if (v.type === 'database') shape = 'cylinder';
+          else if (v.type === 'cloud') shape = 'cloud';
+          else if (v.type === 'start' || v.type === 'end') shape = 'oval';
+
+          out += `${v.id}: "${clean}" {\n  shape: ${shape}\n}\n`;
+        });
+        out += `\n`;
+        graph.edges.forEach(e => {
+          if (e.label && e.label.trim()) {
+            out += `${e.source} -> ${e.target}: "${e.label.trim()}"\n`;
+          } else {
+            out += `${e.source} -> ${e.target}\n`;
+          }
+        });
+        return out;
+      }
+    }
+
+    
+return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutEngine: SugiyamaLayoutEngine, DiagramEmitters: DiagramEmitters };
+})();</script>
+<script>/* Diagram Studio MCP App view: the interface, the MCP Apps host protocol and the engines.
+ *
+ * Two shapes arrive in `ui/notifications/tool-result` structuredContent:
+ *   {graph: {vertices, edges}, direction?, format?, title?}   the studio: one graph, four formats, editable
+ *   {syntax, source, title?}                                  one diagram's source, drawn as written
+ * `GraphKit` (the studio's own palettes, layered layout and emitters, extracted from index.html at build time) and `mermaid` are
+ * globals from the two scripts before this one. */
 (function () {
+  "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var post = function (m) { window.parent.postMessage(m, "*"); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
-  // Handshake, same contract as the ping view (a2ui-private UI_PING_HTML, see its 2026-07-27 note): claude.ai keeps the
-  // iframe reserved-but-hidden until it receives ui/notifications/initialized, so send it unconditionally, once, on any
-  // result-bearing reply or after a short timeout.
+  var FORMATS = ["mermaid", "d2", "plantuml", "drawio"];
+  var TYPES = ["start", "process", "decision", "database", "cloud", "end"];
+  var THEMES = ["modern_indigo", "vibrant_cloud", "warm_amber", "monochrome"];
+  var MAX_V = 200, MAX_E = 400;
+
+  var state = {
+    mode: "source", syntax: "mermaid", source: "", title: "",
+    graph: null, original: null, direction: "TB", theme: "modern_indigo", nodeGap: 70, rankGap: 110,
+    format: "mermaid", tab: "visual", zoom: null, edited: false
+  };
+  var seq = 0;
+
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Host protocol
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  // Handshake, same contract as the ping view (a2ui-private UI_PING_HTML, see its 2026-07-27 note): claude.ai keeps the iframe
+  // reserved-but-hidden until it receives ui/notifications/initialized, so send it unconditionally, once, on any result-bearing
+  // reply or after a short timeout.
   var didInit = false, initId = "init-" + Math.random().toString(36).slice(2);
   function sendInitialized() { if (didInit) return; didInit = true; post({ jsonrpc: "2.0", method: "ui/notifications/initialized" }); }
   function size() {
@@ -2087,15 +2758,25 @@ Expecting `+Qe.join(", ")+", got '"+(this.terminals_[Ne]||Ne)+"'":Dt="Parse erro
            params: { width: Math.ceil(document.documentElement.scrollWidth), height: Math.ceil(document.documentElement.scrollHeight) } });
   }
 
-  // Display mode. Same negotiation the main renderer bundle uses (a2ui-catalogue gen_mcp_apps_bundle.py): declare that we can
-  // go fullscreen in ui/initialize, learn the host's context from the reply, and ask for fullscreen with ui/request-display-mode.
+  // Requests we send and expect an answer to (ui/message, ui/update-model-context): matched by id, with a timeout, because a host is
+  // allowed to decline or to never answer.
+  var reqSeq = 0, pending = {};
+  function request(method, params, cb, ms) {
+    var id = "ax-" + (++reqSeq);
+    pending[id] = cb;
+    post({ jsonrpc: "2.0", id: id, method: method, params: params });
+    setTimeout(function () { if (pending[id]) { delete pending[id]; cb({ error: { message: "no reply from the host" } }); } }, ms || 4000);
+  }
+
+  // Display mode. Same negotiation the main renderer bundle uses (a2ui-catalogue gen_mcp_apps_bundle.py): declare that we can go
+  // fullscreen in ui/initialize, learn the host's context from the reply, and ask for fullscreen with ui/request-display-mode.
   // Asked ONCE, proactively, on the first diagram: a diagram is something you look at rather than read past, and an inline card
   // clips anything tall. Never asked again, so a person who closes fullscreen is not fought. The button asks on demand.
   var host = {}, fsAsked = false, fsSeq = 0;
   function syncMode() {
     var full = host.displayMode === "fullscreen";
     document.documentElement.classList.toggle("fs", full);
-    $("fs").textContent = full ? "\u2921 Exit fullscreen" : "\u2922 Fullscreen";
+    $("fs").textContent = full ? "⤡ Exit fullscreen" : "⤢ Fullscreen";
     size();
   }
   function requestMode(mode) {
@@ -2109,45 +2790,86 @@ Expecting `+Qe.join(", ")+", got '"+(this.terminals_[Ne]||Ne)+"'":Dt="Parse erro
     if ((host.displayMode || "inline") !== "fullscreen") requestMode("fullscreen");
   }
 
-  var seq = 0, current = { syntax: "mermaid", title: "" };
-
-  function showErr(msg) {
-    $("stage").innerHTML = '<div class="err"><b>Could not render this diagram</b><pre>' + esc(msg) + "</pre></div>";
-    $("src").open = true;   // let the person see and fix the source
-    size();
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * The graph: normalise what the model sent, validate, and turn it into the four formats
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  function cleanText(s, max) {
+    s = String(s == null ? "" : s).replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim();
+    return s.length > max ? s.slice(0, max) : s;
   }
 
-  function render(spec) {
-    var mine = ++seq;
-    current = { syntax: spec.syntax || "mermaid", title: spec.title || "" };
-    $("title").textContent = current.title || "Diagram";
-    $("code").value = spec.source;
-    $("meta").textContent = current.syntax + " · " + spec.source.length + " chars";
-    if (current.syntax === "d2") { renderD2(spec, mine); return; }
-    if (current.syntax !== "mermaid") { showErr("Unsupported syntax “" + current.syntax + "”. This view renders mermaid and d2."); return; }
-    // The source is model-authored, so it is untrusted: mermaid's strict security level sanitises labels and disables click handlers.
-    mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral", fontFamily: "system-ui, sans-serif",
-                         flowchart: { curve: "basis", htmlLabels: true } });
-    var rid = "mmd-" + mine;
-    mermaid.render(rid, spec.source).then(function (r) {
-      if (mine !== seq) return;
-      $("stage").innerHTML = r.svg;
-      $("src").open = false;
-      size();
-    }).catch(function (e) {
-      // mermaid leaves its error graphic in <body> on a parse failure; remove it so it does not stack up.
-      var junk = document.getElementById("d" + rid); if (junk && junk.parentNode) junk.parentNode.removeChild(junk);
-      if (mine !== seq) return;
-      showErr((e && e.message) || String(e));
+  // What the model (or the editor) holds: ids, labels, types. Everything is coerced to something safe and bounded.
+  function normalizeGraph(raw) {
+    // Prototype-less: the ids are model-authored, and "constructor" or "__proto__" must be just ids, not inherited properties.
+    var vs = [], es = [], seen = Object.create(null);
+    (Array.isArray(raw.vertices) ? raw.vertices : []).slice(0, MAX_V).forEach(function (v, i) {
+      v = v && typeof v === "object" ? v : {};
+      var id = cleanText(v.id, 40) || ("v" + (i + 1));
+      while (seen[id]) id += "_";
+      seen[id] = true;
+      vs.push({ id: id, label: cleanText(v.label, 80), type: TYPES.indexOf(v.type) >= 0 ? v.type : "process" });
     });
+    (Array.isArray(raw.edges) ? raw.edges : []).slice(0, MAX_E).forEach(function (e, i) {
+      e = e && typeof e === "object" ? e : {};
+      if (!seen[e.source] || !seen[e.target]) return;
+      es.push({ id: cleanText(e.id, 40) || ("e" + (i + 1)), source: e.source, target: e.target, label: cleanText(e.label, 60) });
+    });
+    return { vertices: vs, edges: es };
   }
 
-  // ---- D2 (lazy) ----------------------------------------------------------------------------------------------------
-  // The D2 engine is a self-contained ES module (its WASM is embedded) that starts the WASM inside a blob Web Worker. It is
-  // ~11.5 MB, so it is NOT inlined: it is fetched from a2uicatalog.ai as a gzip file (Cloudflare static assets cap a file at
-  // 25 MiB) and unpacked with DecompressionStream. Each step that could be refused by the host sandbox is logged to the
-  // diagnostics panel, so a failure names its own cause: fetch (connect-src / CORS), module load (blob: script), Worker
-  // (worker-src), WASM (wasm-unsafe-eval).
+  function validateGraph(g) {
+    var p = [];
+    if (!g.vertices.length) p.push("the graph has no nodes");
+    g.vertices.forEach(function (v, i) { if (!v.label) p.push("node " + (i + 1) + " has no label"); });
+    return p;
+  }
+
+  // The studio's emitters write ids and labels straight into Mermaid / D2 / PlantUML / draw.io. They were built for a graph it made
+  // itself; this graph comes from a model (or a person editing), so hand them a sanitised copy: generated ids that are valid in
+  // every language (n1, n2, ...) and labels with nothing that can close a quoted string. The studio's code itself is used untouched.
+  // D2 also reads "$" inside a quoted string as the start of a substitution (found the hard way: it tolerates whitespace, so "$ {x}"
+  // is one too, and a bare "$x" is a compile error), so for D2 only, every "$" is escaped.
+  function labelFor(s, fallback, fmt) {
+    s = cleanText(s, 80).replace(/"/g, "'").replace(/\\/g, "/");
+    if (fmt === "d2") s = s.replace(/\$/g, "\\$");
+    return s || fallback;
+  }
+  function prepare(g, fmt) {
+    var map = Object.create(null);
+    var vertices = g.vertices.map(function (v, i) {
+      var id = "n" + (i + 1);
+      map[v.id] = id;
+      return { id: id, label: labelFor(v.label, "Node " + (i + 1), fmt), type: v.type,
+               width: v.type === "decision" ? 140 : 160, height: v.type === "decision" ? 70 : 60, rank: 0, order: 0, x: 0, y: 0 };
+    });
+    var edges = g.edges.filter(function (e) { return map[e.source] && map[e.target]; }).map(function (e, i) {
+      return { id: "e" + (i + 1), source: map[e.source], target: map[e.target], label: labelFor(e.label, "", fmt) };
+    });
+    return { vertices: vertices, edges: edges };
+  }
+
+  function emitFormat(g, fmt) {
+    var laid = GraphKit.SugiyamaLayoutEngine.layout(prepare(g, fmt), { direction: state.direction, rankGap: state.rankGap, nodeGap: state.nodeGap });
+    var E = GraphKit.DiagramEmitters;
+    if (fmt === "d2") return E.toD2(laid);
+    if (fmt === "plantuml") return E.toPlantUML(laid);
+    if (fmt === "drawio") return E.toDrawioXML(laid, state.theme, state.direction);
+    return E.toMermaid(laid, state.direction);
+  }
+
+  function currentFormat() { return state.mode === "graph" ? state.format : state.syntax; }
+  function currentCode() {
+    if (state.mode === "graph") return state.graph.vertices.length ? emitFormat(state.graph, state.format) : "";
+    return state.source;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Engines: Mermaid (inlined) and D2 (fetched on first use)
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  // D2 is a self-contained ES module (its WASM is embedded) that starts the WASM inside a blob Web Worker. It is ~11.5 MB, so it is
+  // NOT inlined: it is fetched from a2uicatalog.ai as a gzip file (Cloudflare static assets cap a file at 25 MiB) and unpacked with
+  // DecompressionStream. Each step that could be refused by the host sandbox is logged to the diagnostics panel, so a failure names
+  // its own cause: fetch (connect-src / CORS), module load (blob: script), Worker (worker-src), WASM (wasm-unsafe-eval).
   var D2_URL = window.__D2_URL || "https://a2uicatalog.ai/surfaces/diagram-studio/d2.bundle.mjs.gz";
   var diagLines = [], d2p = null;
   function diag(line) { diagLines.push(line); $("diag").textContent = diagLines.join("\n"); $("diagwrap").hidden = false; size(); }
@@ -2215,17 +2937,96 @@ Expecting `+Qe.join(", ")+", got '"+(this.terminals_[Ne]||Ne)+"'":Dt="Parse erro
     return new XMLSerializer().serializeToString(doc.documentElement);
   }
 
-  async function renderD2(spec, mine) {
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Visual tab
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  function showErr(msg) {
+    $("stage").innerHTML = '<div class="err"><b>Could not render this diagram</b><pre>' + esc(msg) + "</pre>" +
+      (state.mode === "source" ? '<button class="ghost" id="toedit" type="button">Edit the source</button>' : "") + "</div>";
+    var b = $("toedit"); if (b) b.addEventListener("click", function () { setTab("code"); });
+    size();
+  }
+
+  function naturalWidth(svg) {
+    var vb = svg.viewBox && svg.viewBox.baseVal;
+    return (vb && vb.width) || parseFloat(svg.getAttribute("width")) || 0;
+  }
+  function applyZoom() {
+    var svg = $("stage").querySelector("svg");
+    if (!svg) { $("zlabel").textContent = "Fit"; return; }
+    var nat = naturalWidth(svg);
+    if (state.zoom === null) {
+      // Fit: as wide as the space allows, but never wider than the diagram's natural size (mermaid sets its own max-width for the same
+      // reason; overriding it with 100% stretched a tall, narrow diagram to the full width of the card).
+      svg.style.width = ""; svg.style.maxWidth = nat ? "min(100%, " + Math.round(nat) + "px)" : "100%"; svg.style.maxHeight = ""; svg.style.height = "auto";
+      $("zlabel").textContent = "Fit";
+    } else {
+      if (!nat) nat = svg.getBoundingClientRect().width;
+      svg.style.maxWidth = "none"; svg.style.maxHeight = "none"; svg.style.height = "auto";
+      svg.style.width = Math.round(nat * state.zoom) + "px";
+      $("zlabel").textContent = Math.round(state.zoom * 100) + "%";
+    }
+    size();
+  }
+  function fitScale() {
+    var svg = $("stage").querySelector("svg");
+    if (!svg) return 1;
+    var nat = naturalWidth(svg);
+    var shown = svg.getBoundingClientRect().width;
+    return nat && shown ? shown / nat : 1;
+  }
+  function zoomBy(f) {
+    var z = (state.zoom === null ? fitScale() : state.zoom) * f;
+    state.zoom = Math.max(0.2, Math.min(4, z));
+    applyZoom();
+  }
+
+  function drawNote(html, withButton) {
+    $("stage").innerHTML = '<div class="note">' + html + (withButton ? '<br><button class="ghost" id="tocode" type="button">Show the code</button>' : "") + "</div>";
+    var b = $("tocode"); if (b) b.addEventListener("click", function () { setTab("code"); });
+    size();
+  }
+
+  function drawVisual() {
+    var mine = ++seq, fmt = currentFormat(), code = currentCode();
+    if (state.mode === "graph" && !state.graph.vertices.length) { drawNote("This graph has no nodes yet. Add one on the Edit tab.", false); return; }
+    if (fmt === "d2") return drawD2(code, mine);
+    if (fmt === "mermaid") return drawMermaid(code, mine);
+    // Raw source in a language this view cannot draw is an error; a GRAPH in one is just a format with no picture yet.
+    if (state.mode === "source") return showErr("Unsupported syntax \u201c" + fmt + "\u201d. This view renders mermaid and d2.");
+    if (fmt === "plantuml") return drawNote("PlantUML has no live preview here yet: it needs a 5 MB engine of its own. The PlantUML source is on the Code tab.", true);
+    if (fmt === "drawio") return drawNote("draw.io is an editable XML format, not a picture: copy it from the Code tab and paste it into diagrams.net (Edit ▸ Paste).", true);
+    showErr("Unsupported syntax “" + fmt + "”. This view renders mermaid and d2.");
+  }
+
+  function drawMermaid(code, mine) {
+    // The source is model-authored, so it is untrusted: mermaid's strict security level sanitises labels and disables click handlers.
+    mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: "neutral", fontFamily: "system-ui, sans-serif",
+                         flowchart: { curve: "basis", htmlLabels: true } });
+    var rid = "mmd-" + mine;
+    mermaid.render(rid, code).then(function (r) {
+      if (mine !== seq) return;
+      $("stage").innerHTML = r.svg;
+      applyZoom();
+    }).catch(function (e) {
+      // mermaid leaves its error graphic in <body> on a parse failure; remove it so it does not stack up.
+      var junk = document.getElementById("d" + rid); if (junk && junk.parentNode) junk.parentNode.removeChild(junk);
+      if (mine !== seq) return;
+      showErr((e && e.message) || String(e));
+    });
+  }
+
+  async function drawD2(code, mine) {
     $("stage").innerHTML = '<div class="wait">Loading the D2 engine (about 9 MB, cached by the browser after the first time)…</div>'; size();
     try {
       var d2 = await loadD2(); if (mine !== seq) return;
       var t = performance.now();
-      var r = await d2.compile(spec.source);
+      var r = await d2.compile(code);
       var svg = await d2.render(r.diagram, r.renderOptions);
       diag("compile + render: " + Math.round(performance.now() - t) + " ms");
       if (mine !== seq) return;
       $("stage").innerHTML = cleanSvg(svg);
-      $("src").open = false; size();
+      applyZoom();
     } catch (e) {
       diag("FAILED: " + ((e && e.message) || e));
       if (mine !== seq) return;
@@ -2233,11 +3034,202 @@ Expecting `+Qe.join(", ")+", got '"+(this.terminals_[Ne]||Ne)+"'":Dt="Parse erro
     }
   }
 
-  // Same trust posture as the ping view: no source check on the message (the host may relay through a proxy frame), which is
-  // acceptable because the only thing a message can do here is draw a sanitised diagram.
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Code tab
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  function updateCodePane() {
+    var graphMode = state.mode === "graph";
+    $("codeout").hidden = !graphMode;
+    $("code").hidden = graphMode;
+    $("re").hidden = graphMode;
+    $("opendio").hidden = !(graphMode && state.format === "drawio");
+    if (graphMode) $("codeout").textContent = currentCode();
+    else $("code").value = state.source;
+    $("copystatus").textContent = "";
+  }
+
+  // The sandbox may or may not grant the clipboard: try the modern API, then the old one, and if both are refused select the text so
+  // the person can press Ctrl+C.
+  function copyText(text) {
+    var viaApi = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject(new Error("no clipboard API"));
+    return viaApi.catch(function () {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (!ok) throw new Error("clipboard blocked");
+    });
+  }
+  function selectAll(el) {
+    if (el.select) { el.focus(); el.select(); return; }
+    var r = document.createRange(); r.selectNodeContents(el);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Edit tab
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  function elt(tag, attrs, children) {
+    var e = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) { if (k === "text") e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); });
+    (children || []).forEach(function (c) { e.appendChild(c); });
+    return e;
+  }
+  function nodeSelect(value, onChange, label) {
+    var s = elt("select", { "aria-label": label });
+    state.graph.vertices.forEach(function (v) {
+      var o = elt("option", { value: v.id, text: (v.label || v.id).slice(0, 34) });   // text via textContent: labels are model-authored
+      if (v.id === value) o.selected = true;
+      s.appendChild(o);
+    });
+    s.addEventListener("change", function () { onChange(s.value); });
+    return s;
+  }
+
+  function renderEditor() {
+    var g = state.graph;
+    var vrows = $("vrows"); vrows.textContent = "";
+    if (!g.vertices.length) vrows.appendChild(elt("div", { class: "empty", text: "No nodes yet." }));
+    g.vertices.forEach(function (v) {
+      var label = elt("input", { type: "text", value: v.label, "aria-label": "Node label", maxlength: "80" });
+      label.addEventListener("input", function () { v.label = cleanText(label.value, 80); touched(false); });
+      var type = elt("select", { "aria-label": "Node shape" });
+      TYPES.forEach(function (t) { var o = elt("option", { value: t, text: t }); if (t === v.type) o.selected = true; type.appendChild(o); });
+      type.addEventListener("change", function () { v.type = type.value; touched(false); });
+      var del = elt("button", { class: "del", type: "button", title: "Delete this node", "aria-label": "Delete node", text: "✕" });
+      del.addEventListener("click", function () {
+        g.vertices = g.vertices.filter(function (x) { return x !== v; });
+        g.edges = g.edges.filter(function (e) { return e.source !== v.id && e.target !== v.id; });
+        renderEditor(); touched(true);
+      });
+      vrows.appendChild(elt("div", { class: "r rv" }, [label, type, del]));
+    });
+
+    var erows = $("erows"); erows.textContent = "";
+    if (!g.edges.length) erows.appendChild(elt("div", { class: "empty", text: "No connections yet." }));
+    g.edges.forEach(function (e) {
+      var from = nodeSelect(e.source, function (v) { e.source = v; touched(false); }, "From node");
+      var to = nodeSelect(e.target, function (v) { e.target = v; touched(false); }, "To node");
+      var label = elt("input", { type: "text", value: e.label, placeholder: "label (optional)", "aria-label": "Connection label", maxlength: "60" });
+      label.addEventListener("input", function () { e.label = cleanText(label.value, 60); touched(false); });
+      var del = elt("button", { class: "del", type: "button", title: "Delete this connection", "aria-label": "Delete connection", text: "✕" });
+      del.addEventListener("click", function () { g.edges = g.edges.filter(function (x) { return x !== e; }); renderEditor(); touched(true); });
+      erows.appendChild(elt("div", { class: "r re" }, [from, elt("span", { class: "arrow", text: "→" }), to, label, del]));
+    });
+    $("addv").disabled = g.vertices.length >= MAX_V;
+    $("adde").disabled = g.vertices.length < 1 || g.edges.length >= MAX_E;
+    size();
+  }
+
+  function newId(prefix, list) {
+    var n = list.length + 1, id;
+    do { id = prefix + n++; } while (list.some(function (x) { return x.id === id; }));
+    return id;
+  }
+
+  // Something in the graph changed: refresh the numbers and the code, and (quietly) keep the model informed.
+  var ctxTimer = null;
+  function touched(structural) {
+    state.edited = true;
+    updateMetrics();
+    if (state.tab === "code") updateCodePane();
+    if (structural && state.tab === "edit") size();
+    clearTimeout(ctxTimer);
+    ctxTimer = setTimeout(tellModel, 1500);
+  }
+  function graphMessage() {
+    return "The person edited the diagram in the Diagram Studio view. The graph now is (JSON):\n" + JSON.stringify(state.graph);
+  }
+  // ui/update-model-context: the host MAY hold this for the next turn instead of acting on it, and each call replaces the last, so it
+  // is safe to send on every (debounced) edit.
+  function tellModel() {
+    request("ui/update-model-context", { content: [{ type: "text", text: graphMessage() }] }, function (m) {
+      if (m.error) diag("model context not updated: " + (m.error.message || "declined"));
+    });
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Chrome: tabs, metrics, controls
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  function updateMetrics() {
+    if (state.mode !== "graph") { $("metrics").hidden = true; $("valid").hidden = true; return; }
+    var g = state.graph, issues = validateGraph(g);
+    $("metrics").hidden = false;
+    $("metrics").textContent = g.vertices.length + " nodes • " + g.edges.length + " edges";
+    $("valid").hidden = false;
+    $("valid").className = "pill " + (issues.length ? "warn" : "ok");
+    $("valid").textContent = issues.length ? "⚠ " + issues.length + (issues.length === 1 ? " issue" : " issues") : "✓ valid";
+    $("valid").title = issues.join("\n");
+  }
+
+  function setTab(t) {
+    state.tab = t;
+    ["visual", "code", "edit"].forEach(function (n) {
+      var b = $("tab-" + n);
+      b.setAttribute("aria-selected", n === t ? "true" : "false");
+    });
+    $("stage").hidden = t !== "visual";
+    $("zoomctl").hidden = t !== "visual";
+    $("codepane").hidden = t !== "code";
+    $("editpane").hidden = t !== "edit";
+    if (t === "visual") drawVisual();
+    else if (t === "code") updateCodePane();
+    else if (t === "edit") renderEditor();
+    size();
+  }
+
+  function syncControls() {
+    Array.prototype.forEach.call($("formats").querySelectorAll("button"), function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-fmt") === state.format ? "true" : "false");
+    });
+    $("dir").value = state.direction;
+    $("theme").value = state.theme;
+    $("ngap").value = state.nodeGap;
+    $("rgap").value = state.rankGap;
+  }
+
+  function showMode() {
+    var g = state.mode === "graph";
+    $("graphtools").hidden = !g;
+    $("tab-edit").hidden = !g;
+    $("meta").hidden = g;
+    if (!g) $("meta").textContent = state.syntax + " · " + state.source.length + " chars";
+    updateMetrics();
+    syncControls();
+  }
+
+  function ingest(sc) {
+    $("title").textContent = cleanText(sc.title, 120) || "Diagram";
+    state.title = cleanText(sc.title, 120);
+    if (sc.graph && typeof sc.graph === "object") {
+      state.mode = "graph";
+      state.graph = normalizeGraph(sc.graph);
+      state.original = clone(state.graph);
+      state.direction = sc.direction === "LR" ? "LR" : "TB";
+      state.format = FORMATS.indexOf(sc.format) >= 0 ? sc.format : "mermaid";
+      state.theme = THEMES.indexOf(sc.theme) >= 0 ? sc.theme : "modern_indigo";
+      state.nodeGap = 70; state.rankGap = 110;
+    } else if (typeof sc.source === "string") {
+      state.mode = "source";
+      state.syntax = sc.syntax || "mermaid";
+      state.source = sc.source;
+    } else return false;
+    state.edited = false; state.zoom = null;
+    showMode();
+    // A format with no picture (PlantUML, draw.io) opens on its code, not on an explanation of why there is no picture.
+    setTab(state.mode === "graph" && (state.format === "plantuml" || state.format === "drawio") ? "code" : "visual");
+    return true;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Wiring
+   * ---------------------------------------------------------------------------------------------------------------------- */
   window.addEventListener("message", function (ev) {
     var m = ev.data;
     if (!m || m.jsonrpc !== "2.0") return;
+    // Answers to requests we made (ui/message, ui/update-model-context): success or error, matched by id.
+    if (m.id && pending[m.id] && !m.method) { var cb = pending[m.id]; delete pending[m.id]; cb(m); return; }
     if (m.result && !m.method) {
       // The init ack carries hostContext (id === initId); a reply to our own display-mode request carries the resulting mode.
       if (m.id === initId && m.result.hostContext) host = m.result.hostContext;
@@ -2249,21 +3241,80 @@ Expecting `+Qe.join(", ")+", got '"+(this.terminals_[Ne]||Ne)+"'":Dt="Parse erro
       for (var k in patch) if (Object.prototype.hasOwnProperty.call(patch, k)) host[k] = patch[k];
       syncMode(); return;
     }
+    // Same trust posture as the ping view: no source check on the message (the host may relay through a proxy frame), which is
+    // acceptable because the only thing a message can do here is draw a sanitised diagram.
     if (m.method === "ui/notifications/tool-result") {
       var sc = (m.params || {}).structuredContent;
-      if (sc && typeof sc.source === "string") { render(sc); maybeGoFullscreen(); }
+      if (sc && ingest(sc)) maybeGoFullscreen();
     }
   });
-  $("fs").addEventListener("click", function () { requestMode(host.displayMode === "fullscreen" ? "inline" : "fullscreen"); });
-  $("re").addEventListener("click", function () {
-    render({ syntax: current.syntax, title: current.title, source: $("code").value });
+
+  Array.prototype.forEach.call($("formats").querySelectorAll("button"), function (b) {
+    b.addEventListener("click", function () {
+      state.format = b.getAttribute("data-fmt");
+      state.zoom = null;
+      syncControls();
+      // PlantUML and draw.io have no picture here, so land on their code rather than on an explanation.
+      if (state.tab === "visual" && (state.format === "plantuml" || state.format === "drawio")) setTab("code");
+      else setTab(state.tab);
+    });
   });
+  $("dir").addEventListener("change", function () { state.direction = $("dir").value; setTab(state.tab); });
+  $("theme").addEventListener("change", function () { state.theme = $("theme").value; setTab(state.tab); });
+  var gapTimer = null;
+  function gapChanged() {
+    state.nodeGap = +$("ngap").value; state.rankGap = +$("rgap").value;
+    clearTimeout(gapTimer); gapTimer = setTimeout(function () { setTab(state.tab); }, 200);
+  }
+  $("ngap").addEventListener("input", gapChanged);
+  $("rgap").addEventListener("input", gapChanged);
+
+  ["visual", "code", "edit"].forEach(function (n) { $("tab-" + n).addEventListener("click", function () { setTab(n); }); });
+  $("zin").addEventListener("click", function () { zoomBy(1.25); });
+  $("zout").addEventListener("click", function () { zoomBy(0.8); });
+  $("zfit").addEventListener("click", function () { state.zoom = null; applyZoom(); });
+  $("fs").addEventListener("click", function () { requestMode(host.displayMode === "fullscreen" ? "inline" : "fullscreen"); });
+
+  $("copy").addEventListener("click", function () {
+    var text = state.mode === "graph" ? currentCode() : $("code").value;
+    copyText(text).then(function () { $("copystatus").textContent = "Copied"; })
+      .catch(function () { selectAll(state.mode === "graph" ? $("codeout") : $("code")); $("copystatus").textContent = "Selected: press Ctrl+C to copy"; });
+  });
+  $("re").addEventListener("click", function () { state.source = $("code").value; $("meta").textContent = state.syntax + " · " + state.source.length + " chars"; setTab("visual"); });
+  $("opendio").addEventListener("click", function () {
+    request("ui/open-link", { url: "https://app.diagrams.net/" }, function (m) {
+      $("copystatus").textContent = m.error ? "The host would not open the link; go to app.diagrams.net yourself." : "Opened diagrams.net: paste with Edit ▸ Paste";
+    });
+  });
+
+  $("addv").addEventListener("click", function () {
+    if (state.graph.vertices.length >= MAX_V) return;
+    state.graph.vertices.push({ id: newId("v", state.graph.vertices), label: "New step", type: "process" });
+    renderEditor(); touched(true);
+  });
+  $("adde").addEventListener("click", function () {
+    var vs = state.graph.vertices;
+    if (!vs.length || state.graph.edges.length >= MAX_E) return;
+    var last = vs[vs.length - 1], prev = vs.length > 1 ? vs[vs.length - 2] : last;
+    state.graph.edges.push({ id: newId("e", state.graph.edges), source: prev.id, target: last.id, label: "" });
+    renderEditor(); touched(true);
+  });
+  $("reset").addEventListener("click", function () { state.graph = clone(state.original); renderEditor(); touched(true); $("sendstatus").textContent = ""; });
+  $("send").addEventListener("click", function () {
+    $("sendstatus").textContent = "Sending…";
+    request("ui/message", { role: "user", content: { type: "text", text: graphMessage() + "\nPlease carry on from this version." } }, function (m) {
+      $("sendstatus").textContent = m.error ? "The host did not accept the message (" + (m.error.message || "declined") + ")." : "Sent to the chat.";
+    }, 6000);
+  });
+
   if (window.ResizeObserver) new ResizeObserver(size).observe(document.body);
+  // Tests (and only tests) read this; it exposes nothing the page does not already hold.
+  window.__studio = { state: function () { return clone(state); }, code: currentCode };
 
   setTimeout(size, 120);
   setTimeout(sendInitialized, 500);
   post({ jsonrpc: "2.0", id: initId, method: "ui/initialize", params: { capabilities: {}, protocolVersion: "2026-01-26",
-        clientInfo: { name: "diagram-studio-view", version: "1" }, appCapabilities: { availableDisplayModes: ["inline", "fullscreen"] } } });
+        clientInfo: { name: "diagram-studio-view", version: "2" }, appCapabilities: { availableDisplayModes: ["inline", "fullscreen"] } } });
 })();
 </script>
 </body>

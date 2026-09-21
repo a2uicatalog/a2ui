@@ -54,7 +54,7 @@
     },
     {
       "name": "diagram_studio",
-      "description": "Draw a diagram in-chat from Mermaid or D2 source that YOU write (MCP Apps hosts only; the view opens fullscreen where the host allows it). Nothing is generated server-side and nothing is stored: the source is drawn in the person's own browser, and they can edit it and re-render. Use syntax \"mermaid\" for flowcharts, sequence, class…"
+      "description": "Draw a diagram in-chat with the full Diagram Studio interface (MCP Apps hosts only; it opens fullscreen where the host allows it). YOU write the diagram; nothing is generated server-side and nothing is stored. PREFER `graph`: give vertices (id, label, type start|process|decision|database|cloud|end) and edges (source, target, optional…"
     },
     {
       "name": "distill_document",
