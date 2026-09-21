@@ -3051,6 +3051,20 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     });
   }
 
+  // A frame-src CSP block fires this event immediately (found live, 2026-09-21: claude.ai's own console showed
+  // `Framing 'https://embed.diagrams.net/' violates ... "frame-src 'self' blob: data:"`), so a blocked frame does not need to be
+  // waited out on a timeout: it is known the instant the browser refuses it. blockedURI is usually reduced to origin-only for a
+  // cross-origin target, so origins are compared rather than full URLs.
+  function originOf(url) { try { return new URL(url, location.href).origin; } catch (e) { return url; } }
+  var cspWatchers = [];
+  document.addEventListener("securitypolicyviolation", function (e) {
+    if (e.effectiveDirective !== "frame-src" && e.violatedDirective !== "frame-src") return;
+    diag("CSP: " + e.violatedDirective + " blocked framing " + e.blockedURI);
+    var origin = originOf(e.blockedURI);
+    cspWatchers.slice().forEach(function (w) { if (originOf(w.url) === origin) { cspWatchers = cspWatchers.filter(function (x) { return x !== w; }); w.cb(); } });
+  });
+  function watchFrameCsp(url, cb) { var w = { url: url, cb: cb }; cspWatchers.push(w); return function () { cspWatchers = cspWatchers.filter(function (x) { return x !== w; }); }; }
+
   // The editor inside the view: the studio's own embed protocol (embed.diagrams.net, proto=json). claude.ai silently drops the frame
   // allowance a view asks for, so there this never starts and falls back, honestly, to the picture and the Edit in draw.io link; a host
   // that allows the frame gets the real editor in the chat. It is only started on request: it loads a third-party page.
@@ -3064,11 +3078,12 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     $("stage").textContent = "";
     $("stage").appendChild(dioBar([info, back]));
     $("stage").appendChild(frame);
-    inline = { frame: frame, xml: currentCode(), info: info,
+    var unwatch = watchFrameCsp(EMBED_URL, function () { failInline("this host's Content-Security-Policy refuses the frame"); });
+    inline = { frame: frame, xml: currentCode(), info: info, unwatch: unwatch,
                timer: setTimeout(function () { failInline("it did not start in time; the host may not allow an embedded frame"); }, window.__DRAWIO_INIT_MS || 90000) };
     size();
   }
-  function leaveInline() { if (inline) { clearTimeout(inline.timer); inline = null; } }
+  function leaveInline() { if (inline) { clearTimeout(inline.timer); inline.unwatch(); inline = null; } }
   function failInline(reason) {
     leaveInline();
     diag("draw.io editor: not started (" + reason + ")");
@@ -3102,18 +3117,19 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   function probeResult(name, ok, detail) { diag("probe " + (ok ? "ok      " : "BLOCKED ") + name + (detail ? ": " + detail : "")); }
 
   // A frame that answers (postMessage to its parent) proves the host let it load; silence for a few seconds means it was refused.
-  function probeFrame(name, configure, ms) {
+  function probeFrame(name, configure, ms, cspUrl) {
     return new Promise(function (resolve) {
-      var f = document.createElement("iframe"), done = false, timer = null;
+      var f = document.createElement("iframe"), done = false, timer = null, unwatch = null;
       f.style.cssText = "position:absolute;width:1px;height:1px;border:0;left:-9999px";
       function finish(ok, why) {
         if (done) return;
-        done = true; clearTimeout(timer); window.removeEventListener("message", onMsg);
+        done = true; clearTimeout(timer); window.removeEventListener("message", onMsg); if (unwatch) unwatch();
         if (f.parentNode) f.parentNode.removeChild(f);
         probeResult("frame: " + name, ok, why); resolve(ok);
       }
       function onMsg(ev) { if (ev.source === f.contentWindow) finish(true, "the page in it answered"); }
       window.addEventListener("message", onMsg);
+      if (cspUrl) unwatch = watchFrameCsp(cspUrl, function () { finish(false, "refused by this host's Content-Security-Policy (frame-src)"); });
       ms = window.__PROBE_MS || ms || 5000;   // (window.__PROBE_MS: tests only, so a fully blocked host does not take a minute to test)
       timer = setTimeout(function () { finish(false, "no answer in " + ms / 1000 + " s"); }, ms);
       try { configure(f); document.body.appendChild(f); } catch (e) { finish(false, (e && e.message) || String(e)); }
@@ -3162,8 +3178,8 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     await probeFrame("srcdoc", function (f) { f.srcdoc = PROBE_PAGE; });
     await probeFrame("blob:", function (f) { f.src = URL.createObjectURL(new Blob([PROBE_PAGE], { type: "text/html" })); });
     await probeFrame("data:", function (f) { f.src = "data:text/html," + encodeURIComponent(PROBE_PAGE); });
-    await probeFrame("a2uicatalog.ai page (frameDomains)", function (f) { f.src = SITE + "frame-probe.html"; }, 6000);
-    await probeFrame("embed.diagrams.net (frameDomains)", function (f) { f.src = EMBED_URL + "?embed=1&proto=json&ui=min&spin=1&modified=0"; }, 30000);
+    await probeFrame("a2uicatalog.ai page (frameDomains)", function (f) { f.src = SITE + "frame-probe.html"; }, 6000, SITE);
+    await probeFrame("embed.diagrams.net (frameDomains)", function (f) { f.src = EMBED_URL + "?embed=1&proto=json&ui=min&spin=1&modified=0"; }, 30000, EMBED_URL);
     try { await navigator.clipboard.writeText("Diagram Studio host diagnostics"); probeResult("clipboard write", true); }
     catch (e) { probeResult("clipboard write", false, (e && e.message) || "refused"); }
     diag("--- done: paste this panel back to whoever is checking ---");
