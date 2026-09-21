@@ -1,0 +1,6 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Diagram Studio host probe</title>
+<!-- Loaded in a frame by the diagram view's host diagnostics, to find out whether the host lets a view embed a page from a2uicatalog.ai
+     (frameDomains). It only tells its parent it loaded. -->
+<script>parent.postMessage({ a2uiProbe: "frame-probe" }, "*");</script>

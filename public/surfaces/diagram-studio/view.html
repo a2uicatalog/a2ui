@@ -46,7 +46,11 @@
 
   /* Mermaid's "neutral" theme is drawn for a light ground: keep the diagram on a paper card whatever the host theme is. */
   #stage { background: #fff; color: #1b2433; border-radius: 10px; padding: 16px; overflow: auto; border: 1px solid var(--line); min-height: 60px; }
-  #stage svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  #stage > svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  #stage .mxgraph { margin: 0 auto; max-width: 100%; overflow: auto; }
+  #stage .dio { width: 100%; height: 520px; border: 0; display: block; background: #fff; }
+  .dbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; font-size: 11px; color: #465267; }
+  .dbar .ghost { color: #465267; }
   .wait { color: #6b7688; }
   .note { color: #465267; }
   .note button { margin-top: 8px; }
@@ -54,6 +58,7 @@
   .err pre { white-space: pre-wrap; margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; }
   .err button { margin-top: 8px; }
 
+  .codenote { color: var(--warn); font-size: 11px; margin: 0 0 8px; }
   .pane { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
   pre#codeout { margin: 0; max-height: 46vh; overflow: auto; white-space: pre; font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace; }
   textarea#code { width: 100%; min-height: 200px; padding: 8px; background: var(--field); border: 1px solid var(--line); border-radius: 8px;
@@ -81,7 +86,8 @@
      100vh rule inline is circular against a host that grows the iframe to the height we report. */
   html.fs body { min-height: 100vh; display: flex; flex-direction: column; }
   html.fs #stage { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; }
-  html.fs #stage svg { max-height: calc(100vh - 210px); width: auto; }
+  html.fs #stage > svg { max-height: calc(100vh - 210px); width: auto; }
+  html.fs #stage .dio { height: calc(100vh - 230px); }
   html.fs .pane { flex: 1 1 auto; }
   html.fs pre#codeout { max-height: calc(100vh - 230px); }
 </style>
@@ -92,7 +98,9 @@
   <span class="pill" id="metrics" hidden></span>
   <span class="pill" id="valid" hidden></span>
   <span class="meta" id="meta">waiting for a diagram…</span>
-  <button id="fs" class="ghost push" type="button" title="Toggle fullscreen">⤢ Fullscreen</button>
+  <span class="status" id="dstatus"></span>
+  <button id="opendraw" class="ghost push" type="button" title="Opens the real draw.io editor with this diagram loaded" hidden>✎ Edit in draw.io</button>
+  <button id="fs" class="ghost" type="button" title="Toggle fullscreen">⤢ Fullscreen</button>
 </div>
 
 <div class="tools" id="graphtools" hidden>
@@ -125,12 +133,12 @@
 <div id="stage"><div class="wait">Waiting for the model to send a diagram…</div></div>
 
 <div class="pane" id="codepane" hidden>
+  <div class="codenote" id="codenote" hidden>Edited in the draw.io editor: this XML no longer matches the graph on the Edit tab.</div>
   <pre id="codeout" tabindex="0"></pre>
   <textarea id="code" spellcheck="false" aria-label="Diagram source" hidden></textarea>
   <div class="row">
     <button class="primary" id="copy" type="button">Copy</button>
     <button class="primary" id="re" type="button" hidden>Re-render</button>
-    <button class="ghost" id="opendio" type="button" hidden title="Opens diagrams.net; paste with Edit ▸ Paste">Open diagrams.net</button>
     <span class="status" id="copystatus"></span>
   </div>
 </div>
@@ -150,6 +158,7 @@
 </div>
 
 <details id="diagwrap" hidden><summary>Engine diagnostics</summary><pre id="diag"></pre></details>
+<div class="row" style="margin-top:6px"><button class="ghost" id="probes" type="button" title="Tests what this host lets a view do (frames, scripts, workers, eval) and lists the result under Engine diagnostics">Run host diagnostics</button></div>
 <script>(function(JM,Ag){typeof exports=="object"&&typeof module<"u"?module.exports=Ag():typeof define=="function"&&define.amd?define(Ag):(JM=typeof globalThis<"u"?globalThis:JM||self,JM.mermaid=Ag())})(this,function(){var FWe,RWe;"use strict";function JM(i){for(var s=[],u=1;u<arguments.length;u++)s[u-1]=arguments[u];var d=Array.from(typeof i=="string"?[i]:i);d[d.length-1]=d[d.length-1].replace(/\r?\n([\t ]*)$/,"");var p=d.reduce(function(y,T){var _=T.match(/\n([\t ]+|(?!\s).)/g);return _?y.concat(_.map(function(A){var P,R;return(R=(P=A.match(/[\t ]/g))===null||P===void 0?void 0:P.length)!==null&&R!==void 0?R:0})):y},[]);if(p.length){var v=new RegExp(`
 [	 ]{`+Math.min.apply(Math,p)+"}","g");d=d.map(function(y){return y.replace(v,`
 `)})}d[0]=d[0].replace(/^\r?\n/,"");var b=d[0];return s.forEach(function(y,T){var _=b.match(/(?:^|\n)( *)$/),A=_?_[1]:"",P=y;typeof y=="string"&&y.includes(`
@@ -2741,7 +2750,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   var state = {
     mode: "source", syntax: "mermaid", source: "", title: "",
     graph: null, original: null, direction: "TB", theme: "modern_indigo", nodeGap: 70, rankGap: 110,
-    format: "mermaid", tab: "visual", zoom: null, edited: false
+    format: "mermaid", tab: "visual", zoom: null, edited: false, editedXml: null
   };
   var seq = 0;
 
@@ -2772,7 +2781,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   // fullscreen in ui/initialize, learn the host's context from the reply, and ask for fullscreen with ui/request-display-mode.
   // Asked ONCE, proactively, on the first diagram: a diagram is something you look at rather than read past, and an inline card
   // clips anything tall. Never asked again, so a person who closes fullscreen is not fought. The button asks on demand.
-  var host = {}, fsAsked = false, fsSeq = 0;
+  var host = {}, hostCaps = null, hostInfo = null, fsAsked = false, fsSeq = 0;
   function syncMode() {
     var full = host.displayMode === "fullscreen";
     document.documentElement.classList.toggle("fs", full);
@@ -2829,9 +2838,12 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   // every language (n1, n2, ...) and labels with nothing that can close a quoted string. The studio's code itself is used untouched.
   // D2 also reads "$" inside a quoted string as the start of a substitution (found the hard way: it tolerates whitespace, so "$ {x}"
   // is one too, and a bare "$x" is a compile error), so for D2 only, every "$" is escaped.
+  // draw.io cells are styled html=1, so a label is read as HTML: for draw.io only, < > & are escaped so a label is always text, and never
+  // depends on the viewer (or diagrams.net) sanitising it.
   function labelFor(s, fallback, fmt) {
     s = cleanText(s, 80).replace(/"/g, "'").replace(/\\/g, "/");
     if (fmt === "d2") s = s.replace(/\$/g, "\\$");
+    if (fmt === "drawio") s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     return s || fallback;
   }
   function prepare(g, fmt) {
@@ -2859,8 +2871,19 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
 
   function currentFormat() { return state.mode === "graph" ? state.format : state.syntax; }
   function currentCode() {
-    if (state.mode === "graph") return state.graph.vertices.length ? emitFormat(state.graph, state.format) : "";
+    if (state.mode === "graph") {
+      if (state.format === "drawio" && state.editedXml) return state.editedXml;
+      return state.graph.vertices.length ? emitFormat(state.graph, state.format) : "";
+    }
     return state.source;
+  }
+  // The draw.io XML for this graph (or the person's edited version of it): what "Edit in draw.io" opens.
+  function drawioXml() { return state.editedXml || (state.graph.vertices.length ? emitFormat(state.graph, "drawio") : ""); }
+  // Changing the graph, direction, theme or spacing regenerates the diagram, which supersedes whatever was edited in draw.io.
+  function dropEdited() {
+    if (!state.editedXml) return;
+    state.editedXml = null;
+    $("dstatus").textContent = "The draw.io edits were replaced by the regenerated diagram.";
   }
 
   /* ------------------------------------------------------------------------------------------------------------------------
@@ -2938,6 +2961,216 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   }
 
   /* ------------------------------------------------------------------------------------------------------------------------
+   * draw.io: the real editor (a link), a picture (the viewer), and an inline editor where the host allows a frame
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  // "Edit in draw.io": app.diagrams.net loads a diagram from the URL fragment: #R + base64(deflate-raw(encodeURIComponent(xml))). Verified
+  // against the live editor. The link is opened through the host (ui/open-link), so it works wherever a view can open a link at all.
+  async function drawioLink(xml) {
+    if (typeof CompressionStream === "undefined") throw new Error("this browser cannot compress the diagram");
+    var cs = new CompressionStream("deflate-raw"), w = cs.writable.getWriter();
+    w.write(new TextEncoder().encode(encodeURIComponent(xml))); w.close();
+    var buf = new Uint8Array(await new Response(cs.readable).arrayBuffer()), bin = "";
+    for (var i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+    return "https://app.diagrams.net/?splash=0#R" + encodeURIComponent(btoa(bin));
+  }
+  async function openInDrawio() {
+    var st = $("dstatus"), xml = state.mode === "graph" ? drawioXml() : "";
+    if (!xml) { st.textContent = "Nothing to draw yet."; return; }
+    var url;
+    st.textContent = "Preparing…";
+    try { url = await drawioLink(xml); } catch (e) { st.textContent = "Could not build the draw.io link: " + ((e && e.message) || e); return; }
+    request("ui/open-link", { url: url }, function (m) {
+      if (!m.error) { st.textContent = "Opened in draw.io."; return; }
+      // Some hosts will not open links for a view: hand over the link itself.
+      copyText(url).then(function () { st.textContent = "The host would not open a link, so the draw.io link is copied: paste it into a new tab."; })
+        .catch(function () { st.textContent = "The host would not open the link (" + ((m.error && m.error.message) || "declined") + ")."; });
+    }, 6000);
+  }
+
+  // The picture: draw.io's own read-only viewer, fetched on first use like D2 (an ~0.9 MB gzip). Its defaults point at viewer.diagrams.net
+  // (stencils, styles, MathJax); none is needed for the shapes a graph uses, so they point nowhere, and the build removes its start-up
+  // call that would fetch MathJax, so viewing a diagram makes no request to diagrams.net.
+  var DRAWIO_VIEWER_URL = window.__DRAWIO_VIEWER_URL || "https://a2uicatalog.ai/surfaces/diagram-studio/drawio-viewer.min.js.gz";
+  var dioP = null, dioViewer = null;
+  function loadDrawioViewer() {
+    if (dioP) return dioP;
+    dioP = (async function () {
+      var t0 = performance.now(), ms = function () { return Math.round(performance.now() - t0) + " ms"; };
+      if (typeof DecompressionStream === "undefined") throw new Error("this browser has no DecompressionStream");
+      ["PROXY_URL", "STYLE_PATH", "SHAPES_PATH", "STENCIL_PATH", "DRAW_MATH_URL", "GRAPH_IMAGE_PATH"].forEach(function (k) { if (!window[k]) window[k] = "about:blank#"; });
+      window.onDrawioViewerLoad = function () {};
+      var res = await fetch(DRAWIO_VIEWER_URL);
+      if (!res.ok) throw new Error("draw.io viewer fetch failed: HTTP " + res.status);
+      diag("draw.io viewer fetch: ok (" + ms() + ")");
+      var text = await new Response(res.body.pipeThrough(new DecompressionStream("gzip"))).text();
+      var s = document.createElement("script"); s.textContent = text; document.head.appendChild(s);
+      if (typeof GraphViewer === "undefined") throw new Error("the draw.io viewer did not start");
+      diag("draw.io viewer: ready (" + (text.length / 1048576).toFixed(1) + " MB of JS, " + ms() + ")");
+      return true;
+    })();
+    dioP.catch(function () { dioP = null; });
+    return dioP;
+  }
+
+  // Does the host allow an embedded draw.io editor? The spec has the host list the frame origins it approved in the initialize reply
+  // (hostCapabilities.sandbox.csp.frameDomains). null = it did not say, so it is worth trying; false = it said no (claude.ai drops the
+  // request), so it is not offered at all.
+  function framesAllowed() {
+    var csp = hostCaps && hostCaps.sandbox && hostCaps.sandbox.csp;
+    if (!csp) return null;
+    return Array.isArray(csp.frameDomains) && csp.frameDomains.some(function (d) { return /^https:\/\/(embed|\*)\.diagrams\.net\/?$/.test(d); });
+  }
+
+  var inline = null;
+  function dioBar(children) { return elt("div", { class: "dbar" }, children); }
+  function drawDrawio(mine) {
+    $("stage").innerHTML = '<div class="wait">Loading the draw.io viewer…</div>'; size();
+    loadDrawioViewer().then(function () {
+      if (mine !== seq) return;
+      var holder = elt("div", { class: "mxgraph" });
+      holder.setAttribute("data-mxgraph", JSON.stringify({ xml: currentCode(), nav: false, resize: true, lightbox: false, edit: null, center: true,
+                                                          highlight: null, border: 8, toolbar: null }));
+      var bar = [elt("span", { text: "The draw.io output, drawn by draw.io’s own viewer." })];
+      if (framesAllowed() === false) {
+        bar.push(elt("span", { id: "noframe", text: "This host does not allow an embedded editor: use Edit in draw.io (top right)." }));
+      } else {
+        var edit = elt("button", { class: "ghost", type: "button", id: "editinline", text: "Edit here",
+                                   title: "Try the draw.io editor inside this view (needs a host that allows an embedded frame)" });
+        edit.addEventListener("click", startInline);
+        bar.push(edit);
+      }
+      $("stage").textContent = "";
+      $("stage").appendChild(dioBar(bar));
+      $("stage").appendChild(holder);
+      GraphViewer.createViewerForElement(holder, function (viewer) { if (mine !== seq) return; dioViewer = viewer; applyZoom(); });
+      size();
+    }).catch(function (e) {
+      diag("FAILED: " + ((e && e.message) || e));
+      if (mine !== seq) return;
+      showErr((e && e.message) || String(e));
+    });
+  }
+
+  // The editor inside the view: the studio's own embed protocol (embed.diagrams.net, proto=json). claude.ai silently drops the frame
+  // allowance a view asks for, so there this never starts and falls back, honestly, to the picture and the Edit in draw.io link; a host
+  // that allows the frame gets the real editor in the chat. It is only started on request: it loads a third-party page.
+  var EMBED_URL = "https://embed.diagrams.net/", EMBED_PARAMS = "embed=1&ui=min&spin=1&modified=0&proto=json&saveAndExit=0&noSaveBtn=1&noExitBtn=1&math=0&gapi=0&db=0&od=0&gh=0&gl=0&tr=0&plugins=0";
+  function startInline() {
+    if (inline) return;
+    var back = elt("button", { class: "ghost", type: "button", text: "Back to the picture" });
+    back.addEventListener("click", function () { drawVisual(); });
+    var info = elt("span", { id: "dinfo", text: "Starting the draw.io editor. It is a large app: the first start can take up to a minute…" });
+    var frame = elt("iframe", { class: "dio", title: "draw.io editor", src: EMBED_URL + "?" + EMBED_PARAMS });
+    $("stage").textContent = "";
+    $("stage").appendChild(dioBar([info, back]));
+    $("stage").appendChild(frame);
+    inline = { frame: frame, xml: currentCode(), info: info,
+               timer: setTimeout(function () { failInline("it did not start in time; the host may not allow an embedded frame"); }, window.__DRAWIO_INIT_MS || 90000) };
+    size();
+  }
+  function leaveInline() { if (inline) { clearTimeout(inline.timer); inline = null; } }
+  function failInline(reason) {
+    leaveInline();
+    diag("draw.io editor: not started (" + reason + ")");
+    $("dstatus").textContent = "This host does not allow an embedded draw.io editor. Use Edit in draw.io instead.";
+    drawVisual();
+  }
+  function fromEmbed(ev) {
+    if (!inline || ev.source !== inline.frame.contentWindow) return false;
+    var msg = null;
+    try { msg = typeof ev.data === "string" ? JSON.parse(ev.data) : ev.data; } catch (e) { return true; }
+    if (!msg || !msg.event) return true;
+    if (msg.event === "init") {
+      clearTimeout(inline.timer);
+      diag("draw.io editor: ready");
+      inline.frame.contentWindow.postMessage(JSON.stringify({ action: "load", autosave: 1, xml: inline.xml }), "*");
+    } else if (msg.event === "load") {
+      diag("draw.io editor: diagram loaded");
+      inline.info.textContent = "Editing in draw.io. Your changes are kept here (see the Code tab).";
+    } else if ((msg.event === "autosave" || msg.event === "save") && typeof msg.xml === "string") {
+      state.editedXml = msg.xml;
+      $("dstatus").textContent = "Edited in draw.io.";
+    }
+    return true;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------
+   * Host diagnostics: what does THIS host let a view do? (Run from the footer button; the report is the "Engine diagnostics" panel.)
+   * It answers the questions the inline draw.io editor and D2 depend on: frames, scripts from our site, workers, eval.
+   * ---------------------------------------------------------------------------------------------------------------------- */
+  var SITE = "https://a2uicatalog.ai/surfaces/diagram-studio/", probing = false;
+  function probeResult(name, ok, detail) { diag("probe " + (ok ? "ok      " : "BLOCKED ") + name + (detail ? ": " + detail : "")); }
+
+  // A frame that answers (postMessage to its parent) proves the host let it load; silence for a few seconds means it was refused.
+  function probeFrame(name, configure, ms) {
+    return new Promise(function (resolve) {
+      var f = document.createElement("iframe"), done = false, timer = null;
+      f.style.cssText = "position:absolute;width:1px;height:1px;border:0;left:-9999px";
+      function finish(ok, why) {
+        if (done) return;
+        done = true; clearTimeout(timer); window.removeEventListener("message", onMsg);
+        if (f.parentNode) f.parentNode.removeChild(f);
+        probeResult("frame: " + name, ok, why); resolve(ok);
+      }
+      function onMsg(ev) { if (ev.source === f.contentWindow) finish(true, "the page in it answered"); }
+      window.addEventListener("message", onMsg);
+      ms = window.__PROBE_MS || ms || 5000;   // (window.__PROBE_MS: tests only, so a fully blocked host does not take a minute to test)
+      timer = setTimeout(function () { finish(false, "no answer in " + ms / 1000 + " s"); }, ms);
+      try { configure(f); document.body.appendChild(f); } catch (e) { finish(false, (e && e.message) || String(e)); }
+    });
+  }
+  function probeWorker(name, opts) {
+    return new Promise(function (resolve) {
+      var done = false, w = null, timer = null;
+      function finish(ok, why) { if (done) return; done = true; clearTimeout(timer); try { w.terminate(); } catch (e) { /* not started */ } probeResult(name, ok, why); resolve(ok); }
+      try {
+        var src = (opts && opts.type === "module" ? "export {};" : "") + "postMessage('hi')";
+        w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })), opts);
+        w.onmessage = function () { finish(true); };
+        w.onerror = function (e) { finish(false, (e && e.message) || "error event"); };
+        timer = setTimeout(function () { finish(false, "no answer in 4 s"); }, 4000);
+      } catch (e) { finish(false, (e && e.message) || String(e)); }
+    });
+  }
+  function probeSiteScript() {
+    return new Promise(function (resolve) {
+      var s = document.createElement("script"), done = false;
+      function finish(ok, why) { if (done) return; done = true; probeResult("script from a2uicatalog.ai (resourceDomains)", ok, why); resolve(ok); }
+      s.src = SITE + "probe.js";
+      s.onload = function () { finish(window.__a2uiProbeScript === "ran", window.__a2uiProbeScript === "ran" ? "" : "loaded but did not run"); };
+      s.onerror = function () { finish(false, "refused"); };
+      setTimeout(function () { finish(false, "no answer in 5 s"); }, 5000);
+      document.head.appendChild(s);
+    });
+  }
+  var PROBE_PAGE = "<!doctype html><script>parent.postMessage({a2uiProbe:'frame'},'*')<\/script>";
+  async function runHostProbes() {
+    if (probing) return;
+    probing = true; $("probes").disabled = true;
+    $("diagwrap").hidden = false; $("diagwrap").open = true;
+    diag("--- host diagnostics ---");
+    diag("host says: " + JSON.stringify({ info: hostInfo, capabilities: hostCaps, context: host }).slice(0, 900));
+    diag("embed.diagrams.net frames, per the host's own capabilities: " + framesAllowed());
+    try { probeResult("new Function()", new Function("return 7")() === 7); } catch (e) { probeResult("new Function()", false, e.message); }
+    try { probeResult("eval()", (0, eval)("1+1") === 2); } catch (e) { probeResult("eval()", false, e.message); }
+    try { await WebAssembly.compile(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0])); probeResult("WebAssembly", true); } catch (e) { probeResult("WebAssembly", false, e.message); }
+    try { var m = await import(URL.createObjectURL(new Blob(["export const x = 1;"], { type: "text/javascript" }))); probeResult("module import from a blob", m.x === 1); }
+    catch (e) { probeResult("module import from a blob", false, (e && e.message) || String(e)); }
+    await probeWorker("Worker from a blob");
+    await probeWorker("module Worker from a blob (what D2 uses)", { type: "module" });
+    await probeSiteScript();
+    await probeFrame("srcdoc", function (f) { f.srcdoc = PROBE_PAGE; });
+    await probeFrame("blob:", function (f) { f.src = URL.createObjectURL(new Blob([PROBE_PAGE], { type: "text/html" })); });
+    await probeFrame("data:", function (f) { f.src = "data:text/html," + encodeURIComponent(PROBE_PAGE); });
+    await probeFrame("a2uicatalog.ai page (frameDomains)", function (f) { f.src = SITE + "frame-probe.html"; }, 6000);
+    await probeFrame("embed.diagrams.net (frameDomains)", function (f) { f.src = EMBED_URL + "?embed=1&proto=json&ui=min&spin=1&modified=0"; }, 30000);
+    try { await navigator.clipboard.writeText("Diagram Studio host diagnostics"); probeResult("clipboard write", true); }
+    catch (e) { probeResult("clipboard write", false, (e && e.message) || "refused"); }
+    diag("--- done: paste this panel back to whoever is checking ---");
+    probing = false; $("probes").disabled = false;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------
    * Visual tab
    * ---------------------------------------------------------------------------------------------------------------------- */
   function showErr(msg) {
@@ -2951,8 +3184,11 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     var vb = svg.viewBox && svg.viewBox.baseVal;
     return (vb && vb.width) || parseFloat(svg.getAttribute("width")) || 0;
   }
+  function stageSvg() { return $("stage").querySelector(":scope > svg"); }
+  function drawioZoomable() { return !!(dioViewer && dioViewer.graph && $("stage").querySelector(".mxgraph")); }
   function applyZoom() {
-    var svg = $("stage").querySelector("svg");
+    if (drawioZoomable()) { $("zlabel").textContent = Math.round(dioViewer.graph.view.scale * 100) + "%"; size(); return; }
+    var svg = stageSvg();
     if (!svg) { $("zlabel").textContent = "Fit"; return; }
     var nat = naturalWidth(svg);
     if (state.zoom === null) {
@@ -2969,13 +3205,14 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     size();
   }
   function fitScale() {
-    var svg = $("stage").querySelector("svg");
+    var svg = stageSvg();
     if (!svg) return 1;
     var nat = naturalWidth(svg);
     var shown = svg.getBoundingClientRect().width;
     return nat && shown ? shown / nat : 1;
   }
   function zoomBy(f) {
+    if (drawioZoomable()) { dioViewer.graph.zoomTo(Math.max(0.2, Math.min(4, dioViewer.graph.view.scale * f))); applyZoom(); return; }
     var z = (state.zoom === null ? fitScale() : state.zoom) * f;
     state.zoom = Math.max(0.2, Math.min(4, z));
     applyZoom();
@@ -2988,6 +3225,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   }
 
   function drawVisual() {
+    leaveInline(); dioViewer = null;
     var mine = ++seq, fmt = currentFormat(), code = currentCode();
     if (state.mode === "graph" && !state.graph.vertices.length) { drawNote("This graph has no nodes yet. Add one on the Edit tab.", false); return; }
     if (fmt === "d2") return drawD2(code, mine);
@@ -2995,7 +3233,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     // Raw source in a language this view cannot draw is an error; a GRAPH in one is just a format with no picture yet.
     if (state.mode === "source") return showErr("Unsupported syntax \u201c" + fmt + "\u201d. This view renders mermaid and d2.");
     if (fmt === "plantuml") return drawNote("PlantUML has no live preview here yet: it needs a 5 MB engine of its own. The PlantUML source is on the Code tab.", true);
-    if (fmt === "drawio") return drawNote("draw.io is an editable XML format, not a picture: copy it from the Code tab and paste it into diagrams.net (Edit ▸ Paste).", true);
+    if (fmt === "drawio") return drawDrawio(mine);
     showErr("Unsupported syntax “" + fmt + "”. This view renders mermaid and d2.");
   }
 
@@ -3042,7 +3280,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     $("codeout").hidden = !graphMode;
     $("code").hidden = graphMode;
     $("re").hidden = graphMode;
-    $("opendio").hidden = !(graphMode && state.format === "drawio");
+    $("codenote").hidden = !(graphMode && state.format === "drawio" && !!state.editedXml);
     if (graphMode) $("codeout").textContent = currentCode();
     else $("code").value = state.source;
     $("copystatus").textContent = "";
@@ -3132,6 +3370,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   var ctxTimer = null;
   function touched(structural) {
     state.edited = true;
+    dropEdited();
     updateMetrics();
     if (state.tab === "code") updateCodePane();
     if (structural && state.tab === "edit") size();
@@ -3193,6 +3432,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     var g = state.mode === "graph";
     $("graphtools").hidden = !g;
     $("tab-edit").hidden = !g;
+    $("opendraw").hidden = !g;
     $("meta").hidden = g;
     if (!g) $("meta").textContent = state.syntax + " · " + state.source.length + " chars";
     updateMetrics();
@@ -3215,10 +3455,10 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
       state.syntax = sc.syntax || "mermaid";
       state.source = sc.source;
     } else return false;
-    state.edited = false; state.zoom = null;
+    state.edited = false; state.zoom = null; state.editedXml = null; $("dstatus").textContent = "";
     showMode();
-    // A format with no picture (PlantUML, draw.io) opens on its code, not on an explanation of why there is no picture.
-    setTab(state.mode === "graph" && (state.format === "plantuml" || state.format === "drawio") ? "code" : "visual");
+    // A format with no picture (PlantUML) opens on its code, not on an explanation of why there is no picture.
+    setTab(state.mode === "graph" && state.format === "plantuml" ? "code" : "visual");
     return true;
   }
 
@@ -3226,13 +3466,19 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
    * Wiring
    * ---------------------------------------------------------------------------------------------------------------------- */
   window.addEventListener("message", function (ev) {
+    if (fromEmbed(ev)) return;
     var m = ev.data;
     if (!m || m.jsonrpc !== "2.0") return;
     // Answers to requests we made (ui/message, ui/update-model-context): success or error, matched by id.
     if (m.id && pending[m.id] && !m.method) { var cb = pending[m.id]; delete pending[m.id]; cb(m); return; }
     if (m.result && !m.method) {
       // The init ack carries hostContext (id === initId); a reply to our own display-mode request carries the resulting mode.
-      if (m.id === initId && m.result.hostContext) host = m.result.hostContext;
+      if (m.id === initId) {
+        if (m.result.hostContext) host = m.result.hostContext;
+        hostCaps = m.result.hostCapabilities || null;
+        hostInfo = m.result.hostInfo || null;
+        if (m.result.hostInfo && m.result.hostInfo.name) diag("host: " + m.result.hostInfo.name + " " + (m.result.hostInfo.version || ""));
+      }
       else if (typeof m.id === "string" && m.id.indexOf("fsreq-") === 0 && m.result.mode) host.displayMode = m.result.mode;
       syncMode(); sendInitialized(); return;
     }
@@ -3254,16 +3500,17 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
       state.format = b.getAttribute("data-fmt");
       state.zoom = null;
       syncControls();
-      // PlantUML and draw.io have no picture here, so land on their code rather than on an explanation.
-      if (state.tab === "visual" && (state.format === "plantuml" || state.format === "drawio")) setTab("code");
+      // PlantUML has no picture here, so land on its code rather than on an explanation.
+      if (state.tab === "visual" && state.format === "plantuml") setTab("code");
       else setTab(state.tab);
     });
   });
-  $("dir").addEventListener("change", function () { state.direction = $("dir").value; setTab(state.tab); });
-  $("theme").addEventListener("change", function () { state.theme = $("theme").value; setTab(state.tab); });
+  $("dir").addEventListener("change", function () { state.direction = $("dir").value; dropEdited(); setTab(state.tab); });
+  $("theme").addEventListener("change", function () { state.theme = $("theme").value; dropEdited(); setTab(state.tab); });
   var gapTimer = null;
   function gapChanged() {
     state.nodeGap = +$("ngap").value; state.rankGap = +$("rgap").value;
+    dropEdited();
     clearTimeout(gapTimer); gapTimer = setTimeout(function () { setTab(state.tab); }, 200);
   }
   $("ngap").addEventListener("input", gapChanged);
@@ -3272,7 +3519,10 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   ["visual", "code", "edit"].forEach(function (n) { $("tab-" + n).addEventListener("click", function () { setTab(n); }); });
   $("zin").addEventListener("click", function () { zoomBy(1.25); });
   $("zout").addEventListener("click", function () { zoomBy(0.8); });
-  $("zfit").addEventListener("click", function () { state.zoom = null; applyZoom(); });
+  $("zfit").addEventListener("click", function () {
+    if (drawioZoomable()) { dioViewer.graph.zoomActual(); applyZoom(); return; }
+    state.zoom = null; applyZoom();
+  });
   $("fs").addEventListener("click", function () { requestMode(host.displayMode === "fullscreen" ? "inline" : "fullscreen"); });
 
   $("copy").addEventListener("click", function () {
@@ -3281,11 +3531,8 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
       .catch(function () { selectAll(state.mode === "graph" ? $("codeout") : $("code")); $("copystatus").textContent = "Selected: press Ctrl+C to copy"; });
   });
   $("re").addEventListener("click", function () { state.source = $("code").value; $("meta").textContent = state.syntax + " · " + state.source.length + " chars"; setTab("visual"); });
-  $("opendio").addEventListener("click", function () {
-    request("ui/open-link", { url: "https://app.diagrams.net/" }, function (m) {
-      $("copystatus").textContent = m.error ? "The host would not open the link; go to app.diagrams.net yourself." : "Opened diagrams.net: paste with Edit ▸ Paste";
-    });
-  });
+  $("opendraw").addEventListener("click", openInDrawio);
+  $("probes").addEventListener("click", runHostProbes);
 
   $("addv").addEventListener("click", function () {
     if (state.graph.vertices.length >= MAX_V) return;
