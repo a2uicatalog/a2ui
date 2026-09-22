@@ -551,6 +551,57 @@ _RENDERERS['scatter_trend'] = function(b) {
     + title + svg + '</div>';
 };
 
+// ─── calibration_plot ─────────────────────────────────────────────────────────
+_RENDERERS['calibration_plot'] = function(b) {
+  var series = (b.series || []).filter(function(s) { return s && s.points && s.points.length; });
+  var title  = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--text,#111827);margin-bottom:8px;">' + _esc(b.title) + '</div>' : '';
+  if (!series.length) return title + '<div style="color:var(--muted,#9ca3af);font-size:0.82rem;">No data</div>';
+  var palette = ['#8b5cf6', '#dc2626', '#0891b2', '#16a34a', '#d97706', '#db2777'];
+  var w = 300, h = 190, padL = 32, padR = 12, padT = 8, padB = 26;
+  var chartW = w - padL - padR, chartH = h - padT - padB;
+  var px = function(v) { return padL + Math.max(0, Math.min(1, v)) * chartW; };
+  var py = function(v) { return padT + (1 - Math.max(0, Math.min(1, v))) * chartH; };
+
+  var grid = '';
+  for (var i = 0; i <= 4; i++) {
+    var frac = i / 4, gx = padL + frac * chartW, gy = padT + frac * chartH;
+    grid += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (padL + chartW) + '" y2="' + gy.toFixed(1) + '" stroke="var(--border,#e5e7eb)" stroke-dasharray="2,3"/>'
+      + '<text x="' + (padL - 6) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end" style="font-size:7.5px;fill:var(--muted,#9ca3af);">' + (1 - frac).toFixed(2) + '</text>'
+      + '<line x1="' + gx.toFixed(1) + '" y1="' + padT + '" x2="' + gx.toFixed(1) + '" y2="' + (padT + chartH) + '" stroke="var(--border,#e5e7eb)" stroke-dasharray="2,3"/>'
+      + '<text x="' + gx.toFixed(1) + '" y="' + (padT + chartH + 13) + '" text-anchor="middle" style="font-size:7.5px;fill:var(--muted,#9ca3af);">' + frac.toFixed(2) + '</text>';
+  }
+  var diagonal = '<line x1="' + px(0).toFixed(1) + '" y1="' + py(0).toFixed(1) + '" x2="' + px(1).toFixed(1) + '" y2="' + py(1).toFixed(1)
+    + '" stroke="var(--muted,#9ca3af)" stroke-width="1.5" stroke-dasharray="5,4"/>';
+
+  var pointsHtml = '', legendHtml = '';
+  series.forEach(function(s, si) {
+    var color = s.color || palette[si % palette.length];
+    (s.points || []).forEach(function(pt) {
+      if (!pt || pt.predicted == null || pt.observed == null) return;
+      var cx = px(pt.predicted), cy = py(pt.observed);
+      var r = 4.5;
+      if (pt.n) r = Math.max(3.5, Math.min(9, 3.5 + Math.sqrt(pt.n) * 0.4));
+      if (pt.ci_low != null && pt.ci_high != null) {
+        pointsHtml += '<line x1="' + cx.toFixed(1) + '" y1="' + py(pt.ci_low).toFixed(1) + '" x2="' + cx.toFixed(1) + '" y2="' + py(pt.ci_high).toFixed(1)
+          + '" stroke="' + _esc(color) + '" stroke-width="1.5" opacity="0.55"/>';
+      }
+      pointsHtml += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r.toFixed(1) + '" fill="' + _esc(color)
+        + '" fill-opacity="0.85" stroke="var(--bg,#fff)" stroke-width="1.2"/>';
+    });
+    legendHtml += '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px;font-size:11px;color:var(--muted,#6b7280);">'
+      + '<span style="width:8px;height:8px;border-radius:50%;background:' + _esc(color) + ';display:inline-block;"></span>' + _esc(s.label || 'Series ' + (si + 1)) + '</span>';
+  });
+
+  var xLabel = _esc(b.x_label || 'Predicted probability'), yLabel = _esc(b.y_label || 'Observed accuracy');
+  var svg = '<svg width="' + w + '" height="' + h + '" style="overflow:visible;">'
+    + grid + diagonal + pointsHtml
+    + '<text x="' + (padL + chartW / 2) + '" y="' + (h - 2) + '" text-anchor="middle" style="font-size:9px;fill:var(--muted,#9ca3af);">' + xLabel + '</text>'
+    + '<text x="9" y="' + (padT + chartH / 2) + '" text-anchor="middle" transform="rotate(-90,9,' + (padT + chartH / 2) + ')" style="font-size:9px;fill:var(--muted,#9ca3af);">' + yLabel + '</text>'
+    + '</svg>';
+  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);">'
+    + title + svg + '<div style="margin-top:8px;">' + legendHtml + '</div></div>';
+};
+
 // ─── stacked_area ─────────────────────────────────────────────────────────────
 // Rendered as stacked horizontal bars (CSS approximation — no canvas/JS charting needed).
 _RENDERERS['stacked_area'] = function(b) {
