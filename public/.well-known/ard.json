@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 522 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 523 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -3552,6 +3552,21 @@
         "show a stacked area chart with overlapping glowing translucent gradients",
         "renders cumulative layered area chart trends utilizing overlapping translucent gradient fills and glowing series",
         "render a stacked area"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:calibration_plot",
+      "displayName": "Calibration Plot",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/calibration_plot",
+      "capabilities": [
+        "web"
+      ],
+      "description": "A reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed diagonal reference line for perfect calibration and optional confidence-interval bars per point. Point radius can grow with sample size (`n`). Answers whether a model's own confidence scores are trustworthy, not just whether its answers are right.",
+      "representativeQueries": [
+        "show a predicted-vs-observed probability calibration chart with confidence intervals",
+        "a reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed",
+        "render a calibration plot"
       ]
     },
     {

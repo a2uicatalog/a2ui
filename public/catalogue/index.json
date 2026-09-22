@@ -581,11 +581,15 @@
       "title": "Data visualisation",
       "alwaysResolved": false,
       "whenToUse": "Use when the surface needs charts — bar/line/pie, sankey, heatmap, sparklines, gauges, funnels, trend viz.",
-      "atomCount": 22,
+      "atomCount": 23,
       "atoms": [
         {
           "type": "benchmark_comparison",
           "description": "side-by-side performance benchmark comparison bars"
+        },
+        {
+          "type": "calibration_plot",
+          "description": "predicted-vs-observed probability calibration chart with confidence intervals"
         },
         {
           "type": "chartjs_bar",

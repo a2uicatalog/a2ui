@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
    accent underline, AND a weight shift (500 -> 700) — so it reads without
    relying on colour alone. Hover lifts only part-way (to full text colour),
    never all the way to the selected accent styling. */
-.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;padding:0 4px;}
+.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;overflow-y:hidden;padding:0 4px;}
 .tm-tab-label{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-muted, #5f6368);
   white-space:nowrap;transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease;user-select:none;
   border-bottom:2px solid transparent;margin-bottom:-1px;}
@@ -207,9 +207,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .tm-tab-panel pre{margin:0;border-radius:0;border:none;}
 </style>
 <style>#tmtabs1_t1:checked ~ .tm-tab-labels .tm-tab-label[for="tmtabs1_t1"]{background:var(--surface,#fff);color:#1a73e8;border-bottom-color:#1a73e8;font-weight:700;}
-#tmtabs1_t1:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(1){display:block;}
+#tmtabs1_t1:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(1){display:block;}
 #tmtabs1_t2:checked ~ .tm-tab-labels .tm-tab-label[for="tmtabs1_t2"]{background:var(--surface,#fff);color:#1a73e8;border-bottom-color:#1a73e8;font-weight:700;}
-#tmtabs1_t2:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(2){display:block;}
+#tmtabs1_t2:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(2){display:block;}
 </style><div class="tm-tabs"><input type="radio" id="tmtabs1_t1" name="tmtabs1" checked><input type="radio" id="tmtabs1_t2" name="tmtabs1" ><div class="tm-tab-labels"><label class="tm-tab-label" for="tmtabs1_t1">Tab 1</label><label class="tm-tab-label" for="tmtabs1_t2">Tab 2</label></div><div class="tm-tab-panels"><div class="tm-tab-panel"><pre><code class="language-">Content one.</code></pre></div><div class="tm-tab-panel"><pre><code class="language-">Content two.</code></pre></div></div></div></div>
 </div>
 

@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Web Atoms — A2UI Atomic Catalog</title>
-  <meta name="description" content="440 A2UI atoms for the Web surface.">
+  <meta name="description" content="441 A2UI atoms for the Web surface.">
   <script>
 (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
 document.documentElement.setAttribute('data-theme',t)})();
@@ -171,7 +171,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 
   <h1>Web</h1>
   
-  <p class="desc">440 atoms available on this surface</p>
+  <p class="desc">441 atoms available on this surface</p>
 
   
 <div class="surface-atom">
@@ -401,7 +401,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
    accent underline, AND a weight shift (500 -> 700) — so it reads without
    relying on colour alone. Hover lifts only part-way (to full text colour),
    never all the way to the selected accent styling. */
-.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;padding:0 4px;}
+.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;overflow-y:hidden;padding:0 4px;}
 .tm-tab-label{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-muted, #5f6368);
   white-space:nowrap;transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease;user-select:none;
   border-bottom:2px solid transparent;margin-bottom:-1px;}
@@ -411,9 +411,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .tm-tab-panel pre{margin:0;border-radius:0;border:none;}
 </style>
 <style>#tmtabs3_t1:checked ~ .tm-tab-labels .tm-tab-label[for="tmtabs3_t1"]{background:var(--surface,#fff);color:#1a73e8;border-bottom-color:#1a73e8;font-weight:700;}
-#tmtabs3_t1:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(1){display:block;}
+#tmtabs3_t1:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(1){display:block;}
 #tmtabs3_t2:checked ~ .tm-tab-labels .tm-tab-label[for="tmtabs3_t2"]{background:var(--surface,#fff);color:#1a73e8;border-bottom-color:#1a73e8;font-weight:700;}
-#tmtabs3_t2:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(2){display:block;}
+#tmtabs3_t2:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(2){display:block;}
 </style><div class="tm-tabs"><input type="radio" id="tmtabs3_t1" name="tmtabs3" checked><input type="radio" id="tmtabs3_t2" name="tmtabs3" ><div class="tm-tab-labels"><label class="tm-tab-label" for="tmtabs3_t1">Tab 1</label><label class="tm-tab-label" for="tmtabs3_t2">Tab 2</label></div><div class="tm-tab-panels"><div class="tm-tab-panel"><pre><code class="language-">Content one.</code></pre></div><div class="tm-tab-panel"><pre><code class="language-">Content two.</code></pre></div></div></div></div>
 </div>
 </div>
@@ -1120,7 +1120,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_card"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;"><em style='color:#999;'>[ pricing_tier_card ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_card"><div style="position:relative;flex:1;min-width:180px;border:2px solid #b5432f;border-radius:12px;padding:18px 18px 20px;background:#fdf3f0;font-family:system-ui,sans-serif;"><div style="position:absolute;top:-10px;left:16px;background:#b5432f;color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;border-radius:20px;text-transform:uppercase;">Popular</div><div style="font-weight:700;font-size:0.95rem;">Plan name</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">USD$29/mo<span style="font-size:0.75rem;font-weight:600;color:#9a9284;">/monthly</span></div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"><li style="margin-bottom:6px;">Core feature</li><li style="margin-bottom:6px;">Advanced analytics</li><li style="margin-bottom:6px;">API access</li></ul><a href="https://example.com" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:14px;padding:9px 14px;border-radius:8px;background:#b5432f;color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;">Call to action label</a></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -1131,7 +1131,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   
 <div class="section">
   <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_group"><div style="margin:1rem 0;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;"><em style='color:#999;'>[ pricing_tier_group ]</em></div></div>
+  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_group"><div style="display:flex;gap:12px;flex-wrap:wrap;margin:1rem 0;"><div style="position:relative;flex:1;min-width:180px;border:1px solid #e2e2e2;border-radius:12px;padding:18px 18px 20px;background:#fff;font-family:system-ui,sans-serif;"><div style="font-weight:700;font-size:0.95rem;">Starter</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">$$9/mo</div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"></ul></div><div style="position:relative;flex:1;min-width:180px;border:1px solid #e2e2e2;border-radius:12px;padding:18px 18px 20px;background:#fff;font-family:system-ui,sans-serif;"><div style="font-weight:700;font-size:0.95rem;">Pro</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">$$29/mo</div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"></ul></div></div></div>
 </div>
 </div>
 <div class="surface-atom">
@@ -2573,6 +2573,13 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <div class="label">Live preview</div>
   <div class="preview-box" role="group" aria-label="Live preview of stacked_area"><div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;"><div style="margin-bottom:8px;"><div style="font-size:.75rem;color:#6b7280;margin-bottom:2px;">Category A</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;"><div style="width:13.3%;height:100%;background:#6366f1;display:inline-block;" title="Series A: 10"></div><div style="width:6.7%;height:100%;background:#10b981;display:inline-block;" title="Series B: 5"></div></div></div><div style="margin-bottom:8px;"><div style="font-size:.75rem;color:#6b7280;margin-bottom:2px;">Category B</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;"><div style="width:26.7%;height:100%;background:#6366f1;display:inline-block;" title="Series A: 20"></div><div style="width:20.0%;height:100%;background:#10b981;display:inline-block;" title="Series B: 15"></div></div></div><div style="margin-bottom:8px;"><div style="font-size:.75rem;color:#6b7280;margin-bottom:2px;">Category C</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;"><div style="width:40.0%;height:100%;background:#6366f1;display:inline-block;" title="Series A: 30"></div><div style="width:33.3%;height:100%;background:#10b981;display:inline-block;" title="Series B: 25"></div></div></div><div style="margin-bottom:8px;"><div style="font-size:.75rem;color:#6b7280;margin-bottom:2px;">Category D</div><div style="height:20px;border-radius:4px;overflow:hidden;background:#f3f4f6;display:flex;"><div style="width:53.3%;height:100%;background:#6366f1;display:inline-block;" title="Series A: 40"></div><div style="width:46.7%;height:100%;background:#10b981;display:inline-block;" title="Series B: 35"></div></div></div><div style="margin-top:10px;"><span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:#6366f1"></span>Series A</span><span style="display:inline-flex;align-items:center;gap:4px;font-size:.75rem;margin-right:12px;"><span style="width:10px;height:10px;border-radius:2px;background:#10b981"></span>Series B</span></div></div></div>
 </div>
+</div>
+<div class="surface-atom">
+  <div class="sa-header">
+    <a class="sa-name" href="/atoms/calibration_plot">Calibration Plot</a>
+    <p class="sa-desc">predicted-vs-observed probability calibration chart with confidence intervals</p>
+  </div>
+  
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -4750,6 +4757,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <p class="sa-desc">inline comprehension pulse — single question, instant feedback, no score pressure</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of knowledge_check"><div style="font-family:system-ui,sans-serif;padding:20px;border-radius:12px;background:#f9fafb;border:1px solid #e5e7eb;margin:1rem 0;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#6366f1;text-transform:uppercase;margin-bottom:8px;">Knowledge Check</div><div style="font-weight:600;margin-bottom:14px;">Which option do you prefer?</div><button data-kccc2326 onclick="kccc2326pick(0)" style="display:block;width:100%;text-align:left;padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;font-size:0.88rem;">{&#x27;label&#x27;: &#x27;Option A&#x27;, &#x27;value&#x27;: &#x27;a&#x27;}</button><button data-kccc2326 onclick="kccc2326pick(1)" style="display:block;width:100%;text-align:left;padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;font-size:0.88rem;">{&#x27;label&#x27;: &#x27;Option B&#x27;, &#x27;value&#x27;: &#x27;b&#x27;}</button><button data-kccc2326 onclick="kccc2326pick(2)" style="display:block;width:100%;text-align:left;padding:11px 14px;border-radius:9px;margin-bottom:7px;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;font-size:0.88rem;">{&#x27;label&#x27;: &#x27;Option C&#x27;, &#x27;value&#x27;: &#x27;c&#x27;}</button></div><script>function kccc2326pick(i){var btns=document.querySelectorAll("[data-kccc2326]");btns.forEach(function(b,j){b.style.background=j===1?"#dcfce7":j===i?"#fee2e2":"#f9fafb";b.style.borderColor=j===1?"#34d399":j===i?"#f87171":"#e5e7eb";});var ex=document.getElementById("kccc2326ex");if(ex)ex.style.display="block";}</script></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -4768,6 +4779,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <p class="sa-desc">branching scenario — situation + choices + consequence reveal with good/neutral/bad outcome</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of scenario_branch"><div style="font-family:system-ui,sans-serif;padding:20px;border-radius:14px;background:#fffbeb;border:1px solid #f59e0b44;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#f59e0b;text-transform:uppercase;margin-bottom:6px;">Scenario</div><div style="font-size:0.9rem;line-height:1.6;margin-bottom:12px;"><p>Success path</p></div><button id="sbf8a33bc0" onclick="sbf8a33bpick(0)" style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;font-size:0.88rem;">Path A</button><button id="sbf8a33bc1" onclick="sbf8a33bpick(1)" style="display:block;width:100%;text-align:left;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:#f9fafb;border:1px solid #e5e7eb;cursor:pointer;font-size:0.88rem;">Path B</button><div id="sbf8a33br0" style="display:none;padding:12px;border-radius:8px;background:#f9fafb;border-left:3px solid #6b7280;margin-top:6px;"></div><div id="sbf8a33br1" style="display:none;padding:12px;border-radius:8px;background:#f9fafb;border-left:3px solid #6b7280;margin-top:6px;"></div></div><script>function sbf8a33bpick(i){[0,1].forEach(function(j){document.getElementById("sbf8a33br"+j).style.display=j===i?"block":"none";});}</script></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -4885,6 +4900,10 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
     <p class="sa-desc">structured case study — situation, data points, questions, optional model answer reveal</p>
   </div>
   
+<div class="section">
+  <div class="label">Live preview</div>
+  <div class="preview-box" role="group" aria-label="Live preview of case_study_card"><div style="font-family:system-ui,sans-serif;padding:20px;border-radius:14px;border:1px solid #38bdf844;background:#f9fafb;"><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;color:#38bdf8;text-transform:uppercase;margin-bottom:6px;">Case Study</div><div style="font-weight:700;font-size:1rem;margin-bottom:10px;">Case Study Card</div><div style="font-size:0.88rem;line-height:1.6;margin-bottom:12px;"><p>A startup facing rapid growth challenges.</p></div></div></div>
+</div>
 </div>
 <div class="surface-atom">
   <div class="sa-header">
@@ -5259,7 +5278,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
    accent underline, AND a weight shift (500 -> 700) — so it reads without
    relying on colour alone. Hover lifts only part-way (to full text colour),
    never all the way to the selected accent styling. */
-.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;padding:0 4px;}
+.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;overflow-y:hidden;padding:0 4px;}
 .tm-tab-label{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-muted, #5f6368);
   white-space:nowrap;transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease;user-select:none;
   border-bottom:2px solid transparent;margin-bottom:-1px;}
@@ -5269,9 +5288,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .tm-tab-panel pre{margin:0;border-radius:0;border:none;}
 </style>
 <style>#cttabs3_t1:checked ~ .tm-tab-labels .tm-tab-label[for="cttabs3_t1"]{background:var(--surface,#fff);color:#6366f1;border-bottom-color:#6366f1;font-weight:700;}
-#cttabs3_t1:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(1){display:block;}
+#cttabs3_t1:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(1){display:block;}
 #cttabs3_t2:checked ~ .tm-tab-labels .tm-tab-label[for="cttabs3_t2"]{background:var(--surface,#fff);color:#6366f1;border-bottom-color:#6366f1;font-weight:700;}
-#cttabs3_t2:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(2){display:block;}
+#cttabs3_t2:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(2){display:block;}
 </style><div class="tm-tabs"><input type="radio" id="cttabs3_t1" name="cttabs3" checked><input type="radio" id="cttabs3_t2" name="cttabs3" ><div class="tm-tab-labels"><label class="tm-tab-label" for="cttabs3_t1">4 Players</label><label class="tm-tab-label" for="cttabs3_t2">8 Players</label></div><div class="tm-tab-panels"><div class="tm-tab-panel"><p>One court, three rounds — every player partners with every other exactly once.</p></div><div class="tm-tab-panel"><p>Two courts, seven rounds — a full partner rotation.</p></div></div></div></div>
 </div>
 </div>

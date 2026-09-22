@@ -2,7 +2,7 @@
  "catalogId": "a2ui-atoms-v1",
  "displayName": "A2UI Multi-Surface Renderer",
  "type": "application/vnd.a2ui.renderer+json",
- "atomCount": 522,
+ "atomCount": 523,
  "compactIndex": "https://a2uicatalog.ai/atoms/index.json",
  "runbooks": "https://a2uicatalog.ai/runbooks/index.json",
  "trainingPrompt": "https://a2uicatalog.ai/prompts/training-md-gem.md",
@@ -6689,6 +6689,27 @@
     "title": "string (optional, e.g., 'SaaS Cumulative Workloads')",
     "labels": "list of strings representing X-axis ticks (e.g., ['Q1', 'Q2', 'Q3', 'Q4'])",
     "series": "list of dictionaries representing stacked layers: [{'label': 'Enterprise', 'data': [10, 25, 45, 60], 'color': '#00f2ff'}, ...]"
+   },
+   "source": {
+    "name": "a2uicatalog",
+    "url": "https://github.com/a2uicatalog/a2ui",
+    "license": "MIT"
+   }
+  },
+  {
+   "type": "calibration_plot",
+   "description": "A reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed diagonal reference line for perfect calibration and optional confidence-interval bars per point. Point radius can grow with sample size (`n`). Answers whether a model's own confidence scores are trustworthy, not just whether its answers are right.",
+   "compact_description": "predicted-vs-observed probability calibration chart with confidence intervals",
+   "surfaces": {
+    "works_on": [
+     "web"
+    ]
+   },
+   "fields": {
+    "title": "string (optional, e.g., 'Jev confidence calibration')",
+    "x_label": "string (optional, default 'Predicted probability')",
+    "y_label": "string (optional, default 'Observed accuracy')",
+    "series": "list of {label: string, color: string (optional hex, auto-assigned otherwise), points: list of {predicted: number 0-1, observed: number 0-1, n: integer (optional sample size, grows point radius), ci_low: number (optional), ci_high: number (optional)}}"
    },
    "source": {
     "name": "a2uicatalog",

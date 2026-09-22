@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 522,
+ "atomCount": 523,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -1952,6 +1952,13 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
+   ]
+  },
+  {
+   "type": "calibration_plot",
+   "compact": "predicted-vs-observed probability calibration chart with confidence intervals",
+   "surfaces": [
+    "web"
    ]
   },
   {

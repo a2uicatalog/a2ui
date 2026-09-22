@@ -7,9 +7,9 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#6366f1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Pricing Tier Card — A2UI Atomic Catalog</title>
-  <meta name="description" content="Renders a single pricing plan with its name, price, key features, and">
-  <link rel="alternate" type="text/markdown" href="/atoms/pricing_tier_card.md">
+  <title>Calibration Plot — A2UI Atomic Catalog</title>
+  <meta name="description" content="A reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed diagonal reference line for perfect calibration and optional confidence-interval bars per point. Point radius can grow with sample size (`n`). Answers whether a model's own confidence scores are trustworthy, not just whether its answers are right.">
+  <link rel="alternate" type="text/markdown" href="/atoms/calibration_plot.md">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -17,7 +17,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "A2UI Catalog", "item": "https://a2uicatalog.ai/" },
       { "@type": "ListItem", "position": 2, "name": "ARD Catalog", "item": "https://a2uicatalog.ai/.well-known/ai-catalog.json" },
-      { "@type": "ListItem", "position": 3, "name": "Pricing Tier Card", "item": "https://a2uicatalog.ai/atoms/pricing_tier_card/" }
+      { "@type": "ListItem", "position": 3, "name": "Calibration Plot", "item": "https://a2uicatalog.ai/atoms/calibration_plot/" }
     ]
   }
   </script>
@@ -171,72 +171,50 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
   <nav class="crumb">
     <a href="/">A2UI Catalog</a> /
     <a href="/.well-known/ai-catalog.json">ARD Catalog</a> /
-    atoms / pricing_tier_card
+    atoms / calibration_plot
   </nav>
 
-  <h1>Pricing Tier Card</h1>
-  <p class="desc">Renders a single pricing plan with its name, price, key features, and</p>
+  <h1>Calibration Plot</h1>
+  <p class="desc">A reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed diagonal reference line for perfect calibration and optional confidence-interval bars per point. Point radius can grow with sample size (`n`). Answers whether a model's own confidence scores are trustworthy, not just whether its answers are right.</p>
 
   <div class="section">
     <div class="label">Surfaces</div>
-    <span class="badge bs">web</span><span class="badge bs">google-meet-stage</span><span class="badge bs">google-chat</span><span class="badge bs">email</span><span class="badge bs">pdf</span><span class="badge bs">google-apps-script-web</span><span class="badge bs">mcp-apps</span>
+    <span class="badge bs">web</span>
   </div>
 
   
 
   
-<div class="section">
-  <div class="label">Live preview</div>
-  <div class="preview-box" role="group" aria-label="Live preview of pricing_tier_card"><div style="position:relative;flex:1;min-width:180px;border:2px solid #b5432f;border-radius:12px;padding:18px 18px 20px;background:#fdf3f0;font-family:system-ui,sans-serif;"><div style="position:absolute;top:-10px;left:16px;background:#b5432f;color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;padding:2px 9px;border-radius:20px;text-transform:uppercase;">Popular</div><div style="font-weight:700;font-size:0.95rem;">Plan name</div><div style="font-size:1.7rem;font-weight:800;margin:8px 0 10px;">USD$29/mo<span style="font-size:0.75rem;font-weight:600;color:#9a9284;">/monthly</span></div><ul style="margin:0;padding-left:18px;font-size:0.82rem;color:#4b463e;line-height:1.7;"><li style="margin-bottom:6px;">Core feature</li><li style="margin-bottom:6px;">Advanced analytics</li><li style="margin-bottom:6px;">API access</li></ul><a href="https://example.com" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;margin-top:14px;padding:9px 14px;border-radius:8px;background:#b5432f;color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none;">Call to action label</a></div></div>
-</div>
 
   
 
   <div class="section">
     <div class="label">Fields</div>
-    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>plan_name</td><td>string</td><td>required</td></tr><tr><td>price</td><td>string</td><td>required</td></tr><tr><td>currency</td><td>string</td><td>required</td></tr><tr><td>frequency</td><td>string</td><td>required</td></tr><tr><td>features</td><td>array</td><td>required</td></tr><tr><td>call_to_action_label</td><td>string</td><td>required</td></tr><tr><td>call_to_action_url</td><td>string</td><td>required</td></tr><tr><td>is_highlighted</td><td>boolean</td><td>required</td></tr></tbody></table>
+    <table><thead><tr><th>Field</th><th>Type</th><th></th></tr></thead><tbody><tr><td>title</td><td>string (optional, e.g., 'Jev confidence calibration')</td><td>optional</td></tr><tr><td>x_label</td><td>string (optional, default 'Predicted probability')</td><td>optional</td></tr><tr><td>y_label</td><td>string (optional, default 'Observed accuracy')</td><td>optional</td></tr><tr><td>series</td><td>list of {label: string, color: string (optional hex, auto-assigned otherwise), points: list of {predicted: number 0-1, observed: number 0-1, n: integer (optional sample size, grows point radius), ci_low: number, ci_high: number}}</td><td>optional</td></tr></tbody></table>
   </div>
 
   <div class="section">
     <div class="label">Example payload</div>
     <pre><code>{
-  "type": "pricing_tier_card",
-  "plan_name": "Plan name",
-  "price": "$29/mo",
-  "currency": "USD",
-  "frequency": "monthly",
-  "features": [
-    "Core feature",
-    "Advanced analytics",
-    "API access"
-  ],
-  "call_to_action_label": "Call to action label",
-  "call_to_action_url": "https://example.com",
-  "is_highlighted": true
+  "type": "calibration_plot"
 }</code></pre>
   </div>
 
   <div class="section">
     <div class="label">ARD catalog entry</div>
     <pre><code>{
-  "identifier": "urn:air:a2uicatalog.ai:atom:pricing_tier_card",
-  "displayName": "Pricing Tier Card",
+  "identifier": "urn:air:a2uicatalog.ai:atom:calibration_plot",
+  "displayName": "Calibration Plot",
   "type": "application/vnd.a2ui.atom+json",
-  "url": "https://a2uicatalog.ai/atoms/pricing_tier_card",
+  "url": "https://a2uicatalog.ai/atoms/calibration_plot",
   "capabilities": [
-    "web",
-    "google-meet-stage",
-    "google-chat",
-    "email",
-    "pdf",
-    "google-apps-script-web",
-    "mcp-apps"
+    "web"
   ],
-  "description": "Renders a single pricing plan with its name, price, key features, and",
+  "description": "A reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed diagonal reference line for perfect calibration and optional confidence-interval bars per point. Point radius can grow with sample size (`n`). Answers whether a model's own confidence scores are trustworthy, not just whether its answers are right.",
   "representativeQueries": [
-    "show a single pricing plan card with features list an optional call to action",
-    "renders a single pricing plan with its name, price, key features, and",
-    "render a pricing tier card"
+    "show a predicted-vs-observed probability calibration chart with confidence intervals",
+    "a reliability diagram plotting predicted probability against observed accuracy for one or more serie",
+    "render a calibration plot"
   ]
 }</code></pre>
   </div>

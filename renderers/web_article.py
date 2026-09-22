@@ -5057,6 +5057,97 @@ def _render_stacked_area(b: dict) -> str:
     """
 
 
+_CALIBRATION_PALETTE = ["#8b5cf6", "#dc2626", "#0891b2", "#16a34a", "#d97706", "#db2777"]
+
+
+def _svg_calibration_plot(b: dict, tokens: dict) -> str:
+    series = [x for x in (b.get("series") or []) if isinstance(x, dict) and x.get("points")]
+    if not series:
+        return ""
+
+    w, h = 520, 300
+    pad_l, pad_r, pad_t, pad_b = 55, 20, 20, 45
+    chart_w = w - pad_l - pad_r
+    chart_h = h - pad_t - pad_b
+    oid = _wa_oid(b)
+
+    def px(v):
+        return pad_l + max(0.0, min(1.0, v)) * chart_w
+
+    def py(v):
+        return pad_t + (1 - max(0.0, min(1.0, v))) * chart_h
+
+    grid = ""
+    for i in range(5):
+        frac = i / 4.0
+        gx, gy = pad_l + frac * chart_w, pad_t + frac * chart_h
+        grid += (f'<line x1="{pad_l}" y1="{gy:.1f}" x2="{pad_l + chart_w}" y2="{gy:.1f}" '
+                f'stroke="{tokens["border"]}" stroke-dasharray="2,3" />'
+                f'<text x="{pad_l - 10}" y="{gy + 3:.1f}" fill="{tokens["dim"]}" font-size="9" '
+                f'font-family="ui-monospace,monospace" text-anchor="end">{1 - frac:.2f}</text>'
+                f'<line x1="{gx:.1f}" y1="{pad_t}" x2="{gx:.1f}" y2="{pad_t + chart_h}" '
+                f'stroke="{tokens["border"]}" stroke-dasharray="2,3" />'
+                f'<text x="{gx:.1f}" y="{pad_t + chart_h + 16}" fill="{tokens["dim"]}" font-size="9" '
+                f'font-family="ui-monospace,monospace" text-anchor="middle">{frac:.2f}</text>')
+
+    diagonal = (f'<line x1="{px(0):.1f}" y1="{py(0):.1f}" x2="{px(1):.1f}" y2="{py(1):.1f}" '
+               f'stroke="{tokens["dim"]}" stroke-width="1.5" stroke-dasharray="5,4" />')
+
+    points_html, legend_html = [], []
+    for i, s in enumerate(series):
+        color = s.get("color") or _CALIBRATION_PALETTE[i % len(_CALIBRATION_PALETTE)]
+        label = _esc(s.get("label", f"Series {i + 1}"))
+        for pt in s["points"]:
+            if not isinstance(pt, dict) or "predicted" not in pt or "observed" not in pt:
+                continue
+            cx, cy = px(pt["predicted"]), py(pt["observed"])
+            r = 4.5
+            if pt.get("n"):
+                r = max(3.5, min(9.0, 3.5 + (pt["n"] ** 0.5) * 0.4))
+            if pt.get("ci_low") is not None and pt.get("ci_high") is not None:
+                y_lo, y_hi = py(pt["ci_low"]), py(pt["ci_high"])
+                points_html.append(f'<line x1="{cx:.1f}" y1="{y_lo:.1f}" x2="{cx:.1f}" y2="{y_hi:.1f}" '
+                                   f'stroke="{color}" stroke-width="1.5" opacity="0.55" />')
+            points_html.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="{color}" '
+                               f'fill-opacity="0.85" stroke="{tokens["surface"]}" stroke-width="1.2" />')
+        legend_html.append(f'<span style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;">'
+                           f'<span style="width:9px;height:9px;border-radius:50%;background:{color};display:inline-block;"></span>'
+                           f'<span style="font-size:12px;color:{tokens["dim"]};">{label}</span></span>')
+
+    x_label = _esc(b.get("x_label", "Predicted probability"))
+    y_label = _esc(b.get("y_label", "Observed accuracy"))
+    svg = (f'<svg viewBox="0 0 {w} {h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">'
+          f'{grid}{diagonal}{"".join(points_html)}'
+          f'<text x="{pad_l + chart_w / 2:.1f}" y="{h - 4}" fill="{tokens["dim"]}" font-size="10" '
+          f'text-anchor="middle" letter-spacing="0.03em">{x_label}</text>'
+          f'<text x="14" y="{pad_t + chart_h / 2:.1f}" fill="{tokens["dim"]}" font-size="10" '
+          f'text-anchor="middle" letter-spacing="0.03em" '
+          f'transform="rotate(-90 14 {pad_t + chart_h / 2:.1f})">{y_label}</text>'
+          f'</svg>')
+    return svg, "".join(legend_html)
+
+
+def _render_calibration_plot(b: dict) -> str:
+    """Reliability diagram: predicted probability vs observed accuracy, a dashed
+    diagonal for perfect calibration, optional confidence-interval bars and
+    multiple colour-coded series. Point radius grows with `n` (sample size)
+    when given, so a bin backed by more evidence visibly stands out. Answers
+    a question a plain scatter/line/bar chart can't: is this model's own
+    confidence trustworthy, or just confident?"""
+    tokens = _theme_tokens(b.get("theme"))
+    result = _svg_calibration_plot(b, tokens)
+    if not result:
+        return ""
+    svg, legend = result
+    title = b.get("title", "")
+    title_html = (f'<div style="font-size:1.05rem;font-weight:700;color:{tokens["text"]};margin-bottom:4px;">'
+                  f'{_esc(title)}</div>' if title else "")
+    legend_html = f'<div style="margin-top:8px;">{legend}</div>' if legend else ""
+    return (f'<div style="margin:1.5rem 0;padding:20px;background:{tokens["surface2"]};'
+           f'border:1px solid {tokens["border"]};border-radius:12px;">'
+           f'{title_html}<div style="width:100%;height:280px;">{svg}</div>{legend_html}</div>')
+
+
 def _render_scatter_trend(b: dict) -> str:
     title = b.get("title", "")
     data_points = b.get("data_points", [])
@@ -15957,6 +16048,7 @@ _RENDERERS["conversion_funnel"] = _render_conversion_funnel
 _RENDERERS["gauge_sla"] = _render_gauge_sla
 _RENDERERS["stacked_area"] = _render_stacked_area
 _RENDERERS["scatter_trend"] = _render_scatter_trend
+_RENDERERS["calibration_plot"] = _render_calibration_plot
 _RENDERERS["call_mood_board"] = _render_call_mood_board
 _RENDERERS["github_activity_grid"] = _render_github_activity_grid
 _RENDERERS["form"] = _render_form

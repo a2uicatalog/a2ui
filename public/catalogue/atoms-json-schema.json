@@ -5979,6 +5979,71 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "calibration_plot"
+          },
+          "title": {
+            "type": "string"
+          },
+          "x_label": {
+            "type": "string"
+          },
+          "y_label": {
+            "type": "string"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "auto-assigned otherwise)": {
+                  "type": "string"
+                },
+                "points": {
+                  "type": "string"
+                },
+                "observed": {
+                  "type": "string"
+                },
+                "n": {
+                  "type": "string"
+                },
+                "grows point radius)": {
+                  "type": "string"
+                },
+                "ci_low": {
+                  "type": "string"
+                },
+                "ci_high": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "auto-assigned otherwise)",
+                "points",
+                "observed",
+                "grows point radius)"
+              ]
+            }
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "scatter_trend"
           },
           "title": {

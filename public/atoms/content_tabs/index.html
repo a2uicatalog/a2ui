@@ -197,7 +197,7 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
    accent underline, AND a weight shift (500 -> 700) — so it reads without
    relying on colour alone. Hover lifts only part-way (to full text colour),
    never all the way to the selected accent styling. */
-.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;padding:0 4px;}
+.tm-tab-labels{display:flex;gap:2px;background:var(--surface-2, #f8f9fa);border-bottom:1px solid var(--border, #e0e0e0);overflow-x:auto;overflow-y:hidden;padding:0 4px;}
 .tm-tab-label{padding:11px 18px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--text-muted, #5f6368);
   white-space:nowrap;transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease;user-select:none;
   border-bottom:2px solid transparent;margin-bottom:-1px;}
@@ -207,9 +207,9 @@ td:first-child{color:var(--text);font-weight:600;font-family:ui-monospace,'SF Mo
 .tm-tab-panel pre{margin:0;border-radius:0;border:none;}
 </style>
 <style>#cttabs1_t1:checked ~ .tm-tab-labels .tm-tab-label[for="cttabs1_t1"]{background:var(--surface,#fff);color:#6366f1;border-bottom-color:#6366f1;font-weight:700;}
-#cttabs1_t1:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(1){display:block;}
+#cttabs1_t1:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(1){display:block;}
 #cttabs1_t2:checked ~ .tm-tab-labels .tm-tab-label[for="cttabs1_t2"]{background:var(--surface,#fff);color:#6366f1;border-bottom-color:#6366f1;font-weight:700;}
-#cttabs1_t2:checked ~ .tm-tab-panels .tm-tab-panel:nth-child(2){display:block;}
+#cttabs1_t2:checked ~ .tm-tab-panels > .tm-tab-panel:nth-child(2){display:block;}
 </style><div class="tm-tabs"><input type="radio" id="cttabs1_t1" name="cttabs1" checked><input type="radio" id="cttabs1_t2" name="cttabs1" ><div class="tm-tab-labels"><label class="tm-tab-label" for="cttabs1_t1">4 Players</label><label class="tm-tab-label" for="cttabs1_t2">8 Players</label></div><div class="tm-tab-panels"><div class="tm-tab-panel"><p>One court, three rounds — every player partners with every other exactly once.</p></div><div class="tm-tab-panel"><p>Two courts, seven rounds — a full partner rotation.</p></div></div></div></div>
 </div>
 

@@ -150,6 +150,7 @@ a2ui-aviation-v1:
 - skill_radar
 a2ui-charts-v1:
 - benchmark_comparison
+- calibration_plot
 - chartjs_bar
 - chartjs_line
 - chartjs_pie

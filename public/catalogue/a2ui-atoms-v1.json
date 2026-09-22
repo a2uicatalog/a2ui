@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (522 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (523 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -7503,6 +7503,46 @@
     "google-meet-stage",
     "google-apps-script-web",
     "mcp-apps"
+   ]
+  },
+  "calibration_plot": {
+   "type": "object",
+   "description": "A reliability diagram plotting predicted probability against observed accuracy for one or more series, with a dashed diagonal reference line for perfect calibration and optional confidence-interval bars per point. Point radius can grow with sample size (`n`). Answers whether a model's own confidence scores are trustworthy, not just whether its answers are right.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "calibration_plot"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, e.g., 'Jev confidence calibration')"
+      },
+      "x_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, default 'Predicted probability')"
+      },
+      "y_label": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, default 'Observed accuracy')"
+      },
+      "series": {
+       "description": "list of {label: string, color: string (optional hex, auto-assigned otherwise), points: list of {predicted: number 0-1, observed: number 0-1, n: integer (optional sample size, grows point radius), ci_low: number (optional), ci_high: number (optional)}}",
+       "type": "array"
+      }
+     },
+     "required": [
+      "component"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "web"
    ]
   },
   "scatter_trend": {
