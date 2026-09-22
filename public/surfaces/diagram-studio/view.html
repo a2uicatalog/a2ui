@@ -2746,6 +2746,10 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   var TYPES = ["start", "process", "decision", "database", "cloud", "end"];
   var THEMES = ["modern_indigo", "vibrant_cloud", "warm_amber", "monochrome"];
   var MAX_V = 200, MAX_E = 400;
+  // Set once, when this script first runs -- NOT per tool-result. Surfaced in host diagnostics so a person can tell, across two
+  // `diagram_studio` calls in the SAME chat, whether the host reused this live iframe (id unchanged) or created a fresh one
+  // (id different). Open question as of 2026-09-21: untested whether an MCP Apps view's JS state survives across chat turns.
+  var VIEW_INSTANCE_ID = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
 
   var state = {
     mode: "source", syntax: "mermaid", source: "", title: "",
@@ -3188,17 +3192,55 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
       document.head.appendChild(s);
     });
   }
+  // Cross-origin isolation gates SharedArrayBuffer, which most WASM emulators/threaded workloads need (e.g. audio-synced game
+  // cores). It is granted by COOP/COEP response headers on the TOP-LEVEL document, or (per spec) may be inherited by same-origin
+  // iframes -- but an MCP Apps view is delivered by the host via resources/read, not a normal same-origin HTTP navigation, so
+  // whether it inherits isolation from the host's own page is genuinely unknown until measured, not something we can set from here.
+  function probeCrossOriginIsolation() {
+    var isolated = typeof self !== "undefined" && self.crossOriginIsolated === true;
+    probeResult("crossOriginIsolated", isolated, isolated ? "" : "self.crossOriginIsolated is " + self.crossOriginIsolated);
+    try { new SharedArrayBuffer(1); probeResult("SharedArrayBuffer", true); }
+    catch (e) { probeResult("SharedArrayBuffer", false, (e && e.message) || String(e)); }
+  }
+  // A silent (gain=0) oscillator: this is a capability probe, not something that should make noise on its own.
+  function probeWebAudio() {
+    return new Promise(function (resolve) {
+      var done = false;
+      function finish(ok, detail) { if (done) return; done = true; probeResult("WebAudio", ok, detail); resolve(ok); }
+      try {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) { finish(false, "no AudioContext constructor"); return; }
+        var ctx = new Ctx();
+        ctx.resume().then(function () {
+          try {
+            var osc = ctx.createOscillator(), gain = ctx.createGain();
+            gain.gain.value = 0;
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.05);
+            setTimeout(function () {
+              var ok = ctx.state === "running"; finish(ok, "state: " + ctx.state);
+              try { ctx.close(); } catch (e2) { /* already closing */ }
+            }, 300);
+          } catch (e) { finish(false, (e && e.message) || String(e)); }
+        }).catch(function (e) { finish(false, "resume() failed: " + ((e && e.message) || String(e))); });
+      } catch (e) { finish(false, (e && e.message) || String(e)); }
+    });
+  }
   var PROBE_PAGE = "<!doctype html><script>parent.postMessage({a2uiProbe:'frame'},'*')<\/script>";
   async function runHostProbes() {
     if (probing) return;
     probing = true; $("probes").disabled = true;
     $("diagwrap").hidden = false; $("diagwrap").open = true;
     diag("--- host diagnostics ---");
+    diag("view instance: " + VIEW_INSTANCE_ID + " -- unchanged across re-renders in this same iframe; if a SECOND diagram_studio "
+      + "call in this same chat produces a DIFFERENT id here, the host built a fresh view rather than reusing this live one");
     diag("host says: " + JSON.stringify({ info: hostInfo, capabilities: hostCaps, context: host }).slice(0, 900));
     diag("embed.diagrams.net frames, per the host's own capabilities: " + framesAllowed());
     try { probeResult("new Function()", new Function("return 7")() === 7); } catch (e) { probeResult("new Function()", false, e.message); }
     try { probeResult("eval()", (0, eval)("1+1") === 2); } catch (e) { probeResult("eval()", false, e.message); }
     try { await WebAssembly.compile(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0])); probeResult("WebAssembly", true); } catch (e) { probeResult("WebAssembly", false, e.message); }
+    probeCrossOriginIsolation();
+    await probeWebAudio();
     try { var m = await import(URL.createObjectURL(new Blob(["export const x = 1;"], { type: "text/javascript" }))); probeResult("module import from a blob", m.x === 1); }
     catch (e) { probeResult("module import from a blob", false, (e && e.message) || String(e)); }
     await probeWorker("Worker from a blob");
