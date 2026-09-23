@@ -95,19 +95,19 @@ let audio_key_space=null;
 async function load_all_sounds()
 {
     if(audio_df_insert==null)
-        audio_df_insert=await load_sound('sounds/insert.mp3');
+        audio_df_insert=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/insert.mp3');
     if(audio_df_eject==null)
-        audio_df_eject=await load_sound('sounds/eject.mp3');
+        audio_df_eject=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/eject.mp3');
     if(audio_df_step == null)
-        audio_df_step=await load_sound('sounds/step.mp3');
+        audio_df_step=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/step.mp3');
     if(audio_hd_step == null)   
-        audio_hd_step=await load_sound('sounds/stephd.mp3');
+        audio_hd_step=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/stephd.mp3');
     if(audio_key_standard == null)   
-        audio_key_standard=await load_sound('sounds/key_standard.mp3');
+        audio_key_standard=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/key_standard.mp3');
     if(audio_key_backspace == null)   
-        audio_key_backspace=await load_sound('sounds/key_backspace.mp3');
+        audio_key_backspace=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/key_backspace.mp3');
     if(audio_key_space == null)   
-        audio_key_space=await load_sound('sounds/key_space.mp3');
+        audio_key_space=await load_sound('https://a2uicatalog.ai/surfaces/amiga/sounds/key_space.mp3');
 }
 load_all_sounds();
 df0_poll_sound=true;
@@ -721,9 +721,9 @@ async function fetchOpenROMS(osname='aros'){
     }
     if(osname=='aros')
     {
-        let response = await fetch("roms/aros-rom-20260820.bin");
+        let response = await fetch("https://a2uicatalog.ai/surfaces/amiga/roms/aros-rom-20260820.bin");
         await installer('.rom_file', response);
-        response = await fetch("roms/aros-ext-20260820.bin");
+        response = await fetch("https://a2uicatalog.ai/surfaces/amiga/roms/aros-ext-20260820.bin");
         await installer('.rom_ext_file', response);   
     }
     else if(osname=='emutos')
@@ -736,34 +736,34 @@ async function fetchOpenROMS(osname='aros'){
 
 function fill_rom_icons(){
     let rom_infos=JSON.parse(wasm_rom_info());
-    let icon="img/rom.png";
+    let icon="https://a2uicatalog.ai/surfaces/amiga/img/rom.png";
     if(rom_infos.hasRom == "false")
     {
-        icon="img/rom_empty.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_empty.png";
     }
     else if(rom_infos.romTitle.toLowerCase().indexOf("aros")>=0)
     {
-        icon="img/rom_aros.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_aros.png";
     }
     else if(rom_infos.romTitle.toLowerCase().indexOf("unknown")>=0)
     {
-        icon="img/rom_unknown.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_unknown.png";
     }
     else if(rom_infos.romTitle.toLowerCase().indexOf("patched")>=0)
     {
-        icon="img/rom_patched.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_patched.png";
     }
     else if(rom_infos.romTitle.toLowerCase().indexOf("hyperion")>=0)
     {
-        icon="img/rom_hyperion.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_hyperion.png";
     }
     else if(rom_infos.romTitle.toLowerCase().indexOf("emutos")>=0)
     {   
-        icon="img/rom_emutos.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_emutos.png";
     }    
     else
     {
-        icon="img/rom_original.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_original.png";
     }
 
     $("#rom_kickstart").attr("src", icon);
@@ -775,30 +775,30 @@ function fill_rom_icons(){
 function fill_ext_icons()
 {
     let rom_infos=JSON.parse(wasm_rom_info());
-    let icon="img/rom.png";
+    let icon="https://a2uicatalog.ai/surfaces/amiga/img/rom.png";
     if(rom_infos.hasExt == "false")
     {
-        icon="img/rom_empty.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_empty.png";
     }
     else if(rom_infos.extTitle.toLowerCase().indexOf("aros")>=0)
     {
-        icon="img/rom_aros.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_aros.png";
     }
     else if(rom_infos.extTitle.toLowerCase().indexOf("unknown")>=0)
     {
-        icon="img/rom_unknown.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_unknown.png";
     }
     else if(rom_infos.extTitle.toLowerCase().indexOf("patched")>=0)
     {
-        icon="img/rom_patched.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_patched.png";
     }
     else if(rom_infos.romTitle.toLowerCase().indexOf("hyperion")>=0)
     {
-        icon="img/rom_hyperion.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_hyperion.png";
     }
     else
     {
-        icon="img/rom_original.png";
+        icon="https://a2uicatalog.ai/surfaces/amiga/img/rom_original.png";
     }
 
     $("#rom_kickstart_ext").attr("src", icon);
@@ -861,7 +861,7 @@ async function load_roms(install_to_core){
         let the_rom=await loadStoredItem(selected_rom, ".rom_file");
         if (the_rom==null){
             all_fine=false;
-            $("#rom_kickstart").attr("src", "img/rom_empty.png");
+            $("#rom_kickstart").attr("src", "https://a2uicatalog.ai/surfaces/amiga/img/rom_empty.png");
             $("#kickstart_title").html("empty socket<br>(required)");
 
             $("#button_delete_kickstart").hide();
@@ -878,7 +878,7 @@ async function load_roms(install_to_core){
         let selected_rom_ext=local_storage_get('rom_ext');
         let the_rom_ext=await loadStoredItem(selected_rom_ext,".rom_ext_file");
         if (the_rom_ext==null){
-            $("#rom_kickstart_ext").attr("src", "img/rom_empty.png");
+            $("#rom_kickstart_ext").attr("src", "https://a2uicatalog.ai/surfaces/amiga/img/rom_empty.png");
             $("#kickstart_ext_title").html("empty socket<br>(optional)");
 
             $("#button_delete_kickstart_ext").hide();
@@ -2205,7 +2205,7 @@ function InitWrappers() {
             console.error("audioContext.audioWorklet == undefined");
             return;
         }
-        await audioContext.audioWorklet.addModule('js/vAmiga_audioprocessor.js');
+        await audioContext.audioWorklet.addModule('https://a2uicatalog.ai/surfaces/amiga/js/vAmiga_audioprocessor.js');
         worklet_node = new AudioWorkletNode(audioContext, 'vAmiga_audioprocessor', {
             outputChannelCount: [2],
             numberOfInputs: 0,
@@ -2289,7 +2289,7 @@ function InitWrappers() {
         gainNode.gain.value = current_sound_volume;
         gainNode.connect(audioContext.destination);
         wasm_set_sample_rate(audioContext.sampleRate);
-        await audioContext.audioWorklet.addModule('js/vAmiga_audioprocessor_sharedarraybuffer.js');
+        await audioContext.audioWorklet.addModule('https://a2uicatalog.ai/surfaces/amiga/js/vAmiga_audioprocessor_sharedarraybuffer.js');
         const audioNode = new AudioWorkletNode(audioContext, 'vAmiga_audioprocessor_sharedarraybuffer', {
             outputChannelCount: [2],
             processorOptions: {
