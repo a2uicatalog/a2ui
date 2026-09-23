@@ -1,0 +1,1155 @@
+//
+// Live Memory View for vAmigaWeb
+//
+// Renders a bit-visualization of Amiga memory into a dockable panel on the
+// right side of the screen. Every 16-bit word is drawn as 16 pixels (one
+// pixel per bit), colored col1 (bit set) or col2 (bit clear). While the
+// emulation is running and "live update" is enabled, the view refreshes
+// each frame. The shown memory region can be scrolled by dragging or the
+// mouse wheel, and the start address can be entered manually.
+//
+// Ported/adapted from the "coppenheimer" fork by Losso.
+//
+
+// internal (crisp) render resolution of the memory canvas
+const MEMVIEW_WORDS_PER_ROW = 20;                       // 16 words per row
+const MEMVIEW_HPIXELS = MEMVIEW_WORDS_PER_ROW * 16;     // 16px per word -> 256
+const MEMVIEW_VPIXELS = 512;                            // rows (1px each)
+const MEMVIEW_BYTES_PER_ROW = MEMVIEW_WORDS_PER_ROW * 2;
+// number of bytes visible in the detail view (used for the overview highlight)
+const MEMVIEW_WINDOW_BYTES = MEMVIEW_VPIXELS * MEMVIEW_BYTES_PER_ROW;
+
+// overview resolution: each memory region gets its own stacked block
+const MEMPREVIEW_HPIXELS = 256;      // internal width per block
+const MEMPREVIEW_BLOCK_ROWS = 128;   // internal height per block
+
+// base addresses of the amiga ram areas in the cpu address space
+// (chip: $000000, zorro-II fast ram: $200000, slow/ranger ram: $C00000)
+const MEM_CHIP_BASE = 0x000000;
+const MEM_FAST_BASE = 0x200000;
+const MEM_SLOW_BASE = 0xC00000;
+const MEM_ROM_BASE = 0xF80000;
+
+// dynamic detail-view geometry (defaults to 16 words per row, contiguous).
+// a bitplane "guess" click switches these so one canvas row equals one
+// bitplane scanline (width = words per line, stride skips the modulo gap).
+var memview_words_per_row = MEMVIEW_WORDS_PER_ROW;
+var memview_hpixels = MEMVIEW_HPIXELS;
+var memview_row_stride = MEMVIEW_BYTES_PER_ROW;   // bytes advanced per displayed row
+
+// cold palette: light gray (set bit) on black (cleared bit)
+var memdump_col1 = 0xffa0a0a0;
+var memdump_col2 = 0xff3a3a3a;
+
+// access-heatmap mode: tint each word by its most recent chip-ram access
+// (chip ram only). requires the core's write/read tracking (wasm_set_write_
+// tracking + the *_ptr / access-frame bindings). owner tags match
+// Memory::WRITE_OWNER_* (1 = cpu, 2 = blitter).
+var memview_show_writers = true;
+const MEMVIEW_WRITE_CPU = 1;
+const MEMVIEW_WRITE_BLITTER = 2;
+// heatmap colors: set bit (1) vs. cleared bit (0) background
+var memdump_write_col1 = 0xffff3b30; // cpu write = red
+var memdump_write_col2 = 0xff350d0d; // cpu write = very dark red
+var memdump_read_col1  = 0xff34c759; // cpu read  = green
+var memdump_read_col2  = 0xff0d2513; // cpu read  = very dark green
+var memdump_blt_col1   = 0xff2196f3; // blitter write = blue
+var memdump_blt_col2   = 0xff0d1f35; // blitter write = very dark blue
+
+// heatmap fade: a fresh write flashes in its author's color (blitter = blue,
+// cpu = gray) and then fades back to the default amber palette over this many
+// *rendered emulation frames*. tying the fade to frames (instead of wall-clock
+// time) means it freezes while the emulation is paused and only advances when
+// frames are actually produced (running, single step or slomo).
+var MEMVIEW_HEAT_FADE_FRAMES = 250;     // ~5s at 50fps (PAL); user-adjustable
+// counter of rendered emulation frames while the panel is open (drives the fade)
+var memview_frame_seq = 0;
+// per-address decay state: addr -> { v: last seen value, f: last-write frame seq }.
+// only holds addresses currently on screen; rebuilt when the window changes
+var memview_heat = new Map();
+var memview_heat_start = null;
+var memview_heat_stride = null;
+
+var live_memory_dump_enabled = false;
+var memview_open = false;
+
+var memdump_start = 0;
+var memview_buffer = null;
+var memview_ctx = null;
+var memview_image_data = null;
+var memview_initialized = false;
+
+// drag state
+var memview_pressed = false;
+var memview_drag_start_y = 0;
+var memview_drag_start_addr = 0;
+
+var last_memdump_info_start = -1;
+
+// overview state
+var mempreview_pressed = false;
+var mempreview_counter = 0;
+var memview_drag_region = null;
+
+// memory regions shown in the overview (built from the core's ram config)
+var memview_regions = [];
+var memview_regions_signature = "";
+
+// bitplane area list state (auto-refreshed while the panel is open)
+var memview_bpl_counter = 0;         // frame throttle counter
+var memview_bpl_last_raw = null;     // last rendered payload (skip if unchanged)
+var memview_bpl_autoselect = true;   // follow mode: keep detail view locked to bpl1
+var memview_bpl_sel_sig = null;      // signature of the currently followed bpl1
+var memview_bpl_recent = [];         // recent bpl1 signatures (page-flip detection)
+const MEMVIEW_BPL_THROTTLE = 15;     // update every n live frames
+const MEMVIEW_BPL_RECENT_MAX = 6;    // how many recent signatures to remember
+const MEMVIEW_BPL_MIN_HEIGHT = 3;    // drop guessed areas shorter than this (fragments)
+
+// width reserved by the docked panel (used by scaleVMCanvas in vAmiga_canvas.js)
+function memview_reserved_width() {
+    if (!memview_open) return 0;
+    let panel = document.getElementById("memview_panel");
+    return panel ? panel.offsetWidth : 0;
+}
+
+function memview_init() {
+    if (memview_initialized) return;
+    let canvas = document.getElementById("memview_canvas");
+    if (!canvas) return;
+    memview_ctx = canvas.getContext("2d");
+    memview_apply_geometry();
+
+    // scroll by wheel / trackpad
+    canvas.addEventListener("wheel", function(e) {
+        e.preventDefault();
+        let rect = canvas.getBoundingClientRect();
+        let rowsPerPixel = MEMVIEW_VPIXELS / rect.height;
+        // wheel: 0 = pixels (trackpad), 1 = lines (mouse wheel), 2 = pages
+        let scale = 1;
+        if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) scale = 24;
+        else if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE) scale = rect.height;
+        let rows = Math.round(e.deltaY * scale * rowsPerPixel);
+        if (rows !== 0) {
+            memview_set_start(memdump_start + rows * memview_row_stride);
+            if (!memview_live_redraw_active()) memdump();
+        }
+    }, { passive: false });
+
+    // drag to scroll (pointer events cover mouse, touch and pen -> works on iPad)
+    canvas.addEventListener("pointerdown", function(e) {
+        e.preventDefault();
+        memview_begin_drag();
+        memview_pressed = true;
+        memview_drag_start_y = e.clientY;
+        memview_drag_start_addr = memdump_start;
+        if (canvas.setPointerCapture) {
+            try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+        }
+    });
+    window.addEventListener("pointermove", function(e) {
+        if (!memview_pressed) return;
+        e.preventDefault();
+        // scale pointer pixels to internal rows
+        let canvasRect = canvas.getBoundingClientRect();
+        let rowsPerPixel = MEMVIEW_VPIXELS / canvasRect.height;
+        let dyRows = Math.round((e.clientY - memview_drag_start_y) * rowsPerPixel);
+        memview_set_start(memview_drag_start_addr - dyRows * memview_row_stride, true);
+        if (!memview_live_redraw_active()) memdump();
+    }, { passive: false });
+    let end_detail_drag = function() {
+        if (memview_pressed) {
+            memview_pressed = false;
+            if (!memview_live_redraw_active()) memdump();
+        }
+        memview_end_drag();
+    };
+    window.addEventListener("pointerup", end_detail_drag);
+    window.addEventListener("pointercancel", end_detail_drag);
+
+    // manual start address input
+    let startInput = document.getElementById("memview_start");
+    if (startInput) {
+        startInput.addEventListener("change", function() {
+            let v = parseInt(this.value.replace(/[^0-9a-fA-F]/g, ""), 16);
+            if (!isNaN(v)) {
+                memview_set_start(v);
+                if (!memview_live_redraw_active()) memdump();
+            }
+        });
+    }
+
+    // manual detail width input
+    let widthInput = document.getElementById("memview_width");
+    if (widthInput) {
+        widthInput.addEventListener("change", function() {
+            let px = parseInt(this.value.replace(/\D/g, ""), 10);
+            if (isNaN(px) || px < 16) px = memview_words_per_row * 16;
+            memview_set_width(px);
+            this.value = String(memview_words_per_row * 16);
+            if (!memview_live_redraw_active()) memdump();
+        });
+    }
+
+    // overview drag handling (blocks are created per region in build_overview_dom)
+    window.addEventListener("pointermove", function(e) {
+        if (mempreview_pressed && memview_drag_region) {
+            e.preventDefault();
+            memview_overview_jump(memview_drag_region, e);
+        }
+    }, { passive: false });
+    let end_overview_drag = function() {
+        mempreview_pressed = false;
+        memview_drag_region = null;
+        memview_end_drag();
+    };
+    window.addEventListener("pointerup", end_overview_drag);
+    window.addEventListener("pointercancel", end_overview_drag);
+
+    // live update checkbox
+    let liveCb = document.getElementById("memview_live");
+    if (liveCb) {
+        live_memory_dump_enabled = liveCb.checked;
+        liveCb.addEventListener("change", function() {
+            live_memory_dump_enabled = this.checked;
+        });
+    }
+
+    // "step" button: pause emulation and advance exactly one frame per click.
+    // if slomo is running, this cancels it and stays in manual
+    // single-step mode (pressing slomo again re-enters slow-mo)
+    let stepBtn = document.getElementById("memview_step");
+    if (stepBtn) {
+        // bind via pointerup (not click) so it fires reliably for touch and
+        // apple pencil on ios, where the synthetic click can get swallowed
+        stepBtn.addEventListener("pointerup", function() { memview_step_button(); });
+    }
+
+    // "slomo" button: toggle slow-motion single stepping (one frame every 500ms);
+    // press again to resume normal running speed
+    let slomoBtn = document.getElementById("memview_slomo");
+    if (slomoBtn) {
+        slomoBtn.addEventListener("pointerup", function() { memview_slomo_toggle(); });
+    }
+
+    // hop on press, just like the navbar icons: add the "pop" class on pointerup
+    // and drop it when the popBounce animation finishes (restart via reflow so
+    // rapid presses re-trigger)
+    let addPop = function(btn) {
+        if (!btn) return;
+        btn.addEventListener("animationend", function(e) {
+            if (e.animationName === "memview_pop") btn.classList.remove("pop");
+        });
+        btn.addEventListener("pointerup", function() {
+            btn.classList.remove("pop");
+            void btn.offsetWidth;   // force reflow so the animation restarts
+            btn.classList.add("pop");
+        });
+    };
+    addPop(stepBtn);
+    addPop(slomoBtn);
+
+    // info ("i") button: toggle the "what am I looking at?" explanation overlay
+    let infoBtn = document.getElementById("memview_info");
+    let infoPop = document.getElementById("memview_info_pop");
+    let infoClose = document.getElementById("memview_info_close");
+    addPop(infoBtn);   // hop on press, same as the slomo/step buttons
+    if (infoBtn && infoPop) {
+        infoBtn.addEventListener("pointerup", function(e) {
+            e.stopPropagation();
+            let showing = (infoPop.style.display === "none");
+            if (showing) {
+                // if there is enough room to the left of the docked panel, float
+                // the overlay there (over the amiga canvas, via position:fixed so
+                // it escapes the panel's overflow:hidden) so the detail view stays
+                // visible while dragging the sliders; otherwise cover the detail
+                // canvas as before. 320px overlay + 6px gap = ~330px.
+                let panel = document.getElementById("memview_panel");
+                let rect = panel ? panel.getBoundingClientRect() : null;
+                if (rect && rect.left >= 330) {
+                    infoPop.classList.add("to_left");
+                    infoPop.style.right = (window.innerWidth - rect.left + 6) + "px";
+                    infoPop.style.top = (rect.top + 6) + "px";
+                    infoPop.style.maxHeight = (rect.height - 12) + "px";
+                } else {
+                    infoPop.classList.remove("to_left");
+                    infoPop.style.right = "";
+                    infoPop.style.top = "";
+                    infoPop.style.maxHeight = "";
+                }
+            }
+            infoPop.style.display = showing ? "flex" : "none";
+        });
+    }
+    if (infoClose && infoPop) {
+        infoClose.addEventListener("pointerup", function() { infoPop.style.display = "none"; });
+    }
+    let infoCloseBottom = document.getElementById("memview_info_close_bottom");
+    if (infoCloseBottom && infoPop) {
+        infoCloseBottom.addEventListener("pointerup", function() { infoPop.style.display = "none"; });
+    }
+    // panel close ("x") button in the memory header: bind via pointerup too
+    // (the inline onclick was removed from the html for the same ios reason)
+    let panelClose = document.getElementById("memview_close");
+    if (panelClose) {
+        panelClose.addEventListener("pointerup", function() { memview_close_panel(); });
+    }
+    // start interacting with the memory canvas -> get the overlay out of the way
+    if (infoPop) {
+        canvas.addEventListener("pointerdown", function() { infoPop.style.display = "none"; });
+    }
+
+    // heatmap fade-length slider (in rendered frames); persisted across sessions
+    let fadeInput = document.getElementById("memview_fade_frames");
+    let fadeVal = document.getElementById("memview_fade_frames_val");
+    if (fadeInput) {
+        let saved = (typeof load_setting === "function")
+            ? parseInt(load_setting("memview_fade_frames", MEMVIEW_HEAT_FADE_FRAMES), 10)
+            : MEMVIEW_HEAT_FADE_FRAMES;
+        if (!isNaN(saved) && saved >= 10) MEMVIEW_HEAT_FADE_FRAMES = saved;
+        fadeInput.value = MEMVIEW_HEAT_FADE_FRAMES;
+        if (fadeVal) fadeVal.textContent = MEMVIEW_HEAT_FADE_FRAMES;
+        fadeInput.addEventListener("input", function() {
+            let v = parseInt(this.value, 10);
+            if (isNaN(v) || v < 10) v = 10;
+            MEMVIEW_HEAT_FADE_FRAMES = v;
+            if (fadeVal) fadeVal.textContent = v;
+            if (typeof save_setting === "function") save_setting("memview_fade_frames", v);
+        });
+    }
+
+    // slomo speed slider (step interval in ms); applies live and is persisted
+    let slomoInput = document.getElementById("memview_slomo_interval");
+    let slomoVal = document.getElementById("memview_slomo_interval_val");
+    if (slomoInput) {
+        let saved = (typeof load_setting === "function")
+            ? parseInt(load_setting("memview_slomo_interval", MEMVIEW_SLOMO_INTERVAL_MS), 10)
+            : MEMVIEW_SLOMO_INTERVAL_MS;
+        if (!isNaN(saved) && saved >= 50) MEMVIEW_SLOMO_INTERVAL_MS = saved;
+        slomoInput.value = MEMVIEW_SLOMO_INTERVAL_MS;
+        if (slomoVal) slomoVal.textContent = MEMVIEW_SLOMO_INTERVAL_MS;
+        slomoInput.addEventListener("input", function() {
+            let v = parseInt(this.value, 10);
+            if (isNaN(v) || v < 50) v = 50;
+            MEMVIEW_SLOMO_INTERVAL_MS = v;
+            if (slomoVal) slomoVal.textContent = v;
+            memview_slomo_restart_timer();   // apply immediately if slomo is running
+            if (typeof save_setting === "function") save_setting("memview_slomo_interval", v);
+        });
+    }
+
+    // auto-select (follow mode): keep the detail view locked to the top-of-list
+    // bitplane while enabled; toggling it on re-locks onto the current bpl1
+    let bplAutoCb = document.getElementById("memview_bpl_autoselect");
+    if (bplAutoCb) {
+        memview_bpl_autoselect = bplAutoCb.checked;
+        bplAutoCb.addEventListener("change", function() {
+            memview_bpl_autoselect = this.checked;
+            if (memview_bpl_autoselect) {
+                memview_bpl_sel_sig = null;      // force a re-select on next refresh
+                memview_bpl_recent.length = 0;   // forget the page-flip history
+                memview_refresh_bitplanes(true);
+            }
+        });
+    }
+
+    // keep the panel below the navbar while it is visible, full height otherwise
+    if (typeof $ !== "undefined") {
+        $("#navbar").on("shown.bs.collapse", memview_update_top);
+        $("#navbar").on("hide.bs.collapse", function() {
+            // navbar is collapsing -> reclaim the full height immediately
+            let panel = document.getElementById("memview_panel");
+            if (panel) panel.style.top = "0px";
+        });
+    }
+    window.addEventListener("resize", memview_update_top);
+
+    memview_initialized = true;
+}
+
+function is_running_safe() {
+    return typeof running !== "undefined" && running;
+}
+
+// true only while the requestAnimationFrame loop really redraws the detail view
+// every frame - then scrolling can skip its own (expensive) memdump(). during
+// slomo the core is halted and the loop is stopped, while `running` still holds
+// the user intent "run", so the redraw has to happen in the scroll handler.
+function memview_live_redraw_active() {
+    return live_memory_dump_enabled && is_running_safe() && memview_slomo_timer === null;
+}
+
+// suppress text/canvas selection while a drag is in progress (some browsers
+// invert the canvas colors when it becomes part of a selection)
+function memview_begin_drag() {
+    document.body.classList.add("memview-dragging");
+    let sel = window.getSelection && window.getSelection();
+    if (sel && sel.removeAllRanges) { try { sel.removeAllRanges(); } catch (e) {} }
+}
+function memview_end_drag() {
+    document.body.classList.remove("memview-dragging");
+}
+
+// positions the panel directly below the navbar while it is visible,
+// otherwise lets it use the full viewport height
+function memview_update_top() {
+    let panel = document.getElementById("memview_panel");
+    if (!panel) return;
+    let nav = document.getElementById("navbar");
+    // note: offsetParent is always null for position:fixed elements, so we
+    // detect visibility via offsetHeight (0 when the collapse is hidden)
+    let visible = nav && nav.offsetHeight > 0;
+    panel.style.top = visible ? nav.getBoundingClientRect().bottom + "px" : "0px";
+    memview_update_bottom();
+}
+
+// when the activity monitor grid is visible, stop the panel right above it so
+// its vertical end lines up exactly with the top of the monitor grid
+function memview_update_bottom() {
+    let panel = document.getElementById("memview_panel");
+    if (!panel) return;
+    let activity = document.getElementById("activity");
+    let h = (activity && activity.offsetHeight > 0) ? activity.offsetHeight : 0;
+    panel.style.bottom = h + "px";
+}
+
+function memview_set_start(addr, keepPressed) {
+    if (addr < 0) addr = 0;
+    memdump_start = addr & 0xfffffe;   // word aligned
+    if (!keepPressed) memview_pressed = false;
+    memview_update_bpl_list_selection();
+}
+
+function memview_set_width(px) {
+    let pixels = parseInt(px, 10);
+    if (isNaN(pixels) || pixels < 16) pixels = memview_words_per_row * 16;
+    let words = Math.max(1, Math.min(512, Math.round(pixels / 16)));
+    memview_set_geometry(words, Math.max(2, words * 2));
+}
+
+function memview_sync_header_inputs(start) {
+    let startEl = document.getElementById("memview_start");
+    if (startEl && document.activeElement !== startEl) {
+        startEl.value = ("000000" + start.toString(16)).slice(-6);
+    }
+    let widthEl = document.getElementById("memview_width");
+    if (widthEl && document.activeElement !== widthEl) {
+        widthEl.value = String(memview_words_per_row * 16);
+    }
+}
+
+// (re)allocates the detail canvas/backbuffer for the current words-per-row
+function memview_apply_geometry() {
+    let canvas = document.getElementById("memview_canvas");
+    if (!canvas || !memview_ctx) return;
+    memview_hpixels = memview_words_per_row * 16;
+    canvas.width = memview_hpixels;
+    canvas.height = MEMVIEW_VPIXELS;
+    memview_image_data = memview_ctx.createImageData(memview_hpixels, MEMVIEW_VPIXELS);
+    memview_buffer = new Uint8Array(memview_hpixels * MEMVIEW_VPIXELS * 4);
+    memview_sync_header_inputs(memdump_start);
+}
+
+// switches the detail view to a specific bitplane geometry:
+//   words = visible words per scanline, strideBytes = memory advance per row
+//   (words*2 + modulo, so interleaved planes and modulo gaps are skipped)
+function memview_set_geometry(words, strideBytes) {
+    words = Math.max(1, Math.min(words | 0, 512));
+    memview_words_per_row = words;
+    memview_row_stride = Math.max(2, strideBytes | 0) & 0xfffffe;
+    memview_apply_geometry();
+}
+
+// restores the default contiguous 16-words-per-row layout
+function memview_reset_geometry() {
+    memview_words_per_row = MEMVIEW_WORDS_PER_ROW;
+    memview_row_stride = MEMVIEW_BYTES_PER_ROW;
+    memview_apply_geometry();
+}
+
+function memview_toggle() {
+    // dismiss the button's bootstrap tooltip so it doesn't linger and cover the
+    // panel/canvas after the click. on touch, tapping the button focuses it, so
+    // bootstrap (trigger "hover focus") re-shows the tooltip on focus right
+    // after our hide - with a mouse there is no focus-on-tap so it stays hidden.
+    // blur the button (removes the focus that triggers the re-show) and hide
+    // again on the next tick via the shared helper to defeat that re-show.
+    let el = document.getElementById("button_memview");
+    if (el && el.blur) el.blur();
+    if (typeof hide_all_tooltips === "function") {
+        hide_all_tooltips();
+        setTimeout(hide_all_tooltips, 0);
+    }
+    if (memview_open) memview_close_panel();
+    else memview_open_panel();
+}
+
+function memview_open_panel() {
+    let panel = document.getElementById("memview_panel");
+    if (!panel) return;
+    panel.style.display = "flex";
+    memview_open = true;
+    memview_init();
+    memview_update_regions();
+    memview_update_top();
+    // start recording bitplane DMA accesses so the guesser has fresh data
+    if (typeof wasm_set_bitplane_guess === "function") wasm_set_bitplane_guess(1);
+    // start write-owner tracking (blitter vs cpu on chip ram) only while the
+    // panel is open; the heatmap fade decides the coloring from here on
+    if (typeof wasm_set_write_tracking === "function") wasm_set_write_tracking(1);
+    memview_heat.clear();
+    memview_heat_start = null;
+    memview_heat_stride = null;
+    memview_bpl_last_raw = null;
+    memview_refresh_bitplanes(true);
+    if (typeof scaleVMCanvas === "function") scaleVMCanvas();
+    memdump();
+    if (typeof save_setting === "function") save_setting("memview_open", true);
+}
+
+function memview_close_panel() {
+    let panel = document.getElementById("memview_panel");
+    if (panel) panel.style.display = "none";
+    memview_open = false;
+    // cancel a running slomo and return to normal speed
+    memview_slomo_stop(true);
+    // stop recording to avoid the small per-write/per-fetch overhead when the
+    // panel is closed
+    if (typeof wasm_set_bitplane_guess === "function") wasm_set_bitplane_guess(0);
+    if (typeof wasm_set_write_tracking === "function") wasm_set_write_tracking(0);
+    if (typeof scaleVMCanvas === "function") scaleVMCanvas();
+    if (typeof save_setting === "function") save_setting("memview_open", false);
+}
+
+// backward-compatible alias for the former "guess" button (pre-rebuild html)
+function memview_guess_bitplanes() { memview_refresh_bitplanes(true); }
+
+// single-step button handler: if slomo is active, cancel it and
+// stay paused in manual single-step mode; then advance exactly one frame.
+function memview_step_button() {
+    if (memview_slomo_timer !== null) memview_slomo_stop(false); // stop slow-mo, no resume
+    memview_step_frame();
+}
+
+// advances the emulation by exactly one frame. the emulator is paused first
+// (so it stays frozen between clicks) and the freshly computed frame is
+// rendered to the amiga canvas, memory view and bitplane list.
+function memview_step_frame() {
+    // single stepping means the user really wants to be paused, so route the
+    // pause through button_run_click to update the toolbar icon and the
+    // selected run state
+    if (is_running_safe() && typeof app !== "undefined" &&
+        typeof app.button_run_click === "function") {
+        app.button_run_click();
+    }
+    memview_advance_one_frame();
+}
+
+// computes and renders exactly one frame without changing the run state.
+// returns true if the core hit a breakpoint, watchpoint or beam trap.
+function memview_advance_one_frame() {
+    // compute exactly one frame synchronously. _wasm_execute() must not be used
+    // here: it refuses to compute anything while the core is paused - which is
+    // exactly the state single stepping and slomo operate in.
+    let trapped = false;
+    if (typeof Module !== "undefined" && typeof Module._wasm_execute_one_frame === "function") {
+        trapped = Module._wasm_execute_one_frame() != 0;
+    }
+    // draw the new frame to the amiga canvas
+    let now = (typeof performance !== "undefined") ? performance.now() : 0;
+    if (typeof render_frame === "function") {
+        render_frame(now);
+    } else if (typeof current_renderer !== "undefined" && current_renderer === "gpu shader" &&
+               typeof render_canvas_gl === "function") {
+        render_canvas_gl(now);
+    } else if (typeof render_canvas === "function") {
+        render_canvas(now);
+    }
+    // refresh the memory view and detected bitplane areas for this frame.
+    // while the user drags the view, the list is only rebuilt when its payload
+    // actually changed - a forced rebuild drops and recreates every list item
+    // and makes the drag stutter.
+    memdump();
+    memview_refresh_bitplanes(!memview_pressed && !mempreview_pressed);
+    // the activity monitor interval skips paused frames, so update it here too
+    if (typeof update_activity_monitors === "function") update_activity_monitors();
+    return trapped;
+}
+
+// --- slomo: slow-motion single stepping -----------------------------------
+// executes one frame every MEMVIEW_SLOMO_INTERVAL_MS and keeps going until the
+// button is clicked again, which resumes normal running speed.
+var MEMVIEW_SLOMO_INTERVAL_MS = 500;     // one single-step every 500ms; user-adjustable
+var memview_slomo_timer = null;
+
+function memview_slomo_step() {
+    if (!memview_advance_one_frame()) return;
+
+    // the core hit a breakpoint, watchpoint or beam trap. stop stepping and
+    // turn the suspend into a real pause so the toolbar shows the same state as
+    // when a trap is hit at normal speed. the run/pause click below is safe:
+    // button_run_click() calls memview_slomo_stop() again, which returns right
+    // away because the timer has already been cleared.
+    memview_slomo_stop(false);
+    if (is_running_safe() && typeof app !== "undefined" &&
+        typeof app.button_run_click === "function") {
+        app.button_run_click();
+    }
+}
+
+function memview_slomo_toggle() {
+    // second press while active: stop and resume normal speed
+    if (memview_slomo_timer !== null) { memview_slomo_stop(true); return; }
+
+    let slomoBtn = document.getElementById("memview_slomo");
+    if (slomoBtn) slomoBtn.classList.add("slomo_active");
+
+    // hold the emulation without changing the run state the user selected, so
+    // stopping slomo can restore exactly that state
+    if (typeof ui_suspend_emulation === "function") ui_suspend_emulation();
+
+    memview_slomo_step();   // immediate first step for responsiveness
+    memview_slomo_timer = setInterval(memview_slomo_step, MEMVIEW_SLOMO_INTERVAL_MS);
+}
+
+// apply a changed interval right away if slomo is currently running
+function memview_slomo_restart_timer() {
+    if (memview_slomo_timer === null) return;
+    clearInterval(memview_slomo_timer);
+    memview_slomo_timer = setInterval(memview_slomo_step, MEMVIEW_SLOMO_INTERVAL_MS);
+}
+
+function memview_slomo_stop(resume) {
+    let was_active = memview_slomo_timer !== null;
+    if (was_active) {
+        clearInterval(memview_slomo_timer);
+        memview_slomo_timer = null;
+    }
+    let slomoBtn = document.getElementById("memview_slomo");
+    if (slomoBtn) slomoBtn.classList.remove("slomo_active");
+    if (!was_active) return;
+
+    // release the suspend taken in memview_slomo_toggle() - it has to happen in
+    // every case, otherwise the counter leaks and dialogs could no longer
+    // resume. with resume=true the run state the user selected before slomo is
+    // restored, so a pre-slomo pause stays paused. with resume=false the caller
+    // decides what comes next (manual single stepping or the run/pause toggle)
+    // and the run state is left untouched.
+    if (typeof ui_resume_emulation === "function") ui_resume_emulation(resume);
+}
+
+// throttled per-frame driver: refreshes the bitplane list while the panel is open
+function memview_bpl_tick() {
+    if (!memview_open) return;
+    // one rendered emulation frame -> advance the heatmap fade clock. this is
+    // the single per-frame hook (called from render_frame for live, single step
+    // and slomo), so the fade only progresses when frames are actually produced.
+    memview_frame_seq++;
+    if ((++memview_bpl_counter % MEMVIEW_BPL_THROTTLE) !== 0) return;
+    memview_refresh_bitplanes(false);
+}
+
+// reads the recorded bitplane DMA ranges of the last frame from the core and
+// lists them as clickable "possible bitplane areas" (jump into the detail view).
+// pass force=true to rebuild regardless of the hover/unchanged guards.
+function memview_refresh_bitplanes(force) {
+    let list = document.getElementById("memview_bpl_list");
+    if (!list) return;
+    if (typeof wasm_get_bitplane_areas !== "function") return;
+
+    let raw = wasm_get_bitplane_areas() || "";
+    // skip the DOM work when nothing changed since the last render
+    if (!force && raw === memview_bpl_last_raw) return;
+    memview_bpl_last_raw = raw;
+
+    list.innerHTML = "";
+    let entries = raw.split(";").filter(function(s) { return s.length > 0; });
+    if (entries.length === 0) {
+        let empty = document.createElement("div");
+        empty.className = "memview_bpl_empty";
+        empty.textContent = "no bitplane dma detected \u2013 run a graphical program";
+        list.appendChild(empty);
+        memview_bpl_sel_sig = null;
+        memview_bpl_recent.length = 0;
+        return;
+    }
+
+    let firstSel = null;   // dominant listed entry -> tracked by follow mode
+
+    // parse + validate, then drop fragments too short to be a real image
+    let parsed = [];
+    for (let i = 0; i < entries.length; i++) {
+        let parts = entries[i].split(",");
+        let plane = parseInt(parts[0], 10);
+        let start = parseInt(parts[1], 10);
+        let end = parseInt(parts[2], 10);
+        let mod = parseInt(parts[3], 10);
+        let words = parseInt(parts[4], 10);
+        let lines = parseInt(parts[5], 10);
+        if (isNaN(start) || isNaN(end)) continue;
+        if (isNaN(words) || words < 1) words = MEMVIEW_WORDS_PER_ROW;
+        if (isNaN(mod)) mod = 0;
+        let widthPx = words * 16;                 // one bit per pixel
+        let stride = words * 2 + mod;             // memory bytes per scanline
+        // height = number of scanlines the core actually did bitplane dma on.
+        // this is layout-independent and works even when the copper reloads
+        // bplpt every line. fall back to the address-range estimate if the
+        // core does not report a line count (older build).
+        let heightPx;
+        if (!isNaN(lines) && lines > 0) {
+            heightPx = lines;
+        } else {
+            heightPx = stride > 0
+                ? Math.max(1, Math.round((end - start - words * 2) / stride) + 1)
+                : 1;
+        }
+        // drop transitional / fragment detections: only keep areas tall enough
+        // to be a real, viewable bitplane image
+        if (heightPx < MEMVIEW_BPL_MIN_HEIGHT) continue;
+        parsed.push({ plane: plane, start: start, mod: mod, words: words,
+                      widthPx: widthPx, heightPx: heightPx });
+    }
+
+    // keep the bpl1..bpl8 grouping, but put the tallest (dominant) area of each
+    // plane on top of its group -> easy to find, and follow mode locks onto the
+    // main image instead of a small segment
+    parsed.sort(function(a, b) {
+        if (a.plane !== b.plane) return a.plane - b.plane;
+        return b.heightPx - a.heightPx;
+    });
+
+    if (parsed.length === 0) {
+        let empty = document.createElement("div");
+        empty.className = "memview_bpl_empty";
+        empty.textContent = "no bitplane dma detected \u2013 run a graphical program";
+        list.appendChild(empty);
+        memview_bpl_sel_sig = null;
+        memview_bpl_recent.length = 0;
+        return;
+    }
+
+    // per-plane segment counts (to label "k/n" when a plane has several areas)
+    let planeCount = {};
+    for (let e of parsed) planeCount[e.plane] = (planeCount[e.plane] || 0) + 1;
+    let planeSeen = {};
+
+    for (let e of parsed) {
+        let plane = e.plane, start = e.start, mod = e.mod, words = e.words;
+        let widthPx = e.widthPx, heightPx = e.heightPx;
+        let n = planeCount[plane];
+        let k = (planeSeen[plane] = (planeSeen[plane] || 0) + 1);
+        let segLabel = n > 1 ? " (" + k + "/" + n + ")" : "";
+
+        let item = document.createElement("div");
+        item.className = "memview_bpl_item";
+        item.title = "jump to bitplane " + plane + segLabel + " \u00b7 " +
+            widthPx + "x" + heightPx + " px \u00b7 modulo " + mod;
+        item.innerHTML =
+            "<span class='memview_bpl_pl'>bpl" + (plane + 1) + "</span>" +
+            "<span class='memview_bpl_addr'>$" + ("000000" + start.toString(16)).slice(-6) + "</span>" +
+            "<span class='memview_bpl_meta'>" + widthPx + "\u00d7" + heightPx + segLabel + "</span>";
+        let addrEl = item.querySelector(".memview_bpl_addr");
+        (function(addr, w, m, ael) {
+            let clearActive = function() {
+                item.classList.remove("memview_bpl_item_active");
+                if (ael) ael.classList.remove("memview_bpl_addr_active");
+            };
+            item.addEventListener("pointerdown", function() {
+                item.classList.add("memview_bpl_item_active");
+                if (ael) ael.classList.add("memview_bpl_addr_active");
+            });
+            item.addEventListener("pointerup", clearActive);
+            item.addEventListener("pointercancel", clearActive);
+            item.addEventListener("pointerleave", clearActive);
+            item.addEventListener("click", function() {
+                memview_select_bpl(addr, w, m, ael);
+            });
+        })(start, words, mod, addrEl);
+        list.appendChild(item);
+
+        if (!firstSel) firstSel = { start: start, words: words, mod: mod, addrEl: addrEl };
+    }
+
+    memview_update_bpl_list_selection();
+
+    // auto-select (follow mode): keep the detail view locked to the top-of-list
+    // bitplane and re-jump whenever its address/geometry changes. suppressed
+    // while the user is dragging (detail-view or overview scroll) so an active
+    // manual inspection is never yanked away.
+    if (memview_bpl_autoselect && firstSel && !memview_pressed && !mempreview_pressed) {
+        let sig = firstSel.start + "," + firstSel.words + "," + firstSel.mod;
+        if (sig !== memview_bpl_sel_sig) {
+            // double-buffer guard: if bpl1's base address keeps returning to a
+            // value we saw a few frames ago, the program is page-flipping between
+            // a small set of buffers (A,B,A,B…). stay locked on the current view
+            // instead of jumping every frame. a genuinely new address (e.g. a
+            // smooth scroll or a real screen change) is never in the history, so
+            // it still follows normally.
+            if (memview_bpl_recent.indexOf(sig) === -1) {
+                memview_bpl_sel_sig = sig;
+                memview_select_bpl(firstSel.start, firstSel.words, firstSel.mod, firstSel.addrEl);
+            }
+        }
+        // record the observed signature (ring buffer) so page-flips age out
+        memview_bpl_recent.push(sig);
+        if (memview_bpl_recent.length > MEMVIEW_BPL_RECENT_MAX) memview_bpl_recent.shift();
+    }
+}
+
+// jumps the detail view to a detected bitplane and plays the "pop" highlight on
+// both the clicked list address and the detail start-address input, so it is
+// visible what just got selected (used by manual clicks and auto-select).
+// width = words per line, stride = line bytes + modulo (skips the modulo gap /
+// interleaved planes) -> clean bitplane image
+function memview_select_bpl(addr, words, mod, addrEl) {
+    let oldWords = memview_words_per_row;
+    memview_set_geometry(words, words * 2 + mod);
+    memview_set_start(addr);
+    let widthEl = document.getElementById("memview_width");
+    memview_sync_header_inputs(addr);
+    memdump();
+    mempreview();
+    if (addrEl) memview_flash(addrEl);
+    memview_flash(document.getElementById("memview_start"));
+    if (widthEl && oldWords !== memview_words_per_row) memview_flash(widthEl);
+}
+
+function memview_update_bpl_list_selection() {
+    let list = document.getElementById("memview_bpl_list");
+    if (!list) return;
+    let items = list.querySelectorAll(".memview_bpl_item");
+    let start = memdump_start >>> 0;
+    for (let item of items) {
+        let addrEl = item.querySelector(".memview_bpl_addr");
+        let addrText = addrEl ? addrEl.textContent.replace(/[^0-9a-fA-F]/g, "") : "";
+        let addrVal = addrText ? parseInt(addrText, 16) : NaN;
+        let active = !isNaN(addrVal) && (addrVal >>> 0) === start;
+        item.classList.toggle("memview_bpl_item_active", active);
+        if (addrEl) addrEl.classList.toggle("memview_bpl_addr_active", active);
+    }
+}
+
+// retriggerable pop+highlight animation (see .memview_flash in vAmiga.css)
+function memview_flash(el) {
+    if (!el) return;
+    el.classList.remove("memview_flash");
+    void el.offsetWidth;               // force reflow so the animation restarts
+    el.classList.add("memview_flash");
+    el.addEventListener("animationend", function handler() {
+        el.classList.remove("memview_flash");
+        el.removeEventListener("animationend", handler);
+    });
+}
+
+// called from the emulator frame loop and on manual updates
+function memdump() {
+    if (!memview_open || !memview_initialized) return;
+    if (typeof wasm_peek16 !== "function") return;
+    memdump_do(memdump_start, memdump_col1, memdump_col2);
+}
+
+// per-channel linear interpolation between two 0xAARRGGBB colors (t in [0,1])
+function memview_lerp_color(c0, c1, t) {
+    let a0 = (c0 >>> 24) & 255, r0 = (c0 >>> 16) & 255, g0 = (c0 >>> 8) & 255, b0 = c0 & 255;
+    let a1 = (c1 >>> 24) & 255, r1 = (c1 >>> 16) & 255, g1 = (c1 >>> 8) & 255, b1 = c1 & 255;
+    let a = (a0 + (a1 - a0) * t + 0.5) | 0;
+    let r = (r0 + (r1 - r0) * t + 0.5) | 0;
+    let g = (g0 + (g1 - g0) * t + 0.5) | 0;
+    let b = (b0 + (b1 - b0) * t + 0.5) | 0;
+    return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
+}
+
+// number of set bits in a 16-bit word (0..16)
+function memview_popcount16(v) {
+    v = v & 0xffff;
+    v = v - ((v >> 1) & 0x5555);
+    v = (v & 0x3333) + ((v >> 2) & 0x3333);
+    v = (v + (v >> 4)) & 0x0f0f;
+    return (v + (v >> 8)) & 0x1f;
+}
+
+// snapshots the core's access-shadow buffers (write owner / write frame / read
+// frame) plus the ram/rom geometry needed to address them. returns null when
+// tracking is off or unavailable. shared by the detail view and the overview.
+function memview_access_ctx() {
+    if (!(memview_show_writers && typeof wasm_get_access_frame === "function")) return null;
+    let chipSize = wasm_get_access_chip_size() | 0;
+    let slowSize = (typeof wasm_get_access_slow_size === "function") ? (wasm_get_access_slow_size() | 0) : 0;
+    let fastSize = (typeof wasm_get_access_fast_size === "function") ? (wasm_get_access_fast_size() | 0) : 0;
+    let romSize = (typeof wasm_get_rom_size === "function") ? (wasm_get_rom_size() | 0) : 0;
+    let fastBase = (typeof wasm_get_fast_base === "function") ? (wasm_get_fast_base() >>> 0) : MEM_FAST_BASE;
+    let op = wasm_get_write_owner_ptr() | 0;
+    let wp = wasm_get_write_frame_ptr() | 0;
+    let rp = wasm_get_read_frame_ptr() | 0;
+    if (!((chipSize > 0 || slowSize > 0 || fastSize > 0 || romSize > 0) && op && wp && rp)) return null;
+    return {
+        chipSize: chipSize, slowSize: slowSize, fastSize: fastSize, romSize: romSize,
+        fastBase: fastBase,
+        chipMask: chipSize > 0 ? chipSize - 1 : 0,
+        romMask: romSize > 0 ? romSize - 1 : 0,
+        romOff: chipSize + slowSize + fastSize,   // rom slice starts here
+        nowFrame: wasm_get_access_frame() | 0,
+        ownerOff: op,                             // HEAPU8 byte index
+        wOff: wp >>> 1,                           // HEAPU16 word index
+        rOff: rp >>> 1,
+        heapU8: Module.HEAPU8,
+        heapU16: Module.HEAPU16
+    };
+}
+
+// maps an absolute cpu address to its packed shadow-buffer index
+// (layout chip | slow | fast | rom, matching Memory::shadowOffset); -1 if none
+function memview_addr_to_idx(c, a) {
+    if (a < 0x200000) return c.chipSize > 0 ? (a & c.chipMask) : -1;
+    if (c.slowSize > 0 && a >= MEM_SLOW_BASE && a < MEM_SLOW_BASE + c.slowSize) return c.chipSize + (a - MEM_SLOW_BASE);
+    if (c.fastSize > 0 && a >= c.fastBase && a < c.fastBase + c.fastSize) return c.chipSize + c.slowSize + (a - c.fastBase);
+    if (c.romSize > 0 && a >= MEM_ROM_BASE) return c.romOff + (a & c.romMask);
+    return -1;
+}
+
+function memdump_do(start0, col1, col2) {
+    let start = start0 < 0 ? 0 : start0;
+    // access heatmap: the core stamps every tracked memory byte (chip | slow |
+    // fast | rom) with the emulated-frame counter of its last CPU read and write
+    // (plus who wrote it). we read those shadow buffers straight from the wasm
+    // heap and fade each cell back to the cold gray palette over
+    // MEMVIEW_HEAT_FADE_FRAMES frames. because the fade is driven by the core's
+    // frame counter, it freezes while the emulation is paused (and stays put
+    // while scrolling/dragging).
+    let ctx = memview_access_ctx();
+    let FADE = MEMVIEW_HEAT_FADE_FRAMES;
+    for (let y = 0; y < MEMVIEW_VPIXELS; y++) {
+        let addr = start + y * memview_row_stride;
+        for (let w = 0; w < memview_words_per_row; w++) {
+            let a = addr + w * 2;
+            let value = wasm_peek16(a);
+            let c1 = col1, c2 = col2;
+            let idx = ctx ? memview_addr_to_idx(ctx, a) : -1;
+            if (idx >= 0) {
+                let owner = ctx.heapU8[ctx.ownerOff + idx];
+                // write heat (owner != 0 means a write was recorded here)
+                let writeHeat = 0, blitter = false;
+                if (owner !== 0) {
+                    let age = (ctx.nowFrame - ctx.heapU16[ctx.wOff + idx]) & 0xffff;
+                    if (age < FADE) {
+                        writeHeat = 1 - age / FADE;
+                        blitter = (owner === MEMVIEW_WRITE_BLITTER);
+                    }
+                }
+                // read heat (frame stamp 0 means never read)
+                let readHeat = 0;
+                let rf = ctx.heapU16[ctx.rOff + idx];
+                if (rf !== 0) {
+                    let age = (ctx.nowFrame - rf) & 0xffff;
+                    if (age < FADE) readHeat = 1 - age / FADE;
+                }
+                // a write (red / blitter blue) wins over a read (green) of equal
+                // or lower heat so freshly modified memory stays obvious
+                if (writeHeat > 0 && writeHeat >= readHeat) {
+                    let base1 = blitter ? memdump_blt_col1 : memdump_write_col1;
+                    let base2 = blitter ? memdump_blt_col2 : memdump_write_col2;
+                    c1 = memview_lerp_color(col1, base1, writeHeat);
+                    c2 = memview_lerp_color(col2, base2, writeHeat);
+                } else if (readHeat > 0) {
+                    c1 = memview_lerp_color(col1, memdump_read_col1, readHeat);
+                    c2 = memview_lerp_color(col2, memdump_read_col2, readHeat);
+                }
+            }
+            memdump_plotword(w * 16, y, value, c1, c2);
+        }
+    }
+    memview_image_data.data.set(memview_buffer);
+    memview_ctx.putImageData(memview_image_data, 0, 0, 0, 0, memview_hpixels, MEMVIEW_VPIXELS);
+    update_memdump_info(start);
+
+    // refresh the overview: every frame while paused/manual, throttled while live
+    if (!(live_memory_dump_enabled && is_running_safe())) {
+        mempreview();
+    } else if ((++mempreview_counter % 8) === 0) {
+        mempreview();
+    }
+}
+
+// reads the current ram configuration from the core and (re)builds the list of
+// memory regions the overview visualizes (chip + optional fast + slow ram)
+function memview_update_regions() {
+    let kb = function(item) {
+        if (typeof wasm_get_config_item !== "function") return 0;
+        let v = parseInt(wasm_get_config_item(item));
+        return isNaN(v) ? 0 : v;
+    };
+    let chip = kb("CHIP_RAM");
+    let fast = kb("FAST_RAM");
+    let slow = kb("SLOW_RAM");
+    let defs = [];
+    if (chip > 0) defs.push({ name: "chip", base: MEM_CHIP_BASE, size: chip * 1024 });
+    if (slow > 0) defs.push({ name: "slow", base: MEM_SLOW_BASE, size: slow * 1024 });
+    if (fast > 0) defs.push({ name: "fast", base: MEM_FAST_BASE, size: fast * 1024 });
+    // kickstart rom (mapped at $F80000; romMask makes base+romSize one clean copy)
+    let rom = (typeof wasm_get_rom_size === "function") ? (wasm_get_rom_size() | 0) : 0;
+    if (rom > 0) defs.push({ name: "rom", base: MEM_ROM_BASE, size: rom });
+    if (defs.length === 0) defs.push({ name: "chip", base: MEM_CHIP_BASE, size: 512 * 1024 });
+
+    let signature = defs.map(function(d) { return d.name + d.size; }).join(",");
+    if (signature !== memview_regions_signature) {
+        memview_regions_signature = signature;
+        memview_build_overview_dom(defs);
+    } else {
+        for (let i = 0; i < defs.length; i++) {
+            memview_regions[i].base = defs[i].base;
+            memview_regions[i].size = defs[i].size;
+        }
+    }
+}
+
+function memview_format_size(bytes) {
+    let kb = bytes / 1024;
+    return kb >= 1024 ? (kb / 1024) + "M" : kb + "K";
+}
+
+// (re)creates one labeled heatmap canvas per memory region, stacked vertically
+function memview_build_overview_dom(defs) {
+    let host = document.getElementById("memview_overview_blocks");
+    if (!host) return;
+    host.innerHTML = "";
+    memview_regions = [];
+    for (let i = 0; i < defs.length; i++) {
+        let d = defs[i];
+        let block = document.createElement("div");
+        block.className = "memview_ov_block";
+        block.style.flexGrow = String(d.size);
+
+        let label = document.createElement("div");
+        label.className = "memview_ov_label";
+        label.textContent = d.name + " \u00b7 " + memview_format_size(d.size);
+
+        let canvas = document.createElement("canvas");
+        canvas.width = MEMPREVIEW_HPIXELS;
+        canvas.height = MEMPREVIEW_BLOCK_ROWS;
+        canvas.title = "click to jump into " + d.name + " ram";
+
+        block.appendChild(label);
+        block.appendChild(canvas);
+        host.appendChild(block);
+
+        let ctx = canvas.getContext("2d");
+        let r = {
+            name: d.name, base: d.base, size: d.size,
+            canvas: canvas,
+            ctx: ctx,
+            image_data: ctx.createImageData(MEMPREVIEW_HPIXELS, MEMPREVIEW_BLOCK_ROWS),
+            buffer: new Uint8Array(MEMPREVIEW_HPIXELS * MEMPREVIEW_BLOCK_ROWS * 4)
+        };
+        memview_regions.push(r);
+
+        (function(region) {
+            canvas.addEventListener("pointerdown", function(e) {
+                e.preventDefault();
+                memview_begin_drag();
+                mempreview_pressed = true;
+                memview_drag_region = region;
+                memview_overview_jump(region, e);
+            });
+        })(r);
+    }
+}
+
+// maps a click/drag position on a region block to a cpu address and jumps there
+function memview_overview_jump(r, e) {
+    let rect = r.canvas.getBoundingClientRect();
+    let W = MEMPREVIEW_HPIXELS, H = MEMPREVIEW_BLOCK_ROWS;
+    let px = Math.floor((e.clientX - rect.left) / rect.width * W);
+    let py = Math.floor((e.clientY - rect.top) / rect.height * H);
+    if (px < 0) px = 0; if (px >= W) px = W - 1;
+    if (py < 0) py = 0; if (py >= H) py = H - 1;
+    let idx = py * W + px;
+    let addr = r.base + Math.floor(idx * (r.size / (W * H)));
+    memview_reset_geometry();
+    memview_set_start(addr);
+    memdump();
+    mempreview();
+}
+
+// draws each memory region: raw memory as green/blue pixels, the visible detail
+// window marked gray, and the same read/write access heatmap as the detail view
+function mempreview() {
+    if (typeof wasm_peek16 !== "function") return;
+    memview_update_regions();
+    let ctx = memview_access_ctx();   // shadow buffers fetched once per refresh
+    for (let i = 0; i < memview_regions.length; i++) {
+        memview_render_region(memview_regions[i], ctx);
+    }
+}
+
+function memview_render_region(r, ctx) {
+    if (!r.ctx) return;
+    let W = MEMPREVIEW_HPIXELS, H = MEMPREVIEW_BLOCK_ROWS;
+    let bytes_per_px = r.size / (W * H);
+    let winStart = memdump_start;
+    let winEnd = memdump_start + MEMVIEW_VPIXELS * memview_row_stride;
+    let FADE = MEMVIEW_HEAT_FADE_FRAMES;
+    let buf = r.buffer;
+    for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+            let p = y * W + x;
+            let addr = r.base + Math.floor(p * bytes_per_px);
+            // cold base: grayscale by set-bit density so it matches the detail
+            // view's gray palette (empty = dark gray, full = light gray) instead
+            // of leaking the raw word into the green/blue channels
+            let dens = memview_popcount16(wasm_peek16(addr)) / 16;
+            let argb = memview_lerp_color(memdump_col2, memdump_col1, dens);
+            // marker for the current detail-view window: tint it with the same
+            // accent color used by the detail-view start address input
+            if (addr >= winStart && addr < winEnd) argb = memview_lerp_color(argb, 0xffdf942a, 0.22);
+            // overlay the read/write access heatmap (one shadow sample per pixel)
+            if (ctx) {
+                let sidx = memview_addr_to_idx(ctx, addr);
+                if (sidx >= 0) {
+                    let owner = ctx.heapU8[ctx.ownerOff + sidx];
+                    let writeHeat = 0, blitter = false;
+                    if (owner !== 0) {
+                        let age = (ctx.nowFrame - ctx.heapU16[ctx.wOff + sidx]) & 0xffff;
+                        if (age < FADE) { writeHeat = 1 - age / FADE; blitter = (owner === MEMVIEW_WRITE_BLITTER); }
+                    }
+                    let readHeat = 0;
+                    let rf = ctx.heapU16[ctx.rOff + sidx];
+                    if (rf !== 0) {
+                        let age = (ctx.nowFrame - rf) & 0xffff;
+                        if (age < FADE) readHeat = 1 - age / FADE;
+                    }
+                    if (writeHeat > 0 && writeHeat >= readHeat) {
+                        argb = memview_lerp_color(argb, blitter ? memdump_blt_col1 : memdump_write_col1, writeHeat);
+                    } else if (readHeat > 0) {
+                        argb = memview_lerp_color(argb, memdump_read_col1, readHeat);
+                    }
+                }
+            }
+            let o = p * 4;
+            buf[o + 0] = 0xff & (argb >> 16); // R
+            buf[o + 1] = 0xff & (argb >> 8);  // G
+            buf[o + 2] = 0xff & (argb);       // B
+            buf[o + 3] = 0xff & (argb >> 24); // A
+        }
+    }
+    r.image_data.data.set(buf);
+    r.ctx.putImageData(r.image_data, 0, 0, 0, 0, W, H);
+}
+
+function memdump_plotword(x, y, word, col1, col2) {
+    for (let b = 0; b < 16; b++) {
+        memdumpset(x + b, y, (word & (0x8000 >> b)) ? col1 : col2);
+    }
+}
+
+function memdumpset(x, y, argb) {
+    let o = memview_hpixels * 4 * y + x * 4;
+    memview_buffer[o + 0] = 0xff & (argb >> 16); // R
+    memview_buffer[o + 1] = 0xff & (argb >> 8);  // G
+    memview_buffer[o + 2] = 0xff & (argb);       // B
+    memview_buffer[o + 3] = 0xff & (argb >> 24); // A
+}
+
+function update_memdump_info(start) {
+    if (start === last_memdump_info_start) return;
+    last_memdump_info_start = start;
+    memview_sync_header_inputs(start);
+}

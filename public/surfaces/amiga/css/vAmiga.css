@@ -1,0 +1,1585 @@
+ :root {
+  --darkbg: #2d2d2d;
+  --lightbg: #e1dfe1;
+  --lighterbg: #f0f0f0;
+  --lightgray: #d8d8d8;
+}
+:root {
+    --keyboard_bottom_margin: 0px;
+    --keycap_zoom: 1.0;
+    --keycap_size: calc(calc(calc(100vw / var(--keycap_columns)) *4) * var(--keycap_zoom));
+}
+#keyboard_grid {
+    display:grid;
+    grid-template-columns: repeat(var(--keycap_columns), calc(calc(var(--keycap_size) /4) * 1.0));
+    grid-template-rows: repeat(6, calc(var(--keycap_size)));
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    user-select:none;
+    padding-bottom: var(--keyboard_bottom_margin);
+}
+.keycap_base {
+    background-color: var(--gray);
+    color:white;
+    border-radius: calc(var(--keycap_size) * 0.1);
+    align-items: center;
+    text-align: center;
+    font-size:calc(var(--keycap_size) / 2.5);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: calc(var(--keycap_size) * 0.038);
+}
+
+@media (max-width: 511px) {
+    :root {
+        --keycap_size: calc(calc(calc(max(100vw,100vh) / var(--keycap_columns)) * 4) * var(--keycap_zoom));
+    }       
+}
+
+#canvas {
+    position:fixed;
+    left:0;
+    right:0;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+}
+
+.select-all {
+    user-select: all;
+    -webkit-user-select: all;
+    font-style: italic;
+}
+.select-all:hover {
+    background: #555;
+}
+
+.pixel_art{
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+#drop_zone {
+    cursor: pointer;
+    border: 3px dashed var(--blue);
+    height: 30px;
+    border-radius: 5px;
+    min-width: 64px;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] #drop_zone {
+    background-color: var(--darkbg);
+}
+
+.scrollx-group > .row {
+display: flex;
+flex-wrap: nowrap;
+overflow-x: auto;
+}
+.scrollx-group > .row > .col-xs-4 {
+flex: 0 0 auto;
+}
+.scrollx-group > .row > .col {
+flex: 0 0 auto;
+}
+
+body
+{
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    overflow:hidden;
+    overscroll-behavior: none; /* blocks swipe navigation */
+    background-color: var(--lighterbg) !important;
+}
+
+[data-theme="dark"] {
+background-color: black !important;
+color: var(--lightgray) !important;
+}
+    
+
+
+/* the filled circle in the switch was to high */
+.custom-switch .custom-control-label::before{
+    top: .23rem;
+}
+
+[data-theme="dark"] .custom-control-input:checked ~ .custom-control-label::before {
+border-color: var(--green) !important;
+background-color: var(--green) !important;
+}
+
+#port1, #port2 {
+    height:32px;
+    width: calc(100vw / 8);
+    padding-top: .18rem;
+    margin-top: 1px; 
+    background-color: inherit !important;
+    border-color: var(--darkbg);
+    color: var(--darkbg) !important;
+    font-size: 15px;
+    text-align: center;
+    text-align-last: center;
+    padding-left: 1px;
+    padding-right: 1px;
+}
+
+    
+[data-theme="dark"] #port1, [data-theme="dark"] #port2 {
+    border-color: var(--lightgray);
+    color: var(--lightgray) !important;
+}
+
+#select_other_group {
+    background-color: inherit !important;
+    border-color: var(--darkbg);
+    color: var(--darkbg) !important;
+    margin-bottom: 1em;
+}
+    
+[data-theme="dark"] #select_other_group {
+    border-color: var(--lightgray);
+    color: var(--lightgray) !important;
+}
+
+
+
+#stored_roms, #stored_exts {
+    background-color: inherit !important;
+    border-color: var(--darkbg);
+    color: var(--darkbg) !important;
+}
+
+[data-theme="dark"] #stored_roms, [data-theme="dark"] #stored_exts {
+    border-color: var(--lightgray);
+    color: var(--lightgray) !important;
+}
+
+
+.btn-sm
+{
+    font-size: .86rem;
+}
+
+.custom_key
+{
+    font-size: 1.2rem !important;
+    opacity: 0.7 !important;
+    z-index: 20;
+    user-select: none;
+    --tx: 0;
+    --ty: 0;
+    transform: translate3d(var(--tx), var(--ty), 0);
+    padding: var(--padding) max(0.5rem, var(--padding)) var(--padding) max(0.5rem, var(--padding));
+    --padding: 0.05rem;
+    --scale_factor: min(1, calc( calc((var(--padding) / 4rem)) * 0.2));
+}
+
+[data-theme="dark"] .custom-select {
+color: var(--lightgray) !important;
+border-color: var(--lightgray) !important;
+}
+
+[data-theme="dark"] #output {
+background-color: var(--gray) !important;
+color: var(--light) !important;
+}
+
+.modal-content {
+background-color: var(--lightbg) !important;
+}
+
+[data-theme="dark"] .modal-content {
+background-color: var(--darkbg) !important;
+}
+
+[data-theme="dark"] .close {
+color: var(--light) !important;
+}
+
+.card {
+background-color: var(--lighterbg) !important;
+}
+[data-theme="dark"] .card {
+background-color: #555 !important;
+}
+
+[data-theme="dark"] .list-group-item {
+background-color: #555 !important;
+color: var(--light) !important;
+}
+
+[data-theme="dark"] .list-group-item.active {
+background-color: #007bff !important;
+}
+
+[data-theme="dark"] .list-group-item.disabled {
+color: #aaa !important;
+}
+
+
+
+#virtual_keyboard {
+    position:fixed;
+    bottom:0;
+    z-index:999;
+    width:100%;
+    background-color: var(--lightbg);
+}
+
+@media (orientation:landscape) {
+    #virtual_keyboard {
+        opacity: var(--keyboard_opacity);
+    }
+}
+
+
+[data-theme="dark"] #virtual_keyboard {
+    background-color:var(--darkbg);
+}
+
+.help_text span, .movable_button_label span, .gc_choice_text span, .vbk_choice_text span, .vjoy_choice_text span, .setting_text span {
+    background-color: var(--gray);
+    border-radius: 6px;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: white;
+}
+
+
+#navbar {
+    background-color: var(--lightbg);
+
+    position: fixed; 
+    top:0; 
+    left:0; 
+    opacity: 0.85; backdrop-filter: blur(6px);
+
+    width: 100vw;
+}
+#button_show_menu {
+    position: fixed; 
+    top:6px; 
+    left:calc(env(safe-area-inset-left) / 2);
+    z-index:200;    
+}
+#navgrid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px;
+    width: 100%;
+}
+
+.left {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(36px, auto)); /* Responsive grid for left side */
+    gap: 0px;
+    justify-content: start;
+    margin-left: calc(env(safe-area-inset-left) / 2);
+}
+
+.left > *, .right > * {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+}
+.left > * {
+    min-width: 45px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+#theFileInput {
+    grid-column: span 2;
+}
+
+.right {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 1px;
+    justify-content: end;
+    padding-right: 2px;
+    margin-right: calc(env(safe-area-inset-right) / 2);
+}
+
+@media (max-width: 600px) {
+    .hide-on-small {
+      display: none;
+    }
+}
+
+
+[data-theme="dark"] #navbar {
+    background-color:var(--darkbg);
+}
+
+#div_toast {
+    z-index:2000;
+}   
+#toast_body, #toast_header  {
+    background-color:var(--lightbg);
+}
+[data-theme="dark"] #toast_body, [data-theme="dark"] #toast_header  {
+    background-color:var(--dark);
+    color:white;
+}
+
+/* debugger toast, anchored below the navbar at the top left edge - the right
+   edge is occupied by the memory view panel, which is exactly what is open
+   while single stepping */
+#div_toast_debug {
+    position: fixed;
+    top: 3.5rem;
+    left: calc(8px + env(safe-area-inset-left));
+    z-index: 2100;
+    max-width: min(20rem, calc(100vw - 16px));
+}
+#toast_debug_body, #toast_debug_header {
+    background-color: var(--lightbg);
+}
+#toast_debug_header {
+    color: var(--red);
+}
+[data-theme="dark"] #toast_debug_body, [data-theme="dark"] #toast_debug_header {
+    background-color: var(--dark);
+    color: white;
+}
+[data-theme="dark"] #toast_debug_header {
+    color: var(--red);
+}
+
+
+.icon {
+    fill: var(--dark);
+    color: var(--dark) !important;
+}
+
+[data-theme="dark"] .icon {
+    fill: var(--lightgray);
+    color: var(--lightgray) !important;
+}
+
+
+
+
+.justify-start {
+  margin-right: auto;
+}
+
+
+
+
+.custom-control-lg .custom-control-label::before,
+.custom-control-lg .custom-control-label::after {
+    top: 0.0rem !important;
+    left: -2rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+}
+
+.custom-control-lg .custom-control-label {
+    margin-left: 0.5rem !important;
+    font-size: 1rem !important;
+}
+
+.alert-darkest {
+    color: var(--light);
+    background-color: var(--gray);
+    border-color: #c6c8ca;
+}
+
+#no_disk_rom_msg {
+    color: var(--light);
+    background-color: var(--danger);
+    border-color: #c6c8ca;
+}
+
+.browser-item-text {
+    font-size: small;
+}
+
+#view_detail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    background-color: var(--lightbg);
+    outline: none;
+    overflow-y: auto;
+    opacity: 1.0;
+    padding-left: calc(env(safe-area-inset-left) * 2.25);
+    padding-right: calc(env(safe-area-inset-right) * 2.25);
+}
+
+
+[data-theme="dark"] #view_detail {
+    background-color: var(--darkbg);
+}
+
+
+
+#detail_content{
+    margin-top:45px;
+}
+
+.detail_screenshot {
+    width: 100%;
+}
+
+#detail_back {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 45px;
+    text-align: left;
+    background-color: var(--darkbg);
+    opacity: 0.6;
+    font-size: larger;
+    border: none;
+    color: var(--light);
+}
+
+button[id^="detail_run"] {
+    width: 100%;
+    font-size: xx-large;
+}
+
+.copy-btn {
+    background-color: var(--lightbg);
+    border-color: var(--lightbg);
+    color: var(--blue);
+}
+
+[data-theme="dark"] .copy-btn {
+    background-color: var(--darkbg);
+    border-color: var(--darkbg);
+    color: var(--blue);
+}
+
+.copy_run_link {
+    width: 94%;
+    font-size: xx-small;
+    background-color: var(--lightbg);
+    /*color: var(--dark);*/
+    border: none;
+}
+
+[data-theme="dark"] .copy_run_link {
+    background-color: var(--darkbg);
+    color: var(--secondary);
+}
+
+#search {
+    border-color: var(--blue);
+    border-left: none;
+}
+
+[data-theme="dark"] #search {
+    background-color: var(--darkbg);
+    color: var(--light);
+    border-color: var(--blue);
+    border-left: none;
+}
+
+#search_symbol {
+    background-color: #0062cc;
+    border: none;
+    color: var(--light);
+}
+
+#alert_wait, #alert_import {
+    z-index: 2000;
+    top: 40%;
+    left: 15%;
+    position: absolute;
+    width: 70%;
+    opacity: 0.83;
+}
+
+
+[data-theme="dark"] textarea {
+    background-color: var(--darkbg);
+    color: var(--light);
+}
+
+
+[data-theme="dark"] .dropdown-menu.show {
+    background-color: #444444;
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--light);
+}
+
+.dropdown-item:focus, 
+.dropdown-item:hover {
+    background-color: var(--blue);
+    color: var(--light);
+}
+
+#vbk_scroll_area {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-top:var(--keycap_size);
+    margin-top:calc( var(--keycap_size) * -1);
+}
+
+.keycap_shift {
+    font-size:calc(var(--keycap_size) / 4.5);
+}
+
+[shift-keys="pressed"] .keycap_shift {
+    font-size:calc(var(--keycap_size) / 2.5);
+}
+
+.keycap_base:hover, .keycap_base:focus, .keycap_base:active  {
+    background-color: #5a6268;
+}
+
+[id^="button_Enter"]:hover, [id^="button_Enter"]:focus, [id^="button_Enter"]:active {
+   background-color: var(--gray);
+}
+
+
+.keycap {
+    font-size:calc(var(--keycap_size) / 2.5);
+}
+/* keyboard grid gap */
+.g-1 { grid-column: auto / span 1 }
+.g-2 { grid-column: auto / span 2 }
+.g-3 { grid-column: auto / span 3 }
+.g-4 { grid-column: auto / span 4 }
+.g-5 { grid-column: auto / span 5 }
+.g-6 { grid-column: auto / span 6 }
+.g-7 { grid-column: auto / span 7 }
+.g-8 { grid-column: auto / span 8 }
+.g-9 { grid-column: auto / span 9 }
+.g-10 { grid-column: auto / span 10 }
+.g-11 { grid-column: auto / span 11 }
+.g-15 { grid-column: auto / span 15 }
+
+.g-32 { grid-column: auto / span 32 }
+
+[shift-keys="pressed"] .keycap {
+    font-size:calc(var(--keycap_size) / 4.5);
+}
+@keyframes pressedAnimation {
+  0%   { transform: scale(1.0); }
+  10%  { transform: translateY(-8%); }
+  40%  { transform: scale(0.8) translateY(-10%); }
+  50%  { transform: scale(1.2) translateY(-15%); }
+  65%  { transform: scale(1.35) translateY(-20%);}
+  100% { transform: scale(1.25) translateY(-40%); }
+}
+
+@keyframes releasedAnimation {
+  0%   { transform: scale(1.25); }
+  25%  { transform: scale(1.35); }
+  40%  { transform: scale(0.92); }
+  50%  { transform: scale(1.04); }
+  65%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pressedSpaceAnimation {
+  0%   { transform: scale(1.0); }
+  40%  { transform: scale(0.98); }
+  50%  { transform: scale(1.04); }
+  65%  { transform: scale(1.08);}
+  100% { transform: scale(1.06); }
+}
+
+@keyframes releasedSpaceAnimation {
+  0%   { transform: scale(1.06); }
+  25%  { transform: scale(1.04); }
+  40%  { transform: scale(0.97); }
+  50%  { transform: scale(1.01); }
+  65%  { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+.keycap_base[key-state="pressed"] {
+    box-shadow: inset 0 0 0.05em rgba(255,255,255,0.5), 0 0 15px 10px rgba(0,0,0,0.1);
+    animation: pressedAnimation 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    z-index: 1000;
+}
+
+.keycap_base[key-state=""] {
+    animation: releasedAnimation 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+#button_Space[key-state="pressed"] {
+    box-shadow: inset 0 0 0.05em rgba(255, 255, 255, 0.5), 0em 0em 3em rgba(0, 0, 0, 0.5);
+    animation: pressedSpaceAnimation 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+#button_Space[key-state=""] {
+    animation: releasedSpaceAnimation 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+[id^="button_Enter"][key-state="pressed"] {
+    box-shadow: none;
+    animation: pressedSpaceAnimation 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    background-color: var(--blue) !important;
+}
+
+[id^="button_Enter"][key-state=""] {
+    animation: releasedSpaceAnimation 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+
+.darkkey {
+    background-color: rgb(78,87,95);
+    border-color: #222222;
+}
+.capslock,.ControlLeft {
+    font-size:calc(var(--keycap_size) / 4.5);
+}
+
+.amigakey { 
+    color: rgb(255, 137, 37);
+    font-style: italic;
+    font-weight: bold;
+    font-family: serif;
+    font-size:calc(var(--keycap_size) / 2);
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+[ControlLeft-key="pressed"] #button_ControlLeft
+{
+    background-color: var(--blue) !important
+}
+
+[CapsLock-key="pressed"]  #button_CapsLock, 
+[ShiftLeft-key="pressed"]  #button_ShiftLeft,
+[ShiftRight-key="pressed"] #button_ShiftRight,
+[leftAmiga-key="pressed"]  #button_leftAmiga,
+[rightAmiga-key="pressed"] #button_rightAmiga,
+[AltLeft-key="pressed"]  #button_AltLeft,
+[AltRight-key="pressed"] #button_AltRight
+{
+    background-color: var(--green) !important;
+}
+
+
+
+.outlined {
+    border-radius:5px;
+    border-style:solid;
+    border-width: 2px;
+}
+
+
+
+#div_drive_select {
+    position:absolute;
+    z-index:3000;
+    bottom:0;
+    left:5%;
+    width:90%;
+    padding-bottom: env(safe-area-inset-bottom);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transform: translateY(100%);
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px; 
+    background-color: var(--lightbg);
+}
+[data-theme="dark"] #div_drive_select {
+    background-color:var(--dark);
+}
+
+#drive_select_file {
+    padding:0.5em;
+    margin-top: 1.4em;
+    background-color: var(--lightbg);
+    display:flex;
+    justify-content:center;
+}
+[data-theme="dark"] #drive_select_file {
+    background-color:var(--dark);
+}
+
+
+#drive_select_choice {
+    padding-top: 0.5em;
+    display:flex;width:100%;
+    flex-direction:row;
+    justify-content:center;
+    background-color: var(--lightbg);
+}
+[data-theme="dark"] #drive_select_choice {
+    background-color:var(--dark);
+}
+
+.slide-in {
+    animation: slide-in 0.5s forwards;
+}
+
+.slide-out {
+    animation: slide-out 0.7s forwards;
+}
+    
+@keyframes slide-in {
+    100% { transform: translateY(0%); }
+}
+    
+@keyframes slide-out {
+    0% { transform: translateY(0%); }
+    100% { transform: translateY(100%); }
+}
+
+#version_selector {
+    border-radius:6px;
+    border-width:2px;
+}
+
+[data-theme="dark"] #version_selector {
+    border-color:var(--light);
+    background-color:var(--darkbg);
+    color:var(--light);    
+}
+
+
+.is-invalid~.invalid-feedback, .is-invalid~.invalid-tooltip, .was-validated :invalid~.invalid-feedback, .was-validated :invalid~.invalid-tooltip {
+    display: block;
+    background-color: red;
+    color: white;
+    border-bottom-right-radius: 0.4em;
+    border-bottom-left-radius: 0.4em;
+    padding: 0.4em;
+    margin-top: 0;
+    margin-left: 0.15em;
+    margin-right: 0.15em;
+}
+
+#div_canvas
+{ 
+	position : relative;
+	overflow : hidden;
+}
+
+
+.monitor_grid {
+    height: auto;
+    width: 100vw;
+    position: absolute;
+    display:grid;grid-template-columns: repeat(10, 1fr);grid-column-gap: 0.5em;
+    bottom: 0;left: 0;background-color: rgba(200, 200, 200, 0.0);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.monitor_hull {
+    background-color: rgba(250, 250, 250, 0.8);
+    border-radius: 0.5em 0.5em 0 0;
+}
+
+[data-theme="dark"] .monitor_hull {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.monitor {
+    height: 12vh;
+    display: grid;grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(100, 1fr);grid-column-gap: 0.5px;
+    --color_start:50,50,50;--color_end:150,150,150;
+    background: linear-gradient(to top, rgba(var(--color_start),0.3), rgba(var(--color_end),0.3));        
+    border: var(--color_end);
+    border-style: none;
+    border-radius: 0.5em 0.5em 0 0;
+}
+[data-theme="dark"] .monitor {
+    --color_end:200,200,200;
+}
+
+@media (max-width: 1023px) {
+    .monitor_grid {
+        display:grid;grid-template-columns: repeat(5, 1fr);grid-column-gap: 0.5em;
+    }       
+    .monitor {
+        height: 10vh;
+    }
+}
+.monitor_label {
+    display:flex;justify-content:center;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgb(100, 100, 100, 1));
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;font-size: smaller;
+    background-clip: text;font-size: smaller;
+}
+[data-theme="dark"] .monitor_label {
+    background: linear-gradient(to top, rgba(100,100,100,0.8), rgb(200,200,200,1));
+    background-clip: text;
+}
+
+.bar {
+    --scale: 100;
+    --start: calc(var(--scale) + 1 - var(--barval));
+    grid-row: var(--start) / 100;
+    border-radius: 1px 1px 0 0;
+    background: linear-gradient(to top, rgba(var(--color_start),0.6), rgba(var(--color_end),0.6));
+}
+
+.bar_splitted_upper {
+    --scale: 100;
+    --start: calc(var(--scale) + 1 - var(--barval));
+    grid-row: calc(var(--start) / 2) / 50;
+    border-radius: 1px 1px 0 0;
+    background: linear-gradient(to top, rgba(0,150,0.4), rgba(0,255,0,0.4));
+}
+.bar_splitted_lower {
+    --end: var(--barval);
+    grid-row: 50 / calc(calc(var(--end) / 2) + 50);
+    border-radius: 1px 1px 0 0;
+    background: linear-gradient(to top, rgba(150,0,0,0.4), rgba(255,0,0,0.4));
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+[warpstate="1"] #no_warping {
+    display: none
+}
+[warpstate="0"] #warping {
+    display: none
+}
+
+#mastervolume {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center; /* Vertikale Zentrierung */
+    margin: 10px 0; /* Abstand um das Grid */
+}
+
+#volumetext 
+{
+    display: flex;
+    justify-content: center;
+    margin-bottom: -5px;
+}
+
+
+
+#volume-slider {
+    --c: #007bff; /* active color */
+    --l: 6px; /* line thickness*/
+    --s: 20px; /* thumb size */
+    
+    height: var(--s); /* needed for Firefox*/
+    --_c: color-mix(in srgb, var(--c), #000 var(--p,0%));
+    -webkit-appearance :none;
+    -moz-appearance :none;
+    appearance :none;
+    background: 
+      linear-gradient(-90deg,#ababab 60%,#0000 0) 100%/5% calc(var(--l) - 1px) repeat-x;
+    cursor: pointer;
+    overflow: hidden;
+    height: 140%; /* because firefox does not respect thumbs height*/
+}
+
+input:focus-visible,
+input:hover{
+  --p: 10%;
+}
+
+/* chromium */
+input[type="range" i]::-webkit-slider-thumb{
+  height: var(--s);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--_c);
+  border-image: linear-gradient(var(--_c) 0 0) 0 0 0 1/calc(50% - var(--l)/2) 0 calc(50% - var(--l)/2) 100vw/0 0 0 100vw;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: .3s;
+}
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  height: var(--s);
+  width: var(--s);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--_c);
+  border-image: linear-gradient(var(--_c) 0 0) 0 0 0 1/calc(50% - var(--l)/2) 0 calc(50% - var(--l)/2) 100vw/0 0 0 100vw;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: .3s;
+}
+@supports not (color: color-mix(in srgb,red,red)) {
+  input {
+    --_c: var(--c);
+  }
+}
+
+#choose_OPT_CPU_REVISION a:last-child {
+    font-size: x-small;
+    font-style: italic;
+    padding: 7px;
+}
+
+[ntsc="true"] #MOS8371, 
+[ntsc="true"] #MOS8367,
+[ntsc="false"] #MOS8361, 
+[ntsc="false"] #MOS8370 {
+    display: none
+}
+
+#ui_file_list {
+    overflow: auto;
+    min-width: fit-content;
+    padding-right: 10px;
+}
+
+
+@keyframes popBounce {
+  0%   { transform: scale(0.6); }
+  25%  { transform: scale(1.4); }
+  40%  { transform: scale(0.9); }
+  50%  { transform: scale(1.05); }
+  65%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.pop {
+    animation: popBounce 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+[id^="img_snap_"] {
+    width: auto;
+    height: auto;
+}
+
+@keyframes action_buttons_press_anim {
+  0%   { transform: translate3d(var(--tx), var(--ty), 0) scale(1); }
+  40%  { transform: translate3d(var(--tx), var(--ty), 0) scale(0.93); }
+  50%  { transform: translate3d(var(--tx), var(--ty), 0) scale(1.03); }
+  65%  { transform: translate3d(var(--tx), var(--ty), 0) scale(1.07);}
+  100% { transform: translate3d(var(--tx), var(--ty), 0) scale(1.05);}
+}
+
+@keyframes action_buttons_release_anim {
+  0%   { transform: translate3d(var(--tx), var(--ty), 0) scale(1.05); }
+  25%  { transform: translate3d(var(--tx), var(--ty), 0) scale(1.08); }
+  40%  { transform: translate3d(var(--tx), var(--ty), 0) scale(0.98); }
+  50%  { transform: translate3d(var(--tx), var(--ty), 0) scale(1.02); }
+  65%  { transform: translate3d(var(--tx), var(--ty), 0) scale(0.99); }
+  100% { transform: translate3d(var(--tx), var(--ty), 0) scale(1); }
+}
+
+
+
+.custom_key[key-state="pressed"] {
+    animation: action_buttons_press_anim 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+.custom_key[key-state=""] {
+    animation: action_buttons_release_anim 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+.cm-editor .cm-content ::selection { background: rgba(100,160,220,0.4); }
+[data-theme="dark"] .cm-editor .cm-content ::selection { background: #3a7bd5; }
+
+
+/* ===================== RetroShell overlay ===================== */
+/* light mode: solid dark-gray font (scrim lives on .modal-content) */
+#retro_shell_textarea {
+  position: relative;
+  color: #333;
+  background: transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+/* dark mode: light font with a soft outline */
+[data-theme="dark"] #retro_shell_textarea {
+  color: #e0e0e0;
+  background: transparent;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
+}
+/* cursor shape changes per console mode (color follows currentColor) */
+/* commander (default): blinking underscore */
+#retro_shell_textarea .rsh-cursor {
+  border-bottom: 0.14em solid currentColor;
+  animation: rsh-blink-underscore 1.06s infinite;
+}
+@keyframes rsh-blink-underscore {
+  0%, 49%   { border-bottom-color: currentColor; }
+  50%, 100% { border-bottom-color: transparent; }
+}
+/* debugger: blinking block (inverts the glyph) */
+#retro_shell_textarea[data-rsh-mode="debugger"] .rsh-cursor {
+  border-bottom: none;
+  animation: rsh-blink-block 1.06s infinite;
+}
+@keyframes rsh-blink-block {
+  0%, 49%   { background-color: var(--rsh-color); color: #000; }
+  50%, 100% { background-color: transparent; }
+}
+/* navigator: blinking vertical bar */
+#retro_shell_textarea[data-rsh-mode="navigator"] .rsh-cursor {
+  border-bottom: none;
+  border-left: 0.12em solid currentColor;
+  margin-left: -0.12em;
+  animation: rsh-blink-bar 1.06s infinite;
+}
+@keyframes rsh-blink-bar {
+  0%, 49%   { border-left-color: currentColor; }
+  50%, 100% { border-left-color: transparent; }
+}
+/* classic terminal colors per active console (cursor follows via currentColor) */
+/* light mode: darker shades for readability on the light scrim */
+#retro_shell_textarea[data-rsh-mode="commander"] { --rsh-color: #1a7f1a; color: var(--rsh-color); }
+#retro_shell_textarea[data-rsh-mode="debugger"]  { --rsh-color: #a85f00; color: var(--rsh-color); }
+#retro_shell_textarea[data-rsh-mode="navigator"] { --rsh-color: #0a7a7a; color: var(--rsh-color); }
+/* dark mode: bright retro shades */
+[data-theme="dark"] #retro_shell_textarea[data-rsh-mode="commander"] { --rsh-color: #33cc33; color: var(--rsh-color); }
+[data-theme="dark"] #retro_shell_textarea[data-rsh-mode="debugger"]  { --rsh-color: #ffb000; color: var(--rsh-color); }
+[data-theme="dark"] #retro_shell_textarea[data-rsh-mode="navigator"] { --rsh-color: #33cccc; color: var(--rsh-color); }
+/* fullscreen, chrome-less, transparent overlay (no window look) */
+/* sit directly above the emulator canvas, but BELOW the on-screen action
+   buttons (.custom_key, z-index 20) so they stay clickable, and below all
+   other real dialogs/modals */
+/* lock the overlay so iOS/iPadOS does not rubber-band the whole UI when
+   there is little (or no) text to scroll */
+#modal_retro_shell {
+  z-index: 15 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+}
+#modal_retro_shell .modal-dialog {
+  max-width: 100%; width: 100%; height: 100%; margin: 0;
+  overflow: hidden;
+}
+/* the scrim fills the visible viewport so no canvas shows through at the
+   edges; use 100% (not 100vh) so the iPad browser chrome cannot create a
+   tiny overflow that becomes scrollable/bouncy */
+#modal_retro_shell .modal-content {
+  width: 100%; height: 100%; overflow: hidden;
+  background: rgba(255,255,255,0.30) !important; border: 0;
+  border-radius: 0; box-shadow: none;
+}
+[data-theme="dark"] #modal_retro_shell .modal-content {
+  background: rgba(0,0,0,0.35) !important;
+}
+#modal_retro_shell .modal-header,
+#modal_retro_shell .modal-footer {
+  border: 0; background: transparent !important;
+}
+#modal_retro_shell .modal-body {
+  flex: 1 1 auto; min-height: 0; display: flex; overflow: hidden;
+}
+/* vertical button column anchored top-right so the iPad soft keyboard
+   (bottom) cannot cover it and it does not overlap the console text */
+#modal_retro_shell #retro_shell_buttons {
+  position: absolute; top: 3.25rem; right: 8px; z-index: 5;
+  flex-direction: column; align-items: flex-end;
+  padding: 0; margin: 0; width: auto;
+}
+/* arrow keys arranged as an inverted-T like on a physical keyboard */
+#retro_shell_dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas:
+    ".    up    ."
+    "left down right";
+  gap: 6px;
+  justify-items: stretch;
+}
+#retro_shell_dpad .btn { margin: 0; }
+/* paired buttons side by side (Home+End, Clear+Delete) */
+#retro_shell_buttons .rsh-btn-row { display: flex; gap: 6px; }
+#retro_shell_buttons .rsh-btn-row .btn { flex: 1; margin: 0; }
+/* same press/release animation as the on-screen action buttons */
+#retro_shell_buttons .btn { --tx: 0; --ty: 0; }
+#retro_shell_buttons .btn[key-state="pressed"] {
+  animation: action_buttons_press_anim 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+#retro_shell_buttons .btn[key-state=""] {
+  animation: action_buttons_release_anim 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+/* keep the top navbar (and its burger button) above the RetroShell overlay,
+   but still below all other dialogs/modals */
+body.retro-shell-open #navbar { z-index: 40; }
+body.retro-shell-open #button_show_menu { z-index: 41; }
+
+/* live memory view, docked to the right edge next to the amiga canvas */
+#memview_panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0; /* height follows top offset (set from navbar visibility) */
+  z-index: 16; /* directly above the RetroShell overlay (z-index 15) */
+  display: none;
+  flex-direction: row;
+  background-color: var(--lightbg, #2a2a2a);
+  border-left: 1px solid rgba(255,255,255,0.15);
+  box-shadow: -6px 0 16px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+#memview_overview_col {
+  display: flex;
+  flex-direction: column;
+  width: 190px;
+  border-right: 1px solid rgba(255,255,255,0.15);
+  background-color: rgba(0,0,0,0.2);
+}
+#memview_detail_col {
+  display: flex;
+  flex-direction: column;
+  width: 340px;
+  min-width: 0;
+}
+.memview_subtitle {
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #ddd;
+  background-color: rgba(0,0,0,0.25);
+  user-select: none;
+}
+[data-theme="dark"] .memview_subtitle {
+  background-color: rgba(0,0,0,0.75);
+}
+.memview_overview_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+.memview_title_actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+#memview_step, #memview_slomo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: normal;
+  color: #cfc39a;
+  background: rgba(223,148,42,0.15);
+  border: 1px solid rgba(223,148,42,0.5);
+  border-radius: 3px;
+  padding: 1px 6px;
+  cursor: pointer;
+}
+#memview_step svg, #memview_slomo svg { display: block; }
+#memview_step:hover, #memview_slomo:hover { background: rgba(223,148,42,0.35); color: #fff; }
+#memview_step:active, #memview_slomo:active { background: rgba(223,148,42,0.5); }
+/* while slomo is running, pulse the button so it's obvious it is active */
+#memview_slomo.slomo_active {
+  color: #fff;
+  animation: memview_slomo_pulse 1s ease-in-out infinite;
+}
+@keyframes memview_slomo_pulse {
+  0%   { background: rgba(223,148,42,0.25); box-shadow: 0 0 0 0 rgba(223,148,42,0.5); }
+  50%  { background: rgba(223,148,42,0.75); box-shadow: 0 0 6px 2px rgba(223,148,42,0.7); }
+  100% { background: rgba(223,148,42,0.25); box-shadow: 0 0 0 0 rgba(223,148,42,0.5); }
+}
+/* subtle hop on press. id+class specificity (and source order) lets this
+   briefly win over the slomo pulse animation. */
+@keyframes memview_pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.97); }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+#memview_step.pop, #memview_slomo.pop, #memview_info.pop {
+  animation: memview_pop 0.28s ease-out forwards;
+}
+#memview_overview_blocks {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.memview_ov_block {
+  display: flex;
+  flex-direction: column;
+  min-height: 42px;
+  border-bottom: 2px solid rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+.memview_ov_block:last-child { border-bottom: none; }
+.memview_ov_label {
+  padding: 1px 6px;
+  font-size: 0.72rem;
+  color: var(--lighterbg);
+  background-color: var(--gray);
+  user-select: none;
+  white-space: nowrap;
+}
+.memview_ov_block canvas {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  cursor: crosshair;
+  image-rendering: pixelated;
+  background: #000;
+  display: block;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+#memview_header {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  color: #ddd;
+  background-color: rgba(0,0,0,0.35);
+  user-select: none;
+}
+[data-theme="dark"] #memview_header {
+  background-color: rgba(0,0,0,0.80);
+}
+#memview_header .memview_title { font-weight: bold; }
+#memview_header .memview_live_label { margin: 0 0 0 auto; display: flex; align-items: center; gap: 0.25em; }
+/* now that the panel allows native touch scrolling (whitelisted in
+   is_inside_scrollable), the browser may treat a tiny finger/pencil movement on
+   a header button as the start of a scroll and fire pointercancel instead of
+   pointerup, swallowing the press. touch-action:none keeps a tap on these
+   controls a tap (they never need to scroll). */
+#memview_header button,
+#memview_panel .memview_title_actions button { touch-action: none; }
+/* round "i" info button next to the memory title */
+#memview_info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9em;
+  height: 1.7em;
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  font-weight: bold;
+  font-style: italic;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #cfc39a;
+  background: rgba(223,148,42,0.15);
+  border: 1px solid rgba(223,148,42,0.5);
+  border-radius: 3px;   /* boxy, matching the single-step/slomo buttons */
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+#memview_info:hover { background: rgba(223,148,42,0.35); color: #fff; }
+#memview_info:active { background: rgba(223,148,42,0.5); }
+/* explanation overlay, covers the detail canvas */
+#memview_detail_col { position: relative; }
+#memview_info_pop {
+  position: absolute;
+  top: 34px;
+  left: 6px;
+  right: 6px;
+  max-height: calc(100% - 44px);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  background: #d5d5d5;
+  color: #222;
+  border: 1px solid rgba(0,0,0,0.35);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+[data-theme="dark"] #memview_info_pop {
+  background: #333;
+  color: #ddd;
+  border-color: rgba(255,255,255,0.2);
+}
+/* when there is room, float the overlay to the left of the whole docked panel
+   (over the amiga canvas) so the detail view stays visible while dragging the
+   sliders. uses position:fixed so it escapes the panel's overflow:hidden clip;
+   right/top/max-height are set from the panel rect in js. */
+#memview_info_pop.to_left {
+  position: fixed;
+  left: auto;
+  width: 320px;
+}
+.memview_info_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-weight: bold;
+  font-size: 0.82rem;
+  color: #222;
+  background: rgba(0,0,0,0.12);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+[data-theme="dark"] .memview_info_head {
+  color: #eee;
+  background: rgba(0,0,0,0.35);
+  border-bottom-color: rgba(255,255,255,0.12);
+}
+#memview_info_close {
+  background: transparent;
+  border: none;
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+#memview_info_close:hover { color: #000; }
+[data-theme="dark"] #memview_info_close { color: #ccc; }
+[data-theme="dark"] #memview_info_close:hover { color: #fff; }
+.memview_info_body {
+  padding: 8px 12px 12px;
+  overflow-y: auto;
+  /* min-height:0 lets this flex child shrink below its content size so it
+     actually becomes a scroll container (needed on iPhone/iPad); the
+     -webkit rule enables momentum scrolling on iOS. touch-action:pan-y is
+     required because body has touch-action:manipulation, which otherwise
+     stops iOS from treating a finger drag here as a vertical scroll (the
+     trackpad scrolls via wheel events, which ignore touch-action). */
+  flex: 1 1 auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+/* full-width close button at the bottom of the info panel */
+.memview_info_close_btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.9em;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: #222;
+  background: rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.memview_info_close_btn:hover { background: rgba(0,0,0,0.2); }
+[data-theme="dark"] .memview_info_close_btn {
+  color: #ddd;
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+[data-theme="dark"] .memview_info_close_btn:hover { background: rgba(255,255,255,0.18); }
+.memview_info_body p { margin: 0 0 0.7em; }
+.memview_info_body h6 {
+  margin: 0.9em 0 0.35em;
+  font-size: 0.78rem;
+  font-weight: bold;
+  color: #111;
+}
+[data-theme="dark"] .memview_info_body h6 { color: #fff; }
+.memview_info_note { color: #666; font-style: italic; }
+[data-theme="dark"] .memview_info_note { color: #999; }
+.memview_info_body .mono { font-family: monospace; color: #111; }
+[data-theme="dark"] .memview_info_body .mono { color: #eee; }
+.memview_legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4em 1.1em;
+  font-size: 0.75rem;
+}
+.memview_sw {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.25);
+  vertical-align: -0.15em;
+  margin-right: 0.15em;
+}
+.memview_color_table {
+  border-collapse: collapse;
+  margin: 0.2em 0 0.3em;
+  font-size: 0.75rem;
+}
+.memview_color_table th {
+  font-weight: normal;
+  color: #666;
+  text-align: center;
+  padding: 1px 10px;
+}
+[data-theme="dark"] .memview_color_table th { color: #aaa; }
+.memview_color_table th:first-child { text-align: left; }
+.memview_color_table td {
+  padding: 2px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+.memview_color_table td:first-child { text-align: left; }
+.memview_color_table td .memview_sw { margin: 0; }
+.memview_fade_ctl {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-size: 0.75rem;
+}
+/* style the memview sliders exactly like the settings modal volume slider so
+   they render correctly on safari (the global ::-webkit-slider-thumb rule uses
+   var(--s), which is only defined here). */
+.memview_fade_ctl input[type="range"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  --c: #007bff;          /* active color (same blue as the volume slider) */
+  --l: 6px;              /* line thickness */
+  --s: 18px;             /* thumb size */
+  --_c: color-mix(in srgb, var(--c), #000 var(--p,0%));
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background:
+    linear-gradient(-90deg,#ababab 60%,#0000 0) 100%/5% calc(var(--l) - 1px) repeat-x;
+  cursor: pointer;
+  overflow: hidden;
+  height: var(--s);
+  /* the scroll container (.memview_info_body) is touch-action:pan-y, which
+     otherwise makes iOS reserve a horizontal finger/pencil drag on the thumb
+     for vertical scrolling so the slider never moves. none lets the range
+     input consume the drag itself. */
+  touch-action: none;
+}
+.memview_fade_ctl span { white-space: nowrap; color: #555; }
+[data-theme="dark"] .memview_fade_ctl span { color: #cfcfcf; }
+.memview_fade_ctl b { color: #111; }
+[data-theme="dark"] .memview_fade_ctl b { color: #fff; }
+#memview_header .memview_addr {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  font-family: monospace;
+}
+#memview_start,
+#memview_width {
+  box-sizing: border-box;
+  font-family: monospace;
+  background: #111;
+  color: #df942a;
+  border: 1px solid #555;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+#memview_start {
+  width: 7.2ch;
+}
+#memview_width {
+  width: 5ch;
+  text-align: center;
+}
+#memview_close {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+#memview_close:hover { color: #fff; }
+#memview_canvas {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  cursor: grab;
+  image-rendering: pixelated;
+  background: #371d20;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+#memview_canvas::selection { background: transparent; }
+/* while dragging inside the memory view, suppress any text/canvas selection
+   globally (some engines invert canvas colors when it gets selected) */
+body.memview-dragging,
+body.memview-dragging * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+body.memview-dragging {
+  -webkit-touch-callout: none !important;
+}
+/* "possible bitplane areas" section in the overview column */
+.memview_bpl_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+.memview_bpl_title .memview_live_label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.72rem;
+  font-weight: normal;
+  color: #cfc39a;
+  cursor: pointer;
+}
+.memview_bpl_title .memview_live_label input { margin: 0; cursor: pointer; }
+#memview_bpl_list {
+  flex: 0 1 auto;
+  max-height: 38%;
+  overflow-y: auto;
+  padding: 2px 0;
+  background: #1f1f1f;
+  border-top: 1px solid rgba(0,0,0,0.4);
+}
+.memview_bpl_item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.memview_bpl_item:hover,
+.memview_bpl_item.memview_bpl_item_active { background: rgba(223,148,42,0.22); }
+.memview_bpl_pl { font-weight: bold; color: #df942a; }
+.memview_bpl_addr { font-family: monospace; color: #f0e6c5; }
+.memview_bpl_addr.memview_bpl_addr_active {
+  background: rgba(223,148,42,0.22);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+/* brief pop+highlight when an address is (auto-)selected, echoing the navbar
+   icon "pop". inline-block so the transform applies to the address span too. */
+@keyframes memview_flash_anim {
+  0%   { transform: scale(1);    background-color: rgba(223,148,42,0.9); color: #1a1a1a; }
+  30%  { transform: scale(1.25); background-color: rgba(223,148,42,0.9); color: #1a1a1a; }
+  100% { transform: scale(1);    background-color: transparent; }
+}
+.memview_flash {
+  display: inline-block;
+  border-radius: 3px;
+  animation: memview_flash_anim 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+.memview_bpl_meta { margin-left: auto; color: #b8b8b8; }
+.memview_bpl_empty {
+  padding: 6px 8px;
+  font-size: 0.7rem;
+  color: #888;
+  font-style: italic;
+}
+#memview_canvas:active { cursor: grabbing; }
