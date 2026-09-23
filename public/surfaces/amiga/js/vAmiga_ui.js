@@ -4977,7 +4977,7 @@ $('.layer').change( function(event) {
             `</select>
             
             <button type="button" id="activate_version" disabled class="btn btn-primary btn-sm px-1 mx-1">activate</button>
-            <button type="button" id="remove_version" class="btn btn-danger btn-sm px-1 mx-1"><svg style="width:1.5em;height:1.5em"><use xlink:href="img/sprites.svg#trash"/></svg>
+            <button type="button" id="remove_version" class="btn btn-danger btn-sm px-1 mx-1"><svg style="width:1.5em;height:1.5em"><use xlink:href="https://a2uicatalog.ai/surfaces/amiga/img/sprites.svg#trash"/></svg>
             </button>
             </div>
             `;

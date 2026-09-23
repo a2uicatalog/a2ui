@@ -206,10 +206,10 @@ function setup_browser_interface()
 
 
 var like_icon_filled = `
-<svg style="color:var(--red);width:1.6em;height:1.6em"><use xlink:href="img/sprites.svg#like_filled"/></svg>
+<svg style="color:var(--red);width:1.6em;height:1.6em"><use xlink:href="https://a2uicatalog.ai/surfaces/amiga/img/sprites.svg#like_filled"/></svg>
 `;
 var like_icon_empty = `
-<svg style="color:var(--gray);width:1.6em;height:1.6em"><use xlink:href="img/sprites.svg#like_empty"/></svg>
+<svg style="color:var(--gray);width:1.6em;height:1.6em"><use xlink:href="https://a2uicatalog.ai/surfaces/amiga/img/sprites.svg#like_empty"/></svg>
 `;
 
 async function load_browser(datasource_name, command="feeds")
@@ -263,10 +263,10 @@ async function load_browser(datasource_name, command="feeds")
 
     var render_persistent_snapshot=function(app_title, item){
         var x_icon = `
-        <svg style="width:1.8em;height:1.8em"><use xlink:href="img/sprites.svg#x"/></svg>
+        <svg style="width:1.8em;height:1.8em"><use xlink:href="https://a2uicatalog.ai/surfaces/amiga/img/sprites.svg#x"/></svg>
         `;
         var export_icon = `
-        <svg style="width:1.6em;height:1.6em"><use xlink:href="img/sprites.svg#export"/></svg>
+        <svg style="width:1.6em;height:1.6em"><use xlink:href="https://a2uicatalog.ai/surfaces/amiga/img/sprites.svg#export"/></svg>
         `;
         var scaled_width= 15;
         var canvas_width = 384;

@@ -92,3 +92,12 @@
 /surfaces/diagram-studio/*
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=3600
+
+# Amiga MCP App (2026-09-22): same reasoning as diagram-studio above, and the same fix was needed for the same reason -- the view's
+# own HTML is fetched by reference by the MCP Worker, but vAmigaWeb (the emulator) itself fetches ALL its own assets (vAmiga.wasm,
+# js/*, roms/*, sounds/*, game.adf) from inside the host's sandboxed iframe, a different origin, which needs CORS on every one of
+# them. Found live, 2026-09-22 (Curtis: black screen; console showed "No 'Access-Control-Allow-Origin' header is present" on
+# vAmiga.wasm itself -- the WASM module cannot load at all without this, which is why nothing booted, not even the toolbar).
+/surfaces/amiga/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
