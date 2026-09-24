@@ -539,12 +539,14 @@ LLMS_TXT = """# A2UI Catalog (the A2UI Atomic Catalog)
 - [CLI / local MCP server (npm registry)](https://registry.npmjs.org/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui). (npm's own package-page web UI 403s plain HTTP clients — the registry API link above is the one that resolves for a bot; `npm view @a2uicatalog/mcp` or a browser both work fine for a human.)
 - [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
 - [Developer portal]({base}/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
+- [SDKs & client libraries]({base}/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs]({base}/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
 - [API reference]({base}/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
 - [OpenAPI spec]({base}/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs]({base}/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits]({base}/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide]({base}/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
+- [SDK guide]({base}/sdk.md): SDK and client library documentation in Markdown format.
 - [Webhooks & events]({base}/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
 - [Pricing & quotas]({base}/pricing/): Free tier limits and self-hosting options.
 - [Versioning & deprecation policy]({base}/versioning/): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.
@@ -622,12 +624,14 @@ def build_api_catalog():
                 item(f"{BASE}/developers/", "text/html", "Developer documentation and API guide"),
                 item(f"{BASE}/docs/", "text/html", "API documentation and endpoint reference"),
                 item(f"{BASE}/api-docs/", "text/html", "API docs and reference directory"),
+                item(f"{BASE}/sdks/", "text/html", "SDKs and client libraries documentation"),
                 item(f"{BASE}/auth/", "text/html", "Authentication and security documentation"),
                 item(f"{BASE}/webhooks/", "text/html", "Webhooks and event delivery documentation"),
                 item(f"{BASE}/versioning/", "text/html", "Versioning and deprecation policy documentation"),
                 item(f"{BASE}/pricing/", "text/html", "Pricing and rate limit documentation"),
                 item(f"{BASE}/versioning.md", "text/markdown", "Versioning and deprecation policy"),
                 item(f"{BASE}/auth.md", "text/markdown", "Authentication guide"),
+                item(f"{BASE}/sdk.md", "text/markdown", "SDK and client libraries documentation"),
                 item(f"{BASE}/pricing.md", "text/markdown", "Pricing and rate limits"),
             ],
         }],

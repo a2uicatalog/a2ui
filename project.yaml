@@ -42,6 +42,8 @@ policy:
     - public/agents.md
     - public/index.md
     - public/auth.md
+    - public/sdk.md
+    - public/sdks.md
     - public/versioning.md
     - public/404.html
     # Agent-readiness artefacts, declared 2026-08-02 against an external scan.
@@ -70,6 +72,7 @@ policy:
     - public/docs/**
     - public/api-docs/**
     - public/developers/**
+    - public/sdks/**
     - public/auth/**
     - public/webhooks/**
     - public/versioning/**

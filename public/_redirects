@@ -47,5 +47,9 @@
 /limits /pricing/ 301
 /rate-limits /pricing/ 301
 /docs/pricing /pricing/ 301
+/sdk /sdks/ 301
+/sdks /sdks/ 301
+/docs/sdk /sdks/ 301
+/docs/sdks /sdks/ 301
 /ard.json /.well-known/ard.json 301
 /.well-known/ard /.well-known/ard.json 301
