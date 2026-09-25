@@ -239,6 +239,8 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/.well-known/oauth-protected-resource/mcp-auth">OAuth Protected Resource Metadata</a> (RFC 9728)</li>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a></li>
 <li><a href="/mcp">MCP Server Endpoint</a></li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI package and SDK generators</li>
+<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
 </ul>"""),
         "webhooks": dict(
             title="Webhooks &amp; Event Delivery",
@@ -265,6 +267,8 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable spec</li>
 <li><a href="/mcp">MCP Server Endpoint</a> — live streamable JSON-RPC 2.0 interface</li>
 <li><a href="/developers/">Developers Guide</a> — deployment and integration guides</li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI package and SDK generators</li>
+<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
 </ul>"""),
         "versioning": dict(
             title="API Versioning &amp; Deprecation Policy",
@@ -297,6 +301,8 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/docs/">API Documentation</a> — REST endpoints and error contracts</li>
 <li><a href="/mcp">MCP Server Endpoint</a> — JSON-RPC 2.0 integration surface</li>
 <li><a href="/developers/">Developers Portal</a> — guide to tools and self-hosting</li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI and client libraries</li>
+<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
 </ul>"""),
         "pricing": dict(
             title="Pricing, Rate Limits &amp; Quotas",
@@ -328,6 +334,8 @@ signup, <code>POST</code> JSON-RPC 2.0 directly.</p>
 <li><a href="/openapi.json">OpenAPI 3.1 Specification</a> — machine-readable endpoint contracts</li>
 <li><a href="/docs/">API Documentation</a> — REST endpoint reference</li>
 <li><a href="/mcp">MCP Server Endpoint</a> — Model Context Protocol endpoint</li>
+<li><a href="/sdks/">SDKs &amp; Client Libraries</a> — npm CLI and client libraries</li>
+<li><a href="/sdk.md">SDK Documentation (Markdown)</a></li>
 </ul>"""),
         "sdks": dict(
             title="SDKs &amp; Client Libraries",

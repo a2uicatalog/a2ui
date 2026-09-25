@@ -105,6 +105,11 @@
           "title": "API docs and reference directory"
         },
         {
+          "href": "https://a2uicatalog.ai/sdks/",
+          "type": "text/html",
+          "title": "SDKs and client libraries documentation"
+        },
+        {
           "href": "https://a2uicatalog.ai/auth/",
           "type": "text/html",
           "title": "Authentication and security documentation"
@@ -135,9 +140,29 @@
           "title": "Authentication guide"
         },
         {
+          "href": "https://a2uicatalog.ai/sdk.md",
+          "type": "text/markdown",
+          "title": "SDK and client libraries documentation"
+        },
+        {
           "href": "https://a2uicatalog.ai/pricing.md",
           "type": "text/markdown",
           "title": "Pricing and rate limits"
+        },
+        {
+          "href": "https://a2uicatalog.ai/agents.md",
+          "type": "text/markdown",
+          "title": "Agent integration guide and tool reference"
+        },
+        {
+          "href": "https://a2uicatalog.ai/llms.txt",
+          "type": "text/markdown",
+          "title": "Agent-facing catalogue overview (llms.txt)"
+        },
+        {
+          "href": "https://a2uicatalog.ai/.well-known/agent-auth.md",
+          "type": "text/markdown",
+          "title": "Authentication and rate limits guide"
         }
       ]
     }
