@@ -811,7 +811,11 @@
    "x-intent-phrases": [
     "I need to show a lot of data in columns that users can scroll through horizontally.",
     "We need a way to display a list of items with clear labels for each piece of information.",
-    "Can I get a clean way to present a grid of information where rows are easy to distinguish?"
+    "Can I get a clean way to present a grid of information where rows are easy to distinguish?",
+    "Show a record for each booking, order or case with its date, status and owner.",
+    "Give me the history of treatments, payments or visits, one row each with the date.",
+    "Lay out results in columns so two or more people or items can be compared side by side.",
+    "Show which items are due soon with the due date next to each."
    ]
   },
   "tabs": {
@@ -895,7 +899,8 @@
    "x-intent-phrases": [
     "I need to display a list of settings with their current values.",
     "Show me all the environment variables and their assigned strings.",
-    "I want to present API endpoint parameters and what they expect."
+    "I want to present API endpoint parameters and what they expect.",
+    "Show the key facts about one thing, such as a policy, a vehicle or a room, as labelled values."
    ]
   },
   "before_after": {
@@ -2056,7 +2061,8 @@
    "x-intent-phrases": [
     "I need a way to see all my project tasks and mark them done.",
     "Help me track what's urgent, who's doing what, and when it's due.",
-    "Show me my to-do list with cool visual flair and quick updates."
+    "Show me my to-do list with cool visual flair and quick updates.",
+    "Show what still needs doing for each person, room or shift, with a way to tick things off."
    ]
   },
   "sentiment_summary": {
@@ -7933,7 +7939,10 @@
    "x-intent-phrases": [
     "I need a way to quickly reorder rows by clicking column headers.",
     "Users must be able to flip through pages of results without reloading.",
-    "I want to show a lot of information in a table that's easy to scan and filter."
+    "I want to show a lot of information in a table that's easy to scan and filter.",
+    "Let people sort accounts, cases or invoices by date, amount or priority.",
+    "Show open work with a deadline column so the earliest can be seen first.",
+    "A sortable set of records with several fields per row, such as customers or vehicles."
    ]
   },
   "metric_comparison_card": {
@@ -8911,7 +8920,10 @@
    "x-intent-phrases": [
     "I need a way to collect user contact details with validation.",
     "We're building a settings page and need fields for preferences.",
-    "I want to create a simple feedback submission area for users."
+    "I want to create a simple feedback submission area for users.",
+    "Collect a few details from a customer, such as their name, a date and a preference, and submit them.",
+    "Let someone request an appointment, a quote or a booking by filling in some fields.",
+    "Capture a short set of inputs, like servings, quantity or budget, and act on them."
    ]
   },
   "form_input": {
@@ -9528,7 +9540,10 @@
    "x-intent-phrases": [
     "I need to show all my team's current projects, with who's assigned and their progress.",
     "Display all available servers, their health, and who's managing them, in a clear list.",
-    "Show a list of all users on my platform, their roles, and their last login time."
+    "Show a list of all users on my platform, their roles, and their last login time.",
+    "Show the clients, patients, cases or members someone looks after, one line each with a short detail and a status.",
+    "List the books, orders, episodes or products with a small state or badge beside each.",
+    "Show people or items with a name, a subtitle and where they stand."
    ]
   },
   "prompt_template": {
@@ -10753,7 +10768,9 @@
    "x-intent-phrases": [
     "I need to show a long list of products with their prices and availability.",
     "My users need to pick multiple items from a table to perform an action.",
-    "I want to let users easily reorder data by clicking on column headers."
+    "I want to let users easily reorder data by clicking on column headers.",
+    "Show many records with several fields each in a compact grid, such as stock, staff or bookings.",
+    "A dense overview of items with a handful of values per item."
    ]
   },
   "tree_view": {
