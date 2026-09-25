@@ -10153,35 +10153,54 @@ function _brickKit() {
 var _BRICK_MAX = 3000;   // bricks per model — the depth sort is O(n log n) per frame
 var _BRICK_MODELS_MAX = 8;   // named models the picker will list
 
+// Coerce an agent-supplied palette (max 256 entries) into #rrggbb strings; a bad entry keeps its index as the default red.
+function _brickPalette(list) {
+  var out = [];
+  if (!Array.isArray(list)) return out;
+  for (var i = 0; i < list.length && out.length < 256; i++) {
+    out.push(typeof list[i] === 'string' && /^#[0-9a-fA-F]{6}$/.test(list[i]) ? list[i].toLowerCase() : '#c91a09');
+  }
+  return out;
+}
+
 // Coerce an agent-supplied brick list into integers and #rrggbb colours, or return null if it is unusable.
+// A brick is an object {x, y, z, w, d, h, c} or a compact array [x, y, z, w, d, c] / [x, y, z, w, d, h, c]; `c` is
+// a #rrggbb string or an integer index into `palette`. The arrays make a 1000-brick model about a third of the size.
 // renderers/web_article.py (_render_brick_build_3d) is a hand-kept twin of this function and of the shell
 // below; tests/test_brick_web_twin.py renders both and compares. Edit BOTH.
-function _brickSanitise(list) {
+function _brickSanitise(list, palette) {
   if (!Array.isArray(list) || !list.length) return null;
   var out = [];
+  var n = function(v, lo, hi, dflt) {
+    v = Math.floor(Number(v));
+    return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
+  };
   for (var i = 0; i < list.length && out.length < _BRICK_MAX; i++) {
-    var r = list[i];
-    if (!r || typeof r !== 'object') continue;
-    var n = function(v, lo, hi, dflt) {
-      v = Math.floor(Number(v));
-      return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
-    };
-    var c = typeof r.c === 'string' && /^#[0-9a-fA-F]{6}$/.test(r.c) ? r.c.toLowerCase() : '#c91a09';
-    out.push({x: n(r.x, 0, 255, 0), y: n(r.y, 0, 255, 0), z: n(r.z, 0, 255, 0),
-              w: n(r.w, 1, 32, 1), d: n(r.d, 1, 32, 1), h: n(r.h, 1, 8, 1), c: c});
+    var r = list[i], x, y, z, w, d, h, c;
+    if (Array.isArray(r) && (r.length === 6 || r.length === 7)) {
+      x = r[0]; y = r[1]; z = r[2]; w = r[3]; d = r[4];
+      h = r.length === 7 ? r[5] : 1; c = r[r.length - 1];
+    } else if (r && typeof r === 'object' && !Array.isArray(r)) {
+      x = r.x; y = r.y; z = r.z; w = r.w; d = r.d; h = r.h; c = r.c;
+    } else continue;
+    if (typeof c === 'number' && isFinite(c) && palette && palette.length) c = palette[Math.floor(c)];
+    c = typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c) ? c.toLowerCase() : '#c91a09';
+    out.push({x: n(x, 0, 255, 0), y: n(y, 0, 255, 0), z: n(z, 0, 255, 0),
+              w: n(w, 1, 32, 1), d: n(d, 1, 32, 1), h: n(h, 1, 8, 1), c: c});
   }
   return out.length ? out : null;
 }
 
 // Named models for the picker: up to _BRICK_MODELS_MAX of {name, bricks}, each brick list sanitised like `bricks`.
 // Entries whose brick list is unusable are skipped; a missing name becomes 'Model N'. Twinned in web_article.py.
-function _brickModels(list) {
+function _brickModels(list, palette) {
   var out = [];
   if (!Array.isArray(list)) return out;
   for (var i = 0; i < list.length && out.length < _BRICK_MODELS_MAX; i++) {
     var m = list[i];
     if (!m || typeof m !== 'object') continue;
-    var bl = _brickSanitise(m.bricks);
+    var pal = Array.isArray(m.palette) ? _brickPalette(m.palette) : palette;
+    var bl = _brickSanitise(m.bricks, pal);
     if (!bl) continue;
     var nm = typeof m.name === 'string' ? m.name.trim().slice(0, 40) : '';
     out.push({name: nm || 'Model ' + (out.length + 1), bricks: bl});
@@ -10320,8 +10339,9 @@ function _brickMount(K, cfg, U) {
 _RENDERERS['brick_build_3d'] = function(b) {
   var kit    = _brickKit();
   var shape  = Object.prototype.hasOwnProperty.call(kit.SHAPES, b.shape) ? b.shape : 'heart';
-  var bricks = _brickSanitise(b.bricks);          // '' (unresolved binding) and junk fall back to shape
-  var models = _brickModels(b.models), start = -1;
+  var palette = _brickPalette(b.palette);
+  var bricks = _brickSanitise(b.bricks, palette);   // '' (unresolved binding) and junk fall back to shape
+  var models = _brickModels(b.models, palette), start = -1;
   if (!bricks && typeof b.model === 'string') {
     for (var j = 0; j < models.length; j++) if (models[j].name === b.model) { start = j; break; }
     if (start >= 0) bricks = models[start].bricks;
