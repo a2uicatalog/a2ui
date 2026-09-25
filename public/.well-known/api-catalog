@@ -105,6 +105,11 @@
           "title": "API docs and reference directory"
         },
         {
+          "href": "https://a2uicatalog.ai/sdks/",
+          "type": "text/html",
+          "title": "SDKs and client libraries documentation"
+        },
+        {
           "href": "https://a2uicatalog.ai/auth/",
           "type": "text/html",
           "title": "Authentication and security documentation"
@@ -133,6 +138,11 @@
           "href": "https://a2uicatalog.ai/auth.md",
           "type": "text/markdown",
           "title": "Authentication guide"
+        },
+        {
+          "href": "https://a2uicatalog.ai/sdk.md",
+          "type": "text/markdown",
+          "title": "SDK and client libraries documentation"
         },
         {
           "href": "https://a2uicatalog.ai/pricing.md",

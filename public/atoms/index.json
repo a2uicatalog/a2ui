@@ -1,6 +1,6 @@
 {
  "catalogId": "a2ui-atoms-v1",
- "atomCount": 523,
+ "atomCount": 524,
  "fullSpec": "https://a2uicatalog.ai/spec.json",
  "atoms": [
   {
@@ -2635,6 +2635,13 @@
    "surfaces": [
     "web",
     "google-apps-script-web",
+    "mcp-apps"
+   ]
+  },
+  {
+   "type": "filterable_list",
+   "compact": "list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts",
+   "surfaces": [
     "mcp-apps"
    ]
   },

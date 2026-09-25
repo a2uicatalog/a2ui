@@ -8729,6 +8729,86 @@
         "properties": {
           "type": {
             "type": "string",
+            "const": "filterable_list"
+          },
+          "title": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "meta": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "title"
+              ]
+            }
+          },
+          "filter_field": {
+            "type": "string"
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "value"
+              ]
+            }
+          },
+          "colors": {
+            "type": "string",
+            "enum": [
+              "object . Map from a status",
+              "category value to a hex colour for its chip and row badge. Default: a distinct colour per chip."
+            ]
+          },
+          "show_counts": {
+            "type": "boolean"
+          },
+          "empty_text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
             "const": "columns"
           },
           "cols": {

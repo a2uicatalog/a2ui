@@ -28,6 +28,7 @@ a2ui-atoms-v1:
 - bullet_list
 - callout
 - chip_group
+- filterable_list
 - code
 - content_tabs
 - code_block

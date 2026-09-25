@@ -37,7 +37,7 @@
         "email",
         "pdf"
       ],
-      "description": "Open-source renderer with 523 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
+      "description": "Open-source renderer with 524 typed atoms for generating rich UI across Google Meet stages, Chat Cards, Apps Script web apps, and web surfaces from a single JSON schema payload.",
       "representativeQueries": [
         "render a rich UI from structured JSON data",
         "generate Google Meet stage content from a schema",
@@ -4745,6 +4745,21 @@
         "show a chip/tag row \u2014 label, color, url, active state; wrap or scroll layout",
         "row of filter/tag chips, optionally scrollable. chips can link to urls and have active state",
         "render a chip group"
+      ]
+    },
+    {
+      "identifier": "urn:air:a2uicatalog.ai:atom:filterable_list",
+      "displayName": "Filterable List",
+      "type": "application/vnd.a2ui.atom+json",
+      "url": "https://a2uicatalog.ai/atoms/filterable_list",
+      "capabilities": [
+        "mcp-apps"
+      ],
+      "description": "A list of items, each with a title, an optional detail line and a status or category, above a row of chips (All plus one per status, with counts) that actually filter it. Tapping a chip shows only the matching rows and updates the \"Showing X of Y\" count. Self-contained, so it works without any other atom; on a static surface it degrades to the full list.",
+      "representativeQueries": [
+        "show a list with status chips that filter its rows \u2014 items with title, detail, status; All plus one chip per status, with counts",
+        "a list of items, each with a title, an optional detail line and a status or category, above a row of chips (all plus",
+        "render a filterable list"
       ]
     },
     {

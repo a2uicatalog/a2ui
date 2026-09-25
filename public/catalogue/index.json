@@ -10,7 +10,7 @@
       "title": "A2UI base atoms",
       "alwaysResolved": true,
       "whenToUse": "The standard catalog — structure, text, data display, inputs, actions and the wired state connectors. ALWAYS resolved; every surface uses it.",
-      "atomCount": 107,
+      "atomCount": 108,
       "atoms": [
         {
           "type": "accordion_item",
@@ -147,6 +147,10 @@
         {
           "type": "file_tree",
           "description": "present hierarchical directory structures and files for software project navigation"
+        },
+        {
+          "type": "filterable_list",
+          "description": "list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts"
         },
         {
           "type": "firestore_read",

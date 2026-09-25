@@ -1,6 +1,6 @@
 # A2UI Catalog (the A2UI Atomic Catalog)
 
-> Open-source, typed UI vocabulary (523 atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, and MCP Apps — from one JSON schema payload, instead of generating HTML.
+> Open-source, typed UI vocabulary (524 atoms) an AI agent uses to compose real interfaces — web, Google Meet stages, Apps Script web apps, Google Chat cards, and MCP Apps — from one JSON schema payload, instead of generating HTML.
 
 ## Integrate & Developer Resources
 
@@ -9,12 +9,14 @@
 - [CLI / local MCP server (npm registry)](https://registry.npmjs.org/@a2uicatalog/mcp): `npx -p @a2uicatalog/mcp a2ui render page.json` renders a payload to HTML with no account and no MCP client. Also runs as a local MCP server (`a2uicatalog-mcp` bin) for Claude Desktop/Cursor, and deploys `training.md` to your own Google Apps Script web app via `build_app`. Source: `mcp/` in the [GitHub repository](https://github.com/a2uicatalog/a2ui). (npm's own package-page web UI 403s plain HTTP clients — the registry API link above is the one that resolves for a bot; `npm view @a2uicatalog/mcp` or a browser both work fine for a human.)
 - [Agent Skills](https://a2uicatalog.ai/.well-known/agent-skills/index.json): three `SKILL.md` files (`a2ui-catalog`, `a2ui-compose`, `a2ui-mcp` — picking atoms, composing/rendering a payload, connecting a new agent over MCP) installable via `npx skills add a2uicatalog/a2ui`. Source: `skills/` in the GitHub repository.
 - [Developer portal](https://a2uicatalog.ai/developers/): Human and agent developer portal, integration guide, REST surfaces, code samples, and self-hosting runbooks.
+- [SDKs & client libraries](https://a2uicatalog.ai/sdks/): Official SDK documentation, npm CLI package, Agent Skills, and client code generators.
 - [API docs](https://a2uicatalog.ai/docs/): API documentation for REST endpoints (/api/render, /api/compose, /ask), request/response schemas, and error shapes.
 - [API reference](https://a2uicatalog.ai/api-docs/): Predictable entry point for developer resources, OpenAPI specs, and MCP endpoints.
 - [OpenAPI spec](https://a2uicatalog.ai/openapi.json): Full OpenAPI 3.1 specification for all endpoints and schemas.
 - [Auth docs](https://a2uicatalog.ai/auth/): Authentication documentation, enterprise OAuth discovery metadata, and public unauthenticated access policies.
 - [Auth & rate limits](https://a2uicatalog.ai/.well-known/agent-auth.md): No API key or signup — the actual per-tool call limits.
 - [Authentication guide](https://a2uicatalog.ai/auth.md): Why you almost certainly need no credential, plus the optional OAuth path for enterprise platforms that require one.
+- [SDK guide](https://a2uicatalog.ai/sdk.md): SDK and client library documentation in Markdown format.
 - [Webhooks & events](https://a2uicatalog.ai/webhooks/): Event delivery, Server-Sent Events (SSE) streaming, and chat webhook destinations.
 - [Pricing & quotas](https://a2uicatalog.ai/pricing/): Free tier limits and self-hosting options.
 - [Versioning & deprecation policy](https://a2uicatalog.ai/versioning/): What changes without notice, how breaking changes are announced (`Deprecation`/`Sunset` headers, 90-day minimum), and the CI parity gate that enforces it.

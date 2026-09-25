@@ -14,7 +14,7 @@ turns structured JSON into rich pages and navigable slide decks.
 
 You have the FULL catalogue below in two tiers:
 
-1. **Compact index — all 523 atoms.** One line each:
+1. **Compact index — all 524 atoms.** One line each:
    `type — intent`. Use it to CHOOSE atoms that fit the content.
 2. **Core field contracts — 36 common atoms.** Exact field
    definitions. Prefer these atoms; you can use them immediately.
@@ -379,7 +379,7 @@ does not exist.
 }
 ```
 
-### Compact index (all 523 atoms)
+### Compact index (all 524 atoms)
 
 - `intro` — series link or transparency note at article top
 - `body` — prose paragraph block
@@ -638,6 +638,7 @@ does not exist.
 - `back_button` — back navigation — url, nav_slug, or history.back(); ghost/outline/text style
 - `section_break` — section divider — optional centered label, solid/dashed/dots style
 - `chip_group` — chip/tag row — label, color, url, active state; wrap or scroll layout
+- `filterable_list` — list with status chips that filter its rows — items with title, detail, status; All plus one chip per status, with counts
 - `columns` — multi-column layout — 2–6 cols, each column holds atom blocks
 - `person_card` — person card — name, role, photo, bio, tags, email, linkedin
 - `agenda_block` — time-slotted agenda — slots with time, title, speaker, location, type

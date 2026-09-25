@@ -1,12 +1,12 @@
 ---
 title: A2UI Atomic Catalog — agent guide
-description: 523 typed UI atoms an AI agent composes into real rendered interfaces instead of generating HTML.
+description: 524 typed UI atoms an AI agent composes into real rendered interfaces instead of generating HTML.
 canonical: https://a2uicatalog.ai/agents.md
 ---
 
 # A2UI Atomic Catalog — agent guide
 
-> 523 typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
+> 524 typed UI atoms an AI agent composes into real rendered interfaces — web, Google Meet,
 > Apps Script, Google Chat and MCP Apps — instead of generating HTML.
 
 ## Connect
@@ -56,6 +56,7 @@ declared sources), or on hosts that cannot display HTML.
 | Document | URL |
 |---|---|
 | Developer guide & API docs | https://a2uicatalog.ai/developers/ |
+| SDKs & client libraries | https://a2uicatalog.ai/sdks/ |
 | CLI / local MCP server (npm) | https://registry.npmjs.org/@a2uicatalog/mcp |
 | Agent Skills index | https://a2uicatalog.ai/.well-known/agent-skills/index.json |
 | OpenAPI specification | https://a2uicatalog.ai/openapi.json |
@@ -65,6 +66,7 @@ declared sources), or on hosts that cannot display HTML.
 | ARD discovery document | https://a2uicatalog.ai/.well-known/ard.json |
 | Auth & rate limits | https://a2uicatalog.ai/.well-known/agent-auth.md |
 | Authentication guide | https://a2uicatalog.ai/auth.md |
+| SDK documentation | https://a2uicatalog.ai/sdk.md |
 | Pricing & limits | https://a2uicatalog.ai/pricing.md |
 | Versioning policy | https://a2uicatalog.ai/versioning.md |
 | Agent overview | https://a2uicatalog.ai/llms.txt |

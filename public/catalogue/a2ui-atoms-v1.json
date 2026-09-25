@@ -4,7 +4,7 @@
  "catalogId": "https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json",
  "title": "A2UI Atoms Catalog",
  "description": "The A2UI multi-surface atom vocabulary as an A2UI-v1.0 catalog document. Each stable atom is a component; a host resolves createSurface.catalogId (this file's URL) to it.",
- "instructions": "Every key under `components` is a valid `component` value (523 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
+ "instructions": "Every key under `components` is a valid `component` value (524 components). Compose layouts with Column/Row containers; each component's fields are its properties. Canonical URI: https://a2uicatalog.ai/catalogue/a2ui-atoms-v1.json — full prose spec (descriptions, surfaces, attribution): https://a2uicatalog.ai/spec.json",
  "components": {
   "intro": {
    "type": "object",
@@ -11943,6 +11943,65 @@
     "I need a way to show a list of categories a user can tap to filter results.",
     "Let me display a set of selectable tags for product attributes, with scrolling if there are many.",
     "Show me a row of clickable items that highlight when selected, for navigating content sections."
+   ]
+  },
+  "filterable_list": {
+   "type": "object",
+   "description": "A list of items, each with a title, an optional detail line and a status or category, above a row of chips (All plus one per status, with counts) that actually filter it. Tapping a chip shows only the matching rows and updates the \"Showing X of Y\" count. Self-contained, so it works without any other atom; on a static surface it degrades to the full list.",
+   "allOf": [
+    {
+     "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ComponentCommon"
+    },
+    {
+     "type": "object",
+     "properties": {
+      "component": {
+       "const": "filterable_list"
+      },
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, heading above the list)"
+      },
+      "items": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array (required). Array of {title (or name), detail? (or subtitle), status? (or whichever field filter_field names), meta? (right-aligned small text), icon? (an emoji)}. Items with no value for the filter field show only under All."
+      },
+      "filter_field": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, default \"status\"). Which item field the chips filter on, e.g. \"category\" or \"assignee\"."
+      },
+      "filters": {
+       "description": "array (optional). Chips to show, as plain strings or {value, label?, color? (hex)}. Default: one chip per distinct value, in first-seen order.",
+       "type": "array"
+      },
+      "colors": {
+       "description": "object (optional). Map from a status or category value to a hex colour for its chip and row badge. Default: a distinct colour per chip.",
+       "type": "object"
+      },
+      "show_counts": {
+       "description": "bool (optional, default true). Show how many rows each chip matches.",
+       "type": "boolean"
+      },
+      "empty_text": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional, shown when a filter matches nothing)"
+      }
+     },
+     "required": [
+      "component",
+      "items"
+     ]
+    }
+   ],
+   "unevaluatedProperties": false,
+   "x-surfaces": [
+    "mcp-apps"
+   ],
+   "x-routing-text": "A list of items, each with a title, an optional detail line and a status or category, above a row of chips (All plus one per status, with counts) that actually filter it. Tapping a chip shows only the matching rows and updates the count. Self-contained, so it works without any other atom.",
+   "x-intent-phrases": [
+    "Show a list of support tickets that the reader can filter by open, pending or resolved.",
+    "I need a task list with a chip for each status so the team can see only what is in progress.",
+    "Let visitors browse our rental properties and narrow them to only the ones marked available."
    ]
   },
   "columns": {
