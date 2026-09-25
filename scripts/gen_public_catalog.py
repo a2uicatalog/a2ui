@@ -116,6 +116,10 @@ def gen_spec(blocks):
             entry["source_inspiration"] = b["source_inspiration"]
         if b.get("aliases"):
             entry["aliases"] = b["aliases"]
+        if b.get("routing_text"):
+            entry["routing_text"] = b["routing_text"]
+        if b.get("intent_phrases"):
+            entry["intent_phrases"] = b["intent_phrases"]
         atoms.append(entry)
     return {
         "catalogId": "a2ui-atoms-v1",
@@ -201,6 +205,10 @@ def _component_def(atom: dict) -> dict:
         definition["x-surfaces"] = surfaces
     if atom.get("aliases"):
         definition["x-aliases"] = atom["aliases"]
+    if atom.get("routing_text"):  # semantic-routing metadata for find_atoms (embedded and shown to the agent)
+        definition["x-routing-text"] = atom["routing_text"]
+    if atom.get("intent_phrases"):
+        definition["x-intent-phrases"] = atom["intent_phrases"]
     return definition
 
 

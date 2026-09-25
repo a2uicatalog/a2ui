@@ -303,6 +303,19 @@ MULTI_REP = {
 }
 
 
+def atom_anchor_text(a: dict) -> str:
+    """Text embedded as an atom's single anchor vector. Schema-driven: routing_text plus ALL intent_phrases from
+    schema.yaml, falling back to the legacy "type: compact_description" for atoms with neither. No "type:" prefix and
+    all phrases, not one: measured on the 97 needs with bge-small, hit@30 is 88/97 for this form against 79/97 with the
+    prefix and 83/97 with one phrase (benchmark-atoms/needs/PROJECT_ACCURACY.md). MULTI_REP is layered on top, unchanged."""
+    if not a.get("routing_text"):
+        return f"{a['type']}: {a.get('compact_description', '')}"
+    body = a["routing_text"]
+    if a.get("intent_phrases"):
+        body += " Fits needs like: " + "; ".join(a["intent_phrases"]) + "."
+    return body
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--endpoint", required=True,
@@ -319,7 +332,7 @@ def main() -> None:
 
     # One batched call: legacy anchor text for every atom, plus every multi-rep
     # phrase, in one request (proven to work up to 468 inputs in a single call).
-    legacy_texts = [f"{a['type']}: {a.get('compact_description', '')}" for a in atoms]
+    legacy_texts = [atom_anchor_text(a) for a in atoms]
     multirep_texts = []
     multirep_index = []  # (atom_type, phrase_position) per multirep_texts entry
     for atype, phrases in MULTI_REP.items():
