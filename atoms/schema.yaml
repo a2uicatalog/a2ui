@@ -11485,6 +11485,12 @@ blocks:
     scrubber: boolean (optional). Show the animate/instructions toggle and step slider. Default true.
     checks: boolean (optional). Show the build-check verdicts. Default true.
     parts: boolean (optional). Show the parts list with an indicative cost. Default false.
+    models: array (optional). Named models for the picker dropdown — up to 8 objects {name, bricks}, each bricks
+      array as above (up to 3000 bricks each). Entries with no usable bricks are skipped; a missing name becomes
+      Model N. The dropdown lists the six built-in shapes followed by these.
+    model: string (optional). Name of the entry in models to show first. Ignored when bricks is set.
+    picker: boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set
+      true to get a dropdown of the six built-in shapes alone.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

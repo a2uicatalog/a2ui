@@ -18152,6 +18152,7 @@ _RENDERERS["canvas_plexus"] = _render_canvas_plexus
 _BRICK_GS = Path(__file__).resolve().parent.parent / "apps-script-surface" / "gas-wired-renderer" / "atoms_brick.gs"
 _BRICK_SHAPES = ("heart", "sphere", "torus", "helix", "pyramid", "house")
 _BRICK_MAX = 3000
+_BRICK_MODELS_MAX = 8
 _brick_src_cache: Dict[str, str] = {}
 _JS_NUM = re.compile(r'^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$')
 _JS_INT = re.compile(r'^\s*([+-]?\d+)')
@@ -18220,6 +18221,24 @@ def _brick_sanitise(lst):
     return out or None
 
 
+def _brick_models(lst):
+    out = []
+    if not isinstance(lst, list):
+        return out
+    for m in lst:
+        if len(out) >= _BRICK_MODELS_MAX:
+            break
+        if not isinstance(m, dict):
+            continue
+        bl = _brick_sanitise(m.get("bricks"))
+        if not bl:
+            continue
+        nm = m.get("name")
+        nm = nm.strip()[:40] if isinstance(nm, str) else ""
+        out.append({"name": nm or "Model %d" % (len(out) + 1), "bricks": bl})
+    return out
+
+
 def _render_brick_build_3d(b: dict) -> str:
     shape = b.get("shape") if b.get("shape") in _BRICK_SHAPES else "heart"
     h = _js_parse_int(b.get("height")) or 380
@@ -18232,14 +18251,26 @@ def _render_brick_build_3d(b: dict) -> str:
             speed = max(0.1, min(4, sp))
             speed = int(speed) if float(speed).is_integer() else speed
     bg = b.get("bg")
+    bricks = _brick_sanitise(b.get("bricks"))
+    models, start = _brick_models(b.get("models")), -1
+    if not bricks and isinstance(b.get("model"), str):
+        for j, m in enumerate(models):
+            if m["name"] == b["model"]:
+                start = j
+                break
+        if start >= 0:
+            bricks = models[start]["bricks"]
     cfg = {
-        "shape": shape, "bricks": _brick_sanitise(b.get("bricks")),
+        "shape": shape, "bricks": bricks,
         "mode": "steps" if b.get("mode") == "steps" else "animate",
         "step": step, "speed": speed,
         "orbit": b.get("orbit") is not False,
         "bg": bg if isinstance(bg, str) and _BRICK_HEXBG.match(bg) else None,
         "scrubber": b.get("scrubber") is not False, "checks": b.get("checks") is not False,
         "parts": b.get("parts") is True,
+        "models": models,
+        "picker": False if b.get("picker") is False else (b.get("picker") is True or len(models) > 0),
+        "start": start,
     }
     uid = "brk" + _wa_uid(b)[:6]
     payload = _json.dumps(cfg, separators=(",", ":"), ensure_ascii=False).replace("<", "\\u003c")

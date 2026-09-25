@@ -36,6 +36,18 @@ CASES = [
     {"speed": 0}, {"speed": 10}, {"speed": "2.5"}, {"speed": None}, {"speed": 1.0},
     {"height": "  250px"}, {"height": 0}, {"height": 12.9}, {"step": "3"}, {"step": 0}, {"step": "x"},
     {"orbit": 0}, {"orbit": False}, {"parts": "yes"}, {"mode": "steps"}, {"mode": "STEPS"},
+    # model picker
+    {"models": [{"name": "Tower", "bricks": BRICKS}]},
+    {"models": [{"name": "  Tower  ", "bricks": BRICKS}, {"bricks": BRICKS}, {"name": "x" * 60, "bricks": BRICKS}],
+     "model": "Tower"},
+    {"models": [{"name": "A", "bricks": BRICKS}, {"name": "B", "bricks": BRICKS}], "model": "B", "picker": False},
+    {"models": [{"name": "</script><b>", "bricks": BRICKS}, {"name": "empty", "bricks": []}, {"name": "junk"},
+                "junk", None, 7, {"name": 5, "bricks": BRICKS}]},
+    {"models": [{"name": "n%d" % i, "bricks": BRICKS} for i in range(12)], "model": "n9"},
+    {"models": "not a list"}, {"models": {}}, {"models": []},
+    {"picker": True}, {"picker": "yes"}, {"picker": True, "bricks": BRICKS, "scrubber": False},
+    {"bricks": BRICKS, "models": [{"name": "M", "bricks": BRICKS}], "model": "M"},   # explicit bricks win
+    {"models": [{"name": "M", "bricks": BRICKS}], "model": "nope"}, {"models": [{"name": "M", "bricks": BRICKS}], "model": 3},
 ]
 
 
