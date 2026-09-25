@@ -720,7 +720,9 @@
    "x-intent-phrases": [
     "I need to show users when they've successfully saved their changes.",
     "Let's warn folks if they're about to delete something important.",
-    "Can we add a small note explaining a complex setting?"
+    "Can we add a small note explaining a complex setting?",
+    "Highlight the refund and rescheduling policy so customers see it before they pay.",
+    "Draw attention to an important notice, such as a fee change or a required document, above the form."
    ]
   },
   "steps": {
@@ -1059,7 +1061,9 @@
    "x-intent-phrases": [
     "I need a way to show lots of photos nicely on any screen size.",
     "Users should be able to tap a picture to see it bigger without leaving the page.",
-    "I want a clean layout for a collection of product images that looks good everywhere."
+    "I want a clean layout for a collection of product images that looks good everywhere.",
+    "Show a set of photos of a rental flat or hotel room that visitors can browse.",
+    "A photo grid of a portfolio or product range with a larger view on click."
    ]
   },
   "video_pair": {
@@ -1599,7 +1603,8 @@
    "x-intent-phrases": [
     "I need to show users how long their file upload is taking.",
     "Can I get something that visually indicates how much of a process is complete?",
-    "I want to give feedback on the loading status of a long operation."
+    "I want to give feedback on the loading status of a long operation.",
+    "Show how far through a course or a checklist someone is, such as 5 of 12 done."
    ]
   },
   "badge_group": {
@@ -3754,7 +3759,8 @@
    "x-intent-phrases": [
     "I need a visual way to show users how much of a task is complete.",
     "Users need to see how far along they are in a multi-step process.",
-    "I want to give instant feedback on file upload progress."
+    "I want to give instant feedback on file upload progress.",
+    "A circular gauge showing how much of a queue of items has been worked through."
    ]
   },
   "action_required_card": {
@@ -4093,7 +4099,9 @@
    "x-intent-phrases": [
     "I need to show the dimensions and weight of items clearly.",
     "Users should be able to compare key features side-by-side.",
-    "Displaying material composition and warranty details is crucial."
+    "Displaying material composition and warranty details is crucial.",
+    "List the rent, deposit, size and included utilities of a property in a compact table.",
+    "A spec sheet for a product or a hire item: dimensions, weight, capacity and price."
    ]
   },
   "comparison_grid": {
@@ -8444,7 +8452,9 @@
    "x-intent-phrases": [
     "I need users to be able to quickly grab this long URL.",
     "Make it easy for people to grab this code snippet.",
-    "Help users copy this product ID without errors."
+    "Help users copy this product ID without errors.",
+    "Give the guest an entry code or booking reference they can copy with one tap.",
+    "Show a discount code or account number with a button to copy it."
    ]
   },
   "conversion_funnel": {
@@ -11349,7 +11359,8 @@
    "x-intent-phrases": [
     "I need to show users how many stages are left in my signup process.",
     "How can I visually guide users through a multi-step setup for their account?",
-    "Users need to see their progress through the application's tutorial steps."
+    "Users need to see their progress through the application's tutorial steps.",
+    "Show which step of a multi-step booking or onboarding flow the user is currently on."
    ]
   },
   "split_pane": {
@@ -17862,7 +17873,9 @@
    "x-intent-phrases": [
     "I need a way to display a brief summary of a user's profile.",
     "Show me key details about a product without being overwhelming.",
-    "How can I present important notifications clearly?"
+    "How can I present important notifications clearly?",
+    "Show a clinic's opening hours, address and what to bring before the patient confirms their appointment.",
+    "Give guests the key details of their stay: check-in time, house rules and the host's contact."
    ]
   },
   "ai_build_trace": {
@@ -22825,7 +22838,9 @@
    "x-intent-phrases": [
     "I need a way for users to easily find our office on a map.",
     "Show customers where our event venue is located.",
-    "Let field staff see nearby job sites on a map."
+    "Let field staff see nearby job sites on a map.",
+    "Show where a venue is on a map, with the street address and directions from the station.",
+    "Let visitors see the location of the nearest branch and how to get there."
    ]
   },
   "sheet_form": {
@@ -23192,7 +23207,8 @@
    "x-intent-phrases": [
     "I need to show users how much of their profile is complete.",
     "Can I visualize the download progress of a large file?",
-    "I want to display how far along a user is in a multi-step process."
+    "I want to display how far along a user is in a multi-step process.",
+    "A small ring showing the share of a daily goal that is completed."
    ]
   },
   "confetti_burst": {
