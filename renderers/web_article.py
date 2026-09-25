@@ -18202,26 +18202,46 @@ def _brick_clamp(v, lo, hi, dflt):
     return max(lo, min(hi, math.floor(n)))
 
 
-def _brick_sanitise(lst):
+def _brick_palette(lst):
+    out = []
+    if not isinstance(lst, list):
+        return out
+    for v in lst:
+        if len(out) >= 256:
+            break
+        out.append(v.lower() if isinstance(v, str) and _BRICK_HEX6.match(v) else "#c91a09")
+    return out
+
+
+def _brick_sanitise(lst, palette=None):
     if not isinstance(lst, list) or not lst:
         return None
     out = []
     for r in lst:
         if len(out) >= _BRICK_MAX:
             break
-        if not isinstance(r, dict):
+        if isinstance(r, list) and len(r) in (6, 7):
+            x, y, z, w, d = r[0], r[1], r[2], r[3], r[4]
+            h, c = (r[5] if len(r) == 7 else 1), r[-1]
+            present = lambda key: True                   # noqa: E731  (array form: every slot is present)
+        elif isinstance(r, dict):
+            x, y, z, w, d, h, c = (r.get(k) for k in ("x", "y", "z", "w", "d", "h", "c"))
+            present = lambda key, r=r: key in r          # noqa: E731
+        else:
             continue
         # a missing key is JS `undefined` (NaN -> default); an explicit null is Number(null) = 0
-        def n(key, lo, hi, dflt):
-            return _brick_clamp(r[key], lo, hi, dflt) if key in r else dflt
-        c = r.get("c")
+        def n(key, v, lo, hi, dflt, present=present):
+            return _brick_clamp(v, lo, hi, dflt) if present(key) else dflt
+        if isinstance(c, (int, float)) and not isinstance(c, bool) and math.isfinite(c) and palette:
+            k = math.floor(c)
+            c = palette[k] if 0 <= k < len(palette) else None
         c = c.lower() if isinstance(c, str) and _BRICK_HEX6.match(c) else "#c91a09"
-        out.append({"x": n("x", 0, 255, 0), "y": n("y", 0, 255, 0), "z": n("z", 0, 255, 0),
-                    "w": n("w", 1, 32, 1), "d": n("d", 1, 32, 1), "h": n("h", 1, 8, 1), "c": c})
+        out.append({"x": n("x", x, 0, 255, 0), "y": n("y", y, 0, 255, 0), "z": n("z", z, 0, 255, 0),
+                    "w": n("w", w, 1, 32, 1), "d": n("d", d, 1, 32, 1), "h": n("h", h, 1, 8, 1), "c": c})
     return out or None
 
 
-def _brick_models(lst):
+def _brick_models(lst, palette=None):
     out = []
     if not isinstance(lst, list):
         return out
@@ -18230,7 +18250,8 @@ def _brick_models(lst):
             break
         if not isinstance(m, dict):
             continue
-        bl = _brick_sanitise(m.get("bricks"))
+        pal = _brick_palette(m["palette"]) if isinstance(m.get("palette"), list) else palette
+        bl = _brick_sanitise(m.get("bricks"), pal)
         if not bl:
             continue
         nm = m.get("name")
@@ -18251,8 +18272,9 @@ def _render_brick_build_3d(b: dict) -> str:
             speed = max(0.1, min(4, sp))
             speed = int(speed) if float(speed).is_integer() else speed
     bg = b.get("bg")
-    bricks = _brick_sanitise(b.get("bricks"))
-    models, start = _brick_models(b.get("models")), -1
+    palette = _brick_palette(b.get("palette"))
+    bricks = _brick_sanitise(b.get("bricks"), palette)
+    models, start = _brick_models(b.get("models"), palette), -1
     if not bricks and isinstance(b.get("model"), str):
         for j, m in enumerate(models):
             if m["name"] == b["model"]:

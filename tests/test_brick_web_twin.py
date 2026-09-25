@@ -48,6 +48,18 @@ CASES = [
     {"picker": True}, {"picker": "yes"}, {"picker": True, "bricks": BRICKS, "scrubber": False},
     {"bricks": BRICKS, "models": [{"name": "M", "bricks": BRICKS}], "model": "M"},   # explicit bricks win
     {"models": [{"name": "M", "bricks": BRICKS}], "model": "nope"}, {"models": [{"name": "M", "bricks": BRICKS}], "model": 3},
+    # compact array bricks and palettes
+    {"bricks": [[0, 0, 0, 2, 2, "#C91A09"], [0, 1, 0, 2, 2, 2, "#0055bf"], [3, 0, 0, 1, 1, "bad"]]},
+    {"palette": ["#C91A09", "#0055BF", "nope", 5], "bricks": [[0, 0, 0, 2, 2, 0], [0, 1, 0, 2, 2, 1], [0, 2, 0, 1, 1, 2],
+                                                            [1, 2, 0, 1, 1, 3], [2, 2, 0, 1, 1, 9], [3, 2, 0, 1, 1, -1]]},
+    {"palette": ["#00ff00"], "bricks": [{"x": 0, "y": 0, "z": 0, "c": 0}, {"x": 1, "y": 0, "z": 0, "c": 0.9},
+                                        {"x": 2, "y": 0, "z": 0, "c": True}, {"x": 3, "y": 0, "z": 0, "c": None}]},
+    {"bricks": [[0, 0, 0, 1, 1, 1, 0]]},                                    # numeric colour, no palette: default red
+    {"palette": ["#123456"], "bricks": [[0, 0, 0, 1, 1, 0], [1, 2], [1, 2, 3, 4, 5, 6, 7, 8], "junk", [None, "1e9", 0, 99, 0, 0]]},
+    {"palette": "not a list", "bricks": [[0, 0, 0, 1, 1, 0]]}, {"palette": ["#abcdef"] * 300, "bricks": [[0, 0, 0, 1, 1, 255]]},
+    {"palette": ["#111111"], "models": [{"name": "A", "bricks": [[0, 0, 0, 2, 2, 0]]},
+                                       {"name": "B", "palette": ["#222222"], "bricks": [[0, 0, 0, 2, 2, 0]]},
+                                       {"name": "C", "palette": "x", "bricks": [[0, 0, 0, 2, 2, 0]]}], "model": "B"},
 ]
 
 

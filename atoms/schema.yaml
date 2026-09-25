@@ -11475,7 +11475,11 @@ blocks:
       is set.
     bricks: array (optional). Explicit model — objects {x, y, z, w, d, h, c}. x and z are stud positions, y is
       the layer (0 sits on the baseplate), w and d the footprint in studs, h the height in bricks (default 1),
-      c a #rrggbb colour. Up to 3000 bricks. A data-model binding such as {path '/bricks'} arrives resolved.
+      c a '#rrggbb' colour or a palette index. A brick may also be a compact array [x, y, z, w, d, c] or
+      [x, y, z, w, d, h, c], about a third of the size. Up to 3000 bricks. A data-model binding such as
+      {path '/bricks'} arrives resolved.
+    palette: array (optional). Up to 256 '#rrggbb' colours. A brick's c may be an integer index into it, which keeps
+      large models small.
     mode: string (optional). animate or steps. Default animate.
     step: integer (optional). Initial instruction step when mode is steps. Default 1.
     speed: number (optional). Animation speed multiplier. Default 1.
@@ -11485,8 +11489,8 @@ blocks:
     scrubber: boolean (optional). Show the animate/instructions toggle and step slider. Default true.
     checks: boolean (optional). Show the build-check verdicts. Default true.
     parts: boolean (optional). Show the parts list with an indicative cost. Default false.
-    models: array (optional). Named models for the picker dropdown — up to 8 objects {name, bricks}, each bricks
-      array as above (up to 3000 bricks each). Entries with no usable bricks are skipped; a missing name becomes
+    models: array (optional). Named models for the picker dropdown — up to 8 objects {name, bricks, palette}, each
+      bricks array as above (up to 3000 bricks each; palette optional, else the top-level one). Entries with no usable bricks are skipped; a missing name becomes
       Model N. The dropdown lists the six built-in shapes followed by these.
     model: string (optional). Name of the entry in models to show first. Ignored when bricks is set.
     picker: boolean (optional). Show the model dropdown. Default true when models is given, otherwise false; set
