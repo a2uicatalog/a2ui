@@ -143,7 +143,7 @@ def test_the_mcp_apps_bundle_itself_renders_scenes_and_clipart():
     assert 'class="a2ui-scene"' in scene and "<animate" in scene and "scene-atom:provenance" in scene, scene[:300]
     assert "not bundled on this surface" not in scene and "spec.preset must be one of" in bad
     assert 'class="a2ui-clipart"' in clip and "A turbine" in clip
-    assert len(bundle) < 3_200_000
+    assert len(bundle) < 3_500_000
 
 
 def test_published_scene_assets_match_the_data_the_renderer_embeds():

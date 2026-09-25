@@ -398,6 +398,8 @@ def test_bundle_size_guard(bundle):
     # a ui:// template inlined into an iframe actually costs on claude.ai or
     # ChatGPT. This number bounds our own carelessness, not the host's tolerance.
     #
+    # Ceiling raised 3.2 -> 3.5 MB on 2026-09-25, with Curtis's go-ahead, because brick_build_3d (model picker, compact bricks)
+    # and the Rebrickable data-source declarations left ~4 KB of headroom. Still our own guard, not a measured host limit.
     # Ceiling raised 2.5 -> 3.2 MB on 2026-09-20, with Curtis's explicit go-ahead, for ONE known, intentional delta:
     # atoms_scene_data.gs, the scene kit's generated data (291 stable props + 45 layouts, ~677 KB raw, ~100 KB gzipped) that
     # scene_stage / clipart render from. Delta checked, not accidental: bundle 2.23 MB -> 3.02 MB, all of it that one file
@@ -405,7 +407,7 @@ def test_bundle_size_guard(bundle):
     # template this size costs on claude.ai / ChatGPT. Nothing ships until the renderer is released. If a host objects, the
     # fallback is to put atoms_scene_data.gs back in EXCLUDE_FILES (gen_mcp_apps_bundle.py) and have the Worker inline only the
     # props one spec uses (~35 KB). Revert this number to 2_500_000 to force that decision.
-    assert len(bundle) < 3_200_000, f"bundle ballooned to {len(bundle)} bytes"
+    assert len(bundle) < 3_500_000, f"bundle ballooned to {len(bundle)} bytes"
     assert len(bundle) > 800_000, "bundle suspiciously small — files missing?"
 
 

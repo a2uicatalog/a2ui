@@ -43,6 +43,16 @@
 #   Tiers compose upward: a `user` or `agent` principal always satisfies
 #   `keyed` and `public`.
 
+# Upstream credentials (added 2026-09-25 for Rebrickable):
+#   upstream_auth: {secret: REBRICKABLE_API_KEY, header: Authorization, prefix: "key "}
+#   The worker reads the VALUE from its own secret store (env[secret], set with `wrangler secret put`) and sends
+#   it upstream as `header: prefix + value`. Only the secret's NAME and the header shape live here; the value never
+#   appears in this file, the public registry, the browser bundle, a cache key or a response. If the secret is
+#   not set the proxy answers 503 "upstream credential not configured" rather than calling upstream without it.
+#   Compiler guards (gen_data_sources.py): secret is UPPER_SNAKE, header is Authorization or X-*, cache_ttl_s >= 3600,
+#   and a `public` source that spends a credential must keep per_ip_per_min <= 20 — a keyed upstream is a shared
+#   quota, so it is cached hard and rate-limited by declaration.
+
 version: 1
 
 csp:
@@ -121,3 +131,72 @@ sources:
     content_type: application/json
     access: {tier: public, scope: "data:workspace_status:read"}
     consumers: [service_status_board, incident_log, stat_pulse]
+
+  # Rebrickable (rebrickable.com/api/v3) — real LEGO part, colour and set data. Feeds brick_build_3d's planned
+  # set / part lookups. Key: worker secret REBRICKABLE_API_KEY. The API is rate-limited (about 1 request/second on
+  # a free key), so everything below is cached for a day or more and budgeted low. Attribution: Rebrickable.
+  rebrickable_set:
+    description: One LEGO set by number (name, year, part count, image, Rebrickable page) via Rebrickable.
+    upstream: "https://rebrickable.com/api/v3/lego/sets/{set_num}/"
+    upstream_auth: {secret: REBRICKABLE_API_KEY, header: Authorization, prefix: "key "}
+    params:
+      set_num: {type: string, pattern: "^[0-9A-Za-z]{1,10}(-[0-9]{1,2})?$", default: "75954-1"}
+    cache_ttl_s: 86400
+    min_client_refresh_s: 86400
+    limits:
+      per_ip_per_min: 10
+      upstream_per_min: 20
+    content_type: application/json
+    access: {tier: public, scope: "data:rebrickable_set:read"}
+    consumers: [brick_build_3d]
+
+  rebrickable_set_parts:
+    description: A set's parts inventory (part, colour, quantity), one page of up to 1000 part/colour rows, via
+      Rebrickable. Sets with more than 1000 distinct part/colour rows are truncated, and `next` is not passed on.
+    upstream: "https://rebrickable.com/api/v3/lego/sets/{set_num}/parts/?page_size=1000&inc_color_details=0"
+    upstream_auth: {secret: REBRICKABLE_API_KEY, header: Authorization, prefix: "key "}
+    params:
+      set_num: {type: string, pattern: "^[0-9A-Za-z]{1,10}(-[0-9]{1,2})?$", default: "75954-1"}
+    cache_ttl_s: 86400
+    min_client_refresh_s: 86400
+    limits:
+      per_ip_per_min: 6
+      upstream_per_min: 12
+    project_fields:
+      root: results
+      fields: [quantity, is_spare, part, color]
+    content_type: application/json
+    access: {tier: public, scope: "data:rebrickable_set_parts:read"}
+    consumers: [brick_build_3d]
+
+  rebrickable_colors:
+    description: Every LEGO colour (id, name, rgb, transparency) via Rebrickable, for resolving a model's hex
+      colours to real LEGO colours.
+    upstream: "https://rebrickable.com/api/v3/lego/colors/?page_size=1000"
+    upstream_auth: {secret: REBRICKABLE_API_KEY, header: Authorization, prefix: "key "}
+    cache_ttl_s: 604800
+    min_client_refresh_s: 604800
+    limits:
+      per_ip_per_min: 6
+      upstream_per_min: 6
+    project_fields:
+      root: results
+      fields: [id, name, rgb, is_trans]
+    content_type: application/json
+    access: {tier: public, scope: "data:rebrickable_colors:read"}
+    consumers: [brick_build_3d]
+
+  rebrickable_part:
+    description: One LEGO part by number (name, image, Rebrickable page) via Rebrickable.
+    upstream: "https://rebrickable.com/api/v3/lego/parts/{part_num}/"
+    upstream_auth: {secret: REBRICKABLE_API_KEY, header: Authorization, prefix: "key "}
+    params:
+      part_num: {type: string, pattern: "^[0-9A-Za-z]{1,20}$", default: "3001"}
+    cache_ttl_s: 604800
+    min_client_refresh_s: 604800
+    limits:
+      per_ip_per_min: 10
+      upstream_per_min: 20
+    content_type: application/json
+    access: {tier: public, scope: "data:rebrickable_part:read"}
+    consumers: [brick_build_3d]
