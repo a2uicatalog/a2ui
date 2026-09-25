@@ -305,3 +305,9 @@ def test_api_catalog_and_llms_advertise_developer_resources():
     ):
         assert required in all_hrefs, f"api-catalog missing required developer resource link: {required}"
 
+    agent_view = json.loads(_load("agent-view.json"))
+    docs = agent_view["documentation"]
+    for key in ("openapi", "sdks", "api_docs", "auth_docs", "webhooks", "versioning_docs", "pricing_docs", "sdk"):
+        assert key in docs, f"agent-view.json missing documentation key: {key}"
+
+
