@@ -100,4 +100,11 @@
 # vAmiga.wasm itself -- the WASM module cannot load at all without this, which is why nothing booted, not even the toolbar).
 /surfaces/amiga/*
   Access-Control-Allow-Origin: *
+
+# brick_build_3d part meshes (spec/brick-parts-v0.1.md): fetched by reference from inside the host's sandboxed
+# MCP Apps iframe, a different origin, same reasoning as diagram-studio and amiga above. Long cache: baked meshes
+# only change when the curated part set or the LDraw pin changes (ldraw-parts-build), which recommits the whole set.
+/parts/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=604800, immutable
   Cache-Control: public, max-age=3600

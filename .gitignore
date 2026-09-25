@@ -98,3 +98,8 @@ public-full/
 atoms/.schema.yaml.public-only.bak
 improve.yaml
 improve_probes
+
+# LDraw parts library (spec/brick-parts-v0.1.md): a ~145MB pinned CC BY download, refetched by
+# scripts/ldraw/fetch_library.py the way node_modules is rebuilt, never carried in git. Only the baked
+# output (public/parts/) is committed.
+scripts/ldraw/_ldraw_cache/

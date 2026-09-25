@@ -1,0 +1,2558 @@
+{
+ "attribution": "Part geometry from the LDraw.org Parts Library (https://www.ldraw.org), used under CC BY 4.0 / CC BY 2.0. LDraw is not affiliated with the LEGO Group. LEGO(R) is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this content.",
+ "quant": 16,
+ "parts": {
+  "2357": {
+   "title": "Brick  2 x  2 Corner",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     384,
+     480
+    ]
+   },
+   "studs": 3,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 10975,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2456": {
+   "title": "Brick  2 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -320
+    ],
+    "max": [
+     960,
+     384,
+     320
+    ]
+   },
+   "studs": 12,
+   "sockets": 12,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 39845,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3001": {
+   "title": "Brick  2 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     384,
+     320
+    ]
+   },
+   "studs": 8,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 24673,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3002": {
+   "title": "Brick  2 x  3",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -320
+    ],
+    "max": [
+     480,
+     384,
+     320
+    ]
+   },
+   "studs": 6,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 17281,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3003": {
+   "title": "Brick  2 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     384,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 9501,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3004": {
+   "title": "Brick  1 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 5679,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3005": {
+   "title": "Brick  1 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 2203,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3006": {
+   "title": "Brick  2 x 10",
+   "bounds": {
+    "min": [
+     -1600,
+     0,
+     -320
+    ],
+    "max": [
+     1600,
+     384,
+     320
+    ]
+   },
+   "studs": 20,
+   "sockets": 20,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 71837,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3007": {
+   "title": "Brick  2 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -320
+    ],
+    "max": [
+     1280,
+     384,
+     320
+    ]
+   },
+   "studs": 16,
+   "sockets": 16,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 61219,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3008": {
+   "title": "Brick  1 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -160
+    ],
+    "max": [
+     1280,
+     384,
+     160
+    ]
+   },
+   "studs": 8,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 28273,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3009": {
+   "title": "Brick  1 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -160
+    ],
+    "max": [
+     960,
+     384,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 20543,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3010": {
+   "title": "Brick  1 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 13111,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3245c": {
+   "title": "Brick  1 x  2 x  2 without Understud",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     768,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 4309,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3622": {
+   "title": "Brick  1 x  3",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     384,
+     160
+    ]
+   },
+   "studs": 3,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 9702,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3754": {
+   "title": "Brick  1 x  6 x  5",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -160
+    ],
+    "max": [
+     960,
+     1920,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 16850,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6111": {
+   "title": "Brick  1 x 10",
+   "bounds": {
+    "min": [
+     -1600,
+     0,
+     -160
+    ],
+    "max": [
+     1600,
+     384,
+     160
+    ]
+   },
+   "studs": 10,
+   "sockets": 10,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 36255,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "11211": {
+   "title": "Brick  1 x  2 with Two Studs on One Side",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 16842,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "11477": {
+   "title": "Slope Brick Curved  2 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     -256,
+     -320
+    ],
+    "max": [
+     160,
+     0,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 11004,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15068": {
+   "title": "Slope Brick Curved  2 x  2 x  0.667",
+   "bounds": {
+    "min": [
+     -320,
+     -256,
+     -320
+    ],
+    "max": [
+     320,
+     0,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 20918,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "24309": {
+   "title": "Slope Brick Curved  3 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -480
+    ],
+    "max": [
+     320,
+     384,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 37614,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "50950": {
+   "title": "Slope Brick Curved  3 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     384,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 12186,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "61678": {
+   "title": "Slope Brick Curved  4 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -640
+    ],
+    "max": [
+     160,
+     384,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 11485,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "88930": {
+   "title": "Slope Brick Curved  2 x  4 with Underside Studs",
+   "bounds": {
+    "min": [
+     -640,
+     -256,
+     -320
+    ],
+    "max": [
+     640,
+     0,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 63579,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "93273": {
+   "title": "Slope Brick Curved  4 x  1 Double",
+   "bounds": {
+    "min": [
+     -160,
+     -256,
+     -640
+    ],
+    "max": [
+     160,
+     0,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 24375,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15712": {
+   "title": "Tile  1 x  1 with Clip (Thick C-Clip)",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 8515,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2429": {
+   "title": "Hinge Plate  1 x  4 Base",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -128
+    ],
+    "max": [
+     128,
+     128,
+     320
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 15748,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2430": {
+   "title": "Hinge Plate  1 x  4 Top",
+   "bounds": {
+    "min": [
+     -128,
+     0,
+     -128
+    ],
+    "max": [
+     640,
+     128,
+     320
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 30758,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3937": {
+   "title": "Hinge  1 x  2 Base",
+   "bounds": {
+    "min": [
+     -320,
+     32,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 20431,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3938": {
+   "title": "Hinge  1 x  2 Top",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     256,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 26998,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60478": {
+   "title": "Plate  1 x  2 with Handle on End",
+   "bounds": {
+    "min": [
+     -320,
+     -64,
+     -160
+    ],
+    "max": [
+     576,
+     128,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 17688,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "61252": {
+   "title": "Plate  1 x  1 with Clip Horizontal (Thick C-Clip)",
+   "bounds": {
+    "min": [
+     -160,
+     -87,
+     -384
+    ],
+    "max": [
+     160,
+     151,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 10527,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2420": {
+   "title": "Plate  2 x  2 Corner",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     128,
+     480
+    ]
+   },
+   "studs": 3,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 10364,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2445": {
+   "title": "Plate  2 x 12",
+   "bounds": {
+    "min": [
+     -1920,
+     0,
+     -320
+    ],
+    "max": [
+     1920,
+     128,
+     320
+    ]
+   },
+   "studs": 24,
+   "sockets": 24,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 88104,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3020": {
+   "title": "Plate  2 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     128,
+     320
+    ]
+   },
+   "studs": 8,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 24672,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3021": {
+   "title": "Plate  2 x  3",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -320
+    ],
+    "max": [
+     480,
+     128,
+     320
+    ]
+   },
+   "studs": 6,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 17280,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3022": {
+   "title": "Plate  2 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 9500,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3023b": {
+   "title": "Plate  1 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 5679,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3024": {
+   "title": "Plate  1 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 2202,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3029": {
+   "title": "Plate  4 x 12",
+   "bounds": {
+    "min": [
+     -1920,
+     0,
+     -640
+    ],
+    "max": [
+     1920,
+     128,
+     640
+    ]
+   },
+   "studs": 48,
+   "sockets": 48,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 269448,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3030": {
+   "title": "Plate  4 x 10",
+   "bounds": {
+    "min": [
+     -1600,
+     0,
+     -640
+    ],
+    "max": [
+     1600,
+     128,
+     640
+    ]
+   },
+   "studs": 40,
+   "sockets": 40,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 218800,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3031": {
+   "title": "Plate  4 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     128,
+     640
+    ]
+   },
+   "studs": 16,
+   "sockets": 16,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 72040,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3032": {
+   "title": "Plate  4 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -640
+    ],
+    "max": [
+     960,
+     128,
+     640
+    ]
+   },
+   "studs": 24,
+   "sockets": 24,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 119408,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3033": {
+   "title": "Plate  6 x 10",
+   "bounds": {
+    "min": [
+     -1600,
+     0,
+     -960
+    ],
+    "max": [
+     1600,
+     128,
+     960
+    ]
+   },
+   "studs": 60,
+   "sockets": 60,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 365764,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3034": {
+   "title": "Plate  2 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -320
+    ],
+    "max": [
+     1280,
+     128,
+     320
+    ]
+   },
+   "studs": 16,
+   "sockets": 16,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 55566,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3035": {
+   "title": "Plate  4 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -640
+    ],
+    "max": [
+     1280,
+     128,
+     640
+    ]
+   },
+   "studs": 32,
+   "sockets": 32,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 168150,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3036": {
+   "title": "Plate  6 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -960
+    ],
+    "max": [
+     1280,
+     128,
+     960
+    ]
+   },
+   "studs": 48,
+   "sockets": 48,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 280734,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3460": {
+   "title": "Plate  1 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -160
+    ],
+    "max": [
+     1280,
+     128,
+     160
+    ]
+   },
+   "studs": 8,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 28272,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3623": {
+   "title": "Plate  1 x  3",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     128,
+     160
+    ]
+   },
+   "studs": 3,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 9701,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3666": {
+   "title": "Plate  1 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -160
+    ],
+    "max": [
+     960,
+     128,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 20542,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3710": {
+   "title": "Plate  1 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 13110,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3795": {
+   "title": "Plate  2 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -320
+    ],
+    "max": [
+     960,
+     128,
+     320
+    ]
+   },
+   "studs": 12,
+   "sockets": 12,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 39844,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3832": {
+   "title": "Plate  2 x 10",
+   "bounds": {
+    "min": [
+     -1600,
+     0,
+     -320
+    ],
+    "max": [
+     1600,
+     128,
+     320
+    ]
+   },
+   "studs": 20,
+   "sockets": 20,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 71836,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3958": {
+   "title": "Plate  6 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -960
+    ],
+    "max": [
+     960,
+     128,
+     960
+    ]
+   },
+   "studs": 36,
+   "sockets": 36,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 198972,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4477": {
+   "title": "Plate  1 x 10",
+   "bounds": {
+    "min": [
+     -1600,
+     0,
+     -160
+    ],
+    "max": [
+     1600,
+     128,
+     160
+    ]
+   },
+   "studs": 10,
+   "sockets": 10,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 36254,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60479": {
+   "title": "Plate  1 x 12",
+   "bounds": {
+    "min": [
+     -1920,
+     0,
+     -160
+    ],
+    "max": [
+     1920,
+     128,
+     160
+    ]
+   },
+   "studs": 12,
+   "sockets": 12,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 44235,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "1126": {
+   "title": "Tile  1 x  2 with Rounded Ends",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 15199,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15573": {
+   "title": "Plate  1 x  2 with Groove with 1 Centre Stud, without Understud",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 8057,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2654a": {
+   "title": "Dish  2 x  2 with Rim",
+   "bounds": {
+    "min": [
+     -320,
+     -64,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 72689,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30565": {
+   "title": "Plate  4 x  4 with Corner Round",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     128,
+     640
+    ]
+   },
+   "studs": 11,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 66157,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3062b": {
+   "title": "Brick  1 x  1 Round with Hollow Stud",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 17320,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3941": {
+   "title": "Brick  2 x  2 Round without Reinforcement",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     384,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 28541,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3960": {
+   "title": "Dish  4 x  4 Inverted",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     256,
+     640
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 122932,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4032a": {
+   "title": "Plate  2 x  2 Round with Axlehole",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 21050,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4740": {
+   "title": "Dish  2 x  2 Inverted",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 30464,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "48092": {
+   "title": "Brick  4 x  4 Corner Round",
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -1280
+    ],
+    "max": [
+     1280,
+     384,
+     0
+    ]
+   },
+   "studs": 3,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 32631,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "5845": {
+   "title": "Arch 1 x 5 x 3.333 with Curved Top and Two Studs",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -1440
+    ],
+    "max": [
+     160,
+     1280,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 20558,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6141": {
+   "title": "Plate  1 x  1 Round",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 13970,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6143": {
+   "title": "Brick  2 x  2 Round Reinforced",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     384,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 34022,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "76776": {
+   "title": "Brick  5 x  5 x  3.333 Corner Round with Dome Top and  2 x  2 Cutout",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -1440
+    ],
+    "max": [
+     1440,
+     1280,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 232332,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "85861": {
+   "title": "Plate  1 x  1 Round with Open Stud",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 17062,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3037": {
+   "title": "Slope Brick 45  2 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -480
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 48625,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3038": {
+   "title": "Slope Brick 45  2 x  3",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -480
+    ],
+    "max": [
+     480,
+     384,
+     160
+    ]
+   },
+   "studs": 3,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 33365,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3039": {
+   "title": "Slope Brick 45  2 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -480
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 18414,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3040b": {
+   "title": "Slope Brick 45  2 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 10013,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3043": {
+   "title": "Slope Brick 45  2 x  2 Double",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     384,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 15746,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3044c": {
+   "title": "Slope Brick 45  2 x  1 Double with Bottom Stud Holder",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -320
+    ],
+    "max": [
+     160,
+     384,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 5990,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3045": {
+   "title": "Slope Brick 45  2 x  2 Double Convex",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     480,
+     384,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 18781,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3298": {
+   "title": "Slope Brick 33  3 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -800
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 32027,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3660a": {
+   "title": "~Slope Brick 45  2 x  2 Inverted without Inner Stopper Ring (Obsolete)",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -480
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 22355,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3665a": {
+   "title": "Slope Brick 45  2 x  1 Inverted without Inner Stopper Ring",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 10692,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3747b": {
+   "title": "Slope Brick 33  3 x  2 Inverted with Ribs between Studs",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -800
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 60889,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4286": {
+   "title": "Slope Brick 33  3 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -800
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 13087,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4460b": {
+   "title": "Slope Brick 75  2 x  1 x  3 with Hollow Stud",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     1152,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 5433,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "54200": {
+   "title": "Slope Brick 31  1 x  1 x  0.667",
+   "bounds": {
+    "min": [
+     -160,
+     -250,
+     -160
+    ],
+    "max": [
+     160,
+     0,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 5818,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60481a": {
+   "title": "Slope Brick 65  2 x  1 x  2 with Symmetric Stud Holder",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     768,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 6174,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "85984": {
+   "title": "Slope Brick 31  1 x  2 x  0.667",
+   "bounds": {
+    "min": [
+     -320,
+     -250,
+     -160
+    ],
+    "max": [
+     320,
+     0,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 12008,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2780": {
+   "title": "Technic Pin with Friction and Slots",
+   "bounds": {
+    "min": [
+     -320,
+     -125,
+     -128
+    ],
+    "max": [
+     320,
+     125,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 2,
+   "needs_occupancy": false,
+   "bytes": 106466,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32000": {
+   "title": "Technic Brick  1 x  2 with Holes",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 33573,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32054": {
+   "title": "Technic Pin Long with Stop Bush",
+   "bounds": {
+    "min": [
+     -480,
+     -144,
+     -144
+    ],
+    "max": [
+     480,
+     144,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 2,
+   "needs_occupancy": false,
+   "bytes": 137666,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32062": {
+   "title": "Technic Axle  2 Notched",
+   "bounds": {
+    "min": [
+     -312,
+     -96,
+     -96
+    ],
+    "max": [
+     312,
+     96,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 27188,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3673": {
+   "title": "Technic Pin",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     320,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 51152,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3700": {
+   "title": "Technic Brick  1 x  2 with Hole",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 2,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 24661,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3701": {
+   "title": "Technic Brick  1 x  4 with Holes",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 6,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 71370,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3702": {
+   "title": "Technic Brick  1 x  8 with Holes",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -160
+    ],
+    "max": [
+     1280,
+     384,
+     160
+    ]
+   },
+   "studs": 8,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 166419,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3703": {
+   "title": "Technic Brick  1 x 16 with Holes",
+   "bounds": {
+    "min": [
+     -2560,
+     0,
+     -160
+    ],
+    "max": [
+     2560,
+     384,
+     160
+    ]
+   },
+   "studs": 16,
+   "sockets": 0,
+   "holes": 30,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 366759,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3704": {
+   "title": "Technic Axle  2",
+   "bounds": {
+    "min": [
+     -312,
+     -96,
+     -96
+    ],
+    "max": [
+     312,
+     96,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 15075,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3749": {
+   "title": "Technic Axle Pin",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     312,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 35350,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3894": {
+   "title": "Technic Brick  1 x  6 with Holes",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -160
+    ],
+    "max": [
+     960,
+     384,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 0,
+   "holes": 10,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 118172,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4274": {
+   "title": "Technic Pin  1/2",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     0,
+     128,
+     128
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 28485,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "43093": {
+   "title": "Technic Axle Pin with Friction",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     312,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 1,
+   "needs_occupancy": true,
+   "bytes": 55540,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6536": {
+   "title": "Technic Cross Block 1 x 2 (Axle/Pin)",
+   "bounds": {
+    "min": [
+     -160,
+     -144,
+     -160
+    ],
+    "max": [
+     160,
+     464,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 56499,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6541": {
+   "title": "Technic Brick  1 x  1 with Hole",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 2,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 16176,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6558": {
+   "title": "Technic Pin Long with Friction and Slot",
+   "bounds": {
+    "min": [
+     -480,
+     -125,
+     -128
+    ],
+    "max": [
+     480,
+     125,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 3,
+   "needs_occupancy": false,
+   "bytes": 153269,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14769": {
+   "title": "Tile  2 x  2 Round with Round Underside Stud",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 33540,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2412b": {
+   "title": "Tile  1 x  2 Grille with Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 9179,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431": {
+   "title": "Tile  1 x  4 with Groove",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 14036,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3026": {
+   "title": "Plate  6 x 24",
+   "bounds": {
+    "min": [
+     -3840,
+     0,
+     -960
+    ],
+    "max": [
+     3840,
+     128,
+     960
+    ]
+   },
+   "studs": 144,
+   "sockets": 144,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 960960,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068b": {
+   "title": "Tile  2 x  2 with Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 11805,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069b": {
+   "title": "Tile  1 x  2 with Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 3359,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070b": {
+   "title": "Tile  1 x  1 with Groove",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 3256,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4162": {
+   "title": "Tile  1 x  8",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -160
+    ],
+    "max": [
+     1280,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 29090,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "63864": {
+   "title": "Tile  1 x  3",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 10660,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6636": {
+   "title": "Tile  1 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -160
+    ],
+    "max": [
+     960,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 21373,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6934": {
+   "title": "Tile  3 x  6",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -480
+    ],
+    "max": [
+     960,
+     128,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 18,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 2914,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87079": {
+   "title": "Tile  2 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": false,
+   "bytes": 25401,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138": {
+   "title": "Tile  1 x  1 Round with Groove",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "needs_occupancy": true,
+   "bytes": 15120,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  }
+ }
+}

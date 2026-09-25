@@ -31,6 +31,8 @@ policy:
     - public/index.html
     - public/try/**
     - public/bricksdemo/**   # brick_build_3d gallery at a2uicatalog.ai/bricksdemo; per-artifact opt-in from Curtis 2026-09-25, noindex
+    - public/parts/**   # baked LDraw part meshes for brick_build_3d (spec/brick-parts-v0.1.md); CC BY 4.0/2.0, attribution in index.json.
+                         # Declared here so the ldraw-parts-build process can commit; NOT pushed/served live without Curtis's separate go-ahead.
     - public/frugal-ai-ops/**
     - public/go/**   # short-link redirect stubs (fragment-hardcoded static pages), per-artifact opt-in
     - public/robots.txt
