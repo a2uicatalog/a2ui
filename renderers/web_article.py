@@ -18141,6 +18141,126 @@ def _render_canvas_plexus(b: dict) -> str:
 _RENDERERS["canvas_plexus"] = _render_canvas_plexus
 
 
+# ─── brick_build_3d ───────────────────────────────────────────────────────────
+# Hand-kept twin of the `_RENDERERS['brick_build_3d']` shell in
+# apps-script-surface/gas-wired-renderer/atoms_brick.gs. The 500-line engine and the page wiring are NOT
+# copied: _brickKit and _brickMount are read out of that file at render time, so the browser code has one
+# source. What is duplicated is only the prop sanitising and the ~10-line HTML shell, with JavaScript's
+# number semantics (Number(), parseInt()) reproduced by the two helpers below.
+# tests/test_brick_web_twin.py renders the same props through Node (the real .gs) and through this function
+# and compares the output modulo the uid. Edit BOTH.
+_BRICK_GS = Path(__file__).resolve().parent.parent / "apps-script-surface" / "gas-wired-renderer" / "atoms_brick.gs"
+_BRICK_SHAPES = ("heart", "sphere", "torus", "helix", "pyramid", "house")
+_BRICK_MAX = 3000
+_brick_src_cache: Dict[str, str] = {}
+_JS_NUM = re.compile(r'^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$')
+_JS_INT = re.compile(r'^\s*([+-]?\d+)')
+_BRICK_HEX6 = re.compile(r'^#[0-9a-fA-F]{6}$')
+_BRICK_HEXBG = re.compile(r'^#[0-9a-fA-F]{3,8}$')
+
+
+def _brick_fn_src(name: str) -> str:
+    """Source text of a top-level function in atoms_brick.gs (what Function.prototype.toString returns)."""
+    if name not in _brick_src_cache:
+        m = re.search(r'^function %s\(.*?\) \{.*?^\}' % re.escape(name), _BRICK_GS.read_text(encoding="utf-8"),
+                      re.S | re.M)
+        if not m:
+            raise RuntimeError("brick_build_3d: function %s not found in %s" % (name, _BRICK_GS))
+        _brick_src_cache[name] = m.group(0)
+    return _brick_src_cache[name]
+
+
+def _js_number(v):
+    """JavaScript Number(v) for JSON scalars; nan when it would be NaN."""
+    if v is None:
+        return 0.0
+    if isinstance(v, bool):
+        return 1.0 if v else 0.0
+    if isinstance(v, (int, float)):
+        return float(v)
+    if isinstance(v, str):
+        t = v.strip()
+        if t == "":
+            return 0.0
+        return float(t) if _JS_NUM.match(t) else float("nan")
+    return float("nan")
+
+
+def _js_parse_int(v):
+    """JavaScript parseInt(v, 10): the leading integer, or None when it would be NaN."""
+    if v is None or isinstance(v, (bool, list, dict)):
+        return None
+    m = _JS_INT.match(v if isinstance(v, str) else (str(int(v)) if isinstance(v, float) and v.is_integer() else str(v)))
+    return int(m.group(1)) if m else None
+
+
+def _brick_clamp(v, lo, hi, dflt):
+    n = _js_number(v)
+    if n != n or n in (float("inf"), float("-inf")):
+        return dflt
+    return max(lo, min(hi, math.floor(n)))
+
+
+def _brick_sanitise(lst):
+    if not isinstance(lst, list) or not lst:
+        return None
+    out = []
+    for r in lst:
+        if len(out) >= _BRICK_MAX:
+            break
+        if not isinstance(r, dict):
+            continue
+        # a missing key is JS `undefined` (NaN -> default); an explicit null is Number(null) = 0
+        def n(key, lo, hi, dflt):
+            return _brick_clamp(r[key], lo, hi, dflt) if key in r else dflt
+        c = r.get("c")
+        c = c.lower() if isinstance(c, str) and _BRICK_HEX6.match(c) else "#c91a09"
+        out.append({"x": n("x", 0, 255, 0), "y": n("y", 0, 255, 0), "z": n("z", 0, 255, 0),
+                    "w": n("w", 1, 32, 1), "d": n("d", 1, 32, 1), "h": n("h", 1, 8, 1), "c": c})
+    return out or None
+
+
+def _render_brick_build_3d(b: dict) -> str:
+    shape = b.get("shape") if b.get("shape") in _BRICK_SHAPES else "heart"
+    h = _js_parse_int(b.get("height")) or 380
+    h = max(160, min(900, h))
+    step = max(1, _js_parse_int(b.get("step")) or 1)
+    speed = 1
+    if "speed" in b:
+        sp = _js_number(b["speed"])
+        if sp == sp and sp not in (float("inf"), float("-inf")):
+            speed = max(0.1, min(4, sp))
+            speed = int(speed) if float(speed).is_integer() else speed
+    bg = b.get("bg")
+    cfg = {
+        "shape": shape, "bricks": _brick_sanitise(b.get("bricks")),
+        "mode": "steps" if b.get("mode") == "steps" else "animate",
+        "step": step, "speed": speed,
+        "orbit": b.get("orbit") is not False,
+        "bg": bg if isinstance(bg, str) and _BRICK_HEXBG.match(bg) else None,
+        "scrubber": b.get("scrubber") is not False, "checks": b.get("checks") is not False,
+        "parts": b.get("parts") is True,
+    }
+    uid = "brk" + _wa_uid(b)[:6]
+    payload = _json.dumps(cfg, separators=(",", ":"), ensure_ascii=False).replace("<", "\\u003c")
+    return (
+        '<div style="border-radius:14px;overflow:hidden;color:#0f1c28;'
+        'font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;'
+        'background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0);">'
+        '<div style="position:relative;height:' + str(h) + 'px;">'
+        '<canvas id="' + uid + 'c" role="img" aria-label="Animated 3D brick model" '
+        'style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas>'
+        '</div>'
+        '<div id="' + uid + 's" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div>'
+        '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>'
+        '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>'
+        '</div>'
+        '<script>(function(){(' + _brick_fn_src("_brickMount") + ')((' + _brick_fn_src("_brickKit") + ')(),'
+        + payload + ',"' + uid + '");})();</script>'
+    )
+_RENDERERS["brick_build_3d"] = _render_brick_build_3d
+
+
 # ─── canvas hero kit + the flow_field / *_type family ────────────────────────
 # 1:1 twin of apps-script-surface/gas-wired-renderer/atoms_canvas.gs's
 # "canvas hero kit" section (2026-09-18) — design rationale and the field
