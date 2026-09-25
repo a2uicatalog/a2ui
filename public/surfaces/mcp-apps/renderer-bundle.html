@@ -10151,6 +10151,7 @@ function _brickKit() {
 }
 
 var _BRICK_MAX = 3000;   // bricks per model — the depth sort is O(n log n) per frame
+var _BRICK_MODELS_MAX = 8;   // named models the picker will list
 
 // Coerce an agent-supplied brick list into integers and #rrggbb colours, or return null if it is unusable.
 // renderers/web_article.py (_render_brick_build_3d) is a hand-kept twin of this function and of the shell
@@ -10170,6 +10171,22 @@ function _brickSanitise(list) {
               w: n(r.w, 1, 32, 1), d: n(r.d, 1, 32, 1), h: n(r.h, 1, 8, 1), c: c});
   }
   return out.length ? out : null;
+}
+
+// Named models for the picker: up to _BRICK_MODELS_MAX of {name, bricks}, each brick list sanitised like `bricks`.
+// Entries whose brick list is unusable are skipped; a missing name becomes 'Model N'. Twinned in web_article.py.
+function _brickModels(list) {
+  var out = [];
+  if (!Array.isArray(list)) return out;
+  for (var i = 0; i < list.length && out.length < _BRICK_MODELS_MAX; i++) {
+    var m = list[i];
+    if (!m || typeof m !== 'object') continue;
+    var bl = _brickSanitise(m.bricks);
+    if (!bl) continue;
+    var nm = typeof m.name === 'string' ? m.name.trim().slice(0, 40) : '';
+    out.push({name: nm || 'Model ' + (out.length + 1), bricks: bl});
+  }
+  return out;
 }
 
 // The atom's page wiring: canvas engine + scrubber + verdicts + parts table. Serialised into the page next to
@@ -10206,9 +10223,27 @@ function _brickMount(K, cfg, U) {
     }
     stepText();
   }
+  function buildPicker(row) {
+    var sel = E('select', 'font:inherit;font-weight:600;border:1px solid #b8c2cc;border-radius:6px;padding:4px 8px;' +
+                          'background:#f7f9fb;color:#0f1c28;cursor:pointer;max-width:min(240px,100%);');
+    sel.setAttribute('aria-label', 'Model');
+    function opt(v, t) { var o = E('option', '', t); o.value = v; sel.appendChild(o); }
+    if (cfg.bricks && cfg.start < 0) opt('c', 'Custom model');
+    for (var k in K.SHAPES) opt('s:' + k, K.SHAPES[k].label);
+    cfg.models.forEach(function(m, i) { opt('m:' + i, m.name); });
+    sel.value = cfg.start >= 0 ? 'm:' + cfg.start : cfg.bricks ? 'c' : 's:' + cfg.shape;
+    sel.addEventListener('change', function() {
+      var v = sel.value;
+      if (v.charAt(0) === 's') atom.setShape(v.slice(2));
+      else atom.setBricks(v === 'c' ? cfg.bricks : cfg.models[+v.slice(2)].bricks);
+    });
+    row.appendChild(sel);
+  }
   function buildScrubber() {
     var row = $('s');
-    if (!cfg.scrubber || !row) return;
+    if (!row) return;
+    if (cfg.picker) buildPicker(row);
+    if (!cfg.scrubber) return;
     var bs = 'font:inherit;font-weight:600;border:1px solid #b8c2cc;border-radius:6px;padding:4px 10px;cursor:pointer;';
     [['animate', 'Animate'], ['steps', 'Instructions']].forEach(function(p) {
       var b = E('button', bs, p[1]);
@@ -10286,6 +10321,11 @@ _RENDERERS['brick_build_3d'] = function(b) {
   var kit    = _brickKit();
   var shape  = Object.prototype.hasOwnProperty.call(kit.SHAPES, b.shape) ? b.shape : 'heart';
   var bricks = _brickSanitise(b.bricks);          // '' (unresolved binding) and junk fall back to shape
+  var models = _brickModels(b.models), start = -1;
+  if (!bricks && typeof b.model === 'string') {
+    for (var j = 0; j < models.length; j++) if (models[j].name === b.model) { start = j; break; }
+    if (start >= 0) bricks = models[start].bricks;
+  }
   var h      = Math.max(160, Math.min(900, parseInt(b.height, 10) || 380));
   var cfg = {
     shape: shape, bricks: bricks,
@@ -10294,7 +10334,8 @@ _RENDERERS['brick_build_3d'] = function(b) {
     speed: b.speed !== undefined && isFinite(Number(b.speed)) ? Math.max(0.1, Math.min(4, Number(b.speed))) : 1,
     orbit: b.orbit !== false,
     bg:    typeof b.bg === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.bg) ? b.bg : null,
-    scrubber: b.scrubber !== false, checks: b.checks !== false, parts: b.parts === true
+    scrubber: b.scrubber !== false, checks: b.checks !== false, parts: b.parts === true,
+    models: models, picker: b.picker === false ? false : (b.picker === true || models.length > 0), start: start
   };
   var uid  = 'brk' + Math.random().toString(36).substr(2, 6);
   var json = JSON.stringify(cfg).replace(/</g, '\\u003c');
