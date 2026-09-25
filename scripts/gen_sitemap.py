@@ -2,7 +2,7 @@
 """Generate public/sitemap.xml from real build output.
 
 Walks public/ for every index.html (the page convention this repo uses),
-skipping paths robots.txt already Disallows (try/, frugal-ai-ops/) — no
+skipping paths robots.txt already Disallows (try/, frugal-ai-ops/, bricksdemo/) — no
 point telling crawlers about a page and blocking them from it in the same
 breath. Must run AFTER the other generators in deploy.yml so it reflects
 the actual build, not a partial tree.
@@ -26,7 +26,7 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 PUBLIC = os.path.join(ROOT, "public")
 BASE_URL = "https://a2uicatalog.ai"
 
-EXCLUDE_PREFIXES = ("try/", "frugal-ai-ops/")
+EXCLUDE_PREFIXES = ("try/", "frugal-ai-ops/", "bricksdemo/")
 
 
 def collect_urls():

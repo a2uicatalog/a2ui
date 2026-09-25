@@ -14,30 +14,35 @@ Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
+Disallow: /bricksdemo/
 
 User-agent: ClaudeBot
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
+Disallow: /bricksdemo/
 
 User-agent: Google-Extended
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
+Disallow: /bricksdemo/
 
 User-agent: ChatGPT-User
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
+Disallow: /bricksdemo/
 
 User-agent: PerplexityBot
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
+Disallow: /bricksdemo/
 
 # Bulk training-data crawlers (Common Crawl's bot, feeds many foundation-model
 # corpora; ByteDance's crawler) — the actual tier differentiation. Disallowed
@@ -56,6 +61,7 @@ Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /try/
 Disallow: /frugal-ai-ops/
+Disallow: /bricksdemo/
 
 Sitemap: https://a2uicatalog.ai/sitemap.xml
 Agentmap: /.well-known/ard.json

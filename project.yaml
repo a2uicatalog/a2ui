@@ -30,6 +30,7 @@ policy:
     # Everything under public/ must match one of these (or published_prompts)
     - public/index.html
     - public/try/**
+    - public/bricksdemo/**   # brick_build_3d gallery at a2uicatalog.ai/bricksdemo; per-artifact opt-in from Curtis 2026-09-25, noindex
     - public/frugal-ai-ops/**
     - public/go/**   # short-link redirect stubs (fragment-hardcoded static pages), per-artifact opt-in
     - public/robots.txt
