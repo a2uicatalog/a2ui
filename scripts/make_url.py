@@ -64,6 +64,25 @@ RENDERERS = {
 
 URL_LIMIT = 8000
 
+# The link we HAND OUT for the wired renderer is the stable front on our own domain:
+# the Worker route a2uicatalog.ai/gas/* answers with a 302 to whichever /exec is current
+# (a2ui-private mcp-worker, ops process gas-refs-sync). A script-project migration then
+# changes one manifest value and links already given out keep working. RENDERERS above
+# stays the RESOLVED raw endpoint: prompts are generated from it, and the POST fallback
+# below must hit the real /exec (a 302 turns a POST into a GET and drops the body).
+STABLE_BASES = {
+    'gem': 'https://a2uicatalog.ai/gas/renderer',
+    'main': 'https://a2uicatalog.ai/gas/renderer',
+}
+
+def followed_length(url):
+    """Length of the URL AS FOLLOWED: the redirect target is the long raw /exec URL, and GAS's
+    request-size ceiling applies to that, not to the short link we print."""
+    for name, stable in STABLE_BASES.items():
+        if url.startswith(stable + '?') or url == stable:
+            return len(url) - len(stable) + len(RENDERERS[name])
+    return len(url)
+
 def make_url(payload, renderer='gem'):
     raw = json.dumps(payload, ensure_ascii=False).encode()
     if renderer in ('gem', 'wired', 'fakes'):
@@ -72,7 +91,7 @@ def make_url(payload, renderer='gem'):
     else:
         compressed = raw
         enc = quote(base64.b64encode(raw).decode(), safe='')
-    return RENDERERS[renderer] + '?p=' + enc, len(raw), len(compressed if renderer in ('gem', 'wired', 'fakes') else raw)
+    return STABLE_BASES.get(renderer, RENDERERS[renderer]) + '?p=' + enc, len(raw), len(compressed if renderer in ('gem', 'wired', 'fakes') else raw)
 
 def emit(url):
     osc52 = f'\033]52;c;{base64.b64encode(url.encode()).decode()}\a'
@@ -94,13 +113,14 @@ if __name__ == '__main__':
         payload = json.load(sys.stdin)
 
     url, json_len, comp_len = make_url(payload, args.renderer)
-    print(f'JSON: {json_len} bytes  |  Compressed: {comp_len} bytes  |  URL: {len(url)} chars', file=sys.stderr)
+    n_followed = followed_length(url)
+    print(f'JSON: {json_len} bytes  |  Compressed: {comp_len} bytes  |  URL: {len(url)} chars ({n_followed} once redirected)', file=sys.stderr)
 
-    if len(url) <= URL_LIMIT:
+    if n_followed <= URL_LIMIT:
         emit(url)
     else:
         # Payload too large for GET — write a self-submitting HTML form and open it
-        print(f'URL too long ({len(url)} chars > {URL_LIMIT}), opening via POST form...', file=sys.stderr)
+        print(f'URL too long ({n_followed} chars once redirected > {URL_LIMIT}), opening via POST form...', file=sys.stderr)
         raw_json = json.dumps(payload, ensure_ascii=False)
         endpoint = RENDERERS[args.renderer]
         tmp = tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False)
