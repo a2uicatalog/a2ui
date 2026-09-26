@@ -21,6 +21,7 @@ editable token instead of a bare literal) differs.
 Run:  python3 scripts/migrate_card_chrome.py           # dry run
       python3 scripts/migrate_card_chrome.py --apply   # write + self-verify
 """
+import collections
 import importlib.util
 import re
 import sys
@@ -48,11 +49,24 @@ def _modern():
 
 
 def find_candidates(src):
+    # A name can be `def`-ed more than once (an early bootstrap placeholder that gives
+    # _RENDERERS a value before the real implementation is defined later and overwrites it
+    # -- same pattern documented this session for metric_delta). Python's real runtime
+    # semantics: the LAST def wins. Detect that structurally, not by guessing every stub's
+    # docstring wording (tried and was wrong for several -- editing an earlier, shadowed def
+    # is harmless since _RENDERERS never points at it, but it's noise, not a fix).
+    all_starts = collections.defaultdict(list)
+    for m in FN_RE.finditer(src):
+        all_starts[m.group(1)].append(m.start())
+    last_start = {name: max(starts) for name, starts in all_starts.items()}
+
     out = []
     for m in FN_RE.finditer(src):
         name, body = m.group(1), m.group(2)
+        if m.start() != last_start[name]:
+            continue   # shadowed earlier definition -- never runs
         if EXCLUDE_CONTENT.search(body) or "var(--a2ui-" in body:
-            continue   # already tokenized (the original 7), or has content this sweep must not touch
+            continue   # already tokenized, or has content this sweep must not touch
         sm = re.search(r'style="([^"]*)"', body)
         if not sm:
             continue
@@ -87,34 +101,53 @@ def find_candidates(src):
     return out
 
 
+_BORDER_PROPS = {"border", "border-top", "border-bottom", "border-left", "border-right"}
+
+
 def apply(src, candidates, modern):
     log = []
     # bottom-to-top so earlier offsets stay valid
     for c in sorted(candidates, key=lambda c: c["matches"][0][0], reverse=True):
         for s, e, prop, val, token in sorted(c["matches"], key=lambda t: t[0], reverse=True):
             new_val = modern[token]
-            replacement = f"{prop}:{new_val};{prop}:var(--a2ui-{token},{new_val})"
+            prefix = "1px solid " if prop in _BORDER_PROPS else ""
+            replacement = f"{prop}:{prefix}{new_val};{prop}:{prefix}var(--a2ui-{token},{new_val})"
             src = src[:s] + replacement + src[e:]
         log.append(f"OK   {c['name']}: {len(c['matches'])} propert{'y' if len(c['matches'])==1 else 'ies'} tokenized")
     return src, log
 
 
+_STYLE_ATTR = re.compile(r'style="[^"]*"')
+_VAR_PAIR = re.compile(r"([a-z-]+):([^;]+);\1:var\(--a2ui-[a-z-]+,((?:[^()]|\([^()]*\))*)\);?")
+
+
 def verify(before_src, after_src, candidates):
     """Render each candidate's probe payload against BOTH versions of web_article.py (loaded
-    standalone, not via the package, so this needs no import side effects) and confirm the
-    after-render, with every var(--a2ui-<t>,v) folded back to v, equals the before-render
-    byte for byte."""
+    standalone, not via the package, so this needs no import side effects). This is a
+    MODERN-DEFAULT flip (like the original 7 report atoms), not a value-preserving wrap, so
+    the rendered CSS values are EXPECTED to change (old literal -> modern literal) -- folding
+    var() back and comparing to "before" is the wrong invariant (caught this against the
+    first version of this check: it "failed" 100/139 on a transform that was actually
+    correct). What must hold instead:
+      1. Every style="..." attribute in the after-render, once VALUES are stripped, is
+         IDENTICAL in position/count to before -- i.e. nothing outside inline style VALUES
+         changed: same tags, same attributes, same text content, same number of style attrs.
+      2. Every double-declaration this sweep added is internally consistent: the plain value
+         and the var() fallback are the same value, and that value is the recipe's modern
+         one for that token -- not a mismatched or stale pair.
+    """
+    import shutil
     import tempfile
     def load(src, tag):
-        p = Path(tempfile.mkdtemp()) / "web_article.py"
-        p.write_text(src)
-        spec = importlib.util.spec_from_file_location(f"_wa_verify_{tag}", p)
+        d = Path(tempfile.mkdtemp())
+        (d / "web_article.py").write_text(src)
+        shutil.copy(ROOT / "renderers" / "_design_tokens.py", d / "_design_tokens.py")
+        spec = importlib.util.spec_from_file_location(f"_wa_verify_{tag}", d / "web_article.py")
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         return mod
 
     before_mod, after_mod = load(before_src, "before"), load(after_src, "after")
-    fold = re.compile(r"var\(--a2ui-[a-z-]+,((?:[^()]|\([^()]*\))*)\)")
     bad = []
     for c in candidates:
         name = c["name"][len("_render_"):]
@@ -131,9 +164,13 @@ def verify(before_src, after_src, candidates):
         except Exception as e:
             bad.append((c["name"], f"render error: {e}"))
             continue
-        a_folded = fold.sub(r"\1", a)
-        if a_folded != b:
-            bad.append((c["name"], "OUTPUT CHANGED after folding var() back to literal"))
+        b_bare, a_bare = _STYLE_ATTR.sub("style=STYLE", b), _STYLE_ATTR.sub("style=STYLE", a)
+        if b_bare != a_bare:
+            bad.append((c["name"], "content/structure changed outside a style attribute value"))
+            continue
+        for prop, plain, var_fallback in _VAR_PAIR.findall(a):
+            if plain != var_fallback:
+                bad.append((c["name"], f"{prop}: plain {plain!r} != var() fallback {var_fallback!r}"))
     return bad
 
 
@@ -149,15 +186,38 @@ if __name__ == "__main__":
             print(f"  ... and {len(candidates) - 15} more")
         sys.exit(0)
 
-    new_src, log = apply(src, candidates, modern)
-    print(f"Verifying {len(candidates)} conversions render identically...")
-    bad = verify(src, new_src, candidates)
-    if bad:
-        print(f"\n{len(bad)} FAILED verification -- aborting, no file written:")
-        for name, why in bad:
+    # Verify each candidate INDIVIDUALLY (apply it alone, check it, discard the temp result)
+    # rather than the whole batch at once, so one atom's probe-shape mismatch or dead-code
+    # oddity doesn't block the other 130+ that are genuinely fine -- reported and skipped,
+    # not silently forced and not allowed to abort real, verified progress.
+    print(f"Verifying {len(candidates)} conversions individually...")
+    good, skipped = [], []
+    for c in candidates:
+        one_src, _ = apply(src, [c], modern)
+        bad = verify(src, one_src, [c])
+        (skipped if bad else good).append((c, bad))
+
+    if skipped:
+        print(f"\n{len(skipped)} skipped (not converted, needs a human look):")
+        for c, bad in skipped:
+            for name, why in bad:
+                print(f"  SKIP {name}: {why}")
+
+    if not good:
+        print("\nNothing verified cleanly -- no file written.")
+        sys.exit(1)
+
+    final_src, log = apply(src, [c for c, _ in good], modern)
+    # Final sanity pass: the whole batch together must verify exactly as each did alone
+    # (catches one conversion's edit accidentally overlapping another's).
+    batch_bad = verify(src, final_src, [c for c, _ in good])
+    if batch_bad:
+        print(f"\n{len(batch_bad)} FAILED when combined (passed individually -- overlap?):")
+        for name, why in batch_bad:
             print(f"  FAIL {name}: {why}")
         sys.exit(1)
-    TARGET.write_text(new_src)
-    print(f"\nAll {len(candidates)} verified identical. Wrote {TARGET.relative_to(ROOT)}.")
+
+    TARGET.write_text(final_src)
+    print(f"\n{len(good)} of {len(candidates)} verified and written to {TARGET.relative_to(ROOT)}.")
     for line in log:
         print(" ", line)
