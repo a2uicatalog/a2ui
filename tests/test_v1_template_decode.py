@@ -277,3 +277,31 @@ def test_real_emitter_output_decodes_and_renders_real_content(core_js):
     assert ">Button<" not in r["html"], "Button fell back to the literal label -- child not resolved"
     assert "Tab 1<" not in r["html"] and "Tab 2<" not in r["html"], \
         "Tabs fell back to positional labels -- title not read"
+
+
+def test_brick_build_3d_bricks_path_binding_reaches_the_renderer(core_js):
+    """apps-script-surface/gas-wired-renderer/atoms_brick.gs WIP commit ba48776f flagged this
+    exact gap as unverified: a v1 surface can legally put a large array like `bricks` in the
+    dataModel and bind a component's `bricks` prop to it with {"path": "/bricks"} rather than
+    embedding it literally in the component tree (the spec's whole point for large/updatable
+    data). _a2uiResolveDynamic's {path} handling is fully generic -- this proves it actually
+    works for brick_build_3d specifically, through the REAL decode (_rehydrateV1Surface) and
+    REAL render (renderAtoms -> _RENDERERS['brick_build_3d']) path, not just by code reading.
+
+    Failure mode this catches: if the binding is NOT resolved, `_brickSanitise` receives the
+    literal {"path": "/bricks"} object (not an array), silently returns null, and the atom
+    falls back to rendering the default 'heart' shape instead of throwing -- a silent content
+    bug, not a crash, so it needs an explicit assertion on the real data, not just "no error"."""
+    surface = {
+        "dataModel": {"bricks": [[3, 0, 2, 4, 1, "#123abc"]]},
+        "components": [
+            {"id": "root", "component": "Column", "children": ["m"]},
+            {"id": "m", "component": "brick_build_3d", "bricks": {"path": "/bricks"},
+             "mode": "steps", "step": 99},
+        ],
+    }
+    r = _decode(core_js, surface, also_render=True)
+    assert '"c":"#123abc"' in r["html"], \
+        "bricks {path} binding did not resolve into the renderer's baked payload"
+    assert '"path"' not in r["html"], \
+        "an unresolved {path} binding leaked into the rendered output"
