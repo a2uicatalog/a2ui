@@ -566,7 +566,7 @@ function _brickKit() {
        on the GPU. Per-group buffers are registered into the shared `buf{}` dict under generated keys so drawSet()
        itself needs no changes. Studs at part connectors are NOT yet drawn (v1: triangles + real edge lines only;
        connector studs are a fast follow once this is confirmed correct on screen -- see the brief). */
-    var partMeshCache={},partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0;
+    var partMeshCache={},partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0,partsTris=0;
     var PART_BASE='https://a2uicatalog.ai/parts/';
     function fetchPartMesh(id,cb){
       var c=partMeshCache[id];
@@ -647,8 +647,10 @@ function _brickKit() {
     // by the SAME i used in partsModelData (the entry's original index), exactly paralleling update()'s role.
     function updateParts(st,OX,OY,OZ,AL){
       if(!partGroups)buildPartGroups();
+      partsTris=0;
       partGroups.forEach(function(grp){
         var geo=ensurePartGeo(grp),n=grp.entries.length,a4=new Float32Array(n*4);
+        partsTris+=(geo.mesh.n/3)*n;
         grp.entries.forEach(function(row,j){
           var i=row.idx,a=st[i]<0?0:st[i]===2?3:st[i]===1?AL[i]:1,o=j*4;
           a4[o]=OX[i];a4[o+1]=OY[i];a4[o+2]=OZ[i];a4[o+3]=a;
@@ -687,11 +689,8 @@ function _brickKit() {
     canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();lost=true;});
     canvas.addEventListener('webglcontextrestored',function(){lost=false;init();if(model)setModel(model);});
     init();
-    return {setModel:setModel,update:update,draw:draw,tris:function(){return tris;},
+    return {setModel:setModel,update:update,draw:draw,tris:function(){return tris+partsTris;},
       setPartsModel:setPartsModel,updateParts:updateParts,
-      _debug:function(){return {partGroups:partGroups&&partGroups.map(function(g){return {key:g.key,n:g.entries.length,
-        hasGeo:!!partGeomCache[g.key],geoN:partGeomCache[g.key]&&partGeomCache[g.key].n};}),
-        meshCacheKeys:Object.keys(partMeshCache),lightVP:lightVP};},
       destroy:function(){var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();}};
   }
 
@@ -846,7 +845,6 @@ function _brickKit() {
         var R=usingParts?0.5*Math.hypot(PM.W+2*MARGIN,PM.D+2*MARGIN,PM.ySpan*1.1)
                          :0.5*Math.hypot(M.W+2*MARGIN,M.D+2*MARGIN,(PL+M.L*BH)*1.1);
         gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg});
-        if(usingParts)canvas.setAttribute('data-cam',JSON.stringify({tx:tx,ty:ty,tz:tz,dist:dist,R:R,gtris:gr.tris(),dbg:gr._debug()}));
         return;
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -966,7 +964,6 @@ function _brickKit() {
       set:function(k,v){o[k]=v;},
       onStats:function(fn){onStats=fn;fn(info());},
       renderer:function(){return gr?'webgl':'canvas';},
-      _debug:function(){return {usingParts:usingParts,gr:gr&&gr._debug(),PM:PM,tx:tx,ty:ty,tz:tz,dist:dist,camx:camx,camy:camy,camz:camz,st:st&&Array.prototype.slice.call(st)};},
       destroy:function(){cancelAnimationFrame(raf);if(gr)gr.destroy();}
     };
   }
