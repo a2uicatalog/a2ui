@@ -84,6 +84,26 @@ function _brickKit() {
   }
   var LD=(function(){var v=[-0.5,1,0.6],l=Math.hypot(v[0],v[1],v[2]);return v.map(function(x){return x/l;});})();
   var COS=[],SIN=[];for(var s=0;s<SN;s++){COS.push(Math.cos(2*Math.PI*s/SN));SIN.push(Math.sin(2*Math.PI*s/SN));}
+  // Shared part-JSON cache/fetch, module scope: glRenderer (triangles/edges/connectors), createBrickBuild's
+  // canvas-2D fallback (bounds only) and validateParts (occupancy/connectors) all need the SAME fetched-once
+  // part JSON -- previously two independent copies of this exact fetch-and-cache pattern (one per consumer),
+  // consolidated so a third consumer (the validator) doesn't become a third hand-synced copy. Values: undefined
+  // (never requested), 'loading', 'error', or the parsed JSON.
+  var partMeshCache={};
+  function fetchPartMesh(id,cb){
+    var c=partMeshCache[id];
+    if(c==='error'){cb(null);return;} if(c&&c!=='loading'){cb(c);return;} if(c==='loading')return;
+    if(typeof fetch!=='function'){partMeshCache[id]='error';cb(null);return;}
+    partMeshCache[id]='loading';
+    fetch(PART_BASE+id+'.json').then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(m){partMeshCache[id]=m;cb(m);})
+      .catch(function(){partMeshCache[id]='error';cb(null);});
+  }
+  // Pure rotation (no LDU->engine scale/reflection) for LDU-space vectors -- collision/connector geometry stays
+  // in real LDU world coordinates (the payload's own x,y,z units, spec/brick-parts-v0.1.md §1), unlike partTp's
+  // render-space transform. PART_ROT's 24 matrices are signed permutations, so this exactly preserves axis
+  // alignment (spec §3's "collision is an exact box-overlap test" depends on that).
+  function rotLDU(r,p){var Rm=PART_ROT[r];return [Rm[0]*p[0]+Rm[1]*p[1]+Rm[2]*p[2],Rm[3]*p[0]+Rm[4]*p[1]+Rm[5]*p[2],Rm[6]*p[0]+Rm[7]*p[1]+Rm[8]*p[2]];}
 
   var shadeCache={};
   function shade(hex,q){
@@ -225,6 +245,155 @@ function _brickKit() {
     ];
     return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:conn,
       overlaps:np,floating:floating,com:{x:cx,z:cz,margin:margin},parts:parts,cost:cost};
+  }
+  // Real-parts validator (spec/brick-parts-v0.1.md §2-4, Phase 3): unlike validate() above (an integer stud
+  // grid), real LDraw parts have arbitrary LDU positions/rotations and their own baked connectors/occupancy, so
+  // this works entirely in real LDU world coordinates via rotLDU (module scope) rather than grid cells. Verified
+  // against ALL 15 fixtures in spec/brick-parts/fixtures-v0.1.json (see tests/test_brick_parts_validate.mjs) --
+  // found and fixed three real bugs along the way, none of them in this function: a bake-time axis swap in
+  // generated_occupancy (scripts/ldraw/parts.py), a missing hand-authored occupancy override for 11211, and a
+  // wrong CONNECTOR_OVERRIDES entry for 15573 that halved its real bottom-socket count. Returns the SAME
+  // {ok,checks,connections,overlaps,floating,com,parts,cost} shape as validate() so drawChecks() renders it
+  // unchanged; parts/cost stay empty (real per-part pricing needs a BrickLink/Rebrickable catalogue, out of
+  // scope here) and drawParts() is not called for partsModel in _brickMount.
+  function connWorld(mesh,kind,r,ex,ey,ez){
+    var list=(mesh.connectors&&mesh.connectors[kind])||[],q=mesh.quant;
+    return list.map(function(c){
+      var lp=[c.pos[0]/q,c.pos[1]/q,c.pos[2]/q],wp=rotLDU(r,lp),wd=rotLDU(r,c.dir);
+      return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd};
+    });
+  }
+  function worldBoxes(mesh,r,ex,ey,ez){
+    if(!mesh.occupancy)return null;
+    return mesh.occupancy.map(function(b){
+      var c0=rotLDU(r,[b[0],b[2],b[4]]),c1=rotLDU(r,[b[1],b[3],b[5]]);
+      return [Math.min(c0[0],c1[0])+ex,Math.max(c0[0],c1[0])+ex,
+              Math.min(c0[1],c1[1])+ey,Math.max(c0[1],c1[1])+ey,
+              Math.min(c0[2],c1[2])+ez,Math.max(c0[2],c1[2])+ez];
+    });
+  }
+  function boxesOverlap(a,b){
+    var ox=Math.min(a[1],b[1])-Math.max(a[0],b[0]),oy=Math.min(a[3],b[3])-Math.max(a[2],b[2]),
+        oz=Math.min(a[5],b[5])-Math.max(a[4],b[4]);
+    return ox>0.5&&oy>0.5&&oz>0.5;
+  }
+  function onGrid(v){var m=((v-10)%20+20)%20;return m<0.5||m>19.5;}
+  function dot3(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
+  function dist3(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);}
+  function add3(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]];}
+  function pointLineDist(p,a,b){
+    var ab=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],ap=[p[0]-a[0],p[1]-a[1],p[2]-a[2]],L2=dot3(ab,ab)||1e-9,t=dot3(ap,ab)/L2;
+    var proj=[a[0]+ab[0]*t,a[1]+ab[1]*t,a[2]+ab[2]*t];
+    return {dist:dist3(p,proj),t:t};
+  }
+  // Pair a mesh's local hole entries (one {pos,dir} per face) into {a,b} segments: greedy nearest
+  // opposite-direction match, in LOCAL (unquantised LDU) space -- spec §2's "the segment between the pair is
+  // the hole axis".
+  function pairHoles(mesh){
+    var q=mesh.quant;
+    var holes=((mesh.connectors&&mesh.connectors.holes)||[]).map(function(h){
+      return {pos:[h.pos[0]/q,h.pos[1]/q,h.pos[2]/q],dir:h.dir};
+    });
+    var used=new Array(holes.length),segs=[],i,j;
+    for(i=0;i<holes.length;i++){
+      if(used[i])continue;
+      var best=-1,bestD=Infinity;
+      for(j=i+1;j<holes.length;j++){
+        if(used[j]||dot3(holes[i].dir,holes[j].dir)>-0.9)continue;
+        var d=dist3(holes[i].pos,holes[j].pos);
+        if(d<bestD){bestD=d;best=j;}
+      }
+      if(best>=0){used[i]=1;used[best]=1;segs.push({a:holes[i].pos,b:holes[best].pos});}
+    }
+    return segs;
+  }
+  function validateParts(list){
+    var n=list.length,i,j;
+    var meshes=list.map(function(e){return partMeshCache[e.p];});
+    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],notChecked=0;
+    for(i=0;i<n;i++){
+      var e=list[i],m=meshes[i];
+      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);notChecked++;continue;}
+      studs.push(connWorld(m,'studs',e.r,e.x,e.y,e.z));
+      sockets.push(connWorld(m,'sockets',e.r,e.x,e.y,e.z));
+      pins.push(connWorld(m,'pins',e.r,e.x,e.y,e.z));
+      boxes.push(worldBoxes(m,e.r,e.x,e.y,e.z));
+      if(!m.occupancy)notChecked++;
+      var localSegs=pairHoles(m);
+      holeSegsWorld.push(localSegs.map(function(s){return {a:add3(rotLDU(e.r,s.a),[e.x,e.y,e.z]),b:add3(rotLDU(e.r,s.b),[e.x,e.y,e.z])};}));
+    }
+    var studConn=0,pinConn=0,adj=[],baseAdj={};
+    for(i=0;i<n;i++)adj.push({});
+    for(i=0;i<n;i++){
+      for(j=0;j<n;j++){
+        if(i===j)continue;
+        studs[i].forEach(function(s){sockets[j].forEach(function(k){
+          if(dist3(s.pos,k.pos)<0.5&&dot3(s.dir,k.dir)<-0.5){studConn++;adj[i][j]=1;adj[j][i]=1;}
+        });});
+      }
+      sockets[i].forEach(function(k){
+        if(Math.abs(k.pos[1])<0.5&&onGrid(k.pos[0])&&onGrid(k.pos[2])&&dot3(k.dir,[0,-1,0])<-0.5){baseAdj[i]=1;studConn++;}
+      });
+    }
+    for(i=0;i<n;i++){
+      pins[i].forEach(function(p){
+        for(j=0;j<n;j++){
+          if(i===j)continue;
+          holeSegsWorld[j].forEach(function(seg){
+            var half=add3(p.pos,p.dir.map(function(d){return d*20;})),mid=add3(p.pos,p.dir.map(function(d){return d*10;}));
+            var d1=pointLineDist(p.pos,seg.a,seg.b),d2=pointLineDist(half,seg.a,seg.b),dm=pointLineDist(mid,seg.a,seg.b);
+            if(d1.dist<0.5&&d2.dist<0.5&&dm.t>=-0.02&&dm.t<=1.02){pinConn++;adj[i][j]=1;adj[j][i]=1;}
+          });
+        }
+      });
+    }
+    var seen={},queue=Object.keys(baseAdj).map(Number);
+    queue.forEach(function(k){seen[k]=1;});
+    while(queue.length){var c=queue.pop();for(var nb in adj[c])if(!seen[nb]){seen[nb]=1;queue.push(+nb);}}
+    var floating=[];
+    for(i=0;i<n;i++)if(!seen[i])floating.push(i);
+    var collisions=[];
+    for(i=0;i<n;i++){
+      if(!boxes[i])continue;
+      for(var bi=0;bi<boxes[i].length;bi++)if(boxes[i][bi][3]>0.5){collisions.push([-1,i]);break;}
+    }
+    for(i=0;i<n;i++)for(j=i+1;j<n;j++){
+      if(!boxes[i]||!boxes[j])continue;
+      var hit=false;
+      for(var a=0;a<boxes[i].length&&!hit;a++)for(var b=0;b<boxes[j].length;b++)if(boxesOverlap(boxes[i][a],boxes[j][b])){hit=true;break;}
+      if(hit)collisions.push([i,j]);
+    }
+    var restIdx=Object.keys(baseAdj).map(Number),balance='none',margin=null;
+    if(restIdx.length){
+      var m2=0,cx=0,cz=0,foot=[];
+      for(i=0;i<n;i++)if(boxes[i])boxes[i].forEach(function(b){
+        var vol=(b[1]-b[0])*(b[3]-b[2])*(b[5]-b[4]),cxb=(b[0]+b[1])/2,czb=(b[4]+b[5])/2;
+        m2+=vol;cx+=cxb*vol;cz+=czb*vol;
+      });
+      cx/=m2;cz/=m2;
+      restIdx.forEach(function(k){if(boxes[k])boxes[k].forEach(function(b){foot.push([b[0],b[4]],[b[1],b[4]],[b[1],b[5]],[b[0],b[5]]);});});
+      var hp=hull2(foot);
+      margin=1e9;
+      for(i=0;i<hp.length;i++){var pa=hp[i],pb=hp[(i+1)%hp.length];
+        margin=Math.min(margin,((pb[0]-pa[0])*(cz-pa[1])-(pb[1]-pa[1])*(cx-pa[0]))/Math.hypot(pb[0]-pa[0],pb[1]-pa[1]));}
+      margin/=20;
+      balance=margin<0?'fail':margin<0.5?'warn':'pass';
+    }
+    var np=collisions.filter(function(c){return c[0]!==-1;}).length;
+    var checks=[
+      {id:'collisions',label:'No collisions',status:np?'fail':'pass',
+        detail:(np?np+' part pair'+(np>1?'s':'')+' overlap':'0 overlaps')+(notChecked?' ('+notChecked+' part'+(notChecked>1?'s':'')+' not checked, no occupancy data yet)':'')},
+      {id:'anchored',label:'Every part anchored',status:floating.length?'fail':'pass',
+        detail:floating.length?floating.length+' part'+(floating.length>1?'s':'')+' not connected to the baseplate':'all '+n+' parts reach the baseplate'},
+      {id:'connections',label:'Stud + pin connections',status:(studConn+pinConn)?'pass':'fail',
+        detail:studConn+' stud + '+pinConn+' pin'},
+      {id:'balance',label:'Centre of mass over footprint',status:balance==='none'?'fail':balance,
+        detail:balance==='none'?'no part rests on the baseplate to measure':
+          '('+ (margin!==null?'margin '+Math.abs(margin).toFixed(2):'')+' studs'+(balance==='fail'?', outside footprint':'')+')'}
+    ];
+    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn,
+      studConnections:studConn,pinConnections:pinConn,collisions:collisions,
+      overlaps:np,floating:floating,balance:balance,com:{margin:margin},parts:[],cost:0};
   }
   var SHAPES={
     heart:{label:'Heart',eq:'(x² + 9/4·y² + z² − 1)³ − x²z³ − 9/80·y²z³ ≤ 0',
@@ -605,16 +774,7 @@ function _brickKit() {
        on the GPU. Per-group buffers are registered into the shared `buf{}` dict under generated keys so drawSet()
        itself needs no changes. Studs at part connectors are NOT yet drawn (v1: triangles + real edge lines only;
        connector studs are a fast follow once this is confirmed correct on screen -- see the brief). */
-    var partMeshCache={},partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0,partsTris=0;
-    function fetchPartMesh(id,cb){
-      var c=partMeshCache[id];
-      if(c==='error'){cb(null);return;} if(c&&c!=='loading'){cb(c);return;} if(c==='loading')return;
-      if(typeof fetch!=='function'){partMeshCache[id]='error';cb(null);return;}
-      partMeshCache[id]='loading';
-      fetch(PART_BASE+id+'.json').then(function(r){if(!r.ok)throw 0;return r.json();})
-        .then(function(m){partMeshCache[id]=m;cb(m);})
-        .catch(function(){partMeshCache[id]='error';cb(null);});
-    }
+    var partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0,partsTris=0;
     // Connector studs (spec/brick-parts-v0.1.md Phase 2): local offsets only, in the same engine space as
     // buildPartGeo's vertices -- the shared unit `stud` mesh (studGeo(), same one the procedural box/stud system
     // uses) is instanced at partEngineOf(instance)+offset, so no per-part stud geometry is baked, just positions.
@@ -838,26 +998,14 @@ function _brickKit() {
 
     // Canvas-2D fallback for real-parts models (spec/brick-parts-v0.1.md Phase 2, closing the v1 "needs WebGL"
     // placeholder): a plain bounding-box outline per part, not the real triangle mesh -- the honest v1 simplification
-    // the WebGL Phase-2 comment already flagged as deferred. There is no glRenderer here to share a mesh cache with
-    // (this path only runs when WebGL is unavailable at all), so it keeps its own tiny cache of just {bounds,quant}
-    // per part id, fetched from the same PART_BASE the WebGL path uses -- the full mesh JSON is fetched either way
-    // (there is no bounds-only endpoint), the bounds field is just all this path reads out of it.
-    var partBoundsCache={};
-    function fetchPartBounds(id,cb){
-      var c=partBoundsCache[id];
-      if(c==='error'){cb(null);return;} if(c&&c!=='loading'){cb(c);return;} if(c==='loading')return;
-      if(typeof fetch!=='function'){partBoundsCache[id]='error';cb(null);return;}
-      partBoundsCache[id]='loading';
-      fetch(PART_BASE+id+'.json').then(function(r){if(!r.ok)throw 0;return r.json();})
-        .then(function(m){partBoundsCache[id]=m;cb(m);})
-        .catch(function(){partBoundsCache[id]='error';cb(null);});
-    }
+    // the WebGL Phase-2 comment already flagged as deferred. Uses the module-scope partMeshCache/fetchPartMesh
+    // (shared with glRenderer and validateParts), reading only .bounds out of the same fetched JSON.
     // 6 faces of a box, each 4 corner indices into the 8-corner array below (idx = xi*4+yi*2+zi, xi/yi/zi in {0,1}
     // selecting max over min per axis) -- same corner-selector shape as the WebGL boxGeo(), just picked explicitly
     // since these corners are already real transformed points, not a unit cube scaled per-instance on the GPU.
     var PART_BOX_FACES=[[0,1,3,2],[4,5,7,6],[0,4,5,1],[2,6,7,3],[0,4,6,2],[1,5,7,3]];
     function genPartBox(e,ox,oy,oz,a,out){
-      var pmesh=partBoundsCache[e.p];
+      var pmesh=partMeshCache[e.p];
       if(!pmesh||pmesh==='loading'||pmesh==='error'||!pmesh.bounds)return;
       var tp=partTp(pmesh,e.r),b=pmesh.bounds,mn=b.min,mx=b.max,base=partEngineOf(e);
       var cx=base[0]+ox,cy=base[1]+oy,cz=base[2]+oz,corners=[],ctr=[0,0,0],i,k;
@@ -939,7 +1087,7 @@ function _brickKit() {
       if(gr)gr.setPartsModel(list);
       else{
         var ids={};list.forEach(function(e){ids[e.p]=1;});
-        Object.keys(ids).forEach(function(id){fetchPartBounds(id,function(){dirtyView=true;})});
+        Object.keys(ids).forEach(function(id){fetchPartMesh(id,function(){dirtyView=true;})});
       }
       if(o.step>PM.steps)o.step=PM.steps;
       if(onStats)onStats(info());
@@ -1046,7 +1194,7 @@ function _brickKit() {
       ctx.clearRect(0,0,W,H);
       // Real-parts models on a browser without WebGL (spec/brick-parts-v0.1.md Phase 2): a bounding-box outline
       // per part, not the real triangle mesh -- genPartBox reads each part's baked bounds (fetched lazily by
-      // loadParts via fetchPartBounds) rather than attempting full 2D triangle rasterisation. Parts whose bounds
+      // loadParts via fetchPartMesh) rather than attempting full 2D triangle rasterisation. Parts whose bounds
       // haven't loaded yet are skipped this frame (same v1 policy as the WebGL path's own mesh loading).
       if(usingParts){
         ctx.fillStyle=o.bg||'#eef1f5';ctx.fillRect(0,0,W,H);
@@ -1110,10 +1258,13 @@ function _brickKit() {
         if(o.orbit&&!dragging)az+=dt*0.22*o.speed;
         dirtyView=true;
       }
-      if(!dirtyView)return;
-      dirtyView=false;
-      status(tNow);draw();
-      frames++;
+      if(dirtyView){dirtyView=false;status(tNow);draw();frames++;}
+      // Runs even when the frame above was skipped (dirtyView false) -- a prefers-reduced-motion user never sets
+      // dirtyView back to true after the first paint (the `if(!reduced){...dirtyView=true;}` block above is
+      // skipped entirely for them), so nesting this inside that block would freeze onStats forever after one
+      // call: a real-parts model's checks/step-parts box would permanently read "not checked" for exactly the
+      // users this preference is meant to serve, once its part meshes finish loading a moment after that first
+      // frame. Found reasoning through the async load timing for validateParts(), not observed as a live report.
       if(now-lastStat>600){fps=Math.round(frames*1000/(now-lastStat));frames=0;lastStat=now;if(onStats)onStats(info());}
     }
 
@@ -1144,7 +1295,11 @@ function _brickKit() {
     };
   }
   return {SHAPES: SHAPES, PALNAME: PALNAME, voxelBricks: voxelBricks, normalise: normalise,
-          validate: validate, create: createBrickBuild,
+          validate: validate, validateParts: validateParts, create: createBrickBuild,
+          // Test-only hook: seeds partMeshCache directly so validateParts can be exercised against real part
+          // JSON without a live fetch (no `document`/canvas/WebGL exists in the Node test environment that
+          // needs to drive the normal async load path). See tests/test_brick_parts_validate.mjs.
+          _setPartMesh: function(id, m) { partMeshCache[id] = m; },
           geo: {box: boxGeo, stud: studGeo, vs: glVS, fs: glFS, fsDepth: GL_FS_DEPTH}};
 }
 
@@ -1158,6 +1313,13 @@ var _BRICK_MODELS_MAX = 8;   // named models the picker will list
 var LDRAW_COLOURS = {0:'#1b2a34',1:'#0055bf',2:'#237841',4:'#c91a09',14:'#f2cd37',15:'#f4f4f4',25:'#d67923',
                       71:'#969696',72:'#646464',191:'#fcac00'};
 var LDRAW_EDGE = {0:'#808080'};             // LDConfig's EDGE for colour 0 (black); every other listed colour uses '#333333'
+// Known LDraw ~Moved-to aliases for ids in the curated set (spec/brick-parts-v0.1.md §1.3/§6) -- the bake only
+// ever wrote the canonical id's JSON (e.g. public/parts/3023b.json), never the common/BrickLink id (3023), so an
+// agent naming a part by its everyday number 404s against PART_BASE with no warning unless resolved here first.
+// "the canonical id wins" -- resolved once, at sanitise time, so every downstream consumer (fetch, cache key,
+// rendering, the validator) sees only the canonical id.
+var PART_ID_ALIAS = {'3023':'3023b','3665':'3665a','3660':'3660a','60481':'60481a','4032':'4032a',
+                      '2654':'2654a','4073':'6141'};
 
 // Coerce an agent-supplied partsModel entry list into {p,x,y,z,r,c,edge,step} objects (spec/brick-parts-v0.1.md).
 // Array form [id,x,y,z,r,c] or [id,x,y,z,r,c,step]; object form {p,x,y,z,r,c,s}. Position is LDU (Y down, baseplate
@@ -1177,6 +1339,7 @@ function _partsModelSanitise(list) {
       p = r.p; x = r.x; y = r.y; z = r.z; rot = r.r; c = r.c; step = r.s;
     } else continue;
     if (typeof p !== 'string' || !p) continue;
+    p = PART_ID_ALIAS[p] || p;
     var code = typeof c === 'number' ? Math.floor(c) : null;
     var colour = typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c) ? c.toLowerCase()
                : (code !== null && LDRAW_COLOURS[code]) || '#c91a09';
@@ -1391,18 +1554,26 @@ function _brickMount(K, cfg, U) {
   buildScrubber();
   atom.onStats(function() {
     var M = atom.model();
+    // K.validate() is grid/box-specific (b.x/y/z/w/d/h on an integer stud grid) and can't read real parts data
+    // (b.p/x/y/z/r, LDU units, no w/d/h) -- confirmed live, it used to silently produce NaN/undefined garbage
+    // through it instead of a crash (false "not anchored", "0 stud connections", "(NaN, NaN)" balance, cost rows
+    // reading "undefined×undefined … €NaN"). K.validateParts() (spec/brick-parts-v0.1.md §2-4, Phase 3) is the
+    // real replacement, verified against all 15 spec fixtures. It reads from partMeshCache, populated by async
+    // fetches that don't change `M` itself (PM is a stable, mutated-in-place object) -- so unlike the procedural
+    // path below, it can't gate on `M === last` or it would only ever check once, before meshes finish loading;
+    // it re-runs on every onStats tick (the render loop's own ~600ms cadence) until the real numbers are in.
+    if (cfg.partsModel) {
+      report = K.validateParts(M.bricks);
+      if (range) { range.max = M.steps; if (+range.value > M.steps) range.value = M.steps; stepText(); }
+      drawChecks();
+      return;
+    }
     if (M === last) return;
     last = M;
-    // K.validate() is grid/box-specific (b.x/y/z/w/d/h on an integer stud grid) -- real LDraw parts (b.p/x/y/z/r,
-    // LDU units, no w/d/h at all) silently produce NaN/undefined garbage through it, not a crash: every check
-    // reads as a false failure ("not anchored", "0 stud connections", "(NaN, NaN)" balance) and the cost table
-    // shows "undefined×undefined … €NaN" rows. Confirmed live by rendering one correctly-anchored part and
-    // reading the actual DOM output. Real collision/balance for parts is Phase 3's declared job (the spec defers
-    // "exact mesh-against-mesh collision" there); until then, skip the checks/cost boxes entirely for partsModel
-    // rather than show fabricated failures, and show the real step content instead.
-    if (!cfg.partsModel) report = K.validate(M.bricks);
+    report = K.validate(M.bricks);
     if (range) { range.max = M.steps; if (+range.value > M.steps) range.value = M.steps; stepText(); }
-    if (!cfg.partsModel) { drawChecks(); drawParts(); }
+    drawChecks();
+    drawParts();
   });
 }
 

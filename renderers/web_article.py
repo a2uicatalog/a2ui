@@ -18245,6 +18245,10 @@ def _brick_sanitise(lst, palette=None):
 _LDRAW_COLOURS = {0: "#1b2a34", 1: "#0055bf", 2: "#237841", 4: "#c91a09", 14: "#f2cd37", 15: "#f4f4f4",
                   25: "#d67923", 71: "#969696", 72: "#646464", 191: "#fcac00"}
 _LDRAW_EDGE = {0: "#808080"}
+# Twin of PART_ID_ALIAS in atoms_brick.gs -- edit BOTH. Known LDraw ~Moved-to aliases for ids in the curated set
+# (spec/brick-parts-v0.1.md §1.3/§6): the bake only wrote the canonical id's JSON, never the common/BrickLink id.
+_PART_ID_ALIAS = {"3023": "3023b", "3665": "3665a", "3660": "3660a", "60481": "60481a", "4032": "4032a",
+                  "2654": "2654a", "4073": "6141"}
 
 
 def _brick_parts_model_sanitise(lst):
@@ -18265,6 +18269,7 @@ def _brick_parts_model_sanitise(lst):
             continue
         if not isinstance(p, str) or not p:
             continue
+        p = _PART_ID_ALIAS.get(p, p)
         code = math.floor(c) if isinstance(c, (int, float)) and not isinstance(c, bool) else None
         colour = c.lower() if isinstance(c, str) and _BRICK_HEX6.match(c) else (_LDRAW_COLOURS.get(code) or "#c91a09")
         edge = _LDRAW_EDGE.get(code) or "#333333"

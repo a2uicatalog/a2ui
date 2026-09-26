@@ -81,10 +81,22 @@ def test_stud_and_socket_counts_match_footprint_for_plain_bricks(index):
         assert entry["sockets"] == w * d, pid
 
 
-def test_jumper_plate_socket_is_overridden_not_doubled():
-    """15573 (jumper plate) has one off-grid stud; a naive one-socket-per-cell rule would give it two."""
+def test_jumper_plate_has_two_bottom_sockets_and_one_offgrid_top_stud():
+    """15573 (jumper plate): one off-grid top stud (its whole point -- a half-stud-offset connection point for
+    whatever sits on it), but a NORMAL two-socket bottom -- the same one-socket-per-cell rule as any other 1x2
+    part. An earlier version of this test (and the CONNECTOR_OVERRIDES entry it verified) asserted exactly one
+    socket, misreading the title's "without Understud" (no reinforcing tube above the top stud) as "no normal
+    bottom connection." Found wrong building the Phase 3 validator against
+    spec/brick-parts/fixtures-v0.1.json's F12_jumper_offset, which requires both bottom sockets to reach 3 total
+    stud_connections (2 baseplate + 1 top) for a jumper plate on the baseplate with a plate on its top stud --
+    the override's 1-socket bottom gave only 2. Removing the override (letting the generic rule apply) makes all
+    15 fixtures pass; this test now locks that in instead of the wrong count."""
     mesh = json.loads((PARTS_DIR / "15573.json").read_text())
-    assert len(mesh["connectors"]["sockets"]) == 1
+    sockets = mesh["connectors"]["sockets"]
+    assert len(sockets) == 2
+    assert sorted(s["pos"][0] for s in sockets) == [-160, 160]   # the two 1x2 footprint cells, symmetric about x=0
+    studs = mesh["connectors"]["studs"]
+    assert len(studs) == 1 and studs[0]["pos"] == [0, 0, 0]      # the single off-grid top stud, unaffected
 
 
 def test_gzipped_total_fits_the_2mb_budget():

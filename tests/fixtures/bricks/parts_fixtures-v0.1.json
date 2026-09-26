@@ -1,0 +1,838 @@
+{
+ "units": "LDU, Y down; baseplate top at y=0, its studs at (10+20i, 0, 10+20j)",
+ "rotations": [
+  [
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    -1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ]
+  ],
+  [
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    0,
+    -1,
+    0
+   ]
+  ],
+  [
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    0,
+    1,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ]
+  ],
+  [
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    -1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    -1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    -1,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    -1,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    -1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ]
+  ],
+  [
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    -1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    1,
+    0,
+    0
+   ]
+  ],
+  [
+   [
+    0,
+    1,
+    0
+   ],
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ]
+  ],
+  [
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    -1,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ]
+  ],
+  [
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    -1
+   ],
+   [
+    0,
+    1,
+    0
+   ]
+  ],
+  [
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1
+   ],
+   [
+    0,
+    -1,
+    0
+   ]
+  ]
+ ],
+ "fixtures": [
+  {
+   "name": "F01_single_brick",
+   "description": "one 2x4 brick on the baseplate",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 8,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F02_stack_aligned",
+   "description": "2x4 on 2x4, aligned",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3001",
+     20,
+     -48,
+     20,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 16,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F03_running_bond",
+   "description": "upper 2x4 shifted one stud: 3 columns x 2 rows engage",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3001",
+     40,
+     -48,
+     20,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 14,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F04_collision",
+   "description": "two 2x4 bricks overlapping by three studs",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3001",
+     40,
+     -24,
+     20,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [
+     [
+      0,
+      1
+     ]
+    ],
+    "stud_connections": 16,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F05_floating",
+   "description": "a 1x1 plate hovering with nothing under it",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3024",
+     110,
+     -48,
+     110,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 8,
+    "pin_connections": 0,
+    "floating": [
+     1
+    ],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F06_plate_on_brick",
+   "description": "1x1 plate on a 2x4 brick",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3024",
+     10,
+     -32,
+     10,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 9,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F07_tile_blocks",
+   "description": "a tile has no studs, so a plate set on it is not connected",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3070b",
+     10,
+     -32,
+     10,
+     0
+    ],
+    [
+     "3024",
+     10,
+     -40,
+     10,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 9,
+    "pin_connections": 0,
+    "floating": [
+     2
+    ],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F08_snot_side_studs",
+   "description": "1x2 plate held on the two side studs of 11211",
+   "parts": [
+    [
+     "11211",
+     20,
+     -24,
+     10,
+     0
+    ],
+    [
+     "3023",
+     20,
+     -14,
+     -8,
+     22
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 4,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "warn"
+   }
+  },
+  {
+   "name": "F09_technic_pin_join",
+   "description": "two 1x2 Technic bricks face to face, joined by a 2L friction pin through both holes",
+   "parts": [
+    [
+     "3700",
+     20,
+     -24,
+     10,
+     0
+    ],
+    [
+     "3700",
+     20,
+     -24,
+     30,
+     0
+    ],
+    [
+     "2780",
+     20,
+     -14,
+     20,
+     3
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 4,
+    "pin_connections": 2,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F10_crossed_bricks",
+   "description": "2x4 turned 90 degrees across a 2x4: a 2x2 overlap engages 4 studs",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3001",
+     20,
+     -48,
+     20,
+     1
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 12,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F11_unbalanced",
+   "description": "2x4 cantilevered on a single 1x1 brick: connected, but the centre of mass is outside the footprint",
+   "parts": [
+    [
+     "3005",
+     10,
+     -24,
+     10,
+     0
+    ],
+    [
+     "3001",
+     40,
+     -48,
+     20,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 2,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "fail"
+   }
+  },
+  {
+   "name": "F12_jumper_offset",
+   "description": "jumper plate: a 1x1 plate half a stud off the grid, legally",
+   "parts": [
+    [
+     "15573",
+     20,
+     -8,
+     10,
+     0
+    ],
+    [
+     "3024",
+     20,
+     -16,
+     10,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 3,
+    "pin_connections": 0,
+    "floating": [],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F13_into_baseplate",
+   "description": "a plate sunk halfway into the baseplate",
+   "parts": [
+    [
+     "3024",
+     10,
+     -4,
+     10,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [
+     [
+      -1,
+      0
+     ]
+    ],
+    "stud_connections": 0,
+    "pin_connections": 0,
+    "floating": [
+     0
+    ],
+    "balance": "none"
+   }
+  },
+  {
+   "name": "F14_half_stud_misaligned",
+   "description": "a 1x2 plate half a stud off the grid on a brick: touching, not connected",
+   "parts": [
+    [
+     "3001",
+     20,
+     -24,
+     20,
+     0
+    ],
+    [
+     "3023",
+     30,
+     -32,
+     10,
+     0
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 8,
+    "pin_connections": 0,
+    "floating": [
+     1
+    ],
+    "balance": "pass"
+   }
+  },
+  {
+   "name": "F15_pin_one_side",
+   "description": "a pin pushed into one Technic brick only: 1 pin connection",
+   "parts": [
+    [
+     "3700",
+     20,
+     -24,
+     10,
+     0
+    ],
+    [
+     "2780",
+     20,
+     -14,
+     20,
+     3
+    ]
+   ],
+   "expect": {
+    "collisions": [],
+    "stud_connections": 2,
+    "pin_connections": 1,
+    "floating": [],
+    "balance": "warn"
+   }
+  }
+ ]
+}

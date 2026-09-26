@@ -39,7 +39,15 @@ def generated_occupancy(title):
     if dims is None:
         return None
     h, w, d = dims
-    return [box(-10 * w, 10 * w, 0, h, -10 * d, 10 * d)]
+    # w, d come from the title's own number order ("Brick 2 x 4" -> w=2, d=4) -- but real LDraw geometry puts the
+    # FIRST number along Z and the SECOND along X, the opposite of the naive w->x, d->z mapping this had before.
+    # Confirmed against real baked bounds for two parts: 3001 "Brick 2 x 4" has real X span 80 (4 studs) / Z span
+    # 40 (2 studs), and 3023b "Plate 1 x 2" has real X span 40 (2 studs) / Z span 20 (1 stud) -- both the SECOND
+    # title number on X, FIRST on Z. The old code did the reverse, so every non-square generated occupancy box
+    # (and everything derived from it: generate_sockets' grid, collision boxes) was rotated 90 degrees off the
+    # part's real stud/socket geometry. Found live 2026-09-26 building the Phase 3 validator: a stacked-bricks
+    # fixture's stud-socket matching came out short because the generated sockets' grid ran the wrong way.
+    return [box(-10 * d, 10 * d, 0, h, -10 * w, 10 * w)]
 
 
 # Hand-authored occupancy for parts whose plain LDraw geometry does not reduce to one clean box, verified against
@@ -55,19 +63,26 @@ OVERRIDES = {
     "4274": [box(-10, 10, -6, 6, -6, 6)],
     "6558": [box(-20, 20, -6, 6, -6, 6)],
     "32054": [box(-30, 30, -9, 9, -9, 9)],
+    # Brick 1x2 with two studs on one side (SNOT): a normal 1x2 brick body underneath the extra side studs, which
+    # come from real geometry (no override needed for them) -- x is the "2" direction, z the "1" direction, per
+    # the corrected w/d convention above (confirmed against this same part's own real top-stud spread, x=+/-10).
+    "11211": [box(-20, 20, 0, 24, -10, 10)],
     # Jumper plate: full 1x2 plate body; its single stud is off-grid and handled by STUD_OVERRIDES below, not occupancy.
     "15573": [box(-20, 20, 0, 8, -10, 10)],
 }
 
 # Parts whose generated stud/socket connectors from geometry are wrong or incomplete for our purposes, replaced
 # wholesale. Each entry: {"studs": [(pos, dir), ...], "sockets": [(pos, dir), ...]}. Empty list = "has none".
-CONNECTOR_OVERRIDES = {
-    # A jumper plate has ONE top stud, off-grid at (0,0,0) rather than the usual grid cell centres, and its
-    # single bottom socket sits at grid cell (10, 8, 0)-ish per the LDraw geometry (kept from geometry: no override
-    # needed for studs since LDraw's own stud primitive is already at the right spot); only sockets need fixing
-    # since the generic "one socket per cell" rule would place two.
-    "15573": {"sockets": [((0, 8, 0), (0, 1, 0))]},
-}
+#
+# 15573 (jumper plate) is NOT here despite an earlier version of this table overriding its sockets down to one
+# ("without Understud" in the title was misread as "without a normal bottom connection at all"). Found wrong
+# building the Phase 3 validator against spec/brick-parts/fixtures-v0.1.json F12_jumper_offset (expects
+# stud_connections: 3 for a jumper plate on the baseplate with a 1x1 plate on its single top stud): the override
+# gave 1 (bottom) + 1 (top) = 2. The generic "one socket per cell" rule for its full 1x2 occupancy footprint gives
+# 2 real bottom sockets, both landing on valid baseplate grid positions for this fixture's placement -- 2 + 1 = 3,
+# matching exactly. "Without understud" describes the top stud having no reinforcing tube above it, not the
+# plate's ordinary two-cell bottom connection -- kept as a documented correction, not silently reverted.
+CONNECTOR_OVERRIDES = {}
 
 
 def generate_sockets(occupancy):
