@@ -1336,7 +1336,7 @@ _RENDERERS['bento_grid'] = function(b) {
     var iconHtml = item.icon ? '<div style="font-size:1.8rem;margin-bottom:8px;">' + _esc(item.icon) + '</div>' : '';
     var titleHtml = item.title ? '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:6px;">' + _esc(item.title) + '</div>' : '';
     var bodyHtml = item.body ? '<div style="font-size:0.875rem;color:#4b5563;line-height:1.5;">' + _esc(item.body) + '</div>' : '';
-    itemsHtml += '<div style="grid-column:span ' + span + ';background:' + scheme.bg + ';border:1px solid ' + scheme.border + ';border-radius:14px;padding:20px;box-sizing:border-box;">' + iconHtml + titleHtml + bodyHtml + '</div>';
+    itemsHtml += '<div style="grid-column:span ' + span + ';background:' + scheme.bg + ';border:1px solid ' + scheme.border + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;box-sizing:border-box;">' + iconHtml + titleHtml + bodyHtml + '</div>';
   }
   return '<div id="' + id + '" style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:14px;margin:1rem 0;">' + itemsHtml + '</div>';
 };
@@ -1430,7 +1430,7 @@ _RENDERERS['sprint_board'] = function(b) {
           labelsHtml += '<span style="background:#ede9fe;color:#5b21b6;font-size:0.7rem;padding:1px 6px;border-radius:999px;">' + _esc(item.labels[l]) + '</span>';
         }
       }
-      cardsHtml += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:8px;">'
+      cardsHtml += '<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px;margin-bottom:8px;">'
         + '<div style="display:flex;align-items:flex-start;gap:8px;">'
         + '<div style="width:8px;height:8px;border-radius:50%;background:' + pcolor + ';flex-shrink:0;margin-top:5px;"></div>'
         + '<div style="flex:1;">'
@@ -1469,7 +1469,7 @@ _RENDERERS['jira_ticket'] = function(b) {
     }
   }
   var assigneeHtml = b.assignee ? '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:#6b7280;"><div style="width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">' + _esc(b.assignee.charAt(0).toUpperCase()) + '</div>' + _esc(b.assignee) + '</div>' : '';
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin:0.75rem 0;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
     + '<span style="font-size:1.2rem;background:' + bgColor + ';padding:6px;border-radius:8px;">' + icon + '</span>'
     + '<span style="font-size:0.82rem;font-weight:700;color:#6b7280;font-family:monospace;">' + _esc(b.key || '') + '</span>'
@@ -1511,7 +1511,7 @@ _RENDERERS['navigation_menu'] = function(b) {
       itemsHtml += '<li style="position:relative;">'
         + '<details style="display:inline;">'
         + '<summary style="display:flex;align-items:center;gap:4px;padding:8px 12px;font-size:0.9rem;font-weight:500;color:#111827;cursor:pointer;list-style:none;border-radius:6px;">' + iconHtml + _esc(item.label || '') + ' <span style="font-size:0.7rem;">▾</span></summary>'
-        + '<ul style="position:absolute;top:100%;left:0;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.1);list-style:none;margin:4px 0 0;padding:6px 0;min-width:180px;z-index:10;">' + subItems + '</ul>'
+        + '<ul style="position:absolute;top:100%;left:0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);box-shadow:0 4px 16px rgba(0,0,0,0.1);list-style:none;margin:4px 0 0;padding:6px 0;min-width:180px;z-index:10;">' + subItems + '</ul>'
         + '</details>'
         + '</li>';
     } else {
@@ -1579,7 +1579,7 @@ _RENDERERS['roadmap_card'] = function(b) {
       itemsHtml += '<li style="font-size:0.875rem;color:#374151;padding:3px 0;">• ' + _esc(b.items[i]) + '</li>';
     }
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:0.75rem 0;background:#fff;">'
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:0.75rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
     + (b.quarter ? '<span style="font-size:0.82rem;font-weight:700;color:#7c3aed;background:#f3f0ff;padding:3px 10px;border-radius:999px;">' + _esc(b.quarter) + '</span>' : '')
     + '<span style="background:' + sc.bg + ';color:' + sc.fg + ';font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">' + _esc(b.status || '') + '</span>'
@@ -1602,7 +1602,7 @@ _RENDERERS['notification_stack'] = function(b) {
   for (var i = 0; i < notifications.length; i++) {
     var n = notifications[i];
     var tc = typeConfig[n.type] || typeConfig['info'];
-    html += '<div style="background:' + tc.bg + ';border:1px solid ' + tc.border + ';border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">'
+    html += '<div style="background:' + tc.bg + ';border:1px solid ' + tc.border + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">'
       + '<span style="font-size:1rem;flex-shrink:0;">' + tc.icon + '</span>'
       + '<div style="flex:1;">'
       + (n.title ? '<div style="font-weight:700;font-size:0.875rem;color:#111827;">' + _esc(n.title) + '</div>' : '')
@@ -1656,7 +1656,7 @@ _RENDERERS['source_citation'] = function(b) {
   var titleHtml = b.url
     ? '<a href="' + _esc(b.url) + '" style="font-weight:600;color:#1d4ed8;text-decoration:none;font-size:0.9rem;">' + _esc(b.title || '') + '</a>'
     : '<span style="font-weight:600;color:#111827;font-size:0.9rem;">' + _esc(b.title || '') + '</span>';
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin:0.75rem 0;background:#fafafa;display:flex;gap:12px;">'
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px;margin:0.75rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);display:flex;gap:12px;">'
     + '<div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">①</div>'
     + '<div>'
     + titleHtml
@@ -1853,7 +1853,7 @@ _RENDERERS['rating_summary_bar'] = function(b) {
       + '<span style="font-size:0.72rem;color:#6b7280;width:28px;text-align:right;">' + count + '</span>'
       + '</div>';
   }
-  return '<div style="display:flex;gap:24px;align-items:flex-start;border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
+  return '<div style="display:flex;gap:24px;align-items:flex-start;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
     + '<div style="text-align:center;min-width:80px;">'
     + '<div style="font-size:2.5rem;font-weight:800;color:#111827;line-height:1;">' + overall.toFixed(1) + '</div>'
     + '<div style="color:#f59e0b;font-size:1.1rem;letter-spacing:2px;">' + starsHtml + '</div>'
@@ -1914,7 +1914,7 @@ _RENDERERS['conversation_snippet'] = function(b) {
         + '</div>';
     } else {
       html += lbl + '<div style="display:flex;justify-content:flex-start;">'
-        + '<div style="background:#fff;border:1px solid #e5e7eb;color:#111827;border-radius:16px 16px 16px 4px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
+        + '<div style="background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);color:#111827;border-radius:16px 16px 16px 4px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
         + '</div>';
     }
   }
@@ -2629,7 +2629,7 @@ _RENDERERS['effect_overlay'] = function(b) {
     }
     content = '<div style="position:relative;overflow:hidden;height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="position:absolute;inset:0;pointer-events:none;">' + particles + '</div><div style="font-size:3.2rem;z-index:1;' + trophyAnim + '">' + icon + '</div>' + msgHtml + '</div>';
   }
-  return css + '<div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:14px;overflow:hidden;">' + statusHtml + content + '</div>';
+  return css + '<div style="margin:1rem 0;background:#0a0f1e;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' + statusHtml + content + '</div>';
 };
 
 // ── New GAS-native atoms ─────────────────────────────────────────────────────
@@ -2703,7 +2703,7 @@ _RENDERERS['step_reveal_sequence'] = function(b) {
   }).join('');
   var nav = '<div class="srs-nav-' + uid + '" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e5e7eb;">'
     + steps.map(function(s, i) {
-        return '<label for="srs-' + uid + '-' + i + '" class="srs-lbl-' + uid + '" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #e5e7eb;font-size:0.8rem;font-weight:600;color:#6b7280;transition:all 0.15s;">' + (i+1) + (s.title ? '. ' + _esc(s.title) : '') + '</label>';
+        return '<label for="srs-' + uid + '-' + i + '" class="srs-lbl-' + uid + '" style="cursor:pointer;padding:6px 14px;border-radius:20px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);font-size:0.8rem;font-weight:600;color:#6b7280;transition:all 0.15s;">' + (i+1) + (s.title ? '. ' + _esc(s.title) : '') + '</label>';
       }).join('')
     + '</div>';
   var body = '<div class="srs-body-' + uid + '">'
@@ -2799,7 +2799,7 @@ _RENDERERS['sequence_diagram'] = function(b) {
         width = Math.min((hi - lo) + laneW * 0.56, 100 - left);
       }
       return '<div style="position:relative;z-index:1;margin:14px 0;">'
-        + '<div style="margin-left:' + left.toFixed(2) + '%;width:' + width.toFixed(2) + '%;background:' + surfaceC + ';border:1px solid ' + accent + '55;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.45;color:' + dimC + ';text-align:center;box-sizing:border-box;">' + _markdownToHtml(m.text || '') + '</div></div>';
+        + '<div style="margin-left:' + left.toFixed(2) + '%;width:' + width.toFixed(2) + '%;background:' + surfaceC + ';border:1px solid ' + accent + '55;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:8px 12px;font-size:12px;line-height:1.45;color:' + dimC + ';text-align:center;box-sizing:border-box;">' + _markdownToHtml(m.text || '') + '</div></div>';
     }
     return '<div style="position:relative;z-index:1;margin:14px 0;padding:11px 16px;background:' + noteBg + ';border-left:3px solid ' + accent + ';border-radius:0 6px 6px 0;font-size:13px;line-height:1.5;color:' + dimC + ';">' + _markdownToHtml(m.text || '') + '</div>';
   }
@@ -2912,7 +2912,7 @@ _RENDERERS['terminal_boot'] = function(b) {
     return '<div id="tb-' + uid + '-' + i + '" style="opacity:0;line-height:1.9;color:' + col + ';">'
       + '<span style="color:#475569;margin-right:10px;user-select:none;">$</span>' + _esc(l) + '</div>';
   }).join('');
-  return '<div style="background:#0a0f1e;border:1px solid #1e293b;border-radius:12px;padding:20px 24px;margin:1rem 0;font-family:\'Courier New\',monospace;font-size:0.84rem;">'
+  return '<div style="background:#0a0f1e;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;font-family:\'Courier New\',monospace;font-size:0.84rem;">'
     + (title ? '<div style="font-size:0.7rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;">' + _esc(title) + '</div>' : '')
     + '<div>' + linesHtml + '</div>'
     + '<span id="tb-cur-' + uid + '" style="display:inline-block;width:8px;height:14px;background:#22c55e;vertical-align:middle;margin-left:2px;animation:tb-bl-' + uid + ' 1s step-end infinite;"></span>'
@@ -2938,7 +2938,7 @@ _RENDERERS['stagger_list'] = function(b) {
         var delay = (i * gap) + 's';
         var base  = 'opacity:0;animation:sl-' + uid + ' 0.45s ease ' + delay + ' both;';
         if (typeof item === 'string') {
-          return '<div style="' + base + 'padding:10px 14px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;color:#374151;">' + _markdownToHtml(item) + '</div>';
+          return '<div style="' + base + 'padding:10px 14px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.9rem;color:#374151;">' + _markdownToHtml(item) + '</div>';
         }
         var icon = item.icon || '•';
         var text = item.text || item.label || '';
@@ -3067,7 +3067,7 @@ _RENDERERS['split_reveal'] = function(b) {
     + '@keyframes sr-bot-' + uid + '{from{transform:translateY(0);}to{transform:translateY(100%);}}'
     + '</style>'
     + '<div style="position:relative;border-radius:16px;overflow:hidden;margin:1rem 0;">'
-    + '<div style="padding:32px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;">'
+    + '<div style="padding:32px;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:16px;">'
     + (title ? '<div style="font-size:1.2rem;font-weight:700;color:#111827;margin-bottom:10px;">' + _esc(title) + '</div>' : '')
     + (text  ? '<div style="color:#374151;line-height:1.7;">' + _markdownToHtml(text) + '</div>' : '')
     + '</div>'
@@ -3151,7 +3151,7 @@ _RENDERERS['status_timeline'] = function(b) {
       + '<div style="width:14px;height:14px;border-radius:50%;background:' + dot + ';flex-shrink:0;margin-top:5px;' + (status==='active'?'box-shadow:0 0 0 4px '+dot+'33;':'') + '"></div>'
       + (!isLast ? '<div style="width:2px;flex:1;background:#e5e7eb;margin:4px 0;min-height:16px;"></div>' : '')
       + '</div>'
-      + '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:10px;padding:12px 16px;flex:1;margin-bottom:' + (isLast?'0':'10px') + ';">'
+      + '<div style="background:' + bg + ';border:1px solid ' + bd + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;flex:1;margin-bottom:' + (isLast?'0':'10px') + ';">'
       + (ev.title ? '<div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(ev.title) + '</div>' : '')
       + (ev.date  ? '<div style="font-size:0.72rem;color:' + dot + ';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">' + _esc(ev.date) + '</div>' : '')
       + (ev.text  ? '<div style="font-size:0.82rem;color:#6b7280;line-height:1.5;margin-top:5px;">' + _esc(ev.text) + '</div>' : '')

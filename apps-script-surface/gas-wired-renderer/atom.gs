@@ -1305,7 +1305,7 @@ _RENDERERS['key_takeaways'] = function(b) {
     var text = typeof p === 'object' ? (p.text || '') : p;
     return '<li style="margin-bottom:6px;font-size:0.88rem;color:#1e3a5f;">' + _markdownToHtml(text) + '</li>';
   }).join('');
-  return '<div style="border:1px solid #bfdbfe;border-left:4px solid #2563eb;border-radius:8px;padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #bfdbfe;border-left:4px solid #2563eb;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#1d4ed8;margin-bottom:10px;">🔑 Key takeaways</div>' +
     '<ul style="margin:0;padding-left:1.2em;">' + lis + '</ul></div>';
 };
@@ -1323,7 +1323,7 @@ _RENDERERS['learning_objectives'] = function(b) {
       '<span style="color:#2563eb;flex-shrink:0;margin-top:1px;">→</span>' +
       '<span style="color:#1e3a5f;">' + _esc(o) + '</span></li>';
   }).join('');
-  return '<div style="border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #bfdbfe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;background:#eff6ff;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#1d4ed8;margin-bottom:10px;">🎯 What you\'ll learn</div>' +
     '<ul style="list-style:none;padding:0;margin:0;">' + lis + '</ul></div>';
 };
@@ -1340,7 +1340,7 @@ _RENDERERS['changelog_entry'] = function(b) {
       '<span style="font-size:0.7rem;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;background:' + color + '22;color:' + color + ';">' + type.toUpperCase() + '</span>' +
       '<span style="font-size:0.85rem;color:#374151;">' + _esc(c.text||'') + '</span></div>';
   }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">' +
     '<span style="font-family:monospace;font-weight:700;font-size:0.95rem;color:#374151;">v' + _esc(version) + '</span>' +
     (date ? '<span style="font-size:0.8rem;color:#9ca3af;">' + _esc(date) + '</span>' : '') +
@@ -1354,7 +1354,7 @@ _RENDERERS['release_notes'] = function(b) {
     var lis = items.map(function(i){ return '<li style="font-size:0.85rem;color:#374151;margin-bottom:3px;">' + _esc(i) + '</li>'; }).join('');
     return '<div style="margin-bottom:14px;"><div style="font-weight:700;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:' + color + ';margin-bottom:6px;">' + label + '</div><ul style="margin:0;padding-left:1.2em;">' + lis + '</ul></div>';
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 22px;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;margin:1.2rem 0;">' +
     '<div style="font-weight:700;font-size:1rem;color:#111827;margin-bottom:14px;">' + _esc(title) + '</div>' +
     section('Added', b.added, '#16a34a') +
     section('Fixed', b.fixed, '#2563eb') +
@@ -1370,7 +1370,7 @@ _RENDERERS['further_reading'] = function(b) {
       '<span style="color:#2563eb;flex-shrink:0;margin-top:2px;">→</span>' +
       '<div><div style="font-size:0.88rem;font-weight:600;color:#1d4ed8;">' + _esc(l.title||'') + '</div>' + annotation + '</div></a>';
   }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#374151;margin-bottom:4px;">📚 Further reading</div>' + items + '</div>';
 };
 
@@ -1387,7 +1387,7 @@ _RENDERERS['resources_list'] = function(b) {
       '<span style="font-size:0.88rem;color:var(--accent);font-weight:500;">' + _esc(item.title||'') + '</span>' +
       '<div style="display:flex;align-items:center;gap:8px;">' + size + type + '</div></a>';
   }).join('');
-  return '<div style="border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:var(--text);margin-bottom:4px;">📎 Resources</div>' + rows + '</div>';
 };
 
@@ -1439,7 +1439,7 @@ _RENDERERS['progress_checkpoint'] = function(b) {
   for (var i = 1; i <= total; i++) {
     steps += '<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;background:' + (i < current ? '#7c3aed' : '#e5e7eb') + ';color:' + (i < current ? '#fff' : '#9ca3af') + ';">' + i + '</div>';
   }
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;">' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' + steps + '</div>' +
     '<div style="background:#f3f4f6;border-radius:100px;height:6px;overflow:hidden;">' +
     '<div style="height:100%;background:#7c3aed;width:' + pct + '%;border-radius:100px;"></div></div>' +
@@ -1504,7 +1504,7 @@ _RENDERERS['table_of_contents'] = function(b) {
     var size = level === 1 ? '0.9rem' : '0.85rem';
     return '<li style="margin:4px 0;' + indent + '"><a href="#" style="color:#7c3aed;text-decoration:none;font-size:' + size + ';">' + prefix + _esc(text) + '</a></li>';
   }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;background:#f9fafb;margin:1.5rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px 20px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:1.5rem 0;">' +
     '<div style="font-weight:700;color:#374151;margin-bottom:10px;font-size:0.85rem;">Contents</div>' +
     '<ul style="list-style:none;padding:0;margin:0;">' + rows + '</ul></div>';
 };
@@ -1565,7 +1565,7 @@ _RENDERERS['tabs'] = function(b) {
       }
       return '<div class="tm-tab-panel-' + uid + '" role="tabpanel" aria-label="' + _esc(t.label||('Tab '+(i+1))) + '">' + content + '</div>';
     }).join('') + '</div>';
-  return '<div style="margin:1.5rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">' + css + inputs + labels + panels + '</div>';
+  return '<div style="margin:1.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' + css + inputs + labels + panels + '</div>';
 };
 
 _RENDERERS['gallery'] = function(b) {
@@ -1678,7 +1678,7 @@ _RENDERERS['stat_card'] = function(b) {
   var deltaColor = isUp ? '#00ff88' : '#ff4444';
   var deltaArrow = isUp ? '▲' : '▼';
   var deltaHtml = delta ? '<span style="font-size:0.85rem;font-weight:700;color:' + deltaColor + ';margin-left:10px;">' + deltaArrow + ' ' + _esc(String(delta)) + '</span>' : '';
-  return '<div style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);border:1px solid ' + accent + '44;border-radius:12px;padding:24px 32px;margin:1rem 0;box-shadow:0 0 20px ' + accent + '22,inset 0 0 20px ' + accent + '08;min-width:200px;text-align:center;">' +
+  return '<div style="display:inline-block;background:linear-gradient(135deg,#0d1117 0%,#1a1f2e 100%);border:1px solid ' + accent + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 32px;margin:1rem 0;box-shadow:0 0 20px ' + accent + '22,inset 0 0 20px ' + accent + '08;min-width:200px;text-align:center;">' +
     '<div style="font-size:0.75rem;font-weight:700;color:' + accent + ';letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">' + _esc(label) + '</div>' +
     '<div style="font-size:2.8rem;font-weight:900;color:#ffffff;line-height:1;font-family:monospace;">' + _esc(String(value)) + deltaHtml + '</div></div>';
 };
@@ -1743,7 +1743,7 @@ _RENDERERS['stepper'] = function(b) {
     var connector = i < norm.length - 1 ? '<div style="width:2px;height:14px;margin:3px 0 3px 13px;background:' + (completed ? color : '#1e293b') + ';border-radius:1px;"></div>' : '';
     return '<div><div style="display:flex;align-items:flex-start;gap:12px;">' + indicator + '<div style="padding-top:4px;"><div style="font-size:0.95rem;font-weight:600;color:' + lc + ';">' + _esc(step.label) + '</div>' + descHtml + '</div></div>' + connector + '</div>';
   }).join('');
-  return '<div style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:20px 24px;margin:1rem 0;">' + headingHtml + items + '</div>';
+  return '<div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 24px;margin:1rem 0;">' + headingHtml + items + '</div>';
 };
 
 _RENDERERS['faq_accordion'] = function(b) {
@@ -1796,7 +1796,7 @@ _RENDERERS['hover_card'] = function(b) {
   var content = '';
   blocks.forEach(function(blk){ var fn = _RENDERERS[blk.component||blk.type]; if(fn) content += fn(blk); });
   if (!content && b.content) content = '<p style="font-size:0.85rem;">' + _markdownToHtml(b.content) + '</p>';
-  return '<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">' +
+  return '<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     '<div style="padding:10px 14px;background:#f3f4f6;font-size:0.85rem;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;">' + _esc(trigger) + '</div>' +
     '<div style="padding:12px 14px;font-size:0.85rem;">' + content + '</div></div>';
 };
@@ -1827,7 +1827,7 @@ _RENDERERS['css_modal'] = function(b) {
     '<div class="' + mid + '-bd"><div style="background:#1e293b;border-radius:12px;padding:28px 28px 20px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);">' +
     titleHtml + descHtml + content +
     '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">' +
-    '<label for="' + mid + '" style="padding:9px 20px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:0.88rem;cursor:pointer;">' + _esc(b.cancel_label||'Cancel') + '</label>' +
+    '<label for="' + mid + '" style="padding:9px 20px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:0.88rem;cursor:pointer;">' + _esc(b.cancel_label||'Cancel') + '</label>' +
     '<label for="' + mid + '" style="padding:9px 22px;border-radius:6px;background:#3b82f6;color:#fff;font-size:0.88rem;font-weight:600;cursor:pointer;">' + _esc(b.confirm_label||'Confirm') + '</label>' +
     '</div></div></div></div>';
 };
@@ -1859,7 +1859,7 @@ _RENDERERS['deprecation_notice'] = function(b) {
   var rv = b.removal_version || '';
   var altHtml = alt ? '<div style="margin-top:4px;font-size:0.85rem;">Use instead: <code style="background:#fef2f2;padding:1px 6px;border-radius:4px;">' + _esc(alt) + '</code></div>' : '';
   var rvHtml = rv ? '<div style="margin-top:6px;font-size:0.8rem;color:#991b1b;">Removed in: <code>' + _esc(rv) + '</code></div>' : '';
-  return '<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:8px;padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#991b1b;margin-bottom:4px;">⚠ Deprecated</div>' + altHtml + rvHtml + '</div>';
 };
 
@@ -1922,7 +1922,7 @@ _RENDERERS['tabbed_code'] = function(b) {
   var panels = '<div class="tcp_' + uid + '">' + tabs.map(function(t, i){
     return '<div style="' + (i===0?'display:block':'display:none') + '"><pre style="margin:0;padding:16px;background:#1e1e2e;font-size:0.82rem;color:#e2e8f0;overflow:auto;"><code>' + _esc(t.code||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>') + '</code></pre></div>';
   }).join('') + '</div>';
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">' +
     perTab + inputs + '<div style="display:flex;background:#f9fafb;border-bottom:1px solid #e5e7eb;">' + labels + '</div>' + panels + '</div>';
 };
 
@@ -1935,7 +1935,7 @@ _RENDERERS['http_request_block'] = function(b) {
   var color = colors[method] || '#6b7280';
   var hdrsHtml = Object.keys(headers).map(function(k){ return '<div style="font-size:0.78rem;font-family:monospace;color:#374151;"><span style="color:#6b7280;">' + _esc(k) + ':</span> ' + _esc(headers[k]) + '</div>'; }).join('');
   var bodyHtml = body ? '<pre style="background:#f9fafb;border-radius:6px;padding:10px;margin-top:10px;font-size:0.78rem;overflow:auto;color:#374151;">' + _esc(body) + '</pre>' : '';
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.2rem 0;">' +
     '<div style="padding:10px 16px;display:flex;align-items:center;gap:10px;background:#f9fafb;">' +
     '<span style="background:' + color + ';color:#fff;font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:5px;font-family:monospace;">' + method + '</span>' +
     '<span style="font-family:monospace;font-size:0.85rem;color:#374151;">' + _esc(url) + '</span></div>' +
@@ -2016,7 +2016,7 @@ _RENDERERS['anchor_list'] = function(b) {
     var href = typeof item === 'object' ? (item.url || '#' + text.toLowerCase().replace(/\s+/g,'-')) : '#';
     return '<li style="margin:4px 0;"><a href="' + _esc(href) + '" style="color:#7c3aed;text-decoration:none;font-size:0.88rem;">→ ' + _esc(text) + '</a></li>';
   }).join('');
-  return '<ul style="list-style:none;padding:12px 16px;margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;">' + rows + '</ul>';
+  return '<ul style="list-style:none;padding:12px 16px;margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' + rows + '</ul>';
 };
 
 _RENDERERS['glossary_term'] = function(b) {
@@ -2064,7 +2064,7 @@ _RENDERERS['article_series_nav'] = function(b) {
   if (prev) nav += '<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">← ' + _esc(prev) + '</a>';
   if (prev && nxt) nav += '<span style="margin:0 8px;color:#d1d5db;">|</span>';
   if (nxt) nav += '<a href="#" style="color:#7c3aed;text-decoration:none;font-size:0.82rem;">' + _esc(nxt) + ' →</a>';
-  return '<div style="border:1px solid #ede9fe;border-radius:10px;padding:14px 18px;background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
+  return '<div style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#faf5ff;margin:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">' +
     '<div style="font-weight:600;color:#7c3aed;font-size:0.85rem;">📚 <a href="' + _esc(url) + '" style="color:#7c3aed;text-decoration:none;">' + _esc(title) + '</a></div>' +
     '<div>' + nav + '</div></div>';
 };
@@ -2075,7 +2075,7 @@ _RENDERERS['post_metadata_bar'] = function(b) {
   if (b.date) parts.push('<span style="color:#6b7280;">📅 ' + _esc(b.date) + '</span>');
   if (b.readTime) parts.push('<span style="color:#6b7280;">⏱️ ' + _esc(String(b.readTime)) + ' min read</span>');
   var inner = parts.join(' <span style="color:#e5e7eb;margin:0 8px;">|</span> ');
-  return '<div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:8px 12px;background:#f9fafb;border:1px solid #f3f4f6;border-radius:6px;margin:1rem 0;flex-wrap:wrap;">' + inner + '</div>';
+  return '<div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;padding:8px 12px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #f1f1f1;border:1px solid var(--a2ui-border-soft,#f1f1f1);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);margin:1rem 0;flex-wrap:wrap;">' + inner + '</div>';
 };
 
 _RENDERERS['author_bio_card'] = function(b) {
@@ -2086,7 +2086,7 @@ _RENDERERS['author_bio_card'] = function(b) {
   var avatarHtml = avatar ? '<img src="' + _esc(avatar) + '" alt="' + _esc(name) + '" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;">' :
     '<div style="width:56px;height:56px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">👤</div>';
   var linksHtml = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="font-size:0.78rem;color:#6b7280;text-decoration:none;margin-right:10px;">' + _esc(k) + '</a>'; }).join('');
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;display:flex;gap:16px;align-items:flex-start;margin:1.5rem 0;">' +
     avatarHtml + '<div>' +
     '<div style="font-weight:700;color:#111827;margin-bottom:4px;">' + _esc(name) + '</div>' +
     '<p style="margin:0 0 8px;font-size:0.85rem;color:#6b7280;line-height:1.5;">' + _markdownToHtml(bio) + '</p>' +
@@ -2097,7 +2097,7 @@ _RENDERERS['related_posts_grid'] = function(b) {
   var posts = b.posts || [];
   var cards = posts.map(function(p){
     var topicHtml = p.topic ? '<div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;margin-bottom:4px;">' + _esc(p.topic) + '</div>' : '';
-    return '<a href="' + _esc(p.url||'#') + '" style="display:block;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;text-decoration:none;">' +
+    return '<a href="' + _esc(p.url||'#') + '" style="display:block;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 16px;text-decoration:none;">' +
       topicHtml + '<div style="font-size:0.88rem;font-weight:600;color:#111827;line-height:1.4;">' + _esc(p.title||'') + '</div></a>';
   }).join('');
   return '<div style="margin:1.5rem 0;"><div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:10px;">Related reading</div>' +
@@ -2176,7 +2176,7 @@ _RENDERERS['expandable_list'] = function(b) {
   }
   var items = b.items || [];
   var inner = items.map(renderNode).join('');
-  return '<div style="padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;margin:1rem 0;">' + inner + '</div>';
+  return '<div style="padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);margin:1rem 0;">' + inner + '</div>';
 };
 
 _RENDERERS['poll_block'] = function(b) {
@@ -2188,7 +2188,7 @@ _RENDERERS['poll_block'] = function(b) {
     return '<div style="margin-bottom:12px;">' +
       '<div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:500;color:#374151;margin-bottom:4px;">' +
       '<span>' + _esc(opt.text||'') + '</span><span>' + (opt.votes||0) + ' votes (' + pct + '%)</span></div>' +
-      '<div style="height:24px;background:#f3f4f6;border-radius:6px;overflow:hidden;border:1px solid #e5e7eb;">' +
+      '<div style="height:24px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">' +
       '<div style="width:' + pct + '%;height:100%;background:#7c3aed;opacity:0.15;border-radius:5px;"></div></div></div>';
   }).join('');
   return '<div style="padding:16px;border:1px solid #ede9fe;border-radius:12px;background:#fff;margin:1.2rem 0;">' +
@@ -2263,7 +2263,7 @@ _RENDERERS['segmented_control'] = function(b) {
   return '<style>.sgc' + uid + ' input:checked+label{background:#e8f0fe;color:#1a73e8;font-weight:600;}</style>' +
     '<div style="margin:1rem 0;">' +
     (label ? '<div style="font-size:0.83rem;font-weight:600;color:#3c4043;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
-    '<div class="sgc' + uid + '" style="display:inline-flex;border:1px solid #dadce0;border-radius:8px;overflow:hidden;background:#fff;">' + items + '</div></div>';
+    '<div class="sgc' + uid + '" style="display:inline-flex;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;background:#ffffff;background:var(--a2ui-surface,#ffffff);">' + items + '</div></div>';
 };
 
 _RENDERERS['zoomable_image'] = function(b) {
@@ -2305,7 +2305,7 @@ _RENDERERS['css_slide_panel'] = function(b) {
   if (!content && b.content) content = '<p>' + _markdownToHtml(b.content) + '</p>';
   return '<div style="margin:1rem 0;display:flex;gap:12px;align-items:flex-start;">' +
     '<button style="padding:8px 14px;background:#374151;color:#fff;border:none;border-radius:6px;font-size:0.82rem;cursor:pointer;white-space:nowrap;">' + _esc(trigger) + ' →</button>' +
-    '<div style="flex:1;padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;border-left:3px solid #374151;font-size:0.85rem;">' + content + '</div></div>';
+    '<div style="flex:1;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);border-left:3px solid #374151;font-size:0.85rem;">' + content + '</div></div>';
 };
 
 _RENDERERS['testimonial_card'] = function(b) {
@@ -2317,7 +2317,7 @@ _RENDERERS['testimonial_card'] = function(b) {
   var starsHtml = rating ? '<div style="margin-bottom:12px;">' + '★'.repeat(rating).split('').map(function(){ return '<span style="color:#facc15;font-size:1rem;">★</span>'; }).join('') + '★'.repeat(5-rating).split('').map(function(){ return '<span style="color:#d1d5db;font-size:1rem;">★</span>'; }).join('') + '</div>' : '';
   var avatarHtml = avatarUrl ? '<img src="' + _esc(avatarUrl) + '" alt="' + _esc(authorName) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">' :
     (authorName ? '<div style="width:40px;height:40px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a73e8;flex-shrink:0;">' + _esc(authorName[0]) + '</div>' : '');
-  return '<div style="margin:1rem 0;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 22px;">' +
+  return '<div style="margin:1rem 0;background:#ffffff;background:var(--a2ui-surface,#ffffff);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;">' +
     starsHtml +
     '<blockquote style="margin:0 0 16px;font-size:0.93rem;color:#374151;line-height:1.65;font-style:italic;">&ldquo;' + _esc(text) + '&rdquo;</blockquote>' +
     '<div style="display:flex;align-items:center;gap:10px;">' + avatarHtml +
@@ -2375,7 +2375,7 @@ _RENDERERS['code_diff'] = function(b) {
   var header = (label || language) ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #1e293b;">' +
     (label ? '<span style="font-size:13px;font-weight:600;color:#94a3b8;">' + _esc(label) + '</span>' : '') +
     (language ? '<span style="font-size:11px;color:#64748b;background:#1e293b;padding:2px 8px;border-radius:4px;">' + _esc(language) + '</span>' : '') + '</div>' : '';
-  return '<div style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;margin:1rem 0;overflow:hidden;font-family:monospace;font-size:0.82rem;">' + header + '<div style="padding:6px 0;">' + rows.join('') + '</div></div>';
+  return '<div style="background:#0a0f1d;border:1px solid #1e293b;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin:1rem 0;overflow:hidden;font-family:monospace;font-size:0.82rem;">' + header + '<div style="padding:6px 0;">' + rows.join('') + '</div></div>';
 };
 
 _RENDERERS['flip_card'] = function(b) {
@@ -4881,7 +4881,7 @@ _RENDERERS['option_plan_builder'] = function(b) {
     'recompute();' +
     '})();</script>';
 
-  return '<div style="margin:1rem 0;border:1px solid #dadce0;border-radius:8px;padding:12px 16px;">' +
+  return '<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;">' +
     optionsHtml +
     '<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;' +
     'border-top:1.5px solid #dadce0;font-weight:600;font-size:0.9rem;color:#3c4043;">' +

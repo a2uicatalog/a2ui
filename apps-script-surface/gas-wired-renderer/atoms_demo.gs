@@ -235,7 +235,7 @@ _RENDERERS['atom_anatomy'] = function(b) {
   var schemaStr = JSON.stringify(schema, null, 2);
   var rendered  = '';
   try { rendered = renderAtoms([schema]); } catch(e) { rendered = '<em style="color:var(--muted);">Could not render preview</em>'; }
-  return '<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:1rem 0;">'
+  return '<div style="border:1px solid var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">'
     + '<div style="padding:8px 16px;background:var(--surface2);font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border);">' + _esc(label) + '</div>'
     + '<div style="display:flex;gap:0;">'
     + '<div style="flex:1;padding:20px;border-right:1px solid var(--border);min-width:0;">'

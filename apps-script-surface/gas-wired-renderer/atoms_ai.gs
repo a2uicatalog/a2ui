@@ -442,7 +442,7 @@ _RENDERERS['tool_call_card'] = function(b) {
     resultHtml = block('Result', resultStr, false);
   }
 
-  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:8px;background:var(--surface,#fff);">' +
+  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:var(--surface,#fff);">' +
     '<div style="display:flex;align-items:center;gap:8px;">' +
     '<span style="font-family:\'Courier New\',monospace;font-weight:700;color:var(--accent,#6366f1);font-size:0.9rem;">' + toolName + '</span>' +
     badgeHtml + latencyHtml + '</div>' +

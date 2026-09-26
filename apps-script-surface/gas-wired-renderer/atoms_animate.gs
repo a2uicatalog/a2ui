@@ -658,7 +658,7 @@ _RENDERERS['chat_card'] = function(b) {
     + '</div>'
     + '</div>';
 
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;font-family:\'Google Sans\',sans-serif;max-width:520px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;font-family:\'Google Sans\',sans-serif;max-width:520px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
     + hdr
     + '<div data-cc-body style="background:#fff;padding:0;"></div>'
     + '<div data-cc-foot style="background:#f9fafb;border-top:1px solid #f3f4f6;padding:10px 18px;font-size:0.78rem;color:#6b7280;"></div>'

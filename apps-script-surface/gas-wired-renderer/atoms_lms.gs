@@ -292,7 +292,7 @@ _RENDERERS['scenario_branch'] = function(b) {
   }));
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
+    '<div style="font-family:\'Inter\',system-ui,sans-serif;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid rgba(255,255,255,0.08);">' +
     '<div style="padding:20px 24px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">' +
       '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:8px;">🎭 Scenario</div>' +
       (context ? '<div style="font-size:0.72rem;color:#64748b;line-height:1.5;font-style:italic;margin-bottom:10px;">' + _esc(context) + '</div>' : '') +
@@ -580,7 +580,7 @@ _RENDERERS['learning_path_selector'] = function(b) {
       '<div style="font-size:0.78rem;color:#64748b;">' + _esc(intro) + '</div>' +
     '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">' + cards + '</div>' +
-    '<div id="' + uid + 'msg" style="display:none;margin-top:14px;padding:12px 16px;border-radius:8px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);font-size:0.75rem;color:#34d399;"></div>' +
+    '<div id="' + uid + 'msg" style="display:none;margin-top:14px;padding:12px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);font-size:0.75rem;color:#34d399;"></div>' +
     '<script>(function(){' +
       'var ps=' + pathsJson + ';' +
       'window["' + uid + 'pick"]=function(i){' +

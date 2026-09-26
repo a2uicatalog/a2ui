@@ -39,6 +39,12 @@ BG = {"#fff": "surface", "#ffffff": "surface",
 RADIUS = {"8": "radius", "10": "radius", "12": "radius", "14": "radius",
           "4": "radius-sm", "6": "radius-sm"}
 EXCLUDE_CONTENT = re.compile(r"<svg|<canvas|<table|WebGL|THREE\.|[Cc]hart\(")
+# Atoms with a DELIBERATE byte-for-byte Python/GAS parity contract (tests/test_computed_type.py) --
+# found the hard way 2026-09-26: tokenizing ONE side's radius/border independently broke that
+# contract for type_scale and contrast_audit (each side's ORIGINAL literal happened to already
+# match the other; the sweep is not aware of this class of cross-file test and must never touch
+# these). If a new byte-parity contract is added elsewhere, add its atoms here too.
+_BYTE_PARITY_CONTRACT = {"type_scale", "readability_card", "drop_cap", "contrast_audit"}
 
 FN_RE = re.compile(r"\ndef (_render_\w+)\(b(?:: dict)?\) -> str:(.*?)(?=\ndef _render_|\nclass |\Z)", re.S)
 
@@ -67,9 +73,23 @@ def find_candidates(src):
         name, body = m.group(1), m.group(2)
         if m.start() != last_start[name]:
             continue   # shadowed earlier definition -- never runs
+        if name[len("_render_"):] in _BYTE_PARITY_CONTRACT:
+            continue   # has a cross-file Python/GAS byte-identity test; never touch independently
         if EXCLUDE_CONTENT.search(body) or "var(--a2ui-" in body:
             continue   # already tokenized, or has content this sweep must not touch
-        sm = re.search(r'style="([^"]*)"', body)
+        # Some functions have SEVERAL style="..." attributes (an inner icon/badge's style
+        # textually before the outer wrapper's); taking only the first one (tried first, was
+        # wrong for ~90 atoms -- e.g. anchor_list's first style is an inner element's
+        # "margin:4px 0;", not its card wrapper) missed the real chrome entirely. Search all
+        # of them for the one that actually looks like a card wrapper -- radius AND border
+        # together, the strong signal -- rather than guessing from position.
+        wrapper_pat = re.compile(r"border-radius:\s*\d+px\b.{0,200}?border(?:-\w+)?:\s*1px solid|"
+                                 r"border(?:-\w+)?:\s*1px solid.{0,200}?border-radius:\s*\d+px\b", re.S)
+        sm = None
+        for cand in re.finditer(r'style="([^"]*)"', body):
+            if wrapper_pat.search(cand.group(1)):
+                sm = cand
+                break
         if not sm:
             continue
         style = sm.group(1)

@@ -45,6 +45,12 @@ RADIUS = {"8": "radius", "10": "radius", "12": "radius", "14": "radius",
           "4": "radius-sm", "6": "radius-sm"}
 _BORDER_PROPS = {"border", "border-top", "border-bottom", "border-left", "border-right"}
 EXCLUDE_CONTENT = re.compile(r"<svg|<canvas|<table|WebGL|THREE\.|Chart\(")
+# Atoms with a DELIBERATE byte-for-byte Python/GAS parity contract (tests/test_computed_type.py) --
+# found the hard way 2026-09-26: tokenizing ONE side's radius/border independently broke that
+# contract for type_scale and contrast_audit (each side's ORIGINAL literal happened to already
+# match the other; the sweep is not aware of this class of cross-file test and must never touch
+# these). If a new byte-parity contract is added elsewhere, add its atoms here too.
+_BYTE_PARITY_CONTRACT = {"type_scale", "readability_card", "drop_cap", "contrast_audit"}
 FN_RE = re.compile(r"\n_RENDERERS\['(\w+)'\] = function\(b\) \{(.*?)\n\};", re.S)
 # One style="..." (or style='...') per candidate, the SAME literal-quote style it already
 # uses -- never rewritten to the other quote convention, to keep the diff minimal.
@@ -71,9 +77,20 @@ def find_candidates():
             name, body = m.group(1), m.group(2)
             if last_start[(f, name)] != m.start():
                 continue
+            if name in _BYTE_PARITY_CONTRACT:
+                continue   # has a cross-file Python/GAS byte-identity test; never touch independently
             if EXCLUDE_CONTENT.search(body) or "var(--a2ui-" in body:
                 continue
-            sm = STYLE_RE.search(body)
+            # Same fix as migrate_card_chrome.py: several style=/'...'/ attrs can exist per
+            # function; take the one that actually looks like a card wrapper (radius+border
+            # together), not just the first textually.
+            wrapper_pat = re.compile(r"border-radius:\s*\d+px\b.{0,200}?border(?:-\w+)?:\s*1px solid|"
+                                     r"border(?:-\w+)?:\s*1px solid.{0,200}?border-radius:\s*\d+px\b", re.S)
+            sm = None
+            for cand in STYLE_RE.finditer(body):
+                if wrapper_pat.search(cand.group(2)):
+                    sm = cand
+                    break
             if not sm:
                 continue
             quote, style = sm.group(1), sm.group(2)

@@ -102,7 +102,7 @@ _RENDERERS['sheet_stats'] = function(b) {
     badges += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">';
     for (var i = 0; i < ops.length; i++) {
       var op = ops[i];
-      badges += '<div style="flex:1;min-width:80px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:10px;padding:12px 16px;text-align:center;">' +
+      badges += '<div style="flex:1;min-width:80px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;text-align:center;">' +
                 '<div style="font-size:1.4rem;font-weight:800;color:' + _esc(accent) + ';">' + _esc(String(values[op] || '—')) + '</div>' +
                 '<div style="font-size:0.72rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.08em;">' + (LABELS[op] || op) + '</div>' +
                 '</div>';
@@ -148,7 +148,7 @@ _RENDERERS['gmail_unread_count'] = function(b) {
       var lbl   = labels[i];
       var count = counts[lbl] || 0;
       var dim   = count === 0;
-      badges += '<div style="display:flex;align-items:center;gap:8px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:8px;padding:8px 14px;">' +
+      badges += '<div style="display:flex;align-items:center;gap:8px;background:var(--bg2,#f8f9fa);border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 14px;">' +
                 '<span style="font-size:0.82rem;font-weight:600;color:var(--text);">' + _esc(lbl) + '</span>' +
                 '<span style="min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:99px;font-size:0.75rem;font-weight:700;background:' + (dim ? 'var(--border,#e2e8f0)' : _esc(accent)) + ';color:' + (dim ? 'var(--muted)' : '#fff') + ';">' + count + '</span>' +
                 '</div>';
@@ -791,7 +791,7 @@ _RENDERERS['jump_nav'] = function(b) {
     var label  = link.label  || '';
     var target = link.target || '';
     html += '<button onclick="(function(){var el=document.getElementById(\'a2ui-' + _esc(target) + '\');if(el)el.scrollIntoView({behavior:\'smooth\',block:\'start\'});})()"'
-          + ' style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
+          + ' style="background:#f1f5f9;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:6px 14px;font-size:0.8rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:background 0.15s;"'
           + ' onmouseover="this.style.background=\'#e2e8f0\'" onmouseout="this.style.background=\'#f1f5f9\'">'
           + _esc(label)
           + '</button>';
@@ -813,7 +813,7 @@ _RENDERERS['command_step'] = function(b) {
 
   return '<div style="font-family:system-ui,sans-serif;margin:8px 0;">' +
     (label ? '<div style="font-size:0.82rem;font-weight:600;color:#475569;margin-bottom:6px;">' + _esc(label) + '</div>' : '') +
-    '<div style="display:flex;align-items:stretch;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;opacity:' + cmdOpacity + ';">' +
+    '<div style="display:flex;align-items:stretch;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);opacity:' + cmdOpacity + ';">' +
       '<div style="flex:1;background:#0f172a;padding:12px 16px;font-family:ui-monospace,monospace;font-size:0.88rem;color:#e2e8f0;white-space:pre-wrap;word-break:break-all;">' +
         '<span style="color:#64748b;user-select:none;">$ </span>' + _esc(cmd) +
       '</div>' +
@@ -913,7 +913,7 @@ _RENDERERS['scenario_case'] = function(b) {
     '<p style="font-size:15px;font-weight:600;color:#0f172a;margin:0 0 12px;">' + _esc(question) + '</p>' +
     optHtml +
     '<button onclick="' + revealFn + '" style="margin-top:6px;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;">Check answer</button>' +
-    '<div data-sc-rat style="display:none;margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;">' +
+    '<div data-sc-rat style="display:none;margin-top:16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;">' +
       '<p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.06em;">Rationale</p>' +
       '<p style="margin:0;font-size:14px;line-height:1.65;color:#166534;">' + _esc(rationale) + '</p>' +
     '</div>' +

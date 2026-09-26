@@ -3695,7 +3695,7 @@ _RENDERERS['tonal_scale'] = function(b) {
   var inner = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
     + '<div style="font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:' + th.mute + ';">tonal scale · OKLCH</div>'
     + '<div style="font-family:' + _CV_VOICES.mono + ';font-size:0.78rem;color:' + th.mute + ';">' + hex + ' · ' + steps + ' tones</div></div>'
-    + '<div id="tn-' + uid + '" style="display:flex;border-radius:10px;overflow:hidden;min-height:72px;border:1px solid ' + th.line + ';"><div style="flex:1;background:' + hex + ';"></div></div>'
+    + '<div id="tn-' + uid + '" style="display:flex;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;min-height:72px;border:1px solid ' + th.line + ';"><div style="flex:1;background:' + hex + ';"></div></div>'
     + (showCode ? '<pre id="tnc-' + uid + '" style="margin:14px 0 0;padding:12px 14px;border-radius:8px;background:' + th.soft + ';border:1px solid ' + th.line + ';font-family:' + _CV_VOICES.mono + ';font-size:0.72rem;line-height:1.5;color:' + th.ink + ';overflow-x:auto;">:root {\n  --' + name + '-500: ' + hex + ';\n}</pre>' : '')
     + '<script>' + _TONAL_SCALE_JS.replace(/%%UID%%/g, uid).replace(/%%CFG%%/g, function() { return cfg; }) + '<\/script>';
   return _cvCard(th, inner);
