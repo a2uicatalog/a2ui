@@ -82,8 +82,10 @@ a{color:inherit}
 <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite &mdash; $0.30 in / $2.50 out per M</option>
 <option value="gemini-3.7-flash" selected>gemini-3.7-flash &mdash; $0.75 in / $3.75 out per M</option>
 </select></label>
-<label><input type="checkbox" id="jev"> Use Jev instead (picks a template, no generation)</label>
-<label><input type="checkbox" id="laya"> Use Laya instead (hosted, picks a template)</label>
+<label><input type="checkbox" data-eng="jev"> Jev (picks a template, no generation)</label>
+<label><input type="checkbox" data-eng="laya"> Laya (hosted, picks a template)</label>
+<label><input type="checkbox" data-eng="jevini"> Jevini (Jev, then Gemini refines if needed)</label>
+<label><input type="checkbox" data-eng="layini"> Layini (Laya, then Gemini refines if needed)</label>
 </div>
 <div class="row">
 <button class="go" id="go" type="button">Design it</button>
@@ -100,7 +102,7 @@ a{color:inherit}
 <table id="hist"><thead><tr><th>#</th><th>Engine / model</th><th>Prompt</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th><th>Bricks</th><th>Time</th></tr></thead><tbody></tbody></table>
 </section>
 <footer>
-<p>Cost is computed from the token counts the model returns and the published per-million-token price (Gemini 3.7 Flash is an introductory rate). Jev and Laya only choose a template, colour and size, so they generate no output tokens; Jev's per-token price is not published, and Laya is a free hosted service by <a href="https://laya.pensero.ai">Pensero</a>. Renders use real LDraw parts (CC BY 4.0). Fan-made, not affiliated with the LEGO Group.</p>
+<p>Cost is computed from the token counts the model returns and the published per-million-token price (Gemini 3.7 Flash is an introductory rate). Jev and Laya only choose a template, colour and size, so they generate no text; Jevini and Layini add a Gemini stage only when the template is not confident or the prompt needs detail, and the cost shown is that Gemini stage. Jev's per-token price is not published, and Laya is a free hosted service by <a href="https://laya.pensero.ai">Pensero</a>. Renders use real LDraw parts (CC BY 4.0). Fan-made, not affiliated with the LEGO Group.</p>
 </footer>
 </main>
 <script>
@@ -112,9 +114,13 @@ EX.forEach(function(t){var b=document.createElement('button');b.type='button';b.
   b.onclick=function(){$('prompt').value=t;upd()};$('chips').appendChild(b)});
 function upd(){$('count').textContent=$('prompt').value.length+' / 150'}
 $('prompt').addEventListener('input',upd);
-$('jev').onchange=function(){if(this.checked)$('laya').checked=false;sync()};
-$('laya').onchange=function(){if(this.checked)$('jev').checked=false;sync()};
-function sync(){$('model').disabled=$('jev').checked||$('laya').checked}
+var BOXES=Array.prototype.slice.call(document.querySelectorAll('input[data-eng]'));
+BOXES.forEach(function(b){b.onchange=function(){if(b.checked)BOXES.forEach(function(o){if(o!==b)o.checked=false});sync()}});
+function engine(){var on=BOXES.filter(function(b){return b.checked})[0];return on?on.getAttribute('data-eng'):'gemini'}
+function sync(){var e=engine();$('model').disabled=!(e==='gemini'||e==='jevini'||e==='layini')}
+var LABEL={jev:'Jev',laya:'Laya',jevini:'Jevini',layini:'Layini'};
+function costText(j,e){if(e==='gemini')return usd(j.cost_usd);if(e==='jev')return 'n/a';if(e==='laya')return 'free';
+  return j.gemini_called?usd(j.cost_usd)+' (Gemini stage)':(e==='layini'?'free':'n/a')}
 function usd(v){return v==null?'—':(v<0.01?'$'+v.toFixed(5):'$'+v.toFixed(4))}
 function n(v){return v==null?'—':Number(v).toLocaleString('en-GB')}
 function show(model){
@@ -126,11 +132,11 @@ var runs=0;
 $('go').onclick=function(){
   var prompt=$('prompt').value.trim();
   if(!prompt){$('err').textContent='Describe a build first.';return}
-  var engine=$('jev').checked?'jev':$('laya').checked?'laya':'gemini';
+  var eng=engine();
   $('err').textContent='';$('go').disabled=true;$('go').textContent='Designing…';
   var t0=Date.now();
   fetch('/api/brick-design',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({prompt:prompt,engine:engine,model:engine==='gemini'?$('model').value:undefined})})
+    body:JSON.stringify({prompt:prompt,engine:eng,model:(eng==='gemini'||eng==='jevini'||eng==='layini')?$('model').value:undefined})})
   .then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}}).then(function(j){return {r:r,j:j}})})
   .then(function(x){
     var j=x.j;
@@ -139,17 +145,23 @@ $('go').onclick=function(){
     $('result').hidden=false;
     $('stats').innerHTML='';
     [['Tokens in',n(u.promptTokens)],['Tokens out',n(u.outputTokens)],
-     ['Cost',engine==='gemini'?usd(j.cost_usd):(engine==='laya'?'free':'n/a')],['Bricks',n(j.parts)],['Time',(j.ms/1000).toFixed(1)+' s']]
+     ['Cost',costText(j,eng)],['Bricks',n(j.parts)],['Time',(j.ms/1000).toFixed(1)+' s']]
     .forEach(function(s){var d=document.createElement('div');d.className='stat';
       var b=document.createElement('b');b.textContent=s[1];var sp=document.createElement('span');sp.textContent=s[0];d.appendChild(b);d.appendChild(sp);$('stats').appendChild(d)});
-    var how=engine==='gemini'?('Designed by '+j.model+' as a voxel grid'+(j.repaired&&j.repaired.dropped_cells?'; '+j.repaired.dropped_cells+' unanchored cells were dropped':'')+'.')
-      :((engine==='jev'?'Jev':'Laya')+' chose "'+(j.choice&&j.choice.archetype)+'" (size '+(j.choice&&j.choice.size)+(j.choice&&j.choice.confidence!=null?', confidence '+(+j.choice.confidence).toFixed(2):'')+'); a deterministic generator built it. No text was generated.');
+    var how;
+    if(eng==='gemini')how='Designed by '+j.model+' as a voxel grid'+(j.repaired&&j.repaired.dropped_cells?'; '+j.repaired.dropped_cells+' unanchored cells were dropped':'')+'.';
+    else{var c=j.choice||{},sys=(eng==='jev'||eng==='jevini')?'Jev':'Laya';
+      how=sys+' chose "'+c.archetype+'" (size '+c.size+(c.confidence!=null?', confidence '+(+c.confidence).toFixed(2):'')+(c.detail!=null?', detail needed '+(+c.detail).toFixed(2):'')+'). ';
+      if(eng==='jev'||eng==='laya')how+='A deterministic generator built it; no text was generated.';
+      else if(j.gemini_called){var g=(j.stages||[])[1]||{};how+='That was not enough, so '+j.model+' refined it with '+(g.edits||0)+' edits ('+n(g.usage&&g.usage.promptTokens)+' in / '+n(g.usage&&g.usage.outputTokens)+' out).'}
+      else if(((j.stages||[])[1]||{}).failed)how+='Refinement was attempted but failed, so the plain template is shown.';
+      else how+='That was confident enough, so Gemini was never called.'}
     $('how').textContent=how;
     show(j);
     runs++;$('histp').hidden=false;
     var tr=document.createElement('tr');
-    [runs,engine==='gemini'?j.model:engine,prompt.length>34?prompt.slice(0,33)+'…':prompt,n(u.promptTokens),n(u.outputTokens),
-     engine==='gemini'?usd(j.cost_usd):(engine==='laya'?'free':'n/a'),n(j.parts),(j.ms/1000).toFixed(1)+' s']
+    [runs,eng==='gemini'?j.model:(j.gemini_called?LABEL[eng]+'+'+j.model:LABEL[eng]),prompt.length>34?prompt.slice(0,33)+'…':prompt,n(u.promptTokens),n(u.outputTokens),
+     costText(j,eng),n(j.parts),(j.ms/1000).toFixed(1)+' s']
     .forEach(function(v){var td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
     $('hist').tBodies[0].insertBefore(tr,$('hist').tBodies[0].firstChild);
   })
