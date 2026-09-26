@@ -18241,6 +18241,42 @@ def _brick_sanitise(lst, palette=None):
     return out or None
 
 
+# Same small, hand-picked LDConfig.ldr subset as PART_ROT's neighbour in atoms_brick.gs -- see spec section 1.4.
+_LDRAW_COLOURS = {0: "#1b2a34", 1: "#0055bf", 2: "#237841", 4: "#c91a09", 14: "#f2cd37", 15: "#f4f4f4",
+                  25: "#d67923", 71: "#969696", 72: "#646464", 191: "#fcac00"}
+_LDRAW_EDGE = {0: "#808080"}
+
+
+def _brick_parts_model_sanitise(lst):
+    """Twin of _partsModelSanitise in atoms_brick.gs -- edit BOTH. Array [id,x,y,z,r,c] / [...,step] or
+    {p,x,y,z,r,c,s}; position is LDU, r wraps into 0..23, c is an LDraw colour code or '#rrggbb'."""
+    if not isinstance(lst, list) or not lst:
+        return None
+    out = []
+    for r in lst:
+        if len(out) >= _BRICK_MAX:
+            break
+        if isinstance(r, list) and 6 <= len(r) <= 7:
+            p, x, y, z, rot, c = r[0], r[1], r[2], r[3], r[4], r[5]
+            step = r[6] if len(r) == 7 else None
+        elif isinstance(r, dict):
+            p, x, y, z, rot, c, step = r.get("p"), r.get("x"), r.get("y"), r.get("z"), r.get("r"), r.get("c"), r.get("s")
+        else:
+            continue
+        if not isinstance(p, str) or not p:
+            continue
+        code = math.floor(c) if isinstance(c, (int, float)) and not isinstance(c, bool) else None
+        colour = c.lower() if isinstance(c, str) and _BRICK_HEX6.match(c) else (_LDRAW_COLOURS.get(code) or "#c91a09")
+        edge = _LDRAW_EDGE.get(code) or "#333333"
+        ri = _brick_clamp(rot, 0, 999999, 0) % 24
+        entry = {"p": p, "x": _brick_clamp(x, -4000, 4000, 0), "y": _brick_clamp(y, -4000, 0, 0),
+                 "z": _brick_clamp(z, -4000, 4000, 0), "r": ri, "c": colour, "edge": edge}
+        if step is not None:   # JS `undefined` is OMITTED by JSON.stringify, not serialised as null -- match that
+            entry["step"] = _brick_clamp(step, 1, 9999, 1)
+        out.append(entry)
+    return out or None
+
+
 def _brick_models(lst, palette=None):
     out = []
     if not isinstance(lst, list):
@@ -18282,17 +18318,21 @@ def _render_brick_build_3d(b: dict) -> str:
                 break
         if start >= 0:
             bricks = models[start]["bricks"]
+    # Real parts (spec/brick-parts-v0.1.md): a separate field from `bricks`, never mixed in v0.1, takes precedence
+    # when present -- same "explicit wins" rule as bricks vs. shape above. Mirrors atoms_brick.gs's shell exactly.
+    parts_model = _brick_parts_model_sanitise(b.get("partsModel"))
     cfg = {
-        "shape": shape, "bricks": bricks,
+        "shape": shape, "bricks": None if parts_model else bricks,
         "mode": "steps" if b.get("mode") == "steps" else "animate",
         "step": step, "speed": speed,
         "orbit": b.get("orbit") is not False,
         "bg": bg if isinstance(bg, str) and _BRICK_HEXBG.match(bg) else None,
         "scrubber": b.get("scrubber") is not False, "checks": b.get("checks") is not False,
         "parts": b.get("parts") is True,
-        "models": models,
-        "picker": False if b.get("picker") is False else (b.get("picker") is True or len(models) > 0),
-        "start": start,
+        "models": [] if parts_model else models,
+        "picker": False if parts_model else (False if b.get("picker") is False else (b.get("picker") is True or len(models) > 0)),
+        "start": -1 if parts_model else start,
+        "partsModel": parts_model,
     }
     uid = "brk" + _wa_uid(b)[:6]
     payload = _json.dumps(cfg, separators=(",", ":"), ensure_ascii=False).replace("<", "\\u003c")

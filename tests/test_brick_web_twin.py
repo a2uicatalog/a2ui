@@ -60,6 +60,15 @@ CASES = [
     {"palette": ["#111111"], "models": [{"name": "A", "bricks": [[0, 0, 0, 2, 2, 0]]},
                                        {"name": "B", "palette": ["#222222"], "bricks": [[0, 0, 0, 2, 2, 0]]},
                                        {"name": "C", "palette": "x", "bricks": [[0, 0, 0, 2, 2, 0]]}], "model": "B"},
+    # real parts (spec/brick-parts-v0.1.md): array and object form, colour codes, rotation wrap, step, precedence
+    {"partsModel": [["3001", 20, -24, 20, 0, 72]]},
+    {"partsModel": [{"p": "3024", "x": 10, "y": -32, "z": 10, "r": 0, "c": 25, "s": 3}]},
+    {"partsModel": [["3001", 20, -24, 20, 25, 191, 2], ["3024", 0, -8, 0, -1, "#abcdef"]]},   # r=25->1, r=-1->23
+    {"partsModel": [["3001", 20, -24, 20, 0, 999]]},                          # unknown colour code -> default red
+    {"partsModel": [["</script><b>", 0, 0, 0, 0, 0]]},                        # a bad id still passes through
+    {"partsModel": [], "shape": "sphere"}, {"partsModel": "not a list"}, {"partsModel": [7, None, "junk", [1, 2]]},
+    {"bricks": BRICKS, "partsModel": [["3001", 0, 0, 0, 0, 0]]},              # never mixed: partsModel wins
+    {"partsModel": [["p%d" % i, i, -24, 0, i % 24, 0] for i in range(5)], "models": [{"name": "M", "bricks": BRICKS}]},
 ]
 
 

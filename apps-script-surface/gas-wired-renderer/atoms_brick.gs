@@ -36,6 +36,40 @@ function _brickKit() {
   /* ---------- constants: real LEGO proportions, in stud-pitch units (1 = 8 mm) ---------- */
   var BH=1.2, PL=0.4, SR=0.3, SH=0.18, SN=10;         // brick 9.6mm, plate 3.2mm, stud r 2.4mm, stud h 1.4mm
   var RB=['#c91a09','#fe8a18','#f2cd37','#a5ca18','#237841','#36aebf','#0055bf','#6a3a9c'];
+
+  /* ---------- real-parts model (spec/brick-parts-v0.1.md): 24 fixed orientations, LDraw units ---------- */
+  // World = PART_ROT[r] (applied to local coords) then the LDU->engine transform below. Index and matrices match
+  // spec/brick-parts/fixtures-v0.1.json's "rotations" exactly (0=identity, 1-3=Y quarter-turns, 4-23=the rest).
+  var PART_ROT = [
+    [1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0],
+    [0.0,0.0,1.0,0.0,1.0,0.0,-1.0,0.0,0.0],
+    [-1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,-1.0],
+    [0.0,0.0,-1.0,0.0,1.0,0.0,1.0,0.0,0.0],
+    [-1.0,0.0,0.0,0.0,-1.0,0.0,0.0,0.0,1.0],
+    [-1.0,0.0,0.0,0.0,0.0,-1.0,0.0,-1.0,0.0],
+    [-1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0],
+    [0.0,-1.0,0.0,-1.0,0.0,0.0,0.0,0.0,-1.0],
+    [0.0,-1.0,0.0,0.0,0.0,-1.0,1.0,0.0,0.0],
+    [0.0,-1.0,0.0,0.0,0.0,1.0,-1.0,0.0,0.0],
+    [0.0,-1.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0],
+    [0.0,0.0,-1.0,-1.0,0.0,0.0,0.0,1.0,0.0],
+    [0.0,0.0,-1.0,0.0,-1.0,0.0,-1.0,0.0,0.0],
+    [0.0,0.0,-1.0,1.0,0.0,0.0,0.0,-1.0,0.0],
+    [0.0,0.0,1.0,-1.0,0.0,0.0,0.0,-1.0,0.0],
+    [0.0,0.0,1.0,0.0,-1.0,0.0,1.0,0.0,0.0],
+    [0.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0,0.0],
+    [0.0,1.0,0.0,-1.0,0.0,0.0,0.0,0.0,1.0],
+    [0.0,1.0,0.0,0.0,0.0,-1.0,-1.0,0.0,0.0],
+    [0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0],
+    [0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.0,-1.0],
+    [1.0,0.0,0.0,0.0,-1.0,0.0,0.0,0.0,-1.0],
+    [1.0,0.0,0.0,0.0,0.0,-1.0,0.0,1.0,0.0],
+    [1.0,0.0,0.0,0.0,0.0,1.0,0.0,-1.0,0.0]
+  ];
+  // LDRAW_COLOURS/LDRAW_EDGE live at MODULE scope (below _brickKit) since _partsModelSanitise needs them and is
+  // also module-level, serialised separately from this closure -- see the comment there.
+  var PART_HSCALE = 1/20;                     // LDU -> engine stud-pitch units (1 stud = 20 LDU)
+  function partEngineY(luY) { return PL - luY * (BH / 24); }   // luY -> engine Y (verified against fixtures-v0.1.json F01/F02)
   var LD=(function(){var v=[-0.5,1,0.6],l=Math.hypot(v[0],v[1],v[2]);return v.map(function(x){return x/l;});})();
   var COS=[],SIN=[];for(var s=0;s<SN;s++){COS.push(Math.cos(2*Math.PI*s/SN));SIN.push(Math.sin(2*Math.PI*s/SN));}
 
@@ -391,7 +425,7 @@ function _brickKit() {
     if(!glSupported())return null;
     var gl=canvas.getContext('webgl',{antialias:true,alpha:true,premultipliedAlpha:true})||canvas.getContext('experimental-webgl');
     if(!gl)return null;
-    var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false;
+    var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false,lineProg=null,lastVP=null;
     var shadowDirty=true,animDirty=true,nBox=0,nStud=0,tris=0,boxA=null,studA=null,studOf=null,lightVP=null;
     function shader(type,src){
       var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
@@ -416,6 +450,11 @@ function _brickKit() {
     function init(){
       ext=gl.getExtension('ANGLE_instanced_arrays');
       var vs=glVS();prog=program(vs,glFS(!!gl.getExtension('OES_standard_derivatives')));depth=program(vs,GL_FS_DEPTH);
+      // Minimal flat-colour line program for real LDraw part edges (spec/brick-parts-v0.1.md Phase 2) -- a single
+      // uniform offset per draw (the part instance's resting position) since edges aren't instanced in v1.
+      lineProg=program(
+        'attribute vec3 aP;uniform mat4 uVP;uniform vec3 uOff;void main(){gl_Position=uVP*vec4(aP+uOff,1.0);}',
+        'precision mediump float;uniform vec3 uCol;void main(){gl_FragColor=vec4(uCol,1.0);}');
       var sg=studGeo();box=mesh(boxGeo());stud=mesh(sg);studTris=sg.i.length/3;
       ['box','boxA','stud','studA'].forEach(function(k){buf[k]=gl.createBuffer();});
       smSize=gl.getParameter(gl.MAX_TEXTURE_SIZE)>=4096?2048:1024;
@@ -491,13 +530,13 @@ function _brickKit() {
       if(nStud){gl.uniform1f(P.u.uKind,1);drawSet(P,stud,'stud','studA',nStud);}
     }
     function draw(c){
-      if(!model||lost)return;
+      if((!model&&!partsModelData)||lost)return;
       gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
-      if(shadowOK&&shadowDirty){
+      if(shadowOK&&shadowDirty&&lightVP){
         gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.viewport(0,0,smSize,smSize);
         gl.clearColor(1,1,1,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
         gl.cullFace(gl.FRONT);gl.useProgram(depth.p);
-        gl.uniformMatrix4fv(depth.u.uVP,false,lightVP);both(depth);
+        gl.uniformMatrix4fv(depth.u.uVP,false,lightVP);both(depth);bothParts(depth);
         gl.cullFace(gl.BACK);gl.bindFramebuffer(gl.FRAMEBUFFER,null);shadowDirty=false;
       }
       gl.viewport(0,0,canvas.width,canvas.height);
@@ -508,17 +547,151 @@ function _brickKit() {
       gl.clearColor(bg[0],bg[1],bg[2],bg[3]);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
       gl.useProgram(prog.p);
       var near=Math.max(0.1,c.dist-c.R*2.2),far=c.dist+c.R*2.2;
-      gl.uniformMatrix4fv(prog.u.uVP,false,m4mul(m4persp(c.fovy,canvas.width/canvas.height,near,far),m4look(c.eye,c.target)));
+      var VP=m4mul(m4persp(c.fovy,canvas.width/canvas.height,near,far),m4look(c.eye,c.target));
+      lastVP=VP;
+      gl.uniformMatrix4fv(prog.u.uVP,false,VP);
       gl.uniformMatrix4fv(prog.u.uL,false,lightVP);
       gl.uniform3f(prog.u.uEye,c.eye[0],c.eye[1],c.eye[2]);gl.uniform3f(prog.u.uLd,LD[0],LD[1],LD[2]);
       gl.uniform1f(prog.u.uShadow,shadowOK?1:0);gl.uniform2f(prog.u.uTx,1/smSize,1/smSize);
       gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,smTex);gl.uniform1i(prog.u.uSM,0);
       both(prog);
+      bothParts(prog);
+      drawPartEdges();
+    }
+    /* ---------- real parts (spec/brick-parts-v0.1.md, Phase 2): rotation baked into geometry on the CPU once per
+       (part id, rotation) pair used, so instancing reuses the EXACT SAME two-buffer layout drawSet() already binds
+       for boxes/studs above: a STATIC per-instance buffer (position, dummy size, colour -- 9 floats, stride 36,
+       same shape as boxA's own "sb"/"ss" source data) and a DYNAMIC per-instance buffer rebuilt every frame
+       (OX,OY,OZ,alpha -- 4 floats, stride 16, same shape as boxA/studA). No new shader; no per-instance rotation
+       on the GPU. Per-group buffers are registered into the shared `buf{}` dict under generated keys so drawSet()
+       itself needs no changes. Studs at part connectors are NOT yet drawn (v1: triangles + real edge lines only;
+       connector studs are a fast follow once this is confirmed correct on screen -- see the brief). */
+    var partMeshCache={},partGeomCache={},partsModelData=null,partGroups=null,partBufSeq=0;
+    var PART_BASE='https://a2uicatalog.ai/parts/';
+    function fetchPartMesh(id,cb){
+      var c=partMeshCache[id];
+      if(c==='error'){cb(null);return;} if(c&&c!=='loading'){cb(c);return;} if(c==='loading')return;
+      if(typeof fetch!=='function'){partMeshCache[id]='error';cb(null);return;}
+      partMeshCache[id]='loading';
+      fetch(PART_BASE+id+'.json').then(function(r){if(!r.ok)throw 0;return r.json();})
+        .then(function(m){partMeshCache[id]=m;cb(m);})
+        .catch(function(){partMeshCache[id]='error';cb(null);});
+    }
+    function buildPartGeo(pmesh,r){
+      var Rm=PART_ROT[r],Sc=1/20,C=[Sc,0,0,0,-Sc,0,0,0,Sc],T=[0,0,0,0,0,0,0,0,0],i,j,k,s;
+      for(i=0;i<3;i++)for(j=0;j<3;j++){s=0;for(k=0;k<3;k++)s+=C[i*3+k]*Rm[k*3+j];T[i*3+j]=s;}
+      var q=pmesh.quant,v=[],idx=[],n=0;
+      function tp(p){return [T[0]*p[0]/q+T[1]*p[1]/q+T[2]*p[2]/q,T[3]*p[0]/q+T[4]*p[1]/q+T[5]*p[2]/q,T[6]*p[0]/q+T[7]*p[1]/q+T[8]*p[2]/q];}
+      (pmesh.triangles||[]).forEach(function(g){
+        var pos=g.pos;
+        for(i=0;i<pos.length;i+=3){
+          var p0=tp(pos[i]),p1t=tp(pos[i+2]),p2t=tp(pos[i+1]);   // v1/v2 swapped: the LDU->engine Y-flip is a
+          var u=[p1t[0]-p0[0],p1t[1]-p0[1],p1t[2]-p0[2]],w=[p2t[0]-p0[0],p2t[1]-p0[1],p2t[2]-p0[2]];  // reflection,
+          var nx=u[1]*w[2]-u[2]*w[1],ny=u[2]*w[0]-u[0]*w[2],nz=u[0]*w[1]-u[1]*w[0];                    // which
+          var l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;                                             // reverses
+          v.push(p0[0],p0[1],p0[2],nx,ny,nz, p1t[0],p1t[1],p1t[2],nx,ny,nz, p2t[0],p2t[1],p2t[2],nx,ny,nz);
+          idx.push(n,n+1,n+2);n+=3;
+        }
+      });
+      var ev=[];
+      (pmesh.edges||[]).forEach(function(g){var pos=g.pos;for(i=0;i<pos.length;i+=2){var a=tp(pos[i]),b=tp(pos[i+1]);ev.push(a[0],a[1],a[2],b[0],b[1],b[2]);}});
+      return {v:v,i:idx,ev:ev};
+    }
+    // partsModel: [{p,x,y,z,r,c,edge,step}], already sanitised (_partsModelSanitise). Kicks off mesh fetches for
+    // every distinct id; rendering proceeds immediately, groups without a loaded mesh yet are skipped this frame
+    // (loading placeholder deferred -- see the brief's Phase 2 notes).
+    function setPartsModel(list){
+      model=null;partsModelData=list;partGeomCache={};partGroups=null;
+      var ids={};list.forEach(function(e){ids[e.p]=1;});
+      Object.keys(ids).forEach(function(id){fetchPartMesh(id,function(){partGroups=null;shadowDirty=true;})});
+      // Light matrix from the instance bounding box + a fixed pad for individual part extents (each part is
+      // usually small relative to a whole model; refine per-part if a model of one huge part ever needs it).
+      var mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+      list.forEach(function(e){var p=partEngineOf(e);for(var k=0;k<3;k++){mn[k]=Math.min(mn[k],p[k]);mx[k]=Math.max(mx[k],p[k]);}});
+      var pad=3,cx=(mn[0]+mx[0])/2,cy=(mn[1]+mx[1])/2+pad*0.3,cz=(mn[2]+mx[2])/2;
+      var R2=0.5*Math.hypot(mx[0]-mn[0]+2*pad,mx[1]-mn[1]+2*pad,mx[2]-mn[2]+2*pad)+1;
+      lightVP=m4mul(m4ortho(R2,0.1,R2*4),m4look([cx+LD[0]*R2*2,cy+LD[1]*R2*2,cz+LD[2]*R2*2],[cx,cy,cz]));
+      buildPartGroups();
+    }
+    function partEngineOf(e){return [e.x/20,partEngineY(e.y),e.z/20];}
+    function buildPartGroups(){
+      if(!partsModelData){partGroups=[];return;}
+      var groups={},order=[];
+      partsModelData.forEach(function(e,i){
+        var mesh=partMeshCache[e.p];
+        if(!mesh||mesh==='loading'||mesh==='error')return;   // v1: skip until loaded, no placeholder yet
+        var key=e.p+'|'+e.r;
+        if(!groups[key]){groups[key]={key:key,mesh:mesh,r:e.r,entries:[]};order.push(key);}
+        groups[key].entries.push({idx:i,e:e});
+      });
+      partGroups=order.map(function(k){return groups[k];});
+    }
+    function ensurePartGeo(grp){
+      if(partGeomCache[grp.key])return partGeomCache[grp.key];
+      var g=buildPartGeo(grp.mesh,grp.r);
+      var m=mesh({v:g.v,i:g.i});
+      var evb=null;
+      if(g.ev.length){evb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,evb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.ev),gl.STATIC_DRAW);}
+      var sKey='pgs'+(partBufSeq++),aKey='pga'+(partBufSeq++);
+      buf[sKey]=gl.createBuffer();buf[aKey]=gl.createBuffer();
+      var n=grp.entries.length,sb=new Float32Array(n*9);
+      grp.entries.forEach(function(row,j){
+        var p=partEngineOf(row.e),c=linRGB(row.e.c);
+        sb.set([p[0],p[1],p[2], 1,1,1, c[0],c[1],c[2]],j*9);
+      });
+      upload(sKey,sb,gl.STATIC_DRAW);
+      var out={mesh:m,edgeVB:evb,edgeCount:g.ev.length/6,sKey:sKey,aKey:aKey,n:n};
+      partGeomCache[grp.key]=out;return out;
+    }
+    // Per-frame animation state (called from the same status()-driven loop as bricks). st/OX/OY/OZ/AL are indexed
+    // by the SAME i used in partsModelData (the entry's original index), exactly paralleling update()'s role.
+    function updateParts(st,OX,OY,OZ,AL){
+      if(!partGroups)buildPartGroups();
+      partGroups.forEach(function(grp){
+        var geo=ensurePartGeo(grp),n=grp.entries.length,a4=new Float32Array(n*4);
+        grp.entries.forEach(function(row,j){
+          var i=row.idx,a=st[i]<0?0:st[i]===2?3:st[i]===1?AL[i]:1,o=j*4;
+          a4[o]=OX[i];a4[o+1]=OY[i];a4[o+2]=OZ[i];a4[o+3]=a;
+        });
+        upload(geo.aKey,a4,gl.DYNAMIC_DRAW);
+      });
+      shadowDirty=true;
+    }
+    function bothParts(P){
+      if(!partGroups)return;
+      partGroups.forEach(function(grp){
+        var geo=partGeomCache[grp.key];if(!geo)return;
+        drawSet(P,geo.mesh,geo.sKey,geo.aKey,geo.n);
+      });
+    }
+    function drawPartEdges(){
+      // Real LDraw edge lines, drawn as flat-coloured GL_LINES per group (world position = static translation +
+      // current animation offset, computed on the CPU per group since line rendering has no shared shader here
+      // yet -- v1 draws edges at each instance's RESTING position only, skipping the drop-in animation offset for
+      // lines specifically; triangles still animate correctly via bothParts(). A minor, documented simplification.
+      if(!partGroups||!lineProg)return;
+      gl.useProgram(lineProg.p);
+      gl.uniformMatrix4fv(lineProg.u.uVP,false,lastVP);
+      partGroups.forEach(function(grp){
+        var geo=partGeomCache[grp.key];if(!geo||!geo.edgeVB||!geo.edgeCount)return;
+        grp.entries.forEach(function(row){
+          var p=partEngineOf(row.e);
+          gl.uniform3f(lineProg.u.uOff,p[0],p[1],p[2]);
+          gl.uniform3f(lineProg.u.uCol,0.13,0.13,0.13);
+          gl.bindBuffer(gl.ARRAY_BUFFER,geo.edgeVB);
+          var l=lineProg.a.aP;gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,3,gl.FLOAT,false,12,0);
+          gl.drawArrays(gl.LINES,0,geo.edgeCount*2);
+        });
+      });
     }
     canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();lost=true;});
     canvas.addEventListener('webglcontextrestored',function(){lost=false;init();if(model)setModel(model);});
     init();
     return {setModel:setModel,update:update,draw:draw,tris:function(){return tris;},
+      setPartsModel:setPartsModel,updateParts:updateParts,
+      _debug:function(){return {partGroups:partGroups&&partGroups.map(function(g){return {key:g.key,n:g.entries.length,
+        hasGeo:!!partGeomCache[g.key],geoN:partGeomCache[g.key]&&partGeomCache[g.key].n};}),
+        meshCacheKeys:Object.keys(partMeshCache),lightVP:lightVP};},
       destroy:function(){var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();}};
   }
 
@@ -530,10 +703,12 @@ function _brickKit() {
       if(canvas.parentNode){var fresh=canvas.cloneNode(false);canvas.parentNode.replaceChild(fresh,canvas);canvas=fresh;}
     }
     var ctx=gr?null:canvas.getContext('2d');
-    var o={shape:'heart',speed:1,orbit:true,bg:null,bricks:null,mode:'animate',step:1};
+    var o={shape:'heart',speed:1,orbit:true,bg:null,bricks:null,partsModel:null,mode:'animate',step:1};
     for(var k in opts)o[k]=opts[k];
+    var usingParts=!!(o.partsModel&&o.partsModel.length);
     var reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
     var M,bricks,N,st,OX,OY,OZ,AL,grid,statics,hl=[],dyn=[],vis=[];
+    var PM;   // parts-mode stats, parallels M for the bricks path: {W,D,L,steps}, in engine units
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
     var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0;
     var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,raf=0;
@@ -544,7 +719,39 @@ function _brickKit() {
     }
     function noOcc(){return 0;}
 
+    // Real parts (spec/brick-parts-v0.1.md, Phase 2): parallels load() for the bricks path, but positions are
+    // already absolute engine coordinates once converted (partEngineOf, LDU x,y,z -> engine x,y,z), not a stud
+    // grid index, so there is no `bricks`/`grid`/`normalise()` here -- PM plays M's role for camera/baseplate sizing.
+    function loadParts(list){
+      N=list.length;
+      st=new Int8Array(N).fill(-2);OX=new Float32Array(N);OY=new Float32Array(N);OZ=new Float32Array(N);AL=new Float32Array(N);
+      var stagger=Math.min(0.12,5/N),dst=1.4/N,seed=1;
+      function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647-0.5;}
+      tBuild=N*stagger+FALL+SETTLE;
+      tCycle=tBuild+HOLD+N*dst+LIFT+0.5;
+      // Steps: explicit per-entry step wins; otherwise generated bottom-to-top by distinct origin y (v1
+      // simplification -- the spec groups by each part's BOTTOM face, which needs its baked mesh height, not
+      // available synchronously here; origin-y is exact within one part type and close enough across mixed
+      // brick/plate stacks. Revisit once mesh bounds are available before steps are assigned).
+      if(!list.some(function(e){return e.step!==undefined;})){
+        var order=list.map(function(e,i){return i;}).sort(function(a,b){return list[b].y-list[a].y;});  // y=0 baseplate; larger y = lower
+        var step=0,lastY=null,count=0;
+        order.forEach(function(i){var e=list[i];if(e.y!==lastY||count>=6){step++;count=0;lastY=e.y;}e.step=step;count++;});
+      }
+      var maxStep=0;list.forEach(function(e){if(e.step>maxStep)maxStep=e.step;});
+      list.forEach(function(e,i){e.t0=i*stagger;e.td=tBuild+HOLD+(N-1-i)*dst;e.jx=rnd()*7;e.jz=rnd()*7;});
+      T0=tBuild*0.7;if(reduced)T0=tBuild+1;tNow=T0;dirtyView=true;
+      var mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+      list.forEach(function(e){var p=[e.x/20,partEngineY(e.y),e.z/20];for(var k=0;k<3;k++){mn[k]=Math.min(mn[k],p[k]);mx[k]=Math.max(mx[k],p[k]);}});
+      PM={W:Math.max(1,mx[0]-mn[0]+2),D:Math.max(1,mx[2]-mn[2]+2),ySpan:Math.max(1,mx[1]-mn[1]+2),
+          steps:maxStep,cx:(mn[0]+mx[0])/2,cz:(mn[2]+mx[2])/2,cy:(mn[1]+mx[1])/2,
+          bricks:list,trimmed:0,studs:0};   // bricks/trimmed/studs aliased so _brickMount's stepText()/info() readers work unchanged
+      if(gr)gr.setPartsModel(list);
+      if(o.step>PM.steps)o.step=PM.steps;
+      if(onStats)onStats(info());
+    }
     function load(shape){
+      if(usingParts){loadParts(o.partsModel);return;}
       o.shape=shape;
       var raw=o.bricks?o.bricks.map(function(b){return {x:b.x,y:b.y,z:b.z,w:b.w||1,d:b.d||1,h:b.h||1,c:b.c||'#c91a09'};})
                       :voxelBricks(SHAPES[shape].fn,SHAPES[shape].b);
@@ -571,15 +778,17 @@ function _brickKit() {
       if(onStats)onStats(info());
     }
     function info(){
+      if(usingParts)return {bricks:N,studs:0,trimmed:0,W:PM.W,D:PM.D,L:PM.ySpan/BH,steps:PM.steps,cycle:tCycle,
+              fps:fps,faces:gr?gr.tris():0,renderer:gr?'webgl':'canvas'};
       return {bricks:N,studs:M.studs,trimmed:M.trimmed,W:M.W,D:M.D,L:M.L,steps:M.steps,cycle:tCycle,fps:fps,
               faces:gr?gr.tris():vis.length,renderer:gr?'webgl':'canvas'};
     }
 
     function status(t){
-      var dirty=false,byStep=o.mode==='steps';
+      var dirty=false,byStep=o.mode==='steps',list=usingParts?o.partsModel:bricks;
       for(var i=0;i<N;i++){
-        var b=bricks[i],tf=t-b.t0,td=t-b.td,s,ox=0,oy=0,oz=0,a=1;
-        if(byStep)s=b.step<o.step?0:b.step===o.step?2:-1;   // 2 = brick placed in this step, drawn highlighted
+        var b=list[i],tf=t-b.t0,td=t-b.td,s,ox=0,oy=0,oz=0,a=1;
+        if(byStep)s=b.step<o.step?0:b.step===o.step?2:-1;   // 2 = brick/part placed in this step, drawn highlighted
         else if(tf<0)s=-1;
         else if(td>=0){var q=td/LIFT;if(q>=1)s=-1;else{s=1;oy=DROP*q*q;a=1-q;}}
         else if(tf<FALL){var p=tf/FALL,e=1-p;s=1;oy=DROP*(1-p*p);ox=b.jx*e*e;oz=b.jz*e*e;a=Math.min(1,p*5);}
@@ -587,6 +796,7 @@ function _brickKit() {
         if(st[i]!==s){dirty=true;st[i]=s;}
         OX[i]=ox;OY[i]=oy;OZ[i]=oz;AL[i]=a;
       }
+      if(usingParts){if(gr)gr.updateParts(st,OX,OY,OZ,AL);return;}
       if(gr)gr.update(st,OX,OY,OZ,AL);
       else if(dirty)rebuild();
     }
@@ -608,8 +818,9 @@ function _brickKit() {
     function setCamera(){
       var az2=az+userAz,el2=Math.max(0.12,Math.min(1.3,el+userEl));
       ca=Math.cos(az2);sa=Math.sin(az2);ce=Math.cos(el2);se=Math.sin(el2);
-      var bw=M.W+2*MARGIN,bd=M.D+2*MARGIN,hh=PL+M.L*BH;
-      tx=M.W/2;tz=M.D/2;ty=hh*0.42;
+      var bw,bd,hh;
+      if(usingParts){bw=PM.W+2*MARGIN;bd=PM.D+2*MARGIN;hh=PM.ySpan;tx=PM.cx;tz=PM.cz;ty=PM.cy;}
+      else{bw=M.W+2*MARGIN;bd=M.D+2*MARGIN;hh=PL+M.L*BH;tx=M.W/2;tz=M.D/2;ty=hh*0.42;}
       var R=0.5*Math.hypot(bw,bd,hh*1.1);
       dist=R*6;foc=0.46*Math.min(W,H*1.25)*dist/R;     // long lens: close to the isometric look of instruction renders
       scx=W/2;scy=H*0.5;
@@ -632,12 +843,23 @@ function _brickKit() {
     function draw(){
       if(gr){
         setCamera();
-        var R=0.5*Math.hypot(M.W+2*MARGIN,M.D+2*MARGIN,(PL+M.L*BH)*1.1);
+        var R=usingParts?0.5*Math.hypot(PM.W+2*MARGIN,PM.D+2*MARGIN,PM.ySpan*1.1)
+                         :0.5*Math.hypot(M.W+2*MARGIN,M.D+2*MARGIN,(PL+M.L*BH)*1.1);
         gr.draw({eye:[camx,camy,camz],target:[tx,ty,tz],fovy:2*Math.atan(H/2/foc),dist:dist,R:R+DROP,bg:o.bg});
+        if(usingParts)canvas.setAttribute('data-cam',JSON.stringify({tx:tx,ty:ty,tz:tz,dist:dist,R:R,gtris:gr.tris(),dbg:gr._debug()}));
         return;
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
+      // Real-parts models need WebGL for now (v1: no canvas-2D fallback geometry yet, see the brief's Phase 2
+      // notes) -- an honest message beats a broken or empty scene. Procedural `bricks` models are unaffected
+      // and keep the full canvas-2D painter below.
+      if(usingParts){
+        ctx.fillStyle=o.bg||'#eef1f5';ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#55636f';ctx.font='13px system-ui,-apple-system,Segoe UI,sans-serif';ctx.textAlign='center';
+        ctx.fillText('This model needs WebGL, which this browser does not have.',W/2,H/2);
+        return;
+      }
       if(o.bg){ctx.fillStyle=o.bg;ctx.fillRect(0,0,W,H);}
       setCamera();
       var i,j,f;
@@ -739,11 +961,12 @@ function _brickKit() {
       setBricks:function(list){o.bricks=list;load(o.shape);},
       setMode:function(m){o.mode=m;dirtyView=true;},
       setStep:function(n){o.step=n;dirtyView=true;},
-      model:function(){return M;},
+      model:function(){return usingParts?PM:M;},
       replay:function(){tNow=0;dirtyView=true;},
       set:function(k,v){o[k]=v;},
       onStats:function(fn){onStats=fn;fn(info());},
       renderer:function(){return gr?'webgl':'canvas';},
+      _debug:function(){return {usingParts:usingParts,gr:gr&&gr._debug(),PM:PM,tx:tx,ty:ty,tz:tz,dist:dist,camx:camx,camy:camy,camz:camz,st:st&&Array.prototype.slice.call(st)};},
       destroy:function(){cancelAnimationFrame(raf);if(gr)gr.destroy();}
     };
   }
@@ -754,6 +977,43 @@ function _brickKit() {
 
 var _BRICK_MAX = 3000;   // bricks per model — bounds the canvas-2D fallback's per-frame depth sort
 var _BRICK_MODELS_MAX = 8;   // named models the picker will list
+
+// A small, hand-picked subset of LDConfig.ldr (NOT the full 322 codes) -- exactly what the curated demo parts and
+// models use today. Extend as new colours are needed (spec section 1.4); an unlisted code falls back to red with
+// a visible warning in the parts list, same as an unrecognised part id. Module-level (not inside _brickKit) since
+// _partsModelSanitise below is also module-level.
+var LDRAW_COLOURS = {0:'#1b2a34',1:'#0055bf',2:'#237841',4:'#c91a09',14:'#f2cd37',15:'#f4f4f4',25:'#d67923',
+                      71:'#969696',72:'#646464',191:'#fcac00'};
+var LDRAW_EDGE = {0:'#808080'};             // LDConfig's EDGE for colour 0 (black); every other listed colour uses '#333333'
+
+// Coerce an agent-supplied partsModel entry list into {p,x,y,z,r,c,edge,step} objects (spec/brick-parts-v0.1.md).
+// Array form [id,x,y,z,r,c] or [id,x,y,z,r,c,step]; object form {p,x,y,z,r,c,s}. Position is LDU (Y down, baseplate
+// top at y=0); r is a 0-23 index into PART_ROT (wrapped, never thrown on); c is an LDraw colour code (int, looked
+// up in the small LDRAW_COLOURS table above) or a '#rrggbb' string. An id not in the loaded part index still
+// passes through here -- the renderer draws it as a placeholder box with a warning; sanitising isn't where an
+// unknown id is caught, since that needs the index, which is fetched async.
+function _partsModelSanitise(list) {
+  if (!Array.isArray(list) || !list.length) return null;
+  var out = [];
+  var ni = function(v, lo, hi, dflt) { v = Math.floor(Number(v)); return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt; };
+  for (var i = 0; i < list.length && out.length < _BRICK_MAX; i++) {
+    var r = list[i], p, x, y, z, rot, c, step;
+    if (Array.isArray(r) && r.length >= 6 && r.length <= 7) {
+      p = r[0]; x = r[1]; y = r[2]; z = r[3]; rot = r[4]; c = r[5]; step = r[6];
+    } else if (r && typeof r === 'object' && !Array.isArray(r)) {
+      p = r.p; x = r.x; y = r.y; z = r.z; rot = r.r; c = r.c; step = r.s;
+    } else continue;
+    if (typeof p !== 'string' || !p) continue;
+    var code = typeof c === 'number' ? Math.floor(c) : null;
+    var colour = typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c) ? c.toLowerCase()
+               : (code !== null && LDRAW_COLOURS[code]) || '#c91a09';
+    var edge = (code !== null && LDRAW_EDGE[code]) || '#333333';
+    var ri = ((ni(rot, 0, 999999, 0) % 24) + 24) % 24;
+    out.push({p: p, x: ni(x, -4000, 4000, 0), y: ni(y, -4000, 0, 0), z: ni(z, -4000, 4000, 0), r: ri,
+              c: colour, edge: edge, step: step !== undefined ? ni(step, 1, 9999, 1) : undefined});
+  }
+  return out.length ? out : null;
+}
 
 // Coerce an agent-supplied palette (max 256 entries) into #rrggbb strings; a bad entry keeps its index as the default red.
 function _brickPalette(list) {
@@ -823,8 +1083,8 @@ function _brickMount(K, cfg, U) {
     if (text !== undefined) e.textContent = text;
     return e;
   }
-  var atom = K.create(cv, {shape: cfg.shape, bricks: cfg.bricks, speed: cfg.speed, orbit: cfg.orbit,
-                           bg: cfg.bg, mode: cfg.mode, step: cfg.step});
+  var atom = K.create(cv, {shape: cfg.shape, bricks: cfg.bricks, partsModel: cfg.partsModel, speed: cfg.speed,
+                           orbit: cfg.orbit, bg: cfg.bg, mode: cfg.mode, step: cfg.step});
   var mode = cfg.mode, report = null, last = null, range = null, info = null, btns = {};
   var COL = {pass: '#1e7a45', warn: '#9a6700', fail: '#c4161a'};
 
@@ -949,15 +1209,19 @@ _RENDERERS['brick_build_3d'] = function(b) {
     if (start >= 0) bricks = models[start].bricks;
   }
   var h      = Math.max(160, Math.min(900, parseInt(b.height, 10) || 380));
+  // Real parts (spec/brick-parts-v0.1.md): a separate field from `bricks`, never mixed in v0.1. Takes precedence
+  // when present and valid, same "explicit wins" rule as bricks vs. shape above.
+  var partsModel = _partsModelSanitise(b.partsModel);
   var cfg = {
-    shape: shape, bricks: bricks,
+    shape: shape, bricks: partsModel ? null : bricks,
     mode:  b.mode === 'steps' ? 'steps' : 'animate',
     step:  Math.max(1, parseInt(b.step, 10) || 1),
     speed: b.speed !== undefined && isFinite(Number(b.speed)) ? Math.max(0.1, Math.min(4, Number(b.speed))) : 1,
     orbit: b.orbit !== false,
     bg:    typeof b.bg === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(b.bg) ? b.bg : null,
     scrubber: b.scrubber !== false, checks: b.checks !== false, parts: b.parts === true,
-    models: models, picker: b.picker === false ? false : (b.picker === true || models.length > 0), start: start
+    models: partsModel ? [] : models, picker: partsModel ? false : (b.picker === false ? false : (b.picker === true || models.length > 0)),
+    start: partsModel ? -1 : start, partsModel: partsModel
   };
   var uid  = 'brk' + Math.random().toString(36).substr(2, 6);
   var json = JSON.stringify(cfg).replace(/</g, '\\u003c');
