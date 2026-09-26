@@ -18243,7 +18243,9 @@ def _brick_sanitise(lst, palette=None):
 
 # Same small, hand-picked LDConfig.ldr subset as PART_ROT's neighbour in atoms_brick.gs -- see spec section 1.4.
 _LDRAW_COLOURS = {0: "#1b2a34", 1: "#0055bf", 2: "#237841", 4: "#c91a09", 14: "#f2cd37", 15: "#f4f4f4",
-                  25: "#d67923", 71: "#969696", 72: "#646464", 191: "#fcac00"}
+                  25: "#d67923", 71: "#969696", 72: "#646464", 191: "#fcac00",
+                  19: "#e4cd9e", 27: "#bbe90b", 28: "#958a73", 70: "#582a12", 272: "#0d325b", 288: "#184632",
+                  320: "#720e0f", 484: "#a95500"}
 _LDRAW_EDGE = {0: "#808080"}
 # Twin of PART_ID_ALIAS in atoms_brick.gs -- edit BOTH. Known LDraw ~Moved-to aliases for ids in the curated set
 # (spec/brick-parts-v0.1.md §1.3/§6): the bake only wrote the canonical id's JSON, never the common/BrickLink id.

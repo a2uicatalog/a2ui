@@ -19,7 +19,7 @@ ROT_X, ROT_Z = 0, 1                                       # r=1 is 90 deg about 
 
 # LDraw colour code -> Rebrickable colour id (identity for the common solid colours; entries differ only where
 # the two schemes diverge).
-LDRAW_TO_REBRICKABLE = {0: 0, 1: 1, 2: 2, 4: 4, 14: 14, 15: 15, 25: 25, 19: 19, 70: 70, 71: 71, 72: 72, 320: 320}
+LDRAW_TO_REBRICKABLE = {c: c for c in (0, 1, 2, 4, 14, 15, 19, 25, 27, 28, 70, 71, 72, 272, 288, 320, 484)}
 
 
 def _runs(cells, colour_of=lambda c: 0):

@@ -1339,7 +1339,8 @@ var _BRICK_MODELS_MAX = 8;   // named models the picker will list
 // a visible warning in the parts list, same as an unrecognised part id. Module-level (not inside _brickKit) since
 // _partsModelSanitise below is also module-level.
 var LDRAW_COLOURS = {0:'#1b2a34',1:'#0055bf',2:'#237841',4:'#c91a09',14:'#f2cd37',15:'#f4f4f4',25:'#d67923',
-                      71:'#969696',72:'#646464',191:'#fcac00'};
+                      71:'#969696',72:'#646464',191:'#fcac00',19:'#e4cd9e',27:'#bbe90b',28:'#958a73',70:'#582a12',
+                      272:'#0d325b',288:'#184632',320:'#720e0f',484:'#a95500'};
 var LDRAW_EDGE = {0:'#808080'};             // LDConfig's EDGE for colour 0 (black); every other listed colour uses '#333333'
 // Known LDraw ~Moved-to aliases for ids in the curated set (spec/brick-parts-v0.1.md §1.3/§6) -- the bake only
 // ever wrote the canonical id's JSON (e.g. public/parts/3023b.json), never the common/BrickLink id (3023), so an
