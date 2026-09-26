@@ -22,12 +22,12 @@ ROT_X, ROT_Z = 0, 1                                       # r=1 is 90 deg about 
 LDRAW_TO_REBRICKABLE = {0: 0, 1: 1, 2: 2, 4: 4, 14: 14, 15: 15, 25: 25, 19: 19, 70: 70, 71: 71, 72: 72, 320: 320}
 
 
-def _runs(cells):
-    """Greedy split of a sorted list of consecutive ints into runs of length <= 4."""
+def _runs(cells, colour_of=lambda c: 0):
+    """Split sorted consecutive ints into runs of length <= 4, also breaking wherever the colour changes."""
     runs, i = [], 0
     while i < len(cells):
         j = i
-        while j + 1 < len(cells) and cells[j + 1] == cells[j] + 1:
+        while j + 1 < len(cells) and cells[j + 1] == cells[j] + 1 and colour_of(cells[j + 1]) == colour_of(cells[i]):
             j += 1
         start, n = cells[i], j - i + 1
         while n:
@@ -39,7 +39,7 @@ def _runs(cells):
     return runs
 
 
-def tile_layer(cells, layer, bias=0):
+def tile_layer(cells, layer, bias=0, colours=None, ly=0):
     """Tile one layer's cells [(cx, cz)] with 1xN bricks. Even layers run along X, odd along Z (flipped by bias)."""
     along_x = (layer + bias) % 2 == 0
     lines = {}
@@ -47,7 +47,10 @@ def tile_layer(cells, layer, bias=0):
         lines.setdefault(cz if along_x else cx, []).append(cx if along_x else cz)
     out = []
     for line in sorted(lines):
-        for start, n in _runs(sorted(lines[line])):
+        def colour_of(u, line=line):
+            cell = (u, ly, line) if along_x else (line, ly, u)
+            return (colours or {}).get(cell, (colours or {}).get('*', 4))
+        for start, n in _runs(sorted(lines[line]), colour_of):
             mid = (start + n / 2.0) * PITCH
             fixed = (line + 0.5) * PITCH
             cell = (start, line) if along_x else (line, start)
@@ -65,7 +68,7 @@ def build_parts(voxels, colours=None, bias=None):
         by_layer.setdefault(ly, []).append((cx, cz))
     parts = []
     for ly in sorted(by_layer):
-        for pid, x, z, r, (cx, cz) in tile_layer(by_layer[ly], ly, bias.get(ly, 0)):
+        for pid, x, z, r, (cx, cz) in tile_layer(by_layer[ly], ly, bias.get(ly, 0), colours, ly):
             code = colours.get((cx, ly, cz), colours.get('*', 4))
             parts.append({'p': pid, 'x': round(x), 'y': -BRICK_H * (ly + 1), 'z': round(z), 'r': r, 'c': code})
     return parts
