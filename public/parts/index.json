@@ -1362,8 +1362,8 @@
    "sockets": 0,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 122932,
+   "needs_occupancy": false,
+   "bytes": 123007,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "4032a": {
@@ -1406,8 +1406,8 @@
    "sockets": 0,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 30464,
+   "needs_occupancy": false,
+   "bytes": 30542,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "48092": {

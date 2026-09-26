@@ -111,6 +111,23 @@ def round_occupancy_and_sockets(module_h, n_studs):
     return occ, sockets
 
 
+# Round dishes: same provably-safe inscribed-square occupancy as ROUND_PARTS (a dish's title size, e.g. "Dish
+# 2 x 2", names its outer diameter in studs, same as any other round part) -- but NOT the same sockets. A dish
+# is a single-point mount: 4740/3960 each have exactly ONE real stud at the centre (confirmed against real baked
+# connector data), not the full N-stud grid of studs a normal round brick/plate has, so generate_sockets()'s
+# "one per cell" rule would fabricate sockets this part does not have. Deliberately sockets=[] here rather than
+# guess at whether/where a bottom connector exists -- this id gets real collision detection (new value) without
+# inventing connection data the geometry does not support. The part's own real top stud (already read correctly
+# from geometry regardless of this table) still works for anchoring if something rests on it.
+DISH_PARTS = {"4740": (8, 2), "3960": (16, 4)}
+
+
+def dish_occupancy(module_h, n_studs):
+    diameter = n_studs * 20
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    return [box(-half_inscribed, half_inscribed, 0, module_h, -half_inscribed, half_inscribed)]
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -213,6 +230,8 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
     if part_id in ROUND_PARTS:
         occ, sockets = round_occupancy_and_sockets(*ROUND_PARTS[part_id])
         return occ, sockets, False
+    if part_id in DISH_PARTS:
+        return dish_occupancy(*DISH_PARTS[part_id]), [], False
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
         return occ, sockets, False
