@@ -10426,7 +10426,7 @@ def _render_skeleton(b: dict) -> str:
     line = f'<div class="skb_{uid}" style="height:14px;margin:8px 0;border-radius:4px;"></div>'
     if kind == "card":
         return base + (
-            f'<div style="border:1px solid #334155;border-radius:12px;padding:20px;margin:1rem 0;">'
+            f'<div style="border:1px solid #334155;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
             f'<div class="skb_{uid}" style="height:120px;border-radius:8px;margin-bottom:12px;"></div>'
             f'<div class="skb_{uid}" style="height:14px;width:70%;margin-bottom:8px;"></div>'
             f'<div class="skb_{uid}" style="height:12px;width:50%;"></div>'

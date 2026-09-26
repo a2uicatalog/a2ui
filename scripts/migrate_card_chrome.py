@@ -139,6 +139,10 @@ def apply(src, candidates, modern):
     return src, log
 
 
+# A few atoms' field names collide with the generic probe's own shape (e.g. skeleton's own
+# `rows`/`cols` are integers, not the generic probe's list-shaped `rows`) -- named overrides
+# rather than a smarter generic probe, since it's just this one case so far.
+_PROBE_OVERRIDES = {"skeleton": {"rows": 3, "cols": 3}}
 _STYLE_ATTR = re.compile(r'style="[^"]*"')
 # Captures the border-shorthand prefix ("1px solid ", or "") SEPARATELY on each side: it sits
 # OUTSIDE var(...) in the generated CSS, so without this the pattern doesn't match a border
@@ -185,6 +189,7 @@ def verify(before_src, after_src, candidates):
             continue
         probe = {"text": "x", "label": "x", "title": "x", "items": [], "value": "1",
                  "headers": [], "rows": [], "events": [], "blocks": []}
+        probe.update(_PROBE_OVERRIDES.get(name, {}))
         try:
             b = fn_before(probe)
             a = fn_after(probe)
