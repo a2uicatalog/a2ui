@@ -214,7 +214,7 @@ _RENDERERS['inline_code'] = function(b) {
 
 _RENDERERS['tag_chip'] = function(b) {
   var color = b.color || 'var(--accent)';
-  return '<span class="asw-badge" style="background:rgba(26,115,232,0.1);color:' + color + ';padding:4px 8px;border-radius:12px;font-size:0.75rem;font-weight:600;margin-right:6px;">' + _esc(b.text) + '</span>';
+  return '<span class="asw-badge" style="background:rgba(26,115,232,0.1);color:' + color + ';padding:4px 8px;border-radius:12px;border-radius:var(--a2ui-radius,12px);font-size:0.75rem;font-weight:600;margin-right:6px;">' + _esc(b.text) + '</span>';
 };
 
 _RENDERERS['badge'] = function(b) {
@@ -1145,7 +1145,7 @@ _RENDERERS['closing'] = function(b) {
 _RENDERERS['pipeline'] = function(b) {
   var steps = b.steps || [];
   var flow = steps.map(function(s){ return '<code>' + _esc(s) + '</code>'; }).join(' ──► ');
-  return '<p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;overflow-x:auto;">' + flow + '</p>';
+  return '<p style="font-family:monospace;background:#f4f4f4;padding:12px 16px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);overflow-x:auto;">' + flow + '</p>';
 };
 
 _RENDERERS['repo_links'] = function(b) {
@@ -1311,7 +1311,7 @@ _RENDERERS['key_takeaways'] = function(b) {
 };
 
 _RENDERERS['summary_box'] = function(b) {
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:18px 22px;background:#f9fafb;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:18px 22px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#374151;margin-bottom:8px;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;">Summary</div>' +
     '<p style="margin:0;color:#4b5563;font-size:0.9rem;line-height:1.6;">' + _markdownToHtml(b.text||'') + '</p></div>';
 };
@@ -1405,7 +1405,7 @@ _RENDERERS['difficulty_badge'] = function(b) {
 };
 
 _RENDERERS['caution_block'] = function(b) {
-  return '<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:8px;padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fef2f2;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#991b1b;margin-bottom:6px;">⚠ Caution</div>' +
     '<p style="margin:0;font-size:0.88rem;color:#7f1d1d;">' + _markdownToHtml(b.message||b.text||'') + '</p></div>';
 };
@@ -1457,7 +1457,7 @@ _RENDERERS['social_share_bar'] = function(b) {
   };
   var btns = platforms.filter(function(p){ return cfg[p]; }).map(function(p){
     var c = cfg[p];
-    return '<a href="' + _esc(c[2]) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;background:' + c[0] + ';color:#fff;font-size:0.8rem;font-weight:600;text-decoration:none;">' + c[1] + '</a>';
+    return '<a href="' + _esc(c[2]) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:' + c[0] + ';color:#fff;font-size:0.8rem;font-weight:600;text-decoration:none;">' + c[1] + '</a>';
   }).join('');
   return '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:1.2rem 0;">' + btns + '</div>';
 };
@@ -1465,7 +1465,7 @@ _RENDERERS['social_share_bar'] = function(b) {
 _RENDERERS['newsletter_cta'] = function(b) {
   var headline = b.headline || 'Stay in the loop';
   var buttonLabel = b.button_label || 'Subscribe';
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:24px 28px;background:linear-gradient(135deg,#f9fafb,#f3f4f6);margin:1.5rem 0;text-align:center;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px 28px;background:linear-gradient(135deg,#f9fafb,#f3f4f6);margin:1.5rem 0;text-align:center;">' +
     '<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:8px;">' + _esc(headline) + '</div>' +
     '<div style="display:flex;gap:8px;max-width:400px;margin:12px auto 0;">' +
     '<input type="email" placeholder="you@example.com" style="flex:1;padding:8px 14px;border:1px solid #d1d5db;border-radius:6px;font-size:0.88rem;">' +
@@ -1489,7 +1489,7 @@ _RENDERERS['article_hero'] = function(b) {
   var title = b.title || '';
   var subtitle = b.subtitle || b.overline || '';
   var imgUrl = b.image || b.image_url || '';
-  var imgHtml = imgUrl ? '<img src="' + _esc(imgUrl) + '" alt="' + _esc(title) + '" style="width:100%;height:220px;object-fit:cover;border-radius:12px;margin-bottom:16px;display:block;">' : '';
+  var imgHtml = imgUrl ? '<img src="' + _esc(imgUrl) + '" alt="' + _esc(title) + '" style="width:100%;height:220px;object-fit:cover;border-radius:12px;border-radius:var(--a2ui-radius,12px);margin-bottom:16px;display:block;">' : '';
   var subHtml = subtitle ? '<p style="margin:0 0 4px;font-size:0.78rem;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:0.05em;">' + _esc(subtitle) + '</p>' : '';
   return '<div style="margin:1.5rem 0;">' + imgHtml + subHtml + '<h1 style="margin:0;font-size:2rem;font-weight:800;color:#111827;line-height:1.2;">' + _esc(title) + '</h1></div>';
 };
@@ -1751,7 +1751,7 @@ _RENDERERS['faq_accordion'] = function(b) {
   var html = items.map(function(item){
     var q = item.question || item.label || '';
     var a = item.answer || item.text || item.body || '';
-    return '<details style="border-bottom:1px solid #e5e7eb;">' +
+    return '<details style="border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);">' +
       '<summary style="padding:14px 16px;cursor:pointer;font-weight:600;font-size:0.88rem;color:#111827;list-style:none;">' + _esc(q) + '</summary>' +
       '<div style="padding:0 16px 16px;font-size:0.85rem;color:#374151;line-height:1.6;">' + _markdownToHtml(a) + '</div></details>';
   }).join('');
@@ -1777,7 +1777,7 @@ _RENDERERS['collapsible_panel'] = function(b) {
   var content = '';
   blocks.forEach(function(blk){ var fn = _RENDERERS[blk.component||blk.type]; if(fn) content += fn(blk); });
   if (!content && b.content) content = '<p>' + _markdownToHtml(b.content) + '</p>';
-  return '<details style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">' +
+  return '<details style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     '<summary style="padding:10px 14px;background:#f3f4f6;font-weight:600;font-size:0.85rem;color:#374151;cursor:pointer;list-style:none;">▶ ' + _esc(title) + '</summary>' +
     '<div style="padding:12px 14px;font-size:0.85rem;">' + content + '</div></details>';
 };
@@ -1785,7 +1785,7 @@ _RENDERERS['collapsible_panel'] = function(b) {
 _RENDERERS['accordion_item'] = function(b) {
   var label = b.label || b.title || '';
   var text = b.text || b.content || b.body || '';
-  return '<details style="margin:0.5rem 0;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">' +
+  return '<details style="margin:0.5rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     '<summary style="padding:10px 14px;background:#f9fafb;font-weight:600;font-size:0.85rem;color:#374151;cursor:pointer;list-style:none;">▶ ' + _esc(label) + '</summary>' +
     '<div style="padding:12px 14px;font-size:0.85rem;">' + _markdownToHtml(text) + '</div></details>';
 };
@@ -1865,14 +1865,14 @@ _RENDERERS['deprecation_notice'] = function(b) {
 
 _RENDERERS['experimental_banner'] = function(b) {
   var msg = b.message || b.text || '';
-  return '<div style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:8px;padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">' +
+  return '<div style="border:1px solid #fbbf24;border-left:4px solid #f59e0b;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;background:#fffbeb;margin:1.2rem 0;">' +
     '<div style="font-weight:700;color:#92400e;margin-bottom:4px;">🧪 Experimental</div>' +
     (msg ? '<p style="font-size:0.85rem;color:#78350f;margin:0;">' + _markdownToHtml(msg) + '</p>' : '') + '</div>';
 };
 
 _RENDERERS['cli_command'] = function(b) {
   var cmd = (b.command || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="display:flex;align-items:center;background:#1e1e2e;border-radius:8px;padding:10px 16px;margin:0.8rem 0;font-family:monospace;font-size:0.85rem;">' +
+  return '<div style="display:flex;align-items:center;background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 16px;margin:0.8rem 0;font-family:monospace;font-size:0.85rem;">' +
     '<span style="color:#a78bfa;margin-right:10px;user-select:none;">$</span>' +
     '<code style="color:#e2e8f0;flex:1;">' + cmd + '</code></div>';
 };
@@ -1964,7 +1964,7 @@ _RENDERERS['env_var_list'] = function(b) {
 _RENDERERS['keyboard_shortcut'] = function(b) {
   var keys = b.keys || [];
   var action = b.action || '';
-  var keyHtml = keys.map(function(k){ return '<kbd style="display:inline-block;padding:2px 8px;font-family:monospace;font-size:0.8rem;border:1px solid #d1d5db;border-bottom:3px solid #9ca3af;border-radius:4px;background:#f9fafb;color:#374151;">' + _esc(k) + '</kbd>'; }).join(' + ');
+  var keyHtml = keys.map(function(k){ return '<kbd style="display:inline-block;padding:2px 8px;font-family:monospace;font-size:0.8rem;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-bottom:3px solid #9ca3af;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);color:#374151;">' + _esc(k) + '</kbd>'; }).join(' + ');
   var actionHtml = action ? '<span style="margin-left:10px;font-size:0.85rem;color:#6b7280;">' + _esc(action) + '</span>' : '';
   return '<div style="margin:0.5rem 0;display:inline-flex;align-items:center;">' + keyHtml + actionHtml + '</div>';
 };
@@ -1992,7 +1992,7 @@ _RENDERERS['api_param_table'] = function(b) {
 _RENDERERS['pagination'] = function(b) {
   var current = b.current_page || b.current || 1;
   var total = b.total_pages || b.total || 1;
-  var prev = current > 1 ? '<button style="padding:6px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;font-size:0.82rem;color:#374151;">← Prev</button>' : '';
+  var prev = current > 1 ? '<button style="padding:6px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);background:#ffffff;background:var(--a2ui-surface,#ffffff);cursor:pointer;font-size:0.82rem;color:#374151;">← Prev</button>' : '';
   var next = current < total ? '<button style="padding:6px 12px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;font-size:0.82rem;color:#374151;">Next →</button>' : '';
   var info = '<span style="font-size:0.82rem;color:#6b7280;">Page ' + current + ' of ' + total + '</span>';
   return '<div style="display:flex;align-items:center;gap:8px;margin:1rem 0;flex-wrap:wrap;">' + prev + info + next + '</div>';
@@ -2123,7 +2123,7 @@ _RENDERERS['reaction_group'] = function(b) {
   var emojisMap = {thumbs_up:'👍',heart:'❤️',rocket:'🚀',mind_blown:'🤯'};
   var enabled = b.enabled_emojis || Object.keys(emojisMap);
   var btns = enabled.filter(function(e){ return emojisMap[e]; }).map(function(e){
-    return '<button onclick="var s=this.querySelector(\'span\');s.textContent=String(parseInt(s.textContent)+1);" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid #e5e7eb;border-radius:100px;background:#f9fafb;cursor:pointer;font-size:0.88rem;">' +
+    return '<button onclick="var s=this.querySelector(\'span\');s.textContent=String(parseInt(s.textContent)+1);" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);cursor:pointer;font-size:0.88rem;">' +
       emojisMap[e] + ' <span style="font-size:0.78rem;color:#6b7280;">0</span></button>';
   }).join('');
   return '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0;">' + btns + '</div>';
@@ -2142,7 +2142,7 @@ _RENDERERS['share_quote'] = function(b) {
 _RENDERERS['follow_cta'] = function(b) {
   var msg = b.message || 'Follow for more';
   var links = b.platform_links || {};
-  var btns = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="padding:8px 18px;border:1px solid #d1d5db;border-radius:6px;font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;">' + _esc(k) + '</a>'; }).join('');
+  var btns = Object.keys(links).map(function(k){ return '<a href="' + _esc(links[k]) + '" target="_blank" rel="noopener" style="padding:8px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;">' + _esc(k) + '</a>'; }).join('');
   return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:1.5rem 0;background:#f9fafb;">' +
     '<span style="font-size:0.95rem;font-weight:600;color:#111827;">' + _esc(msg) + '</span>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + btns + '</div></div>';
@@ -2153,7 +2153,7 @@ _RENDERERS['follow_button'] = function(b) {
   var platform = b.platform || 'twitter';
   var urls = {twitter:'https://twitter.com/'+handle, github:'https://github.com/'+handle, linkedin:'https://linkedin.com/in/'+handle};
   var url = urls[platform] || '#';
-  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:1px solid #d1d5db;border-radius:6px;font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;background:#f9fafb;">Follow @' + _esc(handle) + '</a>';
+  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;font-weight:600;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">Follow @' + _esc(handle) + '</a>';
 };
 
 _RENDERERS['notification_badge'] = function(b) {
@@ -2204,7 +2204,7 @@ _RENDERERS['abbr_tooltip'] = function(b) {
 _RENDERERS['copy_to_clipboard'] = function(b) {
   var text = b.text || '';
   var val = (b.value || text).replace(/'/g,"\\'");
-  return '<span style="display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border:1px solid #e5e7eb;padding:4px 10px;border-radius:6px;font-family:monospace;font-size:0.85rem;color:#1f2937;">' +
+  return '<span style="display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);padding:4px 10px;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-family:monospace;font-size:0.85rem;color:#1f2937;">' +
     '<span>' + _esc(text) + '</span>' +
     '<button onclick="navigator.clipboard.writeText(\'' + val + '\');this.textContent=\'✓\';setTimeout(function(){this.textContent=\'📋\';}.bind(this),1000)" style="border:none;background:none;cursor:pointer;font-size:0.85rem;padding:0;">📋</button></span>';
 };
@@ -2217,7 +2217,7 @@ _RENDERERS['copy_code_button'] = function(b) {
 
 _RENDERERS['log_output'] = function(b) {
   var logs = (b.logs||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="background:#0d1117;border-radius:8px;padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
+  return '<div style="background:#0d1117;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.2rem 0;max-height:300px;overflow-y:auto;">' +
     '<pre style="margin:0;font-family:monospace;font-size:0.78rem;color:#9ca3af;white-space:pre-wrap;word-break:break-all;">' + logs + '</pre></div>';
 };
 
@@ -2226,7 +2226,7 @@ _RENDERERS['json_tree_viewer'] = function(b) {
   var pretty = raw;
   try { pretty = JSON.stringify(JSON.parse(raw), null, 2); } catch(e) {}
   var escaped = pretty.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div style="background:#1e1e2e;border-radius:10px;padding:16px;margin:1.2rem 0;max-height:400px;overflow:auto;">' +
+  return '<div style="background:#1e1e2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:16px;margin:1.2rem 0;max-height:400px;overflow:auto;">' +
     '<pre style="margin:0;font-family:monospace;font-size:0.8rem;color:#e2e8f0;">' + escaped + '</pre></div>';
 };
 
@@ -2424,7 +2424,7 @@ _RENDERERS['framed_screenshot'] = function(b) {
   var url = b.url || b.image_url || '';
   var alt = b.alt || b.caption || '';
   var frame = b.frame || 'browser';
-  var header = '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:6px;">' +
+  var header = '<div style="padding:8px 14px;background:#f3f4f6;border-bottom:1px solid #eaeaea;border-bottom:1px solid var(--a2ui-border,#eaeaea);display:flex;align-items:center;gap:6px;">' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>' +
     '<span style="width:10px;height:10px;border-radius:50%;background:#27c93f;display:inline-block;"></span>' +
@@ -2436,7 +2436,7 @@ _RENDERERS['video_thumbnail'] = function(b) {
   var url = b.url || b.thumbnail_url || '';
   var title = b.title || '';
   var link = b.video_url || b.link || '#';
-  return '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;margin:1rem 0;border-radius:8px;overflow:hidden;">' +
+  return '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;margin:1rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
     (url ? '<img src="' + _esc(url) + '" alt="' + _esc(title) + '" style="width:100%;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;display:flex;align-items:center;justify-content:center;"></div>') +
     '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">' +
     '<div style="width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.5rem;margin-left:4px;">▶</span></div></div>' +
@@ -2448,7 +2448,7 @@ _RENDERERS['video_card'] = function(b) {
   var title = b.title || '';
   var description = b.description || '';
   var link = b.video_url || b.link || '#';
-  return '<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1rem 0;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">' +
     '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;">' +
     (url ? '<img src="' + _esc(url) + '" alt="' + _esc(title) + '" style="width:100%;height:180px;object-fit:cover;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;"></div>') +
     '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.2rem;margin-left:4px;">▶</span></div></div></a>' +
@@ -2460,7 +2460,7 @@ _RENDERERS['video_card'] = function(b) {
 _RENDERERS['audio_player'] = function(b) {
   var url = b.url || b.src_url || '';
   var title = b.title || b.label || '';
-  return '<div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin:1rem 0;background:#f9fafb;">' +
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:12px 16px;margin:1rem 0;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">' +
     (title ? '<div style="font-size:0.85rem;font-weight:600;color:#374151;margin-bottom:8px;">🎵 ' + _esc(title) + '</div>' : '') +
     (url ? '<audio controls style="width:100%;"><source src="' + _esc(url) + '"></audio>' : '<div style="color:#9ca3af;font-size:0.85rem;">No audio source</div>') + '</div>';
 };
@@ -2468,13 +2468,13 @@ _RENDERERS['audio_player'] = function(b) {
 _RENDERERS['audio_link'] = function(b) {
   var url = b.url || '';
   var label = b.label || b.title || 'Audio file';
-  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e5e7eb;border-radius:6px;font-size:0.85rem;color:#374151;text-decoration:none;background:#f9fafb;">🎵 ' + _esc(label) + '</a>';
+  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">🎵 ' + _esc(label) + '</a>';
 };
 
 _RENDERERS['pdf_preview'] = function(b) {
   var url = b.url || '';
   var title = b.title || 'PDF Document';
-  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none;margin:1rem 0;">' +
+  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);text-decoration:none;margin:1rem 0;">' +
     '<div style="width:40px;height:48px;background:#ef4444;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;flex-shrink:0;">PDF</div>' +
     '<div><div style="font-size:0.9rem;font-weight:600;color:#111827;">' + _esc(title) + '</div><div style="font-size:0.75rem;color:#6b7280;margin-top:2px;">Click to open PDF</div></div></a>';
 };
@@ -2483,7 +2483,7 @@ _RENDERERS['document_link'] = function(b) {
   var url = b.url || '';
   var title = b.title || b.label || 'Document';
   var type = (b.type || 'doc').toUpperCase();
-  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #e5e7eb;border-radius:6px;font-size:0.85rem;color:#374151;text-decoration:none;background:#f9fafb;">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:#9ca3af;">[' + _esc(type) + ']</span></a>';
+  return '<a href="' + _esc(url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;color:#374151;text-decoration:none;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);">📄 ' + _esc(title) + ' <span style="font-size:0.7rem;color:#9ca3af;">[' + _esc(type) + ']</span></a>';
 };
 
 _RENDERERS['code_snippet_pair'] = function(b) {
@@ -2501,7 +2501,7 @@ _RENDERERS['toast_notification'] = function(b) {
   var type = b.type || 'info';
   var icons = {info:'ℹ️',success:'✅',warning:'⚠️',error:'❌'};
   var colors = {info:'#2563eb',success:'#16a34a',warning:'#d97706',error:'#dc2626'};
-  return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:8px;border:1px solid ' + (colors[type]||'#6b7280') + '44;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.08);margin:1rem 0;">' +
+  return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid ' + (colors[type]||'#6b7280') + '44;background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 4px 12px rgba(0,0,0,0.08);margin:1rem 0;">' +
     '<span>' + (icons[type]||'📢') + '</span>' +
     '<span style="font-size:0.85rem;color:#374151;">' + _esc(message) + '</span></div>';
 };
@@ -2511,7 +2511,7 @@ _RENDERERS['loading_skeleton'] = function(b) {
   var html = '';
   for (var i = 0; i < lines; i++) {
     var width = i === 0 ? '100%' : (i === lines-1 ? '60%' : '85%');
-    html += '<div style="height:14px;background:#e5e7eb;border-radius:4px;margin-bottom:8px;width:' + width + ';animation:pulse 1.5s ease-in-out infinite alternate;"></div>';
+    html += '<div style="height:14px;background:#e5e7eb;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);margin-bottom:8px;width:' + width + ';animation:pulse 1.5s ease-in-out infinite alternate;"></div>';
   }
   return '<style>@keyframes pulse{from{opacity:1}to{opacity:0.4}}</style>' +
     '<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:8px;">' + html + '</div>';

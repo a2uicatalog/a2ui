@@ -96,21 +96,38 @@ def find_candidates():
     return out
 
 
-def apply_one(texts, c, modern):
-    """texts: {file: current_text}. Returns a NEW dict with c's edit applied."""
-    t = texts[c["file"]]
-    for s, e, prop, val, token in sorted(c["matches"], key=lambda m: m[0], reverse=True):
-        new_val = modern[token]
-        prefix = "1px solid " if prop in _BORDER_PROPS else ""
-        repl = f"{prop}:{prefix}{new_val};{prop}:{prefix}var(--a2ui-{token},{new_val})"
-        t = t[:s] + repl + t[e:]
+def apply_batch(texts, candidates, modern):
+    """texts: {file: current_text}. Applies EVERY candidate's edits in ONE bottom-to-top pass
+    PER FILE -- never per-candidate separately. Each candidate's match offsets were computed
+    once, against the ORIGINAL text; applying them one candidate at a time in separate calls
+    (tried first, wrong) shifts bytes for every edit still pending in the same file, silently
+    corrupting position calculations for anything after the first edit applied. Caught by the
+    verify step's own render check (a Node SyntaxError, not a silent bad render) before
+    anything was written -- but the bug was in this script, not the target files: `finally`
+    in render_via_bundle already restores the real files on any exception, confirmed (atom.gs
+    parses, single definition) before this fix."""
     out = dict(texts)
-    out[c["file"]] = t
+    by_file = collections.defaultdict(list)
+    for c in candidates:
+        by_file[c["file"]].extend(c["matches"])
+    for f, matches in by_file.items():
+        t = out[f]
+        for s, e, prop, val, token in sorted(matches, key=lambda m: m[0], reverse=True):
+            new_val = modern[token]
+            prefix = "1px solid " if prop in _BORDER_PROPS else ""
+            repl = f"{prop}:{prefix}{new_val};{prop}:{prefix}var(--a2ui-{token},{new_val})"
+            t = t[:s] + repl + t[e:]
+        out[f] = t
     return out
 
 
 _STYLE_ATTR_ANY = re.compile(r"style=(['\"])(?:(?!\1).)*\1")
-_VAR_PAIR = re.compile(r"([a-z-]+):((?:1px solid )?[^;]+);\1:(?:1px solid )?var\(--a2ui-[a-z-]+,((?:[^()]|\([^()]*\))*)\);?")
+# Captures the border-shorthand prefix ("1px solid ", or "") SEPARATELY on each side: it sits
+# OUTSIDE var(...) in the generated CSS ("border:1px solid X;border:1px solid var(...,X)"), so
+# comparing the raw "plain" text (prefix included) against the raw var()-fallback text (prefix
+# excluded, since it's outside the parens) is comparing different shapes of the same correct
+# value, not a real mismatch -- reconstruct prefix+fallback on both sides before comparing.
+_VAR_PAIR = re.compile(r"([a-z-]+):(1px solid )?([^;]+);\1:(?:1px solid )?var\(--a2ui-[a-z-]+,((?:[^()]|\([^()]*\))*)\);?")
 
 
 def render_via_bundle(texts_override, probes):
@@ -145,9 +162,7 @@ def verify(candidates, modern, real_texts):
                     "items": [], "value": "1", "headers": [], "rows": [], "events": []})
              for c in candidates]
     before = render_via_bundle(real_texts, probes)
-    after_texts = dict(real_texts)
-    for c in candidates:
-        after_texts = apply_one(after_texts, c, modern)
+    after_texts = apply_batch(real_texts, candidates, modern)
     after = render_via_bundle(after_texts, probes)
 
     bad = []
@@ -161,7 +176,7 @@ def verify(candidates, modern, real_texts):
         if b_bare != a_bare:
             bad.append((c["name"], "content/structure changed outside a style attribute value"))
             continue
-        for prop, plain, var_fallback in _VAR_PAIR.findall(a):
+        for prop, prefix, plain, var_fallback in _VAR_PAIR.findall(a):
             if plain != var_fallback:
                 bad.append((c["name"], f"{prop}: plain {plain!r} != var() fallback {var_fallback!r}"))
     return bad, after_texts

@@ -118,7 +118,12 @@ def apply(src, candidates, modern):
 
 
 _STYLE_ATTR = re.compile(r'style="[^"]*"')
-_VAR_PAIR = re.compile(r"([a-z-]+):([^;]+);\1:var\(--a2ui-[a-z-]+,((?:[^()]|\([^()]*\))*)\);?")
+# Captures the border-shorthand prefix ("1px solid ", or "") SEPARATELY on each side: it sits
+# OUTSIDE var(...) in the generated CSS, so without this the pattern doesn't match a border
+# declaration AT ALL (found retroactively: the border check was silently never running, 0
+# matches, not a false pass on bad content -- the generated CSS itself was independently
+# confirmed correct by hand before this was caught).
+_VAR_PAIR = re.compile(r"([a-z-]+):(1px solid )?([^;]+);\1:(?:1px solid )?var\(--a2ui-[a-z-]+,((?:[^()]|\([^()]*\))*)\);?")
 
 
 def verify(before_src, after_src, candidates):
@@ -168,7 +173,7 @@ def verify(before_src, after_src, candidates):
         if b_bare != a_bare:
             bad.append((c["name"], "content/structure changed outside a style attribute value"))
             continue
-        for prop, plain, var_fallback in _VAR_PAIR.findall(a):
+        for prop, prefix, plain, var_fallback in _VAR_PAIR.findall(a):
             if plain != var_fallback:
                 bad.append((c["name"], f"{prop}: plain {plain!r} != var() fallback {var_fallback!r}"))
     return bad
