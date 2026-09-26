@@ -2415,7 +2415,7 @@ _RENDERERS['checklist_interactive'] = function(b) {
   var items = b.items || [];
   var lis = items.map(function(item){
     var text = typeof item === 'string' ? item : (item.text || item.label || '');
-    return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f3f4f6;">' +
+    return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
       '<input type="checkbox" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
       '<span style="font-size:0.88rem;color:#374151;">' + _esc(text) + '</span></li>';
   }).join('');
@@ -3112,7 +3112,7 @@ _RENDERERS['series_overview_card'] = function(b) {
     var bg = p.current ? '#7c3aed' : '#f3f4f6';
     var color = p.current ? '#fff' : '#6b7280';
     var textStyle = p.current ? 'font-weight:700;color:#7c3aed;' : 'color:#374151;';
-    return '<a href="' + _esc(p.url||'#') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
+    return '<a href="' + _esc(p.url||'#') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);text-decoration:none;">' +
       '<span style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;background:' + bg + ';color:' + color + ';">' + (i+1) + '</span>' +
       '<span style="font-size:0.85rem;' + textStyle + '">' + _esc(p.title||'') + '</span></a>';
   }).join('');
@@ -19203,7 +19203,7 @@ _RENDERERS['dark_hero'] = function(b) {
   var align    = b.align     || 'center';
   var isCenter = align === 'center';
 
-  return '<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;">' +
+  return '<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
     (badge
       ? '<div style="display:inline-block;margin-bottom:18px;padding:5px 14px;' +
         'border:1px solid rgba(255,255,255,0.18);border-radius:99px;' +
@@ -20096,7 +20096,7 @@ _RENDERERS['take_away_card'] = function(b) {
 _RENDERERS['next_step_strip'] = function(b) {
   var steps  = b.steps || [];
   var accent = b.accent || '#6366f1';
-  var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;overflow:hidden;border:1px solid var(--border);">';
+  var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
   steps.forEach(function(s, i) {
     var isLast = i === steps.length - 1;
     html += '<div style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
@@ -20160,7 +20160,7 @@ _RENDERERS['renderer_stats'] = function(b) {
   var stats  = b.stats || [];
   var accent = b.accent || '#6366f1';
   var sub    = b.sub || '';
-  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin:1rem 0;">';
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">';
   stats.forEach(function(s) {
     html += '<div style="padding:20px 16px;background:var(--surface);text-align:center;">'
       + '<div style="font-size:1.7rem;font-weight:900;color:' + accent + ';line-height:1;">' + _esc(String(s.value || '')) + '</div>'
@@ -24188,7 +24188,7 @@ _RENDERERS['case_study_card'] = function(b) {
   for (var i = 0; i < dataPoints.length; i++) {
     var dp = dataPoints[i];
     dpHtml +=
-      '<div style="padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">' +
+      '<div style="padding:10px 12px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">' +
         '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;margin-bottom:3px;">' + _esc(dp.label || '') + '</div>' +
         '<div style="font-size:0.88rem;font-weight:700;color:' + _esc(accent) + ';">' + _esc(dp.value || '') + '</div>' +
         (dp.note ? '<div style="font-size:0.62rem;color:#334155;margin-top:2px;">' + _esc(dp.note) + '</div>' : '') +
@@ -28831,7 +28831,7 @@ _RENDERERS['Row'] = function(b) {
 };
 
 _RENDERERS['Card'] = function(b) {
-  return '<div class="asw-v1-card" style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:20px;margin:1rem 0;">' +
+  return '<div class="asw-v1-card" style="border:1px solid var(--border,#e5e7eb);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">' +
          renderAtoms(b.blocks || []) + '</div>';
 };
 
@@ -29068,7 +29068,7 @@ _RENDERERS['wall_elevation'] = function(b) {
     _wallStatRow('Build time (' + calc.builders + ' builder' + (calc.builders === 1 ? '' : 's') + ')',
       calc.buildDaysSelected.toFixed(1) + ' day' + (calc.buildDaysSelected === 1 ? '' : 's'));
 
-  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:8px;background:var(--surface,#fff);">' +
+  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:var(--surface,#fff);">' +
     _wallSvg(calc) +
     '<div style="margin-top:10px;">' + stats + '</div>' +
     advisories +
@@ -30124,7 +30124,7 @@ _RENDERERS['drive_file_card'] = function(b) {
   return (
     '<div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:10px;' +
       'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="width:44px;height:44px;border-radius:8px;background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
+    '<div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
     '<div style="flex:1;min-width:0;">' +
       '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(name) + '</div>' +
       (desc ? '<div style="font-size:0.72rem;color:#64748b;margin-top:3px;">' + _esc(desc) + '</div>' : '') +
@@ -30287,7 +30287,7 @@ _RENDERERS['sla_timer_display'] = function(b) {
   var stateLabel = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
   var pulse      = state === 'breach' ? 'animation:a2ui-pulse 1s infinite;' : '';
 
-  return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;padding:28px 32px;font-family:system-ui,sans-serif;">' +
+  return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">' +
       '<div>' +
         '<span style="display:inline-block;background:#ef4444;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _esc(severity) + '</span>' +
