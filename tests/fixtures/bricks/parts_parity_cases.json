@@ -1,0 +1,922 @@
+{
+ "cases": [
+  {
+   "name": "F01_single_brick",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 1 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "8 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 1.00 studs)"
+     }
+    ],
+    "connections": 8,
+    "studConnections": 8,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 1
+    }
+   }
+  },
+  {
+   "name": "F02_stack_aligned",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -48,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "16 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 1.00 studs)"
+     }
+    ],
+    "connections": 16,
+    "studConnections": 16,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 1
+    }
+   }
+  },
+  {
+   "name": "F03_running_bond",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3001",
+     "x": 40,
+     "y": -48,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "14 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 1.00 studs)"
+     }
+    ],
+    "connections": 14,
+    "studConnections": 14,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 1
+    }
+   }
+  },
+  {
+   "name": "F04_collision",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3001",
+     "x": 40,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": false,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "fail",
+      "detail": "1 part pair overlap"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "16 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 1.00 studs)"
+     }
+    ],
+    "connections": 16,
+    "studConnections": 16,
+    "pinConnections": 0,
+    "collisions": [
+     [
+      0,
+      1
+     ]
+    ],
+    "overlaps": 1,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 1
+    }
+   }
+  },
+  {
+   "name": "F05_floating",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3024",
+     "x": 110,
+     "y": -48,
+     "z": 110,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": false,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "fail",
+      "detail": "1 part not connected to the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "8 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 0.82 studs)"
+     }
+    ],
+    "connections": 8,
+    "studConnections": 8,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [
+     1
+    ],
+    "balance": "pass",
+    "com": {
+     "margin": 0.82
+    }
+   }
+  },
+  {
+   "name": "F06_plate_on_brick",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3024",
+     "x": 10,
+     "y": -32,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "9 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 0.98 studs)"
+     }
+    ],
+    "connections": 9,
+    "studConnections": 9,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 0.9800000000000001
+    }
+   }
+  },
+  {
+   "name": "F07_tile_blocks",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3070b",
+     "x": 10,
+     "y": -32,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3024",
+     "x": 10,
+     "y": -40,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": false,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "fail",
+      "detail": "1 part not connected to the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "9 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 0.96 studs)"
+     }
+    ],
+    "connections": 9,
+    "studConnections": 9,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [
+     2
+    ],
+    "balance": "pass",
+    "com": {
+     "margin": 0.9615384615384615
+    }
+   }
+  },
+  {
+   "name": "F08_snot_side_studs",
+   "parts": [
+    {
+     "p": "11211",
+     "x": 20,
+     "y": -24,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3023b",
+     "x": 20,
+     "y": -14,
+     "z": -8,
+     "r": 22,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "4 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "warn",
+      "detail": "(margin 0.33 studs)"
+     }
+    ],
+    "connections": 4,
+    "studConnections": 4,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "warn",
+    "com": {
+     "margin": 0.325
+    }
+   }
+  },
+  {
+   "name": "F09_technic_pin_join",
+   "parts": [
+    {
+     "p": "3700",
+     "x": 20,
+     "y": -24,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3700",
+     "x": 20,
+     "y": -24,
+     "z": 30,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "2780",
+     "x": 20,
+     "y": -14,
+     "z": 20,
+     "r": 3,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 3 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "4 stud + 2 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 1.00 studs)"
+     }
+    ],
+    "connections": 6,
+    "studConnections": 4,
+    "pinConnections": 2,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 1
+    }
+   }
+  },
+  {
+   "name": "F10_crossed_bricks",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -48,
+     "z": 20,
+     "r": 1,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "12 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 1.00 studs)"
+     }
+    ],
+    "connections": 12,
+    "studConnections": 12,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 1
+    }
+   }
+  },
+  {
+   "name": "F11_unbalanced",
+   "parts": [
+    {
+     "p": "3005",
+     "x": 10,
+     "y": -24,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3001",
+     "x": 40,
+     "y": -48,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": false,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "2 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "fail",
+      "detail": "(margin 0.83 studs, outside footprint)"
+     }
+    ],
+    "connections": 2,
+    "studConnections": 2,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "fail",
+    "com": {
+     "margin": -0.8333333333333333
+    }
+   }
+  },
+  {
+   "name": "F12_jumper_offset",
+   "parts": [
+    {
+     "p": "15573",
+     "x": 20,
+     "y": -8,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3024",
+     "x": 20,
+     "y": -16,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "3 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 0.50 studs)"
+     }
+    ],
+    "connections": 3,
+    "studConnections": 3,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "pass",
+    "com": {
+     "margin": 0.5
+    }
+   }
+  },
+  {
+   "name": "F13_into_baseplate",
+   "parts": [
+    {
+     "p": "3024",
+     "x": 10,
+     "y": -4,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": false,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "fail",
+      "detail": "1 part not connected to the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "fail",
+      "detail": "0 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "fail",
+      "detail": "no part rests on the baseplate to measure"
+     }
+    ],
+    "connections": 0,
+    "studConnections": 0,
+    "pinConnections": 0,
+    "collisions": [
+     [
+      -1,
+      0
+     ]
+    ],
+    "overlaps": 0,
+    "floating": [
+     0
+    ],
+    "balance": "none",
+    "com": {
+     "margin": null
+    }
+   }
+  },
+  {
+   "name": "F14_half_stud_misaligned",
+   "parts": [
+    {
+     "p": "3001",
+     "x": 20,
+     "y": -24,
+     "z": 20,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "3023b",
+     "x": 30,
+     "y": -32,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": false,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "fail",
+      "detail": "1 part not connected to the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "8 stud + 0 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "pass",
+      "detail": "(margin 0.96 studs)"
+     }
+    ],
+    "connections": 8,
+    "studConnections": 8,
+    "pinConnections": 0,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [
+     1
+    ],
+    "balance": "pass",
+    "com": {
+     "margin": 0.9615384615384615
+    }
+   }
+  },
+  {
+   "name": "F15_pin_one_side",
+   "parts": [
+    {
+     "p": "3700",
+     "x": 20,
+     "y": -24,
+     "z": 10,
+     "r": 0,
+     "c": "#c91a09"
+    },
+    {
+     "p": "2780",
+     "x": 20,
+     "y": -14,
+     "z": 20,
+     "r": 3,
+     "c": "#c91a09"
+    }
+   ],
+   "expected": {
+    "ok": true,
+    "checks": [
+     {
+      "id": "collisions",
+      "label": "No collisions",
+      "status": "pass",
+      "detail": "0 overlaps"
+     },
+     {
+      "id": "anchored",
+      "label": "Every part anchored",
+      "status": "pass",
+      "detail": "all 2 parts reach the baseplate"
+     },
+     {
+      "id": "connections",
+      "label": "Stud + pin connections",
+      "status": "pass",
+      "detail": "2 stud + 1 pin"
+     },
+     {
+      "id": "balance",
+      "label": "Centre of mass over footprint",
+      "status": "warn",
+      "detail": "(margin 0.37 studs)"
+     }
+    ],
+    "connections": 3,
+    "studConnections": 2,
+    "pinConnections": 1,
+    "collisions": [],
+    "overlaps": 0,
+    "floating": [],
+    "balance": "warn",
+    "com": {
+     "margin": 0.3695652173913044
+    }
+   }
+  }
+ ]
+}
