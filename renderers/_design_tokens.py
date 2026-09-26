@@ -18,6 +18,19 @@ TOKEN_PRESETS = {
 }
 _SAFE = re.compile(r"[#A-Za-z0-9_ .,()%/-]{1,120}")
 
+# {recipe_name: css_string}, double-declaration pattern -- see atoms/design-tokens.yaml's
+# `recipes:` comment. Consumed by the hand-written _card_chrome() in renderers/web_article.py.
+CHROME_STYLES = {
+    "card": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));",
+    "card-muted": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);",
+    "row": "border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);",
+    "card-plain": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);",
+    "card-flat": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);",
+    "card-sm-plain": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);",
+    "card-sm-white": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);",
+    "card-sm-muted": "border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);"
+}
+
 
 def token_css(b):
     """`--a2ui-<name>:<value>;` for every token the palette block sets, in

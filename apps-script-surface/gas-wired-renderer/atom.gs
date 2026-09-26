@@ -4317,6 +4317,17 @@ _RENDERERS['palette'] = function(b) {
   return '<style>:root{--a2ui-accent:' + _esc(accent) + ';--a2ui-accent2:' + _esc(accent2) + ';--a2ui-block-gap:' + _esc(gap) + ';' + extra + '}</style>';
 };
 
+// Wrap innerHtml in a <div style="..."> using a CLOSED-ENUM chrome recipe (see
+// atoms/design-tokens.yaml `recipes:`). No override parameter FOR CHROME, deliberately --
+// see _card_chrome's docstring in renderers/web_article.py (reviewed 2026-09-26,
+// chrome-helper-draft.md). extraStyle is component-owned layout (padding/display/min-width),
+// a different axis, appended before CHROME_STYLES so it can never win a clash with a chrome
+// property. CHROME_STYLES is GENERATED DATA (atoms_tokens.gs); this wrapper is hand-written
+// once per language against it, not itself generated.
+function _cardChrome(innerHtml, recipe, extraStyle) {
+  return '<div style="' + (extraStyle || '') + CHROME_STYLES[recipe] + '">' + innerHtml + '</div>';
+}
+
 // ─── drive_image ─────────────────────────────────────────────────────────────
 // Converts a Drive file ID (or full Drive share URL) to the correct uc?export=view URL.
 _RENDERERS['drive_image'] = function(b) {

@@ -49,6 +49,28 @@
     --yellow: #ffd60a;
     --orange: #ff9f0a;
     --highlight-bg: rgba(255, 214, 10, 0.2);
+
+    /* Same alias-bridge pattern as --text-muted/--surface-2 above, for the report-cluster's
+       design tokens (atoms/design-tokens.yaml). Deliberately NOT in :root: undefined in light
+       mode means var(--a2ui-border,#eaeaea) uses the modern preset's own literal (unchanged,
+       2026-09-26 default-flip). Defined here means dark mode gets THIS theme's real dark
+       palette instead of the same white-card-on-dark-page bug the comment above already
+       names once (var() substitutes at use time, so this needs setting only here, not
+       repeated per token per component). Found via the metric_delta/entity_list chrome-
+       helper work (2026-09-26): report-cluster atoms with a FLAT --a2ui-* fallback (all of
+       them except metric_delta, which nested through --border by hand) rendered a light
+       card -- wrong background AND wrong, low-contrast text -- on a dark-themed GAS page.
+       No dedicated dark "faint"/"shadow" tier exists in this theme system; faint reuses
+       muted (same choice AtomStyles.html already makes for other dark-mode text tiers) and
+       shadow is dropped (a light-mode elevation cue reads as a stray halo on a dark surface). */
+    --a2ui-border: var(--border);
+    --a2ui-border-soft: var(--surface2);
+    --a2ui-surface: var(--surface);
+    --a2ui-surface-muted: var(--surface2);
+    --a2ui-text: var(--text);
+    --a2ui-muted: var(--muted);
+    --a2ui-faint: var(--muted);
+    --a2ui-shadow: none;
   }
 
   /* Terminal skin — the catalog brand palette (a2ui-private/spec/brand.md:
@@ -5295,6 +5317,17 @@ _RENDERERS['palette'] = function(b) {
   extra += _tokenCss(b);
   return '<style>:root{--a2ui-accent:' + _esc(accent) + ';--a2ui-accent2:' + _esc(accent2) + ';--a2ui-block-gap:' + _esc(gap) + ';' + extra + '}</style>';
 };
+
+// Wrap innerHtml in a <div style="..."> using a CLOSED-ENUM chrome recipe (see
+// atoms/design-tokens.yaml `recipes:`). No override parameter FOR CHROME, deliberately --
+// see _card_chrome's docstring in renderers/web_article.py (reviewed 2026-09-26,
+// chrome-helper-draft.md). extraStyle is component-owned layout (padding/display/min-width),
+// a different axis, appended before CHROME_STYLES so it can never win a clash with a chrome
+// property. CHROME_STYLES is GENERATED DATA (atoms_tokens.gs); this wrapper is hand-written
+// once per language against it, not itself generated.
+function _cardChrome(innerHtml, recipe, extraStyle) {
+  return '<div style="' + (extraStyle || '') + CHROME_STYLES[recipe] + '">' + innerHtml + '</div>';
+}
 
 // ─── drive_image ─────────────────────────────────────────────────────────────
 // Converts a Drive file ID (or full Drive share URL) to the correct uc?export=view URL.
@@ -26914,6 +26947,14 @@ var _TOKEN_PRESETS = {
 };
 var _TOKEN_SAFE = /^[#A-Za-z0-9_ .,()%\/-]{1,120}$/;
 
+// {recipe_name: css_string}, double-declaration pattern -- see atoms/design-tokens.yaml's
+// `recipes:` comment. Consumed by the hand-written _cardChrome() in atom.gs.
+var CHROME_STYLES = {
+  "card": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#ffffff;background:var(--a2ui-surface,#ffffff);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));",
+  "card-muted": "border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);",
+  "row": "border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);"
+};
+
 // `--a2ui-<name>:<value>;` for every token the palette block sets, in declared
 // order. Explicit fields beat the preset; unsafe values are dropped.
 function _tokenCss(b) {
@@ -27708,12 +27749,12 @@ _RENDERERS['metric_delta'] = function(b) {
   var dColor  = dtype === 'increase' ? '#10b981' : dtype === 'decrease' ? '#ef4444' : '#6b7280';
   var dBg     = dtype === 'increase' ? '#d1fae5' : dtype === 'decrease' ? '#fee2e2' : '#f3f4f6';
   var arrow   = dtype === 'increase' ? '↑' : dtype === 'decrease' ? '↓' : '→';
-  var period  = b.comparison_period ? '<div style="font-size:0.72rem;color:var(--a2ui-muted,var(--muted,#6b7280));margin-top:2px;">' + _esc(b.comparison_period) + '</div>' : '';
-  return '<div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid var(--a2ui-border,var(--border,#e5e7eb));border-radius:var(--a2ui-radius,12px);background:var(--a2ui-surface,var(--bg,#fff));box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));min-width:140px;">'
-    + '<div style="font-size:0.75rem;font-weight:600;color:var(--a2ui-muted,var(--muted,#6b7280));text-transform:uppercase;letter-spacing:0.05em;">' + label + '</div>'
-    + '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,var(--text,#111827));line-height:1.2;margin:4px 0;">' + current + '</div>'
+  var period  = b.comparison_period ? '<div style="font-size:0.72rem;color:var(--a2ui-muted,#666666);margin-top:2px;">' + _esc(b.comparison_period) + '</div>' : '';
+  var inner = '<div style="font-size:0.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;letter-spacing:0.05em;">' + label + '</div>'
+    + '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);line-height:1.2;margin:4px 0;">' + current + '</div>'
     + (delta ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:' + dBg + ';color:' + dColor + ';font-size:0.8rem;font-weight:600;width:fit-content;">' + arrow + ' ' + delta + '</span>' : '')
-    + period + '</div>';
+    + period;
+  return _cardChrome(inner, 'card', 'display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;');
 };
 
 // ─── action_required_card ─────────────────────────────────────────────────────

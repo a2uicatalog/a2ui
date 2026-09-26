@@ -30,7 +30,33 @@ def load():
     for p, vals in d["presets"].items():
         bad = set(vals) - names
         assert not bad, f"preset {p} names unknown tokens {bad}"
+    for r, props in d.get("recipes", {}).items():
+        bad = set(props.values()) - names
+        assert not bad, f"recipe {r} names unknown tokens {bad}"
     return d, order
+
+
+# border/border-* are shorthands: every use in this codebase is "1px solid <colour>", never a
+# different width or style, so the property's colour-only token value gets this prefix. Not
+# true of border-radius, background or box-shadow, which take the token's value as-is.
+_BORDER_PROPS = {"border", "border-top", "border-bottom", "border-left", "border-right"}
+
+
+def chrome_styles(d):
+    """{recipe_name: css_string} using the double-declaration pattern (plain value, then the
+    var()-wrapped override of the SAME property) for every property in every recipe. The
+    plain value is the `modern` preset's -- modern IS the default fallback (2026-09-26), so
+    the plain declaration and the var() fallback are always identical by construction."""
+    modern = d["presets"]["modern"]
+    out = {}
+    for recipe, props in d.get("recipes", {}).items():
+        css = ""
+        for prop, token in props.items():
+            v = modern[token]
+            prefix = "1px solid " if prop in _BORDER_PROPS else ""
+            css += f"{prop}:{prefix}{v};{prop}:{prefix}var(--a2ui-{token},{v});"
+        out[recipe] = css
+    return out
 
 
 def render_py(d, order):
@@ -40,6 +66,10 @@ import re
 TOKEN_ORDER = {json.dumps(order)}
 TOKEN_PRESETS = {json.dumps(d["presets"], indent=4)}
 _SAFE = re.compile(r"[{d["safe_chars"]}]{{1,{d["safe_max_len"]}}}")
+
+# {{recipe_name: css_string}}, double-declaration pattern -- see atoms/design-tokens.yaml's
+# `recipes:` comment. Consumed by the hand-written _card_chrome() in renderers/web_article.py.
+CHROME_STYLES = {json.dumps(chrome_styles(d), indent=4)}
 
 
 def token_css(b):
@@ -64,6 +94,10 @@ def render_gs(d, order):
 var _TOKEN_ORDER = {json.dumps(order)};
 var _TOKEN_PRESETS = {json.dumps(d["presets"], indent=2)};
 var _TOKEN_SAFE = /^[{safe}]{{1,{d["safe_max_len"]}}}$/;
+
+// {{recipe_name: css_string}}, double-declaration pattern -- see atoms/design-tokens.yaml's
+// `recipes:` comment. Consumed by the hand-written _cardChrome() in atom.gs.
+var CHROME_STYLES = {json.dumps(chrome_styles(d), indent=2)};
 
 // `--a2ui-<name>:<value>;` for every token the palette block sets, in declared
 // order. Explicit fields beat the preset; unsafe values are dropped.

@@ -44,6 +44,64 @@ presets:
     faint: "#8f8f8f"
     shadow: 0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)
 
+# Chrome recipes -- CLOSED enum, deliberately. A recipe names a chrome shape and which
+# token (or literal, for a non-tokenized property like a pill's always-round corners) each
+# CSS property uses. NOT free-form: a caller picks a recipe by name, never passes overrides
+# -- letting call sites override individual properties defeats the point (a future structural
+# change would need re-auditing every override again). Add a new recipe here if a real shape
+# doesn't fit; don't parameterize an existing one.
+#
+# gen_design_tokens.py emits these as DATA (ready-made CSS strings), never as a generated
+# function -- Python and GAS/JS have different string-interpolation and default-argument
+# semantics, so a generated function is a real drift risk a generated constant isn't. The
+# small wrapper that consumes this data (_card_chrome in Python, _cardChrome in GAS) is
+# hand-written once per language, reviewed 2026-09-26 (see chrome-helper-draft.md).
+#
+# Each property gets the double-declaration pattern: a plain literal declaration, then the
+# var()-wrapped override of the SAME property. CSS cascade: a client that can't parse var()
+# treats the second line as invalid and keeps the first (verified: Outlook's engine, old PDF
+# engines). Confirmed 2026-09-26: no live email/PDF send pipeline exists in this repo today,
+# and Google Chat renders through real headless Chromium (RENDER_ONLY_SURFACES in
+# a2ui-private/slack-compiler/classify.py) which fully supports var() -- so this is
+# defence-in-depth for a future email pipeline, not a fix for a live break today.
+recipes:
+  card:      # metric_delta, status_dashboard rows, entity_list cards -- bordered surface + shadow
+    border-radius: radius
+    border: border
+    background: surface
+    box-shadow: shadow
+  card-muted:   # status_dashboard's overall banner container, uptime_timeline's wrapper -- no shadow, muted fill
+    border-radius: radius
+    border: border
+    background: surface-muted
+  row:       # table headers, entity_list row dividers -- a hairline, no radius/surface/shadow
+    border-bottom: border-soft
+  # The 6 below cover the mechanical estate-wide sweep (2026-09-26, chrome-helper-draft.md
+  # step 3 review) -- found empirically by scanning every renderer function's outer-wrapper
+  # style for (radius, border, background) combinations that ALREADY reuse this same
+  # neutral-chrome value set, minus shadow (rare outside the original report cluster -- only
+  # `card`/`card-muted` above carry it, matching what those atoms already had). "-plain"
+  # variants have a border+radius but NO background property in the original code; adding
+  # one would be a visual change, not a refactor, so they stay backgroundless on purpose.
+  card-plain:      # radius + border, no fill -- e.g. metric_comparison_card, author_bio_card
+    border-radius: radius
+    border: border
+  card-flat:       # radius + border + white fill, no shadow -- e.g. actual_vs_estimate, toast_notification
+    border-radius: radius
+    border: border
+    background: surface
+  card-sm-plain:   # radius-sm + border, no fill -- e.g. form_input
+    border-radius: radius-sm
+    border: border
+  card-sm-white:   # radius-sm + border + white fill -- e.g. form
+    border-radius: radius-sm
+    border: border
+    background: surface
+  card-sm-muted:   # radius-sm + border + muted fill -- e.g. http_request_block
+    border-radius: radius-sm
+    border: border
+    background: surface-muted
+
 # A palette value is written into a <style> block, so only a conservative
 # character class is accepted (no ; { } : quotes < > or newlines). Explicit
 # ASCII class, matched in full, so Python and JS agree exactly.

@@ -1227,7 +1227,15 @@ _RENDERERS['github_activity_grid'] = function(b) {
 // 18. entity_list — structured entity/person list
 // ─────────────────────────────────────────────────────────
 _RENDERERS['entity_list'] = function(b) {
-  var entities = b.entities || [];
+  // Schema (atoms/schema.yaml) documents `items: [{name, subtitle, icon, status, meta}]`;
+  // this renderer's own richer shape is `entities: [{name, type, description, link,
+  // avatar_url, meta}]` (type-based colour, clickable card). Found 2026-09-26: a
+  // schema-faithful payload (items/subtitle/status) rendered an EMPTY grid here -- same
+  // class of bug as the 8-atom GAS field-alignment fix earlier that day. Both vocabularies
+  // now work: description/subtitle are aliases, status adds the pill schema payloads expect
+  // (alongside type's existing avatar colour, a different axis), icon overrides the
+  // avatar_url/initials fallback.
+  var entities = b.entities || b.items || [];
   var title    = b.title    || '';
 
   var typeColors = {
@@ -1236,6 +1244,14 @@ _RENDERERS['entity_list'] = function(b) {
     location:     '#34d399',
     product:      '#fb923c',
     event:        '#f472b6'
+  };
+  // Same palette as renderers/web_article.py's STATUS_COLORS, for cross-surface parity.
+  var statusColors = {
+    active:        ['#d1fae5', '#059669'],
+    inactive:      ['#f3f4f6', '#6b7280'],
+    error:         ['#fee2e2', '#dc2626'],
+    pending:       ['#fef9c3', '#ca8a04'],
+    'in-progress': ['#dbeafe', '#2563eb']
   };
 
   var html = '<div class="a2ui-entity-list">';
@@ -1252,9 +1268,11 @@ _RENDERERS['entity_list'] = function(b) {
       item += '<div class="a2ui-entity-card">';
     }
 
-    // Avatar
+    // Avatar: icon (schema) beats avatar_url beats initials.
     item += '<div class="a2ui-entity-avatar">';
-    if (entity.avatar_url) {
+    if (entity.icon) {
+      item += '<div class="a2ui-entity-initials" style="background:' + typeColor + ';">' + _esc(entity.icon) + '</div>';
+    } else if (entity.avatar_url) {
       item += '<img src="' + _esc(entity.avatar_url) + '" width="40" height="40" style="border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>';
       item += '<div class="a2ui-entity-initials" style="display:none;background:' + typeColor + ';">' + _esc((entity.name||'?').charAt(0).toUpperCase()) + '</div>';
     } else {
@@ -1266,7 +1284,12 @@ _RENDERERS['entity_list'] = function(b) {
     item += '<div class="a2ui-entity-info">';
     item += '<div class="a2ui-entity-name">' + _esc(entity.name || '') + '</div>';
     if (entity.type) item += '<span class="a2ui-entity-type" style="background:' + typeColor + '20;color:' + typeColor + ';border:1px solid ' + typeColor + '40;">' + _esc(entity.type) + '</span>';
-    if (entity.description) item += '<div class="a2ui-entity-desc">' + _esc(entity.description) + '</div>';
+    if (entity.status) {
+      var sc = statusColors[entity.status] || ['#f3f4f6', '#6b7280'];
+      item += '<span class="a2ui-entity-status" style="display:inline-block;font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:100px;background:' + sc[0] + ';color:' + sc[1] + ';">' + _esc(entity.status) + '</span>';
+    }
+    var desc = entity.description || entity.subtitle;
+    if (desc) item += '<div class="a2ui-entity-desc">' + _esc(desc) + '</div>';
     if (entity.meta) item += '<div class="a2ui-entity-meta">' + _esc(entity.meta) + '</div>';
     item += '</div>';
 

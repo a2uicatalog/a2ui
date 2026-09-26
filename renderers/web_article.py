@@ -10993,7 +10993,7 @@ _RENDERERS.update({t: _stub(t) for t in [
 # `palette` sets them. Names/fields/presets/whitelist are GENERATED from
 # atoms/design-tokens.yaml (scripts/gen_design_tokens.py) into _design_tokens.py
 # and the GAS twin atoms_tokens.gs -- edit the YAML, never a copy.
-def _load_token_css():
+def _load_design_tokens():
     # Loaded by file path, not `from renderers._design_tokens import ...`: this
     # module is imported both as `renderers.web_article` and as bare top-level
     # `web_article` (generate_atom_pages.py, cloud-run-renderer), and only the
@@ -11003,9 +11003,25 @@ def _load_token_css():
         "_a2ui_design_tokens", Path(__file__).resolve().parent / "_design_tokens.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.token_css
+    return module.token_css, module.CHROME_STYLES
 
-_token_css = _load_token_css()
+_token_css, _CHROME_STYLES = _load_design_tokens()
+
+
+def _card_chrome(inner_html: str, recipe: str, extra_style: str = "") -> str:
+    """Wrap `inner_html` in a <div style="..."> using a CLOSED-ENUM chrome recipe (see
+    atoms/design-tokens.yaml `recipes:`). No override parameter FOR CHROME PROPERTIES,
+    deliberately: a call site picks a named recipe, never patches radius/border/background/
+    shadow individually -- reviewed 2026-09-26, chrome-helper-draft.md. `extra_style` is a
+    DIFFERENT axis: plain, component-owned layout (padding, display, min-width, ...) that was
+    never meant to be shared across atoms in the first place; it can never touch a chrome
+    property because CHROME_STYLES is appended last and wins the cascade on any clash.
+    CHROME_STYLES is GENERATED DATA (ready CSS strings, double-declaration pattern), not a
+    generated function -- the Python/GAS twin (_cardChrome in atom.gs) is hand-written once
+    per language against that same data, since a generated function risks silent drift
+    between the two languages' string/default-arg semantics that a generated constant
+    doesn't have."""
+    return f'<div style="{extra_style}{_CHROME_STYLES[recipe]}">{inner_html}</div>'
 
 def _render_palette(b: dict) -> str:
     accent  = b.get("accent", "#6366f1")
@@ -11260,7 +11276,9 @@ def _render_metric_delta(b: dict) -> str:
     bg  = "#d1fae5" if dtype=="increase" else "#fee2e2" if dtype=="decrease" else "#f3f4f6"
     arr = "↑" if dtype=="increase" else "↓" if dtype=="decrease" else "→"
     delta_html = f'<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:{bg};color:{col};font-size:.8rem;font-weight:600;">{arr} {delta}</span>' if delta else ""
-    return f'<div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid var(--a2ui-border,#eaeaea);box-shadow:var(--a2ui-shadow,0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04));border-radius:var(--a2ui-radius,12px);background:var(--a2ui-surface,#ffffff);min-width:140px;"><div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;">{label}</div><div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);margin:4px 0;">{cur}</div>{delta_html}</div>'
+    inner = (f'<div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#666666);text-transform:uppercase;">{label}</div>'
+             f'<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#171717);margin:4px 0;">{cur}</div>{delta_html}')
+    return _card_chrome(inner, "card", "display:inline-flex;flex-direction:column;padding:16px 20px;min-width:140px;")
 
 def _render_review_callout(b: dict) -> str:
     rating, max_r = round(b.get("rating",5)), b.get("max_rating",5)
