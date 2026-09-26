@@ -770,6 +770,79 @@ function _brickKit() {
     }
     function noOcc(){return 0;}
 
+    // Canvas-2D fallback for real-parts models (spec/brick-parts-v0.1.md Phase 2, closing the v1 "needs WebGL"
+    // placeholder): a plain bounding-box outline per part, not the real triangle mesh -- the honest v1 simplification
+    // the WebGL Phase-2 comment already flagged as deferred. There is no glRenderer here to share a mesh cache with
+    // (this path only runs when WebGL is unavailable at all), so it keeps its own tiny cache of just {bounds,quant}
+    // per part id, fetched from the same PART_BASE the WebGL path uses -- the full mesh JSON is fetched either way
+    // (there is no bounds-only endpoint), the bounds field is just all this path reads out of it.
+    var partBoundsCache={};
+    function fetchPartBounds(id,cb){
+      var c=partBoundsCache[id];
+      if(c==='error'){cb(null);return;} if(c&&c!=='loading'){cb(c);return;} if(c==='loading')return;
+      if(typeof fetch!=='function'){partBoundsCache[id]='error';cb(null);return;}
+      partBoundsCache[id]='loading';
+      fetch(PART_BASE+id+'.json').then(function(r){if(!r.ok)throw 0;return r.json();})
+        .then(function(m){partBoundsCache[id]=m;cb(m);})
+        .catch(function(){partBoundsCache[id]='error';cb(null);});
+    }
+    // 6 faces of a box, each 4 corner indices into the 8-corner array below (idx = xi*4+yi*2+zi, xi/yi/zi in {0,1}
+    // selecting max over min per axis) -- same corner-selector shape as the WebGL boxGeo(), just picked explicitly
+    // since these corners are already real transformed points, not a unit cube scaled per-instance on the GPU.
+    var PART_BOX_FACES=[[0,1,3,2],[4,5,7,6],[0,4,5,1],[2,6,7,3],[0,4,6,2],[1,5,7,3]];
+    function genPartBox(e,ox,oy,oz,a,out){
+      var pmesh=partBoundsCache[e.p];
+      if(!pmesh||pmesh==='loading'||pmesh==='error'||!pmesh.bounds)return;
+      var tp=partTp(pmesh,e.r),b=pmesh.bounds,mn=b.min,mx=b.max,base=partEngineOf(e);
+      var cx=base[0]+ox,cy=base[1]+oy,cz=base[2]+oz,corners=[],ctr=[0,0,0],i,k;
+      for(var xi=0;xi<2;xi++)for(var yi=0;yi<2;yi++)for(var zi=0;zi<2;zi++){
+        var p=tp([xi?mx[0]:mn[0],yi?mx[1]:mn[1],zi?mx[2]:mn[2]]);
+        var w=[p[0]+cx,p[1]+cy,p[2]+cz];corners.push(w);
+        for(k=0;k<3;k++)ctr[k]+=w[k]/8;
+      }
+      PART_BOX_FACES.forEach(function(idx){
+        var v0=corners[idx[0]],v1=corners[idx[1]],v2=corners[idx[2]],v3=corners[idx[3]];
+        var ux=v1[0]-v0[0],uy=v1[1]-v0[1],uz=v1[2]-v0[2],wx=v2[0]-v0[0],wy=v2[1]-v0[1],wz=v2[2]-v0[2];
+        var nx=uy*wz-uz*wy,ny=uz*wx-ux*wz,nz=ux*wy-uy*wx,l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;
+        var fx=(v0[0]+v1[0]+v2[0]+v3[0])/4,fy=(v0[1]+v1[1]+v2[1]+v3[1])/4,fz=(v0[2]+v1[2]+v2[2]+v3[2])/4;
+        if(nx*(fx-ctr[0])+ny*(fy-ctr[1])+nz*(fz-ctr[2])<0){nx=-nx;ny=-ny;nz=-nz;}
+        pushF(out,[v0[0],v0[1],v0[2],v1[0],v1[1],v1[2],v2[0],v2[1],v2[2],v3[0],v3[1],v3[2]],[nx,ny,nz],e.c,15,a);
+      });
+    }
+    function paintFaces(lists){
+      vis.length=0;
+      for(var j=0;j<lists.length;j++){
+        var list=lists[j];
+        for(var i=0;i<list.length;i++){
+          var f=list[i];
+          if(f.n[0]*(camx-f.cx)+f.n[1]*(camy-f.cy)+f.n[2]*(camz-f.cz)<=0)continue;
+          proj(f.cx,f.cy,f.cz);
+          vis.push({f:f,d:P[2]});
+        }
+      }
+      vis.sort(function(a,b){return b.d-a.d;});
+      ctx.lineJoin='round';
+      var alpha=1;
+      for(var v=0;v<vis.length;v++){
+        var f=vis[v].f;
+        if(f.a!==alpha){ctx.globalAlpha=alpha=f.a;}
+        var q=0.5+0.56*Math.max(0,f.n[0]*LD[0]+f.n[1]*LD[1]+f.n[2]*LD[2]);
+        if(f.hl)q=Math.min(1.3,q*1.12+0.16);
+        var col=shade(f.c,q),p=f.p,n=p.length/3,sx=new Array(n),sy=new Array(n),k;
+        ctx.beginPath();
+        for(k=0;k<n;k++){proj(p[3*k],p[3*k+1],p[3*k+2]);sx[k]=P[0];sy[k]=P[1];k?ctx.lineTo(P[0],P[1]):ctx.moveTo(P[0],P[1]);}
+        ctx.closePath();
+        ctx.fillStyle=col;ctx.strokeStyle=col;ctx.lineWidth=0.8;
+        ctx.fill();ctx.stroke();
+        if(f.m){
+          ctx.beginPath();
+          for(k=0;k<4;k++)if(f.m&(1<<k)){var k2=(k+1)%4;ctx.moveTo(sx[k],sy[k]);ctx.lineTo(sx[k2],sy[k2]);}
+          ctx.strokeStyle=f.hl?'rgba(255,255,255,0.95)':'rgba(0,0,0,0.3)';ctx.lineWidth=f.hl?1.8:1;ctx.stroke();
+        }
+      }
+      ctx.globalAlpha=1;
+    }
+
     // Real parts (spec/brick-parts-v0.1.md, Phase 2): parallels load() for the bricks path, but positions are
     // already absolute engine coordinates once converted (partEngineOf, LDU x,y,z -> engine x,y,z), not a stud
     // grid index, so there is no `bricks`/`grid`/`normalise()` here -- PM plays M's role for camera/baseplate sizing.
@@ -798,6 +871,10 @@ function _brickKit() {
           steps:maxStep,cx:(mn[0]+mx[0])/2,cz:(mn[2]+mx[2])/2,cy:(mn[1]+mx[1])/2,
           bricks:list,trimmed:0,studs:0};   // bricks/trimmed/studs aliased so _brickMount's stepText()/info() readers work unchanged
       if(gr)gr.setPartsModel(list);
+      else{
+        var ids={};list.forEach(function(e){ids[e.p]=1;});
+        Object.keys(ids).forEach(function(id){fetchPartBounds(id,function(){dirtyView=true;})});
+      }
       if(o.step>PM.steps)o.step=PM.steps;
       if(onStats)onStats(info());
     }
@@ -901,18 +978,29 @@ function _brickKit() {
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
-      // Real-parts models need WebGL for now (v1: no canvas-2D fallback geometry yet, see the brief's Phase 2
-      // notes) -- an honest message beats a broken or empty scene. Procedural `bricks` models are unaffected
-      // and keep the full canvas-2D painter below.
+      // Real-parts models on a browser without WebGL (spec/brick-parts-v0.1.md Phase 2): a bounding-box outline
+      // per part, not the real triangle mesh -- genPartBox reads each part's baked bounds (fetched lazily by
+      // loadParts via fetchPartBounds) rather than attempting full 2D triangle rasterisation. Parts whose bounds
+      // haven't loaded yet are skipped this frame (same v1 policy as the WebGL path's own mesh loading).
       if(usingParts){
         ctx.fillStyle=o.bg||'#eef1f5';ctx.fillRect(0,0,W,H);
-        ctx.fillStyle='#55636f';ctx.font='13px system-ui,-apple-system,Segoe UI,sans-serif';ctx.textAlign='center';
-        ctx.fillText('This model needs WebGL, which this browser does not have.',W/2,H/2);
+        setCamera();
+        var pf=[];
+        for(var pi=0;pi<N;pi++){
+          if(st[pi]<0)continue;
+          var pe=o.partsModel[pi],pa=st[pi]===2?1:(st[pi]===1?AL[pi]:1);
+          genPartBox(pe,OX[pi],OY[pi],OZ[pi],pa,pf);
+        }
+        if(pf.length)paintFaces([pf]);
+        else{
+          ctx.fillStyle='#55636f';ctx.font='13px system-ui,-apple-system,Segoe UI,sans-serif';ctx.textAlign='center';
+          ctx.fillText('Loading part outlines…',W/2,H/2);
+        }
         return;
       }
       if(o.bg){ctx.fillStyle=o.bg;ctx.fillRect(0,0,W,H);}
       setCamera();
-      var i,j,f;
+      var i,j;
       /* shadows: brick boxes projected along the light onto the baseplate, filled once so overlaps do not double up */
       ctx.save();
       ctx.beginPath();
@@ -936,37 +1024,7 @@ function _brickKit() {
       /* collect faces: cached static geometry + bricks currently in motion */
       dyn.length=0;
       for(i=0;i<N;i++)if(st[i]===1)genBrick(bricks[i],noOcc,OX[i],OY[i],OZ[i],AL[i],dyn);
-      vis.length=0;
-      for(j=0;j<3;j++){
-        var list=j===2?hl:j?dyn:statics;
-        for(i=0;i<list.length;i++){
-          f=list[i];
-          if(f.n[0]*(camx-f.cx)+f.n[1]*(camy-f.cy)+f.n[2]*(camz-f.cz)<=0)continue;
-          proj(f.cx,f.cy,f.cz);
-          vis.push({f:f,d:P[2]});
-        }
-      }
-      vis.sort(function(a,b){return b.d-a.d;});
-      ctx.lineJoin='round';
-      var alpha=1;
-      for(i=0;i<vis.length;i++){
-        f=vis[i].f;
-        if(f.a!==alpha){ctx.globalAlpha=alpha=f.a;}
-        var q=0.5+0.56*Math.max(0,f.n[0]*LD[0]+f.n[1]*LD[1]+f.n[2]*LD[2]);
-        if(f.hl)q=Math.min(1.3,q*1.12+0.16);
-        var col=shade(f.c,q),p=f.p,n=p.length/3,sx=new Array(n),sy=new Array(n),k;
-        ctx.beginPath();
-        for(k=0;k<n;k++){proj(p[3*k],p[3*k+1],p[3*k+2]);sx[k]=P[0];sy[k]=P[1];k?ctx.lineTo(P[0],P[1]):ctx.moveTo(P[0],P[1]);}
-        ctx.closePath();
-        ctx.fillStyle=col;ctx.strokeStyle=col;ctx.lineWidth=0.8;
-        ctx.fill();ctx.stroke();
-        if(f.m){
-          ctx.beginPath();
-          for(k=0;k<4;k++)if(f.m&(1<<k)){var k2=(k+1)%4;ctx.moveTo(sx[k],sy[k]);ctx.lineTo(sx[k2],sy[k2]);}
-          ctx.strokeStyle=f.hl?'rgba(255,255,255,0.95)':'rgba(0,0,0,0.3)';ctx.lineWidth=f.hl?1.8:1;ctx.stroke();
-        }
-      }
-      ctx.globalAlpha=1;
+      paintFaces([statics,dyn,hl]);
     }
 
     function resize(){
