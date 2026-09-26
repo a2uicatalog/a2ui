@@ -654,7 +654,7 @@ a{color:inherit}
         gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);gl.viewport(0,0,smSize,smSize);
         gl.clearColor(1,1,1,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
         gl.cullFace(gl.FRONT);gl.useProgram(depth.p);
-        gl.uniformMatrix4fv(depth.u.uVP,false,lightVP);both(depth);bothParts(depth);
+        gl.uniformMatrix4fv(depth.u.uVP,false,lightVP);both(depth);bothParts(depth);drawPartStuds(depth);
         gl.cullFace(gl.BACK);gl.bindFramebuffer(gl.FRAMEBUFFER,null);shadowDirty=false;
       }
       gl.viewport(0,0,canvas.width,canvas.height);
@@ -674,6 +674,7 @@ a{color:inherit}
       gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,smTex);gl.uniform1i(prog.u.uSM,0);
       both(prog);
       bothParts(prog);
+      drawPartStuds(prog);
       drawPartEdges();
     }
     /* ---------- real parts (spec/brick-parts-v0.1.md, Phase 2): rotation baked into geometry on the CPU once per
@@ -695,11 +696,26 @@ a{color:inherit}
         .then(function(m){partMeshCache[id]=m;cb(m);})
         .catch(function(){partMeshCache[id]='error';cb(null);});
     }
-    function buildPartGeo(pmesh,r){
+    // Shared LDU->engine transform (rotation baked into the CPU-side vertex positions, see the comment above --
+    // no per-instance GPU rotation). Factored out of buildPartGeo so buildPartStuds (connector stud positions,
+    // same coordinate space) can reuse it exactly rather than re-deriving it.
+    function partTp(pmesh,r){
       var Rm=PART_ROT[r],Sc=1/20,C=[Sc,0,0,0,-Sc,0,0,0,Sc],T=[0,0,0,0,0,0,0,0,0],i,j,k,s;
       for(i=0;i<3;i++)for(j=0;j<3;j++){s=0;for(k=0;k<3;k++)s+=C[i*3+k]*Rm[k*3+j];T[i*3+j]=s;}
-      var q=pmesh.quant,v=[],idx=[],n=0;
-      function tp(p){return [T[0]*p[0]/q+T[1]*p[1]/q+T[2]*p[2]/q,T[3]*p[0]/q+T[4]*p[1]/q+T[5]*p[2]/q,T[6]*p[0]/q+T[7]*p[1]/q+T[8]*p[2]/q];}
+      var q=pmesh.quant;
+      return function(p){return [T[0]*p[0]/q+T[1]*p[1]/q+T[2]*p[2]/q,T[3]*p[0]/q+T[4]*p[1]/q+T[5]*p[2]/q,T[6]*p[0]/q+T[7]*p[1]/q+T[8]*p[2]/q];};
+    }
+    // Connector studs (spec/brick-parts-v0.1.md Phase 2): local offsets only, in the same engine space as
+    // buildPartGeo's vertices -- the shared unit `stud` mesh (studGeo(), same one the procedural box/stud system
+    // uses) is instanced at partEngineOf(instance)+offset, so no per-part stud geometry is baked, just positions.
+    function buildPartStuds(pmesh,r){
+      var studs=pmesh.connectors&&pmesh.connectors.studs;
+      if(!studs||!studs.length)return [];
+      var tp=partTp(pmesh,r);
+      return studs.map(function(s){return tp(s.pos);});
+    }
+    function buildPartGeo(pmesh,r){
+      var tp=partTp(pmesh,r),v=[],idx=[],n=0;
       (pmesh.triangles||[]).forEach(function(g){
         var pos=g.pos;
         for(i=0;i<pos.length;i+=3){
@@ -759,6 +775,21 @@ a{color:inherit}
       });
       upload(sKey,sb,gl.STATIC_DRAW);
       var out={mesh:m,edgeVB:evb,edgeCount:g.ev.length/6,sKey:sKey,aKey:aKey,n:n};
+      var studLocal=buildPartStuds(grp.mesh,grp.r);
+      if(studLocal.length){
+        var sN=studLocal.length,total=n*sN,ssb=new Float32Array(total*9);
+        grp.entries.forEach(function(row,j){
+          var p=partEngineOf(row.e),c=linRGB(row.e.c);
+          studLocal.forEach(function(off,k){
+            var o=(j*sN+k)*9;
+            ssb.set([p[0]+off[0],p[1]+off[1],p[2]+off[2], 0,0,0, c[0],c[1],c[2]],o);
+          });
+        });
+        var studSKey='pgss'+(partBufSeq++),studAKey='pgsa'+(partBufSeq++);
+        buf[studSKey]=gl.createBuffer();buf[studAKey]=gl.createBuffer();
+        upload(studSKey,ssb,gl.STATIC_DRAW);
+        out.studSKey=studSKey;out.studAKey=studAKey;out.studCount=total;out.studPerPart=sN;
+      }
       partGeomCache[grp.key]=out;return out;
     }
     // Per-frame animation state (called from the same status()-driven loop as bricks). st/OX/OY/OZ/AL are indexed
@@ -774,6 +805,15 @@ a{color:inherit}
           a4[o]=OX[i];a4[o+1]=OY[i];a4[o+2]=OZ[i];a4[o+3]=a;
         });
         upload(geo.aKey,a4,gl.DYNAMIC_DRAW);
+        if(geo.studCount){
+          var sN=geo.studPerPart,sa4=new Float32Array(geo.studCount*4);
+          partsTris+=studTris*geo.studCount;
+          grp.entries.forEach(function(row,j){
+            var i=row.idx,a=st[i]<0?0:st[i]===2?3:st[i]===1?AL[i]:1;
+            for(var k=0;k<sN;k++){var o=(j*sN+k)*4;sa4[o]=OX[i];sa4[o+1]=OY[i];sa4[o+2]=OZ[i];sa4[o+3]=a;}
+          });
+          upload(geo.studAKey,sa4,gl.DYNAMIC_DRAW);
+        }
       });
       shadowDirty=true;
     }
@@ -782,6 +822,17 @@ a{color:inherit}
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo)return;
         drawSet(P,geo.mesh,geo.sKey,geo.aKey,geo.n);
+      });
+    }
+    // Connector studs (spec/brick-parts-v0.1.md Phase 2 fast-follow): drawn as a separate pass, reusing the shared
+    // unit `stud` mesh at uKind=1 (the procedural stud shading path -- cylindrical AO/edge, no box-scaling of aP)
+    // so they read identically to the procedural system's own studs.
+    function drawPartStuds(P){
+      if(!partGroups)return;
+      gl.uniform1f(P.u.uKind,1);
+      partGroups.forEach(function(grp){
+        var geo=partGeomCache[grp.key];if(!geo||!geo.studCount)return;
+        drawSet(P,stud,geo.studSKey,geo.studAKey,geo.studCount);
       });
     }
     function drawPartEdges(){
