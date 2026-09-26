@@ -31,7 +31,8 @@ ROOT = Path(__file__).resolve().parent.parent
 TARGET = ROOT / "renderers" / "web_article.py"
 
 BORDER = {"#e5e7eb": "border", "#e0e0e0": "border", "#e2e8f0": "border",
-          "#dadce0": "border", "#d1d5db": "border", "#eaeaea": "border"}
+          "#dadce0": "border", "#d1d5db": "border", "#eaeaea": "border",
+          "#f3f4f6": "border-soft", "#f1f5f9": "border-soft"}
 BG = {"#fff": "surface", "#ffffff": "surface",
       "#f9fafb": "surface-muted", "#fafafa": "surface-muted", "#f8f9fa": "surface-muted"}
 RADIUS = {"8": "radius", "10": "radius", "12": "radius", "14": "radius",

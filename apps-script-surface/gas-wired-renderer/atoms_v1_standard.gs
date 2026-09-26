@@ -74,7 +74,7 @@ _RENDERERS['Row'] = function(b) {
 };
 
 _RENDERERS['Card'] = function(b) {
-  return '<div class="asw-v1-card" style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:20px;margin:1rem 0;">' +
+  return '<div class="asw-v1-card" style="border:1px solid var(--border,#e5e7eb);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">' +
          renderAtoms(b.blocks || []) + '</div>';
 };
 

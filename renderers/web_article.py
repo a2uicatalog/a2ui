@@ -6757,7 +6757,7 @@ def _render_notification_stack(b: dict) -> str:
 
     title_html = (
         f'<div style="font-size:0.82rem;font-weight:700;color:#374151;'
-        f'padding:0 14px 8px;border-bottom:1px solid #f3f4f6;">{title}</div>'
+        f'padding:0 14px 8px;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">{title}</div>'
     ) if title else ""
 
     rows = ""
@@ -11599,7 +11599,7 @@ def _render_agenda_block(b: dict) -> str:
     slots_html = ''
     for s in slots:
         bg = type_colors.get(s.get('type',''), '#fff')
-        slots_html += (f'<div style="display:flex;border-bottom:1px solid #f3f4f6;">'
+        slots_html += (f'<div style="display:flex;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                        f'<div style="flex:0 0 72px;padding:12px 8px;font-size:12px;font-weight:600;color:{_esc(accent)};'
                        f'border-right:2px solid {_esc(accent)};text-align:right;">{_esc(s.get("time",""))}</div>'
                        f'<div style="flex:1;padding:10px 14px;background:{bg};">'
@@ -12612,7 +12612,7 @@ _RENDERERS['follow_cta'] = _render_follow_cta
 def _render_footnote(b: dict) -> str:
     number = b.get('number', 1)
     text = b.get('text', '')
-    return (f'<div id="fn{number}" style="border-top:1px solid #f3f4f6;padding:6px 0;'
+    return (f'<div id="fn{number}" style="border-top:1px solid #f1f1f1;border-top:1px solid var(--a2ui-border-soft,#f1f1f1);padding:6px 0;'
             f'font-size:0.82rem;color:#6b7280;display:flex;gap:8px;align-items:flex-start;">'
             f'<span style="font-weight:700;flex-shrink:0;">[{number}]</span>'
             f'<span>{_md_inline(text)}</span></div>')
@@ -12983,7 +12983,7 @@ def _render_label_value_grid(b: dict) -> str:
     for item in items:
         label = item.get('label', '') if isinstance(item, dict) else str(item)
         value = item.get('value', '') if isinstance(item, dict) else ''
-        cells += (f'<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+        cells += (f'<div style="padding:10px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                   f'<div style="font-size:0.75rem;color:#9ca3af;font-weight:600;text-transform:uppercase;'
                   f'letter-spacing:0.05em;margin-bottom:2px;">{_esc(label)}</div>'
                   f'<div style="font-size:0.9rem;font-weight:600;color:#111827;">{_esc(str(value))}</div></div>')
@@ -13425,7 +13425,7 @@ def _render_related_articles(b: dict) -> str:
         url = item.get('url', '#')
         label = item.get('title') or item.get('label', '')
         desc = item.get('description') or item.get('subtitle', '')
-        rows += (f'<a href="{_esc(url)}" style="display:block;padding:10px 0;border-bottom:1px solid #f3f4f6;'
+        rows += (f'<a href="{_esc(url)}" style="display:block;padding:10px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);'
                  f'text-decoration:none;">'
                  f'<div style="color:#7c3aed;font-weight:600;font-size:0.88rem;">→ {_esc(label)}</div>'
                  f'{"<div style=font-size:0.8rem;color:#9ca3af;margin-top:2px;>"+_esc(desc)+"</div>" if desc else ""}'
@@ -13572,7 +13572,7 @@ def _render_social_feed_embed(b: dict) -> str:
     items = ''
     for post in posts[:3]:
         txt = post if isinstance(post, str) else post.get('text', '')
-        items += (f'<div style="border-bottom:1px solid #f3f4f6;padding:8px 0;'
+        items += (f'<div style="border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);padding:8px 0;'
                   f'font-size:0.84rem;color:#374151;">{_esc(txt)}</div>')
     return (f'<div style="border:1px solid #e5e7eb;border-radius:12px;padding:14px 18px;max-width:400px;margin:1rem 0;">'
             f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-weight:700;">'
@@ -14037,7 +14037,7 @@ def _render_capability_checklist(b: dict) -> str:
         has = item.get('has', None) if isinstance(item, dict) else None
         icon = '✅' if has is True else '❌' if has is False else '⬜'
         rows += (f'<li style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;'
-                 f'border-bottom:1px solid #f3f4f6;font-size:0.88rem;">'
+                 f'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.88rem;">'
                  f'<span>{icon}</span><span style="color:#374151;">{_md_inline(text)}</span></li>')
     title_html = f'<div style="font-weight:700;margin-bottom:8px;">{_esc(title)}</div>' if title else ''
     return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;margin:1rem 0;">'
@@ -14273,7 +14273,7 @@ def _render_live_aggregator(b: dict) -> str:
     uid = _wa_uid(b)
     title = b.get('title', 'Live Feed')
     sources = b.get('sources', [])
-    items_html = ''.join(f'<div style="padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:0.84rem;">'
+    items_html = ''.join(f'<div style="padding:8px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.84rem;">'
                          f'<span style="color:#9ca3af;font-size:0.75rem;">{_esc(s.get("timestamp",""))}</span> '
                          f'{_md_inline(s.get("text",""))}</div>'
                          for s in sources)
@@ -21028,7 +21028,7 @@ def _render_drive_folder_contents(b: dict) -> str:
         name = _esc(item.get('name', ''))
         url = _esc(item.get('url', '#'))
         rows += ('<div style="display:flex;align-items:center;gap:8px;padding:6px 0;'
-                 'border-bottom:1px solid #f3f4f6;">'
+                 'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                  '<span>' + icon + '</span>'
                  '<a href="' + url + '" target="_blank" rel="noopener noreferrer" '
                  'style="font-size:0.875rem;color:#374151;text-decoration:none;">' + name + '</a>'
@@ -21053,7 +21053,7 @@ def _render_drive_recent_files(b: dict) -> str:
         ts = _esc(item.get('modified', item.get('timestamp', '')))
         url = _esc(item.get('url', '#'))
         rows += ('<div style="display:flex;align-items:center;gap:10px;padding:8px 0;'
-                 'border-bottom:1px solid #f3f4f6;">'
+                 'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                  '<span style="font-size:1.1rem;">' + icon + '</span>'
                  '<div style="flex:1;min-width:0;">'
                  '<a href="' + url + '" style="font-size:0.875rem;font-weight:600;color:#374151;'
@@ -21099,7 +21099,7 @@ def _render_gmail_inbox(b: dict) -> str:
         ts = _esc(msg.get('date', msg.get('timestamp', '')))
         unread = msg.get('unread', False)
         weight = '700' if unread else '400'
-        rows += ('<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+        rows += ('<div style="padding:10px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                  '<div style="display:flex;justify-content:space-between;align-items:baseline;">'
                  '<span style="font-size:0.875rem;font-weight:' + weight + ';color:#111827;">'
                  + sender + '</span>'
@@ -21136,7 +21136,7 @@ def _render_gmail_unread_count(b: dict) -> str:
     items = ''
     for label, count in counts.items():
         items += ('<div style="display:flex;justify-content:space-between;align-items:center;'
-                  'padding:6px 0;border-bottom:1px solid #f3f4f6;">'
+                  'padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                   '<span style="font-size:0.875rem;color:#374151;">' + _esc(str(label)) + '</span>'
                   '<span style="padding:2px 10px;border-radius:12px;background:' + accent + ';'
                   'color:#fff;font-size:0.78rem;font-weight:700;">' + _esc(str(count)) + '</span></div>')
@@ -21353,7 +21353,7 @@ def _render_ai_build_trace(b: dict) -> str:
     for k, v in stats:
         if v and v != '0':
             rows += ('<div style="display:flex;justify-content:space-between;padding:4px 0;'
-                     'border-bottom:1px solid #f3f4f6;font-size:0.82rem;">'
+                     'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.82rem;">'
                      '<span style="color:#6b7280;">' + k + '</span>'
                      '<span style="font-weight:600;color:#374151;">' + _esc(str(v)) + '</span></div>')
     return ('<div style="margin:1rem 0;padding:14px 18px;border:1px solid #e5e7eb;border-radius:10px;'
@@ -22171,7 +22171,7 @@ def _render_stagger_list(b: dict) -> str:
         text = _esc(str(item) if isinstance(item, str) else item.get('text', item.get('label', '')))
         dly = f'{i * stagger:.2f}s'
         rows += ('<div style="opacity:0;animation:' + uid + ' 0.4s ease ' + dly + ' forwards;'
-                 'padding:8px 0;font-size:0.9rem;color:#374151;border-bottom:1px solid #f3f4f6;">'
+                 'padding:8px 0;font-size:0.9rem;color:#374151;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                  + text + '</div>')
     return '<style>' + kf + '</style><div style="margin:1rem 0;">' + rows + '</div>'
 _RENDERERS["stagger_list"] = _render_stagger_list
@@ -22188,7 +22188,7 @@ def _render_step_reveal_sequence(b: dict) -> str:
         dly = f'{i * 0.15:.2f}s'
         rows += ('<div style="opacity:0;transform:translateX(-16px);'
                  'animation:' + uid + 'sl 0.4s ease ' + dly + ' forwards;'
-                 'display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+                 'display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                  '<div style="width:28px;height:28px;border-radius:50%;background:#6366f1;'
                  'color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;'
                  'justify-content:center;flex-shrink:0;">' + str(i + 1) + '</div>'
@@ -22787,7 +22787,7 @@ def _render_multi_surface(b: dict) -> str:
         icon = {'web': '🌐', 'meet-stage': '📽️', 'google-apps-script-web': '⚙️',
                 'googlechat': '💬', 'email': '📧', 'pdf': '📄'}.get(surface, '●')
         rows += ('<div style="display:flex;align-items:center;gap:10px;padding:8px 0;'
-                 'border-bottom:1px solid #f3f4f6;">'
+                 'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">'
                  '<span style="font-size:1rem;">' + icon + '</span>'
                  '<div><div style="font-size:0.875rem;font-weight:600;color:#374151;">' + label + '</div>'
                  '<div style="font-size:0.72rem;color:#9ca3af;">' + surface + '</div></div></div>')
@@ -22805,7 +22805,7 @@ def _render_atom_anatomy(b: dict) -> str:
     field_rows = ''
     for k, v in list(fields.items())[:8]:
         field_rows += ('<div style="display:flex;justify-content:space-between;padding:4px 0;'
-                       'border-bottom:1px solid #f3f4f6;font-size:0.82rem;">'
+                       'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.82rem;">'
                        '<span style="font-weight:600;color:#374151;font-family:ui-monospace,monospace;">'
                        + _esc(k) + '</span>'
                        '<span style="color:#9ca3af;">' + _esc(str(v)) + '</span></div>')

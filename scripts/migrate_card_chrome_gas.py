@@ -26,10 +26,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 GAS_DIR = ROOT / "apps-script-surface" / "gas-wired-renderer"
-FILES = [GAS_DIR / "atom.gs", GAS_DIR / "atoms_charts.gs"]
+# Every renderer source the bundle actually ships (scripts/gen_mcp_apps_bundle.py's own
+# NON_RENDERER_GS list, mirrored here) -- the first version of this script only scanned 2 of
+# 41 files, found retroactively while reconciling web/GAS token coverage (2026-09-26).
+_NON_RENDERER_GS = {"PackMap.gs", "atoms_v1_decode.gs", "atoms_wired_expand.gs",
+                    "atoms_wired_render.gs", "atoms_scene_data.gs", "atoms_tokens.gs",
+                    "atoms_schema_snapshot.gs"}
+FILES = [GAS_DIR / "atom.gs"] + sorted(
+    f for f in GAS_DIR.glob("atoms_*.gs") if f.name not in _NON_RENDERER_GS)
 
 BORDER = {"#e5e7eb": "border", "#e0e0e0": "border", "#e2e8f0": "border",
-          "#dadce0": "border", "#d1d5db": "border", "#eaeaea": "border"}
+          "#dadce0": "border", "#d1d5db": "border", "#eaeaea": "border",
+          "#f3f4f6": "border-soft", "#f1f5f9": "border-soft"}
 BG = {"#fff": "surface", "#ffffff": "surface",
       "#f9fafb": "surface-muted", "#fafafa": "surface-muted", "#f8f9fa": "surface-muted"}
 RADIUS = {"8": "radius", "10": "radius", "12": "radius", "14": "radius",

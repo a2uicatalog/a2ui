@@ -190,7 +190,7 @@ _RENDERERS['take_away_card'] = function(b) {
 _RENDERERS['next_step_strip'] = function(b) {
   var steps  = b.steps || [];
   var accent = b.accent || '#6366f1';
-  var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;overflow:hidden;border:1px solid var(--border);">';
+  var html = '<div style="display:flex;gap:0;margin:1.5rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border);">';
   steps.forEach(function(s, i) {
     var isLast = i === steps.length - 1;
     html += '<div style="flex:1;padding:20px 18px;background:var(--surface);' + (!isLast ? 'border-right:1px solid var(--border);' : '') + '">'
@@ -254,7 +254,7 @@ _RENDERERS['renderer_stats'] = function(b) {
   var stats  = b.stats || [];
   var accent = b.accent || '#6366f1';
   var sub    = b.sub || '';
-  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin:1rem 0;">';
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1rem 0;">';
   stats.forEach(function(s) {
     html += '<div style="padding:20px 16px;background:var(--surface);text-align:center;">'
       + '<div style="font-size:1.7rem;font-weight:900;color:' + accent + ';line-height:1;">' + _esc(String(s.value || '')) + '</div>'

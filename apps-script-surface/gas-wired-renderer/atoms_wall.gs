@@ -200,7 +200,7 @@ _RENDERERS['wall_elevation'] = function(b) {
     _wallStatRow('Build time (' + calc.builders + ' builder' + (calc.builders === 1 ? '' : 's') + ')',
       calc.buildDaysSelected.toFixed(1) + ' day' + (calc.buildDaysSelected === 1 ? '' : 's'));
 
-  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:8px;background:var(--surface,#fff);">' +
+  return '<div style="margin:1rem 0;padding:14px 16px;border:1px solid var(--border,#e2e8f0);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:var(--surface,#fff);">' +
     _wallSvg(calc) +
     '<div style="margin-top:10px;">' + stats + '</div>' +
     advisories +

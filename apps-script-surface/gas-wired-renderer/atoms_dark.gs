@@ -21,7 +21,7 @@ _RENDERERS['dark_hero'] = function(b) {
   var align    = b.align     || 'center';
   var isCenter = align === 'center';
 
-  return '<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;">' +
+  return '<div style="padding:56px 24px 48px;text-align:' + align + ';background:#0f172a;border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
     (badge
       ? '<div style="display:inline-block;margin-bottom:18px;padding:5px 14px;' +
         'border:1px solid rgba(255,255,255,0.18);border-radius:99px;' +

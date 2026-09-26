@@ -1414,7 +1414,7 @@ _RENDERERS['checklist_interactive'] = function(b) {
   var items = b.items || [];
   var lis = items.map(function(item){
     var text = typeof item === 'string' ? item : (item.text || item.label || '');
-    return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f3f4f6;">' +
+    return '<li style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);">' +
       '<input type="checkbox" style="width:16px;height:16px;accent-color:#7c3aed;cursor:pointer;">' +
       '<span style="font-size:0.88rem;color:#374151;">' + _esc(text) + '</span></li>';
   }).join('');
@@ -2111,7 +2111,7 @@ _RENDERERS['series_overview_card'] = function(b) {
     var bg = p.current ? '#7c3aed' : '#f3f4f6';
     var color = p.current ? '#fff' : '#6b7280';
     var textStyle = p.current ? 'font-weight:700;color:#7c3aed;' : 'color:#374151;';
-    return '<a href="' + _esc(p.url||'#') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;text-decoration:none;">' +
+    return '<a href="' + _esc(p.url||'#') + '" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);text-decoration:none;">' +
       '<span style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;background:' + bg + ';color:' + color + ';">' + (i+1) + '</span>' +
       '<span style="font-size:0.85rem;' + textStyle + '">' + _esc(p.title||'') + '</span></a>';
   }).join('');

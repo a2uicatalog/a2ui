@@ -769,7 +769,7 @@ _RENDERERS['drive_file_card'] = function(b) {
   return (
     '<div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:10px;' +
       'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-family:\'Inter\',system-ui,sans-serif;">' +
-    '<div style="width:44px;height:44px;border-radius:8px;background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
+    '<div style="width:44px;height:44px;border-radius:12px;border-radius:var(--a2ui-radius,12px);background:' + mi.c + ';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">' + mi.l + '</div>' +
     '<div style="flex:1;min-width:0;">' +
       '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + _esc(name) + '</div>' +
       (desc ? '<div style="font-size:0.72rem;color:#64748b;margin-top:3px;">' + _esc(desc) + '</div>' : '') +
@@ -932,7 +932,7 @@ _RENDERERS['sla_timer_display'] = function(b) {
   var stateLabel = state === 'breach' ? 'BREACH' : state === 'warn' ? 'WARN' : 'OK';
   var pulse      = state === 'breach' ? 'animation:a2ui-pulse 1s infinite;' : '';
 
-  return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;padding:28px 32px;font-family:system-ui,sans-serif;">' +
+  return '<div style="background:#0f172a;border:1px solid ' + stateColor + '33;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:28px 32px;font-family:system-ui,sans-serif;">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">' +
       '<div>' +
         '<span style="display:inline-block;background:#ef4444;color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.1em;padding:3px 10px;border-radius:4px;margin-right:8px;">' + _esc(severity) + '</span>' +
