@@ -725,7 +725,9 @@
     "Show a record for each booking, order or case with its date, status and owner.",
     "Give me the history of treatments, payments or visits, one row each with the date.",
     "Lay out results in columns so two or more people or items can be compared side by side.",
-    "Show which items are due soon with the due date next to each."
+    "Show which items are due soon with the due date next to each.",
+    "Which orders, repairs or claims are still open, and who is handling each?",
+    "Set out fees, hours or scores for several people or options in rows and columns."
    ]
   },
   {
@@ -1450,7 +1452,10 @@
    "intent_phrases": [
     "I need to show a big number that stands out, with what it means and if it's going up or down.",
     "Can I get a stylish way to display key metrics that grabs attention, like a highlight?",
-    "Show me a prominent display for a number that also tells me how it changed recently."
+    "Show me a prominent display for a number that also tells me how it changed recently.",
+    "How many appointments, tickets or open cases are there right now?",
+    "What has the project cost so far?",
+    "Show the one number people ask about most, such as total spend or bookings today."
    ]
   },
   {
@@ -1902,7 +1907,9 @@
     "I need a way to see all my project tasks and mark them done.",
     "Help me track what's urgent, who's doing what, and when it's due.",
     "Show me my to-do list with cool visual flair and quick updates.",
-    "Show what still needs doing for each person, room or shift, with a way to tick things off."
+    "Show what still needs doing for each person, room or shift, with a way to tick things off.",
+    "What is still outstanding for a room, a shift or a person?",
+    "Show the work left to do, narrowed to one kind of task."
    ]
   },
   {
@@ -7158,7 +7165,9 @@
    "intent_phrases": [
     "I need to show sales figures over time with distinct categories.",
     "How can I visualize user engagement by feature in our app?",
-    "We want to compare performance metrics across different marketing campaigns."
+    "We want to compare performance metrics across different marketing campaigns.",
+    "Break a total down by team, month or category so the biggest part stands out.",
+    "Compare spend or counts across several groups."
    ]
   },
   {
@@ -8067,7 +8076,9 @@
     "I want to create a simple feedback submission area for users.",
     "Collect a few details from a customer, such as their name, a date and a preference, and submit them.",
     "Let someone request an appointment, a quote or a booking by filling in some fields.",
-    "Capture a short set of inputs, like servings, quantity or budget, and act on them."
+    "Capture a short set of inputs, like servings, quantity or budget, and act on them.",
+    "Let a member sign up, change their details or make a request.",
+    "Ask a few questions and record the answers."
    ]
   },
   {
@@ -9620,7 +9631,10 @@
     "My users need to pick multiple items from a table to perform an action.",
     "I want to let users easily reorder data by clicking on column headers.",
     "Show many records with several fields each in a compact grid, such as stock, staff or bookings.",
-    "A dense overview of items with a handful of values per item."
+    "A dense overview of items with a handful of values per item.",
+    "Show inventory, rosters or schedules as a large set of rows with several values each.",
+    "A big collection of records the reader will scan and compare, such as stock levels by branch.",
+    "Show every participant, match or lot with a few key values beside it."
    ]
   },
   {
@@ -10267,7 +10281,8 @@
    "intent_phrases": [
     "I need to show a list of key numbers with their names and whether they're going up or down.",
     "Displaying performance data like sales or user counts needs to be clear and concise, with optional units.",
-    "Show important stats with their context and a quick visual cue for recent changes without animation."
+    "Show important stats with their context and a quick visual cue for recent changes without animation.",
+    "Give the headline figures for a shop, a clinic or a team at a glance: how many, how much, how long."
    ]
   },
   {
@@ -10599,7 +10614,9 @@
    "intent_phrases": [
     "I need a way to track tasks for our team meetings and assign who's responsible.",
     "Show me all outstanding work items for our next project kick-off, with deadlines.",
-    "Let's list the key takeaways from our last incident and who needs to follow up."
+    "Let's list the key takeaways from our last incident and who needs to follow up.",
+    "What should I do next? The most urgent things to deal with first.",
+    "Anything that needs someone's attention this week."
    ]
   },
   {
