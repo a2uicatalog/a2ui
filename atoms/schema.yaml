@@ -11475,7 +11475,9 @@ blocks:
     license: MIT
 - type: brick_build_3d
   description: Equation-driven LEGO-style 3D model that assembles itself stud by stud, drawn in real brick
-    proportions (8 mm pitch, 9.6 mm brick) on a dependency-free canvas. Pass a named shape (heart, sphere,
+    proportions (8 mm pitch, 9.6 mm brick) with dependency-free WebGL — key-light shadows cast between parts,
+    glossy plastic shading and an outline on every part edge, like an instruction-booklet render — and a
+    canvas-2D fallback where WebGL is unavailable. Pass a named shape (heart, sphere,
     torus, helix, pyramid, house) or an explicit bricks array. Every design is checked by deterministic
     geometry — collisions, every brick anchored through stud connections, connection count, centre of mass
     over the footprint — and the verdicts show beside the model. An instructions mode steps through the build
