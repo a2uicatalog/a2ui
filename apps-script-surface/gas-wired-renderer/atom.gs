@@ -1802,8 +1802,8 @@ _RENDERERS['hover_card'] = function(b) {
 };
 
 _RENDERERS['tooltip'] = function(b) {
-  var text = b.text || b.content || '';
-  var target = b.target || b.trigger || 'hover me';
+  var text = b.text || b.content || b.tooltip_content || '';
+  var target = b.target || b.trigger || b.trigger_text || 'hover me';
   return '<div style="margin:1rem 0;display:inline-block;position:relative;">' +
     '<span style="border-bottom:1px dashed #7c3aed;cursor:help;color:#7c3aed;">' + _esc(target) + '</span>' +
     '<div style="margin-top:6px;padding:6px 10px;background:#1f2937;color:#f9fafb;border-radius:6px;font-size:0.78rem;max-width:240px;line-height:1.4;">' + _markdownToHtml(text) + '</div></div>';
@@ -3149,7 +3149,7 @@ _RENDERERS['modal'] = function(b) {
 
 _RENDERERS['follow_up_chips'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
-  var chips = b.chips || [];
+  var chips = b.chips || b.items || [];   // schema field is `items`
 
   var chipsHtml = '';
   for (var i = 0; i < chips.length; i++) {
@@ -3173,6 +3173,7 @@ _RENDERERS['follow_up_chips'] = function(b) {
     '.fuc-chip-' + uid + '{display:inline-block;background:#fff;border:1.5px solid #d1d5db;border-radius:9999px;padding:7px 16px;font-size:14px;color:#374151;cursor:default;font-family:inherit;transition:border-color 0.15s,background 0.15s,color 0.15s;}' +
     '.fuc-chip-' + uid + ':hover{border-color:#7c3aed;background:#faf5ff;color:#7c3aed;}' +
     '</style>' +
+    (b.label ? '<div style="font-size:0.8rem;color:#6b7280;margin:1rem 0 -0.5rem;">' + _esc(b.label) + '</div>' : '') +
     '<div class="fuc-wrap-' + uid + '">' + chipsHtml + '</div>';
 };
 

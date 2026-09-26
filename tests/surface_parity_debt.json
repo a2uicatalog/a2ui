@@ -6,10 +6,6 @@
    "web": 0.0,
    "gas": 1.0
   },
-  "animated_border_card": {
-   "web": 1.0,
-   "gas": 0.0
-  },
   "annotation_highlight": {
    "web": 0.0,
    "gas": 0.67
@@ -30,10 +26,6 @@
    "web": 0.0,
    "gas": 1.0
   },
-  "chartjs_bar": {
-   "web": 0.83,
-   "gas": 0.0
-  },
   "chartjs_line": {
    "web": 0.83,
    "gas": 0.33
@@ -41,10 +33,6 @@
   "checklist_interactive": {
    "web": 0.0,
    "gas": 1.0
-  },
-  "conversation_snippet": {
-   "web": 1.0,
-   "gas": 0.0
   },
   "copy_code_button": {
    "web": 0.0,
@@ -78,17 +66,9 @@
    "web": 0.0,
    "gas": 1.0
   },
-  "follow_up_chips": {
-   "web": 1.0,
-   "gas": 0.0
-  },
   "footnote_group": {
    "web": 0.0,
    "gas": 1.0
-  },
-  "further_reading": {
-   "web": 1.0,
-   "gas": 0.0
   },
   "http_request_block": {
    "web": 0.0,
@@ -138,14 +118,6 @@
    "web": 0.0,
    "gas": 1.0
   },
-  "metric_comparison_card": {
-   "web": 1.0,
-   "gas": 0.0
-  },
-  "mini_sparkline_set": {
-   "web": 1.0,
-   "gas": 0.0
-  },
   "model_card": {
    "web": 1.0,
    "gas": 0.25
@@ -157,14 +129,6 @@
   "number_flip": {
    "web": 0.0,
    "gas": 1.0
-  },
-  "onboarding_stepper": {
-   "web": 0.5,
-   "gas": 0.0
-  },
-  "order_status_card": {
-   "web": 1.0,
-   "gas": 0.0
   },
   "product_spec_table": {
    "web": 0.0,
@@ -185,10 +149,6 @@
   "quiz_result_summary": {
    "web": 0.0,
    "gas": 1.0
-  },
-  "resources_list": {
-   "web": 1.0,
-   "gas": 0.0
   },
   "search_result_card": {
    "web": 0.0,
@@ -225,18 +185,6 @@
   "terminal_block": {
    "web": 0.0,
    "gas": 1.0
-  },
-  "text_callout": {
-   "web": 1.0,
-   "gas": 0.0
-  },
-  "timeline": {
-   "web": 0.5,
-   "gas": 0.0
-  },
-  "tooltip": {
-   "web": 0.5,
-   "gas": 0.0
   },
   "tooltip_glossary": {
    "web": 0.0,

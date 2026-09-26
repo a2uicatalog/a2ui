@@ -13840,7 +13840,9 @@ def _render_timeline(b: dict) -> str:
                   f'<div style="font-weight:700;color:var(--a2ui-text,#111827);font-size:0.9rem;">{_esc(title)}</div>'
                   f'{"<div style=font-size:0.85rem;color:var(--a2ui-muted,#6b7280);margin-top:4px;>"+_md_inline(text)+"</div>" if text else ""}'
                   f'</div>')
-    return f'<div style="margin:1.5rem 0;">{items}</div>'
+    title_html = (f'<div style="font-weight:700;font-size:1.05rem;margin-bottom:16px;">{_esc(b["title"])}</div>'
+                  if b.get('title') else '')
+    return f'<div style="margin:1.5rem 0;">{title_html}{items}</div>'
 
 _RENDERERS['timeline'] = _render_timeline
 
@@ -13869,7 +13871,7 @@ _RENDERERS['toast_notification'] = _render_toast_notification
 def _render_tooltip(b: dict) -> str:
     uid = _wa_uid(b)
     trigger = b.get('trigger_text') or b.get('label', 'hover me')
-    content = b.get('content') or b.get('text', '')
+    content = b.get('content') or b.get('text') or b.get('tooltip_content', '')   # schema field: tooltip_content
     return (f'<span style="position:relative;display:inline-block;">'
             f'<span style="border-bottom:1px dotted #9ca3af;cursor:help;" '
             f'onmouseenter="document.getElementById(\'{uid}\').style.display=\'block\'" '
@@ -20239,7 +20241,7 @@ def _render_onboarding_stepper(b: dict) -> str:
     accent = b.get('accent', '#6366f1')
     steps_html = ''
     for i, s in enumerate(steps):
-        name = _esc(s.get('name', s.get('title', f'Step {i+1}')))
+        name = _esc(s.get('name', s.get('title', s.get('label', f'Step {i+1}'))))
         desc = _esc(s.get('description', ''))
         done = bool(s.get('completed'))
         icon = '✅' if done else str(i + 1)

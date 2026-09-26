@@ -14,6 +14,10 @@ var _CHART_PALETTE = ['#6366f1','#22d3ee','#34d399','#fb923c','#f472b6','#a78bfa
 // ─────────────────────────────────────────────────────────
 _RENDERERS['chartjs_bar'] = function(b) {
   var data        = b.data || [];
+  // Schema shape (atoms/schema.yaml): labels + datasets[{label,data}] -> first dataset drives the bars
+  if (!data.length && b.labels && b.datasets && b.datasets[0] && b.datasets[0].data) {
+    data = b.labels.map(function(l, i){ return {label: l, value: b.datasets[0].data[i]}; });
+  }
   var title       = b.title || '';
   var orientation = b.orientation || 'vertical';
   var height      = parseInt(b.height) || 220;
@@ -610,6 +614,13 @@ _RENDERERS['metric_comparison_card'] = function(b) {
   var comparison = b.comparison || {};
   var title      = b.title || '';
   var higherBetter = b.higher_is_better !== false && b.higher_is_better !== 'false';
+  // Schema shape (atoms/schema.yaml): label / value / previous / lower_is_better (default true, as on web)
+  if (!b.baseline && !b.comparison && (b.value !== undefined || b.previous !== undefined)) {
+    baseline   = {label: 'Previous', value: b.previous};
+    comparison = {label: 'Current',  value: b.value};
+    title      = b.label || title;
+    higherBetter = (b.lower_is_better === false || b.lower_is_better === 'false');
+  }
 
   var bVal  = parseFloat(baseline.value)   || 0;
   var cVal  = parseFloat(comparison.value) || 0;
@@ -646,7 +657,7 @@ _RENDERERS['metric_comparison_card'] = function(b) {
 // 7. mini_sparkline_set — multiple tiny sparklines
 // ─────────────────────────────────────────────────────────
 _RENDERERS['mini_sparkline_set'] = function(b) {
-  var sparklines = b.sparklines || [];
+  var sparklines = b.sparklines || b.series || [];   // schema field is `series`
   if (!sparklines.length) return '<div class="a2ui-chart-empty">No sparklines</div>';
 
   var html = '<div class="a2ui-sparkline-set">';
@@ -1490,8 +1501,11 @@ _RENDERERS['navigation_menu'] = function(b) {
 _RENDERERS['order_status_card'] = function(b) {
   var steps = ['Placed', 'Processing', 'Shipped', 'Delivered'];
   var statusIndex = {placed:0, processing:1, shipped:2, delivered:3, cancelled:-1};
-  var currentStep = statusIndex[b.status] !== undefined ? statusIndex[b.status] : 0;
-  var cancelled = b.status === 'cancelled';
+  // Schema statuses (fulfilled | unfulfilled | partial | cancelled | refunded) map onto the stepper
+  var schemaStatus = {fulfilled: 3, unfulfilled: 0, partial: 2, refunded: -1};
+  var st = (b.status !== undefined && statusIndex[b.status] === undefined && schemaStatus[b.status] !== undefined) ? schemaStatus[b.status] : statusIndex[b.status];
+  var currentStep = st !== undefined && st >= 0 ? st : 0;
+  var cancelled = b.status === 'cancelled' || b.status === 'refunded';
   var stepperHtml = '<div style="display:flex;align-items:center;margin:16px 0 24px;">';
   for (var s = 0; s < steps.length; s++) {
     var done = !cancelled && s <= currentStep;
@@ -1511,11 +1525,12 @@ _RENDERERS['order_status_card'] = function(b) {
   var items = b.items || [];
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#6b7280;text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
+    itemsHtml += '<tr><td style="padding:8px 4px;font-size:0.875rem;color:#111827;">' + _esc(item.name || item.title || '') + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#6b7280;text-align:center;">×' + (item.qty || 1) + '</td><td style="padding:8px 4px;font-size:0.875rem;color:#111827;text-align:right;">' + _esc(item.price || '') + '</td></tr>';
   }
   return '<div style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    + '<span style="font-weight:700;color:#111827;font-size:1rem;">Order ' + _esc(b.order_id || '') + '</span>'
+    + '<span style="font-weight:700;color:#111827;font-size:1rem;">Order ' + _esc(b.order_id || b.order_number || '') + '</span>'
+    + (b.customer || b.date ? '<span style="font-size:0.8rem;color:#6b7280;">' + _esc([b.customer, b.date].filter(Boolean).join(' · ')) + '</span>' : '')
     + (cancelled ? '<span style="background:#fee2e2;color:#991b1b;font-size:0.78rem;font-weight:600;padding:3px 10px;border-radius:999px;">Cancelled</span>' : '')
     + '</div>'
     + stepperHtml
@@ -1694,6 +1709,19 @@ _RENDERERS['token_budget_meter'] = function(b) {
 };
 
 _RENDERERS['text_callout'] = function(b) {
+  // Schema shape (atoms/schema.yaml): variant / title / description -> tinted note block (same palettes as web)
+  if (b.text === undefined && (b.description !== undefined || b.title !== undefined || b.variant !== undefined)) {
+    var pal = {
+      info:    {bg: '#eff6ff', border: '#dbeafe', title: '#1e40af', body: '#1e3a8a'},
+      success: {bg: '#f0fdf4', border: '#dcfce7', title: '#166534', body: '#14532d'},
+      warning: {bg: '#fffbeb', border: '#fef3c7', title: '#92400e', body: '#78350f'},
+      neutral: {bg: '#f9fafb', border: '#e5e7eb', title: '#374151', body: '#4b5563'}
+    };
+    var p = pal[b.variant] || pal.neutral;
+    return '<div style="margin:0.5rem 0;padding:8px 12px;border-radius:6px;background:' + p.bg + ';border:1px solid ' + p.border + ';">'
+      + (b.title ? '<span style="font-weight:700;color:' + p.title + ';margin-right:6px;">' + _esc(b.title) + '</span>' : '')
+      + '<span style="color:' + p.body + ';">' + _esc(b.description || '') + '</span></div>';
+  }
   var text = b.text || '';
   var style = b.style || 'highlight';
   if (style === 'quote') {
@@ -1845,19 +1873,24 @@ _RENDERERS['model_card'] = function(b) {
 };
 
 _RENDERERS['conversation_snippet'] = function(b) {
-  var messages = b.messages || [];
+  // Schema shape (atoms/schema.yaml): user / response (+ optional user_label / ai_label)
+  var messages = b.messages || ((b.user || b.response) ? [
+    {role: 'user', content: b.user || '', label: b.user_label || 'You'},
+    {role: 'assistant', content: b.response || '', label: b.ai_label || 'Assistant'}
+  ] : []);
   var html = '<div style="display:flex;flex-direction:column;gap:10px;margin:1rem 0;">';
   for (var i = 0; i < messages.length; i++) {
     var msg = messages[i];
     var role = msg.role || 'user';
+    var lbl = msg.label ? '<div style="font-size:0.7rem;color:#6b7280;text-align:' + (role === 'user' ? 'right' : 'left') + ';margin:0 4px -6px;">' + _esc(msg.label) + '</div>' : '';
     if (role === 'system') {
       html += '<div style="background:#f3f4f6;border-radius:8px;padding:8px 14px;font-size:0.8rem;color:#6b7280;font-style:italic;text-align:center;">' + _esc(msg.content || '') + '</div>';
     } else if (role === 'user') {
-      html += '<div style="display:flex;justify-content:flex-end;">'
+      html += lbl + '<div style="display:flex;justify-content:flex-end;">'
         + '<div style="background:#ede9fe;color:#111827;border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
         + '</div>';
     } else {
-      html += '<div style="display:flex;justify-content:flex-start;">'
+      html += lbl + '<div style="display:flex;justify-content:flex-start;">'
         + '<div style="background:#fff;border:1px solid #e5e7eb;color:#111827;border-radius:16px 16px 16px 4px;padding:10px 14px;max-width:75%;font-size:0.875rem;">' + _esc(msg.content || '') + '</div>'
         + '</div>';
     }
@@ -1961,7 +1994,7 @@ _RENDERERS['pattern_background'] = _RENDERERS['dot_grid_background'];
 
 _RENDERERS['animated_border_card'] = function(b) {
   var title = b.title || '';
-  var text = b.text || b.content || '';
+  var text = b.text || b.content || b.body || '';
   var uid = Math.random().toString(36).substr(2, 6);
   return '<style>'
     + '.abc-' + uid + '{position:relative;border-radius:16px;padding:2px;margin:1rem 0;}'

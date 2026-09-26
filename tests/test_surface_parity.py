@@ -36,9 +36,34 @@ THRESHOLD = 0.5
 CORE_ENV_NOTE = "GAS side is rendered through the same core the MCP Apps bundle ships"
 
 
+# Schema-faithful payloads for atoms whose generic auto-example is structurally
+# meaningless (structured arrays it can only fill with prose). These are what an
+# agent following get_atom_schema would actually send, so they are the honest
+# parity probe; the 8 that GAS used to drop entirely (2026-09-26 fix) live here.
+CURATED = {
+    "animated_border_card": {"title": "Release notes", "body": "Card body sentinel text"},
+    "conversation_snippet": {"user": "What is A2UI exactly?", "response": "A declarative UI protocol."},
+    "follow_up_chips": {"label": "You might also ask:", "items": ["What is the ROI?", "Show me by region"]},
+    "metric_comparison_card": {"label": "Response latency", "value": 120, "previous": 150},
+    "mini_sparkline_set": {"series": [{"label": "CPU load", "data": [1, 3, 2]}]},
+    "order_status_card": {"order_number": "#1042", "status": "fulfilled", "customer": "Ada Lovelace",
+                          "items": [{"title": "Blue widget", "qty": 2, "price": "$5"}], "total": "$10.00"},
+    "text_callout": {"variant": "info", "title": "Good to know", "description": "Body text goes here"},
+    "tooltip": {"trigger_text": "hover over me", "tooltip_content": "the hidden explanation"},
+    "onboarding_stepper": {"title": "Get started now", "steps": [
+        {"id": "a", "icon": "R", "label": "Install the CLI", "description": "Run the installer"}]},
+    "timeline": {"title": "Project history", "events": [
+        {"date": "2026", "label": "Public launch", "text": "We shipped it"}]},
+    "further_reading": {"links": [{"title": "Guide to tokens", "url": "https://example.com/a",
+                                   "description": "Background reading"}]},
+    "resources_list": {"items": [{"title": "Design kit bundle", "size": "2 MB", "type": "zip",
+                                  "url": "https://example.com/k.zip"}]},
+}
+
+
 def _example(atom, gap):
     t = atom["type"]
-    b = dict(gap._EXAMPLE_BLOCKS.get(t) or json.loads(gap.example_payload(atom)))
+    b = dict(CURATED.get(t) or gap._EXAMPLE_BLOCKS.get(t) or json.loads(gap.example_payload(atom)))
     b["type"] = t
     return b
 
