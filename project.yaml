@@ -302,6 +302,14 @@ generators:
     source: atoms/schema.yaml
     outputs: [apps-script-surface/gas-wired-renderer/atoms_schema_snapshot.gs]  # + mirrors in other renderer dirs
     publish: clasp push (atom-change process)
+  gen_design_tokens:
+    script: scripts/gen_design_tokens.py
+    source: atoms/design-tokens.yaml
+    outputs: [renderers/_design_tokens.py,
+      apps-script-surface/gas-wired-renderer/atoms_tokens.gs]
+    publish: none directly — the .gs rides renderer-release / renderer-release-nogas;
+      the .py rides the web renderer. One YAML stamped into both so the palette
+      token logic cannot drift between surfaces (tests/test_design_tokens.py).
   gen_training_prompt:
     script: scripts/gen_training_prompt.py
     source: spec/training-md-v0.1.md

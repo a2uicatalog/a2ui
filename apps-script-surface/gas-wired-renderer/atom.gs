@@ -219,7 +219,7 @@ _RENDERERS['tag_chip'] = function(b) {
 
 _RENDERERS['badge'] = function(b) {
   var color = b.color || 'var(--muted)';
-  return '<span class="asw-badge" style="border:1px solid ' + color + ';color:' + color + ';padding:2px 6px;border-radius:4px;font-size:0.7rem;font-weight:600;text-transform:uppercase;">' + _esc(b.text) + '</span>';
+  return '<span class="asw-badge" style="border:1px solid ' + color + ';color:' + color + ';padding:2px 6px;border-radius:var(--a2ui-radius-sm,4px);font-size:0.7rem;font-weight:600;text-transform:uppercase;">' + _esc(b.text) + '</span>';
 };
 
 _RENDERERS['image'] = function(b) {
@@ -1263,10 +1263,10 @@ _RENDERERS['timeline'] = function(b) {
       '<div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:4px;">' +
       '<span style="font-size:0.78rem;font-weight:600;color:' + accent + ';font-family:monospace;">' + _esc(date) + '</span>' + tagHtml + '</div>' +
       '<p style="font-weight:700;font-size:0.95rem;margin:0 0 4px;">' + _esc(label) + '</p>' +
-      '<p style="color:#5f6368;font-size:0.88rem;line-height:1.6;margin:0;">' + _markdownToHtml(text) + '</p>' +
+      '<p style="color:var(--a2ui-muted,#5f6368);font-size:0.88rem;line-height:1.6;margin:0;">' + _markdownToHtml(text) + '</p>' +
       '</div></div>';
   }).join('');
-  return '<div style="margin:1.5rem 0;padding:20px 20px 0;background:#fafafa;border-radius:10px;border:1px solid #e0e0e0;">' + titleHtml + items + '</div>';
+  return '<div style="margin:1.5rem 0;padding:20px 20px 0;background:var(--a2ui-surface-muted,#fafafa);border-radius:var(--a2ui-radius,10px);border:1px solid var(--a2ui-border,#e0e0e0);box-shadow:var(--a2ui-shadow,none);">' + titleHtml + items + '</div>';
 };
 
 _RENDERERS['annotated_code'] = function(b) {
@@ -4312,6 +4312,7 @@ _RENDERERS['palette'] = function(b) {
   if (text)  extra += '--text:' + _esc(text) + ';';
   if (bg)    extra += '--bg:'   + _esc(bg)   + ';';
   if (muted) extra += '--muted:' + _esc(muted) + ';';
+  extra += _tokenCss(b);
   return '<style>:root{--a2ui-accent:' + _esc(accent) + ';--a2ui-accent2:' + _esc(accent2) + ';--a2ui-block-gap:' + _esc(gap) + ';' + extra + '}</style>';
 };
 

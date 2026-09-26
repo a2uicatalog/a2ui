@@ -1,0 +1,262 @@
+{
+ "threshold": 0.5,
+ "note": "Measure: render each stable atom's example block on both surfaces and count how\nmany of the block's display strings (>=4 letters, not URLs/colours/enum words)\nappear in each output. An atom DIVERGES when the two coverages differ by\n>= THRESHOLD, i.e. one surface shows content the other drops.",
+ "atoms": {
+  "achievement_badge": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "animated_border_card": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "annotation_highlight": {
+   "web": 0.0,
+   "gas": 0.67
+  },
+  "atom_anatomy": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "badge_showcase": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "blur_fade_in": {
+   "web": 1.0,
+   "gas": 0.5
+  },
+  "caution_block": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "chartjs_bar": {
+   "web": 0.83,
+   "gas": 0.0
+  },
+  "chartjs_line": {
+   "web": 0.83,
+   "gas": 0.33
+  },
+  "checklist_interactive": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "conversation_snippet": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "copy_code_button": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "course_progress_card": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "customer_logo_grid": {
+   "web": 1.0,
+   "gas": 0.33
+  },
+  "embed_stackblitz": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "empty_state": {
+   "web": 1.0,
+   "gas": 0.5
+  },
+  "experimental_banner": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "expert_endorsement": {
+   "web": 0.25,
+   "gas": 1.0
+  },
+  "follow_button": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "follow_up_chips": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "footnote_group": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "further_reading": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "http_request_block": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "icon_stat_row": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "image_with_caption": {
+   "web": 0.5,
+   "gas": 1.0
+  },
+  "inline_alert": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "inline_feedback_message": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "knowledge_check": {
+   "web": 1.0,
+   "gas": 0.25
+  },
+  "learning_objectives": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "learning_path_selector": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "lesson_nav": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "log_output": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "marquee_strip": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "media_mention_card": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "metric_comparison_card": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "mini_sparkline_set": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "model_card": {
+   "web": 1.0,
+   "gas": 0.25
+  },
+  "newsletter_cta": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "number_flip": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "onboarding_stepper": {
+   "web": 0.5,
+   "gas": 0.0
+  },
+  "order_status_card": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "product_spec_table": {
+   "web": 0.0,
+   "gas": 0.67
+  },
+  "pros_cons_list": {
+   "web": 0.0,
+   "gas": 0.83
+  },
+  "punch_card": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "quiz_question": {
+   "web": 1.0,
+   "gas": 0.25
+  },
+  "quiz_result_summary": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "resources_list": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "search_result_card": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "sidebar_note": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "social_proof_banner": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "spotlight_card": {
+   "web": 0.5,
+   "gas": 1.0
+  },
+  "sprint_board": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "summary_box": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "table": {
+   "web": 1.0,
+   "gas": 0.5
+  },
+  "table_of_contents": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "terminal_block": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "text_callout": {
+   "web": 1.0,
+   "gas": 0.0
+  },
+  "timeline": {
+   "web": 0.5,
+   "gas": 0.0
+  },
+  "tooltip": {
+   "web": 0.5,
+   "gas": 0.0
+  },
+  "tooltip_glossary": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "version_badge": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "video_checkpoint": {
+   "web": 0.0,
+   "gas": 1.0
+  },
+  "video_thumbnail": {
+   "web": 0.0,
+   "gas": 0.5
+  },
+  "zoomable_image": {
+   "web": 0.0,
+   "gas": 1.0
+  }
+ }
+}

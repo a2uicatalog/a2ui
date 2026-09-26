@@ -10989,37 +10989,33 @@ _RENDERERS.update({t: _stub(t) for t in [
 
 
 # ─── palette ──────────────────────────────────────────────────────────────────
-# Design tokens consumed by report-cluster renderers as var(--a2ui-<name>,<fallback>).
-# The fallback at each use site equals the historical hardcoded value, so a page
-# with no palette (or a palette that sets none of these) renders unchanged.
-_TOKEN_PRESETS = {
-    # Geist/shadcn-style: hairline neutral borders, larger radius, soft elevation.
-    "modern": {"radius": "12px", "radius-sm": "6px", "border": "#eaeaea",
-               "border-soft": "#f1f1f1", "surface": "#ffffff", "surface-muted": "#fafafa",
-               "text": "#171717", "muted": "#666666", "faint": "#8f8f8f",
-               "shadow": "0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)"},
-}
-_TOKEN_FIELDS = {"radius": "radius", "radius_sm": "radius-sm", "border_color": "border",
-                 "border_soft_color": "border-soft", "surface_color": "surface",
-                 "surface_muted_color": "surface-muted", "muted_color": "muted",
-                 "faint_color": "faint", "shadow": "shadow"}
-_TOKEN_SAFE = re.compile(r"^[#\w\s.,()%/-]{1,120}$")  # no ; { } : quotes or < >
+# Design tokens: report-cluster renderers read var(--a2ui-<token>,<historical value>);
+# `palette` sets them. Names/fields/presets/whitelist are GENERATED from
+# atoms/design-tokens.yaml (scripts/gen_design_tokens.py) into _design_tokens.py
+# and the GAS twin atoms_tokens.gs -- edit the YAML, never a copy.
+def _load_token_css():
+    # Loaded by file path, not `from renderers._design_tokens import ...`: this
+    # module is imported both as `renderers.web_article` and as bare top-level
+    # `web_article` (generate_atom_pages.py, cloud-run-renderer), and only the
+    # first can resolve a package-qualified import. Same reason as qrcodegen.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_a2ui_design_tokens", Path(__file__).resolve().parent / "_design_tokens.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.token_css
+
+_token_css = _load_token_css()
 
 def _render_palette(b: dict) -> str:
     accent  = b.get("accent", "#6366f1")
     accent2 = b.get("accent2", b.get("accent", "#8b5cf6"))
     gap     = b.get("block_gap", "1.25rem")
     extra   = ""
-    if b.get("text_color"): extra += f"--text:{b['text_color']};--a2ui-text:{b['text_color']};"
+    if b.get("text_color"): extra += f"--text:{b['text_color']};"
     if b.get("bg_color"):   extra += f"--bg:{b['bg_color']};"
     if b.get("muted_color"):extra += f"--muted:{b['muted_color']};"
-    tokens = dict(_TOKEN_PRESETS.get(str(b.get("preset", "")), {}))
-    for field, name in _TOKEN_FIELDS.items():
-        if b.get(field):
-            tokens[name] = str(b[field])
-    for name, val in tokens.items():
-        if _TOKEN_SAFE.match(val):
-            extra += f"--a2ui-{name}:{val};"
+    extra += _token_css(b)
     return f"<style>:root{{--a2ui-accent:{accent};--a2ui-accent2:{accent2};--a2ui-block-gap:{gap};{extra}}}</style>"
 
 _RENDERERS["palette"] = _render_palette

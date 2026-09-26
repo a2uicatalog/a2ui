@@ -1,0 +1,44 @@
+# Design tokens for the report-atom cluster — the SINGLE source of truth.
+#
+# Consumed by scripts/gen_design_tokens.py, which stamps the same token logic
+# into every renderer that implements `palette`:
+#   renderers/_design_tokens.py                        (Python / web)
+#   apps-script-surface/gas-wired-renderer/atoms_tokens.gs   (GAS + MCP Apps bundle)
+# Never edit those outputs by hand; tests/test_design_tokens.py regenerates and
+# compares, and runs both implementations on the same inputs (parity).
+#
+# Atoms read a token as var(--a2ui-<name>,<value that atom always used>), so a
+# page that sets no token renders exactly as before. Fallbacks live at the use
+# site (they differ per surface); NAMES, palette FIELDS, presets and the value
+# whitelist live here. Order below = emission order.
+tokens:
+  - { name: radius,         field: radius }
+  - { name: radius-sm,      field: radius_sm }
+  - { name: border,         field: border_color }
+  - { name: border-soft,    field: border_soft_color }
+  - { name: surface,        field: surface_color }
+  - { name: surface-muted,  field: surface_muted_color }
+  - { name: text,           field: text_color }
+  - { name: muted,          field: muted_color }
+  - { name: faint,          field: faint_color }
+  - { name: shadow,         field: shadow }
+
+presets:
+  # Geist/shadcn-style: hairline neutral borders, larger radius, soft elevation.
+  modern:
+    radius: 12px
+    radius-sm: 6px
+    border: "#eaeaea"
+    border-soft: "#f1f1f1"
+    surface: "#ffffff"
+    surface-muted: "#fafafa"
+    text: "#171717"
+    muted: "#666666"
+    faint: "#8f8f8f"
+    shadow: 0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)
+
+# A palette value is written into a <style> block, so only a conservative
+# character class is accepted (no ; { } : quotes < > or newlines). Explicit
+# ASCII class, matched in full, so Python and JS agree exactly.
+safe_chars: "#A-Za-z0-9_ .,()%/-"
+safe_max_len: 120

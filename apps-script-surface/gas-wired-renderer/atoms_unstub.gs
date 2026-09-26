@@ -22,10 +22,10 @@ _RENDERERS['metric_delta'] = function(b) {
   var dColor  = dtype === 'increase' ? '#10b981' : dtype === 'decrease' ? '#ef4444' : '#6b7280';
   var dBg     = dtype === 'increase' ? '#d1fae5' : dtype === 'decrease' ? '#fee2e2' : '#f3f4f6';
   var arrow   = dtype === 'increase' ? '↑' : dtype === 'decrease' ? '↓' : '→';
-  var period  = b.comparison_period ? '<div style="font-size:0.72rem;color:var(--muted,#6b7280);margin-top:2px;">' + _esc(b.comparison_period) + '</div>' : '';
-  return '<div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);min-width:140px;">'
-    + '<div style="font-size:0.75rem;font-weight:600;color:var(--muted,#6b7280);text-transform:uppercase;letter-spacing:0.05em;">' + label + '</div>'
-    + '<div style="font-size:2rem;font-weight:700;color:var(--text,#111827);line-height:1.2;margin:4px 0;">' + current + '</div>'
+  var period  = b.comparison_period ? '<div style="font-size:0.72rem;color:var(--a2ui-muted,var(--muted,#6b7280));margin-top:2px;">' + _esc(b.comparison_period) + '</div>' : '';
+  return '<div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid var(--a2ui-border,var(--border,#e5e7eb));border-radius:var(--a2ui-radius,10px);background:var(--a2ui-surface,var(--bg,#fff));box-shadow:var(--a2ui-shadow,none);min-width:140px;">'
+    + '<div style="font-size:0.75rem;font-weight:600;color:var(--a2ui-muted,var(--muted,#6b7280));text-transform:uppercase;letter-spacing:0.05em;">' + label + '</div>'
+    + '<div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,var(--text,#111827));line-height:1.2;margin:4px 0;">' + current + '</div>'
     + (delta ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:' + dBg + ';color:' + dColor + ';font-size:0.8rem;font-weight:600;width:fit-content;">' + arrow + ' ' + delta + '</span>' : '')
     + period + '</div>';
 };
