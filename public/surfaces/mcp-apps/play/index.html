@@ -9,49 +9,164 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
   <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
+<script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
   <style>
-  :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--indigo:#6366f1;--green:#3fb950}
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-  #mcp-view{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
-  .play-bar{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}
-  .play-bar>*{pointer-events:auto}
-  .play-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}
-  a.play-chip:hover,label.play-chip:hover{border-color:var(--indigo);color:var(--indigo)}
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
+  --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
+  --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);
+  --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
+  --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);
+  --warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
+  --glow:0 4px 24px oklch(58% 0.19 277 / .14);
+  --header-glass:oklch(100% 0 0 / .72);
+  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
+  --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
+  --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);
+  --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
+  --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);
+  --warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
+  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);
+  --header-glass:oklch(33% 0.025 255 / .72);
+  --grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+  /* Playground layout: the site's own sticky header on top, a slim status bar under it, the
+     renderer fills the rest. (The old floating chip bar sat ON TOP of the rendered page and
+     used a hard-coded dark palette that matched nothing else on the site.) */
+  html,body{height:100%}
+  body{display:flex;flex-direction:column;overflow:hidden}
+  .site-header{flex:0 0 auto}
+  .play-sub{flex:0 0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .play-sub .hdr-spacer{margin-right:auto}
+  #mcp-view{flex:1 1 auto;min-height:0;width:100%;border:0;background:#fff}
+  .play-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:650;letter-spacing:.02em;color:var(--text-muted);text-decoration:none}
+  a.play-chip:hover,label.play-chip:hover{border-color:var(--accent);color:var(--accent)}
   label.play-chip{cursor:pointer}
-  .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
-  .mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
+  .play-title{font-size:13px;font-weight:700;color:var(--text)}
+  .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex-shrink:0;transition:background .2s}
+  .mcp-status-dot.live{background:var(--positive);box-shadow:0 0 8px color-mix(in oklch,var(--positive) 60%,transparent)}
   .mcp-status-dot.err{background:var(--negative)}
   #mcp-drawer-toggle{display:none}
-  .play-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:rgba(12,17,23,.97);backdrop-filter:blur(10px);border-left:1px solid var(--border);padding:64px 18px 18px;transform:translateX(100%);transition:transform .25s ease;z-index:9;display:flex;flex-direction:column;gap:12px}
+  .play-drawer{position:fixed;top:var(--play-top,96px);right:0;bottom:0;width:min(560px,94vw);background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--shadow);padding:18px;transform:translateX(100%);transition:transform .25s ease;z-index:50;display:flex;flex-direction:column;gap:12px}
   #mcp-drawer-toggle:checked ~ .play-drawer{transform:translateX(0)}
-  .play-drawer-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--indigo)}
-  .play-drawer textarea{flex:1;width:100%;background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:#9ecbff;resize:none}
-  .play-drawer textarea:focus{outline:none;border-color:var(--indigo)}
+  .play-drawer-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+  .play-drawer textarea{flex:1;width:100%;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:var(--text);resize:none}
+  .play-drawer textarea:focus{outline:none;border-color:var(--accent)}
   .play-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
-  .mcp-play-btn:hover{background:#818cf8}
-  .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
-  .mcp-play-btn.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
-  .mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
-.mcp-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
-.mcp-preset-chip{padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.03em}
-.mcp-preset-chip:hover{border-color:var(--mcp-indigo,#6366f1);color:var(--mcp-indigo,#6366f1)}
+  .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:var(--accent-contrast);cursor:pointer;font-size:13px;font-weight:700}
+  .mcp-play-btn:hover{filter:brightness(1.08)}
+  .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted)}
+  .mcp-play-btn.ghost:hover{border-color:var(--accent);color:var(--accent);filter:none}
+  .mcp-play-err{font-size:12px;color:var(--negative);min-height:16px;flex:1}
+  .mcp-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .mcp-preset-chip{padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.03em}
+  .mcp-preset-chip:hover{border-color:var(--accent);color:var(--accent)}
+  @media (max-width:640px){.play-sub{padding:8px 16px}}
   </style>
 </head>
 <body>
+<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps" aria-current="page">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+  <div class="play-sub">
+    <span class="play-title">Live renderer</span>
+    <span class="play-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
+    <span class="hdr-spacer"></span>
+    <a class="play-chip" href="/surfaces/mcp-apps/">About MCP Apps</a>
+    <label class="play-chip" for="mcp-drawer-toggle">✏ Payload</label>
+  </div>
+
   <!-- allow-same-origin + src on play.a2uicatalog.ai: see the hero-embed
        template's own comment above (this file, ~line 1825) for the full
        "why here, not a2uicatalog.ai itself" reasoning -- same bundle,
        same iframe, same rationale, both templates kept in sync by hand
        like every other sandbox/src change to #mcp-view. -->
   <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=46259e61b9" title="A2UI MCP Apps view"></iframe>
-
-  <div class="play-bar">
-    <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
-    <span class="play-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
-    <label class="play-chip" for="mcp-drawer-toggle">✏ Payload</label>
-  </div>
 
   <input type="checkbox" id="mcp-drawer-toggle">
   <aside class="play-drawer">
@@ -66,6 +181,45 @@
     </div>
   </aside>
 
+<script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
+<script>
+// Keep the payload drawer flush under the header + status bar, whatever height they wrap to.
+(function(){function fit(){var h=document.querySelector('.site-header'),s=document.querySelector('.play-sub');
+  if(h&&s)document.documentElement.style.setProperty('--play-top',(h.offsetHeight+s.offsetHeight)+'px')}
+  addEventListener('resize',fit);addEventListener('load',fit);fit()})();
+</script>
 <script>
 (function () {
   var iframe = document.getElementById('mcp-view');

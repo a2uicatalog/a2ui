@@ -241,9 +241,11 @@ def main():
                      compact_index="\n".join(compact_lines))
                + tail)
     import make_url as _mu  # canonical ?p= encoding + deployment resolution
+    # The link a Gem builds is the STABLE front (a2uicatalog.ai/gas/renderer -> 302 -> current /exec), not the raw
+    # script.google.com id: a script-project migration then changes one manifest value instead of every link a Gem handed out.
     offline = offline.replace(
         "## Example",
-        OFFLINE_URL_SECTION.format(gas_exec=_mu.RENDERERS["gem"], base=BASE_URL)
+        OFFLINE_URL_SECTION.format(gas_exec=_mu.STABLE_BASES["gem"], base=BASE_URL)
         + "## Example", 1)
     offline = offline.replace("{atom_count}", str(atom_count)).replace("{base}", BASE_URL)
     offline = offline.replace("{{", "{").replace("}}", "}")

@@ -975,7 +975,7 @@ import json, zlib, base64
 payload = {...}  # the payload you just built
 raw = json.dumps(payload, ensure_ascii=False).encode()
 enc = base64.urlsafe_b64encode(zlib.compress(raw, level=9, wbits=31)).rstrip(b"=").decode()
-print("GAS:", "https://script.google.com/macros/s/AKfycbzqMKh68wM1YhsSCkTq_SG78MkubQwV7LVXavwPbZ06voMiMZdR8tc83ned6qJPmWTZyg/exec?p=" + enc)
+print("GAS:", "https://a2uicatalog.ai/gas/renderer?p=" + enc)
 print("MCP Apps:", "https://a2uicatalog.ai/play#p=" + enc)
 print("URL chars:", len(enc))
 ```

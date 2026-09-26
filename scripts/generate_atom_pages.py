@@ -2655,49 +2655,58 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>A2UI Live Renderer — the catalog playground for MCP Apps</title>
   <meta name="description" content="Full-screen A2UI renderer running as a spec-conformant MCP Apps View. Paste a payload, or open a #p= link minted by scripts/make_url.py.">
-  <style>
-  :root{--bg:#0c1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--indigo:#6366f1;--green:#3fb950}
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-  #mcp-view{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
-  .play-bar{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10;pointer-events:none}
-  .play-bar>*{pointer-events:auto}
-  .play-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(12,17,23,.88);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-decoration:none}
-  a.play-chip:hover,label.play-chip:hover{border-color:var(--indigo);color:var(--indigo)}
+__SITE_HEAD_JS__
+  <style>__SITE_BASE_CSS__
+  /* Playground layout: the site's own sticky header on top, a slim status bar under it, the
+     renderer fills the rest. (The old floating chip bar sat ON TOP of the rendered page and
+     used a hard-coded dark palette that matched nothing else on the site.) */
+  html,body{height:100%}
+  body{display:flex;flex-direction:column;overflow:hidden}
+  .site-header{flex:0 0 auto}
+  .play-sub{flex:0 0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 24px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .play-sub .hdr-spacer{margin-right:auto}
+  #mcp-view{flex:1 1 auto;min-height:0;width:100%;border:0;background:#fff}
+  .play-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:650;letter-spacing:.02em;color:var(--text-muted);text-decoration:none}
+  a.play-chip:hover,label.play-chip:hover{border-color:var(--accent);color:var(--accent)}
   label.play-chip{cursor:pointer}
-  .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}
-  .mcp-status-dot.live{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}
+  .play-title{font-size:13px;font-weight:700;color:var(--text)}
+  .mcp-status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex-shrink:0;transition:background .2s}
+  .mcp-status-dot.live{background:var(--positive);box-shadow:0 0 8px color-mix(in oklch,var(--positive) 60%,transparent)}
   .mcp-status-dot.err{background:var(--negative)}
   #mcp-drawer-toggle{display:none}
-  .play-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:rgba(12,17,23,.97);backdrop-filter:blur(10px);border-left:1px solid var(--border);padding:64px 18px 18px;transform:translateX(100%);transition:transform .25s ease;z-index:9;display:flex;flex-direction:column;gap:12px}
+  .play-drawer{position:fixed;top:var(--play-top,96px);right:0;bottom:0;width:min(560px,94vw);background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--shadow);padding:18px;transform:translateX(100%);transition:transform .25s ease;z-index:50;display:flex;flex-direction:column;gap:12px}
   #mcp-drawer-toggle:checked ~ .play-drawer{transform:translateX(0)}
-  .play-drawer-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--indigo)}
-  .play-drawer textarea{flex:1;width:100%;background:#0a0e14;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:#9ecbff;resize:none}
-  .play-drawer textarea:focus{outline:none;border-color:var(--indigo)}
+  .play-drawer-label{font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+  .play-drawer textarea{flex:1;width:100%;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:12.5px;line-height:1.55;color:var(--text);resize:none}
+  .play-drawer textarea:focus{outline:none;border-color:var(--accent)}
   .play-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:700}
-  .mcp-play-btn:hover{background:#818cf8}
-  .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
-  .mcp-play-btn.ghost:hover{border-color:var(--indigo);color:var(--indigo)}
-  .mcp-play-err{font-size:12px;color:#f85149;min-height:16px;flex:1}
-.mcp-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
-.mcp-preset-chip{padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.03em}
-.mcp-preset-chip:hover{border-color:var(--mcp-indigo,#6366f1);color:var(--mcp-indigo,#6366f1)}
+  .mcp-play-btn{padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:var(--accent-contrast);cursor:pointer;font-size:13px;font-weight:700}
+  .mcp-play-btn:hover{filter:brightness(1.08)}
+  .mcp-play-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted)}
+  .mcp-play-btn.ghost:hover{border-color:var(--accent);color:var(--accent);filter:none}
+  .mcp-play-err{font-size:12px;color:var(--negative);min-height:16px;flex:1}
+  .mcp-presets{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .mcp-preset-chip{padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.03em}
+  .mcp-preset-chip:hover{border-color:var(--accent);color:var(--accent)}
+  @media (max-width:640px){.play-sub{padding:8px 16px}}
   </style>
 </head>
 <body>
+__SITE_HEADER__
+  <div class="play-sub">
+    <span class="play-title">Live renderer</span>
+    <span class="play-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
+    <span class="hdr-spacer"></span>
+    <a class="play-chip" href="/surfaces/mcp-apps/">About MCP Apps</a>
+    <label class="play-chip" for="mcp-drawer-toggle">✏ Payload</label>
+  </div>
+
   <!-- allow-same-origin + src on play.a2uicatalog.ai: see the hero-embed
        template's own comment above (this file, ~line 1825) for the full
        "why here, not a2uicatalog.ai itself" reasoning -- same bundle,
        same iframe, same rationale, both templates kept in sync by hand
        like every other sandbox/src change to #mcp-view. -->
   <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="https://play.a2uicatalog.ai/renderer-bundle?v=__BUNDLE_HASH__" title="A2UI MCP Apps view"></iframe>
-
-  <div class="play-bar">
-    <a class="play-chip" href="/surfaces/mcp-apps/">← A2UI · MCP Apps</a>
-    <span class="play-chip"><span class="mcp-status-dot" id="mcp-status-dot"></span><span id="mcp-status-text">Connecting…</span></span>
-    <label class="play-chip" for="mcp-drawer-toggle">✏ Payload</label>
-  </div>
 
   <input type="checkbox" id="mcp-drawer-toggle">
   <aside class="play-drawer">
@@ -2712,6 +2721,13 @@ MCP_APPS_PLAY_HTML = """<!DOCTYPE html>
     </div>
   </aside>
 
+__SITE_FOOT_JS__
+<script>
+// Keep the payload drawer flush under the header + status bar, whatever height they wrap to.
+(function(){function fit(){var h=document.querySelector('.site-header'),s=document.querySelector('.play-sub');
+  if(h&&s)document.documentElement.style.setProperty('--play-top',(h.offsetHeight+s.offsetHeight)+'px')}
+  addEventListener('resize',fit);addEventListener('load',fit);fit()})();
+</script>
 <script>
 __MCP_APPS_HOST_JS__
 </script>
@@ -3695,6 +3711,10 @@ def main():
         play_dir.mkdir(parents=True, exist_ok=True)
         (play_dir / "index.html").write_text(
             MCP_APPS_PLAY_HTML.replace("__BUNDLE_HASH__", _bundle_hash())
+            .replace("__SITE_HEAD_JS__", SITE_HEAD_JS)
+            .replace("__SITE_BASE_CSS__", SITE_BASE_CSS)
+            .replace("__SITE_HEADER__", site_header("playground"))
+            .replace("__SITE_FOOT_JS__", SITE_FOOT_JS)
             .replace("__MCP_APPS_HOST_JS__", _mcp_apps_host_js())
             .replace("__MCP_GLOW__", _cursor_glow_html()))
         print(f"✓ full-screen playground → {play_dir}/index.html")
