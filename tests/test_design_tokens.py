@@ -1,9 +1,15 @@
 """Design-token layer for the web renderer's report cluster.
 
-Report atoms read var(--a2ui-<token>,<historical value>); `palette` sets the
-tokens. Guards: (1) the cluster really uses tokens (no raw card border/radius
-creeping back), (2) a palette that sets nothing changes nothing, (3) preset and
-explicit fields work, (4) hostile token values are dropped, not injected.
+Report atoms read var(--a2ui-<token>,<fallback>). The fallback IS the modern
+preset's value (2026-09-26: flipped from the historical per-atom hex/px so the
+DEFAULT render -- no palette block at all, which is what most agent-authored
+payloads send -- looks modern, not just an opt-in). `palette` still lets a
+payload override individual tokens or declare `preset` for a future alternate
+look; "modern" as an explicit preset is now a no-op (its values equal the
+fallback) but stays valid for anything that already set it. Guards: (1) the
+cluster really uses tokens, not raw hex/px, (2) the default (no palette block)
+render IS the modern look, (3) explicit overrides still win, (4) hostile token
+values are dropped, not injected.
 """
 import re
 import pytest
@@ -29,8 +35,32 @@ def test_report_cluster_uses_tokens(atom):
 
 
 def test_default_palette_sets_no_tokens():
+    """No palette block -> no :root override -> every var() falls through to its own
+    fallback. Separate from whether that fallback IS the modern look (next test)."""
     css = w._RENDERERS["palette"]({})
     assert "--a2ui-radius" not in css and "--a2ui-shadow" not in css
+
+
+# Not every report atom hooks every token -- entity_list and timeline, e.g., were only ever
+# wired for text/faint (no card-style border/radius). Checking against MODERN's own values
+# means this can't silently drift out of sync with what gen_design_tokens.py actually emits.
+import yaml as _yaml
+_MODERN = _yaml.safe_load(open("atoms/design-tokens.yaml"))["presets"]["modern"]
+
+
+@pytest.mark.parametrize("atom", sorted(SAMPLES))
+def test_default_render_uses_only_modern_token_values(atom):
+    """No palette block at all -- the common case, since most agent-authored payloads never
+    author one. Whatever a2ui-* tokens THIS atom hooks, their fallback (= what actually
+    renders by default) must be the modern preset's value, not the old historical one."""
+    html = w._RENDERERS[atom](SAMPLES[atom])
+    found = _find_a2ui_vars(html)
+    assert found, f"{atom} default render uses no a2ui-* tokens at all"
+    for name, fallback in found:
+        if fallback.startswith("var("):   # dark-theme-chained (page's own theme var) -- untouched by design
+            continue
+        assert fallback == _MODERN[name], f"{atom}: --a2ui-{name} fallback is {fallback!r}, not modern {_MODERN[name]!r}"
+
 
 
 def test_modern_preset_and_override():
@@ -43,6 +73,21 @@ def test_modern_preset_and_override():
 def test_hostile_token_value_dropped():
     css = w._RENDERERS["palette"]({"radius": "4px;}</style><script>x</script>"})
     assert "<script" not in css and "--a2ui-radius" not in css
+
+
+def _find_a2ui_vars(html):
+    """[(name, fallback), ...] for every var(--a2ui-<name>,<fallback>) in html, matching
+    parens by depth so a fallback that itself contains parens (the shadow token's
+    rgba(...),rgba(...) value) is captured whole, not truncated at the first ')'."""
+    out = []
+    for m in re.finditer(r"var\(--a2ui-([a-z-]+),", html):
+        name = m.group(1)
+        i, depth = m.end(), 1
+        while depth and i < len(html):
+            depth += (html[i] == "(") - (html[i] == ")")
+            i += 1
+        out.append((name, html[m.end():i - 1]))
+    return out
 
 
 # ── cross-surface parity (GAS / MCP Apps <-> Python) ─────────────────────────

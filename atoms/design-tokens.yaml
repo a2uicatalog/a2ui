@@ -7,10 +7,17 @@
 # Never edit those outputs by hand; tests/test_design_tokens.py regenerates and
 # compares, and runs both implementations on the same inputs (parity).
 #
-# Atoms read a token as var(--a2ui-<name>,<value that atom always used>), so a
-# page that sets no token renders exactly as before. Fallbacks live at the use
-# site (they differ per surface); NAMES, palette FIELDS, presets and the value
-# whitelist live here. Order below = emission order.
+# Atoms read a token as var(--a2ui-<name>,<fallback>). CHANGED 2026-09-26: the
+# fallback at each use site is the `modern` preset's own value (was the atom's
+# old historical hex/px) — so a payload with no palette block at all, which is
+# what most agent-authored payloads send, renders the modern look by default,
+# not just when a payload opts in. `presets.modern` below is therefore both a
+# named preset AND the baseline every report atom falls back to; setting
+# preset:"modern" explicitly is now a no-op kept only for payloads that already
+# did. Fallbacks live at the use site (they differ per surface, and dark-theme-
+# chained ones — e.g. var(--a2ui-border,var(--border,...))) are left on the
+# page's own theme var, never overwritten); NAMES, palette FIELDS, presets and
+# the value whitelist live here. Order below = emission order.
 tokens:
   - { name: radius,         field: radius }
   - { name: radius-sm,      field: radius_sm }
