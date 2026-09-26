@@ -63,7 +63,7 @@ def bake_one(lib, colours, entry):
     cond = [{"colour": c, "pos": [qpt(v) for seg in segs for v in seg[:2]],
              "ctl": [qpt(v) for seg in segs for v in seg[2:]]} for c, segs in sorted(cond_groups.items())]
 
-    occ, sockets, needs_occ = resolve_occupancy_and_sockets(pid, title)
+    occ, sockets, needs_occ = resolve_occupancy_and_sockets(pid, title, part.min, part.max, part.holes)
 
     mesh = {
         "id": pid,

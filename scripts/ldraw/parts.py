@@ -50,13 +50,43 @@ def generated_occupancy(title):
     return [box(-10 * d, 10 * d, 0, h, -10 * w, 10 * w)]
 
 
-# Hand-authored occupancy for parts whose plain LDraw geometry does not reduce to one clean box, verified against
-# spec/brick-parts/fixtures-v0.1.json (F09, F15 exercise 3700 and 2780 directly).
+# Straight Technic bricks whose round holes bore through along Z (spec §2's "hole" connector, pairs of
+# peghole.dat on opposite Z faces): solid everywhere except a 12x12 LDU channel at each hole's real X position,
+# open between y=4 and y=16 (every part in this family has its hole centred at y=10, radius 6 -- read from the
+# resolved connector data, not assumed). Originally hand-authored per part for 3700 and 6541 only (verified
+# against spec/brick-parts/fixtures-v0.1.md F09/F15); generalised to a real-geometry-driven formula while adding
+# the longer parts in the same family (32000, 3701, 3894, 3702, 3703) -- reproduces the exact original 3700/6541
+# boxes byte-for-byte (checked), so F09/F15 still pass on the generalised path, not just the two hand-picked ids.
+TECHNIC_HOLES_PARTS = {"3700", "6541", "32000", "3701", "3894", "3702", "3703"}
+CHANNEL_HALF = 6
+
+
+def technic_holes_occupancy(bounds_min, bounds_max, holes):
+    """holes: list of (pos, dir) in real LDU (not yet quantised). Returns None if no Z-axis hole is present."""
+    half_x = (bounds_max[0] - bounds_min[0]) / 2
+    half_z = (bounds_max[2] - bounds_min[2]) / 2
+    height = bounds_max[1] - bounds_min[1]
+    z_holes = [pos for pos, d in holes if abs(d[2]) > 0.5]
+    xs = sorted(set(round(pos[0]) for pos in z_holes))
+    if not xs:
+        return None
+    hy = round(sum(pos[1] for pos in z_holes) / len(z_holes))  # every part in this family has one shared hole y
+    boxes, prev = [], -half_x
+    for hx in xs:
+        if hx - CHANNEL_HALF > prev:
+            boxes.append(box(prev, hx - CHANNEL_HALF, 0, height, -half_z, half_z))
+        boxes.append(box(hx - CHANNEL_HALF, hx + CHANNEL_HALF, 0, hy - CHANNEL_HALF, -half_z, half_z))
+        boxes.append(box(hx - CHANNEL_HALF, hx + CHANNEL_HALF, hy + CHANNEL_HALF, height, -half_z, half_z))
+        prev = hx + CHANNEL_HALF
+    if prev < half_x:
+        boxes.append(box(prev, half_x, 0, height, -half_z, half_z))
+    return boxes
+
+
+# Hand-authored occupancy for parts whose plain LDraw geometry does not reduce to one clean box or the Technic-
+# holes family above, verified against spec/brick-parts/fixtures-v0.1.json (F09, F15 exercise 3700 and 2780
+# directly).
 OVERRIDES = {
-    # Technic brick 1x2 with one hole: two end blocks either side of a 12x12 LDU channel along Z through (0, 10).
-    "3700": [box(-20, -6, 0, 24, -10, 10), box(6, 20, 0, 24, -10, 10), box(-6, 6, 0, 4, -10, 10), box(-6, 6, 16, 24, -10, 10)],
-    # Technic brick 1x1 with hole: same channel shape, 20 LDU wide.
-    "6541": [box(-10, -6, 0, 24, -10, 10), box(6, 10, 0, 24, -10, 10), box(-6, 6, 0, 4, -10, 10), box(-6, 6, 16, 24, -10, 10)],
     # Technic pin (2L): a slim box along its axis; the friction ribs are cosmetic, not occupancy-relevant.
     "2780": [box(-20, 20, -6, 6, -6, 6)],
     "3673": [box(-20, 20, -6, 6, -6, 6)],
@@ -105,9 +135,13 @@ def generate_sockets(occupancy):
     return out
 
 
-def resolve_occupancy_and_sockets(part_id, title):
-    """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool)."""
+def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None):
+    """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes (real LDU, unquantised) are
+    only needed for the Technic-holes family; every other path ignores them, so existing callers that omit them
+    keep working."""
     occ = OVERRIDES.get(part_id) or generated_occupancy(title)
+    if occ is None and part_id in TECHNIC_HOLES_PARTS and bounds_min and holes is not None:
+        occ = technic_holes_occupancy(bounds_min, bounds_max, holes)
     if occ is None:
         return None, [], True
     sockets = generate_sockets(occ)
