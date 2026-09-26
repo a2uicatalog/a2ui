@@ -485,13 +485,27 @@ a{color:inherit}
     }
     var studConn=0,pinConn=0,adj=[],baseAdj={};
     for(i=0;i<n;i++)adj.push({});
+    // Sockets bucketed by rounded world position so each stud probes only the 27 neighbouring 1-LDU cells
+    // instead of every other part's every socket (the naive all-pairs loop took ~60 s at 1,000 parts -- found by
+    // tests/test_brick_parts_stress.mjs); the 0.5-LDU match tolerance can straddle one rounding boundary, hence
+    // the +/-1 probe. Same pairs are matched, so counts are identical to the all-pairs version.
+    var sockHash={};
+    for(j=0;j<n;j++)sockets[j].forEach(function(k){
+      var hk=Math.round(k.pos[0])+','+Math.round(k.pos[1])+','+Math.round(k.pos[2]);
+      (sockHash[hk]=sockHash[hk]||[]).push({j:j,k:k});
+    });
     for(i=0;i<n;i++){
-      for(j=0;j<n;j++){
-        if(i===j)continue;
-        studs[i].forEach(function(s){sockets[j].forEach(function(k){
-          if(dist3(s.pos,k.pos)<0.5&&dot3(s.dir,k.dir)<-0.5){studConn++;adj[i][j]=1;adj[j][i]=1;}
-        });});
-      }
+      studs[i].forEach(function(s){
+        var bx=Math.round(s.pos[0]),by=Math.round(s.pos[1]),bz=Math.round(s.pos[2]);
+        for(var dx=-1;dx<=1;dx++)for(var dy=-1;dy<=1;dy++)for(var dz=-1;dz<=1;dz++){
+          var cell=sockHash[(bx+dx)+','+(by+dy)+','+(bz+dz)];
+          if(!cell)continue;
+          cell.forEach(function(e2){
+            if(e2.j===i)return;
+            if(dist3(s.pos,e2.k.pos)<0.5&&dot3(s.dir,e2.k.dir)<-0.5){studConn++;adj[i][e2.j]=1;adj[e2.j][i]=1;}
+          });
+        }
+      });
       sockets[i].forEach(function(k){
         if(Math.abs(k.pos[1])<0.5&&onGrid(k.pos[0])&&onGrid(k.pos[2])&&dot3(k.dir,[0,-1,0])<-0.5){baseAdj[i]=1;studConn++;}
       });
@@ -518,12 +532,26 @@ a{color:inherit}
       if(!boxes[i])continue;
       for(var bi=0;bi<boxes[i].length;bi++)if(boxes[i][bi][3]>0.5){collisions.push([-1,i]);break;}
     }
-    for(i=0;i<n;i++)for(j=i+1;j<n;j++){
-      if(!boxes[i]||!boxes[j])continue;
-      var hit=false;
-      for(var a=0;a<boxes[i].length&&!hit;a++)for(var b=0;b<boxes[j].length;b++)if(boxesOverlap(boxes[i][a],boxes[j][b])){hit=true;break;}
-      if(hit)collisions.push([i,j]);
+    // Part-vs-part boxes: coarse 80-LDU grid over each part's overall AABB, test only parts sharing a cell (all-pairs
+    // was O(n^2) box-list scans); pairs are deduped and emitted in the same (i asc, j asc) order as before.
+    var grid={},pairSeen={},pairs=[];
+    for(i=0;i<n;i++){
+      if(!boxes[i])continue;
+      var lo=[1e9,1e9,1e9],hi=[-1e9,-1e9,-1e9];
+      boxes[i].forEach(function(b){for(var ax=0;ax<3;ax++){lo[ax]=Math.min(lo[ax],b[ax*2]);hi[ax]=Math.max(hi[ax],b[ax*2+1]);}});
+      for(var gx=Math.floor(lo[0]/80);gx<=Math.floor(hi[0]/80);gx++)for(var gy=Math.floor(lo[1]/80);gy<=Math.floor(hi[1]/80);gy++)
+        for(var gz=Math.floor(lo[2]/80);gz<=Math.floor(hi[2]/80);gz++){
+          var gk=gx+','+gy+','+gz,cellp=grid[gk]=grid[gk]||[];
+          cellp.forEach(function(o){var pk=o+','+i;if(!pairSeen[pk]){pairSeen[pk]=1;pairs.push([o,i]);}});
+          cellp.push(i);
+        }
     }
+    pairs.sort(function(a,b){return a[0]-b[0]||a[1]-b[1];});
+    pairs.forEach(function(pr){
+      var bi2=boxes[pr[0]],bj2=boxes[pr[1]],hit=false;
+      for(var a=0;a<bi2.length&&!hit;a++)for(var b=0;b<bj2.length;b++)if(boxesOverlap(bi2[a],bj2[b])){hit=true;break;}
+      if(hit)collisions.push([pr[0],pr[1]]);
+    });
     var restIdx=Object.keys(baseAdj).map(Number),balance='none',margin=null;
     if(restIdx.length){
       var m2=0,cx=0,cz=0,foot=[];

@@ -205,16 +205,27 @@ def validate_parts(parts, meshes):
     stud_conn = pin_conn = 0
     adj = [set() for _ in range(n)]
     base_adj = set()
+    # Sockets bucketed by rounded world position (twin of the JS spatial hash): each stud probes only the 27
+    # neighbouring 1-LDU cells rather than every other part's every socket. The 0.5-LDU tolerance can straddle
+    # one rounding boundary, hence the +/-1 probe. Same pairs matched as the all-pairs loop, so counts are equal.
+    sock_hash = {}
+    for j in range(n):
+        for k in sockets[j]:
+            hk = (round(k['pos'][0]), round(k['pos'][1]), round(k['pos'][2]))
+            sock_hash.setdefault(hk, []).append((j, k))
     for i in range(n):
-        for j in range(n):
-            if i == j:
-                continue
-            for s in studs[i]:
-                for k in sockets[j]:
-                    if _dist3(s['pos'], k['pos']) < 0.5 and _dot3(s['dir'], k['dir']) < -0.5:
-                        stud_conn += 1
-                        adj[i].add(j)
-                        adj[j].add(i)
+        for s in studs[i]:
+            bx, by, bz = round(s['pos'][0]), round(s['pos'][1]), round(s['pos'][2])
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    for dz in (-1, 0, 1):
+                        for j, k in sock_hash.get((bx + dx, by + dy, bz + dz), ()):
+                            if j == i:
+                                continue
+                            if _dist3(s['pos'], k['pos']) < 0.5 and _dot3(s['dir'], k['dir']) < -0.5:
+                                stud_conn += 1
+                                adj[i].add(j)
+                                adj[j].add(i)
         for k in sockets[i]:
             if (abs(k['pos'][1]) < 0.5 and _on_grid(k['pos'][0]) and _on_grid(k['pos'][2])
                     and _dot3(k['dir'], (0, -1, 0)) < -0.5):
@@ -255,12 +266,24 @@ def validate_parts(parts, meshes):
             if b[3] > 0.5:
                 collisions.append([-1, i])
                 break
+    # Coarse 80-LDU grid over each part's overall AABB (twin of the JS version): only parts sharing a cell are
+    # box-tested; pairs deduped and emitted in (i asc, j asc) order, same as the all-pairs loop.
+    grid, pairs = {}, set()
     for i in range(n):
-        for j in range(i + 1, n):
-            if not boxes[i] or not boxes[j]:
-                continue
-            if any(_boxes_overlap(a, b) for a in boxes[i] for b in boxes[j]):
-                collisions.append([i, j])
+        if not boxes[i]:
+            continue
+        lo = [min(b[ax * 2] for b in boxes[i]) for ax in range(3)]
+        hi = [max(b[ax * 2 + 1] for b in boxes[i]) for ax in range(3)]
+        for gx in range(math.floor(lo[0] / 80), math.floor(hi[0] / 80) + 1):
+            for gy in range(math.floor(lo[1] / 80), math.floor(hi[1] / 80) + 1):
+                for gz in range(math.floor(lo[2] / 80), math.floor(hi[2] / 80) + 1):
+                    cell = grid.setdefault((gx, gy, gz), [])
+                    for o in cell:
+                        pairs.add((o, i))
+                    cell.append(i)
+    for a_i, b_i in sorted(pairs):
+        if any(_boxes_overlap(a, b) for a in boxes[a_i] for b in boxes[b_i]):
+            collisions.append([a_i, b_i])
 
     rest_idx = sorted(base_adj)
     balance, margin = 'none', None
