@@ -37,9 +37,10 @@ FILES = [GAS_DIR / "atom.gs"] + sorted(
 
 BORDER = {"#e5e7eb": "border", "#e0e0e0": "border", "#e2e8f0": "border",
           "#dadce0": "border", "#d1d5db": "border", "#eaeaea": "border",
-          "#f3f4f6": "border-soft", "#f1f5f9": "border-soft"}
+          "#f3f4f6": "border-soft", "#f1f5f9": "border-soft", "#f0f0f0": "border"}
 BG = {"#fff": "surface", "#ffffff": "surface",
-      "#f9fafb": "surface-muted", "#fafafa": "surface-muted", "#f8f9fa": "surface-muted"}
+      "#f9fafb": "surface-muted", "#fafafa": "surface-muted", "#f8f9fa": "surface-muted",
+      "#f3f4f6": "surface-muted", "#e5e7eb": "surface-muted"}
 RADIUS = {"8": "radius", "10": "radius", "12": "radius", "14": "radius",
           "4": "radius-sm", "6": "radius-sm"}
 _BORDER_PROPS = {"border", "border-top", "border-bottom", "border-left", "border-right"}
@@ -154,7 +155,14 @@ def render_via_bundle(texts_override, probes):
     core = [x for x in re.findall(r"<script>\n(.*?)\n</script>", bundle, re.S) if "a2ui-core" in x[:300]][0]
     with tempfile.TemporaryDirectory() as td:
         d = Path(td) / "d.js"
-        d.write_text("global.window=global;\n" + core + "\nvar cs=" + json.dumps(probes) +
+        # Some renderers roll Math.random() into a uid (e.g. split_pane's CSS class name) --
+        # a real, deliberate design choice in the shipped renderer, but it means two
+        # INDEPENDENT render calls of the same unmodified function legitimately produce
+        # different output, which looks like "content changed" to a before/after diff that
+        # isn't actually comparing the transform. Fixed to a constant ONLY inside this
+        # throwaway verification process (never touches the real renderer source) so both
+        # calls roll identically and the comparison is meaningful again.
+        d.write_text("global.window=global;\nMath.random=function(){return 0.42;};\n" + core + "\nvar cs=" + json.dumps(probes) +
                      ";var r={};cs.forEach(function(c){try{r[c.component]=renderAtoms([c],{theme:'light'});}"
                      "catch(e){r[c.component]='THREW: '+e.message;}});console.log(JSON.stringify(r));")
         p = subprocess.run(["node", str(d)], capture_output=True, text=True, timeout=120)

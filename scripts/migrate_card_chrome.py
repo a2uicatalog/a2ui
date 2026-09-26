@@ -32,9 +32,10 @@ TARGET = ROOT / "renderers" / "web_article.py"
 
 BORDER = {"#e5e7eb": "border", "#e0e0e0": "border", "#e2e8f0": "border",
           "#dadce0": "border", "#d1d5db": "border", "#eaeaea": "border",
-          "#f3f4f6": "border-soft", "#f1f5f9": "border-soft"}
+          "#f3f4f6": "border-soft", "#f1f5f9": "border-soft", "#f0f0f0": "border"}
 BG = {"#fff": "surface", "#ffffff": "surface",
-      "#f9fafb": "surface-muted", "#fafafa": "surface-muted", "#f8f9fa": "surface-muted"}
+      "#f9fafb": "surface-muted", "#fafafa": "surface-muted", "#f8f9fa": "surface-muted",
+      "#f3f4f6": "surface-muted", "#e5e7eb": "surface-muted"}
 RADIUS = {"8": "radius", "10": "radius", "12": "radius", "14": "radius",
           "4": "radius-sm", "6": "radius-sm"}
 EXCLUDE_CONTENT = re.compile(r"<svg|<canvas|<table|WebGL|THREE\.|[Cc]hart\(")

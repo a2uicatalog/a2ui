@@ -252,7 +252,7 @@ _RENDERERS['sheet_form_submit'] = function(b) {
     var f    = fields[i];
     var type = f.type || 'text';
     var inp  = type === 'textarea'
-      ? '<textarea name="' + _esc(f.name) + '" placeholder="' + _esc(f.placeholder || '') + '" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--border,#e2e8f0);border-radius:6px;font-size:0.85rem;background:var(--bg2,#f8f9fa);color:var(--text);resize:vertical;"></textarea>'
+      ? '<textarea name="' + _esc(f.name) + '" placeholder="' + _esc(f.placeholder || '') + '" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--border,#e2e8f0);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.85rem;background:var(--bg2,#f8f9fa);color:var(--text);resize:vertical;"></textarea>'
       : '<input type="' + _esc(type) + '" name="' + _esc(f.name) + '" placeholder="' + _esc(f.placeholder || '') + '" style="width:100%;padding:8px 10px;border:1px solid var(--border,#e2e8f0);border-radius:6px;font-size:0.85rem;background:var(--bg2,#f8f9fa);color:var(--text);">';
     inputs += '<div style="margin-bottom:12px;">' +
               '<label style="display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">' + _esc(f.label || f.name) + '</label>' +

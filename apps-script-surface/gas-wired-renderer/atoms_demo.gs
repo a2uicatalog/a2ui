@@ -14,7 +14,7 @@ _RENDERERS['surface_unlocked'] = function(b) {
     + '@keyframes su-glow-' + uid + '{0%,100%{box-shadow:0 0 0 0 ' + accent + '55;}60%{box-shadow:0 0 0 10px ' + accent + '00;}}'
     + '#su-' + uid + '{animation:su-in-' + uid + ' 0.5s cubic-bezier(0.34,1.56,0.64,1) both,su-glow-' + uid + ' 1.8s 0.5s ease-out 3;}'
     + '</style>'
-    + '<div id="su-' + uid + '" style="margin:1.5rem 0;padding:22px 26px;background:' + accent + '12;border:2px solid ' + accent + ';border-radius:14px;display:flex;align-items:center;gap:22px;">'
+    + '<div id="su-' + uid + '" style="margin:1.5rem 0;padding:22px 26px;background:' + accent + '12;border:2px solid ' + accent + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);display:flex;align-items:center;gap:22px;">'
     + '<div style="font-size:3rem;line-height:1;flex-shrink:0">' + icon + '</div>'
     + '<div>'
     + '<div style="font-size:0.6rem;font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:' + accent + ';margin-bottom:5px">' + _esc(sub) + '</div>'

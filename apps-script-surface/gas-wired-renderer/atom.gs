@@ -1428,7 +1428,7 @@ _RENDERERS['glossary_inline'] = function(b) {
 };
 
 _RENDERERS['time_estimate'] = function(b) {
-  return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:100px;">🕐 ' + _esc(String(b.minutes||5)) + ' min read</span>';
+  return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;color:#6b7280;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);padding:3px 10px;border-radius:100px;">🕐 ' + _esc(String(b.minutes||5)) + ' min read</span>';
 };
 
 _RENDERERS['progress_checkpoint'] = function(b) {
@@ -4294,7 +4294,7 @@ _RENDERERS['split_pane'] = function(b) {
   var leftBlocks  = renderAtoms(left.blocks  || []);
   var rightBlocks = renderAtoms(right.blocks || []);
   return '<style>@media(max-width:600px){.sp-' + uid + '{grid-template-columns:1fr!important;}.sp-' + uid + '>div:last-child{border-left:none!important;border-top:1px solid #e5e7eb;}}</style>' +
-    '<div class="sp-' + uid + '" style="display:grid;grid-template-columns:1fr 1fr;border-radius:14px;overflow:hidden;border:1px solid var(--border,#e5e7eb);margin:1.5rem 0;">' +
+    '<div class="sp-' + uid + '" style="display:grid;grid-template-columns:1fr 1fr;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;border:1px solid var(--border,#e5e7eb);margin:1.5rem 0;">' +
     '<div style="background:' + leftBg  + ';padding:24px;">' + leftBlocks  + '</div>' +
     '<div style="background:' + rightBg + ';padding:24px;border-left:1px solid var(--border,#e5e7eb);">' + rightBlocks + '</div>' +
     '</div>';
