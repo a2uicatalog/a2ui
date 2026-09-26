@@ -111,20 +111,47 @@ def round_occupancy_and_sockets(module_h, n_studs):
     return occ, sockets
 
 
-# Rectilinear corner bricks/plates (a clean N x N grid with exactly one corner cell missing, no curve at all --
-# NOT the "Corner Round" family, which is a real curve and stays needs_occupancy=True): one 20x20xheight box per
-# stud actually present, read from the part's own real geometry (not guessed) -- exact, not an approximation,
-# since each present stud position IS the centre of a genuinely solid 20x20 cell for these two ids. Verified
-# against real baked stud positions: 2357/2420 both have exactly 3 studs at (0,0),(20,0),(0,20), so the combined
-# 3-box envelope (x:[-10,30], z:[-10,30]) matches each part's own real baked bounds exactly.
-CORNER_L_PARTS = {"2357": 24, "2420": 8}
-
-
-def corner_l_occupancy_and_sockets(module_h, studs):
-    """studs: list of (pos, dir) in real LDU (not yet quantised)."""
+# One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
+# below for two different reasons -- see each dict's own comment for which:
+def stud_cell_occupancy_and_sockets(module_h, studs):
+    """studs: list of (pos, dir) in real LDU (not yet quantised). Every id using this MUST be checked first that
+    all its studs sit at y=0 facing the normal up direction (-Y) -- a stud anywhere else (an "Inverted" or
+    "Double" slope variant can have one partway up the ramp, at a non-zero y) means the simple "solid 20x20xheight
+    cell under this stud" assumption this function makes does not hold, and the id must NOT be added here.
+    Confirmed live 2026-09-26: 3665a and 3660a ("Inverted" 45-degree slopes) both have a second stud at y=4, not
+    y=0 -- excluded from SLOPE_BACK_WALL_PARTS below for exactly this reason."""
     occ = [box(p[0] - 10, p[0] + 10, 0, module_h, p[2] - 10, p[2] + 10) for p, _ in studs]
     sockets = [((p[0], module_h, p[2]), (0, 1, 0)) for p, _ in studs]
     return occ, sockets
+
+
+# Rectilinear corner bricks/plates (a clean N x N grid with exactly one corner cell missing, no curve at all --
+# NOT the "Corner Round" family, which is a real curve and stays needs_occupancy=True): the stud-cell boxes are
+# EXACT here, not an approximation -- each present stud position IS the centre of a genuinely solid 20x20 cell
+# for these two ids. Verified against real baked stud positions: 2357/2420 both have exactly 3 studs at
+# (0,0),(20,0),(0,20), so the combined 3-box envelope (x:[-10,30], z:[-10,30]) matches each part's own real
+# baked bounds exactly.
+CORNER_L_PARTS = {"2357": 24, "2420": 8}
+
+# Slope bricks (angle encoded in the title -- 31/33/45/65/75 degrees -- but that angle is NOT used here at all):
+# the stud-cell boxes cover only the flat, full-height "back wall" a slope's studs actually sit on, NOT the
+# angled ramp itself (occupancy can only express axis-aligned boxes, and a tight staircase approximation of the
+# real ramp was judged not worth the added risk for this pass) -- a deliberate UNDER-approximation, safe per
+# spec §3 ("miss an overlap ... but never report a false one"): every box here is provably solid material (a
+# stud cannot be moulded floating in air), so this can only ever under-report a collision on the ramp portion,
+# never over-report one anywhere. Only ids where EVERY stud is confirmed at y=0 facing up are listed (checked
+# individually against real baked connector data -- see stud_cell_occupancy_and_sockets' docstring for the two
+# excluded "Inverted" ids this ruled out). Slopes with zero studs at all (3043, all "Curved" variants, the
+# 0.667-height "31" variants) are NOT covered by this and stay needs_occupancy=True -- there is no stud to hang
+# even this partial an approximation off, and guessing a bare box would have no real-geometry anchor at all.
+#
+# A SET, not an {id: height} dict like CORNER_L_PARTS -- most "Slope Brick N W x D" titles are one brick tall
+# (24 LDU), but 60481a ("... 2 x 1 x 2 ...") and 4460b ("... 2 x 1 x 3 ...") are 2 and 3 bricks tall (48/72 LDU)
+# respectively, per their own real baked bounds. A hardcoded 24 for these two (an earlier version of this table)
+# gave a technically-still-safe but needlessly wrong occupancy height -- found by checking bounds height against
+# the assumed constant for every id, not by inspection. Height is now always read from the part's own real
+# bounds at the resolve_occupancy_and_sockets call site, never assumed.
+SLOPE_BACK_WALL_PARTS = {"3040b", "3039", "4286", "3298", "3747b", "60481a", "4460b", "3037", "3038"}
 
 
 # Hand-authored occupancy for parts whose plain LDraw geometry does not reduce to one clean box or the Technic-
@@ -181,13 +208,16 @@ def generate_sockets(occupancy):
 
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
-    unquantised) are only needed for the Technic-holes/round/corner-L families; every other path ignores them,
-    so existing callers that omit them keep working."""
+    unquantised) are only needed for the Technic-holes/round/corner-L/slope families; every other path ignores
+    them, so existing callers that omit them keep working."""
     if part_id in ROUND_PARTS:
         occ, sockets = round_occupancy_and_sockets(*ROUND_PARTS[part_id])
         return occ, sockets, False
     if part_id in CORNER_L_PARTS and studs is not None:
-        occ, sockets = corner_l_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
+        occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
+        return occ, sockets, False
+    if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
+        occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
         return occ, sockets, False
     occ = OVERRIDES.get(part_id) or generated_occupancy(title)
     if occ is None and part_id in TECHNIC_HOLES_PARTS and bounds_min and holes is not None:

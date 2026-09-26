@@ -1557,11 +1557,11 @@
     ]
    },
    "studs": 4,
-   "sockets": 0,
+   "sockets": 4,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 48625,
+   "needs_occupancy": false,
+   "bytes": 48881,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3038": {
@@ -1579,11 +1579,11 @@
     ]
    },
    "studs": 3,
-   "sockets": 0,
+   "sockets": 3,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 33365,
+   "needs_occupancy": false,
+   "bytes": 33556,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3039": {
@@ -1601,11 +1601,11 @@
     ]
    },
    "studs": 2,
-   "sockets": 0,
+   "sockets": 2,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 18414,
+   "needs_occupancy": false,
+   "bytes": 18539,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3040b": {
@@ -1623,11 +1623,11 @@
     ]
    },
    "studs": 1,
-   "sockets": 0,
+   "sockets": 1,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 10013,
+   "needs_occupancy": false,
+   "bytes": 10073,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3043": {
@@ -1711,11 +1711,11 @@
     ]
    },
    "studs": 2,
-   "sockets": 0,
+   "sockets": 2,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 32027,
+   "needs_occupancy": false,
+   "bytes": 32152,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3660a": {
@@ -1777,11 +1777,11 @@
     ]
    },
    "studs": 6,
-   "sockets": 0,
+   "sockets": 6,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 60889,
+   "needs_occupancy": false,
+   "bytes": 61286,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "4286": {
@@ -1799,11 +1799,11 @@
     ]
    },
    "studs": 1,
-   "sockets": 0,
+   "sockets": 1,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 13087,
+   "needs_occupancy": false,
+   "bytes": 13147,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "4460b": {
@@ -1821,11 +1821,11 @@
     ]
    },
    "studs": 1,
-   "sockets": 0,
+   "sockets": 1,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 5433,
+   "needs_occupancy": false,
+   "bytes": 5494,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "54200": {
@@ -1865,11 +1865,11 @@
     ]
    },
    "studs": 1,
-   "sockets": 0,
+   "sockets": 1,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 6174,
+   "needs_occupancy": false,
+   "bytes": 6234,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "85984": {
