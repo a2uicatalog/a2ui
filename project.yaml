@@ -302,6 +302,23 @@ generators:
     source: atoms/schema.yaml
     outputs: [apps-script-surface/gas-wired-renderer/atoms_schema_snapshot.gs]  # + mirrors in other renderer dirs
     publish: clasp push (atom-change process)
+  gen_renderer_page:
+    script: scripts/gen_renderer_page.py
+    source: page content is authored in the script itself (no external source); chrome comes
+      from generate_atom_pages.py (SITE_BASE_CSS/site_header/theme JS)
+    outputs: [public/renderer/index.html]
+    publish: ci (deploy.yml on push -> Cloudflare). Was hand-maintained with its own copy-pasted
+      header + full token CSS ("keep in sync" by hand) until it went stale the first time the
+      brand tokens changed (2026-09-26, caught by tests/test_brand.py) — generated since, same
+      pattern as gen_trust_pages.py.
+  gen_brand:
+    script: scripts/gen_brand.py
+    source: atoms/brand-tokens.yaml
+    outputs: [scripts/_brand_generated.py]   # + ../a2ui-private/spec/brand.md token block when the private sibling is present
+    publish: none directly — imported by generate_atom_pages.py (site header/tokens) and gen_trust_pages.py
+      (docs/about/404); the pages ship via ci. One YAML so the palette, logo and wordmark cannot fork
+      between pages (tests/test_brand.py fails any page that carries the site header but not the current
+      /*brand-tokens hash*/ marker).
   gen_design_tokens:
     script: scripts/gen_design_tokens.py
     source: atoms/design-tokens.yaml
@@ -428,7 +445,7 @@ generators:
   gen_trust_pages:
     script: scripts/gen_trust_pages.py
     source: public/spec.json (itself compiled from atoms/schema.yaml by gen_public_catalog)
-    outputs: [public/developers/, public/docs/, public/api-docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/agents.md, public/index.md, public/surfaces/llms.txt]
+    outputs: [public/developers/, public/docs/, public/api-docs/, public/auth/, public/webhooks/, public/about/, public/contact/, public/privacy/, public/404.html, public/agents.md, public/index.md, public/surfaces/llms.txt]
     publish: ci (deploy.yml on push -> Cloudflare). Answers three agent-readiness
       audit findings from 2026-07-31 — trust anchor pages 0/2, agent discovery file
       0/2, and the markdown-fallback checks — /agents.md is served as real

@@ -6,131 +6,163 @@
   <title>Deploy your Google Apps Script renderer — A2UI Catalog</title>
   <meta name="description" content="Deploy your own A2UI Google Apps Script renderer in 4 commands. Open source, MIT licensed. You own the URL, you own the deployment.">
   <script>
-  (function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
-  document.documentElement.setAttribute('data-theme',t)})();
-  </script>
-  <style>
-    /* v0.3 tokens — keep in sync with SITE_BASE_CSS in scripts/generate_atom_pages.py
-       (this page is hand-maintained, not generator-emitted) */
-    :root{
-      color-scheme:light;
-      --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
-      --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
-      --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);
-      --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
-      --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
-      --code-bg:oklch(96% 0.01 255);--radius:12px;
-      --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
-      --glow:0 4px 24px oklch(58% 0.19 277 / .14);
-      --header-glass:oklch(100% 0 0 / .72);
-      --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
-      --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);--indigo:var(--accent);
-    }
-    :root[data-theme="dark"]{
-      color-scheme:dark;
-      --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
-      --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
-      --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);
-      --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
-      --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
-      --code-bg:oklch(23% 0.02 255);
-      --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
-      --glow:0 4px 28px oklch(72% 0.16 277 / .22);
-      --header-glass:oklch(33% 0.025 255 / .72);
-      --grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
-    .wrap{max-width:860px;margin:0 auto;padding:36px 24px 96px}
-    a{color:var(--accent-2);text-decoration:none}
-    a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-    .site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
-    .hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
-    .wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
-    .logo-atom{width:22px;height:22px;flex-shrink:0}
-    .logo-atom .nuc{fill:var(--accent)}
-    .logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
-    .logo-atom .o2{stroke:var(--accent-2);fill:none;stroke-width:1.5}
-    .logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
-    .logo-atom .el{fill:var(--accent-2)}
-    .wordmark .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
-    .site-nav a{font-size:13px;font-weight:600;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
-    .site-nav a:hover{color:var(--text);background:var(--surface-2);text-decoration:none}
-    .site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
-    .theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
-    .theme-btn:hover{border-color:var(--border-strong)}
-    .gh-pill{font-size:12px;font-weight:650;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
-    .gh-pill:hover{border-color:var(--border-strong);text-decoration:none}
-    @media(max-width:700px){.site-nav{display:none}}
-    a:hover{text-decoration:underline}
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+  <style>/*brand-tokens:8925e7c1*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(58% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+  --negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);--accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+  --negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);--shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
 
-    .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:40px}
-    .breadcrumb a{color:var(--muted)}
-    .breadcrumb a:hover{color:var(--cyan)}
-    .breadcrumb span{margin:0 6px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
 
-    h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
-    .lead{font-size:1.1rem;color:var(--muted);margin-bottom:40px;max-width:600px}
-    .lead strong{color:var(--text)}
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
 
-    .steps{display:flex;flex-direction:column;gap:0;margin-bottom:48px}
-    .step{display:grid;grid-template-columns:40px 1fr;gap:0 20px;position:relative}
-    .step:not(:last-child)::before{content:'';position:absolute;left:19px;top:44px;bottom:-20px;width:2px;background:var(--border)}
-    .step-num{width:40px;height:40px;border-radius:50%;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--indigo);flex-shrink:0;margin-top:2px;position:relative;z-index:1}
-    .step-body{padding-bottom:32px}
-    .step-body h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;margin-top:8px}
-    .step-body p{font-size:14px;color:var(--muted);margin-bottom:12px}
 
-    pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:18px 20px;overflow-x:auto;font-size:13px;font-family:'SF Mono',Monaco,monospace;color:var(--text);position:relative}
-    .copy-btn{position:absolute;top:10px;right:10px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:5px;color:var(--indigo);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.04em}
-    .copy-btn:hover{background:rgba(99,102,241,.25)}
-    .copy-btn.copied{color:var(--green);border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.1)}
-    .comment{color:var(--muted)}
+.wrap{max-width:860px}
+.wrap a{color:var(--accent-2);text-decoration:none}
+.wrap a:hover{text-decoration:underline}
 
-    .what-you-get{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:32px 0 48px}
-    .feature{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
-    .feature-icon{font-size:20px;margin-bottom:10px}
-    .feature h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
-    .feature p{font-size:13px;color:var(--muted);line-height:1.5}
+.breadcrumb{font-size:13px;color:var(--muted);margin-bottom:40px}
+.breadcrumb a{color:var(--muted)}
+.breadcrumb a:hover{color:var(--cyan)}
+.breadcrumb span{margin:0 6px}
 
-    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid var(--border)}
-    .btn-primary{display:inline-block;padding:12px 24px;background:var(--accent);color:var(--accent-contrast);border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.03em;transition:filter .15s,box-shadow .15s}
-    .btn-primary:hover{filter:brightness(1.08);box-shadow:var(--glow);text-decoration:none}
-    .btn-secondary{display:inline-block;padding:12px 24px;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:14px;font-weight:600;background:var(--surface)}
-    .btn-secondary:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+h1{font-size:2.2rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.lead{font-size:1.1rem;color:var(--muted);margin-bottom:40px;max-width:600px}
+.lead strong{color:var(--text)}
 
-    .note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:24px 0}
-    .note strong{color:var(--text)}
+.steps{display:flex;flex-direction:column;gap:0;margin-bottom:48px}
+.step{display:grid;grid-template-columns:40px 1fr;gap:0 20px;position:relative}
+.step:not(:last-child)::before{content:'';position:absolute;left:19px;top:44px;bottom:-20px;width:2px;background:var(--border)}
+.step-num{width:40px;height:40px;border-radius:50%;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent);flex-shrink:0;margin-top:2px;position:relative;z-index:1}
+.step-body{padding-bottom:32px}
+.step-body h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;margin-top:8px}
+.step-body p{font-size:14px;color:var(--muted);margin-bottom:12px}
 
-    /* Try-it-now demo tabs — pill pattern borrowed from the MCP playground preset chips */
-    .try-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);margin-bottom:6px}
-    .try-lead{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:640px}
-    .try-lead strong{color:var(--text)}
-    .demo-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
-    .demo-tab{font:inherit;display:flex;align-items:baseline;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:700;letter-spacing:.02em;transition:color .15s,border-color .15s,background .15s}
-    .demo-tab .k{font-size:10px;font-weight:800;letter-spacing:.09em;opacity:.65}
-    .demo-tab:hover{border-color:var(--indigo);color:var(--indigo)}
-    .demo-tab[aria-selected="true"]{border-color:var(--indigo);color:var(--indigo);background:var(--accent-soft-bg)}
-    .demo-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:48px;box-shadow:var(--shadow)}
-    .demo-panel[hidden]{display:none}
-    .demo-panel h3{font-size:16px;font-weight:800;margin-bottom:8px}
-    .demo-panel p{font-size:14px;color:var(--muted);margin-bottom:14px;max-width:640px}
-    .demo-panel p strong,.demo-panel p code{color:var(--text)}
-    .demo-cta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .demo-url{margin:0;padding:10px 88px 10px 14px;font-size:12.5px;flex:1;min-width:230px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:18px 20px;overflow-x:auto;font-size:13px;font-family:ui-monospace,'SF Mono',Monaco,monospace;color:var(--text);position:relative}
+.copy-btn{position:absolute;top:10px;right:10px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:5px;color:var(--accent);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;letter-spacing:.04em}
+.copy-btn:hover{background:rgba(99,102,241,.25)}
+.copy-btn.copied{color:var(--positive);border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.1)}
+.comment{color:var(--muted)}
 
-    footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-  </style>
+.what-you-get{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:32px 0 48px}
+.feature{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.feature-icon{font-size:20px;margin-bottom:10px}
+.feature h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.feature p{font-size:13px;color:var(--muted);line-height:1.5}
+
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:32px;border-top:1px solid var(--border)}
+.btn-primary{display:inline-block;padding:12px 24px;background:var(--accent);color:var(--accent-contrast);border-radius:8px;font-size:14px;font-weight:700;letter-spacing:.03em;transition:filter .15s,box-shadow .15s}
+.btn-primary:hover{filter:brightness(1.08);box-shadow:var(--glow);text-decoration:none}
+.btn-secondary{display:inline-block;padding:12px 24px;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:14px;font-weight:600;background:var(--surface)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+
+.note{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--muted);margin:24px 0}
+.note strong{color:var(--text)}
+
+/* Try-it-now demo tabs — pill pattern borrowed from the MCP playground preset chips */
+.try-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.try-lead{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:640px}
+.try-lead strong{color:var(--text)}
+.demo-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.demo-tab{font:inherit;display:flex;align-items:baseline;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:700;letter-spacing:.02em;transition:color .15s,border-color .15s,background .15s}
+.demo-tab .k{font-size:10px;font-weight:800;letter-spacing:.09em;opacity:.65}
+.demo-tab:hover{border-color:var(--accent);color:var(--accent)}
+.demo-tab[aria-selected="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft-bg)}
+.demo-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:48px;box-shadow:var(--shadow)}
+.demo-panel[hidden]{display:none}
+.demo-panel h3{font-size:16px;font-weight:800;margin-bottom:8px}
+.demo-panel p{font-size:14px;color:var(--muted);margin-bottom:14px;max-width:640px}
+.demo-panel p strong,.demo-panel p code{color:var(--text)}
+.demo-cta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.demo-url{margin:0;padding:10px 88px 10px 14px;font-size:12.5px;flex:1;min-width:230px}
+</style>
 </head>
 <body>
-  <header class="site-header"><div class="hdr-in">
+<header class="site-header"><div class="hdr-in">
     <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
     <nav class="site-nav">
       <a href="/">Atoms</a>
+      
       <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
       <a href="/renderer" aria-current="page">Apps Script Renderer</a>
       <a href="/blog">Blog</a>
+      
     </nav>
     <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
     <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
@@ -139,7 +171,7 @@
 
   <div class="breadcrumb">
     <a href="/">A2UI Catalog</a>
-    <span>›</span>
+    <span>&rsaquo;</span>
     Deploy your Google Apps Script renderer
   </div>
 
@@ -160,7 +192,7 @@
     <p>A slide playbook over Toulouse-Blagnac: <strong>live ADS-B and METAR feeds</strong>, an isometric takeoff scene, and a fullscreen airspace command deck with a real-time traffic ticker. Everything arrives as one declarative payload — the aircraft on the radar are actually up there right now.</p>
     <p>Proves: playbook slides, data-source atoms, fullscreen breakout — in a plain shareable link.</p>
     <div class="demo-cta">
-      <a class="btn-primary" href="https://a2uicatalog.ai/s/atc" target="_blank" rel="noopener">Open demo →</a>
+      <a class="btn-primary" href="https://a2uicatalog.ai/s/atc" target="_blank" rel="noopener">Open demo &rarr;</a>
       <pre class="demo-url" id="url-atc">https://a2uicatalog.ai/s/atc<button class="copy-btn" onclick="copy('url-atc',this)">COPY</button></pre>
     </div>
   </div>
@@ -170,7 +202,7 @@
     <p>A padel tournament night as a <strong>wired surface</strong>: live scoring, rotation schedules, standings that update as you tap — state stores, actions, and sessions, still expressed as one declarative payload. Open it on two phones with the same link and score together.</p>
     <p>Proves: the wired dialect — real interactivity without the agent writing a line of imperative code.</p>
     <div class="demo-cta">
-      <a class="btn-primary" href="https://a2uicatalog.ai/s/americano#t=renderer-demo" target="_blank" rel="noopener">Open demo →</a>
+      <a class="btn-primary" href="https://a2uicatalog.ai/s/americano#t=renderer-demo" target="_blank" rel="noopener">Open demo &rarr;</a>
       <pre class="demo-url" id="url-americano">https://a2uicatalog.ai/s/americano<button class="copy-btn" onclick="copy('url-americano',this)">COPY</button></pre>
     </div>
   </div>
@@ -180,7 +212,7 @@
     <p>A five-module curriculum on <strong>A2UI and the Model Context Protocol</strong>: the payload contract, atoms and the graduation pipeline, the <code>?p=</code> URL model, MCP fundamentals, and MCP Apps' sandboxed handshake. Flashcards, knowledge checks, and worked examples throughout.</p>
     <p>Proves: <code>module_map</code> pagination — five module cards, each its own permanently-published page, so depth is unbounded while every link stays shareable. Module 3 explains why: the same atom builds sub-pages differently depending on whether it's rendering on Apps Script or here, in the browser.</p>
     <div class="demo-cta">
-      <a class="btn-primary" href="https://a2uicatalog.ai/s/learn-a2ui" target="_blank" rel="noopener">Open demo →</a>
+      <a class="btn-primary" href="https://a2uicatalog.ai/s/learn-a2ui" target="_blank" rel="noopener">Open demo &rarr;</a>
       <pre class="demo-url" id="url-learn">https://a2uicatalog.ai/s/learn-a2ui<button class="copy-btn" onclick="copy('url-learn',this)">COPY</button></pre>
     </div>
   </div>
@@ -230,7 +262,7 @@ clasp push
         <h3>Deploy</h3>
         <p>Deploy as a web app accessible to anyone. You'll get a URL — that's your renderer endpoint.</p>
         <pre id="code-deploy">clasp deploy --description "A2UI Renderer v1"
-<span class="comment"># → https://script.google.com/macros/s/YOUR_ID/exec</span>
+<span class="comment"># &rarr; https://script.google.com/macros/s/YOUR_ID/exec</span>
 <button class="copy-btn" onclick="copy('code-deploy',this)">COPY</button></pre>
       </div>
     </div>
@@ -240,22 +272,22 @@ clasp push
   <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">What you get</h2>
   <div class="what-you-get">
     <div class="feature">
-      <div class="feature-icon">🔒</div>
+      <div class="feature-icon">&#128274;</div>
       <h4>You own the deployment</h4>
       <p>Runs in your Google account. No dependency on the catalog's demo URL. Survives any catalog changes.</p>
     </div>
     <div class="feature">
-      <div class="feature-icon">⚡</div>
+      <div class="feature-icon">&#9889;</div>
       <h4>501 atoms, ready to go</h4>
       <p>Stat cards, charts, globes, animations, tables, forms — all render immediately. A handful of data-source atoms want their own API key (see below) and degrade gracefully without one.</p>
     </div>
     <div class="feature">
-      <div class="feature-icon">🎨</div>
+      <div class="feature-icon">&#127912;</div>
       <h4>Fully customisable</h4>
       <p>Fork the renderer, add your own atoms, change the CSS, restrict to specific surfaces. It's your code.</p>
     </div>
     <div class="feature">
-      <div class="feature-icon">🔄</div>
+      <div class="feature-icon">&#128260;</div>
       <h4>Stay up to date</h4>
       <p>Pull the latest from the repo and <code>clasp push</code> again when new atoms are added to the catalog.</p>
     </div>
@@ -287,29 +319,57 @@ function doGet() {
   </div>
 
   <div class="note">
-    <strong>A few atoms want their own Script Properties</strong> — Trading212 (<code>T212_API_KEY</code>, <code>T212_API_SECRET</code>), Twelve Data (<code>TWELVE_API_KEY</code>) and Vertex AI (<code>VERTEX_PROJECT_ID</code>) each back one data-source atom. Set them under <strong>Project Settings → Script Properties</strong> in your Apps Script editor if you use those atoms; every other atom works with none set, and these three fail gracefully (return an explicit error, not a broken page) without their key.
+    <strong>A few atoms want their own Script Properties</strong> — Trading212 (<code>T212_API_KEY</code>, <code>T212_API_SECRET</code>), Twelve Data (<code>TWELVE_API_KEY</code>) and Vertex AI (<code>VERTEX_PROJECT_ID</code>) each back one data-source atom. Set them under <strong>Project Settings &rarr; Script Properties</strong> in your Apps Script editor if you use those atoms; every other atom works with none set, and these three fail gracefully (return an explicit error, not a broken page) without their key.
   </div>
 
   <div class="cta-row">
-    <a href="/" class="btn-primary">Browse atoms →</a>
+    <a href="/" class="btn-primary">Browse atoms &rarr;</a>
     <a href="https://github.com/a2uicatalog/a2ui/tree/main/apps-script-surface/gas-wired-renderer" target="_blank" rel="noopener" class="btn-secondary">View source on GitHub</a>
     <a href="/.well-known/ai-catalog.json" class="btn-secondary">ARD manifest</a>
   </div>
 
   <footer>
-    <span>A2UI Atomic Catalog · <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
+    <span>A2UI Atomic Catalog &middot; <a href="https://github.com/a2uicatalog/a2ui">github.com/a2uicatalog/a2ui</a></span>
     <span>Independent, unofficial catalog — not affiliated with or endorsed by Google. A2UI is Google's protocol; official spec at <a href="https://a2ui.org">a2ui.org</a>.</span>
     <span>MIT License</span>
   </footer>
-  </div>
 
-  <script>
-    document.addEventListener('click',function(e){
-      var b=e.target.closest('.theme-btn');if(!b)return;
-      var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
-      r.setAttribute('data-theme',t);
-      try{localStorage.setItem('a2ui-theme',t)}catch(err){}
-    });
+  </div>
+<script>
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+
+
     function copy(id, btn) {
       const pre = document.getElementById(id);
       const text = pre.innerText.replace(/COPY\s*$/, '').trim();
@@ -330,7 +390,7 @@ function doGet() {
         });
       });
     });
-  </script>
 
+</script>
 </body>
 </html>

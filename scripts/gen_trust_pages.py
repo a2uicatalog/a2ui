@@ -21,6 +21,13 @@ import os
 import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import generate_atom_pages as _site  # the site's shared chrome: header, tokens, theme JS (one definition)
+
+# Which top-nav item is current for each page. The developer/API docs live under "Docs";
+# About / Contact / Privacy are not a nav destination, so none is highlighted.
+_NAV_ACTIVE = {"developers": "docs", "docs": "docs", "api-docs": "docs", "auth": "docs",
+               "webhooks": "docs", "versioning": "docs", "pricing": "docs", "sdks": "docs"}
 PUBLIC = os.path.join(ROOT, "public")
 BASE = "https://a2uicatalog.ai"
 LINKEDIN = "https://www.linkedin.com/in/curtiskrygier"
@@ -42,28 +49,26 @@ PAGE = """<!DOCTYPE html>
 <script type="application/ld+json">
 {jsonld}
 </script>
-<style>
-:root{{color-scheme:light dark}}
-*{{box-sizing:border-box}}
-body{{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
- font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}}
-.wrap{{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
- box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}}
-h1{{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}}
-h2{{font-size:1.15rem;margin:2rem 0 .5rem}}
-.k{{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
- font-weight:600;margin:0 0 26px}}
-a{{color:#00205B}} code{{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}}
-nav.top{{max-width:720px;margin:0 auto 14px;font-size:.85rem}}
-nav.top a{{text-decoration:none;margin-right:14px}}
-footer{{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}}
-@media(prefers-color-scheme:dark){{
- body{{background:#0e1116;color:#e6e9ef}} .wrap{{background:#161a22;box-shadow:none}}
- a{{color:#8ab4ff}} code{{background:#1e2430}}}}
+{site_head_js}
+<style>{site_css}
+.trust{{max-width:860px;margin:0 auto;padding:36px 24px 72px}}
+.trust .wrap{{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+ padding:40px 44px;box-shadow:var(--shadow)}}
+.trust h1{{margin:0 0 6px;font-size:2rem;font-weight:800;letter-spacing:-.02em}}
+.trust h2{{font-size:1.15rem;margin:2rem 0 .5rem}}
+.trust h2.k{{color:var(--text-muted);font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:650;margin:0 0 26px}}
+.trust .wrap p,.trust .wrap li{{color:var(--text)}}
+.trust a{{color:var(--accent)}}
+.trust code{{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em;font-family:ui-monospace,'SF Mono',Monaco,monospace}}
+.trust pre code{{background:none;padding:0;border-radius:0}}
+.trust table td{{color:var(--text)}}
+.trust footer{{margin-top:22px;padding-top:0;border-top:0;font-size:.78rem;color:var(--text-muted);display:block}}
+@media(max-width:640px){{.trust{{padding:24px 16px 56px}}.trust .wrap{{padding:28px 20px}}}}
 </style>
 </head>
 <body>
-<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+{site_header}
+<main class="trust">
 <div class="wrap">
 <h1>A2UI Atomic Catalog — {title}</h1>
 <h2 class="k">Developer &amp; Agent Documentation</h2>
@@ -71,6 +76,8 @@ footer{{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}}
 </div>
 <footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
 A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="{li}">Curtis Krygier</a>. MIT License.</footer>
+</main>
+{site_foot_js}
 </body>
 </html>
 """
@@ -634,14 +641,72 @@ Static channels (`email`, `pdf`) need the image/print path, not interactive atom
 """
 
 
+# The 404 page. Was hand-maintained (and the odd one out: no header, no tokens); now generated with
+# the same chrome as every other page so a brand change reaches it too. Deliberately no canonical/og:
+# an error page must not be indexed or shared as the site's identity.
+NOT_FOUND_PAGE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Page not found — A2UI Atomic Catalog</title>
+<meta name="description" content="This page doesn't exist. Links to the catalog's real machine-readable surfaces: sitemap, llms.txt, developer docs.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://a2uicatalog.ai/">
+{site_head_js}
+<style>{site_css}
+.trust{{max-width:720px;margin:0 auto;padding:48px 24px 72px}}
+.trust .wrap{{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 44px;box-shadow:var(--shadow)}}
+.trust h1{{margin:0 0 6px;font-size:1.9rem;font-weight:800;letter-spacing:-.02em}}
+.trust .k{{color:var(--text-muted);font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:650;margin:0 0 26px}}
+.trust a{{color:var(--accent)}}
+.trust code{{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em}}
+.trust ul{{padding-left:1.2em}}
+.trust footer{{margin-top:22px;padding-top:0;border-top:0;font-size:.78rem;color:var(--text-muted);display:block}}
+</style>
+</head>
+<body>
+{site_header}
+<main class="trust">
+<div class="wrap">
+<h1>404 — Page not found</h1>
+<p class="k">A2UI Atomic Catalog</p>
+<p>That path doesn't exist on this site. If you arrived here as an agent probing a link, the
+real machine-readable entry points are below — <code>/.well-known/api-catalog</code> is the one
+that indexes everything else in a single hop.</p>
+<ul>
+<li><a href="/sitemap.xml">/sitemap.xml</a> — every real page on the site</li>
+<li><a href="/llms.txt">/llms.txt</a> — agent-facing overview and integration links</li>
+<li><a href="/.well-known/api-catalog">/.well-known/api-catalog</a> — RFC 9727 linkset indexing the full machine surface</li>
+<li><a href="/developers/">/developers/</a> — human integration guide (MCP + REST)</li>
+<li><a href="/openapi.json">/openapi.json</a> — the REST API spec</li>
+</ul>
+</div>
+<footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
+A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="{li}">Curtis Krygier</a>. MIT License.</footer>
+</main>
+{site_foot_js}
+</body>
+</html>
+"""
+
+
 def main():
     n = _n()
     for slug, p in pages(n).items():
         d = os.path.join(PUBLIC, slug)
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "index.html"), "w", encoding="utf-8") as f:
-            f.write(PAGE.format(slug=slug, base=BASE, li=LINKEDIN, **p))
+            f.write(PAGE.format(slug=slug, base=BASE, li=LINKEDIN,
+                                site_head_js=_site.SITE_HEAD_JS, site_css=_site.SITE_BASE_CSS,
+                                site_header=_site.site_header(_NAV_ACTIVE.get(slug, "")),
+                                site_foot_js=_site.SITE_FOOT_JS, **p))
         print(f"wrote public/{slug}/index.html")
+
+    with open(os.path.join(PUBLIC, "404.html"), "w", encoding="utf-8") as f:
+        f.write(NOT_FOUND_PAGE.format(li=LINKEDIN, site_head_js=_site.SITE_HEAD_JS, site_css=_site.SITE_BASE_CSS,
+                                      site_header=_site.site_header(""), site_foot_js=_site.SITE_FOOT_JS))
+    print("wrote public/404.html")
 
     with open(os.path.join(PUBLIC, "agents.md"), "w", encoding="utf-8") as f:
         f.write(AGENTS_MD.format(n=n))

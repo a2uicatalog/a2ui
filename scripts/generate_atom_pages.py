@@ -382,34 +382,11 @@ if _PRIVATE_EXAMPLE_BLOCKS.exists():
 # default, dark is a toggle — per the approved handoff, not OS-derived).
 # Legacy var names (--card/--muted/--cyan/--green) alias into the new tokens so
 # every pre-v0.3 rule and the MCP hero inherit the theme without edits.
-SITE_BASE_CSS = """
-:root{
-  color-scheme:light;
-  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);
-  --border:oklch(90% 0.01 255);--border-strong:oklch(82% 0.02 255);
-  --text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);
-  --accent:oklch(58% 0.19 277);--accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);
-  --accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);--negative:oklch(55% 0.18 25);
-  --warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
-  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);
-  --glow:0 4px 24px oklch(58% 0.19 277 / .14);
-  --header-glass:oklch(100% 0 0 / .72);
-  --grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
-  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);
-  --border:oklch(42% 0.02 255);--border-strong:oklch(50% 0.02 255);
-  --text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);
-  --accent:oklch(72% 0.16 277);--accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);
-  --accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);--negative:oklch(68% 0.17 25);
-  --warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);
-  --shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
-  --glow:0 4px 28px oklch(72% 0.16 277 / .22);
-  --header-glass:oklch(33% 0.025 255 / .72);
-  --grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
-}
+import sys as _sys_brand, os as _os_brand
+_sys_brand.path.insert(0, _os_brand.path.dirname(_os_brand.path.abspath(__file__)))
+from _brand_generated import BRAND_TOKEN_CSS, BRAND_LOGO_HTML, BRAND_HASH  # noqa: E402  GENERATED from atoms/brand-tokens.yaml
+
+SITE_BASE_CSS = BRAND_TOKEN_CSS + """
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -522,7 +499,7 @@ def site_header(active=""):
     def cur(k):
         return ' aria-current="page"' if k == active else ""
     return f"""<header class="site-header"><div class="hdr-in">
-    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <a class="wordmark" href="/">{BRAND_LOGO_HTML}</a>
     <nav class="site-nav">
       <a href="/"{cur('atoms')}>Atoms</a>
       {'<a href="/templates"' + cur('templates') + '>Templates</a>' if os.environ.get("A2UI_CATALOG_FULL") == "1" else ''}

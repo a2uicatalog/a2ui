@@ -22,28 +22,123 @@
   }
 }
 </script>
-<style>
-:root{color-scheme:light dark}
-*{box-sizing:border-box}
-body{margin:0;background:#f7f8fb;color:#1f2330;padding:48px 20px;
- font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-.wrap{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;padding:40px 44px;
- box-shadow:0 1px 3px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.07)}
-h1{margin:0 0 6px;font-size:1.9rem;letter-spacing:-.02em}
-h2{font-size:1.15rem;margin:2rem 0 .5rem}
-.k{color:#6b7280;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;
- font-weight:600;margin:0 0 26px}
-a{color:#00205B} code{background:#f1f3f8;padding:2px 6px;border-radius:5px;font-size:.9em}
-nav.top{max-width:720px;margin:0 auto 14px;font-size:.85rem}
-nav.top a{text-decoration:none;margin-right:14px}
-footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
-@media(prefers-color-scheme:dark){
- body{background:#0e1116;color:#e6e9ef} .wrap{background:#161a22;box-shadow:none}
- a{color:#8ab4ff} code{background:#1e2430}}
+<script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+<style>/*brand-tokens:8925e7c1*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(58% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+  --negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);--accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+  --negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);--shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+.trust{max-width:860px;margin:0 auto;padding:36px 24px 72px}
+.trust .wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+ padding:40px 44px;box-shadow:var(--shadow)}
+.trust h1{margin:0 0 6px;font-size:2rem;font-weight:800;letter-spacing:-.02em}
+.trust h2{font-size:1.15rem;margin:2rem 0 .5rem}
+.trust h2.k{color:var(--text-muted);font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:650;margin:0 0 26px}
+.trust .wrap p,.trust .wrap li{color:var(--text)}
+.trust a{color:var(--accent)}
+.trust code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-size:.9em;font-family:ui-monospace,'SF Mono',Monaco,monospace}
+.trust pre code{background:none;padding:0;border-radius:0}
+.trust table td{color:var(--text)}
+.trust footer{margin-top:22px;padding-top:0;border-top:0;font-size:.78rem;color:var(--text-muted);display:block}
+@media(max-width:640px){.trust{padding:24px 16px 56px}.trust .wrap{padding:28px 20px}}
 </style>
 </head>
 <body>
-<nav class="top"><a href="/">← A2UI Atomic Catalog</a><a href="/developers/">Developers</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a></nav>
+<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs" aria-current="page">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+<main class="trust">
 <div class="wrap">
 <h1>A2UI Atomic Catalog — Webhooks &amp; Event Delivery</h1>
 <h2 class="k">Developer &amp; Agent Documentation</h2>
@@ -68,5 +163,39 @@ footer{max-width:720px;margin:22px auto 0;font-size:.78rem;color:#6b7280}
 </div>
 <footer>Independent, unofficial catalog — not affiliated with, endorsed by, or sponsored by Google or Anthropic.
 A2UI is Google's protocol; MCP is Anthropic's. Maintained by <a href="https://www.linkedin.com/in/curtiskrygier">Curtis Krygier</a>. MIT License.</footer>
+</main>
+<script>
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+</script>
 </body>
 </html>
