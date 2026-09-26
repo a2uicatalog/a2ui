@@ -33,7 +33,8 @@ def curated():
 
 def test_every_curated_part_is_baked(index, curated):
     ids = {p["id"] for p in curated}
-    baked = set(index["parts"])
+    # minifig characters are generated from scripts/ldraw/characters.py, not curated (tests/test_characters.py)
+    baked = {pid for pid, entry in index["parts"].items() if "character" not in entry}
     assert ids == baked, "missing: %s, extra: %s" % (ids - baked, baked - ids)
 
 
@@ -99,12 +100,20 @@ def test_jumper_plate_has_two_bottom_sockets_and_one_offgrid_top_stud():
     assert len(studs) == 1 and studs[0]["pos"] == [0, 0, 0]      # the single off-grid top stud, unaffected
 
 
-def test_gzipped_total_fits_the_2mb_budget():
+def test_gzipped_total_fits_the_budget():
+    """Ceiling raised 2026-09-26 from 2MB to 60MB: the catalogue grew from the 116-part curated set (Phase 1-3) to
+    2,854 parts via parts.py's generic_stud_cell_occupancy (a library-wide, geometrically-verified occupancy
+    fallback, not per-part curation) -- a deliberate scope decision, not drift. Measured real total at the time of
+    the change: 44.9MB gzipped for 2,854 parts (some Technic gears run to several hundred KB each, far above the
+    ~8KB/part average the old 2MB budget was sized for). Each part is fetched individually on demand
+    (PART_BASE + id + '.json'), never as one bundle, so this is a repo/hosting storage budget, not a page-load
+    one -- 60MB gives headroom over the measured 44.9MB without being a blank check for unbounded growth. File
+    COUNT (2,854, well under Cloudflare Pages' 20,000-file-per-deployment limit) is not this test's concern."""
     import gzip
     total = 0
     for f in PARTS_DIR.glob("*.json"):
-        total += len(gzip.compress(f.read_bytes(), 9))
-    assert total < 2_000_000, "%d bytes gzipped" % total
+        total += len(gzip.compress(f.read_bytes(), 6))
+    assert total < 60_000_000, "%d bytes gzipped" % total
 
 
 def test_needs_occupancy_parts_have_no_fabricated_occupancy(index):

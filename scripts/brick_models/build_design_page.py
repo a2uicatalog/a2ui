@@ -22,6 +22,10 @@ OUT = ROOT / "public" / "bricksdemo" / "design" / "index.html"
 SENTINEL = [["3005", 10, -24, 10, 0, 4]]
 CODES = [0, 1, 2, 4, 14, 15, 19, 25, 27, 28, 70, 71, 72, 272, 288, 320, 484]
 
+CNAMES = {0: 'Black', 1: 'Blue', 2: 'Green', 4: 'Red', 14: 'Yellow', 15: 'White', 19: 'Tan', 25: 'Orange', 27: 'Lime',
+          28: 'Dark Tan', 70: 'Reddish Brown', 71: 'Light Bluish Gray', 72: 'Dark Bluish Gray', 272: 'Dark Blue',
+          288: 'Dark Green', 320: 'Dark Red', 484: 'Dark Orange'}
+
 PAGE = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +45,7 @@ main{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 h1{font-size:20px;margin:0;text-wrap:balance}
 p{margin:0;color:var(--mute);font-size:13px;max-width:72ch}
 .panel{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px}
+#csearch{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
 textarea{width:100%;min-height:64px;resize:vertical;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
 .row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -49,6 +54,7 @@ label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 select,button.go{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:6px 10px}
 button.go{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600;cursor:pointer}
 button.go:disabled{opacity:.55;cursor:progress}
+button.alt{background:var(--bg);color:var(--fg);border-color:var(--rule)}
 .count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .stat{border:1px solid var(--rule);border-radius:6px;padding:8px 10px}
@@ -93,9 +99,17 @@ a{color:inherit}
 <span class="count" id="count">0 / 150</span>
 </div>
 </section>
+<section class="panel" id="charp">
+<label for="csearch"><b>Add a minifigure</b> <span class="note">search characters, then pick one to stand beside your build</span></label>
+<input id="csearch" type="search" placeholder="e.g. knight, space, pirate, chef" aria-label="Search minifigure characters" autocomplete="off">
+<div class="chips" id="cres" aria-live="polite"></div>
+<div class="row"><button class="go alt" id="cclear" type="button" hidden>Remove minifigures</button><span class="note" id="cnote"></span></div>
+</section>
 <section class="panel" id="result" hidden>
 <div class="stats" id="stats"></div>
 <p class="note" id="how"></p>
+<div class="row"><button class="go" id="manual" type="button">Build manual</button>
+<button class="go alt" id="csv" type="button">Rebrickable list (CSV)</button><span class="note" id="mstat"></span></div>
 <iframe id="view" title="3D build" sandbox="allow-scripts allow-same-origin"></iframe>
 </section>
 <section class="panel tbl" id="histp" hidden>
@@ -107,7 +121,7 @@ a{color:inherit}
 </main>
 <script>
 (function(){
-var PRE=__PRE__, POST=__POST__, HEX=__HEX__, EDGE=__EDGE__;
+var PRE=__PRE__, POST=__POST__, HEX=__HEX__, EDGE=__EDGE__, CNAME=__CNAME__;
 var $=function(id){return document.getElementById(id)};
 var EX=['a giant red castle','a tall blue lighthouse','a cosy cottage','a tiny green pyramid','a long grey wall'];
 EX.forEach(function(t){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=t;
@@ -124,10 +138,130 @@ function costText(j,e){if(e==='gemini')return usd(j.cost_usd);if(e==='jev')retur
 function usd(v){return v==null?'—':(v<0.01?'$'+v.toFixed(5):'$'+v.toFixed(4))}
 function n(v){return v==null?'—':Number(v).toLocaleString('en-GB')}
 function show(model){
-  var parts=(model.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z]{1,12}$/.test(p[0])}).map(function(p){
+  var parts=(model.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){
     var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}});
   $('view').srcdoc='<!doctype html><meta charset="utf-8"><body style="margin:0;font:14px system-ui">'+PRE+JSON.stringify(parts)+POST+'</body>';
 }
+
+var PIDX=null,last=null;
+fetch('/parts/index.json').then(function(r){return r.json()}).then(function(j){PIDX=j.parts;csearch()}).catch(function(){});
+function pname(id){return (PIDX&&PIDX[id]&&PIDX[id].title||id).replace(/\s+/g,' ').trim()}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function hexOf(cssColour){var m=/rgb\((\d+), (\d+), (\d+)\)/.exec(cssColour);if(!m)return cssColour;
+  return '#'+[1,2,3].map(function(i){return ('0'+(+m[i]).toString(16)).slice(-2)}).join('')}
+function codeOfHex(h){for(var k in HEX)if(HEX[k]===h)return +k;return null}
+function agg(parts){var g={};parts.forEach(function(p){var k=p[0]+'|'+p[5];g[k]=(g[k]||0)+1});
+  return Object.keys(g).sort().map(function(k){var a=k.split('|');return {id:a[0],col:+a[1],n:g[k]}})}
+$('csv').onclick=function(){
+  if(!last)return;
+  var rows={};
+  agg(last.partsModel).filter(function(r){return !isChar(r.id)}).forEach(function(r){var rb=/^\d+[a-z]$/.test(r.id)?r.id.slice(0,-1):r.id,k=rb+','+r.col;rows[k]=(rows[k]||0)+r.n});
+  var csv='Part,Color,Quantity\n'+Object.keys(rows).sort().map(function(k){return k+','+rows[k]}).join('\n')+'\n';
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='wanted-list.csv';
+  document.body.appendChild(a);a.click();a.remove()};
+function frameDoc(parts,orbit){
+  return '<!doctype html><meta charset="utf-8"><body style="margin:0;font:14px system-ui">'+(orbit?PRE:PRE.replace('"orbit":true','"orbit":false'))+JSON.stringify(parts)+POST+'</body>'}
+function until(fn,ms){return new Promise(function(res){var t0=Date.now();(function tick(){var v;try{v=fn()}catch(e){}
+  if(v||Date.now()-t0>ms)res(v);else setTimeout(tick,250)})()})}
+function hookFrames(win,doc){var orig=win.requestAnimationFrame;
+  win.__cap=null;
+  win.requestAnimationFrame=function(cb){return orig.call(win,function(t){cb(t);
+    var c=win.__cap;if(c&&++c.n>=3){win.__cap=null;
+      // Composite onto a plain white backing (same technique the atom's own screenshot harness uses) before
+      // encoding to JPEG: the canvas's own background is transparent by design (alpha:true, no cfg.bg here), and
+      // JPEG has no alpha channel, so encoding it directly leaves every transparent pixel solid BLACK -- real
+      // instruction booklets have white pages, not black ones.
+      var cv=doc.querySelector('canvas'),o=document.createElement('canvas');o.width=cv.width;o.height=cv.height;
+      var g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,o.width,o.height);g.drawImage(cv,0,0);
+      c.res(o.toDataURL('image/jpeg',0.9))}})}}
+function grab(win){return new Promise(function(res){win.__cap={n:0,res:res}})}
+$('manual').onclick=function(){
+  if(!last)return;
+  var win=window.open('','_blank');
+  if(!win){$('mstat').textContent='Allow pop-ups to open the manual.';return}
+  win.document.write('<title>Building manual</title><body style="font:16px system-ui;padding:24px">Rendering build steps…</body>');
+  var btn=$('manual');btn.disabled=true;$('mstat').textContent='Rendering steps…';
+  var fr=document.createElement('iframe');
+  // Positioned ON-screen (opacity-hidden, not off-screen): brick_build_3d's WebGL renderer pauses its own draw
+  // loop via IntersectionObserver once its canvas stops intersecting the viewport (a real, deliberate perf
+  // optimisation for the normal case of a build scrolling off-screen on a real page) -- an off-screen iframe
+  // never intersects, so it never draws a single frame and every captured image comes back fully transparent.
+  // opacity near-zero plus pointer-events:none keeps it invisible to the visitor without breaking that check.
+  fr.style.cssText='position:fixed;left:0;top:0;width:900px;height:720px;border:0;opacity:0.01;pointer-events:none;z-index:-1';
+  fr.srcdoc=frameDoc(last.parts,false);document.body.appendChild(fr);
+  var doc,w2,steps=[];
+  until(function(){doc=fr.contentDocument;w2=fr.contentWindow;return doc&&doc.querySelector('input[type=range]')&&/Every part anchored/.test(doc.body.innerText)&&!/not checked|Loading/.test(doc.body.innerText)},60000)
+  .then(function(){
+    var b=[].slice.call(doc.querySelectorAll('button')).filter(function(x){return x.textContent.trim()==='Instructions'})[0];if(b)b.click();
+    hookFrames(w2,doc);
+    var rg=doc.querySelector('input[type=range]'),S=+rg.max,k=0;
+    function box(){var sp=[].slice.call(doc.querySelectorAll('span')).filter(function(x){return x.textContent==='New this step:'})[0];return sp&&sp.parentNode}
+    return new Promise(function(done){(function next(){
+      if(++k>S){done();return}
+      rg.value=k;rg.dispatchEvent(new w2.Event('input',{bubbles:true}));rg.dispatchEvent(new w2.Event('change',{bubbles:true}));
+      grab(w2).then(function(img){
+        var chips=[],bx=box();
+        if(bx)[].slice.call(bx.children).slice(1).forEach(function(c){var m=/^×(\d+) (.+)$/.exec(c.textContent),sw=c.firstChild;
+          chips.push({n:m?+m[1]:1,id:m?m[2]:c.textContent,col:codeOfHex(hexOf(sw.style.backgroundColor))})});
+        steps.push({img:img,chips:chips});$('mstat').textContent='Rendering steps… '+k+' / '+S;next()})})()})})
+  .then(function(){
+    fr.remove();
+    var j=last.j,total=last.partsModel.length,list=agg(last.partsModel);
+    var css='@page{size:A4;margin:12mm}*{box-sizing:border-box}body{margin:0;font:14px/1.4 system-ui,sans-serif;color:#111;background:#fff}'+
+      '.pg{page-break-after:always;min-height:270mm;display:flex;flex-direction:column;padding:6mm}.pg:last-child{page-break-after:auto}'+
+      'h1{font-size:34px;margin:0 0 6px}h2{font-size:18px;margin:0 0 10px}.mut{color:#555}.step{font-size:64px;font-weight:800;color:#c91a09;line-height:1}'+
+      '.img{flex:1;display:flex;align-items:center;justify-content:center}.img img{max-width:100%;max-height:200mm;border:1px solid #ddd;border-radius:6px}'+
+      '.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #888;border-radius:8px;padding:6px 12px;font-size:20px;font-weight:700}'+
+      '.chip i{width:16px;height:16px;border-radius:3px;border:1px solid rgba(0,0,0,.4);display:inline-block}.chip small{font-weight:400;font-size:12px;color:#555}'+
+      'table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ddd;padding:4px 8px;text-align:left;font-size:13px}.sw{width:14px;height:14px;display:inline-block;border:1px solid #888;border-radius:2px;vertical-align:-2px;margin-right:6px}'+
+      '.bar{position:sticky;top:0;background:#111;color:#fff;padding:8px 14px;font-size:13px}@media print{.bar{display:none}}';
+    var h='<!doctype html><meta charset="utf-8"><title>'+esc(j.name||'Building manual')+' — building manual</title><style>'+css+'</style>'+
+      '<div class="bar">Print this page (Ctrl/Cmd+P) and choose “Save as PDF”.</div>'+
+      '<div class="pg"><div style="margin:auto 0"><div class="mut">Building manual</div><h1>'+esc(j.name||'Custom build')+'</h1>'+
+      '<p class="mut">“'+esc(j.prompt||'')+'”</p><p><b>'+total+'</b> bricks · <b>'+steps.length+'</b> steps · '+list.length+' distinct part/colour lines</p>'+
+      '<p class="mut">Checked in the browser: no collisions, every part anchored to the baseplate, stud connections engaged, centre of mass over the footprint.</p></div>'+
+      '<div class="img">'+(steps.length?'<img src="'+steps[steps.length-1].img+'" alt="finished build">':'')+'</div></div>';
+    steps.forEach(function(st,i){
+      h+='<div class="pg"><div class="step">'+(i+1)+'</div><div class="img"><img src="'+st.img+'" alt="step '+(i+1)+'"></div><div class="chips">'+
+        st.chips.map(function(c){return '<span class="chip"><i style="background:'+(HEX[c.col]||'#c91a09')+'"></i>'+c.n+'× <small>'+esc(c.id)+' '+esc(pname(c.id))+'</small></span>'}).join('')+'</div></div>'});
+    h+='<div class="pg"><h2>Parts list</h2><table><tr><th>Qty</th><th>Part</th><th>Description</th><th>Colour</th></tr>'+
+      list.map(function(r){return '<tr><td>'+r.n+'</td><td>'+esc(r.id)+'</td><td>'+esc(pname(r.id))+'</td><td><span class="sw" style="background:'+(HEX[r.col]||'#c91a09')+'"></span>'+esc(CNAME[r.col]||r.col)+'</td></tr>'}).join('')+
+      '</table><p class="mut" style="margin-top:14px;font-size:12px">Part geometry from the LDraw parts library (CC BY 4.0), part numbers per Rebrickable. Fan-made instructions, not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group.</p></div>';
+    win.document.open();win.document.write(h);win.document.close();
+    btn.disabled=false;$('mstat').textContent='Manual opened ('+steps.length+' steps).'})
+  .catch(function(){btn.disabled=false;$('mstat').textContent='Could not build the manual.'})};
+// ---- Minifigure characters: baked by scripts/ldraw/characters.py as single parts (mf-<id>), listed in the part
+// index with {name, tags}. A character stands on a 1x2 stud pair: its origin is the neck, feet 72 LDU below, and
+// its sockets at local x=+-10, z=0 land on the baseplate grid when x is a multiple of 20 and z is 10 mod 20.
+function isChar(id){return /^mf-/.test(id)}
+function chars(){return PIDX?Object.keys(PIDX).filter(function(k){return PIDX[k].character}).map(function(k){
+  var c=PIDX[k].character;return {id:k,name:c.name,hay:(k+' '+c.name+' '+c.tags.join(' ')).toLowerCase()}}):[]}
+function csearch(){
+  var box=$('cres');box.innerHTML='';
+  if(!PIDX){$('cnote').textContent='Loading characters…';return}
+  var words=$('csearch').value.toLowerCase().split(/\s+/).filter(Boolean);
+  var hits=chars().filter(function(c){return words.every(function(w){return c.hay.indexOf(w)>=0})});
+  $('cnote').textContent=hits.length?hits.length+' character'+(hits.length===1?'':'s'):'No character matches that.';
+  hits.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=c.name;
+    b.onclick=function(){addChar(c)};box.appendChild(b)})}
+function addChar(c){
+  if(!last)last={j:{name:c.name,prompt:''},partsModel:[],parts:[]};
+  var built=last.parts.filter(function(p){return !isChar(p.p)}),nc=last.parts.length-built.length;
+  var maxX=built.reduce(function(m,p){return Math.max(m,p.x)},-Infinity);
+  // beside the build, 80 LDU (4 studs) apart: a stock brick reaches up to 40 LDU from its origin and a figure's
+  // arms 31 LDU from its own, and arms are cosmetic (not in the collision boxes), so the gap has to be real;
+  // snapped to the 20 LDU stud grid
+  var x=(isFinite(maxX)?Math.ceil((maxX+80)/20)*20:0)+nc*80;
+  last.partsModel.push([c.id,x,-72,10,0,14]);
+  last.parts.push({p:c.id,x:x,y:-72,z:10,r:0,c:HEX[14],edge:EDGE[14]});
+  $('result').hidden=false;$('cclear').hidden=false;
+  $('view').srcdoc=frameDoc(last.parts,true);
+  $('cnote').textContent='Added '+c.name+'. Minifigures appear in the build manual; the Rebrickable CSV lists bricks only.'}
+$('csearch').addEventListener('input',csearch);
+$('cclear').onclick=function(){if(!last)return;
+  last.partsModel=last.partsModel.filter(function(p){return !isChar(p[0])});last.parts=last.parts.filter(function(p){return !isChar(p.p)});
+  $('cclear').hidden=true;$('cnote').textContent='';
+  if(last.parts.length)$('view').srcdoc=frameDoc(last.parts,true);else $('result').hidden=true};
 var runs=0;
 $('go').onclick=function(){
   var prompt=$('prompt').value.trim();
@@ -157,6 +291,7 @@ $('go').onclick=function(){
       else if(((j.stages||[])[1]||{}).failed)how+='Refinement was attempted but failed, so the plain template is shown.';
       else how+='That was confident enough, so Gemini was never called.'}
     $('how').textContent=how;
+    last={j:j,partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
     show(j);
     runs++;$('histp').hidden=false;
     var tr=document.createElement('tr');
@@ -185,8 +320,9 @@ def build():
     hexes = {c: w._LDRAW_COLOURS[c] for c in CODES}
     edges = {c: w._LDRAW_EDGE.get(c, "#333333") for c in CODES}
     esc = lambda s: json.dumps(s).replace("</", "<\\/")  # noqa: E731
+    names = {c: CNAMES[c] for c in CODES}
     return (PAGE.replace("__PRE__", esc(pre)).replace("__POST__", esc(post))
-            .replace("__HEX__", json.dumps(hexes)).replace("__EDGE__", json.dumps(edges)))
+            .replace("__CNAME__", json.dumps(names)).replace("__HEX__", json.dumps(hexes)).replace("__EDGE__", json.dumps(edges)))
 
 
 def main(out=OUT):

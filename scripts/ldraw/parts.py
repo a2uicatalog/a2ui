@@ -178,7 +178,7 @@ OVERRIDES = {
     # Technic pin (2L): a slim box along its axis; the friction ribs are cosmetic, not occupancy-relevant.
     "2780": [box(-20, 20, -6, 6, -6, 6)],
     "3673": [box(-20, 20, -6, 6, -6, 6)],
-    "4274": [box(-10, 10, -6, 6, -6, 6)],
+    "4274": [box(-20, 0, -6, 6, -6, 6)],   # pin lies along -x from its origin: bounds x -20..0
     "6558": [box(-20, 20, -6, 6, -6, 6)],
     "32054": [box(-30, 30, -9, 9, -9, 9)],
     # Brick 1x2 with two studs on one side (SNOT): a normal 1x2 brick body underneath the extra side studs, which
@@ -223,28 +223,130 @@ def generate_sockets(occupancy):
     return out
 
 
-def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None):
+# A full-height occupancy box is NOT literally solid plastic for most real parts -- LEGO bricks are deliberately
+# hollow underneath (open bottom, anti-stud tube structure), so even the CURRENTLY TRUSTED, hand-verified 81-part
+# catalogue only measures 19-100% solid by this exact ray-parity test (part_checks.py, measured 2026-09-26): the
+# most hollow accepted case is 4274 (a Technic pin) at 19.2%. 0.15 sits just below that real floor -- comfortable
+# margin to accept ordinary hollow parts, while still catching a genuinely pathological candidate (a stud on a
+# thin unconnected nub/bridge with real empty space beneath it), which registers near 0%, not merely "hollow."
+STUD_CELL_MIN_SOLID = 0.15
+
+
+def _stud_box_solid_fraction(tris, box_, n=48):
+    """Fraction of n sample points inside `box_` that also lie inside the real mesh (ray-parity), used to PROVE a
+    candidate occupancy box is genuinely solid before accepting it -- see generic_stud_cell_occupancy."""
+    import numpy as np
+    if not tris:
+        return 0.0
+    x0, x1, y0, y1, z0, z1 = box_
+    rng = np.random.default_rng(20260926)
+    pts = np.stack([rng.uniform(x0, x1, n), rng.uniform(y0, y1, n), rng.uniform(z0, z1, n)], axis=1)
+    T = np.array([t[:3] for t in tris], dtype=float)   # tris may be (p0,p1,p2) or (p0,p1,p2,colour); colour ignored
+    v0, v1, v2 = T[:, 0], T[:, 1], T[:, 2]
+    e1, e2 = v1 - v0, v2 - v0
+    d = np.array([1.0, 0.6180339887, 0.4142135624])   # deliberately irrational-ratio direction: low odds of exact
+    d = d / np.linalg.norm(d)                          # algebraic alignment with axis-aligned or 45-degree LDraw geometry
+    h = np.cross(d, e2)
+    a = np.einsum("ij,ij->i", e1, h)
+    ok = np.abs(a) > 1e-9
+    v0, e1, e2, h, a = v0[ok], e1[ok], e2[ok], h[ok], a[ok]
+    inside = np.zeros(len(pts), dtype=bool)
+    for i in range(len(pts)):
+        s = pts[i] - v0
+        u = np.einsum("ij,ij->i", s, h) / a
+        qv = np.cross(s, e1)
+        v = qv @ d / a                       # v = dot(d, cross(s, e1)) / a -- must use the REAL ray direction d
+        t = np.einsum("ij,ij->i", qv, e2) / a  # here, not qv[:,0] (only valid when d happens to be the x-unit vector,
+        hit = (u >= 0) & (v >= 0) & (u + v <= 1) & (t > 1e-9)  # as in part_checks.py's fixed-direction inside_points)
+        inside[i] = (hit.sum() % 2) == 1
+    return float(inside.mean())
+
+
+def generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris):
+    """Library-wide fallback (2026-09-26) for any part not covered by a named family above. The curated tables
+    above (ROUND_PARTS, CORNER_L_PARTS, SLOPE_BACK_WALL_PARTS) all rest on the same underlying fact, verified BY
+    HAND per id against real baked connector data: a stud sitting flush at y=0 facing straight up always has solid
+    material in a 20x20xheight column directly beneath it (a stud cannot be moulded floating in air). This
+    generalises that verification into an automated, per-part geometric PROOF instead of hand-picking ids: for
+    every stud that sits flush (y~=0, facing up), propose the same box the curated families use, then ray-cast
+    sample points against the part's OWN real triangles and require at least STUD_CELL_MIN_SOLID of them to land
+    inside the mesh. A part with even one stud that fails (off-grid, on a raised nub as an "Inverted" slope's
+    second stud is, or genuinely floating) is excluded ENTIRELY (needs_occupancy=True) rather than accepting a
+    partial or guessed result -- consistent with "never guess" from the Phase 1 handoff, just automated rather
+    than manual. Under-approximating is always safe per spec section 3; this only ever adds boxes proven solid.
+    """
+    if not studs or not tris or bounds_min is None or bounds_max is None:
+        return None, []
+    flush = [(p, d) for p, d in studs if abs(p[1]) < 0.5 and d[1] < -0.9]
+    if len(flush) != len(studs) or not flush:
+        return None, []
+    # Span the box over the part's OWN real y extent, not an assumed y:[0, height] -- found live, 2026-09-26:
+    # ordinary bricks have bounds_min[1]==0 (origin at the top surface), but plenty of real parts don't (a
+    # baseplate's origin sits at its vertical CENTRE, e.g. bounds y:[-4,+4]; a mudguard/curved-slope's flare can
+    # rise above the stud plane, e.g. bounds y:[-12,+8]) -- hardcoding [0, bounds_max-bounds_min] silently shifted
+    # every such box off the part's real geometry, caught by pipeline.py's gate (456/2854 parts flagged: every
+    # occupancy box landing partly or wholly outside the part's own declared bounds). Using the real bounds
+    # instead is self-limiting via the existing ray-parity proof below: a genuinely too-tall box (mostly empty at
+    # the extremes) fails STUD_CELL_MIN_SOLID on its own, no separate special-casing needed.
+    y0, y1 = bounds_min[1], bounds_max[1]
+    boxes = [box(p[0] - 10, p[0] + 10, y0, y1, p[2] - 10, p[2] + 10) for p, _ in flush]
+    for b in boxes:
+        if _stud_box_solid_fraction(tris, b) < STUD_CELL_MIN_SOLID:
+            return None, []
+    sockets = [((p[0], y1, p[2]), (0, 1, 0)) for p, _ in flush]
+    return boxes, sockets
+
+
+def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
+    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes. Skipped (treated
+    as passing) when bounds aren't supplied, matching this module's existing "bounds/studs/tris are optional"
+    contract for callers that don't have real geometry (e.g. unit tests exercising one family in isolation)."""
+    if bounds_min is None or bounds_max is None:
+        return True
+    lo = [bounds_min[i] - tol for i in range(3)]
+    hi = [bounds_max[i] + tol for i in range(3)]
+    for x0, x1, y0, y1, z0, z1 in occ:
+        if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
+            return False
+    return True
+
+
+def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None, tris=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
-    unquantised) are only needed for the Technic-holes/round/corner-L/slope families; every other path ignores
-    them, so existing callers that omit them keep working."""
+    unquantised) are only needed for the Technic-holes/round/corner-L/slope families and the generic fallback;
+    every other path ignores them, so existing callers that omit them keep working. `tris`: the part's own real
+    triangles (list of (p0,p1,p2)), needed only by the generic fallback's geometric proof.
+
+    EVERY path's result is verified against the part's own real bounds before being trusted (2026-09-26): found
+    live expanding the catalogue past the original 116 that generated_occupancy's title-based box assumes a
+    part's footprint is CENTRED on its origin, which is not universal -- id 3176 ("Plate 3 x 2 with Hole") has a
+    genuinely off-centre real footprint (an asymmetric extension "with Hole" doesn't rule out), producing a box
+    that overshoots the part's real bounds on one side. This was a LATENT bug in the pre-existing, previously-
+    trusted plain-box path -- it just never triggered against the original hand-picked 116, since none of them
+    happened to be asymmetric. Caught by pipeline.py's gate, not by inspection.
+    """
+    def verified(occ, sockets):
+        return (occ, sockets, False) if _boxes_within_bounds(occ, bounds_min, bounds_max) else (None, [], True)
+
     if part_id in ROUND_PARTS:
         occ, sockets = round_occupancy_and_sockets(*ROUND_PARTS[part_id])
-        return occ, sockets, False
+        return verified(occ, sockets)
     if part_id in DISH_PARTS:
-        return dish_occupancy(*DISH_PARTS[part_id]), [], False
+        return verified(dish_occupancy(*DISH_PARTS[part_id]), [])
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
-        return occ, sockets, False
+        return verified(occ, sockets)
     if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
         occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
-        return occ, sockets, False
+        return verified(occ, sockets)
     occ = OVERRIDES.get(part_id) or generated_occupancy(title)
     if occ is None and part_id in TECHNIC_HOLES_PARTS and bounds_min and holes is not None:
         occ = technic_holes_occupancy(bounds_min, bounds_max, holes)
     if occ is None:
-        return None, [], True
+        gen_occ, gen_sockets = generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris)
+        return verified(gen_occ, gen_sockets) if gen_occ else (None, [], True)
     sockets = generate_sockets(occ)
     over = CONNECTOR_OVERRIDES.get(part_id, {})
     if "sockets" in over:
         sockets = over["sockets"]
-    return occ, sockets, False
+    return verified(occ, sockets)

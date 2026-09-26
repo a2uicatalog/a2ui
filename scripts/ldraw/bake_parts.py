@@ -9,6 +9,7 @@ keeps the baked set small without visible error (1/16 LDU = 0.025mm).
 Declared process: ldraw-parts-build (a2ui-private/ops/project-ops.yaml). Run:
     python3 scripts/ldraw/fetch_library.py     # once, or whenever the pin changes
     python3 scripts/ldraw/bake_parts.py
+    python3 scripts/ldraw/bake_parts.py --characters-only   # just the minifig characters (characters.py)
 """
 import json
 import os
@@ -17,6 +18,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from resolve import Library, ColourTable, resolve_part  # noqa: E402
 from parts import resolve_occupancy_and_sockets  # noqa: E402
+import characters  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
 CURATED = os.path.join(ROOT, "..", "a2ui-private", "spec", "brick-parts", "curated-parts-v1.json")
@@ -40,7 +42,10 @@ def qpt(p):
 
 def bake_one(lib, colours, entry):
     pid, title_hint = entry["id"], entry["title"]
-    part = resolve_part(lib, colours, pid + ".dat")
+    template = entry.get("character")
+    # a character's head stud is hidden under its headgear and nothing attaches to it, so its studs are baked into
+    # the mesh (in their real colours) instead of becoming connectors
+    part = resolve_part(lib, colours, pid + ".dat", bake_studs=bool(template))
     if part.missing:
         raise RuntimeError("%s: could not resolve %s" % (pid, sorted(part.missing)))
     title = part.title or title_hint
@@ -63,7 +68,11 @@ def bake_one(lib, colours, entry):
     cond = [{"colour": c, "pos": [qpt(v) for seg in segs for v in seg[:2]],
              "ctl": [qpt(v) for seg in segs for v in seg[2:]]} for c, segs in sorted(cond_groups.items())]
 
-    occ, sockets, needs_occ = resolve_occupancy_and_sockets(pid, title, part.min, part.max, part.holes, part.studs)
+    if template:
+        (occ, sockets), needs_occ = characters.occupancy_and_sockets(), False
+    else:
+        occ, sockets, needs_occ = resolve_occupancy_and_sockets(pid, title, part.min, part.max, part.holes,
+                                                                part.studs, part.tris)
 
     mesh = {
         "id": pid,
@@ -83,18 +92,38 @@ def bake_one(lib, colours, entry):
         "occupancy": [list(b) for b in occ] if occ else None,
         "needs_occupancy": needs_occ,
     }
+    if template:
+        mesh["character"] = {"name": template["name"], "tags": template["tags"], "feet_y": characters.FEET_Y,
+                             "slots": {slot: {"part": part_id, "colour": colour}
+                                       for slot, (part_id, colour) in characters.template_slots(template).items()}}
     return mesh
 
 
-def main():
-    curated = json.load(open(CURATED))
+def character_entries(lib):
+    """Registers every minifig template (characters.py) as an in-memory model and returns bake entries for them."""
+    entries = []
+    for t in characters.TEMPLATES:
+        pid = characters.character_id(t)
+        lib.add_virtual(pid + ".dat", characters.template_dat(t))
+        entries.append({"id": pid, "title": t["name"], "character": t})
+    return entries
+
+
+def main(characters_only=False):
     lib = Library()
     colours = ColourTable(lib)
     os.makedirs(OUT_DIR, exist_ok=True)
 
     index = {"attribution": ATTRIBUTION, "quant": QUANT, "parts": {}}
+    if characters_only:
+        # re-bake just the minifig characters into the existing index (a full bake takes ~20 minutes)
+        index = json.load(open(os.path.join(OUT_DIR, "index.json")))
+        index["parts"] = {k: v for k, v in index["parts"].items() if "character" not in v}
+        todo = character_entries(lib)
+    else:
+        todo = json.load(open(CURATED)) + character_entries(lib)
     errors = []
-    for entry in curated:
+    for entry in todo:
         pid = entry["id"]
         try:
             mesh = bake_one(lib, colours, entry)
@@ -115,6 +144,8 @@ def main():
             "bytes": len(text),
             "license": mesh["license"],
         }
+        if "character" in mesh:
+            index["parts"][pid]["character"] = {"name": mesh["character"]["name"], "tags": mesh["character"]["tags"]}
         print("baked %-8s %6d B  studs=%d sockets=%d%s" % (
             pid, len(text), index["parts"][pid]["studs"], index["parts"][pid]["sockets"],
             "  [needs_occupancy]" if mesh["needs_occupancy"] else ""))
@@ -133,4 +164,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(characters_only="--characters-only" in sys.argv[1:])
