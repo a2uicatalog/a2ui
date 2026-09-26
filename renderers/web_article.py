@@ -4019,24 +4019,24 @@ def _render_status_dashboard(b: dict) -> str:
             rows.append((m.get("label", ""), "", None, str(m.get("value", "")),
                          str(m.get("color", "#94a3b8"))))
     if not rows:
-        return ('<div style="margin:1rem 0;padding:12px;border:1px solid #e5e7eb;'
-                'border-radius:10px;color:#6b7280;font-size:.85rem;">No status items provided.</div>')
+        return ('<div style="margin:1rem 0;padding:12px;border:1px solid var(--a2ui-border,#e5e7eb);box-shadow:var(--a2ui-shadow,none);'
+                'border-radius:var(--a2ui-radius,10px);color:var(--a2ui-muted,#6b7280);font-size:.85rem;">No status items provided.</div>')
     keys = {r[2] for r in rows if r[2]}
     overall = next((k for k in ("outage", "degraded", "maintenance") if k in keys), "operational")
     title = b.get("title", "System Status")
     esc = lambda v: _h.escape(str(v))
-    out = [f'<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff;">',
+    out = [f'<div style="margin:1rem 0;border:1px solid var(--a2ui-border,#e5e7eb);box-shadow:var(--a2ui-shadow,none);border-radius:var(--a2ui-radius,10px);overflow:hidden;background:var(--a2ui-surface,#fff);">',
            f'<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:{COLORS[overall]};color:#fff;">'
-           f'<span style="width:10px;height:10px;border-radius:50%;background:#fff;opacity:.9;flex-shrink:0;"></span>'
+           f'<span style="width:10px;height:10px;border-radius:50%;background:var(--a2ui-surface,#fff);opacity:.9;flex-shrink:0;"></span>'
            f'<div>' + (f'<div style="font-weight:700;font-size:.95rem;">{esc(title)}</div>' if title else "") +
            f'<div style="font-size:.8rem;opacity:.95;">{OVERALL[overall]}</div></div></div>']
     for name, desc, _k, label, color in rows:
         c = esc(color)
         out.append(
-            f'<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #f3f4f6;">'
+            f'<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--a2ui-border-soft,#f3f4f6);">'
             f'<span style="width:8px;height:8px;border-radius:50%;background:{c};flex-shrink:0;"></span>'
-            f'<div style="flex:1;min-width:0;"><span style="font-size:.88rem;color:#111827;">{esc(name)}</span>'
-            + (f'<span style="display:block;font-size:.75rem;color:#6b7280;">{esc(desc)}</span>' if desc else "") +
+            f'<div style="flex:1;min-width:0;"><span style="font-size:.88rem;color:var(--a2ui-text,#111827);">{esc(name)}</span>'
+            + (f'<span style="display:block;font-size:.75rem;color:var(--a2ui-muted,#6b7280);">{esc(desc)}</span>' if desc else "") +
             f'</div><span style="font-size:.75rem;font-weight:600;padding:2px 10px;border-radius:12px;'
             f'background:{c}20;color:{c};border:1px solid {c}40;">{esc(label)}</span></div>')
     out.append('</div>')
@@ -4063,10 +4063,10 @@ def _render_uptime_timeline(b: dict) -> str:
             color = "#f59e0b"
         else:
             color = "#059669"
-        blocks.append(f'<div style="background:{color};height:20px;border-radius:2px;" title="{color}"></div>')
-    return (f'<div style="margin:1rem 0;padding:12px;border:1px solid #e5e7eb;border-radius:8px;">'
+        blocks.append(f'<div style="background:{color};height:20px;border-radius:var(--a2ui-radius-sm,2px);" title="{color}"></div>')
+    return (f'<div style="margin:1rem 0;padding:12px;border:1px solid var(--a2ui-border,#e5e7eb);box-shadow:var(--a2ui-shadow,none);border-radius:var(--a2ui-radius,8px);">'
             f'<div style="display:grid;grid-template-columns:repeat({days},1fr);gap:2px;">{"".join(blocks)}</div>'
-            f'<div style="font-size:0.7rem;color:#6b7280;margin-top:6px;">{days}-day uptime: {uptime}%</div>'
+            f'<div style="font-size:0.7rem;color:var(--a2ui-muted,#6b7280);margin-top:6px;">{days}-day uptime: {uptime}%</div>'
             f'</div>')
 
 def _render_command_palette(b: dict) -> str:
@@ -6473,17 +6473,17 @@ def _render_entity_list(b: dict) -> str:
             f'background:{badge_bg};color:{badge_fg};">{status}</span>'
         ) if status else ""
         subtitle_html = (
-            f'<div style="font-size:0.75rem;color:#6b7280;">{subtitle}</div>'
+            f'<div style="font-size:0.75rem;color:var(--a2ui-muted,#6b7280);">{subtitle}</div>'
         ) if subtitle else ""
         meta_html = (
-            f'<div style="font-size:0.75rem;color:#9ca3af;white-space:nowrap;">{meta}</div>'
+            f'<div style="font-size:0.75rem;color:var(--a2ui-faint,#9ca3af);white-space:nowrap;">{meta}</div>'
         ) if meta else ""
         rows += (
             f'<div style="display:flex;align-items:center;gap:12px;padding:10px 0;'
             f'border-bottom:1px solid #f3f4f6;">'
             f'{icon_html}'
             f'<div style="flex:1;min-width:0;">'
-            f'<div style="font-size:0.88rem;font-weight:600;color:#111827;'
+            f'<div style="font-size:0.88rem;font-weight:600;color:var(--a2ui-text,#111827);'
             f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{name}</div>'
             f'{subtitle_html}'
             f'</div>'
@@ -10989,14 +10989,37 @@ _RENDERERS.update({t: _stub(t) for t in [
 
 
 # ─── palette ──────────────────────────────────────────────────────────────────
+# Design tokens consumed by report-cluster renderers as var(--a2ui-<name>,<fallback>).
+# The fallback at each use site equals the historical hardcoded value, so a page
+# with no palette (or a palette that sets none of these) renders unchanged.
+_TOKEN_PRESETS = {
+    # Geist/shadcn-style: hairline neutral borders, larger radius, soft elevation.
+    "modern": {"radius": "12px", "radius-sm": "6px", "border": "#eaeaea",
+               "border-soft": "#f1f1f1", "surface": "#ffffff", "surface-muted": "#fafafa",
+               "text": "#171717", "muted": "#666666", "faint": "#8f8f8f",
+               "shadow": "0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)"},
+}
+_TOKEN_FIELDS = {"radius": "radius", "radius_sm": "radius-sm", "border_color": "border",
+                 "border_soft_color": "border-soft", "surface_color": "surface",
+                 "surface_muted_color": "surface-muted", "muted_color": "muted",
+                 "faint_color": "faint", "shadow": "shadow"}
+_TOKEN_SAFE = re.compile(r"^[#\w\s.,()%/-]{1,120}$")  # no ; { } : quotes or < >
+
 def _render_palette(b: dict) -> str:
     accent  = b.get("accent", "#6366f1")
     accent2 = b.get("accent2", b.get("accent", "#8b5cf6"))
     gap     = b.get("block_gap", "1.25rem")
     extra   = ""
-    if b.get("text_color"): extra += f"--text:{b['text_color']};"
+    if b.get("text_color"): extra += f"--text:{b['text_color']};--a2ui-text:{b['text_color']};"
     if b.get("bg_color"):   extra += f"--bg:{b['bg_color']};"
     if b.get("muted_color"):extra += f"--muted:{b['muted_color']};"
+    tokens = dict(_TOKEN_PRESETS.get(str(b.get("preset", "")), {}))
+    for field, name in _TOKEN_FIELDS.items():
+        if b.get(field):
+            tokens[name] = str(b[field])
+    for name, val in tokens.items():
+        if _TOKEN_SAFE.match(val):
+            extra += f"--a2ui-{name}:{val};"
     return f"<style>:root{{--a2ui-accent:{accent};--a2ui-accent2:{accent2};--a2ui-block-gap:{gap};{extra}}}</style>"
 
 _RENDERERS["palette"] = _render_palette
@@ -11241,7 +11264,7 @@ def _render_metric_delta(b: dict) -> str:
     bg  = "#d1fae5" if dtype=="increase" else "#fee2e2" if dtype=="decrease" else "#f3f4f6"
     arr = "↑" if dtype=="increase" else "↓" if dtype=="decrease" else "→"
     delta_html = f'<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:{bg};color:{col};font-size:.8rem;font-weight:600;">{arr} {delta}</span>' if delta else ""
-    return f'<div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;min-width:140px;"><div style="font-size:.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;">{label}</div><div style="font-size:2rem;font-weight:700;color:#111827;margin:4px 0;">{cur}</div>{delta_html}</div>'
+    return f'<div style="display:inline-flex;flex-direction:column;padding:16px 20px;border:1px solid var(--a2ui-border,#e5e7eb);box-shadow:var(--a2ui-shadow,none);border-radius:var(--a2ui-radius,10px);background:var(--a2ui-surface,#fff);min-width:140px;"><div style="font-size:.75rem;font-weight:600;color:var(--a2ui-muted,#6b7280);text-transform:uppercase;">{label}</div><div style="font-size:2rem;font-weight:700;color:var(--a2ui-text,#111827);margin:4px 0;">{cur}</div>{delta_html}</div>'
 
 def _render_review_callout(b: dict) -> str:
     rating, max_r = round(b.get("rating",5)), b.get("max_rating",5)
@@ -13709,16 +13732,16 @@ def _render_table(b: dict) -> str:
     def _w(i):
         return f'width:{col_widths[i]};' if i < len(col_widths) else ''
     ths = ''.join(f'<th style="padding:8px 14px;text-align:left;font-size:0.78rem;font-weight:700;'
-                  f'text-transform:uppercase;color:#6b7280;background:#f9fafb;{_w(i)}">{_esc(str(h))}</th>'
+                  f'text-transform:uppercase;color:var(--a2ui-muted,#6b7280);background:var(--a2ui-surface-muted,#f9fafb);{_w(i)}">{_esc(str(h))}</th>'
                   for i, h in enumerate(headers))
     body = ''
     for i, row in enumerate(rows):
         cells = row if isinstance(row, (list, tuple)) else [row.get(str(h), '') for h in headers]
-        tds = ''.join(f'<td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid #f3f4f6;{_w(j)}">'
+        tds = ''.join(f'<td style="padding:9px 14px;font-size:0.85rem;border-top:1px solid var(--a2ui-border-soft,#f3f4f6);{_w(j)}">'
                       f'{_md_inline(str(c))}</td>' for j, c in enumerate(cells))
         body += f'<tr style="background:{"#fff" if i%2==0 else "#f9fafb"};">{tds}</tr>'
-    cap = f'<caption style="padding:8px;font-size:0.8rem;color:#9ca3af;text-align:left;">{_esc(caption)}</caption>' if caption else ''
-    return (f'<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
+    cap = f'<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#9ca3af);text-align:left;">{_esc(caption)}</caption>' if caption else ''
+    return (f'<div style="border:1px solid var(--a2ui-border,#e5e7eb);border-radius:var(--a2ui-radius,10px);overflow:hidden;margin:1.2rem 0;overflow-x:auto;">'
             f'<table style="{table_style}">{cap}'
             f'<thead><tr>{ths}</tr></thead><tbody>{body}</tbody></table></div>')
 
@@ -13817,9 +13840,9 @@ def _render_timeline(b: dict) -> str:
                   f'font-size:0.7rem;">{icon}</div>'
                   f'<div style="position:absolute;left:12px;top:26px;width:2px;'
                   f'background:{_esc(accent)}44;height:calc(100% + 8px);"></div>'
-                  f'{"<div style=font-size:0.75rem;color:#9ca3af;margin-bottom:2px;>"+_esc(date)+"</div>" if date else ""}'
-                  f'<div style="font-weight:700;color:#111827;font-size:0.9rem;">{_esc(title)}</div>'
-                  f'{"<div style=font-size:0.85rem;color:#6b7280;margin-top:4px;>"+_md_inline(text)+"</div>" if text else ""}'
+                  f'{"<div style=font-size:0.75rem;color:var(--a2ui-faint,#9ca3af);margin-bottom:2px;>"+_esc(date)+"</div>" if date else ""}'
+                  f'<div style="font-weight:700;color:var(--a2ui-text,#111827);font-size:0.9rem;">{_esc(title)}</div>'
+                  f'{"<div style=font-size:0.85rem;color:var(--a2ui-muted,#6b7280);margin-top:4px;>"+_md_inline(text)+"</div>" if text else ""}'
                   f'</div>')
     return f'<div style="margin:1.5rem 0;">{items}</div>'
 
@@ -20398,7 +20421,7 @@ _RENDERERS["tag_chip"] = _render_tag_chip
 def _render_badge(b: dict) -> str:
     text = _esc(b.get('text', ''))
     color = _esc(b.get('color', '#6366f1'))
-    return ('<span style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:0.72rem;'
+    return ('<span style="display:inline-block;padding:2px 10px;border-radius:var(--a2ui-radius-sm,4px);font-size:0.72rem;'
             'font-weight:700;background:' + color + ';color:#fff;letter-spacing:0.04em;">'
             + text + '</span>')
 _RENDERERS["badge"] = _render_badge

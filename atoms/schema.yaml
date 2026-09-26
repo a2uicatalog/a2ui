@@ -14566,6 +14566,16 @@ blocks:
     block_gap: CSS length (default 1.25rem). Vertical gap between atom blocks.
     text_color: hex (optional). Overrides --text CSS var.
     bg_color: hex (optional). Overrides --bg CSS var.
+  preset: 'string (optional, web surface only). "modern" = Geist/shadcn-style tokens (12px radius, hairline #eaeaea borders, soft shadow). Explicit fields below override the preset.'
+  radius: CSS length (optional, web surface only). Card corner radius token --a2ui-radius. Consumed by metric_delta, status_dashboard, uptime_timeline, table, timeline, badge, entity_list.
+  radius_sm: CSS length (optional, web surface only). Small-element radius token --a2ui-radius-sm.
+  border_color: colour (optional, web surface only). Card border token --a2ui-border.
+  border_soft_color: colour (optional, web surface only). Row divider token --a2ui-border-soft.
+  surface_color: colour (optional, web surface only). Card background token --a2ui-surface.
+  surface_muted_color: colour (optional, web surface only). Zebra/header background token --a2ui-surface-muted.
+  muted_color: hex (optional). Overrides --muted; also secondary-text token on web.
+  faint_color: colour (optional, web surface only). Tertiary-text token --a2ui-faint.
+  shadow: CSS box-shadow (optional, web surface only). Card elevation token --a2ui-shadow (default none).
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
