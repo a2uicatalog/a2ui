@@ -6,6 +6,7 @@ Occupancy is either generated (plain bricks/plates/tiles, from their title) or h
 table for the fixture-verified non-box parts). Everything else is marked needs_occupancy=True and left for
 Phase 3 — never guessed, per the Phase 1 handoff.
 """
+import math
 import re
 
 # title -> (module, w, d) for a plain rectangular footprint. Module height in LDU: brick=24, plate=8 (a tile is a
@@ -83,6 +84,49 @@ def technic_holes_occupancy(bounds_min, bounds_max, holes):
     return boxes
 
 
+# Simple round bricks/plates (always a square N x N footprint -- LDraw round parts are never rectangular): the
+# occupancy box is a square INSCRIBED in the real circle (side = diameter/sqrt(2)), not the full N-stud bounding
+# square, so two round parts placed edge to edge on the grid (their circles tangent, not overlapping) can never
+# be falsely flagged as colliding -- spec §3's "never report a false one" (this is exact, not a heuristic: any
+# axis-aligned square with that side length is provably entirely inside a circle of that diameter). Sockets are
+# the STANDARD full N-stud grid (studs on these parts sit at the ordinary +/-10-per-stud positions, confirmed
+# against real baked stud data for both ids in each entry below, e.g. 6143/3941's four studs at (+/-10,+/-10),
+# identical to a normal square 2x2 brick) -- generated from the FULL square, deliberately not the smaller
+# inscribed one generate_sockets() would otherwise misplace against.
+# id -> (module_h, n_studs). Only the ids checked against real stud data are listed here; a round part NOT in
+# this table (e.g. 14769, which has an unusual underside stud instead of a socket) stays needs_occupancy=True
+# rather than being guessed by a generic title regex.
+ROUND_PARTS = {
+    "3062b": (24, 1), "6141": (8, 1), "85861": (8, 1), "98138": (8, 1),
+    "6143": (24, 2), "3941": (24, 2), "4032a": (8, 2),
+}
+
+
+def round_occupancy_and_sockets(module_h, n_studs):
+    diameter = n_studs * 20
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    occ = [box(-half_inscribed, half_inscribed, 0, module_h, -half_inscribed, half_inscribed)]
+    full_half = n_studs * 10
+    sockets = generate_sockets([box(-full_half, full_half, 0, module_h, -full_half, full_half)])
+    return occ, sockets
+
+
+# Rectilinear corner bricks/plates (a clean N x N grid with exactly one corner cell missing, no curve at all --
+# NOT the "Corner Round" family, which is a real curve and stays needs_occupancy=True): one 20x20xheight box per
+# stud actually present, read from the part's own real geometry (not guessed) -- exact, not an approximation,
+# since each present stud position IS the centre of a genuinely solid 20x20 cell for these two ids. Verified
+# against real baked stud positions: 2357/2420 both have exactly 3 studs at (0,0),(20,0),(0,20), so the combined
+# 3-box envelope (x:[-10,30], z:[-10,30]) matches each part's own real baked bounds exactly.
+CORNER_L_PARTS = {"2357": 24, "2420": 8}
+
+
+def corner_l_occupancy_and_sockets(module_h, studs):
+    """studs: list of (pos, dir) in real LDU (not yet quantised)."""
+    occ = [box(p[0] - 10, p[0] + 10, 0, module_h, p[2] - 10, p[2] + 10) for p, _ in studs]
+    sockets = [((p[0], module_h, p[2]), (0, 1, 0)) for p, _ in studs]
+    return occ, sockets
+
+
 # Hand-authored occupancy for parts whose plain LDraw geometry does not reduce to one clean box or the Technic-
 # holes family above, verified against spec/brick-parts/fixtures-v0.1.json (F09, F15 exercise 3700 and 2780
 # directly).
@@ -135,10 +179,16 @@ def generate_sockets(occupancy):
     return out
 
 
-def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None):
-    """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes (real LDU, unquantised) are
-    only needed for the Technic-holes family; every other path ignores them, so existing callers that omit them
-    keep working."""
+def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None):
+    """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
+    unquantised) are only needed for the Technic-holes/round/corner-L families; every other path ignores them,
+    so existing callers that omit them keep working."""
+    if part_id in ROUND_PARTS:
+        occ, sockets = round_occupancy_and_sockets(*ROUND_PARTS[part_id])
+        return occ, sockets, False
+    if part_id in CORNER_L_PARTS and studs is not None:
+        occ, sockets = corner_l_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
+        return occ, sockets, False
     occ = OVERRIDES.get(part_id) or generated_occupancy(title)
     if occ is None and part_id in TECHNIC_HOLES_PARTS and bounds_min and holes is not None:
         occ = technic_holes_occupancy(bounds_min, bounds_max, holes)
