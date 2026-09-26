@@ -27,7 +27,7 @@ a{color:inherit}
 <h1>Brick Build 3D</h1>
 <p>Pick a model from the dropdown, drag to orbit, or switch to Instructions and use the slider to step through the build. Each model is checked live: no collisions, every brick reaches the baseplate, and the balance point sits inside the footprint. The models are generated from equations and layered voxel rules, then tiled into bricks with a running bond so the layers lock together.</p>
 </div>
-<div style="border-radius:14px;overflow:hidden;color:#0f1c28;font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0);"><div style="position:relative;height:560px;"><canvas id="brk2e59c2c" role="img" aria-label="Animated 3D brick model" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas></div><div id="brk2e59c2s" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div><ul id="brk2e59c2k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul><div id="brk2e59c2p" style="overflow-x:auto;padding:0 14px 12px;"></div></div><script>(function(){(function _brickMount(K, cfg, U) {
+<div style="border-radius:14px;overflow:hidden;color:#0f1c28;font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0);"><div style="position:relative;height:560px;"><canvas id="brk2e59c2c" role="img" aria-label="Animated 3D brick model" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas></div><div id="brk2e59c2s" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div><div id="brk2e59c2n" style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 14px 0;font-size:12px;"></div><ul id="brk2e59c2k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul><div id="brk2e59c2p" style="overflow-x:auto;padding:0 14px 12px;"></div></div><script>(function(){(function _brickMount(K, cfg, U) {
   var $ = function(s) { return document.getElementById(U + s); };
   var cv = $('c');
   if (!cv) return;
@@ -48,6 +48,35 @@ a{color:inherit}
     info.textContent = mode === 'steps'
       ? 'step ' + n + ' of ' + M.steps + ' · +' + k + ' brick' + (k === 1 ? '' : 's')
       : M.steps + ' steps · ' + M.bricks.length + ' bricks';
+    if (cfg.partsModel) drawStepParts(n);
+  }
+  // Step parts box (spec/brick-parts-v0.1.md §7): "for each step, group the new parts by (part id, colour),
+  // with a count ... the booklet's '2x / 1x' box and the on-screen box in Instructions mode." v1 simplification:
+  // a colour swatch + part id + count, not a rendered 3D thumbnail (matching drawParts()'s own existing swatch
+  // convention for the whole-model cost table -- no thumbnail-rendering pipeline exists yet for either).
+  function drawStepParts(n) {
+    var box = $('n');
+    if (!box) return;
+    box.textContent = '';
+    if (mode !== 'steps') return;
+    var groups = {}, order = [];
+    atom.model().bricks.forEach(function(b) {
+      if (b.step !== n) return;
+      var key = b.p + '|' + b.c;
+      if (!groups[key]) { groups[key] = {p: b.p, c: b.c, count: 0}; order.push(key); }
+      groups[key].count++;
+    });
+    if (!order.length) return;
+    box.appendChild(E('span', 'font-weight:600;color:#55636f;', 'New this step:'));
+    order.forEach(function(key) {
+      var g = groups[key];
+      var chip = E('span', 'display:inline-flex;align-items:center;gap:5px;border:1px solid #b8c2cc;' +
+                            'border-radius:6px;padding:2px 8px;background:#f7f9fb;');
+      chip.appendChild(E('span', 'display:inline-block;width:10px;height:10px;border-radius:2px;' +
+                                  'border:1px solid rgba(0,0,0,.25);background:' + g.c + ';'));
+      chip.appendChild(document.createTextNode('×' + g.count + ' ' + g.p));
+      box.appendChild(chip);
+    });
   }
   function setMode(m) {
     mode = m;
@@ -145,10 +174,16 @@ a{color:inherit}
     var M = atom.model();
     if (M === last) return;
     last = M;
-    report = K.validate(M.bricks);
+    // K.validate() is grid/box-specific (b.x/y/z/w/d/h on an integer stud grid) -- real LDraw parts (b.p/x/y/z/r,
+    // LDU units, no w/d/h at all) silently produce NaN/undefined garbage through it, not a crash: every check
+    // reads as a false failure ("not anchored", "0 stud connections", "(NaN, NaN)" balance) and the cost table
+    // shows "undefined×undefined … €NaN" rows. Confirmed live by rendering one correctly-anchored part and
+    // reading the actual DOM output. Real collision/balance for parts is Phase 3's declared job (the spec defers
+    // "exact mesh-against-mesh collision" there); until then, skip the checks/cost boxes entirely for partsModel
+    // rather than show fabricated failures, and show the real step content instead.
+    if (!cfg.partsModel) report = K.validate(M.bricks);
     if (range) { range.max = M.steps; if (+range.value > M.steps) range.value = M.steps; stepText(); }
-    drawChecks();
-    drawParts();
+    if (!cfg.partsModel) { drawChecks(); drawParts(); }
   });
 })((function _brickKit() {
   /* ---------- constants: real LEGO proportions, in stud-pitch units (1 = 8 mm) ---------- */
@@ -525,15 +560,22 @@ a{color:inherit}
     'void main(){',
     '  if(vA<0.999&&vA<bayer(0.5*gl_FragCoord.xy)*0.25+bayer(gl_FragCoord.xy))discard;',
     '  vec3 N=normalize(vN),V=normalize(uEye-vW);',
-    '  float ndl=max(dot(N,uLd),0.0),sh=ndl>0.0?shadowF(ndl):0.0,ao=1.0,edge;',
+    '  float ndl=max(dot(N,uLd),0.0),sh=ndl>0.0?shadowF(ndl):0.0,ao=1.0,edge=1.0e6;',
     '  if(uKind<0.5){',
     '    vec3 d=min(vQ-vec3('+glf(GAP)+'),vS-vec3('+glf(GAP)+')-vQ);',
     '    float mn=min(d.x,min(d.y,d.z)),mx=max(d.x,max(d.y,d.z));edge=d.x+d.y+d.z-mn-mx;',
     '    if(abs(N.y)<0.5)ao=mix(0.58,1.0,smoothstep(0.0,0.6,vQ.y));else if(N.y<-0.5)ao=0.45;',
-    '  }else{',
+    '  }else if(uKind<1.5){',
     '    edge=N.y>0.5?'+glf(SR)+'-length(vQ.xz):min('+glf(SH)+'-vQ.y,vQ.y);',
     '    ao=mix(0.62,1.0,smoothstep(0.0,0.14,vQ.y));',
     '  }',
+    // uKind>=1.5 (real LDraw part triangles, spec/brick-parts-v0.1.md): vQ/vS are raw mesh-space positions here,
+    // not the 0..size box-local coordinates the two branches above assume -- the "distance to a procedural
+    // box/stud edge" trick above is meaningless on arbitrary triangle geometry and, tested live on a curved part
+    // (a round brick), produced wild per-facet banding as `edge` swung unpredictably triangle to triangle. Real
+    // parts already get real edge/conditional LINES (drawPartEdges/drawPartConditional) instead of this fragment
+    // hack, so ao/edge are left at their neutral defaults (no fake AO falloff, no edge darkening) and shading here
+    // is real Lambertian + specular + environment fresnel only.
     '  vec3 hemi=mix(vec3(0.16,0.16,0.17),vec3(0.46,0.49,0.54),N.y*0.5+0.5);',
     '  vec3 H=normalize(uLd+V),R=reflect(-V,N);',
     '  float spec=pow(max(dot(N,H),0.0),64.0)*0.5;',
@@ -555,7 +597,7 @@ a{color:inherit}
     if(!glSupported())return null;
     var gl=canvas.getContext('webgl',{antialias:true,alpha:true,premultipliedAlpha:true})||canvas.getContext('experimental-webgl');
     if(!gl)return null;
-    var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false,lineProg=null,lastVP=null;
+    var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false,lineProg=null,condLineProg=null,lastVP=null;
     var shadowDirty=true,animDirty=true,nBox=0,nStud=0,tris=0,boxA=null,studA=null,studOf=null,lightVP=null;
     function shader(type,src){
       var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
@@ -584,6 +626,24 @@ a{color:inherit}
       // uniform offset per draw (the part instance's resting position) since edges aren't instanced in v1.
       lineProg=program(
         'attribute vec3 aP;uniform mat4 uVP;uniform vec3 uOff;void main(){gl_Position=uVP*vec4(aP+uOff,1.0);}',
+        'precision mediump float;uniform vec3 uCol;void main(){gl_FragColor=vec4(uCol,1.0);}');
+      // LDraw type-5 conditional lines (spec/brick-parts-v0.1.md §5): "shown only when their control points
+      // fall on the same side in screen space" -- evaluated per-vertex here since visibility depends on the
+      // current camera, not a fixed property of the geometry. aP/aQ are the line's own two endpoints (aQ is
+      // "the other one", swapped between the line's two vertices so d=aQ-aP always describes the same line
+      // regardless of which endpoint is being shaded); aC0/aC1 are the two adjacent triangles' third vertices
+      // (the real LDraw "control points"). Same side (s0*s1>0) => draw; opposite sides => push off-screen, the
+      // same w=0-style cull trick glVS() already uses for a<0.001 (dead simple, no discard/blending needed).
+      condLineProg=program([
+        'attribute vec3 aP;attribute vec3 aQ;attribute vec3 aC0;attribute vec3 aC1;',
+        'uniform mat4 uVP;uniform vec3 uOff;',
+        'void main(){',
+        '  vec4 p=uVP*vec4(aP+uOff,1.0),q=uVP*vec4(aQ+uOff,1.0);',
+        '  vec4 c0=uVP*vec4(aC0+uOff,1.0),c1=uVP*vec4(aC1+uOff,1.0);',
+        '  vec2 P=p.xy/p.w,Q=q.xy/q.w,C0=c0.xy/c0.w,C1=c1.xy/c1.w,d=Q-P;',
+        '  float s0=d.x*(C0.y-P.y)-d.y*(C0.x-P.x),s1=d.x*(C1.y-P.y)-d.y*(C1.x-P.x);',
+        '  gl_Position=(s0*s1>0.0)?p:vec4(2.0,2.0,2.0,1.0);',
+        '}'].join('\n'),
         'precision mediump float;uniform vec3 uCol;void main(){gl_FragColor=vec4(uCol,1.0);}');
       var sg=studGeo();box=mesh(boxGeo());stud=mesh(sg);studTris=sg.i.length/3;
       ['box','boxA','stud','studA'].forEach(function(k){buf[k]=gl.createBuffer();});
@@ -688,6 +748,7 @@ a{color:inherit}
       bothParts(prog);
       drawPartStuds(prog);
       drawPartEdges();
+      drawPartConditional();
     }
     /* ---------- real parts (spec/brick-parts-v0.1.md, Phase 2): rotation baked into geometry on the CPU once per
        (part id, rotation) pair used, so instancing reuses the EXACT SAME two-buffer layout drawSet() already binds
@@ -731,7 +792,19 @@ a{color:inherit}
       });
       var ev=[];
       (pmesh.edges||[]).forEach(function(g){var pos=g.pos;for(i=0;i<pos.length;i+=2){var a=tp(pos[i]),b=tp(pos[i+1]);ev.push(a[0],a[1],a[2],b[0],b[1],b[2]);}});
-      return {v:v,i:idx,ev:ev};
+      // Type-5 conditional lines: pos holds endpoint pairs (like edges above), ctl the matching control-point
+      // pairs -- one pair of each per line. 12 floats per LINES vertex (aP,aQ,aC0,aC1), 2 vertices per line, aQ
+      // swapped between them so condLineProg's line-direction math is the same regardless of which endpoint it is.
+      var cv=[];
+      (pmesh.conditional||[]).forEach(function(g){
+        var pos=g.pos,ctl=g.ctl;
+        for(i=0;i<pos.length;i+=2){
+          var a=tp(pos[i]),b=tp(pos[i+1]),c0=tp(ctl[i]),c1=tp(ctl[i+1]);
+          cv.push(a[0],a[1],a[2], b[0],b[1],b[2], c0[0],c0[1],c0[2], c1[0],c1[1],c1[2]);
+          cv.push(b[0],b[1],b[2], a[0],a[1],a[2], c0[0],c0[1],c0[2], c1[0],c1[1],c1[2]);
+        }
+      });
+      return {v:v,i:idx,ev:ev,cv:cv};
     }
     // partsModel: [{p,x,y,z,r,c,edge,step}], already sanitised (_partsModelSanitise). Kicks off mesh fetches for
     // every distinct id; rendering proceeds immediately, groups without a loaded mesh yet are skipped this frame
@@ -767,6 +840,8 @@ a{color:inherit}
       var m=mesh({v:g.v,i:g.i});
       var evb=null;
       if(g.ev.length){evb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,evb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.ev),gl.STATIC_DRAW);}
+      var cvb=null;
+      if(g.cv.length){cvb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cvb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.cv),gl.STATIC_DRAW);}
       var sKey='pgs'+(partBufSeq++),aKey='pga'+(partBufSeq++);
       buf[sKey]=gl.createBuffer();buf[aKey]=gl.createBuffer();
       var n=grp.entries.length,sb=new Float32Array(n*9);
@@ -775,7 +850,7 @@ a{color:inherit}
         sb.set([p[0],p[1],p[2], 1,1,1, c[0],c[1],c[2]],j*9);
       });
       upload(sKey,sb,gl.STATIC_DRAW);
-      var out={mesh:m,edgeVB:evb,edgeCount:g.ev.length/6,sKey:sKey,aKey:aKey,n:n};
+      var out={mesh:m,edgeVB:evb,edgeCount:g.ev.length/6,condVB:cvb,condCount:g.cv.length/24,sKey:sKey,aKey:aKey,n:n};
       var studLocal=buildPartStuds(grp.mesh,grp.r);
       if(studLocal.length){
         var sN=studLocal.length,total=n*sN,ssb=new Float32Array(total*9);
@@ -820,6 +895,7 @@ a{color:inherit}
     }
     function bothParts(P){
       if(!partGroups)return;
+      gl.uniform1f(P.u.uKind,2);   // real part triangles -- see glFS()'s uKind>=1.5 branch
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo)return;
         drawSet(P,geo.mesh,geo.sKey,geo.aKey,geo.n);
@@ -841,18 +917,43 @@ a{color:inherit}
       // current animation offset, computed on the CPU per group since line rendering has no shared shader here
       // yet -- v1 draws edges at each instance's RESTING position only, skipping the drop-in animation offset for
       // lines specifically; triangles still animate correctly via bothParts(). A minor, documented simplification.
+      // Colour: each part's own LDConfig edge colour (spec/brick-parts-v0.1.md §1.4 -- "the renderer takes its
+      // line colours from there"), not a fixed grey -- so black-edged parts (colour 0 -> #808080) read correctly.
       if(!partGroups||!lineProg)return;
       gl.useProgram(lineProg.p);
       gl.uniformMatrix4fv(lineProg.u.uVP,false,lastVP);
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo||!geo.edgeVB||!geo.edgeCount)return;
         grp.entries.forEach(function(row){
-          var p=partEngineOf(row.e);
+          var p=partEngineOf(row.e),ec=linRGB(row.e.edge||'#333333');
           gl.uniform3f(lineProg.u.uOff,p[0],p[1],p[2]);
-          gl.uniform3f(lineProg.u.uCol,0.13,0.13,0.13);
+          gl.uniform3f(lineProg.u.uCol,ec[0],ec[1],ec[2]);
           gl.bindBuffer(gl.ARRAY_BUFFER,geo.edgeVB);
           var l=lineProg.a.aP;gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,3,gl.FLOAT,false,12,0);
           gl.drawArrays(gl.LINES,0,geo.edgeCount*2);
+        });
+      });
+    }
+    // Type-5 conditional lines (spec/brick-parts-v0.1.md §5): same per-instance draw pattern as
+    // drawPartEdges(), condLineProg's own vertex shader (see init()) does the same-side screen-space visibility
+    // test per vertex, so this function just binds the four interleaved attribute streams and lets it cull.
+    function drawPartConditional(){
+      if(!partGroups||!condLineProg)return;
+      gl.useProgram(condLineProg.p);
+      gl.uniformMatrix4fv(condLineProg.u.uVP,false,lastVP);
+      var A=condLineProg.a;
+      partGroups.forEach(function(grp){
+        var geo=partGeomCache[grp.key];if(!geo||!geo.condVB||!geo.condCount)return;
+        grp.entries.forEach(function(row){
+          var p=partEngineOf(row.e),ec=linRGB(row.e.edge||'#333333');
+          gl.uniform3f(condLineProg.u.uOff,p[0],p[1],p[2]);
+          gl.uniform3f(condLineProg.u.uCol,ec[0],ec[1],ec[2]);
+          gl.bindBuffer(gl.ARRAY_BUFFER,geo.condVB);
+          [['aP',0],['aQ',12],['aC0',24],['aC1',36]].forEach(function(f){
+            var l=A[f[0]];if(l===undefined||l<0)return;
+            gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,3,gl.FLOAT,false,48,f[1]);
+          });
+          gl.drawArrays(gl.LINES,0,geo.condCount*2);
         });
       });
     }

@@ -18345,6 +18345,7 @@ def _render_brick_build_3d(b: dict) -> str:
         'style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas>'
         '</div>'
         '<div id="' + uid + 's" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div>'
+        '<div id="' + uid + 'n" style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 14px 0;font-size:12px;"></div>'
         '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>'
         '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>'
         '</div>'
