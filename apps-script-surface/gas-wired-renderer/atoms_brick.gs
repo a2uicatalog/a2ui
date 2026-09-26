@@ -641,7 +641,7 @@ function _brickKit() {
     if(!glSupported())return null;
     var gl=canvas.getContext('webgl',{antialias:true,alpha:true,premultipliedAlpha:true})||canvas.getContext('experimental-webgl');
     if(!gl)return null;
-    var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false,lineProg=null,condLineProg=null,lastVP=null;
+    var ext,prog,depth,box,stud,studTris,fbo,smTex,smSize,shadowOK,buf={},model=null,lost=false,lineProg=null,condLineProg=null,lastVP=null,partAnim=null;
     var shadowDirty=true,animDirty=true,nBox=0,nStud=0,tris=0,boxA=null,studA=null,studOf=null,lightVP=null;
     function shader(type,src){
       var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
@@ -908,12 +908,14 @@ function _brickKit() {
     function updateParts(st,OX,OY,OZ,AL){
       if(!partGroups)buildPartGroups();
       partsTris=0;
+      partAnim=partAnim||[];
       partGroups.forEach(function(grp){
         var geo=ensurePartGeo(grp),n=grp.entries.length,a4=new Float32Array(n*4);
         partsTris+=(geo.mesh.n/3)*n;
         grp.entries.forEach(function(row,j){
           var i=row.idx,a=st[i]<0?0:st[i]===2?3:st[i]===1?AL[i]:1,o=j*4;
           a4[o]=OX[i];a4[o+1]=OY[i];a4[o+2]=OZ[i];a4[o+3]=a;
+          partAnim[i]=a>=1||(st[i]===1&&AL[i]>0.5)?[OX[i],OY[i],OZ[i]]:null;   // null = not built yet: its edge lines stay hidden too
         });
         upload(geo.aKey,a4,gl.DYNAMIC_DRAW);
         if(geo.studCount){
@@ -950,8 +952,8 @@ function _brickKit() {
     function drawPartEdges(){
       // Real LDraw edge lines, drawn as flat-coloured GL_LINES per group (world position = static translation +
       // current animation offset, computed on the CPU per group since line rendering has no shared shader here
-      // yet -- v1 draws edges at each instance's RESTING position only, skipping the drop-in animation offset for
-      // lines specifically; triangles still animate correctly via bothParts(). A minor, documented simplification.
+      // yet -- lines follow each part's build state and drop-in offset (partAnim, filled by updateParts): a part that is not
+      // built yet has no lines, so no wire cubes float ahead of the bricks while Animate runs.
       // Colour: each part's own LDConfig edge colour (spec/brick-parts-v0.1.md §1.4 -- "the renderer takes its
       // line colours from there"), not a fixed grey -- so black-edged parts (colour 0 -> #808080) read correctly.
       if(!partGroups||!lineProg)return;
@@ -960,7 +962,9 @@ function _brickKit() {
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo||!geo.edgeVB||!geo.edgeCount)return;
         grp.entries.forEach(function(row){
+          var an=partAnim&&partAnim[row.idx];if(partAnim&&!an)return;   // hidden until built; follows the drop-in offset
           var p=partEngineOf(row.e),ec=linRGB(row.e.edge||'#333333');
+          if(an){p=[p[0]+an[0],p[1]+an[1],p[2]+an[2]];}
           gl.uniform3f(lineProg.u.uOff,p[0],p[1],p[2]);
           gl.uniform3f(lineProg.u.uCol,ec[0],ec[1],ec[2]);
           gl.bindBuffer(gl.ARRAY_BUFFER,geo.edgeVB);
@@ -980,7 +984,9 @@ function _brickKit() {
       partGroups.forEach(function(grp){
         var geo=partGeomCache[grp.key];if(!geo||!geo.condVB||!geo.condCount)return;
         grp.entries.forEach(function(row){
+          var an=partAnim&&partAnim[row.idx];if(partAnim&&!an)return;
           var p=partEngineOf(row.e),ec=linRGB(row.e.edge||'#333333');
+          if(an){p=[p[0]+an[0],p[1]+an[1],p[2]+an[2]];}
           gl.uniform3f(condLineProg.u.uOff,p[0],p[1],p[2]);
           gl.uniform3f(condLineProg.u.uCol,ec[0],ec[1],ec[2]);
           gl.bindBuffer(gl.ARRAY_BUFFER,geo.condVB);
