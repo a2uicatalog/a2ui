@@ -8053,9 +8053,13 @@
       "component": {
        "const": "status_dashboard"
       },
-      "metrics": {
-       "description": "array of {label, value, color}. Status entries.",
-       "type": "array"
+      "title": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Heading shown in the overall-status banner."
+      },
+      "items": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/ChildList",
+       "description": "array of {name, status, description?}. status is one of operational | degraded | outage | maintenance; the banner rolls up to the worst status."
       }
      },
      "required": [

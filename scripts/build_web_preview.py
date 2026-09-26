@@ -338,7 +338,7 @@ DEMO = {
                                            {"stars": 1, "count": 6}]},
     "stat_row":         {"stats": [{"label": "Atoms", "value": "220"}, {"label": "Vendors", "value": "8"},
                                     {"label": "Surfaces", "value": "5"}, {"label": "Categories", "value": "23"}]},
-    "status_dashboard": {"services": [{"name": "Stage Server", "status": "operational"},
+    "status_dashboard": {"title": "Stage services", "items": [{"name": "Stage Server", "status": "operational"},
                                        {"name": "WebSocket Fiber", "status": "operational"},
                                        {"name": "Renderer", "status": "operational"},
                                        {"name": "Firestore Sync", "status": "degraded"}]},

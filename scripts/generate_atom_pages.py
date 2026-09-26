@@ -63,6 +63,12 @@ except Exception as e:
 # Representative example blocks for atoms supported by the web-article renderer.
 # These are richer than example_payload() can generate automatically.
 _EXAMPLE_BLOCKS = {
+    # `items` is a structured array the generic generator can't infer from its
+    # prose field description; without this the GAS renderer's items.some() throws.
+    "status_dashboard": {"type": "status_dashboard", "title": "System Status",
+                         "items": [{"name": "API", "status": "operational"},
+                                   {"name": "Database", "status": "degraded",
+                                    "description": "Elevated query latency"}]},
     # scene kit atoms (2026-09-20): the auto-generator would put placeholder words in `preset` / `asset`, which the renderer
     # (correctly) refuses; use real ids so the atom pages and the every-atom render sweep show the atoms working.
     "scene_stage": {"type": "scene_stage", "preset": "wind-farm", "theme": {"time": "dusk"}},

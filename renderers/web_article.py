@@ -3993,7 +3993,54 @@ def _render_heatmap(b: dict) -> str:
     """
 
 def _render_status_dashboard(b: dict) -> str:
-    return '<div style="margin:1rem 0;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"><div style="padding:8px;border:1px solid #e5e7eb;border-radius:4px;"><span style="display:inline-block;width:8px;height:8px;background:#059669;border-radius:50%;margin-right:6px;"></span>API: Online</div><div style="padding:8px;border:1px solid #e5e7eb;border-radius:4px;"><span style="display:inline-block;width:8px;height:8px;background:#059669;border-radius:50%;margin-right:6px;"></span>DB: Online</div></div>'
+    """Overall-status banner + per-service rows. Mirrors the GAS renderer
+    (apps-script-surface/atom.gs): title, items [{name, status, description?}],
+    status enum operational|degraded|outage|maintenance, banner = worst status.
+    Legacy shapes still accepted: `metrics` [{label, value, color}] (the old
+    schema.yaml doc) and `services` (old demo alias for `items`)."""
+    import html as _h
+    COLORS = {"operational": "#22c55e", "degraded": "#f59e0b",
+              "outage": "#ef4444", "maintenance": "#6366f1"}
+    LABELS = {"operational": "Operational", "degraded": "Degraded",
+              "outage": "Outage", "maintenance": "Maintenance"}
+    OVERALL = {"operational": "All systems operational",
+               "degraded": "Some systems are experiencing degraded performance",
+               "outage": "One or more systems are experiencing an outage",
+               "maintenance": "Scheduled maintenance in progress"}
+    rows = []  # (name, description, status_key or None, label, color)
+    for m in (b.get("items") or b.get("services") or []):
+        if not isinstance(m, dict):
+            continue
+        key = str(m.get("status") or "operational").lower()
+        rows.append((m.get("name", m.get("label", "")), m.get("description", ""), key,
+                     LABELS.get(key, str(m.get("status", ""))), COLORS.get(key, "#94a3b8")))
+    for m in (b.get("metrics") or []):
+        if isinstance(m, dict):
+            rows.append((m.get("label", ""), "", None, str(m.get("value", "")),
+                         str(m.get("color", "#94a3b8"))))
+    if not rows:
+        return ('<div style="margin:1rem 0;padding:12px;border:1px solid #e5e7eb;'
+                'border-radius:10px;color:#6b7280;font-size:.85rem;">No status items provided.</div>')
+    keys = {r[2] for r in rows if r[2]}
+    overall = next((k for k in ("outage", "degraded", "maintenance") if k in keys), "operational")
+    title = b.get("title", "System Status")
+    esc = lambda v: _h.escape(str(v))
+    out = [f'<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff;">',
+           f'<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:{COLORS[overall]};color:#fff;">'
+           f'<span style="width:10px;height:10px;border-radius:50%;background:#fff;opacity:.9;flex-shrink:0;"></span>'
+           f'<div>' + (f'<div style="font-weight:700;font-size:.95rem;">{esc(title)}</div>' if title else "") +
+           f'<div style="font-size:.8rem;opacity:.95;">{OVERALL[overall]}</div></div></div>']
+    for name, desc, _k, label, color in rows:
+        c = esc(color)
+        out.append(
+            f'<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #f3f4f6;">'
+            f'<span style="width:8px;height:8px;border-radius:50%;background:{c};flex-shrink:0;"></span>'
+            f'<div style="flex:1;min-width:0;"><span style="font-size:.88rem;color:#111827;">{esc(name)}</span>'
+            + (f'<span style="display:block;font-size:.75rem;color:#6b7280;">{esc(desc)}</span>' if desc else "") +
+            f'</div><span style="font-size:.75rem;font-weight:600;padding:2px 10px;border-radius:12px;'
+            f'background:{c}20;color:{c};border:1px solid {c}40;">{esc(label)}</span></div>')
+    out.append('</div>')
+    return "".join(out)
 
 def _render_uptime_timeline(b: dict) -> str:
     uptime = float(b.get("uptime", 99.9))

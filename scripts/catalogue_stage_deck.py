@@ -261,7 +261,7 @@ GEN_DATA = {
     'progress_bar': {'label': 'Migration', 'percentage': 68},
     'progress_circle': {'percentage': 82, 'label': 'Score'},
     'sparkline': {'data': [5, 8, 4, 11, 7, 14, 9]},
-    'status_dashboard': {'metrics': [{'label': 'API', 'value': 'Online', 'color': '#059669'}, {'label': 'CDN', 'value': 'Degraded', 'color': '#f59e0b'}]},
+    'status_dashboard': {'title': 'Services', 'items': [{'name': 'API', 'status': 'operational'}, {'name': 'CDN', 'status': 'degraded'}]},
     'trend_indicator': {'value': '+5.2%', 'label': 'MoM growth'},
     'uptime_timeline': {'uptime': 99.7},
     'author_bio_card': {'name': 'Curtis Krygier', 'bio': 'Building at the intersection of AI and UI.'},

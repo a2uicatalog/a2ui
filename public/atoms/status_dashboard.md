@@ -10,25 +10,15 @@ web, google-meet-stage, google-apps-script-web, mcp-apps
 
 | Field | Type |
 |---|---|
-| metrics | array of {label, value, color}. Status entries. |
+| title | string (optional). Heading shown in the overall-status banner. |
+| items | array of {name, status, description?}. status is one of operational | degraded | outage | maintenance; the banner rolls up to the worst status. |
 
 ## Example payload
 
 ```json
 {
   "type": "status_dashboard",
-  "metrics": [
-    {
-      "label": "Revenue",
-      "value": "$1.2M",
-      "trend": "up"
-    },
-    {
-      "label": "Users",
-      "value": "42K",
-      "trend": "up"
-    }
-  ]
+  "items": 1
 }
 ```
 

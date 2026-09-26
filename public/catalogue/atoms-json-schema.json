@@ -5497,33 +5497,34 @@
             "type": "string",
             "const": "status_dashboard"
           },
-          "metrics": {
+          "title": {
+            "type": "string"
+          },
+          "items": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "label": {
+                "name": {
                   "type": "string"
                 },
-                "value": {
+                "status": {
                   "type": "string"
                 },
-                "color": {
+                "description": {
                   "type": "string"
                 }
               },
               "additionalProperties": false,
               "required": [
-                "label",
-                "value",
-                "color"
+                "name",
+                "status"
               ]
             }
           }
         },
         "required": [
-          "type",
-          "metrics"
+          "type"
         ],
         "additionalProperties": false
       },
