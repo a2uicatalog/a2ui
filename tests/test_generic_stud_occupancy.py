@@ -51,23 +51,31 @@ def test_generic_occupancy_accepts_a_plain_flush_stud():
     assert sockets == [((0.0, 24, 0.0), (0, 1, 0))]
 
 
-def test_generic_occupancy_rejects_a_stud_not_flush_at_the_top():
-    """An 'Inverted' slope's second stud sits partway up the ramp (y=4, not y=0) -- the whole part must be
-    rejected (needs_occupancy stays True), not just the offending stud dropped, since a partial result would be a
-    guess about the rest. Mirrors the real 3665a/3660a exclusion from SLOPE_BACK_WALL_PARTS."""
+def test_generic_occupancy_drops_a_non_flush_stud_but_keeps_the_flush_one():
+    """An 'Inverted' slope's second stud sits partway up the ramp (y=4, not y=0). 2026-09-27: the all-or-nothing
+    gate that used to reject the WHOLE part over one non-flush stud was relaxed (see generic_stud_cell_occupancy's
+    docstring) -- a real boat hull (164c01) has 34 flush studs where only 6 edge ones failed the solidity proof,
+    and discarding all 34 over those 6 was the actual blocker for a large share of the real reject pool, not a
+    missing family rule. Each surviving box is still individually ray-cast proven solid; the non-flush stud is
+    still correctly excluded from EVER getting a box (there is no 'beneath' for it to be proven against), it just
+    no longer poisons its flush sibling. Mirrors 3665a/3660a's real behaviour (see the parametrized test below)."""
     tris = _box_tris(-10, 10, 0, 24, -10, 10)
     studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0)), ((0.0, 4.0, 0.0), (0.0, -1.0, 0.0))]
     occ, sockets = P.generic_stud_cell_occupancy((-10, 0, -10), (10, 24, 10), studs, tris)
-    assert occ is None and sockets == []
+    assert occ == [(-10.0, 10.0, 0, 24.0, -10.0, 10.0)]
+    assert sockets == [((0.0, 24, 0.0), (0, 1, 0))]
 
 
-def test_generic_occupancy_rejects_a_stud_facing_sideways():
+def test_generic_occupancy_drops_a_sideways_stud_but_keeps_the_flush_one():
     """A SNOT part's side stud (dir facing -Z, not up) must not get a 'solid column beneath it' box -- there is no
-    'beneath' for a sideways stud. Mirrors 11211's real exclusion (it needs its OVERRIDES entry instead)."""
+    'beneath' for a sideways stud -- but (2026-09-27, see test above) no longer poisons a genuinely flush sibling
+    stud on the same part either. Real 11211 needs its OVERRIDES entry regardless (its flush studs alone give a
+    different, smaller footprint than the hand-authored override), covered by the parametrized test below."""
     tris = _box_tris(-10, 10, 0, 24, -10, 10)
     studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0)), ((0.0, 12.0, -10.0), (0.0, 0.0, -1.0))]
-    occ, _ = P.generic_stud_cell_occupancy((-10, 0, -10), (10, 24, 10), studs, tris)
-    assert occ is None
+    occ, sockets = P.generic_stud_cell_occupancy((-10, 0, -10), (10, 24, 10), studs, tris)
+    assert occ == [(-10.0, 10.0, 0, 24.0, -10.0, 10.0)]
+    assert sockets == [((0.0, 24, 0.0), (0, 1, 0))]
 
 
 def test_generic_occupancy_rejects_a_stud_on_a_floating_nub():
@@ -136,12 +144,62 @@ def test_generic_fallback_reproduces_the_curated_corner_l_result_exactly():
     assert sorted(gen_sockets) == sorted(curated_sockets)
 
 
+# pid -> expected occ after the 2026-09-27 per-stud relaxation: only each part's genuinely flush, individually
+# solid-proven studs contribute a box now (real values, checked against a live resolve, not asserted blind).
+# 11211 has 2 flush top studs (its 2 SNOT side studs are excluded, same as always) -- note this is a SMALLER,
+# different footprint than 11211's own OVERRIDES entry (a full 1x2 body), so the dispatcher must still prefer
+# OVERRIDES over this generic result (covered by test_dispatcher_prefers_named_families_and_overrides... above).
+# 3665a/3660a each have their ramp-side stud(s) at y=4 excluded, keeping only the flush y=0 stud(s).
+_RELAXED_REAL_PARTS = {
+    "11211": [(0.0, 20.0, 0.0, 24.0, -10.0, 10.0), (-20.0, 0.0, 0.0, 24.0, -10.0, 10.0)],
+    "3665a": [(-10.0, 10.0, 0.0, 24.0, -10.0, 10.0)],
+    "3660a": [(0.0, 20.0, 0.0, 24.0, -10.0, 10.0), (-20.0, 0.0, 0.0, 24.0, -10.0, 10.0)],
+}
+
+
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 @pytest.mark.parametrize("pid", ["11211", "3665a", "3660a"])
-def test_generic_fallback_rejects_the_same_real_parts_the_curated_tables_exclude(pid):
+def test_generic_fallback_keeps_only_the_flush_studs_on_real_non_flush_parts(pid):
     from resolve import Library, ColourTable, resolve_part
     lib = Library(str(LDRAW_CACHE))
     colours = ColourTable(lib)
     part = resolve_part(lib, colours, pid + ".dat")
     occ, _ = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
-    assert occ is None, "%s should be rejected (non-flush stud), matching its real exclusion from the curated tables" % pid
+    assert occ is not None, "%s has at least one genuinely flush, solid-proven stud and should not be rejected outright" % pid
+    assert sorted(occ) == sorted(_RELAXED_REAL_PARTS[pid])
+
+
+# bar_grip_points (2026-09-27): real grip position/axis for held/clip-mounted parts, refactored from the
+# earlier has_bar_grip boolean so the real data (not just a yes/no) reaches the baked mesh's `bars` connector
+# field. Exact expected values checked against a live resolve, same rigor as the tables above.
+_REAL_GRIPS = {
+    "2714a": [((0.0, 18.0, 0.0), (0.0, 1.0, 0.0))],     # "Bar 8L with Stop Rings and Pin"
+    "11090": [((0.0, 0.0, -4.0), (0.0, 0.0, -1.0))],    # "Bar Tube with Clip"
+    "11103": [((0.0, 10.0, 0.0), (0.0, 1.0, 0.0))],     # "Minifig Sword Double Blade with Bar Holder"
+}
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["2714a", "11090", "11103"])
+def test_bar_grip_points_on_real_held_parts(pid):
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    grips = P.bar_grip_points(part.min, part.max, part.cylinders, part.tris)
+    got = [(tuple(round(v, 1) for v in p), tuple(round(v, 2) for v in d)) for p, d in grips]
+    assert got == _REAL_GRIPS[pid]
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["3001", "5258", "100942"])
+def test_bar_grip_points_empty_on_real_non_grip_parts(pid):
+    """3001 (plain Brick 2x4, has other cylinders -- studs' anti-stud tubes -- but none at the bar radius),
+    5258 (a Door, has real radius-4 hinge-pin-shaped cylinders but none pass the extremity+isolation checks),
+    100942 (a Wheel, radius-4 cylinders embedded in the hub, not a free grip) -- same real ids the raw-radius
+    prototype over-triggered on before the extremity/isolation filter was added, see the module docstring."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    assert P.bar_grip_points(part.min, part.max, part.cylinders, part.tris) == []

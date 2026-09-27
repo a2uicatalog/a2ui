@@ -14,6 +14,7 @@ import re
 LD = os.environ.get("LDRAW_DIR") or os.path.join(os.path.dirname(__file__), "_ldraw_cache", "ldraw")
 SEARCH_DIRS = ["parts", "parts/s", "p", "p/48", "p/8"]
 STUD_RE = re.compile(r"^stud(2a?|10|15)?\.dat$")
+CYL_RE = re.compile(r"^\d+-\d+cyl[io]2?\.dat$")
 
 ID = (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)   # 3x4 affine: a..i (rotation/scale), x,y,z
 
@@ -130,6 +131,11 @@ class Part:
         self.studs = []      # list of (pos, dir) — dir is the stud's local -Y through its transform
         self.holes = []      # list of (pos, dir) from peghole.dat
         self.pins = []       # list of (pos, dir) from confric*.dat
+        self.cylinders = []  # list of (centre, axis, radius) from cyli/cylo primitive refs -- centre is the
+                              # primitive's own local origin (one true END of the cylinder, not its middle: these
+                              # primitives are authored spanning local Y 0..1, not -0.5..+0.5), axis is the vector
+                              # to the OTHER end (its magnitude is the cylinder's real length, not a unit vector).
+                              # Used by parts.py to find bar-grip candidates -- never trusted directly as occupancy.
         self.min = [1e9, 1e9, 1e9]
         self.max = [-1e9, -1e9, -1e9]
         self.license = None
@@ -203,6 +209,12 @@ def _walk(lib, colours, part, name, M, colour_code, winding_ccw, invert, bake_st
                 _walk(lib, colours, part, sub_name, N, resolved_code, sub_ccw, sub_invert, bake_studs, depth + 1)
             elif re.match(r"confric\d*\.dat$", sub_base):
                 part.pins.append((apply(N, (0, 0, 0)), (N[1], N[4], N[7])))
+                _walk(lib, colours, part, sub_name, N, resolved_code, sub_ccw, sub_invert, bake_studs, depth + 1)
+            elif CYL_RE.match(sub_base):
+                centre = apply(N, (0, 0, 0))
+                axis = (N[1], N[4], N[7])
+                radius = (N[0] ** 2 + N[3] ** 2 + N[6] ** 2) ** 0.5
+                part.cylinders.append((centre, axis, radius))
                 _walk(lib, colours, part, sub_name, N, resolved_code, sub_ccw, sub_invert, bake_studs, depth + 1)
             else:
                 _walk(lib, colours, part, sub_name, N, resolved_code, sub_ccw, sub_invert, bake_studs, depth + 1)
