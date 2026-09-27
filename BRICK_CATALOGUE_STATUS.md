@@ -649,3 +649,26 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 ## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
 - Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
 - **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
+
+## 2026-09-27: TECHNIC_AXLE_PARTS Occupancy Family (cloud agent, `agent/technic-axle-rods`)
+
+- **Task**: Add real occupancy support for plain Technic straight axle rods (`scripts/ldraw/parts.py`).
+- **Scope & Baseline Reject Survey**:
+  - Scoped strictly to 19 plain straight axle rods (the remaining heterogeneous Technic rejects like gears, connectors, and steering links remain out of scope):
+    - 12 plain rods: `4519` (Axle 3), `3705` (Axle 4), `32073` (Axle 5), `3706` (Axle 6), `44294` (Axle 7), `3707` (Axle 8), `60485` (Axle 9), `3737` (Axle 10), `23948` (Axle 11), `3708` (Axle 12), `50451` (Axle 16), `50450` (Axle 32).
+    - 7 rods with stop/stud: `24316` (Axle 3 with Stop), `6587` (Axle 3 with Stud), `87083` (Axle 4 with Stop), `15462` (Axle 5 with Stop), `32209` (Axle 5.5 with Stop Type 1), `59426` (Axle 5.5 with Stop Type 2), `55013` (Axle 8 with Stop).
+  - Baseline survey via `scripts/ldraw/survey_rejects.py` restricted to these 19 IDs:
+    - Scanned: 19
+    - Accepted: 0
+    - Rejected: 19 (100% rejected, all in category `Technic Axle`)
+    - Resolution errors: 0
+- **Geometric Investigation & Measured Findings**:
+  - **Long axis convention**: Unlike `TYRE_PARTS` (rotationally symmetric about Z), all 19 Technic axles are straight rods aligned along the X axis (`[-x_min, x_max]`), centered at `(0, 0)` in the YZ plane (`(y_min + y_max)/2 == 0` and `(z_min + z_max)/2 == 0`).
+  - **Shaft cross-section**: All 13 plain rods have outer bounds $Y \in [-6.0, 6.0]$ and $Z \in [-6.0, 6.0]$, matching an outer cross-section radius of 6.0 LDU. This exactly matches the 12.0 LDU bore diameter (`CHANNEL_HALF = 6.0`) of `peghole.dat` and `axl*hole.dat` in `resolve.py` and `technic_holes_occupancy`.
+  - **Stop collar variants**: The 7 rods with stop/stud have bounding boxes $Y \in [-8.0, 8.0]$ and $Z \in [-8.0, 8.0]$ caused by a raised collar of radius 8.0 LDU near one end (`4-4cylc.dat` / `4-4disc.dat`). Under-approximating the collar by maintaining the constant 6.0 LDU shaft radius across the entire length is safe per spec §3 ("miss an overlap ... but never report a false one"): it guarantees the rod can enter pegholes and axle holes without generating false collisions, while never over-reporting collisions elsewhere.
+  - **Solidity proof**: Ray-parity sampling with `_stud_box_solid_fraction` against real resolved triangles across all 19 parts confirms a solid fraction of 0.536 to 0.586 (54% - 59%), comfortably exceeding `STUD_CELL_MIN_SOLID = 0.15` (15%).
+  - **Connectors**: Axles have no sockets (`sockets = []`), holes, or friction pins (`part.pins`). Part `6587` has one end stud at `(30.0, 0.0, 0.0)` in direction `(1.0, 0.0, 0.0)` which is parsed into `part.studs` by `resolve.py`.
+- **Catalogue Impact & Target**:
+  - Pre-implementation rejects: 19
+  - Target post-implementation rejects: 0 (unlocking all 19 parts)
+
