@@ -145,7 +145,14 @@ _RENDERERS['module_map'] = function(b) {
 _RENDERERS['knowledge_check'] = function(b) {
   var uid      = 'kc' + Math.random().toString(36).substr(2, 6);
   var question = b.question    || 'Comprehension check';
-  var options  = b.options     || [];
+  // Schema says options are plain strings, but a common alternate shape sends
+  // {label, value} objects; String(obj) here stringified to the literal text
+  // "[object Object]", losing every option's real text (surface-parity debt: the Python
+  // side's str(dict) happened to still embed the label by accident). Normalise explicitly.
+  // 2026-09-27.
+  var options  = (b.options || []).map(function(o) {
+    return (typeof o === 'string') ? o : (o.label || o.text || o.value || String(o));
+  });
   var correct  = parseInt(b.correct || 0);
   var explain  = b.explanation || '';
 

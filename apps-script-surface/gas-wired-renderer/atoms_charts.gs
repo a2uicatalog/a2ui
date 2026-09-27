@@ -159,10 +159,12 @@ _RENDERERS['chartjs_line'] = function(b) {
     svg += '<text x="' + (padL - 4) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="9" fill="#94a3b8">' + Math.round(gv) + '</text>';
   }
 
-  // X-axis labels
+  // X-axis labels. Full label text, not truncated -- an earlier .substr(0,8) here dropped
+  // the tail of any label past 8 chars, which the web renderer never truncates at all
+  // (surface-parity debt: chartjs_line). 2026-09-27.
   labels.forEach(function(lbl, i) {
     if (n <= 12 || i % Math.ceil(n / 10) === 0) {
-      svg += '<text x="' + px(i) + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="9" fill="#64748b">' + _esc((lbl||'').substr(0,8)) + '</text>';
+      svg += '<text x="' + px(i) + '" y="' + (padT + chartH + 14) + '" text-anchor="middle" font-size="9" fill="#64748b">' + _esc(lbl||'') + '</text>';
     }
   });
 
@@ -935,59 +937,57 @@ _RENDERERS['search_result_card'] = function(b) {
 // ─────────────────────────────────────────────────────────
 // 13. punch_card — day-of-week × hour heatmap
 // ─────────────────────────────────────────────────────────
+// Was built against a flat {day,hour,count} object array that shares no shape with the
+// documented schema (`data`: a list of 7 rows x 24 numbers) and ignored labels_days/color/
+// subtitle entirely (surface-parity debt). Ported to the real schema shape, keeping this
+// renderer's own rect-grid visual style rather than the web renderer's glow-bubble SVG (a
+// deliberate surface-appropriate difference, not a gap -- the CONTENT is now the same).
+// 2026-09-27.
 _RENDERERS['punch_card'] = function(b) {
-  var data  = b.data  || [];
+  var data = (b.data && b.data.length && Array.isArray(b.data[0])) ? b.data : [];
+  var dayLabels = b.labels_days || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var color = b.color || '#00f2ff';
   var title = b.title || '';
+  var subtitle = b.subtitle || '';
+  if (!data.length) return '<div class="a2ui-punch-card"></div>';
 
-  var dayLabels  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var hourLabels = ['0','','','','','','6','','','','','','12','','','','','','18','','','','','23'];
+  var numRows = data.length, numCols = data[0].length;
+  var flat = [];
+  data.forEach(function(row){ row.forEach(function(v){ flat.push(parseFloat(v) || 0); }); });
+  var maxCount = Math.max.apply(null, flat) || 1;
 
-  // Build lookup
-  var counts = {};
-  var maxCount = 0;
-  data.forEach(function(d) {
-    var key = d.day + '-' + d.hour;
-    counts[key] = (d.count || 0);
-    if (d.count > maxCount) maxCount = d.count;
-  });
-  if (!maxCount) maxCount = 1;
+  var cellW = 18, cellH = 18, cellG = 3;
+  var padL = 36, padT = 30, padR = 10, padB = 10;
+  var svgW = padL + numCols * (cellW + cellG) + padR;
+  var svgH = padT + numRows * (cellH + cellG) + padB;
 
-  var cellW  = 18, cellH = 18, cellG = 3;
-  var padL   = 36, padT = 30, padR = 10, padB = 10;
-  var svgW   = padL + 24 * (cellW + cellG) + padR;
-  var svgH   = padT + 7  * (cellH + cellG) + padB;
+  var header = '';
+  if (title || subtitle) {
+    header = '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">'
+      + (title ? '<span style="font-size:0.85rem;font-weight:700;color:#1e293b;">' + _esc(title) + '</span>' : '<span></span>')
+      + (subtitle ? '<span style="font-size:0.72rem;color:#64748b;font-family:monospace;">' + _esc(subtitle) + '</span>' : '')
+      + '</div>';
+  }
 
   var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" width="100%" preserveAspectRatio="xMidYMid meet">';
-  if (title) svg += '<text x="' + (svgW/2) + '" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">' + _esc(title) + '</text>';
-
-  // Hour labels
-  for (var h = 0; h < 24; h++) {
-    if (hourLabels[h]) {
-      svg += '<text x="' + (padL + h*(cellW+cellG) + cellW/2) + '" y="' + (padT-4) + '" text-anchor="middle" font-size="8" fill="#94a3b8">' + hourLabels[h] + '</text>';
-    }
+  for (var c = 0; c < numCols; c++) {
+    if (c % 6 === 0) svg += '<text x="' + (padL + c*(cellW+cellG) + cellW/2) + '" y="' + (padT-4) + '" text-anchor="middle" font-size="8" fill="#94a3b8">' + c + '</text>';
   }
-  // Day labels
-  for (var d = 0; d < 7; d++) {
-    svg += '<text x="' + (padL-4) + '" y="' + (padT + d*(cellH+cellG) + cellH/2 + 3) + '" text-anchor="end" font-size="9" fill="#64748b">' + dayLabels[d] + '</text>';
+  for (var d = 0; d < numRows; d++) {
+    svg += '<text x="' + (padL-4) + '" y="' + (padT + d*(cellH+cellG) + cellH/2 + 3) + '" text-anchor="end" font-size="9" fill="#64748b">' + _esc(dayLabels[d] || '') + '</text>';
   }
-
-  for (var day = 0; day < 7; day++) {
-    for (var hour = 0; hour < 24; hour++) {
-      var cnt = counts[day+'-'+hour] || 0;
+  for (var row = 0; row < numRows; row++) {
+    for (var col = 0; col < numCols; col++) {
+      var cnt = parseFloat(data[row][col]) || 0;
       var opacity = cnt / maxCount;
-      var r = 70 + Math.round(opacity * 115);
-      var g = 50 + Math.round(opacity * 10);
-      var bv = 200 + Math.round(opacity * 51);
-      // Purple scale: light (#e9d5ff) to dark (#581c87)
-      var fill = cnt === 0 ? '#f1f5f9' : 'rgb(' + Math.round(233 - opacity*152) + ',' + Math.round(213 - opacity*157) + ',' + Math.round(255 - opacity*130) + ')';
-      var cx = padL + hour*(cellW+cellG);
-      var cy = padT + day*(cellH+cellG);
-      svg += '<rect x="' + cx + '" y="' + cy + '" width="' + cellW + '" height="' + cellH + '" rx="2" fill="' + fill + '"><title>' + dayLabels[day] + ' ' + hour + ':00 — ' + cnt + '</title></rect>';
+      var fill = cnt <= 0 ? '#f1f5f9' : color;
+      var cx = padL + col*(cellW+cellG);
+      var cy = padT + row*(cellH+cellG);
+      svg += '<rect x="' + cx + '" y="' + cy + '" width="' + cellW + '" height="' + cellH + '" rx="2" fill="' + fill + '" fill-opacity="' + (cnt <= 0 ? 1 : (0.25 + opacity * 0.75).toFixed(2)) + '"><title>' + _esc(dayLabels[row] || '') + ' ' + col + ':00 — ' + cnt + '</title></rect>';
     }
   }
-
   svg += '</svg>';
-  return '<div class="a2ui-punch-card">' + svg + '</div>';
+  return '<div class="a2ui-punch-card">' + header + svg + '</div>';
 };
 
 // ─────────────────────────────────────────────────────────
@@ -1863,35 +1863,50 @@ _RENDERERS['rating_summary_bar'] = function(b) {
     + '</div>';
 };
 
+// Was built against an older, unrelated field shape (metrics/tags/name/version/type/
+// license/description/link) that shares no field with the current schema
+// (name/provider/context_window/pricing/capabilities/accent) except `name` -- every other
+// field silently rendered nothing (surface-parity debt). Ported from the web renderer's
+// current, schema-correct design; alpha-hex suffix (e.g. accent+'14') is this codebase's
+// established idiom for a translucent variant of a caller-supplied hex, matching
+// follow_button/badge_showcase elsewhere in this file rather than a full rgba() conversion.
+// 2026-09-27.
 _RENDERERS['model_card'] = function(b) {
-  var metricsHtml = '';
-  if (b.metrics && b.metrics.length) {
-    for (var i = 0; i < b.metrics.length; i++) {
-      var m = b.metrics[i];
-      metricsHtml += '<div style="background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px;text-align:center;">'
-        + '<div style="font-size:1.1rem;font-weight:700;color:#7c3aed;">' + _esc(m.value || '') + '</div>'
-        + '<div style="font-size:0.72rem;color:#6b7280;margin-top:2px;">' + _esc(m.label || '') + '</div>'
-        + '</div>';
-    }
-  }
-  var tagsHtml = '';
-  if (b.tags && b.tags.length) {
-    for (var t = 0; t < b.tags.length; t++) {
-      tagsHtml += '<span style="background:#ede9fe;color:#5b21b6;font-size:0.72rem;padding:2px 8px;border-radius:999px;">' + _esc(b.tags[t]) + '</span>';
-    }
-  }
-  return '<div style="border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:1rem 0;background:#fff;">'
-    + '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">'
-    + '<div style="flex:1;">'
-    + (b.name ? '<div style="font-weight:800;font-size:1.1rem;color:#111827;">' + _esc(b.name) + (b.version ? ' <span style="font-size:0.78rem;color:#6b7280;font-weight:400;">v' + _esc(b.version) + '</span>' : '') + '</div>' : '')
-    + (b.type ? '<div style="font-size:0.8rem;color:#7c3aed;font-weight:600;margin-top:2px;">' + _esc(b.type) + '</div>' : '')
-    + '</div>'
-    + (b.license ? '<span style="background:#f3f4f6;color:#374151;font-size:0.72rem;padding:3px 8px;border-radius:6px;">' + _esc(b.license) + '</span>' : '')
-    + '</div>'
-    + (b.description ? '<p style="font-size:0.875rem;color:#4b5563;margin:0 0 14px;line-height:1.6;">' + _esc(b.description) + '</p>' : '')
-    + (metricsHtml ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:14px;">' + metricsHtml + '</div>' : '')
-    + (tagsHtml ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">' + tagsHtml + '</div>' : '')
-    + (b.link ? '<a href="' + _esc(b.link) + '" style="font-size:0.82rem;color:#7c3aed;text-decoration:none;font-weight:600;">View model →</a>' : '')
+  var name = b.name || '';
+  var provider = b.provider || '';
+  var contextWin = b.context_window || '';
+  var pricing = b.pricing || '';
+  // Schema says capabilities are plain badge strings, but a common alternate shape sends
+  // {label, supported} objects; String(obj) here stringified to the literal text
+  // "[object Object]", losing every badge (surface-parity debt). Normalise explicitly.
+  // 2026-09-27.
+  var capabilities = (b.capabilities || []).map(function(c) {
+    return (typeof c === 'string') ? c : (c.label || c.text || String(c));
+  });
+  var accent = b.accent || '#7c3aed';
+
+  var providerHtml = provider ? '<span style="font-size:0.72rem;font-weight:600;color:' + _esc(accent) + ';text-transform:uppercase;letter-spacing:0.07em;">' + _esc(provider) + '</span>' : '';
+
+  var metaItems = [];
+  if (contextWin) metaItems.push(['context', contextWin]);
+  if (pricing) metaItems.push(['pricing', pricing]);
+  var metaHtml = metaItems.map(function(kv) {
+    return '<div style="display:flex;flex-direction:column;gap:1px;">'
+      + '<span style="font-size:0.68rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">' + kv[0] + '</span>'
+      + '<span style="font-size:0.82rem;font-weight:600;color:#374151;">' + _esc(kv[1]) + '</span></div>';
+  }).join('');
+  var metaWrap = metaItems.length ? '<div style="display:flex;gap:24px;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;">' + metaHtml + '</div>' : '';
+
+  var badges = capabilities.map(function(cap) {
+    return '<span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;background:' + _esc(accent) + '14;color:' + _esc(accent) + ';border:1px solid ' + _esc(accent) + '4d;font-weight:500;">' + _esc(cap) + '</span>';
+  }).join('');
+  var badgesHtml = badges ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">' + badges + '</div>' : '';
+
+  return '<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
+    + providerHtml
+    + '<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">' + _esc(name) + '</div>'
+    + badgesHtml
+    + metaWrap
     + '</div>';
 };
 
@@ -1992,7 +2007,9 @@ _RENDERERS['typing_indicator'] = function(b) {
 };
 
 _RENDERERS['blur_fade_in'] = function(b) {
-  var text = b.text || b.content || '';
+  // Schema's field is `body`; this read the non-existent `text`/`content`, so the
+  // payload's actual body never appeared (surface-parity debt). 2026-09-27.
+  var text = b.body || b.text || b.content || '';
   var title = b.title || '';
   var delay = parseFloat(b.delay || 0);
   var uid = Math.random().toString(36).substr(2, 6);

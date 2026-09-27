@@ -245,6 +245,8 @@ _RENDERERS['table'] = function(b) {
   var tableStyle = colWidths.length ? ' style="table-layout:fixed;width:100%;"' : '';
   function w(i) { return (i < colWidths.length) ? (' style="width:' + colWidths[i] + ';"') : ''; }
   var html = '<table' + tableStyle + '>';
+  // Schema declares `caption`; this never used it at all (surface-parity debt). 2026-09-27.
+  if (b.caption) html += '<caption style="padding:8px;font-size:0.8rem;color:var(--a2ui-faint,#8f8f8f);text-align:left;">' + _esc(b.caption) + '</caption>';
   if (b.headers && b.headers.length) {
     html += '<thead><tr>';
     for (var i = 0; i < b.headers.length; i++) {
@@ -451,7 +453,14 @@ _RENDERERS['course_progress_card'] = function(b) {
 // ── Category C: Interactive Renderers ────────────────────────────────────────
 
 _RENDERERS['quiz_question'] = function(b) {
-  var options = b.options || [];
+  // Schema says options are plain strings, but a common alternate shape sends
+  // {label, value} objects; _esc(obj) here stringified to the literal text
+  // "[object Object]", losing every option (surface-parity debt: the Python side's
+  // f-string-of-dict happened to still embed the label by accident). Normalise explicitly.
+  // 2026-09-27.
+  var options = (b.options || []).map(function(o) {
+    return (typeof o === 'string') ? o : (o.label || o.text || o.value || String(o));
+  });
   var correctIdx = b.correct || 0;
   var explanation = b.explanation || '';
   var atomId = b.id || 'quiz-' + Math.floor(Math.random() * 100000);
@@ -922,6 +931,25 @@ _RENDERERS['embed_stackblitz'] = _degradedLinkRenderer('StackBlitz sandbox embed
 _RENDERERS['embed_gist'] = _degradedLinkRenderer('GitHub Gist widget');
 _RENDERERS['embed_google_slides'] = _degradedLinkRenderer('Google Slides preview iframe');
 _RENDERERS['figma_embed'] = _degradedLinkRenderer('Figma interactive canvas design preview');
+
+// Schema declares this degraded (not incompatible) on google-apps-script-web: "external
+// iframe -- depends on site's X-Frame-Options; test before use" -- unlike figma_embed
+// (fully blocked), stackblitz.com's ?embed=1 URL is designed for framing, so an actual
+// iframe (mirroring the web renderer) is the correct degraded behaviour here, not the
+// link-only _degradedLinkRenderer fallback. Was entirely absent on this surface until
+// 2026-09-27 (surface-parity debt: embed_stackblitz, web 1.0 / gas 0.0).
+_RENDERERS['embed_stackblitz'] = function(b) {
+  var projectId = b.project_id || b.id || '';
+  var url = b.url || (projectId ? 'https://stackblitz.com/edit/' + projectId + '?embed=1' : '#');
+  var title = b.title || 'StackBlitz';
+  var height = b.height || '400px';
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+    + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;margin:1.5rem 0;">'
+    + '<div style="padding:7px 12px;background:#1a1a2e;border-bottom:1px solid #2a2a3e;'
+    + 'font-size:0.78rem;color:#89dceb;font-family:monospace;">⚡ StackBlitz · ' + _esc(title) + '</div>'
+    + '<iframe src="' + _esc(url) + '" height="' + _esc(String(height)) + '" '
+    + 'style="width:100%;border:none;display:block;" allowfullscreen loading="lazy"></iframe></div>';
+};
 
 function _degradedLinkRenderer(typeName) {
   return function(b) {
@@ -2415,8 +2443,12 @@ _RENDERERS['image_with_caption'] = function(b) {
   var url = b.url || b.image_url || '';
   var alt = b.alt || b.alt_text || '';
   var caption = b.caption || b.text || '';
-  return '<figure style="margin:1.2rem 0;text-align:center;">' +
-    '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;">' +
+  // Schema declares `link_url` but this never used it (a real, if not test-visible,
+  // field-contract drop -- URLs aren't counted as display text by the parity probe, so it
+  // went unnoticed until read directly). 2026-09-27.
+  var img = '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;">';
+  if (b.link_url) img = '<a href="' + _safeUrl(b.link_url) + '" target="_top">' + img + '</a>';
+  return '<figure style="margin:1.2rem 0;text-align:center;">' + img +
     (caption ? '<figcaption style="font-size:0.82rem;color:#6b7280;margin-top:8px;font-style:italic;">' + _esc(caption) + '</figcaption>' : '') + '</figure>';
 };
 
@@ -2435,9 +2467,13 @@ _RENDERERS['framed_screenshot'] = function(b) {
 _RENDERERS['video_thumbnail'] = function(b) {
   var url = b.url || b.thumbnail_url || '';
   var title = b.title || '';
+  // Schema also declares `alt_text`, distinct from `title`; this only ever used `title`
+  // as the img alt attribute, so a payload with a real alt_text lost that leaf
+  // (surface-parity debt). 2026-09-27.
+  var alt = b.alt_text || title;
   var link = b.video_url || b.link || '#';
   return '<a href="' + _esc(link) + '" target="_blank" rel="noopener" style="display:block;position:relative;margin:1rem 0;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;">' +
-    (url ? '<img src="' + _esc(url) + '" alt="' + _esc(title) + '" style="width:100%;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;display:flex;align-items:center;justify-content:center;"></div>') +
+    (url ? '<img src="' + _esc(url) + '" alt="' + _esc(alt) + '" style="width:100%;display:block;">' : '<div style="width:100%;height:180px;background:#1e293b;display:flex;align-items:center;justify-content:center;"></div>') +
     '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">' +
     '<div style="width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:1.5rem;margin-left:4px;">▶</span></div></div>' +
     (title ? '<div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:#fff;font-size:0.85rem;font-weight:600;">' + _esc(title) + '</div>' : '') + '</a>';
@@ -2520,7 +2556,9 @@ _RENDERERS['loading_skeleton'] = function(b) {
 _RENDERERS['empty_state'] = function(b) {
   var icon = b.icon || '📭';
   var title = b.title || b.heading || 'Nothing here yet';
-  var message = b.message || b.text || '';
+  // Schema's field is `description`; this read the non-existent `message`/`text`, so the
+  // payload's actual content never appeared (surface-parity debt). 2026-09-27.
+  var message = b.description || b.message || b.text || '';
   var action = b.action_label || '';
   return '<div style="text-align:center;padding:40px 20px;margin:1rem 0;">' +
     '<div style="font-size:3rem;margin-bottom:12px;">' + icon + '</div>' +
@@ -3294,7 +3332,9 @@ _RENDERERS['feedback_prompt'] = function(b) {
 
 _RENDERERS['pros_cons_list'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
-  var title = b.title || '';
+  // Schema's field is `subject`; this read the non-existent `title`, so the heading never
+  // appeared for a payload sent under the real field name (surface-parity debt). 2026-09-27.
+  var title = b.subject || b.title || '';
   var pros = b.pros || [];
   var cons = b.cons || [];
 
@@ -3549,7 +3589,9 @@ _RENDERERS['side_by_side_spec'] = function(b) {
 _RENDERERS['product_spec_table'] = function(b) {
   var uid = Math.random().toString(36).substr(2, 6);
   var specs = b.specs || [];
-  var title = b.title || '';
+  // Schema's field is `product_name`; this read the non-existent `title`, so the heading
+  // never appeared (surface-parity debt). 2026-09-27.
+  var title = b.product_name || b.title || '';
 
   var rowsHtml = '';
   for (var i = 0; i < specs.length; i++) {

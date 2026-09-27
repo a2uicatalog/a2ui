@@ -52,6 +52,16 @@ CURATED = {
     "tooltip": {"trigger_text": "hover over me", "tooltip_content": "the hidden explanation"},
     "onboarding_stepper": {"title": "Get started now", "steps": [
         {"id": "a", "icon": "R", "label": "Install the CLI", "description": "Run the installer"}]},
+    "course_progress_card": {"course_title": "Intro to A2UI", "modules": [
+        {"title": "Getting started", "lessons_total": 4, "lessons_done": 4},
+        {"title": "Advanced atoms", "lessons_total": 6, "lessons_done": 2}]},
+    "http_request_block": {"method": "POST", "url": "https://api.example.com/v1/widgets",
+                            "headers": {"Authorization": "Bearer token123", "Content-Type": "application/json"},
+                            "body": '{"name": "Blue widget"}'},
+    "punch_card": {"title": "Commit Activity", "subtitle": "curtiskrygier/meetstudio",
+                   "data": [[1 if (h + d) % 5 == 0 else 0 for h in range(24)] for d in range(7)]},
+    "zoomable_image": {"image_url": "https://example.com/photo.jpg",
+                        "alt_text": "Descriptive alt text for accessibility", "zoom_factor": 2.0},
     "timeline": {"title": "Project history", "events": [
         {"date": "2026", "label": "Public launch", "text": "We shipped it"}]},
     "further_reading": {"links": [{"title": "Guide to tokens", "url": "https://example.com/a",

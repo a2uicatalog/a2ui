@@ -300,10 +300,15 @@ _RENDERERS['social_proof_banner'] = function(b) {
       : '<span style="font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);padding:4px 12px;">' + _esc(l.name || '') + '</span>';
   }).join('');
   var quote  = b.testimonial ? '<blockquote style="font-style:italic;font-size:0.875rem;color:var(--text,#374151);margin:0;">"' + _esc(b.testimonial) + '"</blockquote>' : '';
-  return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
+  // Schema also declares `icon_url` and `link_url`; neither was ever used at all
+  // (surface-parity debt). 2026-09-27.
+  var iconHtml = b.icon_url ? '<img src="' + _esc(b.icon_url) + '" style="width:20px;height:20px;object-fit:contain;margin-bottom:8px;">' : '';
+  var body = iconHtml
+    + '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;padding:24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg,#fff);text-align:center;">'
     + metric
     + (logos ? '<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px;margin:16px 0;">' + logos + '</div>' : '')
     + quote + '</div>';
+  return b.link_url ? '<a href="' + _safeUrl(b.link_url) + '" target="_top" style="text-decoration:none;color:inherit;display:block;">' + body + '</a>' : body;
 };
 
 // ─── expert_endorsement ───────────────────────────────────────────────────────
@@ -435,14 +440,22 @@ _RENDERERS['product_thumbnail'] = function(b) {
 _RENDERERS['customer_logo_grid'] = function(b) {
   var title = b.title ? '<div style="font-weight:700;font-size:0.9rem;color:var(--muted,#6b7280);text-align:center;margin-bottom:16px;">' + _esc(b.title) + '</div>' : '';
   var cols  = b.cols || 4;
+  // Schema only documents `logos` as a bare "list" (no item shape); the web renderer
+  // accepts either `url`/`src` for the image and `name`/`alt` for the label, but this only
+  // checked `image_url`, so a payload shaped the web way (the CURATED/real one) fell through
+  // to the text-only branch and the actual logo image never rendered (surface-parity debt).
+  // 2026-09-27.
   var logos = (b.logos || []).map(function(l) {
-    if (l.url && l.image_url) {
-      return '<a href="' + _safeUrl(l.url) + '" target="_top" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(l.image_url) + '" alt="' + _esc(l.name||'') + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"></a>';
+    var img = l.image_url || l.url || l.src || '';
+    var name = l.name || l.alt || '';
+    var linkUrl = l.link_url || (l.url && l.image_url ? l.url : '');
+    if (linkUrl && img) {
+      return '<a href="' + _safeUrl(linkUrl) + '" target="_top" style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5"></a>';
     }
-    if (l.image_url) {
-      return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(l.image_url) + '" alt="' + _esc(l.name||'') + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);"></div>';
+    if (img) {
+      return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;"><img src="' + _esc(img) + '" alt="' + _esc(name) + '" style="max-height:36px;max-width:120px;object-fit:contain;opacity:0.5;filter:grayscale(1);"></div>';
     }
-    return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);">' + _esc(l.name||'') + '</div>';
+    return '<div style="display:flex;align-items:center;justify-content:center;padding:12px;font-size:0.8rem;font-weight:700;color:var(--muted,#9ca3af);">' + _esc(name) + '</div>';
   }).join('');
   return '<div style="margin:var(--a2ui-block-gap,1.25rem) 0;">'
     + title

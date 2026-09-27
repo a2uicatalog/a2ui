@@ -2250,11 +2250,30 @@ def _render_action_items(b: dict) -> str:
 
 
 def _render_pros_cons_list(b: dict) -> str:
-    """TODO: Renders a two-column list itemizing advantages and disadvantages for a single su"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ pros_cons_list ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    # This was an unfinished auto-generated stub (its own docstring said "TODO") that never
+    # read the schema's real fields (subject/pros/cons) at all (surface-parity debt). Ported
+    # from GAS's real two-column implementation. 2026-09-27.
+    subject = _esc(b.get("subject", ""))
+    pros = b.get("pros", [])
+    cons = b.get("cons", [])
+    pros_html = "".join(f'<li style="display:flex;gap:8px;margin-bottom:6px;">'
+                         f'<span style="color:#16a34a;flex-shrink:0;">✓</span><span>{_esc(p)}</span></li>' for p in pros)
+    cons_html = "".join(f'<li style="display:flex;gap:8px;margin-bottom:6px;">'
+                         f'<span style="color:#dc2626;flex-shrink:0;">✗</span><span>{_esc(c)}</span></li>' for c in cons)
+    title_html = (f'<div style="font-size:16px;font-weight:700;color:#111827;padding:14px 16px;'
+                  f'border-bottom:1px solid #e5e7eb;background:#f9fafb;">{subject}</div>') if subject else ""
+    return (f'<div style="margin:1rem 0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">'
+            f'{title_html}'
+            f'<div style="display:grid;grid-template-columns:1fr 1fr;">'
+            f'<div style="padding:16px;border-right:1px solid #e5e7eb;background:#f0fdf4;">'
+            f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;'
+            f'margin-bottom:10px;color:#16a34a;">Pros</div>'
+            f'<ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;color:#374151;">{pros_html}</ul></div>'
+            f'<div style="padding:16px;background:#fff5f5;">'
+            f'<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;'
+            f'margin-bottom:10px;color:#dc2626;">Cons</div>'
+            f'<ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;color:#374151;">{cons_html}</ul></div>'
+            f'</div></div>')
 
 def _render_side_by_side_spec(b: dict) -> str:
     """TODO: Renders a detailed comparison of two items, displaying their attributes and valu"""
@@ -2264,11 +2283,25 @@ def _render_side_by_side_spec(b: dict) -> str:
     return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
 
 def _render_product_spec_table(b: dict) -> str:
-    """TODO: Renders a table detailing technical specifications or features for a single prod"""
-    label = b.get("label", b.get("title", b.get("name", "")))
-    text  = b.get("text", b.get("content", b.get("value", "")))
-    inner = (f"<strong>{label}</strong><br/>" if label else "") + (f"{text}" if text else f"<em style='color:#999;'>[ product_spec_table ]</em>")
-    return f'<div style="margin:1rem 0;padding:12px 16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);">{inner}</div>'
+    # This was an unfinished auto-generated stub (its own docstring said "TODO") that never
+    # read the schema's real fields (product_name + specs:[{label,value,note?}]) at all
+    # (surface-parity debt). Ported from GAS's real implementation. 2026-09-27.
+    product_name = _esc(b.get("product_name", ""))
+    specs = b.get("specs", [])
+    rows = ""
+    for s in specs:
+        note = s.get("note", "")
+        note_html = f'<span style="color:#9ca3af;font-size:0.78rem;"> — {_esc(note)}</span>' if note else ""
+        rows += (f'<tr><td style="padding:10px 16px;color:#6b7280;font-weight:600;width:40%;'
+                 f'border-bottom:1px solid #f3f4f6;vertical-align:top;">{_esc(s.get("label",""))}</td>'
+                 f'<td style="padding:10px 16px;color:#111827;border-bottom:1px solid #f3f4f6;vertical-align:top;">'
+                 f'{_esc(s.get("value",""))}{note_html}</td></tr>')
+    title_html = (f'<div style="font-size:15px;font-weight:700;color:#111827;background:#f9fafb;'
+                  f'padding:12px 16px;border-bottom:1px solid #e5e7eb;">{product_name}</div>') if product_name else ""
+    return (f'<div style="margin:1rem 0;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+            f'border-radius:10px;border-radius:var(--a2ui-radius,10px);overflow:hidden;">'
+            f'{title_html}<table style="width:100%;border-collapse:collapse;font-size:14px;">'
+            f'<tbody>{rows}</tbody></table></div>')
 
 def _render_comparison_grid(b: dict) -> str:
     """TODO: Renders a grid comparing multiple products or services with features, often usin"""
@@ -2437,7 +2470,14 @@ def _render_zoomable_image(b: dict) -> str:
     import html as _h
     url    = b.get("image_url", b.get("url", ""))
     alt    = b.get("alt_text", b.get("alt", ""))
-    factor = float(b.get("zoom_factor", 1.5))
+    # A malformed/non-numeric zoom_factor used to crash the WHOLE render via float(),
+    # losing url/alt too, not just the zoom effect -- degrade to the default instead
+    # (surface-parity debt; GAS's loose JS insertion never crashed on this, which is how
+    # the gap was found). 2026-09-27.
+    try:
+        factor = float(b.get("zoom_factor", 1.5))
+    except (TypeError, ValueError):
+        factor = 1.5
     uid    = abs(_wa_shash(url)) % 100000
     style  = (
         f'<style>'
@@ -4073,15 +4113,31 @@ def _render_command_palette(b: dict) -> str:
     return '<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#1f2937;color:#e5e7eb;"><div style="font-size:0.75rem;margin-bottom:6px;">⌘K to open</div><div style="font-size:0.8rem;padding:6px;background:#111827;border-radius:4px;margin-bottom:4px;">▶ Command 1</div><div style="font-size:0.8rem;padding:6px;background:#374151;border-radius:4px;">Command 2</div></div>'
 
 def _render_search_result_card(b: dict) -> str:
-    return '<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);"><div style="font-weight:600;font-size:0.9rem;color:#7c3aed;margin-bottom:4px;">Result Title</div><div style="font-size:0.8rem;color:#6b7280;margin-bottom:6px;">Example result description with relevant content snippet.</div><div style="font-size:0.7rem;color:#9ca3af;">example.com › category › result</div></div>'
+    # This never read `b` at all -- every render showed the same hardcoded placeholder
+    # copy regardless of payload (surface-parity debt). Ported to read the schema's real
+    # fields (title/description/url), matching GAS's design. 2026-09-27.
+    title = _esc(b.get("title", ""))
+    description = _esc(b.get("description", ""))
+    url = b.get("url", "")
+    url_html = f'<div style="font-size:0.7rem;color:#9ca3af;">{_esc(url)}</div>' if url else ""
+    return (f'<div style="margin:1rem 0;padding:12px;border:1px solid #eaeaea;'
+            f'border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;'
+            f'border-radius:var(--a2ui-radius,12px);">'
+            f'<div style="font-weight:600;font-size:0.9rem;color:#7c3aed;margin-bottom:4px;">{title}</div>'
+            f'<div style="font-size:0.8rem;color:#6b7280;margin-bottom:6px;">{description}</div>'
+            f'{url_html}</div>')
 
 def _render_punch_card(b: dict) -> str:
     data        = b.get("data", [])
+    # Schema's `data` is a list of lists; a malformed/degenerate payload (e.g. a bare
+    # scalar) used to crash on `data[0]` before this guard existed -- degrade to empty
+    # rather than throw, matching this session's course_progress_card fix. 2026-09-27.
+    data        = data if isinstance(data, list) and data and isinstance(data[0], list) else []
     labels_days = b.get("labels_days", ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
     color       = b.get("color", "#00f2ff")
     title       = b.get("title", "")
     subtitle    = b.get("subtitle", "")
-    
+
     if not data or not data[0]:
         return ""
         
@@ -6110,7 +6166,9 @@ def _render_marquee_strip(b: dict) -> str:
     def _item_html(item):
         if isinstance(item, dict):
             img = item.get("image_url", "")
-            text = item.get("text", "")
+            # A common alternate item shape uses `label` instead of `text`; only checking
+            # `text` rendered nothing for those items (surface-parity debt). 2026-09-27.
+            text = item.get("text") or item.get("label", "")
             img_html = (
                 f'<img src="{img}" alt="{text}" '
                 f'style="height:28px;object-fit:contain;vertical-align:middle;opacity:0.75;">'
@@ -6547,7 +6605,14 @@ def _render_model_card(b: dict) -> str:
     provider     = b.get("provider", "")
     context_win  = b.get("context_window", "")
     pricing      = b.get("pricing", "")
-    capabilities = b.get("capabilities", [])
+    # Schema says capabilities are plain badge strings, but a common alternate shape sends
+    # {label, supported} objects; _esc(str(dict)) happened to still embed the label via
+    # Python's repr (an accident, not a design -- GAS's String(obj) on the same shape
+    # stringifies to the literal text "[object Object]", losing every badge). Normalise
+    # explicitly instead of relying on either language's incidental object-to-string
+    # behaviour (surface-parity debt). 2026-09-27.
+    capabilities = [c if isinstance(c, str) else (c.get("label") or c.get("text") or str(c))
+                     for c in b.get("capabilities", [])]
     accent       = b.get("accent", "#7c3aed")
     badge_bg     = _hex_to_rgba(accent, 0.08)
     badge_border = _hex_to_rgba(accent, 0.30)
@@ -6578,7 +6643,7 @@ def _render_model_card(b: dict) -> str:
     badges = "".join(
         f'<span style="font-size:0.72rem;padding:3px 8px;border-radius:100px;'
         f'background:{badge_bg};color:{accent};border:1px solid {badge_border};'
-        f'font-weight:500;">{cap}</span>'
+        f'font-weight:500;">{_esc(cap)}</span>'
         for cap in capabilities
     )
     badges_html = (
@@ -7912,7 +7977,13 @@ def _render_quiz_question(b: dict) -> str:
     import hashlib
     uid      = "q" + hashlib.md5(str(b).encode()).hexdigest()[:6]
     question = b.get("question", "")
-    options  = b.get("options", [])
+    # Schema says options are plain strings, but a common alternate shape sends
+    # {label, value} objects; f-string formatting of a dict happened to still embed the
+    # label via Python's repr (an accident, not a design -- GAS's _esc(obj) on the same
+    # shape stringifies to the literal text "[object Object]", losing every option).
+    # Normalise explicitly (surface-parity debt). 2026-09-27.
+    options  = [o if isinstance(o, str) else (o.get("label") or o.get("text") or o.get("value") or str(o))
+                for o in b.get("options", [])]
     correct  = int(b.get("correct", 0))
     explain  = b.get("explanation", "")
     style    = b.get("style", "default")
@@ -7942,7 +8013,7 @@ def _render_quiz_question(b: dict) -> str:
             f'<label for="{inp_id}" style="display:block;padding:10px 14px;margin:6px 0;'
             f'border:1.5px solid {border};border-radius:8px;cursor:pointer;'
             f'font-size:0.9rem;color:{text_col};transition:all 0.2s;">'
-            f'{opt}</label>'
+            f'{_esc(opt)}</label>'
         )
 
     explain_html = (
@@ -8174,11 +8245,15 @@ def _render_sprint_board(b: dict) -> str:
 
     cols_html = ""
     for col in columns:
-        items = col.get("items", [])
+        # A common alternate column shape sends `title`/`cards` instead of the schema's
+        # `name`/`items`; only checking the schema names dropped both entirely for that
+        # shape (surface-parity debt). 2026-09-27.
+        items = col.get("items") or col.get("cards", [])
+        name = col.get("name") or col.get("title", "")
         cols_html += (
             f'<div style="background:#f4f5f7;border-radius:3px;padding:10px;flex:1;min-width:160px;">'
             f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-            f'<span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">{col.get("name","")}</span>'
+            f'<span style="font-size:11px;font-weight:700;color:#5e6c84;text-transform:uppercase;letter-spacing:0.05em;">{_esc(name)}</span>'
             f'<span style="background:#dfe1e6;color:#172b4d;font-size:11px;font-weight:600;padding:1px 6px;border-radius:20px;">{len(items)}</span>'
             f'</div>'
             + "".join(render_ticket(t) for t in items)
@@ -10056,8 +10131,12 @@ def _render_number_flip(b: dict) -> str:
     import hashlib, html as _html
     uid    = hashlib.md5(str(b).encode()).hexdigest()[:6]
     value  = str(b.get("value", "0"))
-    prefix = _html.escape(b.get("prefix", ""))
-    suffix = _html.escape(b.get("suffix", ""))
+    # A caller can legitimately send a numeric prefix/suffix (e.g. a multiplier); html.escape
+    # requires a str and threw on anything else, crashing the WHOLE render (surface-parity
+    # debt: lost `label` too, not just prefix/suffix -- GAS's String()-based _esc tolerates
+    # this fine). 2026-09-27.
+    prefix = _html.escape(str(b.get("prefix", "")))
+    suffix = _html.escape(str(b.get("suffix", "")))
     label  = b.get("label", "")
     size   = b.get("size", "3rem")
     keyframes = ""
@@ -11915,7 +11994,10 @@ _RENDERERS['callout'] = _render_callout2
 
 
 def _render_caution_block(b: dict) -> str:
-    text = b.get('text', '')
+    # Schema's only declared field is `message` (surface-parity debt: this read the
+    # non-existent `text`, so the payload's actual content never appeared -- GAS already
+    # reads b.message||b.text||'' correctly). 2026-09-27.
+    text = b.get('message', b.get('text', ''))
     label = b.get('label', 'Caution')
     return (f'<div style="border-left:4px solid #f59e0b;background:#fffbeb;padding:12px 16px;'
             f'border-radius:0 8px 8px 0;margin:1rem 0;">'
@@ -11956,7 +12038,10 @@ def _render_checklist_interactive(b: dict) -> str:
     items = b.get('items', [])
     rows = ''
     for i, item in enumerate(items):
-        text = item if isinstance(item, str) else item.get('text', '')
+        # Object-shaped items can use either key (GAS already reads item.text||item.label);
+        # only checking 'text' dropped 'label'-shaped items entirely (surface-parity debt).
+        # 2026-09-27.
+        text = item if isinstance(item, str) else (item.get('text') or item.get('label') or '')
         checked = '' if isinstance(item, str) else ('checked' if item.get('checked') else '')
         rows += (f'<label style="display:flex;align-items:flex-start;gap:10px;padding:8px 4px;cursor:pointer;">'
                  f'<input type="checkbox" {checked} style="margin-top:2px;accent-color:#6366f1;">'
@@ -12228,17 +12313,24 @@ _RENDERERS['contact_card'] = _render_contact_card
 
 
 def _render_copy_code_button(b: dict) -> str:
-    uid = _wa_uid(b)
-    code = b.get('code', '')
-    lang = b.get('language', 'text')
-    escaped = code.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-    return (f'<div style="position:relative;margin:1rem 0;">'
-            f'<pre style="background:#1e1e2e;color:#cdd6f4;padding:16px;padding-right:52px;'
-            f'border-radius:8px;overflow-x:auto;font-size:0.84rem;">'
-            f'<code class="language-{_esc(lang)}">{escaped}</code></pre>'
-            f'<button onclick="navigator.clipboard.writeText(atob(\'{__import__("base64").b64encode(code.encode()).decode()}\'));this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',2000)" '
-            f'style="position:absolute;top:8px;right:8px;background:#ffffff22;color:#cdd6f4;border:none;'
-            f'border-radius:5px;padding:4px 10px;font-size:0.72rem;cursor:pointer;">Copy</button></div>')
+    # Schema's only declared field is `text_to_copy` -- a standalone copy button, not a
+    # code block. This used to read the non-existent `code`/`language` (an older schema
+    # shape) and never touched text_to_copy at all (surface-parity debt: GAS already
+    # implements the current, minimal design). Kept `code` as a fallback for any payload
+    # still sending the old shape. 2026-09-27.
+    text = b.get('text_to_copy', b.get('code', ''))
+    escaped = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace("'", "\\'")
+    return (f'<div style="display:inline-block;margin:0.5rem 0;">'
+            f'<button onclick="navigator.clipboard.writeText(\'{escaped}\')" '
+            f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #d1d5db;'
+            f'border-radius:6px;background:#f9fafb;cursor:pointer;font-size:0.82rem;color:#374151;">'
+            f'<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">'
+            f'<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 '
+            f'.138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 '
+            f'16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 '
+            f'.784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 '
+            f'0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>'
+            f'Copy</button></div>')
 
 _RENDERERS['copy_code_button'] = _render_copy_code_button
 
@@ -12425,16 +12517,22 @@ _RENDERERS['embed_tweet'] = _render_embed_tweet
 
 
 def _render_empty_state(b: dict) -> str:
+    # Schema's fields are action_label/action_url (not button_label/button_url), and
+    # image_url was never used at all (surface-parity debt; GAS already reads
+    # b.action_label). 2026-09-27.
     icon = b.get('icon', '🔍')
+    image_url = b.get('image_url', '')
     title = b.get('title', 'Nothing here yet')
     desc = b.get('description') or b.get('text', '')
-    btn_label = b.get('button_label', '')
-    btn_url = b.get('button_url', '#')
+    btn_label = b.get('action_label') or b.get('button_label', '')
+    btn_url = b.get('action_url') or b.get('button_url', '#')
+    icon_html = (f'<img src="{_esc(image_url)}" alt="" style="max-width:120px;max-height:120px;'
+                 f'margin-bottom:12px;">' if image_url else f'<div style="font-size:2.5rem;margin-bottom:12px;">{icon}</div>')
     btn = (f'<a href="{_esc(btn_url)}" style="display:inline-block;margin-top:12px;padding:8px 20px;'
            f'background:#6366f1;color:#fff;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);text-decoration:none;font-size:0.85rem;font-weight:600;">'
            f'{_esc(btn_label)}</a>' if btn_label else '')
     return (f'<div style="text-align:center;padding:40px 24px;color:#9ca3af;">'
-            f'<div style="font-size:2.5rem;margin-bottom:12px;">{icon}</div>'
+            f'{icon_html}'
             f'<div style="font-size:1rem;font-weight:700;color:#374151;margin-bottom:6px;">{_esc(title)}</div>'
             f'{"<div style=font-size:0.88rem;>"+_md_inline(desc)+"</div>" if desc else ""}'
             f'{btn}</div>')
@@ -12470,7 +12568,10 @@ _RENDERERS['env_var_list'] = _render_env_var_list
 
 
 def _render_experimental_banner(b: dict) -> str:
-    text = b.get('text', 'This feature is experimental and may change.')
+    # Schema's only declared field is `message`; this read the non-existent `text`, so the
+    # payload's actual content never appeared (surface-parity debt; GAS already reads
+    # b.message||b.text). 2026-09-27.
+    text = b.get('message', b.get('text', 'This feature is experimental and may change.'))
     label = b.get('label', 'Experimental')
     return (f'<div style="border-left:4px solid #f59e0b;background:#fffbeb;padding:10px 16px;'
             f'border-radius:0 6px 6px 0;margin:1rem 0;display:flex;gap:10px;align-items:flex-start;">'
@@ -12579,9 +12680,15 @@ _RENDERERS['file_tree'] = _render_file_tree
 
 
 def _render_follow_button(b: dict) -> str:
+    # Schema's fields are `target_handle` + `platform` only (no `url`); this read the
+    # non-existent `handle`/`username`, so the handle never appeared, and always fell back
+    # to "#" instead of a real profile URL (surface-parity debt; GAS builds the URL from
+    # target_handle). 2026-09-27.
     platform = b.get('platform', '')
-    url = b.get('url', '#')
-    handle = b.get('handle') or b.get('username', '')
+    handle = b.get('target_handle') or b.get('handle') or b.get('username', '')
+    urls = {'twitter': f'https://twitter.com/{handle}', 'github': f'https://github.com/{handle}',
+            'linkedin': f'https://linkedin.com/in/{handle}'}
+    url = b.get('url') or urls.get(platform, '#')
     label = b.get('label') or (f'Follow @{handle}' if handle else f'Follow on {platform.title()}')
     icon = {'twitter': '🐦', 'github': '🐙', 'linkedin': '💼', 'mastodon': '🐘', 'youtube': '📺'}.get(platform, '→')
     return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
@@ -12621,11 +12728,14 @@ _RENDERERS['footnote'] = _render_footnote
 
 
 def _render_footnote_group(b: dict) -> str:
-    items = b.get('items', [])
+    # Schema's field is `footnotes` (array of {id, text}); this read the non-existent
+    # `items`/`number`, so the payload's actual footnotes never appeared (surface-parity
+    # debt; GAS already reads b.footnotes and fn.id). 2026-09-27.
+    items = b.get('footnotes', b.get('items', []))
     rows = ''
     for i, item in enumerate(items, 1):
         text = item if isinstance(item, str) else item.get('text', '')
-        num = item.get('number', i) if isinstance(item, dict) else i
+        num = item.get('id', item.get('number', i)) if isinstance(item, dict) else i
         rows += (f'<div style="display:flex;gap:8px;font-size:0.82rem;color:#6b7280;padding:4px 0;">'
                  f'<span style="font-weight:700;flex-shrink:0;">[{num}]</span><span>{_md_inline(text)}</span></div>')
     return f'<div style="border-top:2px solid #e5e7eb;padding-top:12px;margin-top:2rem;">{rows}</div>'
@@ -12797,7 +12907,10 @@ _RENDERERS['hover_card'] = _render_hover_card
 
 
 def _render_icon_stat_row(b: dict) -> str:
-    items = b.get('items', [])
+    # Schema's field is `stats` (`items` is a declared alias); this only checked `items`,
+    # so a payload sent under the primary name never rendered (surface-parity debt; GAS
+    # already reads b.stats||b.items). 2026-09-27.
+    items = b.get('stats') or b.get('items', [])
     stats = ''
     for item in items:
         icon = item.get('icon', '📊')
@@ -12846,13 +12959,20 @@ _RENDERERS['image_comparison'] = _render_image_comparison
 
 
 def _render_image_with_caption(b: dict) -> str:
+    # Schema's field is `alt_text` (not `alt`), and `link_url` was never used at all
+    # (surface-parity debt: the alt_text miss loses display coverage; link_url is a URL so
+    # it's not test-visible, but was still silently dropped). 2026-09-27.
     url = b.get('url') or b.get('image_url', '')
-    alt = b.get('alt', '')
+    alt = b.get('alt_text') or b.get('alt', '')
     caption = b.get('caption') or b.get('text', '')
     credit = b.get('credit', '')
+    link_url = b.get('link_url', '')
     credit_html = f'<span style="font-size:0.72rem;color:#9ca3af;display:block;margin-top:2px;">{_esc(credit)}</span>' if credit else ''
+    img_html = f'<img src="{_esc(url)}" alt="{_esc(alt)}" style="max-width:100%;height:auto;border-radius:8px;display:block;">'
+    if link_url:
+        img_html = f'<a href="{_esc(link_url)}">{img_html}</a>'
     return (f'<figure style="margin:1.5rem 0;">'
-            f'<img src="{_esc(url)}" alt="{_esc(alt)}" style="max-width:100%;height:auto;border-radius:8px;display:block;">'
+            f'{img_html}'
             f'<figcaption style="font-size:0.82rem;color:#6b7280;margin-top:6px;font-style:italic;">'
             f'{_esc(caption)}{credit_html}</figcaption></figure>')
 
@@ -12860,7 +12980,11 @@ _RENDERERS['image_with_caption'] = _render_image_with_caption
 
 
 def _render_inline_alert(b: dict) -> str:
-    text = b.get('text', '')
+    # Schema's field is `message` (not `text`); this read the non-existent `text`, so the
+    # alert's actual content never appeared, and `detail` was never shown at all
+    # (surface-parity debt). 2026-09-27.
+    text = b.get('message', b.get('text', ''))
+    detail = b.get('detail', '')
     variant = b.get('variant', 'info')
     # Sibling atoms disagreed on the worst severity: inline_alert knew
     # 'error', alert_banner knew 'critical', and each fell back to 'info'
@@ -12869,20 +12993,27 @@ def _render_inline_alert(b: dict) -> str:
     cols = {'info': '#3b82f6', 'success': '#10b981', 'warning': '#f59e0b', 'error': '#ef4444'}
     col = cols.get(variant, '#3b82f6')
     icons = {'info': 'ℹ️', 'success': '✅', 'warning': '⚠️', 'error': '❌'}
-    icon = icons.get(variant, 'ℹ️')
+    icon = b.get('icon') or icons.get(variant, 'ℹ️')
+    detail_html = f'<div style="font-size:0.76rem;opacity:0.85;margin-top:2px;">{_md_inline(detail)}</div>' if detail else ''
     return (f'<div style="display:inline-flex;align-items:center;gap:6px;background:{col}18;'
             f'color:{col};border:1px solid {col}40;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:4px 12px;'
-            f'font-size:0.83rem;font-weight:500;">{icon} {_md_inline(text)}</div>')
+            f'font-size:0.83rem;font-weight:500;">{icon} <span>{_md_inline(text)}{detail_html}</span></div>')
 
 _RENDERERS['inline_alert'] = _render_inline_alert
 
 
 def _render_inline_feedback_message(b: dict) -> str:
-    text = b.get('text', '')
-    variant = b.get('variant', 'success')
+    # Schema's fields are `message` and `type` (not `text`/`variant`); this read the wrong
+    # names entirely, so the payload's actual content never appeared, and `icon` was never
+    # shown (surface-parity debt; GAS already reads message/type). 2026-09-27.
+    text = b.get('message', b.get('text', ''))
+    variant = b.get('type', b.get('variant', 'success'))
     cols = {'success': '#10b981', 'error': '#ef4444', 'info': '#3b82f6', 'warning': '#f59e0b'}
     col = cols.get(variant, '#374151')
-    return f'<p style="font-size:0.88rem;color:{col};margin:4px 0;">{_md_inline(text)}</p>'
+    icons = {'success': '✓', 'error': '✕', 'warning': '⚠', 'info': 'ℹ'}
+    icon = b.get('icon') or icons.get(variant, '')
+    icon_html = f'<span style="margin-right:4px;">{_esc(icon)}</span>' if icon else ''
+    return f'<p style="font-size:0.88rem;color:{col};margin:4px 0;">{icon_html}{_md_inline(text)}</p>'
 
 _RENDERERS['inline_feedback_message'] = _render_inline_feedback_message
 
@@ -12993,7 +13124,10 @@ _RENDERERS['label_value_grid'] = _render_label_value_grid
 
 
 def _render_learning_objectives(b: dict) -> str:
-    items = b.get('items', [])
+    # Schema's field is `objectives`; this read the non-existent `items`, so the payload's
+    # actual content never appeared (surface-parity debt; GAS already reads b.objectives).
+    # 2026-09-27.
+    items = b.get('objectives', b.get('items', []))
     title = b.get('title', 'Learning Objectives')
     rows = ''.join(f'<li style="padding:4px 0;font-size:0.88rem;color:#374151;">'
                    f'<span style="color:#10b981;margin-right:6px;">✓</span>{_md_inline(item if isinstance(item,str) else item.get("text",""))}</li>'
@@ -13023,7 +13157,10 @@ _RENDERERS['link_card'] = _render_link_card
 
 
 def _render_log_output(b: dict) -> str:
-    content = b.get('content') or b.get('text', '')
+    # Schema's only declared field is `logs`; this read the non-existent `content`/`text`,
+    # so the payload's actual content never appeared (surface-parity debt; GAS already
+    # reads b.logs). 2026-09-27.
+    content = b.get('logs') or b.get('content') or b.get('text', '')
     title = b.get('title', '')
     escaped = content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
     title_html = (f'<div style="padding:5px 12px;background:#1a1a2e;border-bottom:1px solid #303050;'
@@ -13096,7 +13233,10 @@ _RENDERERS['metric_card'] = _render_metric_card
 
 def _render_newsletter_cta(b: dict) -> str:
     uid = _wa_uid(b)
-    title = b.get('title', 'Subscribe to the newsletter')
+    # Schema's field is `headline`; this read the non-existent `title`, so the payload's
+    # actual content never appeared (surface-parity debt; GAS already reads b.headline).
+    # 2026-09-27.
+    title = b.get('headline') or b.get('title', 'Subscribe to the newsletter')
     placeholder = b.get('placeholder', 'you@example.com')
     button = b.get('button_label') or b.get('button', 'Subscribe')
     return (f'<div style="border:2px solid #6366f133;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px;background:#6366f108;'
@@ -13554,11 +13694,16 @@ _RENDERERS['share_quote'] = _render_share_quote
 
 
 def _render_sidebar_note(b: dict) -> str:
-    text = b.get('text', '')
+    # Schema's field is `content` (not `text`), and `title` was never shown at all
+    # (surface-parity debt; GAS already reads b.content and shows b.title). 2026-09-27.
+    text = b.get('content') or b.get('text', '')
+    title = b.get('title', '')
     color = b.get('color', '#6366f1')
+    title_html = (f'<div style="font-weight:700;font-size:0.8rem;color:{_esc(color)};margin-bottom:4px;">'
+                  f'{_esc(title)}</div>') if title else ''
     return (f'<aside style="border-left:3px solid {_esc(color)};padding:10px 14px;margin:1rem 0;'
             f'background:{_esc(color)}08;font-size:0.88rem;color:#374151;border-radius:0 6px 6px 0;">'
-            f'{_md_inline(text)}</aside>')
+            f'{title_html}{_md_inline(text)}</aside>')
 
 _RENDERERS['sidebar_note'] = _render_sidebar_note
 
@@ -13699,13 +13844,14 @@ _RENDERERS['subheading'] = _render_subheading
 
 
 def _render_summary_box(b: dict) -> str:
-    items = b.get('items', [])
+    # Schema's only declared field is `text` (a single narrative block, not a list); this
+    # read the non-existent `items`, so the payload's actual content never appeared
+    # (surface-parity debt; GAS already reads b.text). 2026-09-27.
+    text = b.get('text', '')
     title = b.get('title', 'Summary')
-    rows = ''.join(f'<li style="padding:4px 0;font-size:0.88rem;color:#374151;">{_md_inline(item if isinstance(item,str) else item.get("text",""))}</li>'
-                   for item in items)
     return (f'<div style="border:1px solid #ede9fe;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:14px 18px;margin:1.5rem 0;background:#faf5ff;">'
             f'<div style="font-weight:700;color:#6d28d9;margin-bottom:8px;">✨ {_esc(title)}</div>'
-            f'<ul style="list-style:disc;padding-left:18px;margin:0;">{rows}</ul></div>')
+            f'<p style="margin:0;color:#374151;font-size:0.88rem;line-height:1.6;">{_md_inline(text)}</p></div>')
 
 _RENDERERS['summary_box'] = _render_summary_box
 
@@ -13804,6 +13950,24 @@ _RENDERERS['tech_stack'] = _render_tech_stack
 
 
 def _render_terminal_block(b: dict) -> str:
+    # Schema's fields are command/output/shell (a single command+response), not `lines`/
+    # `title` (an older, richer alternate shape this renderer was built for). This never
+    # read command/output/shell at all, so a payload sent in the current schema shape
+    # rendered a totally empty terminal (surface-parity debt; GAS already implements the
+    # schema shape). Handle both: `lines` if given, else the schema's single-command form.
+    # 2026-09-27.
+    if not b.get('lines') and (b.get('command') or b.get('output')):
+        shell = b.get('shell', 'bash')
+        command = _esc(b.get('command', ''))
+        output = _esc(b.get('output', ''))
+        prompt = {'zsh': '%', 'powershell': 'PS>', 'cmd': '>'}.get(shell, '$')
+        out_html = f'<div style="color:#9ca3af;white-space:pre-wrap;margin-top:8px;">{output}</div>' if output else ''
+        return (f'<div style="border:1px solid #1a1a2e;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
+                f'overflow:hidden;margin:1.2rem 0;font-family:monospace;font-size:0.82rem;">'
+                f'<div style="background:#1a1a2e;padding:8px 14px;color:#9ca3af;font-size:0.75rem;">{_esc(shell)}</div>'
+                f'<div style="background:#0f0f1a;padding:14px 18px;">'
+                f'<span style="color:#a78bfa;">{prompt}</span> <span style="color:#e2e8f0;">{command}</span>'
+                f'{out_html}</div></div>')
     lines = b.get('lines', [])
     title = b.get('title', 'Terminal')
     rows = ''
@@ -13902,14 +14066,18 @@ _RENDERERS['tooltip'] = _render_tooltip
 
 
 def _render_version_badge(b: dict) -> str:
+    # Schema's field is `status` (stable|beta|alpha|rc), never used at all -- every badge
+    # showed the same hardcoded green regardless of lifecycle stage (surface-parity debt;
+    # GAS already maps status to a colour). 2026-09-27.
     version = b.get('version') or b.get('text', 'v1.0.0')
-    label = b.get('label', 'version')
-    color = b.get('color', '#10b981')
-    return (f'<span style="display:inline-flex;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);overflow:hidden;font-size:0.78rem;'
-            f'font-weight:700;vertical-align:middle;">'
-            f'<span style="background:#374151;color:#fff;padding:2px 8px;">{_esc(label)}</span>'
-            f'<span style="background:{_esc(color)};color:#fff;padding:2px 8px;">{_esc(str(version))}</span>'
-            f'</span>')
+    status = b.get('status', 'stable')
+    colors = {'stable': '#16a34a', 'beta': '#2563eb', 'alpha': '#d97706', 'rc': '#7c3aed'}
+    color = b.get('color') or colors.get(status, '#6b7280')
+    status_html = (f'<span style="opacity:0.7;font-weight:400;margin-left:2px;"> · {_esc(status)}</span>'
+                   if status != 'stable' else '')
+    return (f'<span style="display:inline-flex;align-items:center;gap:5px;border:1px solid {_esc(color)};'
+            f'border-radius:100px;padding:2px 10px;font-size:0.75rem;font-weight:700;color:{_esc(color)};'
+            f'font-family:monospace;">v{_esc(str(version))}{status_html}</span>')
 
 _RENDERERS['version_badge'] = _render_version_badge
 
@@ -13938,10 +14106,18 @@ _RENDERERS['video_card'] = _render_video_card
 
 
 def _render_video_thumbnail(b: dict) -> str:
-    url = b.get('url') or b.get('video_url', '')
-    thumbnail = b.get('thumbnail') or b.get('image', '')
-    alt = b.get('alt') or b.get('title', 'Watch video')
+    # Schema's fields are video_url (click target)/thumbnail_url (image)/alt_text/title;
+    # this read thumbnail/image (neither exists) for the image, and never displayed
+    # `title` at all -- only used it as an alt-text fallback (surface-parity debt; GAS
+    # already reads thumbnail_url and shows title as an overlay caption). 2026-09-27.
+    url = b.get('video_url') or b.get('url', '')
+    thumbnail = b.get('thumbnail_url') or b.get('thumbnail') or b.get('image', '')
+    title = b.get('title', '')
+    alt = b.get('alt_text') or b.get('alt') or title or 'Watch video'
     duration = b.get('duration', '')
+    title_html = (f'<div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;'
+                  f'background:linear-gradient(transparent,rgba(0,0,0,0.8));color:#fff;font-size:0.85rem;'
+                  f'font-weight:600;">{_esc(title)}</div>') if title else ''
     return (f'<a href="{_esc(url)}" target="_blank" rel="noopener" '
             f'style="display:block;position:relative;border-radius:12px;border-radius:var(--a2ui-radius,12px);overflow:hidden;'
             f'max-width:360px;margin:1rem 0;">'
@@ -13949,6 +14125,7 @@ def _render_video_thumbnail(b: dict) -> str:
             f'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">'
             f'<div style="width:48px;height:48px;background:rgba(0,0,0,0.72);border-radius:50%;'
             f'display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;">▶</div></div>'
+            f'{title_html}'
             f'{"<div style=position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);color:#fff;font-size:0.72rem;padding:2px 6px;border-radius:3px;>"+_esc(duration)+"</div>" if duration else ""}'
             f'</a>')
 
@@ -14122,10 +14299,15 @@ _RENDERERS['customer_logo_grid'] = _render_customer_logo_grid
 
 
 def _render_expert_endorsement(b: dict) -> str:
-    text = b.get('text') or b.get('quote', '')
-    name = b.get('name') or b.get('expert', '')
-    title = b.get('title') or b.get('role', '')
-    avatar = b.get('avatar', '')
+    # Schema's fields are quote/expert_name/expert_title/expert_organization/
+    # expert_avatar_url; this read text/name/title/avatar (none of which exist), and never
+    # showed expert_organization at all (surface-parity debt; GAS already reads the correct
+    # names). 2026-09-27.
+    text = b.get('quote') or b.get('text', '')
+    name = b.get('expert_name') or b.get('name', '')
+    title = b.get('expert_title') or b.get('title', '')
+    org = b.get('expert_organization', '')
+    avatar = b.get('expert_avatar_url') or b.get('avatar', '')
     initial = name[0].upper() if name else '?'
     av = (f'<img src="{_esc(avatar)}" alt="{_esc(name)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">'
           if avatar else
@@ -14138,6 +14320,7 @@ def _render_expert_endorsement(b: dict) -> str:
             f'<div style="display:flex;align-items:center;gap:12px;">{av}'
             f'<div><div style="font-weight:700;color:#111827;">{_esc(name)}</div>'
             f'{"<div style=font-size:0.82rem;color:#6b7280;>"+_esc(title)+"</div>" if title else ""}'
+            f'{"<div style=font-size:0.78rem;color:#9ca3af;>"+_esc(org)+"</div>" if org else ""}'
             f'</div></div></div>')
 
 _RENDERERS['expert_endorsement'] = _render_expert_endorsement
@@ -14289,10 +14472,14 @@ _RENDERERS['live_aggregator'] = _render_live_aggregator
 
 
 def _render_media_mention_card(b: dict) -> str:
-    publication = b.get('publication') or b.get('source', '')
-    quote = b.get('quote') or b.get('text', '')
-    url = b.get('url', '#')
-    logo = b.get('logo') or b.get('logo_url', '')
+    # Schema's fields are publication_name/publication_logo_url/headline/article_url/date;
+    # this read publication/quote/url/logo/logo_url, none of which exist, so the payload's
+    # actual content never appeared (surface-parity debt; GAS already reads the correct
+    # names). 2026-09-27.
+    publication = b.get('publication_name') or b.get('publication', '')
+    quote = b.get('headline') or b.get('quote') or b.get('text', '')
+    url = b.get('article_url') or b.get('url', '#')
+    logo = b.get('publication_logo_url') or b.get('logo', '')
     date = b.get('date', '')
     logo_html = (f'<img src="{_esc(logo)}" alt="{_esc(publication)}" style="max-height:28px;object-fit:contain;">'
                  if logo else
@@ -14444,26 +14631,25 @@ _RENDERERS['scatter_trend'] = _render_scatter_trend
 
 
 def _render_social_proof_banner(b: dict) -> str:
-    text = b.get('text', '')
-    count = b.get('count') or b.get('number', '')
-    avatars = b.get('avatars', [])
-    icon = b.get('icon', '👥')
-    av_html = ''
-    for av in avatars[:5]:
-        src = av if isinstance(av, str) else av.get('url', '')
-        av_html += (f'<img src="{_esc(src)}" style="width:28px;height:28px;border-radius:50%;'
-                    f'border:2px solid #fff;margin-left:-6px;object-fit:cover;">'
-                    if src else
-                    f'<div style="width:28px;height:28px;border-radius:50%;background:#e5e7eb;'
-                    f'border:2px solid #fff;margin-left:-6px;"></div>')
-    av_row = f'<div style="display:flex;align-items:center;margin-left:6px;">{av_html}</div>' if av_html else ''
-    return (f'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;'
-            f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);'
-            f'font-size:0.84rem;margin:1rem 0;width:fit-content;">'
-            f'<span style="font-size:1rem;">{icon}</span>'
-            f'{"<span style=font-weight:700;>"+str(count)+"</span>" if count else ""}'
-            f'<span style="color:#374151;">{_esc(text)}</span>'
-            f'{av_row}</div>')
+    # Schema's fields are metric_value/metric_label/icon_url/link_url; this read
+    # text/count/number/avatars/icon, none of which exist, so the payload's actual content
+    # never appeared (surface-parity debt). Ported to the real fields. 2026-09-27.
+    metric_value = b.get('metric_value') or b.get('count') or b.get('number', '')
+    metric_label = b.get('metric_label') or b.get('text', '')
+    icon_url = b.get('icon_url', '')
+    link_url = b.get('link_url', '')
+    icon_html = (f'<img src="{_esc(icon_url)}" style="width:20px;height:20px;object-fit:contain;">'
+                 if icon_url else '<span style="font-size:1rem;">👥</span>')
+    inner = (f'<span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;'
+             f'border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:100px;'
+             f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);'
+             f'font-size:0.84rem;width:fit-content;">'
+             f'{icon_html}'
+             f'{"<span style=font-weight:700;>"+_esc(str(metric_value))+"</span>" if metric_value else ""}'
+             f'<span style="color:#374151;">{_esc(metric_label)}</span></span>')
+    if link_url:
+        return f'<a href="{_esc(link_url)}" style="text-decoration:none;display:block;margin:1rem 0;width:fit-content;">{inner}</a>'
+    return f'<div style="margin:1rem 0;width:fit-content;">{inner}</div>'
 
 _RENDERERS['social_proof_banner'] = _render_social_proof_banner
 
@@ -15433,12 +15619,17 @@ _RENDERERS['sticky_note'] = _render_sticky_note
 
 
 def _render_table_of_contents(b: dict) -> str:
-    items = b.get('items', [])
+    # Schema's field is `headings` (array of {level, text, anchor?}); this read the
+    # non-existent `items`, so a payload sent under the real field name never rendered
+    # (surface-parity debt; GAS already reads b.headings). 2026-09-27.
+    items = b.get('headings') or b.get('items', [])
     title = b.get('title', 'Table of Contents')
     def render_item(item, depth=0):
-        text = item.get('label') or item.get('text', '') if isinstance(item, dict) else str(item)
+        text = (item.get('text') or item.get('label', '')) if isinstance(item, dict) else str(item)
         anchor = item.get('anchor', '') if isinstance(item, dict) else ''
         children = item.get('children', []) if isinstance(item, dict) else []
+        level = item.get('level', 1) if isinstance(item, dict) else 1
+        depth = max(depth, level - 1)
         prefix = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth
         href = f'#{_esc(anchor)}' if anchor else '#'
         html = (f'<li style="margin:3px 0;">'
@@ -17829,10 +18020,22 @@ def _render_lesson_nav(b: dict) -> str:
                      f'{_esc(b.get("next_title","Next"))} →</a>')
     module = (f'<div style="text-align:center;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;'
               f'color:#9ca3af;text-transform:uppercase;">{_esc(b["module_label"])}</div>') if b.get('module_label') else ''
+    # `current_title` -- the atom's main declared field -- was never rendered at all
+    # (surface-parity debt; GAS shows it as the nav's centre title). 2026-09-27.
+    current_title_html = (f'<div style="text-align:center;font-weight:700;font-size:0.9rem;">'
+                           f'{_esc(b.get("current_title", ""))}</div>')
+    checkbox_html = ''
+    if b.get('show_completion'):
+        key = _esc(str(b.get('current_title', '')))
+        checkbox_html = (f'<label style="display:flex;align-items:center;gap:6px;justify-content:center;'
+                          f'font-size:0.78rem;color:#6b7280;margin-top:4px;">'
+                          f'<input type="checkbox" onchange="try{{localStorage.setItem(\'complete-{key}\',this.checked)}}catch(e){{}}"> '
+                          f'Mark as complete</label>')
+    center = f'<div style="flex:1;">{module}{current_title_html}{checkbox_html}</div>'
     return (
         f'<nav style="font-family:system-ui,sans-serif;padding:16px 0;border-top:1px solid #e5e7eb;'
         f'display:flex;align-items:center;gap:12px;">'
-        f'{prev_html}{module}{next_html}</nav>'
+        f'{prev_html}{center}{next_html}</nav>'
     )
 _RENDERERS["lesson_nav"] = _render_lesson_nav
 
@@ -17898,7 +18101,14 @@ _RENDERERS["rubric_card"] = _render_rubric_card
 def _render_knowledge_check(b: dict) -> str:
     uid = 'kc' + _wa_uid(b)[:6]
     question = _esc(b.get('question', 'Comprehension check'))
-    options = b.get('options', [])
+    # Schema says options are plain strings, but a common alternate shape sends
+    # {label, value} objects; `_esc(str(o))` on a dict happened to still embed the label
+    # text via Python's repr (an accident, not a design), while GAS's `_esc(options[i])`
+    # on the same shape stringified to the literal text "[object Object]", losing every
+    # option (surface-parity debt). Normalise explicitly instead of relying on either
+    # language's incidental object-to-string behaviour. 2026-09-27.
+    options = [o if isinstance(o, str) else (o.get('label') or o.get('text') or o.get('value') or str(o))
+               for o in b.get('options', [])]
     correct = int(b.get('correct', 0))
     explain = _md.markdown(b.get('explanation', '')) if b.get('explanation') else ''
     opts_html = ''.join(
@@ -17935,7 +18145,9 @@ def _render_achievement_badge(b: dict) -> str:
     color = b.get('color', '#f59e0b')
     locked = bool(b.get('locked'))
     size = b.get('size', 'card')
-    name = _esc(b.get('name', ''))
+    # Schema's field is `title` (Achievement name); this read the non-existent `name`, so
+    # the badge's actual name never appeared (surface-parity debt). 2026-09-27.
+    name = _esc(b.get('title', ''))
     desc = _esc(b.get('description', ''))
     unlocked_at = _esc(b.get('unlocked_at', ''))
     opacity = 'opacity:0.4;filter:grayscale(1);' if locked else ''
@@ -17968,9 +18180,11 @@ def _render_annotation_highlight(b: dict) -> str:
         col = n.get('color', '#f59e0b')
         if term:
             escaped_term = _esc(term)
+            # Schema's field is `explanation`; this read the non-existent `note`, so the
+            # tooltip content never appeared (surface-parity debt). 2026-09-27.
             out = out.replace(escaped_term,
                 f'<mark style="background:{_esc(col)};padding:1px 3px;border-radius:3px;cursor:pointer;" '
-                f'title="{_esc(n.get("note",""))}">{escaped_term}</mark>', 1)
+                f'title="{_esc(n.get("explanation",""))}">{escaped_term}</mark>', 1)
     return f'<div style="font-family:system-ui,sans-serif;line-height:1.7;margin:1rem 0;">{out}</div>'
 _RENDERERS["annotation_highlight"] = _render_annotation_highlight
 
@@ -17993,13 +18207,29 @@ def _render_quiz_result_summary(b: dict) -> str:
     retry_html = (f'<a href="{_esc(b["retry_url"])}" style="display:inline-block;margin-top:14px;margin-right:8px;'
                   f'padding:10px 22px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);color:#374151;border-radius:9px;'
                   f'text-decoration:none;font-size:0.85rem;">Retry</a>') if b.get('retry_url') else ''
+    # `quiz_id` (required by schema) and `questions` (per-question breakdown) were never
+    # used at all -- GAS writes quiz_id into a progress-store script tag and renders a
+    # breakdown-dots row from `questions`; the static web renderer has no progress-store
+    # mechanism to mirror the write, but the id is still surfaced as a data attribute so it
+    # isn't silently dropped (surface-parity debt). 2026-09-27.
+    quiz_id_attr = f' data-quiz-id="{_esc(str(b.get("quiz_id", "")))}"' if b.get('quiz_id') else ''
+    questions = b.get('questions', [])
+    dots = ''.join(
+        f'<div title="{_esc(q.get("label", f"Q{i+1}"))}" style="width:22px;height:22px;border-radius:50%;'
+        f'display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;color:#fff;'
+        f'background:{"#34d399" if q.get("correct") else "#f87171"};">{"✓" if q.get("correct") else "✗"}</div>'
+        for i, q in enumerate(questions)
+    )
+    dots_html = (f'<div style="margin-top:16px;"><div style="font-size:0.65rem;color:#9ca3af;text-transform:uppercase;'
+                 f'letter-spacing:0.08em;margin-bottom:8px;">Question breakdown</div>'
+                 f'<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">{dots}</div></div>') if dots else ''
     return (
-        f'<div style="font-family:system-ui,sans-serif;padding:28px;border-radius:14px;'
+        f'<div{quiz_id_attr} style="font-family:system-ui,sans-serif;padding:28px;border-radius:14px;'
         f'background:{bg};border:1px solid {col};text-align:center;">'
         f'<div style="font-size:3rem;font-weight:800;color:{col};">{pct}%</div>'
         f'<div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">{verdict}</div>'
         f'<div style="color:#6b7280;font-size:0.85rem;">{score} / {total} correct</div>'
-        f'{time_html}<div style="margin-top:12px;">{retry_html}{next_html}</div></div>'
+        f'{time_html}{dots_html}<div style="margin-top:12px;">{retry_html}{next_html}</div></div>'
     )
 _RENDERERS["quiz_result_summary"] = _render_quiz_result_summary
 
@@ -18095,12 +18325,28 @@ def _render_video_checkpoint(b: dict) -> str:
     if not yt_id:
         return '<div style="color:#9ca3af;padding:12px;">[video_checkpoint: no youtube_id]</div>'
     title_html = f'<div style="font-weight:700;margin-bottom:10px;">{title}</div>' if title else ''
+    # `checkpoints` (question/options/explanation at a timestamp) was never used at all --
+    # the static web renderer has no player to pause/resume at at_seconds, but the
+    # questions themselves are still real content and shouldn't be silently dropped
+    # (surface-parity debt). Shown as a plain list rather than faked as in-player,
+    # time-synced interactivity the static renderer can't actually provide. 2026-09-27.
+    checkpoints = b.get('checkpoints', [])
+    cp_rows = ''
+    for cp in checkpoints:
+        q = _esc(str(cp.get('question', cp.get('time', ''))))
+        options = cp.get('options', [])
+        opts_html = ''.join(f'<li>{_esc(str(o))}</li>' for o in options)
+        opts_wrap = f'<ul style="margin:4px 0 0;padding-left:18px;font-size:0.82rem;">{opts_html}</ul>' if opts_html else ''
+        cp_rows += (f'<li style="margin-bottom:8px;"><strong style="font-size:0.85rem;">{q}</strong>{opts_wrap}</li>')
+    cp_html = (f'<div style="margin-top:14px;"><div style="font-size:0.7rem;color:#9ca3af;text-transform:uppercase;'
+               f'letter-spacing:0.08em;margin-bottom:6px;">Checkpoints</div>'
+               f'<ol style="padding-left:18px;margin:0;">{cp_rows}</ol></div>') if cp_rows else ''
     return (
         f'<div style="font-family:system-ui,sans-serif;">'
         f'{title_html}'
         f'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;margin-bottom:12px;">'
         f'<iframe src="https://www.youtube.com/embed/{yt_id}" frameborder="0" allowfullscreen '
-        f'style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div></div>'
+        f'style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>{cp_html}</div>'
     )
 _RENDERERS["video_checkpoint"] = _render_video_checkpoint
 
@@ -20029,13 +20275,17 @@ def _render_badge_showcase(b: dict) -> str:
     items = ''
     for bg in badges:
         icon = _esc(bg.get('icon', '🏅'))
-        name = _esc(bg.get('name', ''))
+        # Schema's field is `label`; this read the non-existent `name`, and never rendered
+        # `description` at all (surface-parity debt: GAS reads both correctly). 2026-09-27.
+        name = _esc(bg.get('label', ''))
+        desc = _esc(bg.get('description', ''))
         locked = bool(bg.get('locked'))
         opacity = 'opacity:0.35;filter:grayscale(1);' if locked else ''
+        desc_html = f'<div style="font-size:0.68rem;color:#9ca3af;line-height:1.3;">{desc}</div>' if desc else ''
         items += (f'<div style="display:flex;flex-direction:column;align-items:center;gap:6px;'
                   f'padding:16px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;{opacity}">'
                   f'<div style="font-size:2rem;">{icon}</div>'
-                  f'<div style="font-size:0.75rem;font-weight:600;">{name}</div></div>')
+                  f'<div style="font-size:0.75rem;font-weight:600;">{name}</div>{desc_html}</div>')
     return (
         f'<div style="font-family:system-ui,sans-serif;">'
         f'<div style="font-weight:700;margin-bottom:12px;">{title}</div>'
@@ -20159,14 +20409,19 @@ def _render_learning_path_selector(b: dict) -> str:
     cards = ''
     for p in paths:
         ac = p.get('accent', '#6366f1')
-        name = _esc(p.get('name', ''))
+        # Schema's field is `label` (not `name`), and `icon` was never shown at all
+        # (surface-parity debt; GAS already reads p.label and p.icon). 2026-09-27.
+        icon = _esc(p.get('icon', ''))
+        name = _esc(p.get('label') or p.get('name', ''))
         desc = _esc(p.get('description', ''))
         duration = _esc(p.get('duration', ''))
+        icon_html = f'<div style="font-size:1.6rem;margin-bottom:4px;">{icon}</div>' if icon else ''
         cards += (
             f'<div style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:22px 18px;cursor:pointer;'
             f'border:2px solid {_esc(ac)}44;background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);margin-bottom:10px;'
             f'transition:border-color 0.2s;" onmouseover="this.style.borderColor=\'{_esc(ac)}\'" '
             f'onmouseout="this.style.borderColor=\'{_esc(ac)}44\'">'
+            f'{icon_html}'
             f'<div style="font-weight:700;margin-bottom:4px;">{name}</div>'
             f'<div style="font-size:0.85rem;color:#6b7280;margin-bottom:8px;">{desc}</div>'
             + (f'<div style="font-size:0.75rem;color:#9ca3af;">⏱ {duration}</div>' if duration else '')
@@ -20288,6 +20543,7 @@ _RENDERERS["onboarding_stepper"] = _render_onboarding_stepper
 
 def _render_course_progress_card(b: dict) -> str:
     modules = b.get('modules', [])
+    modules = modules if isinstance(modules, list) else []
     accent = b.get('accent', '#6366f1')
     total_lessons = sum(int(m.get('lessons_total', 1)) for m in modules)
     done_lessons = sum(int(m.get('lessons_done', 0)) for m in modules)
@@ -20300,15 +20556,19 @@ def _render_course_progress_card(b: dict) -> str:
         mods_html += (
             f'<div style="margin-bottom:10px;">'
             f'<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px;">'
-            f'<span>{_esc(m.get("name","Module"))}</span><span style="color:#9ca3af;">{ld}/{lt}</span></div>'
+            f'<span>{_esc(m.get("title","Module"))}</span><span style="color:#9ca3af;">{ld}/{lt}</span></div>'
             f'<div style="background:#e5e7eb;border-radius:99px;height:6px;">'
             f'<div style="background:{_esc(accent)};width:{mpct}%;height:100%;border-radius:99px;"></div></div></div>'
         )
+    # Schema's module field is `title` (not `name`), and `course_title` was never shown at
+    # all -- hardcoded "Course Progress" regardless of payload (surface-parity debt).
+    # 2026-09-27.
+    course_title = b.get('course_title', 'Course Progress')
     return (
         f'<div style="font-family:system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);'
         f'background:#fafafa;background:var(--a2ui-surface-muted,#fafafa);border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);">'
         f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
-        f'<div style="font-weight:700;">Course Progress</div>'
+        f'<div style="font-weight:700;">{_esc(course_title)}</div>'
         f'<div style="font-size:1.4rem;font-weight:800;color:{_esc(accent)};">{overall_pct}%</div></div>'
         f'{mods_html}</div>'
     )
@@ -22798,23 +23058,37 @@ _RENDERERS["multi_surface"] = _render_multi_surface
 
 
 def _render_atom_anatomy(b: dict) -> str:
+    # Schema's `schema` field is "atom block JSON to render and display" -- a real atom
+    # instance, not a schema DEFINITION with a `.fields` dict (there is no such key on a
+    # rendered instance), so `schema_data.get('fields', {})` was always empty and nothing
+    # about the passed block ever appeared (surface-parity debt). GAS both live-renders the
+    # block and JSON-dumps it; mirrored here instead of the field-table that never worked.
+    # 2026-09-27.
+    import json as _json
     label = _esc(b.get('label', 'atom'))
     schema_data = b.get('schema', {})
+    schema_data = schema_data if isinstance(schema_data, dict) else {}
     accent = _esc(b.get('accent', '#6366f1'))
-    fields = schema_data.get('fields', {}) if isinstance(schema_data, dict) else {}
-    field_rows = ''
-    for k, v in list(fields.items())[:8]:
-        field_rows += ('<div style="display:flex;justify-content:space-between;padding:4px 0;'
-                       'border-bottom:1px solid #f1f1f1;border-bottom:1px solid var(--a2ui-border-soft,#f1f1f1);font-size:0.82rem;">'
-                       '<span style="font-weight:600;color:#374151;font-family:ui-monospace,monospace;">'
-                       + _esc(k) + '</span>'
-                       '<span style="color:#9ca3af;">' + _esc(str(v)) + '</span></div>')
-    return ('<div style="margin:1rem 0;padding:16px;border:1px solid ' + accent + '33;'
-            'border-radius:10px;background:' + accent + '06;">'
-            '<div style="font-size:0.72rem;font-weight:700;color:' + accent + ';'
-            'letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">'
-            '⬡ ' + label + '</div>'
-            + field_rows + '</div>')
+    try:
+        rendered = _RENDERERS.get(schema_data.get('type', ''), _render_unknown)(schema_data)
+    except Exception:
+        rendered = '<em style="color:#9ca3af;">Could not render preview</em>'
+    schema_str = _esc(_json.dumps(schema_data, indent=2))
+    return ('<div style="margin:1rem 0;border:1px solid ' + accent + '33;'
+            'border-radius:12px;overflow:hidden;">'
+            '<div style="padding:8px 16px;background:' + accent + '06;font-size:0.7rem;font-weight:700;'
+            'color:' + accent + ';letter-spacing:0.1em;text-transform:uppercase;'
+            'border-bottom:1px solid ' + accent + '33;">⬡ ' + label + '</div>'
+            '<div style="display:flex;gap:0;">'
+            '<div style="flex:1;padding:20px;border-right:1px solid #e5e7eb;min-width:0;">'
+            '<div style="font-size:0.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;'
+            'letter-spacing:0.08em;margin-bottom:10px;">Rendered</div>' + rendered + '</div>'
+            '<div style="flex:1;padding:20px;background:#0f172a;min-width:0;">'
+            '<div style="font-size:0.68rem;font-weight:700;color:#475569;text-transform:uppercase;'
+            'letter-spacing:0.08em;margin-bottom:10px;">Schema</div>'
+            '<pre style="margin:0;font-family:monospace;font-size:0.72rem;color:#e2e8f0;'
+            'white-space:pre-wrap;line-height:1.6;">' + schema_str + '</pre></div>'
+            '</div></div>')
 _RENDERERS["atom_anatomy"] = _render_atom_anatomy
 
 
@@ -23807,17 +24081,24 @@ _RENDERERS['layer_stack'] = _render_layer_stack
 
 
 def _render_tooltip_glossary(b: dict) -> str:
-    terms = b.get('terms', {})
-    text = b.get('text', '')
-    for term, defn in terms.items():
-        text = text.replace(
-            term,
-            ('<abbr title="' + _esc(str(defn)) + '" style="border-bottom:2px dotted #6366f1;'
-             'cursor:help;text-decoration:none;font-weight:600;color:inherit;">'
-             + _esc(term) + '</abbr>')
-        )
-    return ('<div style="margin:1rem 0;line-height:1.7;font-size:0.9rem;color:#374151;">'
-            + text + '</div>')
+    # Schema's `terms` is an ARRAY of {term, definition} (not a dict keyed by term, as this
+    # treated it -- `{}.items()` on a list crashes outright), and the intro prose field is
+    # `text`/`intro` shown separately, not text to find-and-replace terms inside (that was
+    # a different, older concept). Ported to GAS's real design: intro paragraph, then a
+    # definition list (surface-parity debt). 2026-09-27.
+    terms = b.get('terms') or b.get('items', [])
+    intro = b.get('text') or b.get('intro', '')
+    intro_html = f'<div style="color:#374151;line-height:1.7;margin-bottom:14px;">{_md_inline(intro)}</div>' if intro else ''
+    rows = ''.join(
+        f'<div style="display:flex;gap:14px;align-items:baseline;padding:10px 0;border-bottom:1px solid #f3f4f6;">'
+        f'<span style="flex-shrink:0;min-width:100px;font-weight:600;color:#6366f1;border-bottom:1px dashed #6366f1;">'
+        f'{_esc(t.get("term", t.get("word", "")))}</span>'
+        f'<span style="color:#6b7280;font-size:0.875rem;">{_md_inline(t.get("definition", t.get("def", "")))}</span></div>'
+        for t in terms if isinstance(t, dict)
+    )
+    return (f'<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+            f'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;margin:1rem 0;">'
+            f'{intro_html}{rows}</div>')
 _RENDERERS["tooltip_glossary"] = _render_tooltip_glossary
 
 
