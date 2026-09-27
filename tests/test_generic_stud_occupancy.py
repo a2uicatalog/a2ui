@@ -440,3 +440,33 @@ def test_snot_studs_on_real_minifig_armour(pid, expect_n):
     assert len(sockets) == expect_n
     for _, d in sockets:
         assert d[1] == 0  # every real stud on these parts is sideways -- no Y-axis socket should appear
+
+
+# ── Slope Back Wall Family (SLOPE_BACK_WALL_PARTS extension) ──────────────────
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+def test_slope_back_wall_2875_resolved_geometry():
+    """2875 'Slope Brick 45  2 x  6 x  0.667': 6 studs at y=8.0 (flat shelf on 16 LDU height brick).
+    Occupancy boxes span y: [8.0, 24.0] (the 20x20x16 column beneath each stud), within bounds
+    min=[-60.0, 0.0, -30.0], max=[60.0, 24.0, 10.0]. 6 bottom sockets at y=24.0."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, "2875.dat")
+    assert len(part.studs) == 6
+    for p, d in part.studs:
+        assert p[1] == pytest.approx(8.0)
+        assert d[1] < -0.9  # facing up
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        "2875", part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert len(occ) == 6
+    assert len(sockets) == 6
+    for b in occ:
+        assert b[2] == pytest.approx(8.0) and b[3] == pytest.approx(24.0)
+        assert P._stud_box_solid_fraction(part.tris, b) >= P.STUD_CELL_MIN_SOLID
+    for pos, sdir in sockets:
+        assert pos[1] == pytest.approx(24.0)
+        assert sdir == (0, 1, 0)
+
