@@ -5,6 +5,7 @@ has solid material beneath it) into an automated ray-parity PROOF against the pa
 candidate is only ever accepted once it is actually geometrically demonstrated, never assumed from title/shape
 alone. These tests use synthetic geometry (no LDraw library needed, so they run in CI) plus, where the fetched
 library is present, real curated parts to prove parity with the hand-verified tables it is meant to subsume."""
+import math
 import sys
 from pathlib import Path
 
@@ -174,6 +175,113 @@ def test_generic_fallback_keeps_only_the_flush_studs_on_real_non_flush_parts(pid
     occ, _ = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
     assert occ is not None, "%s has at least one genuinely flush, solid-proven stud and should not be rejected outright" % pid
     assert sorted(occ) == sorted(_RELAXED_REAL_PARTS[pid])
+
+
+# ── Tyres Family (TYRE_PARTS) ──────────────────────────────────────────────────
+
+def test_tyre_occupancy_pure_math():
+    """Tyre occupancy box is an inscribed square in the circular cross-section (XY plane), spanning Z width."""
+    # Symmetric 50 LDU diameter, z in [-14, 14]
+    half50 = 50.0 / (2 * math.sqrt(2))
+    occ = P.tyre_occupancy(50.0, -14.0, 14.0)
+    assert occ == [(-half50, half50, -half50, half50, -14.0, 14.0)]
+
+    # From bounds: diameter = 70, z_min = -20, z_max = 10 (asymmetric Z)
+    half70 = 70.0 / (2 * math.sqrt(2))
+    occ_bounds = P.tyre_occupancy((-35.0, -35.0, -20.0), (35.0, 35.0, 10.0))
+    assert occ_bounds == [(-half70, half70, -half70, half70, -20.0, 10.0)]
+
+
+def test_dispatcher_resolves_tyre_parts_with_exact_values():
+    """TYRE_PARTS resolves to an inscribed square in XY, spanning Z, with empty sockets and needs_occupancy=False."""
+    # 6015: "Tyre 12/ 40 x 11 Wide" -- diameter 50 LDU, z: [-14.0, 14.0]
+    half_6015 = 50.0 / (2 * math.sqrt(2))  # 17.677669529663685
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("6015", "Tyre 12/ 40 x 11 Wide")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-half_6015, half_6015, -half_6015, half_6015, -14.0, 14.0)]
+
+    # 30028b: "Tyre  8/ 40 x  8 Slick Smooth" -- diameter 36 LDU, z: [-10.0, 10.0]
+    half_30028b = 36.0 / (2 * math.sqrt(2))  # 12.727922061357855
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("30028b", "Tyre  8/ 40 x  8 Slick Smooth")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-half_30028b, half_30028b, -half_30028b, half_30028b, -10.0, 10.0)]
+
+    # 2346: "Tyre 12/ 50 x 16 Offset Tread" -- diameter 70 LDU, asymmetric z: [-20.0, 10.0]
+    half_2346 = 70.0 / (2 * math.sqrt(2))  # 24.74873734152916
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("2346", "Tyre 12/ 50 x 16 Offset Tread")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-half_2346, half_2346, -half_2346, half_2346, -20.0, 10.0)]
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_d,expected_z0,expected_z1", [
+    ("6015", 50.0, -14.0, 14.0),
+    ("30028b", 36.0, -10.0, 10.0),
+    ("30391", 76.0, -17.0, 17.0),
+    ("3139b", 36.0, -5.5, 5.5),
+    ("11209", 52.5, -12.5, 12.5),
+    ("32003", 170.01, -30.0, 30.0),
+    ("3641", 36.0, -8.0, 8.0),
+    ("2346", 70.0, -20.0, 10.0),
+    ("44309", 108.0, -27.0, 27.0),
+    ("56890", 60.0, -14.0, 14.0),
+])
+def test_real_resolved_tyre_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
+    """Representative sample of 10 real tyre parts verified against real resolved geometry."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Real geometry facts verified: tyres have NO studs, holes, or pins
+    assert len(part.studs) == 0, "%s should have no studs" % pid
+    assert len(part.holes) == 0, "%s should have no holes" % pid
+    assert len(part.pins) == 0, "%s should have no pins" % pid
+
+    # Rotational symmetry in XY: dx == dy, centered at (0, 0)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    assert abs(dx - dy) < 0.25, "%s should be rotationally symmetric in XY (dx=%f, dy=%f)" % (pid, dx, dy)
+    assert abs((part.min[0] + part.max[0]) / 2.0) < 0.5, "%s should be centered at X=0" % pid
+    assert abs((part.min[1] + part.max[1]) / 2.0) < 0.5, "%s should be centered at Y=0" % pid
+
+    # Resolved diameter and Z bounds match expected constants
+    assert round((dx + dy) / 2.0, 2) == expected_d
+    assert round(part.min[2], 2) == expected_z0
+    assert round(part.max[2], 2) == expected_z1
+
+    # Dispatcher resolves with real bounds
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris
+    )
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 1
+
+    # Inscribed square box is provably within the part's real bounds
+    b = occ[0]
+    assert b[0] >= part.min[0] - 0.5 and b[1] <= part.max[0] + 0.5
+    assert b[2] >= part.min[1] - 0.5 and b[3] <= part.max[1] + 0.5
+    assert b[4] >= part.min[2] - 0.5 and b[5] <= part.max[2] + 0.5
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["2807", "6578c01"])
+def test_excluded_deformed_tyres_remain_rejected(pid):
+    """2807 ('Needs Work') and 6578c01 ('Deformed') must remain rejected (needs_occupancy=True)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris
+    )
+    assert needs is True, "%s should remain rejected (needs_occupancy=True)" % pid
+    assert occ is None
+
 
 
 # bar_grip_points (2026-09-27): real grip position/axis for held/clip-mounted parts, refactored from the

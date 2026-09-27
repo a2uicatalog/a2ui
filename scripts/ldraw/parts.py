@@ -128,6 +128,75 @@ def dish_occupancy(module_h, n_studs):
     return [box(-half_inscribed, half_inscribed, 0, module_h, -half_inscribed, half_inscribed)]
 
 
+# Tyres: rotationally symmetric about the Z axis (wheel axle) with their circular cross-section in the XY plane,
+# centered at (0, 0). Like ROUND_PARTS and DISH_PARTS, occupancy is an axis-aligned square inscribed in that
+# outer circle (half-side = diameter / (2 * sqrt(2))), spanning the part's own real Z bounds (the tyre's width).
+# Any point within this square has distance from origin r <= half_inscribed * sqrt(2) = diameter / 2, so it is
+# provably contained within the outer cylinder of the tyre and can never over-report an external collision (spec §3's
+# "never report a false one"). Sockets are empty ([]): tyres carry no studs, anti-studs, pegholes, or pins (confirmed
+# against real resolved geometry for all 95 Tyre-category parts in the library -- nothing normally stacks onto a tyre;
+# wheels mount via axle/rim submodels).
+#
+# Unlike ROUND_PARTS/DISH_PARTS, a tyre's outer diameter is NOT expressed in stud units in its title -- LEGO tyre
+# nomenclature encodes rim diameter in mm, aspect ratio %, or width in mm (e.g. "Tyre 12/ 40 x 11 Wide" has rim=12mm,
+# aspect=40%, width=11mm, giving real diameter 50 LDU; "Tyre 14/ 50 x 17" has real diameter 76 LDU; "Tyre for Wheel
+# 41mm Znap" has diameter 130 LDU), so diameter cannot be derived from a single title regex without guessing.
+#
+# Like SLOPE_BACK_WALL_PARTS, this family supports reading dimensions directly from real resolved bounds (bounds_min
+# and bounds_max) at the resolve_occupancy_and_sockets call site, while also providing pre-calculated constants
+# (diameter, z_min, z_max) for when bounds are omitted.
+#
+# Verified against real resolved geometry for all 94 official Tyre-category parts in the library:
+# 92 parts are verified clean, rotationally symmetric in XY (dx == dy to within 0.1 LDU), centered at (0, 0) in XY,
+# and strictly non-empty (dz > 0). Two parts are excluded: 2807 ('Tyre Minifig Bicycle (Needs Work)' -- marked
+# incomplete) and 6578c01 ('Tyre 14/ 36 x 20 VR (Deformed to 10/ 67 x 24)' -- conically/mechanically deformed variant).
+TYRE_PARTS = {
+    "11209": (52.5, -12.5, 12.5), "11957": (251.72, -24.0, 24.0), "15413": (123.52, -25.25, 25.25),
+    "18450": (208.6, -55.5, 55.5), "18977": (60.0, -14.0, 14.0), "2346": (70.0, -20.0, 10.0),
+    "23798": (267.77, -55.0, 55.0), "23799": (204.0, -55.0, 55.0), "2696": (108.0, -24.0, 8.0),
+    "2857": (121.99, -25.0, 25.0), "2902": (204.0, -17.5, 17.5), "2995": (170.0, -50.0, 50.0),
+    "2997": (202.77, -42.0, 42.0), "30028b": (36.0, -10.0, 10.0), "30391": (76.0, -17.0, 17.0),
+    "30648": (60.0, -17.0, 17.0), "30699": (109.0, -18.0, 18.0), "3139b": (36.0, -5.5, 5.5),
+    "32003": (170.01, -30.0, 30.0), "32019": (156.6, -34.5, 15.5), "32076": (174.58, -17.5, 17.5),
+    "32078": (174.58, -35.2, 35.2), "32180": (140.0, -37.75, 38.75), "32196": (204.0, -40.0, 40.0),
+    "32296": (206.0, -62.0, 62.0), "32296p01": (206.0, -62.0, 62.0), "32298": (262.0, -76.0, 76.0),
+    "32298p01": (262.0, -76.0, 76.0), "3483": (62.0, -9.0, 9.0), "35578": (89.6, -17.0, 17.0),
+    "36": (106.0, -9.0, 9.0), "3634": (108.26, -16.0, 9.0), "3641": (36.0, -8.0, 8.0),
+    "3740": (205.22, -30.0, 30.0), "4084": (50.0, -12.0, 8.0), "41893": (171.99, -45.0, 45.0),
+    "41897": (140.0, -35.0, 35.0), "4267": (160.0, -25.0, 25.0), "4410": (204.17, -55.0, 55.0),
+    "44308": (108.0, -28.0, 28.0), "44309": (108.0, -27.0, 27.0), "4455": (219.23, -44.5, 44.5),
+    "44771": (172.12, -44.0, 44.0), "44799": (76.0, -9.0, 9.0), "451b": (36.0, -8.5, 8.5),
+    "458": (44.0, -6.0, 6.0), "45982": (204.63, -48.0, 48.0), "46335": (236.0, -44.1, 44.1),
+    "50861": (53.11, -7.5, 7.5), "50951": (38.0, -8.0, 8.0), "51011": (43.84, -8.0, 8.0),
+    "52985": (172.5, -34.0, 34.0), "539": (130.0, -21.0, 21.0), "54120": (236.73, -55.0, 55.0),
+    "55976": (142.0, -32.0, 32.0), "55978": (92.35, -28.0, 28.0), "56890": (60.0, -14.0, 14.0),
+    "56891": (92.0, -28.0, 17.0), "56897": (76.0, -17.0, 9.0), "56898": (107.07, -18.0, 18.0),
+    "56907": (204.0, -44.0, 44.0), "574": (108.26, -18.0, 7.0), "58090": (76.0, -17.0, 17.0),
+    "59895": (36.0, -5.5, 5.5), "6015": (50.0, -14.0, 14.0), "61254": (59.26, -9.0, 9.0),
+    "61480": (171.37, -43.0, 43.0), "61481": (108.0, -33.0, 33.0), "6292": (114.0, -31.0, 31.0),
+    "6578": (76.0, -17.5, 17.5), "6579": (102.0, -33.0, 33.0), "6581": (121.99, -25.0, 25.0),
+    "6594": (124.06, -35.0, 35.0), "6596": (204.01, -17.5, 17.5), "67140": (238.0, -35.0, 35.0),
+    "69909": (188.0, -35.0, 35.0), "69912": (201.85, -42.88, 42.88), "70490": (123.52, -18.0, 18.0),
+    "70695": (139.53, -32.0, 32.0), "71721": (332.0, -34.0, 34.0), "71722": (350.0, -46.0, 46.0),
+    "7860": (187.64, -16.25, 16.25), "80279": (220.0, -55.0, 55.0), "80542": (187.83, -25.0, 25.0),
+    "87414": (35.83, -8.0, 8.0), "87697": (50.0, -14.0, 14.0), "88516": (237.49, -25.77, 25.77),
+    "89201": (60.0, -17.0, 17.0), "92402": (76.0, -17.0, 17.0), "92409": (43.83, -8.0, 8.0),
+    "92912": (236.32, -48.0, 48.0), "u9131": (60.0, -9.0, 9.0),
+}
+
+
+def tyre_occupancy(bounds_min, bounds_max=None, z_max=None):
+    """Returns an inscribed-square occupancy box in the XY plane spanning Z.
+    Can be called with (bounds_min, bounds_max) or (diameter, z_min, z_max)."""
+    if z_max is not None:
+        diameter, z_min = bounds_min, bounds_max
+    else:
+        diameter = (bounds_max[0] - bounds_min[0] + bounds_max[1] - bounds_min[1]) / 2.0
+        z_min, z_max = bounds_min[2], bounds_max[2]
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    return [box(-half_inscribed, half_inscribed, -half_inscribed, half_inscribed, z_min, z_max)]
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -559,6 +628,12 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         return verified(occ, sockets)
     if part_id in DISH_PARTS:
         return verified(dish_occupancy(*DISH_PARTS[part_id]), [])
+    if part_id in TYRE_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ = tyre_occupancy(bounds_min, bounds_max)
+        else:
+            occ = tyre_occupancy(*TYRE_PARTS[part_id])
+        return verified(occ, [])
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
         return verified(occ, sockets)
