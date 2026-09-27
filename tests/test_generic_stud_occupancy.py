@@ -283,6 +283,123 @@ def test_excluded_deformed_tyres_remain_rejected(pid):
     assert occ is None
 
 
+# ── Technic Axle Rods Family (TECHNIC_AXLE_PARTS) ──────────────────────────────
+
+def test_technic_axle_occupancy_pure_math():
+    """Technic axle occupancy box spans the long axis X, with Y and Z spanning [-AXLE_RADIUS, AXLE_RADIUS]."""
+    # Direct from x_min, x_max: Axle 3 (-29.5, 29.5)
+    occ = P.technic_axle_occupancy(-29.5, 29.5)
+    assert occ == [(-29.5, 29.5, -6.0, 6.0, -6.0, 6.0)]
+
+    # From bounds tuples: Axle 4 bounds min (-39.5, -6.0, -6.0), max (39.5, 6.0, 6.0)
+    occ_bounds = P.technic_axle_occupancy((-39.5, -6.0, -6.0), (39.5, 6.0, 6.0))
+    assert occ_bounds == [(-39.5, 39.5, -6.0, 6.0, -6.0, 6.0)]
+
+    # With explicit radius
+    occ_custom = P.technic_axle_occupancy(-10.0, 10.0, radius=4.0)
+    assert occ_custom == [(-10.0, 10.0, -4.0, 4.0, -4.0, 4.0)]
+
+
+def test_dispatcher_resolves_technic_axle_parts_with_exact_values():
+    """TECHNIC_AXLE_PARTS resolves to a box along X spanning [-6, 6] in YZ, with empty sockets and needs_occupancy=False."""
+    # 4519: "Technic Axle  3" -- x: [-29.5, 29.5]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("4519", "Technic Axle  3")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-29.5, 29.5, -6.0, 6.0, -6.0, 6.0)]
+
+    # 24316: "Technic Axle  3 with Stop" -- x: [-29.5, 30.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("24316", "Technic Axle  3 with Stop")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-29.5, 30.0, -6.0, 6.0, -6.0, 6.0)]
+
+    # 3705: "Technic Axle  4" -- x: [-39.5, 39.5]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3705", "Technic Axle  4")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-39.5, 39.5, -6.0, 6.0, -6.0, 6.0)]
+
+    # 32209: "Technic Axle  5.5 with Stop Type 1" -- x: [-55.0, 52.5]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("32209", "Technic Axle  5.5 with Stop Type 1")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-55.0, 52.5, -6.0, 6.0, -6.0, 6.0)]
+
+    # 50450: "Technic Axle 32" -- x: [-319.5, 319.5]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("50450", "Technic Axle 32")
+    assert needs is False
+    assert sockets == []
+    assert occ == [(-319.5, 319.5, -6.0, 6.0, -6.0, 6.0)]
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_x0,expected_x1,expected_r", [
+    ("4519", -29.5, 29.5, 6.0),
+    ("24316", -29.5, 30.0, 8.0),
+    ("6587", -29.5, 30.0, 8.0),
+    ("3705", -39.5, 39.5, 6.0),
+    ("87083", -39.5, 40.0, 8.0),
+    ("32073", -49.5, 49.5, 6.0),
+    ("15462", -49.5, 50.0, 8.0),
+    ("32209", -55.0, 52.5, 8.0),
+    ("59426", -54.5, 54.5, 8.0),
+    ("3706", -59.5, 59.5, 6.0),
+    ("44294", -69.5, 69.5, 6.0),
+    ("3707", -79.5, 79.5, 6.0),
+    ("55013", -79.5, 80.0, 8.0),
+    ("60485", -89.5, 89.5, 6.0),
+    ("3737", -99.5, 99.5, 6.0),
+    ("23948", -109.5, 109.5, 6.0),
+    ("3708", -119.5, 119.5, 6.0),
+    ("50451", -159.5, 159.5, 6.0),
+    ("50450", -319.5, 319.5, 6.0),
+])
+def test_real_resolved_technic_axle_parts_match_geometry_and_remains_within_bounds(pid, expected_x0, expected_x1, expected_r):
+    """All 19 real Technic axle parts verified against real resolved geometry."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Connectors verified: axles have NO holes, pins, or extra studs (except 6587's single end stud)
+    assert len(part.holes) == 0, "%s should have no holes" % pid
+    assert len(part.pins) == 0, "%s should have no pins" % pid
+    if pid == "6587":
+        assert len(part.studs) == 1, "6587 has exactly 1 end stud"
+    else:
+        assert len(part.studs) == 0, "%s should have no studs" % pid
+
+    # Rotational symmetry in YZ: dy == dz, centered at (0, 0)
+    dy = part.max[1] - part.min[1]
+    dz = part.max[2] - part.min[2]
+    assert abs(dy - dz) < 0.1, "%s should be symmetric in YZ (dy=%f, dz=%f)" % (pid, dy, dz)
+    assert abs((part.min[1] + part.max[1]) / 2.0) < 0.1, "%s should be centered at Y=0" % pid
+    assert abs((part.min[2] + part.max[2]) / 2.0) < 0.1, "%s should be centered at Z=0" % pid
+
+    # Resolved X bounds and Y radius match expected constants
+    assert round(part.min[0], 1) == expected_x0
+    assert round(part.max[0], 1) == expected_x1
+    assert round(dy / 2.0, 1) == expected_r
+
+    # Dispatcher resolves with real bounds
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris
+    )
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 1
+
+    # Box is provably within the part's real bounds
+    b = occ[0]
+    assert b[0] >= part.min[0] - 0.5 and b[1] <= part.max[0] + 0.5
+    assert b[2] >= part.min[1] - 0.5 and b[3] <= part.max[1] + 0.5
+    assert b[4] >= part.min[2] - 0.5 and b[5] <= part.max[2] + 0.5
+
+    # Solidity proof: ray-parity solid fraction exceeds STUD_CELL_MIN_SOLID
+    frac = P._stud_box_solid_fraction(part.tris, b)
+    assert frac >= P.STUD_CELL_MIN_SOLID, "%s solid fraction (%f) below threshold (%f)" % (pid, frac, P.STUD_CELL_MIN_SOLID)
+
 
 # bar_grip_points (2026-09-27): real grip position/axis for held/clip-mounted parts, refactored from the
 # earlier has_bar_grip boolean so the real data (not just a yes/no) reaches the baked mesh's `bars` connector

@@ -668,7 +668,10 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
   - **Stop collar variants**: The 7 rods with stop/stud have bounding boxes $Y \in [-8.0, 8.0]$ and $Z \in [-8.0, 8.0]$ caused by a raised collar of radius 8.0 LDU near one end (`4-4cylc.dat` / `4-4disc.dat`). Under-approximating the collar by maintaining the constant 6.0 LDU shaft radius across the entire length is safe per spec §3 ("miss an overlap ... but never report a false one"): it guarantees the rod can enter pegholes and axle holes without generating false collisions, while never over-reporting collisions elsewhere.
   - **Solidity proof**: Ray-parity sampling with `_stud_box_solid_fraction` against real resolved triangles across all 19 parts confirms a solid fraction of 0.536 to 0.586 (54% - 59%), comfortably exceeding `STUD_CELL_MIN_SOLID = 0.15` (15%).
   - **Connectors**: Axles have no sockets (`sockets = []`), holes, or friction pins (`part.pins`). Part `6587` has one end stud at `(30.0, 0.0, 0.0)` in direction `(1.0, 0.0, 0.0)` which is parsed into `part.studs` by `resolve.py`.
-- **Catalogue Impact & Target**:
-  - Pre-implementation rejects: 19
-  - Target post-implementation rejects: 0 (unlocking all 19 parts)
+- **Catalogue Impact & Verified Rejects Survey**:
+  - Pre-implementation survey (`scripts/ldraw/survey_rejects.py`): 19 scanned, 0 accepted, 19 rejected (100% rejected in category `Technic Axle`).
+  - Post-implementation survey (`scripts/ldraw/survey_rejects.py`): 19 scanned, 19 accepted, 0 rejected (0% rejected).
+  - Unlocked **all 19 targeted Technic axle parts** (rejects in this subset dropped from 19 to 0).
+- **Verification**:
+  - Added targeted test cases in `tests/test_generic_stud_occupancy.py` (pure math tests, dispatcher tests with exact constants, rotational symmetry in YZ, bounds compliance, and ray-parity solidity verification across all 19 real parts). All 72 tests pass (21 new tests added, 51 -> 72 passing).
 
