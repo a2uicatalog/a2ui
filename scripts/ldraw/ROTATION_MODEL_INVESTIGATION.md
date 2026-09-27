@@ -1,6 +1,6 @@
 # Arbitrary Rotation Model Investigation (2026-09-27)
 
-## Status: IN PROGRESS
+## Status: COMPLETE
 
 ## What I'm checking
 - Real scale of non-axis-aligned rotations across real LDraw OMR sets (examining 3-5 sets directly, citing real part IDs and rotation matrices).
@@ -262,4 +262,12 @@ The scope is clearly bounded and architecturally clean, but requires precision b
 ---
 
 ## Conclusion
-*(To be completed)*
+1. **The rotation model is the primary blocker to real-world set coverage.** 99.6% of tilted parts in real OMR sets are genuine continuous 3D rotations, not near-miss tolerances or mirror reflections. They represent standard building techniques: aerodynamic train noses (`10001-1`, 65.6% tilted), Technic space-frames and linkages (`8880-1`, 40.9% tilted), octagonal architectural wings (`6597-1`, 23.7% tilted), castle battlements and minifig poses (`6080-1`, 5.8% tilted).
+2. **Quantisation is a non-starter; continuous matrices are mandatory.** Discretising rotations to an angular grid introduces linear lever-arm errors up to 3.5 LDU on a 10-stud subassembly (7x the 0.5-LDU connector/collision tolerance), breaks Pythagorean triangle linkages, causes combinatorial explosion in 3D SO(3) (13k–373k matrices), and *still* requires OBB/SAT due to bounding box inflation. Adopting continuous 9-element matrices matching LDraw line 1 is mathematically sound, robust, and industry standard.
+3. **Baked part occupancy is completely unaffected.** All 4,634 baked occupancy boxes in `public/parts/` are defined in part-local coordinates where bricks are inherently Cartesian. Local boxes automatically become Oriented Bounding Boxes (OBBs) in world space via matrix multiplication. **Zero parts need re-baking or re-deriving.**
+4. **Collision detection requires a 2-tier OBB-OBB SAT engine in Python and JS.** `brick_parts_validate.py` and its twin `atoms_brick.gs` must be upgraded to instantiate OBBs and run the standard 15-axis Separating Axis Theorem (with a fast-path for axis-aligned pairs). Connector matching (`studs`, `sockets`, `pins`, `holes`) is already continuous 3D Euclidean geometry and requires zero changes.
+5. **Concrete Sizing: MEDIUM (~6 developer days, 2 focused PRs).**
+   - **PR 1 (Core Validator Parity):** Implement OBB math and 15-axis SAT in `brick_parts_validate.py` and `atoms_brick.gs`; generate parity test fixtures proving 100% Python/JS parity.
+   - **PR 2 (Pipeline & Consumer Integration):** Update payload sanitisation, `omr_import.py`, WebGL matrix handling, and Canvas 2D fallback.
+   - **Payoff:** Immediately unlocks 26,222 real parts across the OMR library, boosting renderable coverage from **48.6% to 68.4%** across real sets.
+
