@@ -649,3 +649,32 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 ## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
 - Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
 - **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
+
+## 2026-09-27: PANEL_FLAT_WALL_PARTS Occupancy Family & Investigation (cloud agent, `agent/panel-family`)
+
+- **Task**: Real occupancy for Panel parts where provable (`scripts/ldraw/parts.py`).
+- **Investigation of Two Distinct Sub-Families**:
+  - **Sub-Family 1: Simple Flat Wall Panels (`15207`, `23950`, `23969`, `4865a`, `30413`, `4865b`, `93095`, `6231`, `30010`, `43337`, `4865`)**:
+    - **Physical Geometry**: Zero studs (`studs == []`), 1-stud depth (Z: `[-10.0, 10.0]`), 1-brick height (Y: `[0.0, 24.0]`), and width $N \times 20$ LDU (X: `[-10*N, 10*N]`).
+    - **Solidity Proof**: Bounding box solidity was evaluated against real resolved mesh triangles via ray-parity sampling (`_stud_box_solid_fraction`). All verified parts measure 31.5% to 53.3% solid (`15207`: 36.7%, `23950`: 41.3%, `23969`: 50.3%, `4865a`: 41.7%, `4865b`: 41.7%, `30413`: 40.7%, `6231`: 53.3%, `93095`: 46.7%), well above the catalogue floor `STUD_CELL_MIN_SOLID = 0.15` and comparable to an ordinary solid-topped 2x4 brick (`3001` at 43.4%).
+    - **Corner Fillet Safety**: The rounded corners on rounded-corner variants (`4865b`, `15207`, `23950`, `30413`, `23969`) have a measured fillet radius of ~2 LDU (0.8 mm; at 3x3 LDU the corner region is >91% solid). In the discrete LEGO grid (stud pitch 20 LDU, plate height 8 LDU), no LEGO element can fit inside a 0.8 mm corner relief, so the bounding box is a provably safe under-approximation that cannot cause false collisions with legitimately placed adjacent parts (spec §3).
+    - **Sockets**: Standard downward-facing sockets at $y=24$ are generated via `generate_sockets` on the 20x20 LDU grid (1 socket for 1x1, 2 for 1x2, 3 for 1x3, 4 for 1x4), matching the physical anti-stud mounting sockets on the real underside.
+  - **Sub-Family 2: Corner/Curved Wall Panels with Studs (`2345`, `2409`, `2448`, `2466`, `2468`, `2571`, `2572`) — Safely Left Unresolved**:
+    - **Castle Wall Corner `2345`**: Crenellated corner wall. Studs sit on an inner walkway at $y=24$, while the outer corner battlements rise to $y=0$. `stud_cell_occupancy_and_sockets` assumes studs sit at $y=0$, and would fabricate 24 LDU of non-existent solid material in the empty air above the studs. Moreover, the columns beneath the studs are thin hollow shells (solid fractions 0.06 to 0.23, failing the 0.15 threshold on 3 of 5 studs).
+    - **BURP/LURP Rock Corner `2409`**: 10x10x12 rock corner (288 LDU tall). Its 6 studs occupy a tiny 2x2 corner. Below the top brick ($y > 24$), the rock face opens into a massive hollow cave interior. Solid fraction across the full 288 LDU height is only 1.0% to 3.0%. A full-height column box would falsely block the hollow interior, while a 24 LDU box would place sockets in mid-air at $y=24$ instead of the base at $y=288$.
+    - **Fuselage/Airplane Panels `2448`, `2466`, `2468`, `2571`, `2572`**: Thin curved shells spanning 144 to 216 LDU height. All column solidities under top studs are between 1.0% and 7.0% (far below 0.15). In addition, `2448` has studs at two different heights ($y=0$ and $y=128$), and `2448`/`2466`/`2468` have negative bounds min Y (-8.0) that violate the 0-based box model. Curved-top panels (`2571`, `2572`) have curved top contours that a rectangular box severely over-approximates. Per spec §3 and task instructions, these are honestly left `needs_occupancy=True`.
+- **Catalogue Impact**:
+  - Rejects survey (`scripts/ldraw/survey_rejects.py`) on panel categories prior to change:
+    - `Panel 1`: 8 rejected (`15207`, `23950`, `23969`, `30413`, `4865a`, `4865b`, `6231`, `93095`)
+    - `=Panel`: 8 rejected (including aliases `30010` and `43337`)
+    - Total non-Technic panel rejects: 51
+    - Total panel-related rejects across library: 122
+  - Post-implementation survey:
+    - `Panel 1`: **0 rejected** (dropped from 8 to 0, 100% resolved)
+    - `=Panel`: **6 rejected** (dropped from 8 to 6)
+    - Total non-Technic panel rejects: dropped from 51 to 41
+    - Total panel-related rejects: dropped from 122 to 112
+- **Verification**:
+  - Added pure math tests, dispatcher tests without bounds, and real resolved geometry tests for all 11 parts in `PANEL_FLAT_WALL_PARTS` plus patterned variants (`4865ap01`, `23969p01`) in `tests/test_generic_stud_occupancy.py`.
+  - Added parameterized rejection tests verifying that all 7 Sub-Family 2 parts safely remain `needs_occupancy=True`.
+  - All 78 tests in `tests/test_generic_stud_occupancy.py` pass.
