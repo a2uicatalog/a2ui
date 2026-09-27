@@ -66,16 +66,18 @@ def test_generic_occupancy_drops_a_non_flush_stud_but_keeps_the_flush_one():
     assert sockets == [((0.0, 24, 0.0), (0, 1, 0))]
 
 
-def test_generic_occupancy_drops_a_sideways_stud_but_keeps_the_flush_one():
-    """A SNOT part's side stud (dir facing -Z, not up) must not get a 'solid column beneath it' box -- there is no
-    'beneath' for a sideways stud -- but (2026-09-27, see test above) no longer poisons a genuinely flush sibling
-    stud on the same part either. Real 11211 needs its OVERRIDES entry regardless (its flush studs alone give a
-    different, smaller footprint than the hand-authored override), covered by the parametrized test below."""
+def test_generic_occupancy_keeps_both_a_flush_stud_and_a_real_sideways_one():
+    """A flush (up-facing) stud and a SNOT (sideways) stud on the same synthetic part each get their own
+    independently-proven box now (2026-09-27 SNOT addition, see the module-level comment on
+    generic_stud_cell_occupancy) -- the sideways box spans the part's full bounds only along ITS OWN axis
+    (Z here), +/-10 on the other two, the direct generalisation of how the flush box already spans full
+    bounds only along Y. Real 11211 needs its OVERRIDES entry regardless for the full-body footprint
+    (covered by the parametrized test below); this only exercises the generic function directly."""
     tris = _box_tris(-10, 10, 0, 24, -10, 10)
     studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0)), ((0.0, 12.0, -10.0), (0.0, 0.0, -1.0))]
     occ, sockets = P.generic_stud_cell_occupancy((-10, 0, -10), (10, 24, 10), studs, tris)
-    assert occ == [(-10.0, 10.0, 0, 24.0, -10.0, 10.0)]
-    assert sockets == [((0.0, 24, 0.0), (0, 1, 0))]
+    assert sorted(occ) == sorted([(-10.0, 10.0, 0, 24.0, -10.0, 10.0), (-10.0, 10.0, 2.0, 22.0, -10, 10)])
+    assert sorted(sockets) == sorted([((0.0, 24, 0.0), (0, 1, 0)), ((0.0, 12.0, -10.0), (0.0, 0.0, -1.0))])
 
 
 def test_generic_occupancy_rejects_a_stud_on_a_floating_nub():
@@ -144,14 +146,19 @@ def test_generic_fallback_reproduces_the_curated_corner_l_result_exactly():
     assert sorted(gen_sockets) == sorted(curated_sockets)
 
 
-# pid -> expected occ after the 2026-09-27 per-stud relaxation: only each part's genuinely flush, individually
-# solid-proven studs contribute a box now (real values, checked against a live resolve, not asserted blind).
-# 11211 has 2 flush top studs (its 2 SNOT side studs are excluded, same as always) -- note this is a SMALLER,
-# different footprint than 11211's own OVERRIDES entry (a full 1x2 body), so the dispatcher must still prefer
-# OVERRIDES over this generic result (covered by test_dispatcher_prefers_named_families_and_overrides... above).
-# 3665a/3660a each have their ramp-side stud(s) at y=4 excluded, keeping only the flush y=0 stud(s).
+# pid -> expected occ after the 2026-09-27 per-stud relaxation: only each part's genuinely flush (or, since
+# the same day's later SNOT addition, genuinely sideways-and-solid) individually-proven studs contribute a
+# box now (real values, checked against a live resolve, not asserted blind).
+# 11211 has 2 flush top studs AND 2 real sideways (SNOT) studs, both individually solid-proven now -- 4
+# boxes total, a SMALLER, different footprint than 11211's own OVERRIDES entry (a full 1x2 body) either
+# way, so the dispatcher must still prefer OVERRIDES over this generic result (covered by
+# test_dispatcher_prefers_named_families_and_overrides... above) -- production behaviour for 11211 is
+# unaffected by the SNOT addition, only this direct unit-level call on the generic function itself.
+# 3665a/3660a each have their ramp-side stud(s) at y=4 excluded -- that stud is Y-axis (dir (0,-2,0)), which
+# the SNOT path deliberately never touches (it only ever handles X/Z-axis studs), so these two are unchanged.
 _RELAXED_REAL_PARTS = {
-    "11211": [(0.0, 20.0, 0.0, 24.0, -10.0, 10.0), (-20.0, 0.0, 0.0, 24.0, -10.0, 10.0)],
+    "11211": [(0.0, 20.0, 0.0, 24.0, -10.0, 10.0), (-20.0, 0.0, 0.0, 24.0, -10.0, 10.0),
+              (0.0, 20.0, 0.0, 20.0, -10.0, 10.0), (-20.0, 0.0, 0.0, 20.0, -10.0, 10.0)],
     "3665a": [(-10.0, 10.0, 0.0, 24.0, -10.0, 10.0)],
     "3660a": [(0.0, 20.0, 0.0, 24.0, -10.0, 10.0), (-20.0, 0.0, 0.0, 24.0, -10.0, 10.0)],
 }
@@ -293,3 +300,35 @@ def test_minifig_headwear_does_not_shadow_bar_grip():
     assert needs is False
     assert occ == []
     assert sockets == []  # bar-grip path: deliberately no socket yet, not the headwear socket
+
+
+# SNOT studs (2026-09-27): a stud facing sideways (X or Z, not Y) was previously excluded from
+# generic_stud_cell_occupancy entirely -- found live: "Minifig Armour Shoulder Pads with 1 Stud on Front, 2
+# Studs on Back" (11097) has 3 real studs, ALL sideways, individually 15-19% solid (healthy, comparable to
+# other accepted parts), but the up-only flush check discarded the whole part over having zero up-facing
+# studs at all. Generalises the same ray-cast proof to any axis-aligned direction.
+def test_snot_stud_synthetic_sideways_box():
+    """The sideways box spans the part's full real bounds only along the stud's OWN axis (Z, -10..10 here);
+    the other two axes (X, Y) get the same +/-10 footprint the up-facing case already uses for X/Z -- so a
+    stud sitting at y=12 (not y=0) gets a Y span of 2..22, not the full 0..24 height."""
+    tris = _box_tris(-10, 10, 0, 24, -10, 10)
+    studs = [((0.0, 12.0, 10.0), (0.0, 0.0, 1.0))]  # a single sideways (Z+) stud, no up-facing stud at all
+    occ, sockets = P.generic_stud_cell_occupancy((-10, 0, -10), (10, 24, 10), studs, tris)
+    assert occ == [(-10.0, 10.0, 2.0, 22.0, -10, 10)]
+    assert sockets == [((0.0, 12.0, 10.0), (0.0, 0.0, 1.0))]
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expect_n", [("11097", 2), ("15086", 3)])
+def test_snot_studs_on_real_minifig_armour(pid, expect_n):
+    """11097: 2 of its 3 sideways studs pass (the third is individually below STUD_CELL_MIN_SOLID) -- partial
+    credit, same under-approximation principle as the boat-hull fix. 15086: all 3 pass."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
+    assert occ is not None and len(occ) == expect_n
+    assert len(sockets) == expect_n
+    for _, d in sockets:
+        assert d[1] == 0  # every real stud on these parts is sideways -- no Y-axis socket should appear

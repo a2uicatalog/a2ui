@@ -28,6 +28,22 @@ hole-channel-generalisation / bar-grip-detection work already in `scripts/ldraw/
   use) the same way `has_bar_grip`'s cylinder detection works, then extend `validate_parts`'s adjacency
   graph with a bar-to-clip proximity match parallel to the existing stud-to-socket one.
 
+**Also landed this session, on `local/snot-studs`:** SNOT (Studs Not On Top) generalisation of
+`generic_stud_cell_occupancy`. Found investigating minifig anatomy: "Minifig Armour Shoulder Pads with 1
+Stud on Front, 2 Studs on Back" (11097) has 3 real studs, ALL sideways (X/Z direction, not Y), each
+individually 15-19% solid by the existing ray-cast proof -- healthy, comparable to already-accepted parts --
+but the up-only flush check discarded the whole part over having zero up-facing studs at all. Generalised
+the same proof to any axis-aligned stud direction, added as fully separate code alongside the proven Y-axis
+path (not a rewrite) -- zero regression risk, confirmed live (3001, 164c01, 3665a all byte-identical to
+before). Deliberately does NOT copy the Y-axis path's `abs(p[1]) < 0.5` position pre-filter for the new X/Z
+axes: that check encodes a real LDraw convention specific to Y (an ordinary brick's local origin sits at
+y=0) with no X/Z equivalent, and the ray-cast solid-fraction proof is the actual safety mechanism regardless
+of position. Real, not hypothetical: 11097 (2 of 3 studs pass) and 15086 "with Neck Protection" (all 3 pass)
+now both resolve cleanly. Not minifig-specific -- unlocks any sideways-stud (SNOT) part catalogue-wide. 3
+new tests, all 37 in the file passing (one pre-existing test's expected value updated to reflect 11211's
+generic-function-level result now correctly including its 2 real sideways studs -- 11211's actual PRODUCTION
+resolution is unaffected, it still uses its own OVERRIDES entry unchanged).
+
 **Also landed this session, on `local/minifig-anatomy`:** minifig headwear connector. `minifig_headwear_socket()`
 gives hair/helmet/hat/headdress/cap/mask/crown parts a single downward-facing socket at their own LOCAL ORIGIN
 (0,0,0) -- this is NOT a guess: `characters.py`'s own `OFFSETS` table already places both "head" and "headgear"

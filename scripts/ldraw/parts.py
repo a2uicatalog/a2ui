@@ -286,8 +286,9 @@ def generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris):
     if not studs or not tris or bounds_min is None or bounds_max is None:
         return None, []
     flush = [(p, d) for p, d in studs if abs(p[1]) < 0.5 and d[1] < -0.9]
-    if not flush:
-        return None, []
+    # NOTE: no `if not flush: return None, []` here -- a part can have ZERO up-facing studs and still have
+    # real sideways (SNOT) ones the loop below checks (e.g. 11097, all 3 studs sideways, 0 flush). The
+    # final `if not boxes: return None, []` after both passes is the real bail-out.
     # Span the box over the part's OWN real y extent, not an assumed y:[0, height] -- found live, 2026-09-26:
     # ordinary bricks have bounds_min[1]==0 (origin at the top surface), but plenty of real parts don't (a
     # baseplate's origin sits at its vertical CENTRE, e.g. bounds y:[-4,+4]; a mudguard/curved-slope's flare can
@@ -299,10 +300,42 @@ def generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris):
     y0, y1 = bounds_min[1], bounds_max[1]
     kept = [p for p, _ in flush if _stud_box_solid_fraction(
         tris, box(p[0] - 10, p[0] + 10, y0, y1, p[2] - 10, p[2] + 10)) >= STUD_CELL_MIN_SOLID]
-    if not kept:
-        return None, []
     boxes = [box(p[0] - 10, p[0] + 10, y0, y1, p[2] - 10, p[2] + 10) for p in kept]
     sockets = [((p[0], y1, p[2]), (0, 1, 0)) for p in kept]
+
+    # SNOT (Studs Not On Top) addition, 2026-09-27: a stud facing sideways (X or Z, not Y) was previously
+    # excluded from this whole function entirely by the `flush` filter above, which only recognises the
+    # up-facing case -- found live surveying real rejects: "Minifig Armour Shoulder Pads with 1 Stud on
+    # Front, 2 Studs on Back" (11097) has 3 real studs, all sideways (dir (0,0,-1)/(0,0,1)), individually
+    # ~17-19% solid -- healthy, comparable to other accepted parts -- but the up-only flush check discarded
+    # the whole part regardless. Generalises the SAME ray-cast proof to any axis-aligned stud direction,
+    # deliberately WITHOUT copying the Y-axis path's `abs(p[1]) < 0.5` position pre-filter: that check
+    # encodes a real LDraw convention specific to Y (an ordinary brick's own local origin sits at y=0, its
+    # top stud surface) that has no equivalent for X/Z -- there's no universal "sideways studs sit at
+    # x/z=0" convention to check against. The ray-cast solid-fraction proof is the actual safety
+    # mechanism either way (a stud on a ramp's raised nub still needs a real solid column to pass, position
+    # or not); dropping an inapplicable heuristic is not the same as dropping the proof. Left as fully
+    # separate code (not merged into the `flush` list above) so the proven Y-axis path is byte-for-byte
+    # unchanged -- zero regression risk on already-verified results.
+    for p, d in studs:
+        axis = max(range(3), key=lambda i: abs(d[i]))
+        if axis == 1 or abs(d[axis]) <= 0.9:
+            continue   # Y-axis studs already handled above; a non-axis-aligned direction is never a real stud
+        sign = 1.0 if d[axis] > 0 else -1.0
+        spans = [None, None, None]
+        spans[axis] = (bounds_min[axis], bounds_max[axis])
+        for other in range(3):
+            if other != axis:
+                spans[other] = (p[other] - 10, p[other] + 10)
+        b = _axis_box(axis, spans)
+        if _stud_box_solid_fraction(tris, b) >= STUD_CELL_MIN_SOLID:
+            boxes.append(b)
+            sdir = [0.0, 0.0, 0.0]
+            sdir[axis] = sign
+            sockets.append((tuple(p), tuple(sdir)))
+
+    if not boxes:
+        return None, []
     return boxes, sockets
 
 
