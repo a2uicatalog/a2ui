@@ -1,6 +1,6 @@
 # Hinge occupancy investigation (2026-09-27)
 
-## Status: IN PROGRESS
+## Status: COMPLETE
 
 ## What I'm checking
 - Real hinge part representation (one part with a pose, or two static parts?)
@@ -79,5 +79,44 @@ Survey of baked parts in the current catalogue (4,761 parts):
   1. **Connector / Connectivity recognition**: `brick_parts_validate.py` only builds graph edges for `stud_conn` and `pin_conn`. It has no detector for hinge mating (matching hinge axes). As a result, the pivoted half is flagged as `floating` unless anchored to other bricks or the baseplate.
   2. **Non-orthogonal rotation angles in `partsModel`**: `partsModel` entries use integer `r` (0..23). Angling a hinge at 45° or 30° cannot be expressed in `r: 0..23`. This is a model-level rotation/transform question, not a part-level pose parameter.
 
+### 5. Architectural Sketch: What Would a Pose-Aware Model Require?
+For completeness, if someone attempted to make composite shortcut parts articulate internally via an angle parameter:
+- **`resolve.py` (`Part` class)**:
+  - `Part` would have to become a multi-body kinematic tree: `bodies: list[Body]`, `joints: list[Joint]`, where each joint defines a parent body, child body, pivot anchor `(x, y, z)`, axis vector `(dx, dy, dz)`, and angular limits `[theta_min, theta_max]`.
+  - `_walk()` would need complex heuristic graph-partitioning to separate triangles into distinct bodies based on internal subfile calls.
+- **`parts.py` (`resolve_occupancy_and_sockets`)**:
+  - Occupancy boxes cannot be pre-baked into static world or local boxes. Instead, occupancy would need to be parameterized per sub-body, or sampled at discrete angle intervals (e.g. every 15°), massively expanding baked JSON payloads.
+- **`bake_parts.py` & JSON Schema**:
+  - `public/parts/<id>.json` would need a new schema version carrying kinematic sub-bodies, joint trees, and conditional/dynamic occupancy.
+- **`renderers/brick_parts_validate.py` & `atoms_brick.gs`**:
+  - Massive overhaul: `_world_boxes` currently relies on static axis-aligned boxes rotated via `PART_ROT[r]`.
+  - Non-axis-aligned sub-body poses would require Oriented Bounding Box (OBB) collision tests using the Separating Axis Theorem (SAT), replacing the simple `_boxes_overlap` coordinate span comparisons.
+  - The spatial hashing grid (80 LDU cells) and baseplate contact checks would need complete re-architecting in both Python and Google Apps Script / JS.
+- **Conclusion on this path**: It is completely unnecessary and would be solving the wrong problem. LDraw shortcuts are not how models articulate.
+
+### 6. The Real Scope: Follow-Up Implementation Plan
+Because real hinges are two independent static parts, the actual engineering required to fully support hinges in `a2ui` is **vastly smaller and fully modular**:
+
+1. **Add Hinge Connector Detection to `resolve.py` and `parts.py`**:
+   - Detect hinge primitives in `resolve.py`:
+     - `h1.dat`, `h2.dat` (classic fingers)
+     - `clh*.dat` (click hinge fingers)
+     - `3938s01.dat` / `3937` (brick hinge pivots)
+   - Store in `Part.hinges`: `list[{"pos": (x, y, z), "axis": (dx, dy, dz), "kind": "finger2"|"finger3"|"base"|"top"}]`.
+   - Bake into `mesh["connectors"]["hinges"]` in `bake_parts.py`.
+2. **Add Hinge Graph Edge Matching in `brick_parts_validate.py` (and `atoms_brick.gs`)**:
+   - In `validate_parts()`:
+     - Compare world hinge connectors between parts:
+       - Distance between pivot positions < 0.5 LDU.
+       - Collinear axes: `abs(_dot3(axis_A, axis_B)) > 0.99`.
+       - Complementary kinds: `finger2` mates with `finger3`; `base` mates with `top`.
+     - When matched, add an adjacency edge `adj[i].add(j); adj[j].add(i)` and record `hinge_connections += 1`.
+     - This immediately clears the `floating` check for the hinged half!
+3. **Static Occupancy Overrides for Studless Hinge Halves**:
+   - Add static boxes in `OVERRIDES` for the few hinge halves that have no top studs (e.g. `3937` Base: `box(-20, 20, 16, 24, -10, 10)`), bringing them out of `needs_occupancy: true`.
+
 ## Conclusion
-(fill in last)
+1. **No pose parameter is needed.** A LEGO hinge is modeled as two separate, static parts in both LDraw and physical LEGO. Neither part has internal moving geometry.
+2. **Existing occupancy machinery already handles hinges at orthogonal angles.** Most hinge halves (e.g. `2429`, `2430`, `4275b`, `4276b`, `44301a`, `44302a`, `3830`, `3831`) are ALREADY baked with valid occupancy, do not falsely collide when mated at 0° or 90°, and correctly detect collisions when folded onto themselves at 270°.
+3. **The only missing capability is connector recognition.** Adding a `hinges` connector detector to pair hinge axes in `brick_parts_validate.py` (matching the existing `studs` and `pins` patterns) will resolve connectivity/anchoring without requiring any changes to the core occupancy or part data models.
+
