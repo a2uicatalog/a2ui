@@ -645,3 +645,7 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
   - Post-implementation survey unlocks **92 real tyre parts** (`Tyre` reject count dropped from 94 to 2).
 - **Verification**:
   - Added targeted test cases in `tests/test_generic_stud_occupancy.py` (pure math tests, dispatcher tests, and real resolved geometry tests for a representative sample of 10 tyre parts plus rejection tests for excluded parts). All 28 tests pass.
+
+## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
+- Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
+- **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
