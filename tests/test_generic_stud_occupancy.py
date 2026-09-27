@@ -6,6 +6,7 @@ candidate is only ever accepted once it is actually geometrically demonstrated, 
 alone. These tests use synthetic geometry (no LDraw library needed, so they run in CI) plus, where the fetched
 library is present, real curated parts to prove parity with the hand-verified tables it is meant to subsume."""
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -14,7 +15,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "ldraw"))
 import parts as P  # noqa: E402
 
-LDRAW_CACHE = Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"
+LDRAW_CACHE = Path(os.environ.get("LDRAW_DIR") or (Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"))
 
 
 def _box_tris(x0, x1, y0, y1, z0, z1):
