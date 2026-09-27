@@ -283,6 +283,207 @@ def test_excluded_deformed_tyres_remain_rejected(pid):
     assert occ is None
 
 
+# ── Technic Gears Family (TECHNIC_GEAR_PARTS) ───────────────────────────────
+
+def test_gear_occupancy_pure_math():
+    """Gear occupancy is an annular 4-box inscribed square in the circular cross-section (XY plane),
+    spanning Z width, with the central axle bore (B=6.0) strictly excluded."""
+    # 8-tooth gear: diameter 24.86 LDU, z in [-10.0, 10.0], default bore_half=6.0
+    half24 = 24.86 / (2 * math.sqrt(2))  # ~8.7895 LDU
+    occ = P.gear_occupancy(24.86, -10.0, 10.0)
+    assert len(occ) == 4
+    # Top, Bottom, Left, Right
+    b_top, b_bot, b_left, b_right = occ
+    assert b_top == (-half24, half24, 6.0, half24, -10.0, 10.0)
+    assert b_bot == (-half24, half24, -half24, -6.0, -10.0, 10.0)
+    assert b_left == (-half24, -6.0, -6.0, 6.0, -10.0, 10.0)
+    assert b_right == (6.0, half24, -6.0, 6.0, -10.0, 10.0)
+
+    # Prove bore exclusion: no box covers any interior point in (-6, 6) x (-6, 6)
+    for b in occ:
+        overlap_bore = (b[0] < 6.0 and b[1] > -6.0 and b[2] < 6.0 and b[3] > -6.0)
+        assert not overlap_bore, f"Box {b} overlaps central axle bore!"
+
+    # Prove outer cylinder containment: all corners have r <= diameter / 2
+    r_out = 24.86 / 2.0
+    for b in occ:
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-6
+
+    # From bounds: diameter = 54.0 (20-tooth double bevel), z_min = -10.0, z_max = 10.0
+    half54 = 54.0 / (2 * math.sqrt(2))
+    occ_bounds = P.gear_occupancy((-27.0, -27.0, -10.0), (27.0, 27.0, 10.0))
+    assert len(occ_bounds) == 4
+    assert occ_bounds[0] == (-half54, half54, 6.0, half54, -10.0, 10.0)
+
+    # Small gear edge case where half_inscribed <= bore_half returns empty list []
+    assert P.gear_occupancy(16.0, -5.0, 5.0, bore_half=6.0) == []
+
+
+def test_dispatcher_resolves_technic_gear_parts_with_exact_values():
+    """TECHNIC_GEAR_PARTS resolves to 4 annular boxes in XY, spanning Z, with empty sockets and needs_occupancy=False."""
+    # 10928: Technic Gear 8 Tooth Reinforced -- D=24.86, z: [-10.0, 10.0]
+    half_10928 = 24.86 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("10928", "Technic Gear  8 Tooth Reinforced")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_10928, half_10928, 6.0, half_10928, -10.0, 10.0)
+
+    # 3647: Technic Gear 8 Tooth -- D=24.86, z: [-10.0, 10.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3647", "Technic Gear  8 Tooth")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_10928, half_10928, 6.0, half_10928, -10.0, 10.0)
+
+    # 4019: Technic Gear 16 Tooth -- D=43.28, z: [-10.0, 10.0]
+    half_4019 = 43.28 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("4019", "Technic Gear 16 Tooth")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_4019, half_4019, 6.0, half_4019, -10.0, 10.0)
+
+    # 94925: Technic Gear 16 Tooth Reinforced -- D=43.28, z: [-10.0, 10.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("94925", "Technic Gear 16 Tooth Reinforced")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_4019, half_4019, 6.0, half_4019, -10.0, 10.0)
+
+    # 6589: Technic Gear 12 Tooth Bevel -- D=32.0, z: [-3.0, 7.0]
+    half_6589 = 32.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("6589", "Technic Gear 12 Tooth Bevel")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_6589, half_6589, 6.0, half_6589, -3.0, 7.0)
+
+    # 32269: Technic Gear 20 Tooth Double Bevel -- D=54.0, z: [-10.0, 10.0]
+    half_32269 = 54.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("32269", "Technic Gear 20 Tooth Double Bevel")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_32269, half_32269, 6.0, half_32269, -10.0, 10.0)
+
+    # 18575: Technic Gear 20 Tooth Double Bevel Reinforced -- D=54.0, z: [-10.0, 10.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("18575", "Technic Gear 20 Tooth Double Bevel Reinforced")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_32269, half_32269, 6.0, half_32269, -10.0, 10.0)
+
+    # 32072: Technic Gear 4 Knob -- D=60.0, z: [-10.0, 10.0]
+    half_32072 = 60.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("32072", "Technic Gear  4 Knob")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_32072, half_32072, 6.0, half_32072, -10.0, 10.0)
+
+    # 3648b: Technic Gear 24 Tooth with Single Axle Hole -- D=64.78, z: [-9.62, 9.62]
+    half_3648b = 64.78 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3648b", "Technic Gear 24 Tooth with Single Axle Hole")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_3648b, half_3648b, 6.0, half_3648b, -9.62, 9.62)
+
+    # 3649: Technic Gear 40 Tooth -- D=104.70, z: [-10.0, 10.0]
+    half_3649 = 104.70 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3649", "Technic Gear 40 Tooth")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_3649, half_3649, 6.0, half_3649, -10.0, 10.0)
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_d,expected_z0,expected_z1", [
+    ("10928", 24.86, -10.0, 10.0),   # Technic Gear 8 Tooth Reinforced
+    ("3647", 24.86, -10.0, 10.0),    # Technic Gear 8 Tooth
+    ("94925", 43.28, -10.0, 10.0),   # Technic Gear 16 Tooth Reinforced
+    ("4019", 43.28, -10.0, 10.0),    # Technic Gear 16 Tooth
+    ("6589", 32.00, -3.0, 7.0),      # Technic Gear 12 Tooth Bevel
+    ("18575", 54.00, -10.0, 10.0),   # Technic Gear 20 Tooth Double Bevel Reinforced
+    ("32269", 54.00, -10.0, 10.0),   # Technic Gear 20 Tooth Double Bevel
+    ("32072", 60.00, -10.0, 10.0),   # Technic Gear 4 Knob
+    ("3648b", 64.78, -9.62, 9.62),   # Technic Gear 24 Tooth with Single Axle Hole
+    ("3649", 104.70, -10.0, 10.0),   # Technic Gear 40 Tooth
+    ("3650a", 65.96, -8.0, 12.0),    # Technic Gear 24 Tooth Crown Type 1
+    ("4143", 35.88, -4.0, 3.0),      # Technic Gear 14 Tooth Bevel
+    ("32198a", 52.00, -7.0, 3.0),    # Technic Gear 20 Tooth Bevel with Two Axlehole Slots
+])
+def test_real_resolved_technic_gear_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
+    """Representative sample of 13 real Technic gear parts verified against real resolved geometry."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Rotational symmetry in XY: dx == dy, centered at (0, 0)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    assert abs(dx - dy) < 0.25, "%s should be rotationally symmetric in XY (dx=%f, dy=%f)" % (pid, dx, dy)
+    assert abs((part.min[0] + part.max[0]) / 2.0) < 0.5, "%s should be centered at X=0" % pid
+    assert abs((part.min[1] + part.max[1]) / 2.0) < 0.5, "%s should be centered at Y=0" % pid
+
+    # Resolved diameter and Z bounds match expected constants
+    assert round((dx + dy) / 2.0, 2) == pytest.approx(expected_d, abs=0.1)
+    assert round(part.min[2], 2) == pytest.approx(expected_z0, abs=0.1)
+    assert round(part.max[2], 2) == pytest.approx(expected_z1, abs=0.1)
+
+    # Dispatcher resolves with real bounds
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+
+    r_out = (dx + dy) / 4.0
+    for b in occ:
+        # Bounds containment
+        assert b[0] >= part.min[0] - 0.5 and b[1] <= part.max[0] + 0.5
+        assert b[2] >= part.min[1] - 0.5 and b[3] <= part.max[1] + 0.5
+        assert b[4] >= part.min[2] - 0.5 and b[5] <= part.max[2] + 0.5
+
+        # Outer cylinder containment: every corner has r <= r_out
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-5, f"{pid}: corner ({x},{y}) exceeds r_out={r_out}"
+
+        # Axle bore clearance: simulated Technic axle ([-6, 6] x [-6, 6]) along Z has zero overlap
+        overlap_axle = (b[0] < 6.0 and b[1] > -6.0 and b[2] < 6.0 and b[3] > -6.0)
+        assert not overlap_axle, f"{pid}: box {b} overlaps inserted axle!"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "3743",    # Linear gear rack 1 x 4 (bounds: -40,-6,-10 .. 40,8,10)
+    "24014",   # Technic gear 12 tooth double bevel with axle extension (asymmetric X: -16.6 .. 49.5)
+    "18940",   # Technic gear rack 1 x 14 with bottom beam housing (linear rack)
+    "24121",   # Technic gear ring quarter 11 x 11 (90-degree quadrant segment)
+    "32167",   # Technic gear box half
+])
+def test_deliberately_excluded_gear_subgroups_remain_rejected(pid):
+    """Deliberately excluded gear sub-groups (linear racks, asymmetric extensions, quadrants, casings)
+    must remain rejected (needs_occupancy=True)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, "%s should remain rejected (needs_occupancy=True)" % pid
+    assert occ is None
+
+
+
 
 # bar_grip_points (2026-09-27): real grip position/axis for held/clip-mounted parts, refactored from the
 # earlier has_bar_grip boolean so the real data (not just a yes/no) reaches the baked mesh's `bars` connector

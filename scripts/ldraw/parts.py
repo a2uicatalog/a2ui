@@ -197,6 +197,123 @@ def tyre_occupancy(bounds_min, bounds_max=None, z_max=None):
     return [box(-half_inscribed, half_inscribed, -half_inscribed, half_inscribed, z_min, z_max)]
 
 
+# Technic Gears: rotationally symmetric about the Z axis (the gear axle) with their circular cross-section in
+# the XY plane, centered at (0, 0).
+#
+# Critical difference from tyres:
+# Tyres mount around the outside of a wheel rim and have no axle or pin passing through their local coordinate
+# center (nothing normally stacks onto or through a tyre in a model). Most Technic gears mount onto a Technic axle
+# through an axle hole running through their rotational center (0, 0) along Z.
+#
+# If gear occupancy naively copied the tyre approach (a solid inscribed square spanning the center), it would
+# place solid occupancy directly inside the axle bore, falsely reporting physical collisions between the gear
+# and the axle running through it in every assembly -- a severe false positive that violates spec §3's "never report
+# a false one" mandate.
+#
+# Furthermore, generic_hole_channel_occupancy (used for Technic beams) is NOT usable for Technic gears because:
+# 1. Primitives like axlehol2.dat, axlehol5.dat, and axlehol6.dat (or subparts s/3648s02.dat) are missed by
+#    AXLE_HOLE_RE = r"^axl\d*hole\.dat$" due to DOS 8.3 filename truncation ("hole" -> "hol"), leaving part.holes
+#    empty despite physical axle holes existing.
+# 2. Gears decompose into cylindrical/circular envelopes whose outer corners in an axis-aligned bounding box
+#    reach empty air between teeth (radius R * sqrt(2) exceeds outer tooth radius R), failing the raycast
+#    solid-fraction check (STUD_CELL_MIN_SOLID = 0.15).
+#
+# Gear occupancy therefore uses an annular 4-box inscribed square decomposition that provably satisfies two
+# simultaneous safety guarantees:
+#
+# 1. Outer cylinder containment (never over-reports external collisions):
+#    The outer boundary is an axis-aligned square inscribed in the circular gear cross-section of diameter D:
+#    half_inscribed = W = D / (2 * sqrt(2)). For any point (x, y) with |x| <= W and |y| <= W:
+#    x^2 + y^2 <= 2 * W^2 = 2 * (D^2 / 8) = (D / 2)^2 = R_out^2.
+#    Thus, every point in the occupancy is provably inside the physical outer cylinder of the gear teeth,
+#    never projecting into surrounding empty space (spec §3's under-approximation guarantee).
+#
+# 2. Central axle bore exclusion (never collides with mounting axle):
+#    The central square region (-B, B) x (-B, B) x [z_min, z_max] with B = GEAR_BORE_HALF = 6.0 LDU is
+#    strictly excluded from occupancy.
+#    - Standard Technic cross-axles fit within a 12x12 LDU square (|x| <= 6.0, |y| <= 6.0; outer boundary radius 6.0 LDU).
+#    - Standard axle hole primitives (axlehole.dat, axl2hol2.dat) have outer bore radius 6.0 LDU.
+#    The 4 boxes:
+#      Top:    [-W,  W] x [ B,  W] x [z_min, z_max]
+#      Bottom: [-W,  W] x [-W, -B] x [z_min, z_max]
+#      Left:   [-W, -B] x [-B,  B] x [z_min, z_max]
+#      Right:  [ B,  W] x [-B,  B] x [z_min, z_max]
+#    have no point satisfying both |x| < B and |y| < B. Every point in Box Top has y >= 6.0; Box Bottom has
+#    y <= -6.0; Box Left has x <= -6.0; Box Right has x >= 6.0. An axle passing along Z at (0, 0) has zero
+#    interior intersection with any of the 4 boxes, completely eliminating false-positive axle collisions.
+#
+# Sockets are empty ([]): Technic gears mount via axle/pin connections and carry no bottom studs/sockets.
+#
+# Hand-verified against real resolved geometry for all 29 clean, rotationally symmetric Technic gear parts
+# in the library with outer diameter D >= 24.86 LDU (ensuring W >= 8.79 LDU > B = 6.0 LDU, so W - B >= 2.79 LDU).
+#
+# Deliberately unaddressed sub-groups (remain needs_occupancy=True):
+# - Linear gear racks (e.g. 3743 Technic Gear Rack 1 x 4, 18940, 18942, 32170, 6574): linear bar geometry,
+#   not rotationally symmetric round gears.
+# - Asymmetric gear assemblies with integral axle extensions (e.g. 24014 Technic Gear 12 Tooth Double Bevel with Axle Extension):
+#   bounds (-16.6,-16.6,-10)..(49.5,16.6,10) include an asymmetric 49.5 LDU axle shaft.
+# - Technic gear ring quarters (e.g. 24121, 78442): curved 90-degree quadrant segments, not full round gears.
+# - Gearbox casings and internal components (e.g. 171, 172, 173, 45360, 46217, 32167, 32239, 6588, u9342, u9344).
+# - Composite mechanism assemblies (e.g. 2742c01 propeller with gear, 6573 / 62821 differentials, 46490c01/c02 bearings).
+# - Duplo system gears (e.g. 6529, 6530, 31622).
+
+GEAR_BORE_HALF = 6.0  # Standard Technic cross-axle bore exclusion half-width (LDU)
+
+TECHNIC_GEAR_PARTS = {
+    # Hand-verified against real resolved geometry (bake_parts.py / resolve_part):
+    "10928": (24.86, -10.0, 10.0),     # Technic Gear  8 Tooth Reinforced
+    "11955": (24.86, -10.0, 10.0),     # Technic Gear  8 Tooth Reinforced Sliding
+    "18575": (54.0, -10.0, 10.0),      # Technic Gear 20 Tooth Double Bevel Reinforced
+    "24505": (64.78, -9.62, 9.62),     # =Technic Gear 24 Tooth with Single Axle Hole
+    "2474a": (50.2, -10.0, 10.0),      # Technic Gear Stepper with  8 Teeth
+    "32072": (60.0, -10.0, 10.0),      # Technic Gear  4 Knob
+    "32198a": (52.0, -7.0, 3.0),       # Technic Gear 20 Tooth Bevel with Two Axlehole Slots
+    "32198b": (52.0, -7.0, 3.0),       # Technic Gear 20 Tooth Bevel with Four Axlehole Slots
+    "32269": (54.0, -10.0, 10.0),      # Technic Gear 20 Tooth Double Bevel
+    "34432": (104.7, -10.0, 10.0),     # =Technic Gear 40 Tooth
+    "3647": (24.86, -10.0, 10.0),      # Technic Gear  8 Tooth
+    "3648a": (64.78, -9.62, 9.62),     # Technic Gear 24 Tooth with 3 Axleholes
+    "3648b": (64.78, -9.62, 9.62),     # Technic Gear 24 Tooth with Single Axle Hole
+    "3649": (104.7, -10.0, 10.0),      # Technic Gear 40 Tooth
+    "3650a": (65.96, -8.0, 12.0),      # Technic Gear 24 Tooth Crown Type 1
+    "3650b": (65.96, -8.0, 12.0),      # Technic Gear 24 Tooth Crown Type 2
+    "3650c": (65.96, -8.0, 12.0),      # Technic Gear 24 Tooth Crown Type 3
+    "4019": (43.28, -10.0, 10.0),      # Technic Gear 16 Tooth
+    "401926": (43.28, -10.0, 10.0),    # ~_Technic Gear 16 Tooth Black (Obsolete)
+    "4143": (35.88, -4.0, 3.0),        # Technic Gear 14 Tooth Bevel
+    "46227": (58.3, -14.0, 14.0),      # ~Technic Gear 24 Tooth Double Bevel
+    "46372": (73.6, -10.0, 10.0),      # Technic Gear 28 Tooth Double Bevel
+    "5405": (47.11, -10.0, 10.0),      # Technic Gear  4 Knob 45°
+    "6542a": (43.71, -10.0, 10.0),     # Technic Gear 16 Tooth with Clutch
+    "6589": (32.0, -3.0, 7.0),         # Technic Gear 12 Tooth Bevel
+    "69762": (54.0, -10.0, 10.0),      # Technic Gear 14 Tooth Bevel
+    "69778": (35.39, -10.0, 10.0),     # Technic Gear 12 Tooth
+    "69779": (55.2, -10.0, 10.0),      # Technic Gear 20 Tooth
+    "94925": (43.28, -10.0, 10.0),     # Technic Gear 16 Tooth Reinforced
+}
+
+
+def gear_occupancy(bounds_min, bounds_max=None, z_max=None, bore_half=GEAR_BORE_HALF):
+    """Returns an annular 4-box occupancy in the XY plane spanning Z, with the central
+    axle bore excluded to avoid false-positive collisions against mounting axles.
+    Can be called with (bounds_min, bounds_max) or (diameter, z_min, z_max)."""
+    if z_max is not None:
+        diameter, z_min = bounds_min, bounds_max
+    else:
+        diameter = (bounds_max[0] - bounds_min[0] + bounds_max[1] - bounds_min[1]) / 2.0
+        z_min, z_max = bounds_min[2], bounds_max[2]
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    b = bore_half
+    if half_inscribed <= b:
+        return []
+    return [
+        box(-half_inscribed, half_inscribed, b, half_inscribed, z_min, z_max),
+        box(-half_inscribed, half_inscribed, -half_inscribed, -b, z_min, z_max),
+        box(-half_inscribed, -b, -b, b, z_min, z_max),
+        box(b, half_inscribed, -b, b, z_min, z_max),
+    ]
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -633,6 +750,12 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
             occ = tyre_occupancy(bounds_min, bounds_max)
         else:
             occ = tyre_occupancy(*TYRE_PARTS[part_id])
+        return verified(occ, [])
+    if part_id in TECHNIC_GEAR_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ = gear_occupancy(bounds_min, bounds_max)
+        else:
+            occ = gear_occupancy(*TECHNIC_GEAR_PARTS[part_id])
         return verified(occ, [])
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
