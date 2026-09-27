@@ -374,8 +374,16 @@ function setSearch(){
     .then(function(j){
       if(seq!==setSearchSeq)return;   // a later keystroke's request already landed
       var box=$('setres');box.innerHTML='';
-      var hits=Array.isArray(j&&j.results)?j.results:[];
-      $('setnote').textContent=hits.length?(hits.length+' set'+(hits.length===1?'':'s')+' -- click one to import'):'No sets found.';
+      var all=Array.isArray(j&&j.results)?j.results:[];
+      // Rebrickable's set search also returns books/magazines with a LEGO tie-in, catalogued under an ISBN
+      // (e.g. "9788828795346-1") instead of a real LEGO set number -- these can never have an OMR file, and
+      // importSet() would only report a confusing "set must look like a LEGO set number" instead of the honest
+      // "not available" message a real-but-unbaked set gets. SET_RE below mirrors the server's own omr-import.js
+      // shape check (2-7 digits, optional -N) so only genuinely buildable-looking sets are offered as chips.
+      var SET_RE=/^[0-9]{2,7}(-[0-9]{1,3})?$/;
+      var hits=all.filter(function(s){return SET_RE.test(s.set_num)}),hidden=all.length-hits.length;
+      $('setnote').textContent=hits.length?(hits.length+' set'+(hits.length===1?'':'s')+' -- click one to import'+(hidden?' ('+hidden+' book/magazine tie-in'+(hidden===1?'':'s')+' hidden)':'')):
+        (hidden?'Only book/magazine tie-ins found for that search, no buildable sets.':'No sets found.');
       hits.forEach(function(s){var b=document.createElement('button');b.type='button';b.className='chip';
         b.title=s.set_num+(s.num_parts?' -- '+n(s.num_parts)+' parts':'');
         b.textContent=s.name+(s.year?' ('+s.year+')':'');
