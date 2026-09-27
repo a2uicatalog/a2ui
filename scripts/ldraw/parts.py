@@ -464,6 +464,30 @@ def bar_grip_points(bounds_min, bounds_max, cylinders, tris):
     return grips
 
 
+# Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
+# head's own real top stud (confirmed live: the curated head part 3626bp01's own title literally says
+# "Blocked Hollow Stud") -- so it needs a socket, not occupancy (nothing is ever stacked on top of a hat in
+# normal building). The mount point is the part's own LOCAL ORIGIN (0,0,0), not a bounding-box computation
+# -- this is NOT a guess: `characters.py`'s OFFSETS table already places both "head" and "headgear" at the
+# identical relative offset from the torso's neck, and that file's own minifig templates already compose 16
+# real characters successfully on this exact convention (LDraw authors every minifig accessory with its own
+# origin AT its attachment point, the same way a stud's or a pin's local origin IS its own connector
+# position). Direction faces down (0,-1,0) to receive an upward-facing stud, matching the existing
+# stud/socket opposite-direction convention `renderers/brick_parts_validate.py` already uses. Title
+# prefixes are the real ones found sampling the actual reject pool (scripts/ldraw/survey_rejects.py), not
+# guessed -- covering roughly 3/4 of the real "Minifig Headwear" category by sampled count.
+MINIFIG_HEADWEAR_PREFIXES = ("minifig hair", "minifig helmet", "minifig hat", "minifig headdress",
+                              "minifig cap", "minifig mask", "minifig crown")
+
+
+def minifig_headwear_socket(title):
+    """Returns a single (pos, dir) socket list if `title` matches a real minifig headwear family, else None."""
+    t = (title or "").strip().lower()
+    if any(t.startswith(p) for p in MINIFIG_HEADWEAR_PREFIXES):
+        return [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    return None
+
+
 def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
     """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes. Skipped (treated
     as passing) when bounds aren't supplied, matching this module's existing "bounds/studs/tris are optional"
@@ -508,6 +532,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
     if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
         occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
         return verified(occ, sockets)
+    headwear_sockets = minifig_headwear_socket(title)
+    if headwear_sockets is not None:
+        return [], headwear_sockets, False
     occ = OVERRIDES.get(part_id) or generated_occupancy(title)
     if occ is None and part_id in TECHNIC_HOLES_PARTS and bounds_min and holes is not None:
         occ = technic_holes_occupancy(bounds_min, bounds_max, holes)

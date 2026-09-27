@@ -28,6 +28,27 @@ hole-channel-generalisation / bar-grip-detection work already in `scripts/ldraw/
   use) the same way `has_bar_grip`'s cylinder detection works, then extend `validate_parts`'s adjacency
   graph with a bar-to-clip proximity match parallel to the existing stud-to-socket one.
 
+**Also landed this session, on `local/minifig-anatomy`:** minifig headwear connector. `minifig_headwear_socket()`
+gives hair/helmet/hat/headdress/cap/mask/crown parts a single downward-facing socket at their own LOCAL ORIGIN
+(0,0,0) -- this is NOT a guess: `characters.py`'s own `OFFSETS` table already places both "head" and "headgear"
+at the identical relative offset from the torso's neck, and that file's 16 real character templates already
+compose real headgear parts on this exact convention (LDraw authors every minifig accessory with its own origin
+AT its attachment point). Title prefixes are the real ones sampled from the actual reject pool, covering ~76%
+of the real "Minifig Headwear" category. Cross-validated against `characters.py`'s own already-proven ids (3896,
+3901), not just fresh reject-pool samples. 6 new tests, all passing.
+
+**Investigated further and deliberately stopped, not a half-finished attempt:** the other minifig anatomy
+categories -- Minifig Head (64 real rejects), Minifig Torso (41), Minifig Hips (26), Minifig Leg(s) (19),
+Minifig Neckwear (94) -- do NOT share one clean connector pattern the way Headwear did. Sampled real parts
+across all five: every one has ZERO real studs (unlike the standard curated head 3626bp01, which has exactly
+one) and the categories are dominated by novelty/special variants with no shared attachment convention at all
+-- an Animal Crossing Raccoon head, a bat-wing torso, a robotic prosthetic leg, a wooden leg, Ninja Turtle
+shells, backpacks, shoulder armour (a couple of which DO have 3 studs, a different and unexplored mount style).
+Forcing one family rule across this pool would mean guessing at connector geometry with no real shared pattern
+to verify against -- exactly what this session's task brief said to avoid. Real follow-up: these need either
+per-sub-family investigation (start with whichever novelty theme has the most real parts) or per-part curation,
+not a quick generalisation.
+
 **Also landed this session, on `local/technic-axle`:** Technic axle-hole detection. Investigated the real
 LDraw representation of an axle cross-section (`p/axleconnect.dat`, built from four radius-9 quarter-
 cylinder arcs — the male rod) and the receiving axle hole in real "... with Axle Holes" Liftarm/Beam parts

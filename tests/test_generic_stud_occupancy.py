@@ -250,3 +250,46 @@ def test_real_alternating_hole_beam_stays_safely_rejected():
                                                             part.holes, part.studs, part.tris, part.cylinders)
     assert needs is True
     assert occ is None
+
+
+# Minifig headwear socket (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part receives the head's own
+# real top stud at its own LOCAL ORIGIN -- cross-validated against characters.py's own already-proven headgear
+# ids (3896, 3901), not just the reject-pool samples.
+def test_minifig_headwear_socket_matches_real_prefixes():
+    assert P.minifig_headwear_socket("Minifig Hair Tousled") == [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.minifig_headwear_socket("Minifig Helmet Castle with Chin-Guard") == [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.minifig_headwear_socket("Minifig Hat Cowboy") == [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.minifig_headwear_socket("Brick 2 x 4") is None
+    assert P.minifig_headwear_socket("Minifig Neckwear Cape") is None  # a real, deliberately DIFFERENT family
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["10048", "10051", "3896", "3901"])
+def test_minifig_headwear_accepted_on_real_parts(pid):
+    """3896 and 3901 are the exact ids characters.py's own Wizard/Male-hair templates already use
+    successfully -- cross-validating the socket convention against already-proven data, not just the
+    reject-pool samples (10048, 10051)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, part.title or pid, part.min, part.max,
+                                                            part.holes, part.studs, part.tris, part.cylinders)
+    assert needs is False
+    assert occ == []
+    assert sockets == [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+def test_minifig_headwear_does_not_shadow_bar_grip():
+    """11103 (a sword, real bar-grip part) must not be affected by the headwear check -- different title,
+    different family, no interference between the two."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, "11103.dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("11103", part.title or "11103", part.min, part.max,
+                                                            part.holes, part.studs, part.tris, part.cylinders)
+    assert needs is False
+    assert occ == []
+    assert sockets == []  # bar-grip path: deliberately no socket yet, not the headwear socket
