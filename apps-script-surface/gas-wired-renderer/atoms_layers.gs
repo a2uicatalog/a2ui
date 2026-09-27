@@ -161,7 +161,7 @@ _RENDERERS['stack_layer'] = function(b) {
 
   return '<div style="background:' + _layerToken('paper_raised') + ';'
     + 'border:1px solid ' + _layerToken('line') + ';'
-    + 'border-left:3px solid ' + _layerToken(strong) + ';border-radius:10px;'
+    + 'border-left:3px solid ' + _layerToken(strong) + ';border-radius:12px;border-radius:var(--a2ui-radius,12px);'
     + 'padding:0.85rem 1rem;">'
     + '<div style="display:grid;grid-template-columns:minmax(6rem,9rem) repeat(' + span
     + ',minmax(0,1fr));gap:0.75rem;align-items:start;">'
@@ -279,7 +279,7 @@ _RENDERERS['layer_stack'] = function(b) {
 
   return fontCss
     + '<div style="' + cssVars + ';font-family:' + _JOURNEY_SERIF + ';background:var(--paper);'
-    + 'color:var(--ink);padding:clamp(1.4rem,4vw,2.2rem);border-radius:14px;'
+    + 'color:var(--ink);padding:clamp(1.4rem,4vw,2.2rem);border-radius:12px;border-radius:var(--a2ui-radius,12px);'
     + 'border:1px solid var(--line);">'
     // Attribution before everything, headline included — see _journeySourceBar.
     + _journeySourceBar(b)

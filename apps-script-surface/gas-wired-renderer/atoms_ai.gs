@@ -206,7 +206,7 @@ _RENDERERS['ai_build_trace'] = function(b) {
   chips += _aiBuildChip('total', fmt(ptotal), 'var(--muted,#94a3b8)');
 
   return '<div style="margin-top:32px;padding:14px 16px;background:rgba(99,102,241,0.04);' +
-         'border:1px solid rgba(99,102,241,0.12);border-radius:10px;">' +
+         'border:1px solid rgba(99,102,241,0.12);border-radius:12px;border-radius:var(--a2ui-radius,12px);">' +
 
          // Row 1: icon + model + bar legend
          '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
@@ -245,7 +245,7 @@ _RENDERERS['gemini_prompt'] = function(b) {
   var uid = 'gp' + Math.random().toString(36).slice(2, 8);
 
   return '<div style="background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.14);' +
-         'border-radius:12px;padding:20px 22px;margin:4px 0;">' +
+         'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px 22px;margin:4px 0;">' +
 
          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">' +
          '<div style="width:22px;height:22px;background:linear-gradient(135deg,#6366f1,#38bdf8);' +

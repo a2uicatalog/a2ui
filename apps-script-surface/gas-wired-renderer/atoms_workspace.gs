@@ -449,7 +449,7 @@ _RENDERERS['gmail_inbox'] = function(b) {
 
     cards +=
       '<a href="' + _esc(gmailUrl) + '" target="_top" style="text-decoration:none;flex:0 0 260px;scroll-snap-align:start;">' +
-      '<div style="height:100%;padding:16px;border-radius:12px;cursor:pointer;box-sizing:border-box;' +
+      '<div style="height:100%;padding:16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;box-sizing:border-box;' +
         'background:' + bg + ';border:1px solid ' + bd + ';' +
         'transition:background 0.15s,transform 0.15s;display:flex;flex-direction:column;gap:10px;"' +
         ' onmouseover="this.style.background=\'rgba(99,102,241,0.12)\';this.style.transform=\'translateY(-2px)\'"' +
@@ -600,7 +600,7 @@ _RENDERERS['drive_recent_files'] = function(b) {
     var nm = f.name.length > 34 ? f.name.substring(0, 32) + '…' : f.name;
     cards +=
       '<a href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;flex:0 0 200px;scroll-snap-align:start;">' +
-      '<div style="height:100%;padding:14px;border-radius:10px;cursor:pointer;box-sizing:border-box;' +
+      '<div style="height:100%;padding:14px;border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);' +
         'transition:background 0.15s,transform 0.15s;display:flex;flex-direction:column;gap:10px;"' +
         ' onmouseover="this.style.background=\'rgba(66,133,244,0.1)\';this.style.transform=\'translateY(-2px)\'"' +
@@ -718,7 +718,7 @@ _RENDERERS['drive_folder_contents'] = function(b) {
     var nm = f.name.length > 28 ? f.name.substring(0, 26) + '…' : f.name;
     items +=
       '<a href="' + _esc(f.url) + '" target="_top" style="text-decoration:none;">' +
-      '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;' +
+      '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
         'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);' +
         'transition:background 0.12s;cursor:pointer;"' +
         ' onmouseover="this.style.background=\'rgba(66,133,244,0.08)\'"' +

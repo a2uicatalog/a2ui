@@ -6586,8 +6586,8 @@ def _render_model_card(b: dict) -> str:
     ) if badges else ""
 
     return (
-        f'<div style="margin:1rem 0;padding:16px 18px;border:1px solid #e0e0e0;'
-        f'border-radius:10px;background:#fff;">'
+        f'<div style="margin:1rem 0;padding:16px 18px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);'
+        f'border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
         f'{provider_html}'
         f'<div style="font-size:1.1rem;font-weight:700;color:#111827;margin-top:2px;">{name}</div>'
         f'{badges_html}'
@@ -22982,7 +22982,7 @@ def _render_surface_map(b: dict) -> str:
                   'border-radius:20px;border:1px solid ' + accent + '33;background:' + accent + '08;'
                   'font-size:0.78rem;color:' + accent + ';margin:3px;">'
                   + icon + ' ' + name + '</span>')
-    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">'
+    return ('<div style="margin:1rem 0;padding:16px;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);">'
             + ('<div style="font-weight:700;font-size:0.9rem;color:#111827;margin-bottom:10px;">' + title + '</div>' if title else '')
             + '<div>' + items + '</div></div>')
 _RENDERERS["surface_map"] = _render_surface_map

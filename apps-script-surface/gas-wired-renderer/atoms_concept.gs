@@ -183,7 +183,7 @@ _RENDERERS['concept_ladder'] = function(b) {
   var modelHtml = '';
   if (model) {
     modelHtml = '<div style="background:var(--paper-raised);border:1px solid var(--line);'
-      + 'border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:1.8rem;">'
+      + 'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:1.1rem 1.3rem;margin-bottom:1.8rem;">'
       + '<div style="font-family:' + _JOURNEY_MONO + ';font-size:0.7rem;font-weight:700;'
       + 'letter-spacing:0.09em;text-transform:uppercase;color:var(--accent);'
       + 'margin-bottom:0.5rem;">The model</div>'

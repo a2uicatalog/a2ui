@@ -85,36 +85,48 @@ def find_candidates(src):
         # together, the strong signal -- rather than guessing from position.
         wrapper_pat = re.compile(r"border-radius:\s*\d+px\b.{0,200}?border(?:-\w+)?:\s*1px solid|"
                                  r"border(?:-\w+)?:\s*1px solid.{0,200}?border-radius:\s*\d+px\b", re.S)
-        sm = None
-        for cand in re.finditer(r'style="([^"]*)"', body):
-            if wrapper_pat.search(cand.group(1)):
-                sm = cand
-                break
-        if not sm:
-            continue
-        style = sm.group(1)
+        # A function can have MORE THAN ONE wrapper-shaped style (radius+border together) --
+        # e.g. model_card's badge (border-radius:100px, but a COMPUTED color: {badge_border},
+        # not a literal hex) textually precedes its real outer card
+        # (border:1px solid #e0e0e0;border-radius:10px;background:#fff; -- fully literal and
+        # whitelisted). Committing to the FIRST wrapper-shaped match and giving up if ITS
+        # values don't parse (the original behaviour) skipped the atom entirely even though a
+        # later, genuinely convertible wrapper existed. Try each wrapper-shaped candidate in
+        # order; take the first one that actually yields real whitelisted matches. Found
+        # 2026-09-27 reconciling web/GAS token parity.
+        style = None
         matches = []
-        for pat, table, prop_tpl in (
-            (r"border-radius:\s*(\d+)px\b", RADIUS, "border-radius"),
-            (r"(border(?:-\w+)?):\s*1px solid (#[0-9a-fA-F]{3,6})\b", BORDER, None),
-            (r"(background(?:-color)?):\s*(#[0-9a-fA-F]{3,6})\b", BG, None),
-        ):
-            mm = re.search(pat, style)
-            if not mm:
+        for cand in re.finditer(r'style="([^"]*)"', body):
+            if not wrapper_pat.search(cand.group(1)):
                 continue
-            val = mm.group(1) if prop_tpl else mm.group(2)
-            table_val = val.lower() if prop_tpl is None else val
-            token = table.get(table_val)
-            if token is None:
-                continue
-            prop = prop_tpl or mm.group(1)
-            # must be ';'-terminated (or end of string) -- anything else is a shape this
-            # sweep doesn't try to parse, skipped rather than guessed at.
-            end = mm.end()
-            if end < len(style) and style[end] != ";":
-                matches = None
-                break
-            matches.append((mm.start(), end, prop, val, token))
+            cand_style = cand.group(1)
+            cand_matches = []
+            aborted = False
+            for pat, table, prop_tpl in (
+                (r"border-radius:\s*(\d+)px\b", RADIUS, "border-radius"),
+                (r"(border(?:-\w+)?):\s*1px solid (#[0-9a-fA-F]{3,6})\b", BORDER, None),
+                (r"(background(?:-color)?):\s*(#[0-9a-fA-F]{3,6})\b", BG, None),
+            ):
+                mm = re.search(pat, cand_style)
+                if not mm:
+                    continue
+                val = mm.group(1) if prop_tpl else mm.group(2)
+                table_val = val.lower() if prop_tpl is None else val
+                token = table.get(table_val)
+                if token is None:
+                    continue
+                prop = prop_tpl or mm.group(1)
+                # must be ';'-terminated (or end of string) -- anything else is a shape this
+                # sweep doesn't try to parse, skipped rather than guessed at.
+                end = mm.end()
+                if end < len(cand_style) and cand_style[end] != ";":
+                    aborted = True
+                    break
+                cand_matches.append((mm.start(), end, prop, val, token))
+            if aborted or not cand_matches:
+                continue   # this candidate didn't pan out -- try the next wrapper-shaped style
+            style, matches, sm = cand_style, cand_matches, cand
+            break
         if not matches:
             continue
         base = m.start(2) + sm.start(1)

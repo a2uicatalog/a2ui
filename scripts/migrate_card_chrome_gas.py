@@ -54,7 +54,14 @@ _BYTE_PARITY_CONTRACT = {"type_scale", "readability_card", "drop_cap", "contrast
 FN_RE = re.compile(r"\n_RENDERERS\['(\w+)'\] = function\(b\) \{(.*?)\n\};", re.S)
 # One style="..." (or style='...') per candidate, the SAME literal-quote style it already
 # uses -- never rewritten to the other quote convention, to keep the diff minimal.
-STYLE_RE = re.compile(r"style=(['\"])((?:(?!\1).)*)\1")
+# re.DOTALL: a style value routinely spans a JS string-concatenation line break (long CSS
+# split across `'...' + '...'` for line length) -- without it `.` can't cross the newline,
+# so the match fails at that point and the WHOLE style="..." becomes invisible to this
+# script, not just under-matched. Found 2026-09-27 reconciling web/GAS token parity:
+# actual_vs_estimate's GAS wrapper (border:1px solid #e5e7eb;border-radius:12px;background:#fff;
+# split across a line break) was a real, whitelisted match that this blind spot skipped
+# entirely -- it never reached find_candidates()'s own matching logic at all.
+STYLE_RE = re.compile(r"style=(['\"])((?:(?!\1).)*)\1", re.S)
 
 
 def _modern():
@@ -83,38 +90,47 @@ def find_candidates():
                 continue
             # Same fix as migrate_card_chrome.py: several style=/'...'/ attrs can exist per
             # function; take the one that actually looks like a card wrapper (radius+border
-            # together), not just the first textually.
+            # together), not just the first textually. AND (2026-09-27, same reconciliation
+            # pass) more than one style can be wrapper-shaped -- an inner badge/icon with a
+            # COMPUTED (non-literal) color can textually precede the real outer card whose
+            # values are fully literal and whitelisted. Committing to the first shape-match and
+            # giving up if ITS values don't parse skipped the atom even though a later
+            # candidate would have worked. Try each wrapper-shaped candidate in order; take the
+            # first that yields real whitelisted matches.
             wrapper_pat = re.compile(r"border-radius:\s*\d+px\b.{0,200}?border(?:-\w+)?:\s*1px solid|"
                                      r"border(?:-\w+)?:\s*1px solid.{0,200}?border-radius:\s*\d+px\b", re.S)
             sm = None
-            for cand in STYLE_RE.finditer(body):
-                if wrapper_pat.search(cand.group(2)):
-                    sm = cand
-                    break
-            if not sm:
-                continue
-            quote, style = sm.group(1), sm.group(2)
+            quote = style = None
             matches = []
-            ok = True
-            for pat, table, prop_tpl in (
-                (r"border-radius:\s*(\d+)px\b", RADIUS, "border-radius"),
-                (r"(border(?:-\w+)?):\s*1px solid (#[0-9a-fA-F]{3,6})\b", BORDER, None),
-                (r"(background(?:-color)?):\s*(#[0-9a-fA-F]{3,6})\b", BG, None),
-            ):
-                mm = re.search(pat, style)
-                if not mm:
+            for cand in STYLE_RE.finditer(body):
+                if not wrapper_pat.search(cand.group(2)):
                     continue
-                val = mm.group(1) if prop_tpl else mm.group(2)
-                token = table.get(val)
-                if token is None:
-                    continue
-                prop = prop_tpl or mm.group(1)
-                end = mm.end()
-                if end < len(style) and style[end] != ";":
-                    ok = False
-                    break
-                matches.append((mm.start(), end, prop, val, token))
-            if not ok or not matches:
+                cand_quote, cand_style = cand.group(1), cand.group(2)
+                cand_matches = []
+                aborted = False
+                for pat, table, prop_tpl in (
+                    (r"border-radius:\s*(\d+)px\b", RADIUS, "border-radius"),
+                    (r"(border(?:-\w+)?):\s*1px solid (#[0-9a-fA-F]{3,6})\b", BORDER, None),
+                    (r"(background(?:-color)?):\s*(#[0-9a-fA-F]{3,6})\b", BG, None),
+                ):
+                    mm = re.search(pat, cand_style)
+                    if not mm:
+                        continue
+                    val = mm.group(1) if prop_tpl else mm.group(2)
+                    token = table.get(val)
+                    if token is None:
+                        continue
+                    prop = prop_tpl or mm.group(1)
+                    end = mm.end()
+                    if end < len(cand_style) and cand_style[end] != ";":
+                        aborted = True
+                        break
+                    cand_matches.append((mm.start(), end, prop, val, token))
+                if aborted or not cand_matches:
+                    continue   # this candidate didn't pan out -- try the next wrapper-shaped style
+                sm, quote, style, matches = cand, cand_quote, cand_style, cand_matches
+                break
+            if not matches:
                 continue
             base = m.start(2) + sm.start(2)
             out.append({"file": f, "name": name, "quote": quote,

@@ -196,7 +196,7 @@ _RENDERERS['reflection_prompt'] = function(b) {
   var accent = b.accent      || '#6366f1';
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:12px;' +
+    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.12);">' +
     '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + _esc(accent) + ';margin-bottom:10px;">✍️ Reflection</div>' +
     '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;line-height:1.5;margin-bottom:14px;">' + _esc(prompt) + '</div>' +
@@ -268,7 +268,7 @@ _RENDERERS['annotation_highlight'] = function(b) {
   return (
     '<div style="font-family:\'Inter\',system-ui,sans-serif;">' +
     '<div style="font-size:0.88rem;color:#cbd5e1;line-height:1.9;">' + out + '</div>' +
-    '<div id="' + uid + 'panel" style="display:none;margin-top:12px;padding:14px 16px;border-radius:10px;' +
+    '<div id="' + uid + 'panel" style="display:none;margin-top:12px;padding:14px 16px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);">' +
       '<div id="' + uid + 'pt" style="font-size:0.7rem;font-weight:700;margin-bottom:5px;"></div>' +
       '<div id="' + uid + 'pe" style="font-size:0.78rem;color:#94a3b8;line-height:1.6;"></div>' +
@@ -327,7 +327,7 @@ _RENDERERS['onboarding_stepper'] = function(b) {
   }
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:14px;' +
+    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:20px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">' +
     '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;">🚀 ' + _esc(title) + '</div>' +
     '<div id="' + uid + 'pg" style="font-size:0.68rem;color:#334155;margin-bottom:16px;margin-top:3px;">0 / ' + steps.length + ' complete</div>' +
@@ -544,7 +544,7 @@ _RENDERERS['spaced_repetition_card'] = function(b) {
     '<div style="perspective:1000px;height:180px;cursor:pointer;margin-bottom:14px;" onclick="' + uid + 'flip()">' +
       '<div id="' + uid + 'card" style="position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d;">' +
         // Front
-        '<div style="position:absolute;inset:0;border-radius:14px;padding:24px;box-sizing:border-box;' +
+        '<div style="position:absolute;inset:0;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:24px;box-sizing:border-box;' +
           'background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);' +
           'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;' +
           'backface-visibility:hidden;-webkit-backface-visibility:hidden;">' +
@@ -651,7 +651,7 @@ _RENDERERS['leaderboard_card'] = function(b) {
   }).join('');
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:14px;' +
+    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);">' +
     '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:14px;">🏆 ' + _esc(title) + '</div>' +
     items +

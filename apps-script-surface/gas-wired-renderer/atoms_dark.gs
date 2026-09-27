@@ -270,7 +270,7 @@ _RENDERERS['dark_feature_grid'] = function(b) {
     cards += '<div style="' +
       'background:#0f1117;' +
       'border:1px solid rgba(255,255,255,0.07);' +
-      'border-radius:14px;padding:22px;' +
+      'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:22px;' +
       'display:flex;flex-direction:column;gap:10px;">' +
       '<div style="width:40px;height:40px;border-radius:10px;' +
       'background:linear-gradient(135deg,' + _esc(colour) + '33,' + _esc(colour) + '11);' +

@@ -55,7 +55,7 @@ _RENDERERS['module_map'] = function(b) {
     var m = modules[i];
     cards +=
       '<a id="' + uid + 'a' + i + '" href="#" target="_top" style="text-decoration:none;">' +
-      '<div id="' + uid + 'c' + i + '" style="border-radius:14px;padding:20px;min-height:150px;box-sizing:border-box;' +
+      '<div id="' + uid + 'c' + i + '" style="border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:20px;min-height:150px;box-sizing:border-box;' +
         'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
         'display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;transition:all 0.2s;">' +
         '<div id="' + uid + 's' + i + '" style="position:absolute;top:12px;right:12px;"></div>' +
@@ -164,7 +164,7 @@ _RENDERERS['knowledge_check'] = function(b) {
   }
 
   return (
-    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;' +
+    '<div style="font-family:\'Inter\',system-ui,sans-serif;padding:18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.14);">' +
     '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6366f1;margin-bottom:10px;">💡 Knowledge Check</div>' +
     '<div style="font-size:0.88rem;font-weight:600;color:#f1f5f9;line-height:1.5;margin-bottom:14px;">' + _esc(question) + '</div>' +
@@ -509,7 +509,7 @@ _RENDERERS['badge_showcase'] = function(b) {
     var reqId = bg.required_id || bg.id || ('badge' + i);
     items +=
       '<div id="' + uid + 'b' + i + '" data-req="' + _esc(reqId) + '" ' +
-        'style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:12px;text-align:center;' +
+        'style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:12px;border-radius:var(--a2ui-radius,12px);text-align:center;' +
           'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;">' +
         '<div id="' + uid + 'i' + i + '" style="font-size:2rem;filter:grayscale(1);opacity:0.25;transition:all 0.4s;">' + _esc(bg.icon || '🏅') + '</div>' +
         '<div style="font-size:0.65rem;font-weight:700;color:#334155;">' + _esc(bg.label || '') + '</div>' +
@@ -663,7 +663,7 @@ _RENDERERS['flashcard_deck'] = function(b) {
       '</div>' +
       '<div style="display:flex;align-items:center;gap:10px;margin-top:1.4rem;">' +
         '<button id="' + uid + 'P" onclick="window[\'' + uid + '\'].prev()" disabled ' +
-          'style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);' +
+          'style="padding:8px 18px;border-radius:12px;border-radius:var(--a2ui-radius,12px);border:1px solid rgba(255,255,255,0.08);' +
           'background:rgba(255,255,255,0.04);color:#64748b;cursor:pointer;font-size:0.78rem;font-weight:600;">← Prev</button>' +
         '<button onclick="window[\'' + uid + '\'].flip()" ' +
           'style="padding:8px 22px;border-radius:8px;border:none;background:' + _esc(accent) + ';' +

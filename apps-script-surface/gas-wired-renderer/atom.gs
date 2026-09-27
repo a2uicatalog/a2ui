@@ -360,7 +360,7 @@ _RENDERERS['preview_frame'] = function(b) {
       + 'font-size:0.875rem;background:var(--surface,#f9fafb);">'
       + _esc(b.emptyMessage || 'Nothing selected yet.') + '</div>';
   var frame = '<iframe data-a2ui-frame src="' + _esc(src) + '" style="display:' + (src ? '' : 'none')
-      + ';width:100%;height:' + height + 'px;border:1px solid var(--border,#e5e7eb);border-radius:8px;" '
+      + ';width:100%;height:' + height + 'px;border:1px solid var(--border,#e5e7eb);border-radius:12px;border-radius:var(--a2ui-radius,12px);" '
       + 'loading="lazy" title="' + _esc(b.label || 'Preview') + '"></iframe>';
   return '<div>' + label + placeholder + frame + '</div>';
 };
@@ -1664,7 +1664,7 @@ _RENDERERS['actual_vs_estimate'] = function(b) {
       + 'letter-spacing:.1em;text-transform:uppercase;color:#5a5a52;">' + _esc(String(b.label)) + '</div>' : '';
   var cap = b.caption ? '<div style="padding:0 16px 14px;color:#5a5a52;font-size:.9rem;">'
       + _esc(String(b.caption)) + '</div>' : '';
-  return '<div style="border:1px solid #e5e7eb;border-radius:12px;background:#fff;'
+  return '<div style="border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);background:#ffffff;background:var(--a2ui-surface,#ffffff);'
       + 'margin:1.5rem 0;overflow:hidden;">' + head
       + '<div style="display:flex;flex-wrap:wrap;">' + tiles + '</div>' + cap + '</div>';
 };
@@ -2576,7 +2576,7 @@ _RENDERERS['sheet_badge'] = function(b) {
 
   return '<button id="' + uid + '" type="button" title="Open backing spreadsheet in Drive"'
     + ' style="display:inline-flex;align-items:center;gap:6px;background:var(--bg,#fff);'
-    + 'border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:5px 10px;cursor:pointer;'
+    + 'border:1px solid var(--border,#e5e7eb);border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);padding:5px 10px;cursor:pointer;'
     + 'font-size:0.8rem;font-weight:500;color:var(--text,#374151);font-family:inherit;transition:opacity 0.2s;">'
     + '<span style="display:inline-block;width:14px;height:16px;flex-shrink:0;background:#0f9d58;border-radius:2px;"></span>'
     + _esc(label)
@@ -3666,7 +3666,7 @@ _RENDERERS['linkedin_post_image'] = function(b) {
       ? '<div style="padding:10px 16px;font-size:0.78rem;color:#5f6368;text-align:center;' +
         'border-top:1px solid #e0e0e0;background:#f8f9fa;">' + _esc(caption) + '</div>'
       : '';
-    return '<div style="aspect-ratio:1.91/1;border:1px solid #e0e0e0;border-radius:12px;' +
+    return '<div style="aspect-ratio:1.91/1;border:1px solid #eaeaea;border:1px solid var(--a2ui-border,#eaeaea);border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
       'overflow:hidden;display:flex;flex-direction:column;margin:1.5rem 0;' +
       'box-shadow:0 2px 8px rgba(0,0,0,0.08);">' +
       '<div style="flex:1;display:flex;overflow:hidden;">' +
@@ -4562,7 +4562,7 @@ _RENDERERS['article_journey'] = function(b) {
         + _esc(steps[i].status_label || '?') + '</span>');
     }
     tally = '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;padding:0.9rem 1rem;'
-      + 'background:var(--paper-raised);border:1px solid var(--line);border-radius:10px;margin-bottom:1.8rem;">'
+      + 'background:var(--paper-raised);border:1px solid var(--line);border-radius:12px;border-radius:var(--a2ui-radius,12px);margin-bottom:1.8rem;">'
       + '<span style="font-family:' + _JOURNEY_MONO + ';font-size:0.72rem;letter-spacing:0.07em;'
       + 'text-transform:uppercase;color:var(--ink-soft);margin-right:0.35rem;">Sequence</span>'
       + chips.join(' &rarr; ') + '</div>';

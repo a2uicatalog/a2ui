@@ -1015,7 +1015,7 @@ _RENDERERS['playbook'] = function(b) {
     '<div id="' + uid + 'nav" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);' +
     'display:flex;gap:8px;z-index:9999;flex-wrap:wrap;justify-content:center;' +
     'background:rgba(0,0,0,0.8);border:1px solid rgba(0,242,255,0.18);' +
-    'border-radius:10px;padding:8px 14px;backdrop-filter:blur(12px);">' +
+    'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:8px 14px;backdrop-filter:blur(12px);">' +
     navBtns + '</div>' +
     '<script>(function(){' +
     // duration/next map for auto-advance

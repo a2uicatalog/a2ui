@@ -50,7 +50,7 @@ _RENDERERS['domain_brief'] = function(b) {
       areasHtml +=
         '<div style="background:rgba(15,23,42,0.8);' +
           'border:1px solid ' + _esc(ac) + '28;border-left:3px solid ' + _esc(ac) + ';' +
-          'border-radius:8px;padding:10px 12px;">' +
+          'border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:10px 12px;">' +
           '<div style="font-size:0.78rem;font-weight:700;color:' + _esc(ac) + ';margin-bottom:3px;">' + _esc(a.label || '') + '</div>' +
           (a.detail ? '<div style="font-size:0.69rem;color:#64748b;line-height:1.5;">' + _esc(a.detail) + '</div>' : '') +
         '</div>';
@@ -128,7 +128,7 @@ _RENDERERS['brevet_timeline'] = function(b) {
         '</div>' +
         '<div class="' + uid + 'pn" style="background:rgba(30,41,59,0.97);' +
           'border:1px solid rgba(255,255,255,0.07);padding:0.85rem 1rem;' +
-          'border-radius:12px;cursor:pointer;transition:border-color 0.2s;" ' +
+          'border-radius:12px;border-radius:var(--a2ui-radius,12px);cursor:pointer;transition:border-color 0.2s;" ' +
           'onmouseover="this.style.borderColor=\'' + _esc(accent) + '44\'" ' +
           'onmouseout="this.style.borderColor=\'rgba(255,255,255,0.07)\'">' +
           '<div style="font-weight:700;color:#f1f5f9;font-size:0.92rem;line-height:1.4;">' +
@@ -203,7 +203,7 @@ _RENDERERS['text_analysis'] = function(b) {
       noteDivs +
       // Document passage
       '<div style="background:rgba(15,23,42,0.97);border:1px solid rgba(255,255,255,0.07);' +
-        'border-left:3px solid #d97706;border-radius:12px;padding:1.4rem 1.5rem;margin-bottom:0.9rem;">' +
+        'border-left:3px solid #d97706;border-radius:12px;border-radius:var(--a2ui-radius,12px);padding:1.4rem 1.5rem;margin-bottom:0.9rem;">' +
         (source ? '<div style="font-size:0.58rem;font-weight:700;letter-spacing:0.16em;' +
           'text-transform:uppercase;color:#d97706;margin-bottom:0.75rem;">' + _esc(source) + '</div>' : '') +
         '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:1.05rem;' +
@@ -286,7 +286,7 @@ _RENDERERS['brevet_automatismes'] = function(b) {
             'placeholder="?" maxlength="16" autocomplete="off" ' +
             'style="width:68px;padding:5px 8px;text-align:center;box-sizing:border-box;' +
             'background:rgba(0,0,0,0.35);border:1px solid rgba(16,185,129,0.25);' +
-            'color:#fff;border-radius:6px;font-size:0.9rem;font-family:\'Courier New\',monospace;">' +
+            'color:#fff;border-radius:6px;border-radius:var(--a2ui-radius-sm,6px);font-size:0.9rem;font-family:\'Courier New\',monospace;">' +
           '<span class="' + uid + 'fb" style="font-size:0.9rem;width:28px;text-align:left;"></span>' +
         '</div>' +
       '</div>';
@@ -770,7 +770,7 @@ _RENDERERS['catalogue_provenance'] = function(b) {
       '<div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;">' +
         // Target label at top (what in the card this points to)
         '<div style="font-size:0.6rem;font-weight:700;color:' + color + ';text-align:center;' +
-          'padding:2px 8px;border:1px solid ' + color + '44;border-radius:8px;' +
+          'padding:2px 8px;border:1px solid ' + color + '44;border-radius:12px;border-radius:var(--a2ui-radius,12px);' +
           'background:' + color + '0d;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;">' +
           _esc(s.target || s.what || '') +
         '</div>' +
