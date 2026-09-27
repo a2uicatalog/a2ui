@@ -17,7 +17,7 @@ main{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 h1{font-size:20px;margin:0;text-wrap:balance}
 p{margin:0;color:var(--mute);font-size:13px;max-width:72ch}
 .panel{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px}
-#csearch{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
+#csearch,#omrset{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
 textarea{width:100%;min-height:64px;resize:vertical;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
 .row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -76,6 +76,11 @@ a{color:inherit}
 <input id="csearch" type="search" placeholder="e.g. 3001, slope, arch, knight, plate 2 x 4" aria-label="Search the parts catalogue" autocomplete="off">
 <div class="chips" id="cres" aria-live="polite"></div>
 <div class="row"><button class="go alt" id="cclear" type="button" hidden>Remove added parts</button><span class="note" id="cnote"></span></div>
+</section>
+<section class="panel">
+<label for="omrset"><b>Import a real LEGO set</b> <span class="note">by set number, from the LDraw Official Model Repository -- replaces the current build</span></label>
+<div class="row"><input id="omrset" type="text" placeholder="e.g. 75978-1" aria-label="LEGO set number" autocomplete="off" style="max-width:180px">
+<button class="go alt" id="omrgo" type="button">Import set</button><span class="note" id="omrnote"></span></div>
 </section>
 <section class="panel" id="result" hidden>
 <div class="stats" id="stats"></div>
@@ -254,6 +259,34 @@ $('cclear').onclick=function(){if(!last||!last.staged)return;
   last.staged=0;last.trayX=undefined;
   $('cclear').hidden=true;$('cnote').textContent='';
   if(last.parts.length)$('view').srcdoc=frameDoc(last.parts,true);else $('result').hidden=true};
+// ---- Real set import: GET /api/brick-omr?set=<id> parses the actual LDraw OMR model file for that set (real
+// parts, positions, rotations, colours and build steps) and normalises it -- see mcp-worker/src/omr-import.js.
+// Coverage is never hidden: a set with parts this catalogue can't yet render or that sit at a tilted (non-axis-
+// aligned) angle is reported honestly, not silently dropped without comment.
+$('omrgo').onclick=function(){
+  var id=$('omrset').value.trim();
+  if(!id){$('omrnote').textContent='Enter a set number first.';return}
+  $('omrnote').textContent='';$('omrgo').disabled=true;$('omrgo').textContent='Importing…';
+  fetch('/api/brick-omr?set='+encodeURIComponent(id))
+  .then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}}).then(function(j){return {r:r,j:j}})})
+  .then(function(x){
+    var j=x.j;
+    if(!j.ok){$('omrnote').textContent=j.error||'Could not import that set.';return}
+    var c=j.coverage||{};
+    $('result').hidden=false;$('cclear').hidden=true;$('cnote').textContent='';
+    $('stats').innerHTML='';
+    [['Set',j.set],['Total parts',n(c.parts)],['Renderable',n(c.renderable)],
+     ['Not yet baked',n(c.parts-c.baked)],['Tilted (skipped)',n(c.tilted)]]
+    .forEach(function(s){var d=document.createElement('div');d.className='stat';
+      var b=document.createElement('b');b.textContent=s[1];var sp=document.createElement('span');sp.textContent=s[0];d.appendChild(b);d.appendChild(sp);$('stats').appendChild(d)});
+    var pct=c.parts?Math.round(100*c.renderable/c.parts):0;
+    $('how').textContent='Imported from the LDraw Official Model Repository: '+n(c.renderable)+' of '+n(c.parts)+' parts ('+pct+'%) could be rendered -- '
+      +'the rest are either not yet in this catalogue or sit at an angle this importer does not yet place. '+j.attribution;
+    last={j:{name:j.name,prompt:''},partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
+    show({partsModel:j.partsModel});
+    $('omrnote').textContent='Imported '+j.name+'.'})
+  .catch(function(){$('omrnote').textContent='Could not reach the import service.'})
+  .then(function(){$('omrgo').disabled=false;$('omrgo').textContent='Import set'})};
 var runs=0;
 $('go').onclick=function(){
   var prompt=$('prompt').value.trim();
