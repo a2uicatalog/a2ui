@@ -54,5 +54,30 @@ Survey of baked parts in the current catalogue (4,761 parts):
 - Parts that currently have `needs_occupancy: true` (e.g. `3937` Base, `30552` Technic arm):
   - They lack occupancy solely because they have no top studs flush at Y=0, so `generic_stud_cell_occupancy` cannot anchor boxes off studs. This is a static box-authoring question for studless parts, NOT an articulation/pose issue.
 
+### 4. Is a Hinge ONE Part with a Pose, or TWO Static Parts?
+**A hinge in this codebase and in LDraw is unequivocally TWO separate parts, each with its own static geometry.**
+
+- **Physical & Data Model Reality**:
+  - A LEGO hinge is never one part with an internal moving joint. It is two separate rigid parts (e.g. `2429` Base + `2430` Top; `4275b` 3-finger plate + `4276b` 2-finger plate; `3937` Base + `3938` Top).
+  - Each half is an independent rigid body of molded ABS plastic. Neither half has internal degrees of freedom, moving sub-assemblies, or variable geometry.
+  - The apparent single-part hinges in LDraw (such as `73983.dat` / `2429c01.dat` "Hinge Plate 1 x 4 (Complete)") are classified as `Shortcut` files. They contain no kinematics; they are simply convenience wrappers that place the two separate component parts (`2429` and `2430`) at (0, 0, 0) with identity transforms.
+  - In real models (e.g. Official Model Repository / OMR), builders place each half as a distinct entry with its own position and rotation.
+
+- **Does a Part Need a Pose Parameter?**:
+  - **NO.** Neither `Part` in `resolve.py` nor the baked mesh format in `public/parts/<id>.json` needs a pose parameter.
+  - The earlier hypothesis that hinges require an open-ended data-model redesign with a pose parameter was based on a fundamental misunderstanding: treating convenience shortcut assemblies (like `73983`) as monolithic parts that need to articulate internally.
+
+- **Does Existing Occupancy Machinery Work?**:
+  - **YES.** Because each half is static, each half has its OWN static occupancy boxes in its local reference frame.
+  - For orthogonal angles (0°, 90°, 180°, 270°), the existing `PART_ROT` (24 cubic rotations) and `_world_boxes` in `brick_parts_validate.py` already work out of the box:
+    - Tested empirically: `2429` (Base) and `2430` (Top) placed flat (0°) validate with `ok: True`, 0 collisions, 0 overlaps.
+    - Tested empirically: `2429` and `2430` placed at a 90° bend (`r=1`) validate with `ok: True`, 0 collisions, 0 overlaps.
+    - Tested empirically: `2429` and `2430` placed folding backwards into each other (270°, `r=3`) correctly fail with `collisions: [[0, 1]]` (real physical self-intersection detected).
+
+- **What Is Actually Missing?**:
+  The limitation is NOT in the part representation or occupancy model. The real missing pieces are:
+  1. **Connector / Connectivity recognition**: `brick_parts_validate.py` only builds graph edges for `stud_conn` and `pin_conn`. It has no detector for hinge mating (matching hinge axes). As a result, the pivoted half is flagged as `floating` unless anchored to other bricks or the baseplate.
+  2. **Non-orthogonal rotation angles in `partsModel`**: `partsModel` entries use integer `r` (0..23). Angling a hinge at 45° or 30° cannot be expressed in `r: 0..23`. This is a model-level rotation/transform question, not a part-level pose parameter.
+
 ## Conclusion
 (fill in last)
