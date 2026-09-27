@@ -69,8 +69,17 @@ def _gcloud(args):
 
 
 def get_key():
-    name = _gcloud(["services", "api-keys", "list", "--project", PROJECT, "--format=value(name)"]).split()[0]
-    return _gcloud(["services", "api-keys", "get-key-string", name, "--format=value(keyString)"]).strip()
+    """Pick the key restricted to the API this file actually calls (ENDPOINT's host), not just the first key
+    returned -- the project holds more than one API key for different features (e.g. a generativelanguage.
+    googleapis.com key for an unrelated Voice feature), and list order is not a service match."""
+    host = ENDPOINT.split("/")[2]
+    names = _gcloud(["services", "api-keys", "list", "--project", PROJECT, "--format=value(name)"]).split()
+    for name in names:
+        restriction = _gcloud(["services", "api-keys", "describe", name, "--project", PROJECT,
+                               "--format=value(restrictions.apiTargets[0].service)"]).strip()
+        if restriction == host:
+            return _gcloud(["services", "api-keys", "get-key-string", name, "--format=value(keyString)"]).strip()
+    raise RuntimeError("no API key in project %s is restricted to %s" % (PROJECT, host))
 
 
 def render(mesh, size=384):
