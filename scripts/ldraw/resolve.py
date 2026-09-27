@@ -43,6 +43,7 @@ class Library:
     def __init__(self, root=None):
         self.root = root or LD
         self._index = {}
+        self._virtual = {}   # in-memory model files registered by add_virtual
         for d in SEARCH_DIRS:
             full = os.path.join(self.root, d)
             if not os.path.isdir(full):
@@ -64,6 +65,13 @@ class Library:
             raise RuntimeError(
                 "LDraw library not found at %r. Run scripts/ldraw/fetch_library.py, or set LDRAW_DIR." % self.root)
 
+    def add_virtual(self, name, text):
+        """Register an in-memory model file (e.g. a minifig character assembled by characters.py) under `name`,
+        so resolve_part can walk it exactly like a real library file."""
+        key = "virtual:" + name.lower()
+        self._index[name.lower()] = key
+        self._virtual[key] = tuple(l for l in text.splitlines() if l.strip())
+
     def find(self, name):
         n = name.lower().replace("\\", "/")
         for key in (n, "s/" + n if not n.startswith("s/") else n):
@@ -77,6 +85,8 @@ class Library:
             return tuple(l.rstrip("\n") for l in fh if l.strip())
 
     def lines(self, path):
+        if path in self._virtual:
+            return self._virtual[path]
         return self._lines_cached(path)
 
 

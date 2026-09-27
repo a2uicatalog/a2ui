@@ -103,3 +103,6 @@ improve_probes
 # scripts/ldraw/fetch_library.py the way node_modules is rebuilt, never carried in git. Only the baked
 # output (public/parts/) is committed.
 scripts/ldraw/_ldraw_cache/
+
+# Gemini QA working files: Rebrickable reference photos, our renders, per-model verdicts (review artefacts, not published)
+scripts/ldraw/qa/
