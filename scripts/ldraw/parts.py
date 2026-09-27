@@ -263,23 +263,32 @@ def _stud_box_solid_fraction(tris, box_, n=48):
 
 
 def generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris):
-    """Library-wide fallback (2026-09-26) for any part not covered by a named family above. The curated tables
-    above (ROUND_PARTS, CORNER_L_PARTS, SLOPE_BACK_WALL_PARTS) all rest on the same underlying fact, verified BY
-    HAND per id against real baked connector data: a stud sitting flush at y=0 facing straight up always has solid
-    material in a 20x20xheight column directly beneath it (a stud cannot be moulded floating in air). This
-    generalises that verification into an automated, per-part geometric PROOF instead of hand-picking ids: for
-    every stud that sits flush (y~=0, facing up), propose the same box the curated families use, then ray-cast
-    sample points against the part's OWN real triangles and require at least STUD_CELL_MIN_SOLID of them to land
-    inside the mesh. A part with even one stud that fails (off-grid, on a raised nub as an "Inverted" slope's
-    second stud is, or genuinely floating) is excluded ENTIRELY (needs_occupancy=True) rather than accepting a
-    partial or guessed result -- consistent with "never guess" from the Phase 1 handoff, just automated rather
-    than manual. Under-approximating is always safe per spec section 3; this only ever adds boxes proven solid.
+    """Library-wide fallback (2026-09-26, relaxed to per-stud 2026-09-27) for any part not covered by a named
+    family above. The curated tables above (ROUND_PARTS, CORNER_L_PARTS, SLOPE_BACK_WALL_PARTS) all rest on the
+    same underlying fact, verified BY HAND per id against real baked connector data: a stud sitting flush at y=0
+    facing straight up always has solid material in a 20x20xheight column directly beneath it (a stud cannot be
+    moulded floating in air). This generalises that verification into an automated, per-part geometric PROOF
+    instead of hand-picking ids: for every stud that sits flush (y~=0, facing up), propose the same box the
+    curated families use, then ray-cast sample points against the part's OWN real triangles and require at least
+    STUD_CELL_MIN_SOLID of them to land inside the mesh.
+
+    2026-09-27: originally a single non-flush or non-solid stud excluded the WHOLE part (needs_occupancy=True).
+    Surveying the ~12,800 real rejects (scripts/ldraw/survey_rejects.py) found this all-or-nothing gate was the
+    actual blocker for a large share of them, not a missing family rule: e.g. boat hull 164c01 has 34 flush studs,
+    28 of which pass comfortably (0.6-0.85 solid) -- only the 6 studs in its tapered bow/stern row fail (0.06-0.08,
+    genuinely thin material there), and the ALL-must-pass gate discarded all 34 over those 6. Relaxed to keep only
+    the individual studs that pass (or are flush at all) and drop the rest -- each surviving box is still a real,
+    individually-proven-solid PROOF, nothing is guessed, and dropping a failing/non-flush stud's cell is the same
+    kind of safe under-approximation SLOPE_BACK_WALL_PARTS already relies on deliberately (spec section 3: miss a
+    real collision on the dropped area, never report a false one). A part where EVERY stud fails or is non-flush
+    still returns None (unchanged) -- there is nothing proven to offer.
     """
     if not studs or not tris or bounds_min is None or bounds_max is None:
         return None, []
     flush = [(p, d) for p, d in studs if abs(p[1]) < 0.5 and d[1] < -0.9]
-    if len(flush) != len(studs) or not flush:
-        return None, []
+    # NOTE: no `if not flush: return None, []` here -- a part can have ZERO up-facing studs and still have
+    # real sideways (SNOT) ones the loop below checks (e.g. 11097, all 3 studs sideways, 0 flush). The
+    # final `if not boxes: return None, []` after both passes is the real bail-out.
     # Span the box over the part's OWN real y extent, not an assumed y:[0, height] -- found live, 2026-09-26:
     # ordinary bricks have bounds_min[1]==0 (origin at the top surface), but plenty of real parts don't (a
     # baseplate's origin sits at its vertical CENTRE, e.g. bounds y:[-4,+4]; a mudguard/curved-slope's flare can
@@ -289,12 +298,227 @@ def generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris):
     # instead is self-limiting via the existing ray-parity proof below: a genuinely too-tall box (mostly empty at
     # the extremes) fails STUD_CELL_MIN_SOLID on its own, no separate special-casing needed.
     y0, y1 = bounds_min[1], bounds_max[1]
-    boxes = [box(p[0] - 10, p[0] + 10, y0, y1, p[2] - 10, p[2] + 10) for p, _ in flush]
+    kept = [p for p, _ in flush if _stud_box_solid_fraction(
+        tris, box(p[0] - 10, p[0] + 10, y0, y1, p[2] - 10, p[2] + 10)) >= STUD_CELL_MIN_SOLID]
+    boxes = [box(p[0] - 10, p[0] + 10, y0, y1, p[2] - 10, p[2] + 10) for p in kept]
+    sockets = [((p[0], y1, p[2]), (0, 1, 0)) for p in kept]
+
+    # SNOT (Studs Not On Top) addition, 2026-09-27: a stud facing sideways (X or Z, not Y) was previously
+    # excluded from this whole function entirely by the `flush` filter above, which only recognises the
+    # up-facing case -- found live surveying real rejects: "Minifig Armour Shoulder Pads with 1 Stud on
+    # Front, 2 Studs on Back" (11097) has 3 real studs, all sideways (dir (0,0,-1)/(0,0,1)), individually
+    # ~17-19% solid -- healthy, comparable to other accepted parts -- but the up-only flush check discarded
+    # the whole part regardless. Generalises the SAME ray-cast proof to any axis-aligned stud direction,
+    # deliberately WITHOUT copying the Y-axis path's `abs(p[1]) < 0.5` position pre-filter: that check
+    # encodes a real LDraw convention specific to Y (an ordinary brick's own local origin sits at y=0, its
+    # top stud surface) that has no equivalent for X/Z -- there's no universal "sideways studs sit at
+    # x/z=0" convention to check against. The ray-cast solid-fraction proof is the actual safety
+    # mechanism either way (a stud on a ramp's raised nub still needs a real solid column to pass, position
+    # or not); dropping an inapplicable heuristic is not the same as dropping the proof. Left as fully
+    # separate code (not merged into the `flush` list above) so the proven Y-axis path is byte-for-byte
+    # unchanged -- zero regression risk on already-verified results.
+    for p, d in studs:
+        axis = max(range(3), key=lambda i: abs(d[i]))
+        if axis == 1 or abs(d[axis]) <= 0.9:
+            continue   # Y-axis studs already handled above; a non-axis-aligned direction is never a real stud
+        sign = 1.0 if d[axis] > 0 else -1.0
+        spans = [None, None, None]
+        spans[axis] = (bounds_min[axis], bounds_max[axis])
+        for other in range(3):
+            if other != axis:
+                spans[other] = (p[other] - 10, p[other] + 10)
+        b = _axis_box(axis, spans)
+        if _stud_box_solid_fraction(tris, b) >= STUD_CELL_MIN_SOLID:
+            boxes.append(b)
+            sdir = [0.0, 0.0, 0.0]
+            sdir[axis] = sign
+            sockets.append((tuple(p), tuple(sdir)))
+
+    if not boxes:
+        return None, []
+    return boxes, sockets
+
+
+def _axis_box(bore, spans):
+    """spans: {axis_index: (lo, hi)} for all three axes -- returns the box() 6-tuple regardless of which axis
+    is which (the channel builder below works in axis-index terms, not x/y/z names, so it can reuse the same
+    logic no matter which real axis a given part's holes bore through)."""
+    return box(*spans[0], *spans[1], *spans[2])
+
+
+def generic_hole_channel_occupancy(bounds_min, bounds_max, studs, holes, tris):
+    """Generalises technic_holes_occupancy (hand-verified 2026-09-26 for 7 straight-beam ids, ALWAYS bored along
+    Z with holes spaced along X) to any part whose holes bore straight through along one shared axis -- X, Y or
+    Z, not just Z -- and are spaced along a second axis at one shared position on the third. That's the real
+    shape of an ordinary Technic beam/liftarm/panel, just not always oriented the same way as the original 7.
+
+    Unlike the hand-verified original, this runs on parts NOBODY has checked individually, so it does not trust
+    the parametric channel construction alone: every proposed box is ray-cast verified solid first (reusing
+    _stud_box_solid_fraction, the same proof generic_stud_cell_occupancy uses), and if even one box in the
+    result fails, the WHOLE part is excluded (needs_occupancy=True) -- no partial credit here, unlike the stud
+    relaxation above, since a hole-channel construction's boxes are interdependent (each one only correctly
+    represents "solid" if the geometry really is the assumed straight-beam-with-holes shape throughout).
+
+    Bails (returns None, []) rather than guess whenever the assumed shape doesn't hold: holes that don't all
+    bore along one shared axis, holes spread across BOTH remaining axes (a true 2D hole grid, e.g. a perforated
+    panel -- a materially different shape this decomposition can't express), or any box that fails the solidity
+    proof.
+    """
+    if not holes or not tris or bounds_min is None or bounds_max is None:
+        return None, []
+    AXES = (0, 1, 2)
+    bore = next((ax for ax in AXES if all(abs(d[ax]) > 0.9 for _, d in holes)), None)
+    if bore is None:
+        return None, []
+    other = [a for a in AXES if a != bore]
+    spread = {a: max(p[a] for p, _ in holes) - min(p[a] for p, _ in holes) for a in other}
+    varying = [a for a in other if spread[a] > 1.0]
+    if len(varying) > 1:
+        return None, []
+    space_axis = varying[0] if varying else other[0]
+    const_axis = other[1] if space_axis == other[0] else other[0]
+    const_val = round(sum(p[const_axis] for p, _ in holes) / len(holes))
+
+    lo = [bounds_min[0], bounds_min[1], bounds_min[2]]
+    hi = [bounds_max[0], bounds_max[1], bounds_max[2]]
+    full_bore = (lo[bore], hi[bore])
+    full_const = (lo[const_axis], hi[const_axis])
+    positions = sorted(set(round(p[space_axis]) for p, _ in holes))
+
+    boxes, prev = [], lo[space_axis]
+    for s in positions:
+        if s - CHANNEL_HALF > prev:
+            spans = {bore: full_bore, const_axis: full_const, space_axis: (prev, s - CHANNEL_HALF)}
+            boxes.append(_axis_box(bore, spans))
+        for k_lo, k_hi in ((lo[const_axis], const_val - CHANNEL_HALF), (const_val + CHANNEL_HALF, hi[const_axis])):
+            if k_hi > k_lo:
+                spans = {bore: full_bore, const_axis: (k_lo, k_hi), space_axis: (s - CHANNEL_HALF, s + CHANNEL_HALF)}
+                boxes.append(_axis_box(bore, spans))
+        prev = s + CHANNEL_HALF
+    if prev < hi[space_axis]:
+        spans = {bore: full_bore, const_axis: full_const, space_axis: (prev, hi[space_axis])}
+        boxes.append(_axis_box(bore, spans))
+    if not boxes:
+        return None, []
     for b in boxes:
         if _stud_box_solid_fraction(tris, b) < STUD_CELL_MIN_SOLID:
             return None, []
-    sockets = [((p[0], y1, p[2]), (0, 1, 0)) for p, _ in flush]
+
+    flush = [(p, d) for p, d in (studs or []) if abs(p[1]) < 0.5 and d[1] < -0.9]
+    sockets = [((p[0], hi[1], p[2]), (0, 1, 0)) for p, _ in flush]
     return boxes, sockets
+
+
+# Bar-grip detection (2026-09-27): a "held" part (minifig accessory, tool, weapon -- also technic/door pivot
+# pins, which are the same physical connector, just clip-mounted instead of hand-held) has a cylindrical grip of
+# radius 4 LDU -- confirmed against two independent real references: a genuine "Bar 8L" part (2714a) measures
+# exactly radius 4, and the standard clip1.dat primitive's own inner opening is also exactly radius 4 -- the real
+# LEGO/LDraw bar-clip manufacturing standard, not a fitted constant. A raw radius match alone over-triggers
+# (v1 prototype: 3,514 hits across categories that clearly aren't held items -- Windscreen, Wheel, Door, Brick --
+# because plenty of unrelated features, hinge posts, axle stubs, technic bosses, share the same standard radius).
+# Two more checks bring it down to genuine grips (prototype v2: 1,814 hits, false positives gone on inspection):
+#   1. EXTREMITY: a real grip sticks out to the part's own bounding-box edge; an embedded post does not.
+#   2. ISOLATION: a real grip is a thin rod protruding from a much narrower stem -- a ray-cast box straddling its
+#      base, just wider than the rod itself, is mostly EMPTY. An embedded post's equivalent box is mostly solid
+#      (it's flush inside the part's main body). Reuses _stud_box_solid_fraction, the same proof the stud/hole
+#      paths use, just checking for LOW solid fraction instead of high.
+# These parts don't need occupancy at all -- nothing is ever stacked on a held sword or a hinge pin -- so a match
+# here means "genuinely no occupancy claim, not a guess", the same honest empty-occupancy the DISH_PARTS family
+# also intentionally uses. Sockets are deliberately left empty too: a bar/clip connector pair is a real, different
+# attachment TYPE (not a stud/socket), and this data model doesn't yet have anywhere to safely express it end to
+# end (see BRICK_CATALOGUE_STATUS.md scoping note) -- claiming a socket here would be exactly the kind of
+# fabricated connection data this module's own convention (CONNECTOR_OVERRIDES's docstring, sockets=[] pattern in
+# DISH_PARTS) already refuses to do.
+BAR_RADIUS = 4.0
+BAR_RADIUS_TOL = 0.4
+BAR_EXTREMITY_TOL = 3.0
+BAR_ISOLATION_MAX_SOLID = 0.35
+
+
+def _cluster_cylinders(cylinders):
+    hits = [(centre, axis, radius) for centre, axis, radius in cylinders if abs(radius - BAR_RADIUS) <= BAR_RADIUS_TOL]
+    clusters = []
+    for centre, axis, radius in hits:
+        length = (axis[0] ** 2 + axis[1] ** 2 + axis[2] ** 2) ** 0.5
+        placed = False
+        for c in clusters:
+            if math.dist(c["centre"], centre) < 2.0:
+                c["length"] = max(c["length"], length)
+                placed = True
+                break
+        if not placed:
+            clusters.append({"centre": centre, "axis": axis, "length": length})
+    return clusters
+
+
+def _at_extremity(p, bounds_min, bounds_max):
+    return any(abs(p[i] - bounds_min[i]) <= BAR_EXTREMITY_TOL or abs(p[i] - bounds_max[i]) <= BAR_EXTREMITY_TOL
+               for i in range(3))
+
+
+def bar_grip_points(bounds_min, bounds_max, cylinders, tris):
+    """Returns a list of (pos, dir) for every genuine bar/clip-type grip on this part -- pos is the rod's own
+    OUTER tip (where a hand/clip would actually grip it), dir is the unit vector pointing outward along the
+    rod's axis (inner attachment -> outer tip), the same "axis of insertion" convention part.pins already uses
+    for technic friction pins -- a bar grip is physically the same kind of connector (a rod mating with a
+    receiving socket-shaped feature), just clip/hand-held instead of pin/hole-mated. See the module-level
+    comment above for the two-check detection method (extremity + isolation) and why it's needed beyond a bare
+    radius match. A part can genuinely have more than one grip (e.g. a double-ended bar), so this returns all
+    of them, not just the first. Empty list (not None/False) when there's no genuine grip, so callers can use
+    it directly as a falsy/truthy check (`if bar_grip_points(...):`) exactly like the old has_bar_grip did."""
+    if not cylinders or not tris or bounds_min is None or bounds_max is None:
+        return []
+    grips = []
+    for c in _cluster_cylinders(cylinders):
+        if c["length"] < 4:
+            continue
+        # `centre` is the primitive's local origin, which is one TRUE END (cyli/cylo span local Y 0..1, not
+        # -0.5..+0.5) -- the other true end is centre + axis (axis already has magnitude == length).
+        end_a = c["centre"]
+        end_b = tuple(c["centre"][i] + c["axis"][i] for i in range(3))
+        if _at_extremity(end_a, bounds_min, bounds_max):
+            outer, inner = end_a, end_b
+        elif _at_extremity(end_b, bounds_min, bounds_max):
+            outer, inner = end_b, end_a
+        else:
+            continue
+        axis_len = c["length"] or 1.0
+        u = tuple(c["axis"][i] / axis_len for i in range(3))
+        # probe box centred half a rod-length further INWARD of the attachment end, radius 7 (just past the
+        # rod's own radius 4) -- empty here means a thin rod on a narrow stem; solid means an embedded post.
+        p = tuple(inner[i] - u[i] * c["length"] * 0.5 for i in range(3))
+        probe = box(p[0] - 7, p[0] + 7, p[1] - 7, p[1] + 7, p[2] - 7, p[2] + 7)
+        if _stud_box_solid_fraction(tris, probe) <= BAR_ISOLATION_MAX_SOLID:
+            # direction points OUTWARD (inner -> outer), i.e. away from the part's body, matching "axis of
+            # insertion" pointing out of the part the way a pin's axis points out of its part.
+            out_dir = tuple(outer[i] - inner[i] for i in range(3))
+            out_len = (out_dir[0] ** 2 + out_dir[1] ** 2 + out_dir[2] ** 2) ** 0.5 or 1.0
+            grips.append((outer, tuple(d / out_len for d in out_dir)))
+    return grips
+
+
+# Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
+# head's own real top stud (confirmed live: the curated head part 3626bp01's own title literally says
+# "Blocked Hollow Stud") -- so it needs a socket, not occupancy (nothing is ever stacked on top of a hat in
+# normal building). The mount point is the part's own LOCAL ORIGIN (0,0,0), not a bounding-box computation
+# -- this is NOT a guess: `characters.py`'s OFFSETS table already places both "head" and "headgear" at the
+# identical relative offset from the torso's neck, and that file's own minifig templates already compose 16
+# real characters successfully on this exact convention (LDraw authors every minifig accessory with its own
+# origin AT its attachment point, the same way a stud's or a pin's local origin IS its own connector
+# position). Direction faces down (0,-1,0) to receive an upward-facing stud, matching the existing
+# stud/socket opposite-direction convention `renderers/brick_parts_validate.py` already uses. Title
+# prefixes are the real ones found sampling the actual reject pool (scripts/ldraw/survey_rejects.py), not
+# guessed -- covering roughly 3/4 of the real "Minifig Headwear" category by sampled count.
+MINIFIG_HEADWEAR_PREFIXES = ("minifig hair", "minifig helmet", "minifig hat", "minifig headdress",
+                              "minifig cap", "minifig mask", "minifig crown")
+
+
+def minifig_headwear_socket(title):
+    """Returns a single (pos, dir) socket list if `title` matches a real minifig headwear family, else None."""
+    t = (title or "").strip().lower()
+    if any(t.startswith(p) for p in MINIFIG_HEADWEAR_PREFIXES):
+        return [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    return None
 
 
 def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
@@ -311,11 +535,13 @@ def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
     return True
 
 
-def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None, tris=None):
+def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
+                                   tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
     unquantised) are only needed for the Technic-holes/round/corner-L/slope families and the generic fallback;
     every other path ignores them, so existing callers that omit them keep working. `tris`: the part's own real
-    triangles (list of (p0,p1,p2)), needed only by the generic fallback's geometric proof.
+    triangles (list of (p0,p1,p2)), needed only by the generic fallback's geometric proof. `cylinders`: list of
+    (centre, axis, radius) from resolve.py's cyli/cylo primitive detection, needed only by has_bar_grip.
 
     EVERY path's result is verified against the part's own real bounds before being trusted (2026-09-26): found
     live expanding the catalogue past the original 116 that generated_occupancy's title-based box assumes a
@@ -339,12 +565,26 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
     if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
         occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
         return verified(occ, sockets)
+    headwear_sockets = minifig_headwear_socket(title)
+    if headwear_sockets is not None:
+        return [], headwear_sockets, False
     occ = OVERRIDES.get(part_id) or generated_occupancy(title)
     if occ is None and part_id in TECHNIC_HOLES_PARTS and bounds_min and holes is not None:
         occ = technic_holes_occupancy(bounds_min, bounds_max, holes)
     if occ is None:
         gen_occ, gen_sockets = generic_stud_cell_occupancy(bounds_min, bounds_max, studs, tris)
-        return verified(gen_occ, gen_sockets) if gen_occ else (None, [], True)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
+        gen_occ, gen_sockets = generic_hole_channel_occupancy(bounds_min, bounds_max, studs, holes, tris)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
+        if bar_grip_points(bounds_min, bounds_max, cylinders, tris):
+            # occupancy/sockets stay empty here (unchanged contract) -- the real grip position/axis data is
+            # exposed separately via bar_grip_points() itself, called directly by bake_parts.py, so it can go
+            # into its own `bars` connector field rather than being force-fit into this function's plain
+            # (occ, sockets, needs_occupancy) return shape, which every existing caller already depends on.
+            return [], [], False
+        return (None, [], True)
     sockets = generate_sockets(occ)
     over = CONNECTOR_OVERRIDES.get(part_id, {})
     if "sockets" in over:

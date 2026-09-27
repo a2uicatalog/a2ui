@@ -17,7 +17,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from resolve import Library, ColourTable, resolve_part  # noqa: E402
-from parts import resolve_occupancy_and_sockets  # noqa: E402
+from parts import resolve_occupancy_and_sockets, bar_grip_points  # noqa: E402
 import characters  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -70,9 +70,14 @@ def bake_one(lib, colours, entry):
 
     if template:
         (occ, sockets), needs_occ = characters.occupancy_and_sockets(), False
+        bars = []
     else:
         occ, sockets, needs_occ = resolve_occupancy_and_sockets(pid, title, part.min, part.max, part.holes,
-                                                                part.studs, part.tris)
+                                                                part.studs, part.tris, part.cylinders)
+        # Called directly (not folded into resolve_occupancy_and_sockets's own return) so the grip's real
+        # pos/dir reaches the baked mesh as its own `bars` connector field -- see the call site in parts.py's
+        # resolve_occupancy_and_sockets for why the two aren't merged into one return shape.
+        bars = bar_grip_points(part.min, part.max, part.cylinders, part.tris)
 
     mesh = {
         "id": pid,
@@ -88,6 +93,11 @@ def bake_one(lib, colours, entry):
             "sockets": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in sockets],
             "holes": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in part.holes],
             "pins": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in part.pins],
+            # A held/clip-mounted connector (2026-09-27): geometrically the same "rod inserts into a
+            # receiving feature" shape as pins/holes, just clip/hand-held instead of pin/hole-mated. No
+            # renderer-side matching logic consumes this yet (the receiving clip side isn't detected at
+            # all currently) -- documented as real, deliberate scope left for later, not silently dropped.
+            "bars": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in bars],
         },
         "occupancy": [list(b) for b in occ] if occ else None,
         "needs_occupancy": needs_occ,
@@ -140,6 +150,7 @@ def main(characters_only=False):
             "sockets": len(mesh["connectors"]["sockets"]),
             "holes": len(mesh["connectors"]["holes"]),
             "pins": len(mesh["connectors"]["pins"]),
+            "bars": len(mesh["connectors"]["bars"]),
             "needs_occupancy": mesh["needs_occupancy"],
             "bytes": len(text),
             "license": mesh["license"],
