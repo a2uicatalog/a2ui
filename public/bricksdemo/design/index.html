@@ -72,10 +72,10 @@ a{color:inherit}
 </div>
 </section>
 <section class="panel" id="charp">
-<label for="csearch"><b>Add a minifigure</b> <span class="note">search characters, then pick one to stand beside your build</span></label>
-<input id="csearch" type="search" placeholder="e.g. knight, space, pirate, chef" aria-label="Search minifigure characters" autocomplete="off">
+<label for="csearch"><b>Browse the parts catalogue</b> <span class="note">search real LEGO parts and minifigures by id or name, then pick one to add beside your build</span></label>
+<input id="csearch" type="search" placeholder="e.g. 3001, slope, arch, knight, plate 2 x 4" aria-label="Search the parts catalogue" autocomplete="off">
 <div class="chips" id="cres" aria-live="polite"></div>
-<div class="row"><button class="go alt" id="cclear" type="button" hidden>Remove minifigures</button><span class="note" id="cnote"></span></div>
+<div class="row"><button class="go alt" id="cclear" type="button" hidden>Remove added parts</button><span class="note" id="cnote"></span></div>
 </section>
 <section class="panel" id="result" hidden>
 <div class="stats" id="stats"></div>
@@ -115,8 +115,8 @@ function show(model){
   $('view').srcdoc='<!doctype html><meta charset="utf-8"><body style="margin:0;font:14px system-ui">'+PRE+JSON.stringify(parts)+POST+'</body>';
 }
 
-var PIDX=null,last=null;
-fetch('/parts/index.json').then(function(r){return r.json()}).then(function(j){PIDX=j.parts;csearch()}).catch(function(){});
+var PIDX=null,QUANT=1,last=null;
+fetch('/parts/index.json').then(function(r){return r.json()}).then(function(j){PIDX=j.parts;QUANT=j.quant||1;csearch()}).catch(function(){});
 function pname(id){return (PIDX&&PIDX[id]&&PIDX[id].title||id).replace(/\s+/g,' ').trim()}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function hexOf(cssColour){var m=/rgb\((\d+), (\d+), (\d+)\)/.exec(cssColour);if(!m)return cssColour;
@@ -202,36 +202,56 @@ $('manual').onclick=function(){
     win.document.open();win.document.write(h);win.document.close();
     btn.disabled=false;$('mstat').textContent='Manual opened ('+steps.length+' steps).'})
   .catch(function(){btn.disabled=false;$('mstat').textContent='Could not build the manual.'})};
-// ---- Minifigure characters: baked by scripts/ldraw/characters.py as single parts (mf-<id>), listed in the part
-// index with {name, tags}. A character stands on a 1x2 stud pair: its origin is the neck, feet 72 LDU below, and
-// its sockets at local x=+-10, z=0 land on the baseplate grid when x is a multiple of 20 and z is 10 mod 20.
+// ---- Catalogue browser: search every baked part (public/parts/index.json, real LDraw geometry) or minifigure
+// character (baked by scripts/ldraw/characters.py as single parts mf-<id>, listed with {name, tags}) and add one
+// beside the build client-side -- no server round trip, same pattern proven for characters before this was
+// generalised. A character stands on a 1x2 stud pair: its origin is the neck, feet 72 LDU below, and its sockets
+// at local x=+-10, z=0 land on the baseplate grid when x is a multiple of 20 and z is 10 mod 20 -- that placement
+// stays hardcoded (every character shares the same rig). A general part has no such convention, so it's floored
+// onto y=0 using its own baked bounds (index.json bounds are in quantised units -- divide by QUANT for real LDU).
 function isChar(id){return /^mf-/.test(id)}
-function chars(){return PIDX?Object.keys(PIDX).filter(function(k){return PIDX[k].character}).map(function(k){
-  var c=PIDX[k].character;return {id:k,name:c.name,hay:(k+' '+c.name+' '+c.tags.join(' ')).toLowerCase()}}):[]}
+function footprint(id){
+  var b=PIDX[id]&&PIDX[id].bounds;
+  if(!b)return {w:20,yOff:0};
+  return {w:Math.max(b.max[0]-b.min[0],b.max[2]-b.min[2])/QUANT,yOff:-b.min[1]/QUANT}}
+function catalogHits(words){
+  return Object.keys(PIDX).filter(function(k){
+    var e=PIDX[k];
+    if(!e.character&&/^[~=]/.test(e.title))return false;  // obsolete/"moved to"/stub entries -- never real picks
+    var hay=(k+' '+e.title+(e.character?(' '+e.character.name+' '+e.character.tags.join(' ')):'')).toLowerCase();
+    return words.every(function(w){return hay.indexOf(w)>=0})})}
 function csearch(){
   var box=$('cres');box.innerHTML='';
-  if(!PIDX){$('cnote').textContent='Loading characters…';return}
+  if(!PIDX){$('cnote').textContent='Loading catalogue…';return}
   var words=$('csearch').value.toLowerCase().split(/\s+/).filter(Boolean);
-  var hits=chars().filter(function(c){return words.every(function(w){return c.hay.indexOf(w)>=0})});
-  $('cnote').textContent=hits.length?hits.length+' character'+(hits.length===1?'':'s'):'No character matches that.';
-  hits.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=c.name;
-    b.onclick=function(){addChar(c)};box.appendChild(b)})}
-function addChar(c){
-  if(!last)last={j:{name:c.name,prompt:''},partsModel:[],parts:[]};
-  var built=last.parts.filter(function(p){return !isChar(p.p)}),nc=last.parts.length-built.length;
-  var maxX=built.reduce(function(m,p){return Math.max(m,p.x)},-Infinity);
-  // beside the build, 80 LDU (4 studs) apart: a stock brick reaches up to 40 LDU from its origin and a figure's
-  // arms 31 LDU from its own, and arms are cosmetic (not in the collision boxes), so the gap has to be real;
-  // snapped to the 20 LDU stud grid
-  var x=(isFinite(maxX)?Math.ceil((maxX+80)/20)*20:0)+nc*80;
-  last.partsModel.push([c.id,x,-72,10,0,14]);
-  last.parts.push({p:c.id,x:x,y:-72,z:10,r:0,c:HEX[14],edge:EDGE[14]});
+  if(!words.length){$('cnote').textContent='Type to search '+Object.keys(PIDX).length+' parts and minifigures.';return}
+  var hits=catalogHits(words),shown=hits.slice(0,40);
+  $('cnote').textContent=hits.length?(hits.length+' match'+(hits.length===1?'':'es')+(hits.length>40?' (showing 40)':'')):'No matches.';
+  shown.forEach(function(id){var b=document.createElement('button');b.type='button';b.className='chip';
+    b.title=id+' — '+pname(id);b.textContent=PIDX[id].character?PIDX[id].character.name:(id+' '+pname(id));
+    b.onclick=function(){addPart(id)};box.appendChild(b)})}
+function addPart(id){
+  if(!last)last={j:{name:pname(id),prompt:''},partsModel:[],parts:[],staged:0};
+  if(last.staged===undefined)last.staged=0;
+  if(last.trayX===undefined){
+    var built=last.parts.slice(0,last.parts.length-last.staged);
+    var maxX=built.reduce(function(m,p){return Math.max(m,p.x)},-Infinity);
+    // beside the build, first gap 80 LDU (4 studs): a stock brick reaches up to 40 LDU from its origin and a
+    // figure's arms 31 LDU from its own (arms are cosmetic, not in the collision boxes), so the gap has to be real
+    last.trayX=(isFinite(maxX)?maxX:0)+80}
+  var fp=footprint(id),half=Math.max(fp.w/2,20),x=Math.ceil((last.trayX+half)/20)*20;
+  var y=isChar(id)?-72:Math.round(fp.yOff),z=isChar(id)?10:0,col=isChar(id)?14:4;
+  last.partsModel.push([id,x,y,z,0,col]);
+  last.parts.push({p:id,x:x,y:y,z:z,r:0,c:HEX[col],edge:EDGE[col]});
+  last.staged++;last.trayX=x+half+20;
   $('result').hidden=false;$('cclear').hidden=false;
   $('view').srcdoc=frameDoc(last.parts,true);
-  $('cnote').textContent='Added '+c.name+'. Minifigures appear in the build manual; the Rebrickable CSV lists bricks only.'}
+  $('cnote').textContent='Added '+pname(id)+(isChar(id)?'. Minifigures appear in the build manual; the Rebrickable CSV lists bricks only.':'.')}
 $('csearch').addEventListener('input',csearch);
-$('cclear').onclick=function(){if(!last)return;
-  last.partsModel=last.partsModel.filter(function(p){return !isChar(p[0])});last.parts=last.parts.filter(function(p){return !isChar(p.p)});
+$('cclear').onclick=function(){if(!last||!last.staged)return;
+  var n=last.staged;
+  last.partsModel=last.partsModel.slice(0,-n);last.parts=last.parts.slice(0,-n);
+  last.staged=0;last.trayX=undefined;
   $('cclear').hidden=true;$('cnote').textContent='';
   if(last.parts.length)$('view').srcdoc=frameDoc(last.parts,true);else $('result').hidden=true};
 var runs=0;
