@@ -441,3 +441,144 @@ def test_snot_studs_on_real_minifig_armour(pid, expect_n):
     assert len(sockets) == expect_n
     for _, d in sockets:
         assert d[1] == 0  # every real stud on these parts is sideways -- no Y-axis socket should appear
+
+
+# -----------------------------------------------------------------------------
+# Tile family generic occupancy (2026-09-27)
+# -----------------------------------------------------------------------------
+
+def _cylinder_tris(r, y0, y1, segments=16):
+    """A closed polygonal cylinder for synthetic round tile tests."""
+    tris = []
+    pts_bot = []
+    pts_top = []
+    for i in range(segments):
+        th = 2 * math.pi * i / segments
+        x = r * math.cos(th)
+        z = r * math.sin(th)
+        pts_bot.append((x, y0, z))
+        pts_top.append((x, y1, z))
+    for i in range(segments):
+        nxt = (i + 1) % segments
+        tris.append(((0, y0, 0), pts_bot[i], pts_bot[nxt]))
+        tris.append(((0, y1, 0), pts_top[nxt], pts_top[i]))
+        tris.append((pts_bot[i], pts_top[i], pts_top[nxt]))
+        tris.append((pts_bot[i], pts_top[nxt], pts_bot[nxt]))
+    return tris
+
+
+def test_generic_tile_occupancy_synthetic_rect():
+    """Synthetic 2x2 rectangular tile with 0 studs and plate height [0, 8]."""
+    tris = _box_tris(-20, 20, 0, 8, -20, 20)
+    occ, sockets = P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), [], tris, "Tile 2 x 2 with Pattern")
+    assert occ == [(-20, 20, 0.0, 8.0, -20, 20)]
+    assert len(sockets) == 4
+    # All sockets face down at y=8
+    for pos, d in sockets:
+        assert pos[1] == 8
+        assert d == (0, 1, 0)
+
+
+def test_generic_tile_occupancy_synthetic_corner_l():
+    """Synthetic 2x2 L-shaped corner tile (3 cells solid, 1 missing)."""
+    tris = (_box_tris(-10, 10, 0, 8, -10, 10) +
+            _box_tris(10, 30, 0, 8, -10, 10) +
+            _box_tris(-10, 10, 0, 8, 10, 30))
+    occ, sockets = P.generic_tile_occupancy((-10, 0, -10), (30, 8, 30), [], tris, "Tile 2 x 2 Corner with Pattern")
+    assert occ is not None and len(occ) == 3
+    assert len(sockets) == 3
+    expected_centers = {(0.0, 0.0), (20.0, 0.0), (0.0, 20.0)}
+    actual_centers = {(pos[0], pos[2]) for pos, _ in sockets}
+    assert actual_centers == expected_centers
+
+
+def test_generic_tile_occupancy_synthetic_round():
+    """Synthetic 2x2 round tile: inscribed square box [-14.14, 14.14], no sockets."""
+    tris = _cylinder_tris(20, 0, 8)
+    occ, sockets = P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), [], tris, "Tile 2 x 2 Round with Pattern")
+    assert occ is not None and len(occ) == 1
+    half = 40.0 / (2 * math.sqrt(2))
+    assert math.isclose(occ[0][0], -half, rel_tol=1e-5)
+    assert math.isclose(occ[0][1], half, rel_tol=1e-5)
+    assert occ[0][2] == 0.0 and occ[0][3] == 8.0
+    assert sockets == []
+
+
+def test_generic_tile_occupancy_synthetic_1x1_round():
+    """Synthetic 1x1 round tile receives a single center socket at (0, 8, 0)."""
+    tris = _cylinder_tris(10, 0, 8)
+    occ, sockets = P.generic_tile_occupancy((-10, 0, -10), (10, 8, 10), [], tris, "Tile 1 x 1 Round with Pattern")
+    assert occ is not None and len(occ) == 1
+    assert sockets == [((0.0, 8.0, 0.0), (0.0, 1.0, 0.0))]
+
+
+def test_generic_tile_occupancy_synthetic_exclusions():
+    """Exclusions required by spec §3 (under-approximate, never guess)."""
+    tris = _box_tris(-20, 20, 0, 8, -20, 20)
+    # Top studs must not enter tile path
+    top_studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), top_studs, tris, "Tile 2 x 2") == (None, [])
+
+    # Functional clip feature
+    assert P.generic_tile_occupancy((-10, -10, -10), (10, 8, 10), [], tris, "Tile 1 x 1 with Clip") == (None, [])
+
+    # Through-hole feature
+    assert P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), [], tris, "Tile 2 x 2 Round with Hole") == (None, [])
+
+    # Non-plate height bounds
+    assert P.generic_tile_occupancy((-20, 0, -20), (20, 24, 20), [], tris, "Tile 2 x 2") == (None, [])
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expect_n_occ,expect_n_sock", [
+    ("10202", 1, 36),     # Tile 6 x 6 with Groove and Underside Studs
+    ("10202p04", 1, 36),  # Tile 6 x 6 with "Soap Suds Cleans it all" Pattern
+    ("10202p05", 1, 36),  # Tile 6 x 6 with Minifig and Washing Machine Pattern
+    ("14719", 3, 3),      # Tile 2 x 2 Corner
+    ("14719p00", 3, 3),   # Tile 2 x 2 Corner with Orange and Yellow Diamonds Pattern
+    ("14769", 1, 0),      # Tile 2 x 2 Round with Round Underside Stud
+    ("14769p0a", 1, 0),   # Tile 2 x 2 Round with Round Underside Stud with Pattern
+    ("3068bp06", 1, 4),   # Tile 2 x 2 with Red Warning Triangle Pattern
+    ("3068bp09", 1, 4),   # Tile 2 x 2 with Transport Text on Crate Pattern
+    ("3069bp01", 1, 2),   # Tile 1 x 2 with Letter Pattern
+    ("3069bp02", 1, 2),   # Tile 1 x 2 with Tape Reels Pattern
+    ("3070bp01", 1, 1),   # Tile 1 x 1 with Black "1" Pattern
+    ("2431p01", 1, 4),    # Tile 1 x 4 with Wood Grain and 4 Nails Pattern
+    ("6636p01", 1, 6),    # Tile 1 x 6 with "Rockefeller" Pattern
+    ("4150", 1, 0),       # Tile 2 x 2 Round with Cross Underside Stud
+    ("4150p01", 1, 0),    # Tile 2 x 2 Round with Grille Pattern
+    ("98138p01", 1, 1),   # Tile 1 x 1 Round with Venomari Pattern
+])
+def test_real_tile_parts_accepted(pid, expect_n_occ, expect_n_sock):
+    """Real tile parts (including printed variants and base tiles) verified via resolve_part."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should be accepted"
+    assert occ is not None and len(occ) == expect_n_occ
+    assert len(sockets) == expect_n_sock
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "15535",  # Tile 2 x 2 Round with Hole (through-hole)
+    "12825",  # Tile 1 x 1 with Clip with Rounded Tips (functional clip)
+    "22385",  # Tile 3 x 2 with Angled End (angled/cut corner)
+    "27925",  # Tile 2 x 2 Corner Round (curved corner)
+])
+def test_real_tile_feature_exclusions_stay_rejected(pid):
+    """Feature-bearing tiles that cannot be safely under-approximated as plain rectangular/round tiles."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+

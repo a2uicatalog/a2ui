@@ -649,3 +649,31 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 ## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
 - Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
 - **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
+
+## 2026-09-27: Generic Tile Occupancy & Printed Variant Unlock (cloud agent, `agent/tile-family`)
+
+- **Task**: Unlock real occupancy for Tile parts, especially printed/decorated variants (`scripts/ldraw/parts.py`).
+- **Core Insight & Empirical Validation**:
+  - Sampled and verified 25+ real tile parts and printed pairs (e.g. `10202` vs `10202p04`/`10202p05`, `14719` vs `14719p00`, `14769` vs `14769p0a`, `3068b` vs `3068bp06`/`3068bp09`, `3069b` vs `3069bp01`/`3069bp02`, `3070b` vs `3070bp01`, `2431` vs `2431p01`, `6636` vs `6636p01`, `4150` vs `4150p01`, `98138` vs `98138p01`).
+  - Confirmed that printed variants (`*p*.dat`) share identical resolved geometry (exact bounds and ray-parity solidity fractions) with their base unprinted tiles.
+  - While plain tiles previously relied on brittle title matching (`SAFE_SUFFIXES`), printed titles carry descriptive pattern names that failed classification, causing thousands of valid tiles to be rejected.
+- **Implementation**:
+  - Added `generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title="")` in `scripts/ldraw/parts.py` and connected it as a fallback in `resolve_occupancy_and_sockets`.
+  - **Flat Rectilinear Tiles**: For parts with plate height ($y \in [-0.5, 8.5]$, $dy \in [7.0, 8.5]$) and grid dimensions ($N \times M$ multiples of 20 LDU), candidate 20x20 LDU cells are tested via ray-parity solidity (`_stud_box_solid_fraction >= 0.15`). If all $N \times M$ cells are solid and the 4 extreme bounding box corners are proven solid ($\ge 0.20$, preventing false matching of circular/curved parts), a single unified bounding box and standard downward sockets (`generate_sockets(occ)`) are emitted.
+  - **L-Shaped Corner Tiles** (e.g. `14719`, `14719p00`): In a 2x2 grid where exactly 3 out of 4 cells are solid plastic and 1 corner is empty air, 3 individual cell boxes and 3 downward anti-stud sockets are emitted.
+  - **Round Tiles** (e.g. `14769`, `4150`, `98138`, `67095`): Circular discs centered at $(0, 0)$ in XZ are modeled using inscribed squares ($[-D / (2\sqrt{2}), D / (2\sqrt{2})]$), provably containing collision boxes inside the circular cylinder without corner overshoots. 1x1 round tiles receive a single center bottom socket; multi-stud round tiles have non-standard undersides (e.g. round/cross underside studs) and leave sockets empty (`sockets = []`), matching `DISH_PARTS`.
+  - **Safe Exclusions** (under-approximate, never guess per spec §3):
+    - Tiles with clips (e.g. `12825`, `2555`, `30350`): clip jaws protrude beyond plate height ($y: [-10, 8]$) or create open grasping regions; excluded from flat tile occupancy.
+    - Tiles with through-holes (e.g. `15535 Tile 2 x 2 Round with Hole`): a solid inscribed square would cover the center hole and falsely collide with inserted pins/axles; safely excluded (`needs_occupancy=True`).
+    - Curved/angled tiles (e.g. `22385 with Angled End`, `27925 Corner Round`, `24246 with Rounded End`, `35787 Triangular`): extreme corners fail the $\ge 0.20$ solidity threshold; safely excluded.
+- **Catalogue Impact**:
+  - Unprinted rejects survey (`scripts/ldraw/survey_rejects.py`):
+    - Prior to change: 623 candidate tile parts; 20 accepted, 603 rejected.
+    - Post-implementation: **515 accepted, 108 rejected** (495 newly accepted unprinted tile parts, an 82.1% reduction in unprinted tile rejects).
+    - The remaining 108 rejected parts consist strictly of feature-bearing or curved items (clips, through-holes, angled wedges, quarter-round corners, magnet holders, projectile launchers).
+  - Whole library impact (including printed variants across all 2,290 tile parts in LDraw):
+    - Prior to change: 57 accepted, 2,233 rejected.
+    - Post-implementation: **1,879 accepted** (1,331 printed variants + 548 unprinted base/sticker tiles), reducing total tile rejects from 2,233 to 411.
+- **Verification**:
+  - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`: synthetic rectilinear tiles, synthetic L-corner tiles, synthetic round tiles, synthetic exclusions, real resolved tile parts across 17 part IDs/variants, and real feature exclusions.
+  - All 77 tests in `tests/test_generic_stud_occupancy.py` pass cleanly in 19.58s.

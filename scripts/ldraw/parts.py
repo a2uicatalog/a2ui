@@ -604,6 +604,94 @@ def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
     return True
 
 
+def generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title=""):
+    """Generic geometry-proven occupancy for Tile-family parts (2026-09-27).
+
+    Tiles have zero top flush studs and a flat plate height (y ~ 0..8 LDU).
+    Decomposes the footprint into candidate boxes proven solid via ray-parity sampling:
+    - Rectilinear tiles: N x M 20x20 LDU cells, verified solid across all cells and all 4 extreme corners.
+      Produces a clean full rectangular box and standard N x M bottom sockets.
+    - L-shaped corner tiles (e.g. 14719): exactly 3 out of 4 cells in a 2x2 grid solid; produces 3 individual
+      20x20 cell boxes and 3 bottom sockets at cell centers.
+    - Round tiles (e.g. 98138, 14769, 4150): circular discs in XZ centered at (0, 0); produces an inscribed
+      square box (radius <= diameter / 2, provably solid inside cylinder without over-reporting in corners).
+      1x1 round tiles receive a single center bottom socket; multi-stud round tiles have non-standard undersides
+      so sockets are empty (matching DISH_PARTS).
+    - Exclusions: parts with clips (protrude above/below plate height or have open jaws), through-holes
+      (e.g. 15535, center hole would be covered by inscribed square), or non-solid corners (angled/curved tiles).
+    """
+    if bounds_min is None or bounds_max is None or not tris:
+        return None, []
+
+    # Must have 0 top flush studs (parts with top studs belong to generic_stud_cell_occupancy)
+    flush = [(p, d) for p, d in (studs or []) if abs(p[1]) < 0.5 and d[1] < -0.9]
+    if flush:
+        return None, []
+
+    y0, y1 = bounds_min[1], bounds_max[1]
+    # Standard plate/tile height in LDU is 8.
+    # Allow small tolerance for stickers (-0.2 at top, +0.2 at bottom) or groove bevels.
+    if y0 < -0.5 or y1 > 8.5 or (y1 - y0) < 7.0 or (y1 - y0) > 8.5:
+        return None, []
+
+    tl = (title or "").lower()
+    # Exclude parts with through-holes, clips, or hinges where bounding box covers empty functional openings
+    if re.search(r"\b(clip|clips|hole|holes|hinge)\b", tl):
+        return None, []
+
+    x0, x1 = bounds_min[0], bounds_max[0]
+    z0, z1 = bounds_min[2], bounds_max[2]
+    dx = x1 - x0
+    dz = z1 - z0
+
+    nx = round(dx / 20.0)
+    nz = round(dz / 20.0)
+
+    # 1. Test whether the part is a full solid rectilinear tile (or rectilinear L-corner)
+    if nx >= 1 and nz >= 1 and abs(dx - nx * 20.0) <= 0.5 and abs(dz - nz * 20.0) <= 0.5:
+        xs = [round(x0 + 10 + i * 20) for i in range(nx)]
+        zs = [round(z0 + 10 + j * 20) for j in range(nz)]
+        solid_cells = []
+        for cx in xs:
+            for cz in zs:
+                cb = box(cx - 10, cx + 10, 0.0, 8.0, cz - 10, cz + 10)
+                if _stud_box_solid_fraction(tris, cb) >= STUD_CELL_MIN_SOLID:
+                    solid_cells.append(((cx, cz), cb))
+
+        if len(solid_cells) == nx * nz:
+            # Full grid is candidate. Verify the 4 extreme corners are solid plastic,
+            # which rules out round tiles or tiles with rounded/angled corners.
+            corners = [
+                box(x0, x0 + 4, 0.0, 8.0, z0, z0 + 4),
+                box(x1 - 4, x1, 0.0, 8.0, z0, z0 + 4),
+                box(x0, x0 + 4, 0.0, 8.0, z1 - 4, z1),
+                box(x1 - 4, x1, 0.0, 8.0, z1 - 4, z1),
+            ]
+            if min(_stud_box_solid_fraction(tris, cb) for cb in corners) >= 0.20:
+                occ = [box(round(x0), round(x1), 0.0, 8.0, round(z0), round(z1))]
+                sockets = generate_sockets(occ)
+                return occ, sockets
+        elif len(solid_cells) == 3 and nx == 2 and nz == 2:
+            # L-shaped corner tile (e.g. 14719 Tile 2 x 2 Corner): exactly 3 out of 4 cells solid
+            occ = [b for _, b in solid_cells]
+            sockets = [(((b[0] + b[1]) / 2.0, 8.0, (b[4] + b[5]) / 2.0), (0.0, 1.0, 0.0)) for b in occ]
+            return occ, sockets
+
+    # 2. Test whether the part is a round tile (symmetric circular disc)
+    is_round_title = bool(re.search(r"\bround\b", tl)) and not bool(re.search(r"\bcorner\b", tl))
+    if is_round_title and abs(dx - dz) <= 0.5 and abs(x0 + x1) <= 0.5 and abs(z0 + z1) <= 0.5:
+        diam = (dx + dz) / 2.0
+        n_studs = round(diam / 20.0)
+        if n_studs >= 1:
+            half = diam / (2.0 * math.sqrt(2))
+            cand = box(-half, half, 0.0, 8.0, -half, half)
+            if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+                sockets = [((0.0, 8.0, 0.0), (0.0, 1.0, 0.0))] if n_studs == 1 else []
+                return [cand], sockets
+
+    return None, []
+
+
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
                                    tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
@@ -659,6 +747,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
             # into its own `bars` connector field rather than being force-fit into this function's plain
             # (occ, sockets, needs_occupancy) return shape, which every existing caller already depends on.
             return [], [], False
+        gen_occ, gen_sockets = generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
         return (None, [], True)
     sockets = generate_sockets(occ)
     over = CONNECTOR_OVERRIDES.get(part_id, {})
