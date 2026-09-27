@@ -470,3 +470,45 @@ def test_slope_back_wall_2875_resolved_geometry():
         assert pos[1] == pytest.approx(24.0)
         assert sdir == (0, 1, 0)
 
+
+# ── Double Slope Roof Bricks (SLOPE_DOUBLE_PARTS) ─────────────────────────────
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_y_top,expected_half_x,expected_n_sockets", [
+    ("3044b", 10, 10, 2),   # 45° 2 x 1 Double
+    ("3042", 10, 30, 6),    # 45° 2 x 3 Double
+    ("3041", 10, 40, 8),    # 45° 2 x 4 Double
+    ("3300", 18, 20, 4),    # 33° 2 x 2 Double
+    ("3299", 18, 40, 8),    # 33° 2 x 4 Double
+])
+def test_slope_double_parts_resolved_geometry(pid, expected_y_top, expected_half_x, expected_n_sockets):
+    """Symmetric double slope roof bricks: studless on top, solid central core spanning z:[-10, 10]
+    and y:[expected_y_top, 24], with full-footprint 2 x N bottom socket grid at y=24."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    assert len(part.studs) == 0, "%s is studless on top" % pid
+
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert len(occ) == 1
+    assert len(sockets) == expected_n_sockets
+
+    # Occupancy box matches expected central core
+    b = occ[0]
+    assert b == (-expected_half_x, expected_half_x, expected_y_top, 24, -10, 10)
+    assert P._boxes_within_bounds(occ, part.min, part.max)
+
+    # Ray-cast proof confirms solid core
+    assert P._stud_box_solid_fraction(part.tris, b) >= P.STUD_CELL_MIN_SOLID
+
+    # All sockets are downward-facing at y=24 on the standard 20 LDU grid
+    for pos, sdir in sockets:
+        assert pos[1] == pytest.approx(24.0)
+        assert sdir == (0, 1, 0)
+        assert abs(pos[2]) == pytest.approx(10.0)  # z is +/-10 on the 2-stud-deep grid
+
+

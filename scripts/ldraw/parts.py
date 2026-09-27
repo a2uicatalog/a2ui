@@ -244,6 +244,30 @@ CORNER_L_PARTS = {"2357": 24, "2420": 8}
 # x=-50: 0.333, -30: 0.375, -10: 0.333, 10: 0.333, 30: 0.542, 50: 0.333, all >= 0.333 > STUD_CELL_MIN_SOLID).
 SLOPE_BACK_WALL_PARTS = {"3040b", "3039", "4286", "3298", "3747b", "60481a", "4460b", "3037", "3038", "2875"}
 
+# Double slope roof bricks (45° and 33°): symmetric ridge along the centerline (z=0) sloping down to both
+# +/-Z faces. Studless on top (the ridge comes to a narrow peak). The occupancy box is a central solid core
+# spanning z: [-10, 10] (the region where the sloped surfaces are provably above the box's top y), while the
+# bottom sockets cover the full 2 x N stud footprint on the bottom face (y=24), matching ROUND_PARTS's pattern
+# of generating sockets from the full footprint rather than the under-approximated core box.
+# id -> (y_top, half_x)
+SLOPE_DOUBLE_PARTS = {
+    # 45° slopes: peak at y=0, slopes down 1:1, so at z=+/-10 top surface is at y=10 (measured solid fractions:
+    # 3044b: 0.580, 3042: 0.330, 3041: 0.330, all well above STUD_CELL_MIN_SOLID).
+    "3044b": (10, 10),   # Slope Brick 45  2 x  1 Double
+    "3042":  (10, 30),   # Slope Brick 45  2 x  3 Double
+    "3041":  (10, 40),   # Slope Brick 45  2 x  4 Double
+    # 33° slopes: peak at y=10, slopes down 14 LDU over 20 LDU, so at z=+/-10 top surface is at y=17 (18 safe;
+    # measured solid fractions: 3300: 0.290, 3299: 0.250).
+    "3300":  (18, 20),   # Slope Brick 33  2 x  2 Double
+    "3299":  (18, 40),   # Slope Brick 33  2 x  4 Double
+}
+
+
+def slope_double_occupancy_and_sockets(y_top, half_x):
+    occ = [box(-half_x, half_x, y_top, 24, -10, 10)]
+    sockets = generate_sockets([box(-half_x, half_x, 0, 24, -20, 20)])
+    return occ, sockets
+
 
 # Hand-authored occupancy for parts whose plain LDraw geometry does not reduce to one clean box or the Technic-
 # holes family above, verified against spec/brick-parts/fixtures-v0.1.json (F09, F15 exercise 3700 and 2780
@@ -644,6 +668,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         return verified(occ, sockets)
     if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
         occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
+        return verified(occ, sockets)
+    if part_id in SLOPE_DOUBLE_PARTS:
+        occ, sockets = slope_double_occupancy_and_sockets(*SLOPE_DOUBLE_PARTS[part_id])
         return verified(occ, sockets)
     headwear_sockets = minifig_headwear_socket(title)
     if headwear_sockets is not None:
