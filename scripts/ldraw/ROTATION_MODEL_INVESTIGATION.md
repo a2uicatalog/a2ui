@@ -138,10 +138,128 @@ Mathematical and geometric analysis proves this is **unworkable**:
 **Finding:** The standard ecosystem approach—**continuous 3x3 transformation matrix storage combined with 15-axis OBB / SAT collision checking**—is the only mathematically valid and practically viable solution.
 
 ### 4. Architectural Scope & Component Changes
-*(To be scoped: brick_parts_validate.py & atoms_brick.gs, omr_import.py, occupancy boxes & families)*
+
+#### 4.1 Changes in `renderers/brick_parts_validate.py` and `apps-script-surface/gas-wired-renderer/atoms_brick.gs`
+The Python validator and its JavaScript twin must be updated in exact lockstep to prevent drift. The required mathematical and structural changes are:
+
+1. **`partsModel` Element Schema & Rotation Dispatch**:
+   - **Current representation:** `{p, x, y, z, r, c}` where `r` is integer `0..23` indexing `PART_ROT`.
+   - **Unified representation:** `r` can be either:
+     - `int 0..23`: axis-aligned rotation index (compact 1-byte, backward compatible with all existing models and spec fixtures).
+     - `tuple` (Python) / `Array` (JS) of 9 floats: `[m00, m01, m02, m10, m11, m12, m20, m21, m22]` (flat row-major $3 \times 3$ matrix matching LDraw line 1).
+   - **Sanitisation (`_partsModelSanitise` in `atoms_brick.gs`, `_brick_parts_model_sanitise` in `web_article.py`)**:
+     - Currently clamps `rot % 24`.
+     - Generalised logic: if `typeof rot === 'number'`, keep `((rot % 24) + 24) % 24`. If `Array.isArray(rot) && rot.length === 9`, validate finite numbers, clamp entries to $[-1.0, 1.0]$, check proper rotation determinant $\det(M) \approx 1.0 \pm 0.05$ (or re-orthonormalise via Gram-Schmidt), and round to 4 decimal places.
+
+2. **Vector Rotation (`rot_ldu` / `rotLDU`)**:
+   - Updated signature: `rot_ldu(r, p)`:
+     ```python
+     def rot_ldu(r, p):
+         m = PART_ROT[r] if isinstance(r, int) else r
+         return (m[0] * p[0] + m[1] * p[1] + m[2] * p[2],
+                 m[3] * p[0] + m[4] * p[1] + m[5] * p[2],
+                 m[6] * p[0] + m[7] * p[1] + m[8] * p[2])
+     ```
+   - **Key insight on connectors:** `_conn_world` and `hole_segs_world` already transform positions and directions via `rot_ldu(r, lp)` and `rot_ldu(r, dir)`. Because matrix multiplication is naturally continuous, **connector world positions and directions become continuous immediately with zero additional code**.
+   - **Key insight on connector matching:** In `validate_parts`:
+     - Stud-to-socket: `_dist3(s.pos, k.pos) < 0.5 and _dot3(s.dir, k.dir) < -0.5`.
+     - Pin-to-hole: `_point_line_dist(p.pos, seg.a, seg.b) < 0.5`.
+     Both tests are **already pure continuous 3D Euclidean distance and vector geometry**.
+     The 1-LDU spatial hash with $\pm 1$ neighbor search (27 cells) mathematically guarantees finding all candidate sockets within 0.5 LDU, regardless of orientation. No changes are required in connector matching.
+
+3. **World Occupancy Transformation (`_world_boxes` / `worldBoxes`)**:
+   - Currently transforms only corners $(x_0, y_0, z_0)$ and $(x_1, y_1, z_1)$, which is only valid for axis-aligned rotations.
+   - For arbitrary rotations, `_world_boxes` must instantiate **Oriented Bounding Boxes (OBBs)**:
+     - Local center: $C_{loc} = \frac{1}{2}(x_0+x_1, y_0+y_1, z_0+z_1)$.
+     - Local half-extents: $E = \frac{1}{2}(x_1-x_0, y_1-y_0, z_1-z_0)$.
+     - World center: $C_{world} = \text{rot\_ldu}(r, C_{loc}) + (ex, ey, ez)$.
+     - World axes: $u_0 = \text{rot\_ldu}(r, (1,0,0))$, $u_1 = \text{rot\_ldu}(r, (0,1,0))$, $u_2 = \text{rot\_ldu}(r, (0,0,1))$ (i.e. the rows/columns of $M$).
+     - Enclosing World AABB (for broadphase grid and floor check):
+       $$R_i = E_0 |u_{0,i}| + E_1 |u_{1,i}| + E_2 |u_{2,i}| \quad \text{for } i \in \{x, y, z\}$$
+       Enclosing AABB min is $C_{world} - R$; max is $C_{world} + R$.
+     - Returning `{center: C, extents: E, axes: [u0, u1, u2], aabb: [min, max]}` per box.
+
+4. **Collision Overlap Test (`_boxes_overlap` / `boxesOverlap`)**:
+   - Replace the 1D interval coordinate test with a 2-tier check:
+     - **Tier 1 (Fast Path):** If both parts have integer `r` (axis-aligned), retain the existing 6-comparison interval test (`ox > 0.5 && oy > 0.5 && oz > 0.5`). This preserves $O(1)$ microsecond speed for the 80%+ axis-aligned pairs.
+     - **Tier 2 (General OBB-OBB SAT):** If either part has a non-axis-aligned matrix, execute the Separating Axis Theorem over 15 candidate axes:
+       - 3 axes of Box A: $u_{A0}, u_{A1}, u_{A2}$
+       - 3 axes of Box B: $u_{B0}, u_{B1}, u_{B2}$
+       - 9 cross-product axes: $u_{Ai} \times u_{Bj}$
+       - On candidate axis $L$:
+         $$\text{radius}_A = \sum_{i=0}^2 E_{Ai} |u_{Ai} \cdot L|, \quad \text{radius}_B = \sum_{j=0}^2 E_{Bj} |u_{Bj} \cdot L|$$
+         $$\text{dist} = |(C_B - C_A) \cdot L|$$
+         If $(\text{radius}_A + \text{radius}_B) - \text{dist} \le 0.5 \cdot \|L\|_2$: the boxes are separated along axis $L \implies$ return `False` immediately (early exit).
+       - If overlap $> 0.5 \cdot \|L\|_2$ across all 15 axes $\implies$ return `True` (collision).
+
+5. **Baseplate Contacts, Balance & Rendering (`atoms_brick.gs`)**:
+   - **Floor collision:** For each OBB, lowest point in Y is $C_{world, y} + R_y$. If $C_{world, y} + R_y > 0.5$ (LDraw Y down), collision with baseplate is flagged.
+   - **Center of mass:** Box mass = volume $= 8 \cdot E_x \cdot E_y \cdot E_z$ (invariant under rotation). Center of mass is simply $C_{world}$.
+   - **Baseplate footprint:** For contacting parts ($C_{world, y} + R_y \approx 0$), project the 8 OBB vertices to $(x, z)$ on $y=0$ to form the footprint polygon for `_hull2`.
+   - **WebGL rendering:** In `partTp(pmesh, r)`, `Rm` is already multiplied as a $3 \times 3$ matrix. Replacing `Rm = PART_ROT[r]` with direct assignment if `r` is an array gives WebGL continuous rotation out of the box!
+   - **Canvas-2D fallback:** Draw projected edges of the OBB wireframe rather than an axis-aligned box.
+
+---
+
+#### 4.2 Changes in `scripts/ldraw/omr_import.py`
+The OMR importer is the primary consumer turning LDraw model files into `partsModel` arrays:
+
+1. **`rot_index(m, tol=0.02)`**:
+   - Current implementation returns `None` for anything not in `PART_ROT`.
+   - Updated behavior:
+     - Check if `m` matches any entry in `PART_ROT` within `tol=0.02`. If so, return integer `i` (`0..23`).
+     - Otherwise, verify proper rotation $\det(m) \approx 1.0$. If valid, return `tuple(round(v, 4) for v in m)`.
+     - Mirrored parts ($\det(m) \approx -1.0$) can either be flagged or handled via reflection scale.
+2. **`bottom_y(pid, l, r)`**:
+   - Currently: `m = PART_ROT[r]`.
+   - Updated: `m = PART_ROT[r] if isinstance(r, int) else r`. Transforms all 8 corners of `mesh["bounds"]` to find true lowest world-Y point.
+3. **`to_parts_model(leaves)`**:
+   - Emits `[pid, round(x), round(y), round(z), r_or_m, colour, step]`.
+4. **Immediate Impact on OMR Model Coverage**:
+   - Current: 64,083 / 131,960 parts renderable (**48.6%**).
+   - With continuous rotation: 90,305 / 131,960 parts renderable (**68.4%**).
+   - **Every baked part instance currently excluded solely due to rotation angle (26,222 real parts across the OMR library) becomes immediately renderable.**
+
+---
+
+#### 4.3 Impact on Occupancy Boxes and Existing Occupancy Families
+A crucial architectural question was whether baked occupancy boxes (`box(x0,x1,y0,y1,z0,z1)`) in `public/parts/` would need to be re-derived or changed.
+
+- **Empirical Ground Truth:**
+  - Inspection of all 4,761 baked parts in `public/parts/` (4,634 with occupancy) reveals that **100% of baked occupancy boxes are defined in the part's own LOCAL coordinate system**.
+  - In physical LEGO manufacturing and in LDraw part definitions, parts are designed on Cartesian stud molds. Studs, sockets, pin holes, axle channels, and walls are oriented along local X, Y, and Z axes.
+  - Existing occupancy families in `scripts/ldraw/parts.py`:
+    - `generic_stud_cell_occupancy`: 20x20xheight stud columns in local coordinates.
+    - `generic_hole_channel_occupancy`: Channels along hole axes in local coordinates.
+    - `ROUND_PARTS`: Inscribed/cross boxes approximating cylinders in local coordinates.
+    - `TYRE_PARTS`: Tyre bounding cylinders in local coordinates.
+    - `OVERRIDES`: Hand-authored boxes in local coordinates.
+- **Do Occupancy Families Need Re-Deriving?**
+  - **NO. ZERO occupancy boxes need to change in `public/parts/`**.
+  - A local box $[x_0, x_1, y_0, y_1, z_0, z_1]$ is an axis-aligned box in the part's local frame.
+  - When the part is placed into a model with world transformation matrix $M$ and translation $T$, the local box *automatically* maps to an Oriented Bounding Box (OBB) in world space:
+    $$C_{world} = M \cdot C_{local} + T, \quad \text{Axes} = M \cdot I, \quad E_{world} = E_{local}$$
+  - **Conclusion:** All existing occupancy work, all catalog bakes, and all occupancy generator functions remain 100% intact and valid. The change from AABB to OBB is purely a model-time instantiation in the validator and renderer, not a part-baking change.
+
+---
 
 ### 5. Effort and Complexity Estimate
-*(To be scoped)*
+The scope is clearly bounded and architecturally clean, but requires precision because changes must be implemented simultaneously in Python and JavaScript without parity drift.
+
+| Component | Files Affected | Changes Required | Complexity | Estimated Effort |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Data Model & Sanitisation** | `atoms_brick.gs`, `web_article.py` | Allow 9-tuple row-major matrix in `partsModel` alongside `r: 0..23`. Update sanitisation and validation regex/clamp. | Small | 0.5 days |
+| **2. OMR Importer** | `scripts/ldraw/omr_import.py` | Update `rot_index` to emit 9-tuple on non-axis matches; update `bottom_y` and `to_parts_model`. | Small | 0.5 days |
+| **3. OBB & SAT Collision Engine (Python)** | `renderers/brick_parts_validate.py` | Implement OBB instantiation in `_world_boxes`, enclosing AABB for broadphase, 15-axis SAT in `_boxes_overlap` with 0.5 LDU tolerance. | Medium | 1.5 days |
+| **4. OBB & SAT Collision Engine (JS Twin)** | `apps-script-surface/gas-wired-renderer/atoms_brick.gs` | Exact port of Python OBB & 15-axis SAT logic into JavaScript in `worldBoxes` and `boxesOverlap`. | Medium | 1.5 days |
+| **5. WebGL & Canvas Renderer** | `apps-script-surface/gas-wired-renderer/atoms_brick.gs` | Support 9-array matrix in `partTp` WebGL pipeline and wireframe OBB in canvas fallback. | Small-Med | 1.0 day |
+| **6. Parity Verification & Test Suite** | `tests/test_brick_parts_validate.py`, `tests/test_brick_parts_validate.mjs` | Add parity test fixtures for 15°, 30°, 45°, 60° rotations, OBB non-collision cases, and stress test with 1,000 parts. | Small-Med | 1.0 day |
+
+- **Overall Sizing:** **MEDIUM (~6 developer days, ideal for 2 focused sequential implementation sessions / PRs)**:
+  - **Session 1 (Core Geometry & Validator Twin):** Implement OBB math and 15-axis SAT in `brick_parts_validate.py` and `atoms_brick.gs`, generate parity fixtures, and prove 100% Python/JS parity.
+  - **Session 2 (Pipeline & Consumer Integration):** Update `_partsModelSanitise`, `omr_import.py`, WebGL/Canvas rendering in `atoms_brick.gs`, and verify complete rendering of real angled sets (e.g. `6080-1`, `10001-1`, `8880-1`).
+
+---
 
 ## Conclusion
 *(To be completed)*
