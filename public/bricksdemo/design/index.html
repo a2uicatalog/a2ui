@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <title>Brick Design Lab</title>
-<meta name="description" content="Describe a LEGO build in a few words. A model designs it, real parts are validated, and the token and cost of every render is shown.">
+<meta name="description" content="Design a LEGO build with Gemini, or pick a template directly. Real parts are validated, and the token and cost of every render is shown.">
 <meta name="robots" content="noindex, nofollow">
 <style>
 :root{--bg:#f3f5f7;--fg:#0f1c28;--mute:#55636f;--rule:#d5dce3;--card:#fff;--acc:#c91a09;--ok:#1e7a45;color-scheme:light}
@@ -17,7 +17,7 @@ main{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 h1{font-size:20px;margin:0;text-wrap:balance}
 p{margin:0;color:var(--mute);font-size:13px;max-width:72ch}
 .panel{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px}
-#csearch,#omrset{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
+#csearch,#omrset,#setsearch{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
 textarea{width:100%;min-height:64px;resize:vertical;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:8px}
 .row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -27,16 +27,13 @@ select,button.go{font:inherit;color:inherit;background:var(--bg);border:1px soli
 button.go{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600;cursor:pointer}
 button.go:disabled{opacity:.55;cursor:progress}
 button.alt{background:var(--bg);color:var(--fg);border-color:var(--rule)}
+button.alt[aria-pressed="true"]{border-color:var(--acc);color:var(--acc);font-weight:600}
 .count{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .stat{border:1px solid var(--rule);border-radius:6px;padding:8px 10px}
 .stat b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
 .stat span{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
 iframe{width:100%;height:640px;border:1px solid var(--rule);border-radius:8px;background:var(--card)}
-.results{display:flex;flex-wrap:wrap;gap:16px}
-.rescard{flex:1 1 320px;min-width:280px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--rule);border-radius:8px;padding:10px}
-.rescard h2{font-size:14px;margin:0}
-.rescard iframe{height:420px}
 .err{color:var(--acc);font-size:13px}
 .note{font-size:12px}
 .tbl{overflow-x:auto}
@@ -52,9 +49,14 @@ a{color:inherit}
 <main>
 <div>
 <h1>Brick Design Lab</h1>
-<p>Describe a build. A model designs it as a compact voxel grid, the server repairs and tiles it with real LEGO parts, and the brick_build_3d atom checks collisions, anchoring and balance live. Every render shows its tokens and cost.</p>
+<p>Design with Gemini (a free-form prompt, built as a compact voxel grid and tiled with real LEGO parts) or pick a template directly (instant, no model call, zero tokens). The brick_build_3d atom checks collisions, anchoring and balance live.</p>
 </div>
 <section class="panel">
+<div class="row" role="tablist" aria-label="Design mode">
+<button class="go alt" id="modeGemini" type="button" aria-pressed="true">Design with Gemini</button>
+<button class="go alt" id="modeTemplate" type="button" aria-pressed="false">Pick a template</button>
+</div>
+<div id="geminiControls">
 <textarea id="prompt" maxlength="150" placeholder="e.g. a giant red castle with four towers" aria-label="Describe a LEGO build"></textarea>
 <div class="chips" id="chips"></div>
 <div class="row">
@@ -64,13 +66,19 @@ a{color:inherit}
 <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite &mdash; $0.30 in / $2.50 out per M</option>
 <option value="gemini-3.7-flash" selected>gemini-3.7-flash &mdash; $0.75 in / $3.75 out per M</option>
 </select></label>
-<label><input type="checkbox" data-eng="gemini" checked> Gemini alone (free generation)</label>
-<label><input type="checkbox" data-eng="jev" checked> Jev (picks a template, no generation)</label>
-<label><input type="checkbox" data-eng="laya" checked> Laya (hosted, picks a template)</label>
-<label><input type="checkbox" data-eng="jevini"> Jevini (Jev, then Gemini refines if needed)</label>
-<label><input type="checkbox" data-eng="layini"> Layini (Laya, then Gemini refines if needed)</label>
 </div>
-<p class="note">Check as many engines as you like — checked engines run side by side, in parallel, each timed independently.</p>
+</div>
+<div id="templateControls" hidden>
+<div class="row">
+<label>Shape
+<select id="tArch"><option value="house">House / cottage</option><option value="tower">Tower / lighthouse</option><option value="pyramid">Pyramid</option><option value="castle">Castle</option><option value="wall">Wall</option><option value="block">Block</option></select></label>
+<label>Colour
+<select id="tColour"><option value="r">Red</option><option value="b">Blue</option><option value="g">Green</option><option value="y">Yellow</option><option value="w">White</option><option value="k">Black</option><option value="o">Orange</option><option value="l">Light grey</option><option value="d">Dark grey</option><option value="t">Tan</option><option value="n">Brown</option><option value="m">Maroon</option><option value="e">Dark green</option><option value="u">Navy</option><option value="i">Lime</option></select></label>
+<label>Size
+<select id="tSize"><option value="small">Small</option><option value="medium" selected>Medium</option><option value="large">Large</option><option value="huge">Huge</option></select></label>
+</div>
+<p class="note">No model call -- built directly from your picks, instant and free.</p>
+</div>
 <div class="row">
 <button class="go" id="go" type="button">Design it</button>
 <span id="err" class="err" role="alert"></span>
@@ -84,7 +92,11 @@ a{color:inherit}
 <div class="row"><button class="go alt" id="cclear" type="button" hidden>Remove added parts</button><span class="note" id="cnote"></span></div>
 </section>
 <section class="panel">
-<label for="omrset"><b>Import a real LEGO set</b> <span class="note">by set number, from the LDraw Official Model Repository -- replaces the current build</span></label>
+<label for="setsearch"><b>Find a real LEGO set</b> <span class="note">search by name (e.g. "Harry Potter", "Hogwarts", "Millennium Falcon") via Rebrickable, then pick one to import -- replaces the current build</span></label>
+<input id="setsearch" type="search" placeholder="e.g. Harry Potter" aria-label="Search real LEGO sets by name" autocomplete="off">
+<div class="chips" id="setres" aria-live="polite"></div>
+<p class="note" id="setnote"></p>
+<label for="omrset">Or enter a set number directly</label>
 <div class="row"><input id="omrset" type="text" placeholder="e.g. 75978-1" aria-label="LEGO set number" autocomplete="off" style="max-width:180px">
 <button class="go alt" id="omrgo" type="button">Import set</button><span class="note" id="omrnote"></span></div>
 </section>
@@ -95,15 +107,11 @@ a{color:inherit}
 <button class="go alt" id="csv" type="button">Rebrickable list (CSV)</button><span class="note" id="mstat"></span></div>
 <iframe id="view" title="3D build" sandbox="allow-scripts allow-same-origin"></iframe>
 </section>
-<section class="panel" id="cmp" hidden>
-<p class="note">Side by side, launched in parallel. The card above mirrors the first engine that finished, so Build manual / CSV / add-a-part still work on it.</p>
-<div class="results" id="cmpres"></div>
-</section>
 <section class="panel tbl" id="histp" hidden>
-<table id="hist"><thead><tr><th>#</th><th>Engine / model</th><th>Prompt</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th><th>Bricks</th><th>Time</th></tr></thead><tbody></tbody></table>
+<table id="hist"><thead><tr><th>#</th><th>Engine / model</th><th>Prompt / picks</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th><th>Bricks</th><th>Time</th></tr></thead><tbody></tbody></table>
 </section>
 <footer>
-<p>Cost is computed from the token counts the model returns and the published per-million-token price (Gemini 3.7 Flash is an introductory rate). Jev and Laya only choose a template, colour and size, so they generate no text; Jevini and Layini add a Gemini stage only when the template is not confident or the prompt needs detail, and the cost shown is that Gemini stage. Jev's per-token price is not published, and Laya is a free hosted service by <a href="https://laya.pensero.ai">Pensero</a>. Renders use real LDraw parts (CC BY 4.0). Fan-made, not affiliated with the LEGO Group.</p>
+<p>Cost is computed from the token counts the model returns and the published per-million-token price (Gemini 3.7 Flash is an introductory rate). The template picker makes no model call, so it generates no text and costs nothing. Renders use real LDraw parts (CC BY 4.0). Fan-made, not affiliated with the LEGO Group.</p>
 </footer>
 </main>
 <script>
@@ -115,19 +123,25 @@ EX.forEach(function(t){var b=document.createElement('button');b.type='button';b.
   b.onclick=function(){$('prompt').value=t;upd()};$('chips').appendChild(b)});
 function upd(){$('count').textContent=$('prompt').value.length+' / 150'}
 $('prompt').addEventListener('input',upd);
-var BOXES=Array.prototype.slice.call(document.querySelectorAll('input[data-eng]'));
-BOXES.forEach(function(b){b.onchange=sync});
-function engines(){var on=BOXES.filter(function(b){return b.checked}).map(function(b){return b.getAttribute('data-eng')});return on.length?on:['gemini']}
-function sync(){var es=engines();$('model').disabled=!es.some(function(e){return e==='gemini'||e==='jevini'||e==='layini'})}
-var LABEL={jev:'Jev',laya:'Laya',jevini:'Jevini',layini:'Layini'};
-function costText(j,e){if(e==='gemini')return usd(j.cost_usd);if(e==='jev')return 'n/a';if(e==='laya')return 'free';
-  return j.gemini_called?usd(j.cost_usd)+' (Gemini stage)':(e==='layini'?'free':'n/a')}
+var MODE='gemini';
+function setMode(m){
+  MODE=m;
+  $('modeGemini').setAttribute('aria-pressed',String(m==='gemini'));
+  $('modeTemplate').setAttribute('aria-pressed',String(m==='template'));
+  $('geminiControls').hidden=m!=='gemini';
+  $('templateControls').hidden=m!=='template';
+  $('model').disabled=m!=='gemini';
+}
+$('modeGemini').onclick=function(){setMode('gemini')};
+$('modeTemplate').onclick=function(){setMode('template')};
+var LABEL={gemini:'Gemini',template:'Template'};
+function costText(j,e){return e==='template'?'free':usd(j.cost_usd)}
 function usd(v){return v==null?'—':(v<0.01?'$'+v.toFixed(5):'$'+v.toFixed(4))}
 function n(v){return v==null?'—':Number(v).toLocaleString('en-GB')}
-function show(view,model){
+function show(model){
   var parts=(model.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){
     var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}});
-  view.srcdoc='<!doctype html><meta charset="utf-8"><body style="margin:0;font:14px system-ui">'+PRE+JSON.stringify(parts)+POST+'</body>';
+  $('view').srcdoc='<!doctype html><meta charset="utf-8"><body style="margin:0;font:14px system-ui">'+PRE+JSON.stringify(parts)+POST+'</body>';
 }
 
 var PIDX=null,QUANT=1,last=null;
@@ -273,15 +287,16 @@ $('cclear').onclick=function(){if(!last||!last.staged)return;
 // parts, positions, rotations, colours and build steps) and normalises it -- see mcp-worker/src/omr-import.js.
 // Coverage is never hidden: a set with parts this catalogue can't yet render or that sit at a tilted (non-axis-
 // aligned) angle is reported honestly, not silently dropped without comment.
-$('omrgo').onclick=function(){
-  var id=$('omrset').value.trim();
-  if(!id){$('omrnote').textContent='Enter a set number first.';return}
-  $('omrnote').textContent='';$('omrgo').disabled=true;$('omrgo').textContent='Importing…';
+function importSet(id,note){
+  note=note||$('omrnote');
+  if(!id){note.textContent='Enter a set number first.';return}
+  $('omrset').value=id;
+  note.textContent='';$('omrgo').disabled=true;$('omrgo').textContent='Importing…';
   fetch('/api/brick-omr?set='+encodeURIComponent(id))
   .then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}}).then(function(j){return {r:r,j:j}})})
   .then(function(x){
     var j=x.j;
-    if(!j.ok){$('omrnote').textContent=j.error||'Could not import that set.';return}
+    if(!j.ok){note.textContent=j.error||'Could not import that set.';return}
     var c=j.coverage||{};
     $('result').hidden=false;$('cclear').hidden=true;$('cnote').textContent='';
     $('stats').innerHTML='';
@@ -293,93 +308,82 @@ $('omrgo').onclick=function(){
     $('how').textContent='Imported from the LDraw Official Model Repository: '+n(c.renderable)+' of '+n(c.parts)+' parts ('+pct+'%) could be rendered -- '
       +'the rest are either not yet in this catalogue or sit at an angle this importer does not yet place. '+j.attribution;
     last={j:{name:j.name,prompt:''},partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
-    show($('view'),{partsModel:j.partsModel});
-    $('omrnote').textContent='Imported '+j.name+'.'})
-  .catch(function(){$('omrnote').textContent='Could not reach the import service.'})
-  .then(function(){$('omrgo').disabled=false;$('omrgo').textContent='Import set'})};
+    show({partsModel:j.partsModel});
+    note.textContent='Imported '+j.name+'.'})
+  .catch(function(){note.textContent='Could not reach the import service.'})
+  .then(function(){$('omrgo').disabled=false;$('omrgo').textContent='Import set'})}
+$('omrgo').onclick=function(){importSet($('omrset').value.trim(),$('omrnote'))};
+// ---- Set search: GET /api/data/rebrickable_set_search?query=<name> (declared in atoms/data-sources.yaml, real
+// Rebrickable set data -- NOT every result has a matching OMR file; importSet() reports that honestly per-click,
+// same as a hand-typed set number, rather than pre-filtering results against the OMR library on every keystroke.
+var setSearchSeq=0,setSearchTimer=null;
+function setSearch(){
+  clearTimeout(setSearchTimer);
+  var q=$('setsearch').value.trim();
+  if(!q){$('setres').innerHTML='';$('setnote').textContent='';return}
+  setSearchTimer=setTimeout(function(){
+    var seq=++setSearchSeq;
+    $('setnote').textContent='Searching…';
+    fetch('/api/data/rebrickable_set_search?query='+encodeURIComponent(q))
+    .then(function(r){return r.json()})
+    .then(function(j){
+      if(seq!==setSearchSeq)return;   // a later keystroke's request already landed
+      var box=$('setres');box.innerHTML='';
+      var hits=Array.isArray(j&&j.results)?j.results:[];
+      $('setnote').textContent=hits.length?(hits.length+' set'+(hits.length===1?'':'s')+' -- click one to import'):'No sets found.';
+      hits.forEach(function(s){var b=document.createElement('button');b.type='button';b.className='chip';
+        b.title=s.set_num+(s.num_parts?' -- '+n(s.num_parts)+' parts':'');
+        b.textContent=s.name+(s.year?' ('+s.year+')':'');
+        b.onclick=function(){$('setnote').textContent='Importing '+s.name+'…';importSet(s.set_num,$('setnote'))};
+        box.appendChild(b)})})
+    .catch(function(){if(seq===setSearchSeq)$('setnote').textContent='Could not reach the set search.'})
+  },350)}
+$('setsearch').addEventListener('input',setSearch);
 var runs=0;
-function logHistory(eng,j,prompt,u){
+function logHistory(eng,j,label,u){
   runs++;$('histp').hidden=false;
   var tr=document.createElement('tr');
-  [runs,eng==='gemini'?j.model:(j.gemini_called?LABEL[eng]+'+'+j.model:LABEL[eng]),prompt.length>34?prompt.slice(0,33)+'…':prompt,n(u.promptTokens),n(u.outputTokens),
+  [runs,eng==='gemini'?j.model:'Template',label,n(u.promptTokens),n(u.outputTokens),
    costText(j,eng),n(j.parts),(j.ms/1000).toFixed(1)+' s']
   .forEach(function(v){var td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
   $('hist').tBodies[0].insertBefore(tr,$('hist').tBodies[0].firstChild);
 }
 function howText(eng,j){
   if(eng==='gemini')return 'Designed by '+j.model+' as a voxel grid'+(j.repaired&&j.repaired.dropped_cells?'; '+j.repaired.dropped_cells+' unanchored cells were dropped':'')+'.';
-  var c=j.choice||{},sys=(eng==='jev'||eng==='jevini')?'Jev':'Laya';
-  var how=sys+' chose "'+c.archetype+'" (size '+c.size+(c.confidence!=null?', confidence '+(+c.confidence).toFixed(2):'')+(c.detail!=null?', detail needed '+(+c.detail).toFixed(2):'')+'). ';
-  if(eng==='jev'||eng==='laya')how+='A deterministic generator built it; no text was generated.';
-  else if(j.gemini_called){var g=(j.stages||[])[1]||{};how+='That was not enough, so '+j.model+' refined it with '+(g.edits||0)+' edits ('+n(g.usage&&g.usage.promptTokens)+' in / '+n(g.usage&&g.usage.outputTokens)+' out).'}
-  else if(((j.stages||[])[1]||{}).failed)how+='Refinement was attempted but failed, so the plain template is shown.';
-  else how+='That was confident enough, so Gemini was never called.';
-  return how;
-}
-function fillStats(stats,pairs){
-  stats.innerHTML='';
-  pairs.forEach(function(s){var d=document.createElement('div');d.className='stat';
-    var b=document.createElement('b');b.textContent=s[1];var sp=document.createElement('span');sp.textContent=s[0];d.appendChild(b);d.appendChild(sp);stats.appendChild(d)});
-}
-function panel(eng){
-  var card=document.createElement('div');card.className='rescard';
-  var h=document.createElement('h2');h.textContent=eng==='gemini'?'Gemini ('+$('model').value+')':(LABEL[eng]||eng);card.appendChild(h);
-  var stats=document.createElement('div');stats.className='stats';card.appendChild(stats);
-  var how=document.createElement('p');how.className='note';card.appendChild(how);
-  var view=document.createElement('iframe');view.title=eng+' 3D build';view.setAttribute('sandbox','allow-scripts allow-same-origin');card.appendChild(view);
-  return {card:card,stats:stats,how:how,view:view};
-}
-function renderSingle(eng,j,prompt,quiet){
-  var u=j.usage||{};
-  $('result').hidden=false;$('cclear').hidden=true;
-  fillStats($('stats'),[['Tokens in',n(u.promptTokens)],['Tokens out',n(u.outputTokens)],
-    ['Cost',costText(j,eng)],['Bricks',n(j.parts)],['Time',(j.ms/1000).toFixed(1)+' s']]);
-  $('how').textContent=howText(eng,j);
-  last={j:j,partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
-  show($('view'),j);
-  if(!quiet)logHistory(eng,j,prompt,u);
+  var c=j.choice||{};
+  return 'Built directly from your picks ("'+c.archetype+'", size '+c.size+') -- no model call, zero tokens.';
 }
 $('go').onclick=function(){
-  var prompt=$('prompt').value.trim();
-  if(!prompt){$('err').textContent='Describe a build first.';return}
-  var es=engines();
-  $('err').textContent='';$('go').disabled=true;$('go').textContent=es.length>1?'Designing '+es.length+'…':'Designing…';
-  $('cmp').hidden=true;$('cmpres').innerHTML='';
-  Promise.allSettled(es.map(function(eng){
-    return fetch('/api/brick-design',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt:prompt,engine:eng,model:(eng==='gemini'||eng==='jevini'||eng==='layini')?$('model').value:undefined})})
-    .then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}})});
-  })).then(function(outcomes){
-    // One engine: identical to the original single-build path -- writes into #result/last, so
-    // Build manual / CSV / the parts catalogue browser / OMR import all keep working exactly as before.
-    if(es.length===1){
-      var eng=es[0],j=outcomes[0].status==='fulfilled'?outcomes[0].value:{ok:false,error:'Could not reach the design service.'};
-      if(!j.ok){$('err').textContent=j.error||'Something went wrong.';return}
-      renderSingle(eng,j,prompt);
-      return;
-    }
-    // Several engines: side-by-side panels, launched in parallel, each timed independently. Also
-    // mirrors the first successful result into the classic single view (above) so the build tools
-    // still have something real to act on afterward -- pick your favourite of the N, export it.
-    $('cmp').hidden=false;
-    var firstOk=null;
-    outcomes.forEach(function(outcome,i){
-      var eng=es[i];
-      var j=outcome.status==='fulfilled'?outcome.value:{ok:false,error:'Could not reach the design service.'};
-      var p=panel(eng);$('cmpres').appendChild(p.card);
-      if(!j.ok){p.how.textContent=j.error||'Something went wrong.';return}
-      var u=j.usage||{};
-      fillStats(p.stats,[['Tokens in',n(u.promptTokens)],['Tokens out',n(u.outputTokens)],
-        ['Cost',costText(j,eng)],['Bricks',n(j.parts)],['Time',(j.ms/1000).toFixed(1)+' s']]);
-      p.how.textContent=howText(eng,j);
-      show(p.view,j);
-      logHistory(eng,j,prompt,u);
-      if(!firstOk)firstOk={eng:eng,j:j};
-    });
-    if(firstOk)renderSingle(firstOk.eng,firstOk.j,prompt,true);
-  }).then(function(){$('go').disabled=false;$('go').textContent='Design it'});
+  var body;
+  if(MODE==='gemini'){
+    var prompt=$('prompt').value.trim();
+    if(!prompt){$('err').textContent='Describe a build first.';return}
+    body={prompt:prompt,engine:'gemini',model:$('model').value};
+  } else {
+    body={engine:'template',archetype:$('tArch').value,colour:$('tColour').value,size:$('tSize').value};
+  }
+  $('err').textContent='';$('go').disabled=true;$('go').textContent='Designing…';
+  fetch('/api/brick-design',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}})})
+  .then(function(j){
+    if(!j.ok){$('err').textContent=j.error||'Something went wrong.';return}
+    var u=j.usage||{};
+    $('result').hidden=false;$('cclear').hidden=true;
+    $('stats').innerHTML='';
+    [['Tokens in',n(u.promptTokens)],['Tokens out',n(u.outputTokens)],
+     ['Cost',costText(j,MODE)],['Bricks',n(j.parts)],['Time',(j.ms/1000).toFixed(1)+' s']]
+    .forEach(function(s){var d=document.createElement('div');d.className='stat';
+      var b=document.createElement('b');b.textContent=s[1];var sp=document.createElement('span');sp.textContent=s[0];d.appendChild(b);d.appendChild(sp);$('stats').appendChild(d)});
+    $('how').textContent=howText(MODE,j);
+    last={j:j,partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
+    show(j);
+    var label=MODE==='gemini'?(body.prompt.length>34?body.prompt.slice(0,33)+'…':body.prompt):(body.archetype+'/'+body.colour+'/'+body.size);
+    logHistory(MODE,j,label,u);
+  })
+  .catch(function(){$('err').textContent='Could not reach the design service.'})
+  .then(function(){$('go').disabled=false;$('go').textContent='Design it'});
 };
-sync();upd();
+setMode('gemini');upd();
 })();
 </script>
 </body>

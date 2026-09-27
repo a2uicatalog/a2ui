@@ -150,6 +150,26 @@ sources:
     access: {tier: public, scope: "data:rebrickable_set:read"}
     consumers: [brick_build_3d]
 
+  rebrickable_set_search:
+    description: Search real LEGO sets by name (e.g. "Harry Potter"), for the Brick Design Lab's set picker —
+      results are candidates for the OMR importer (brick-omr), which separately confirms a real buildable model
+      exists for whichever set_num the visitor picks (not every real set has an LDraw OMR file).
+    upstream: "https://rebrickable.com/api/v3/lego/sets/?search={query}&page_size=20&ordering=-year"
+    upstream_auth: {secret: REBRICKABLE_API_KEY, header: Authorization, prefix: "key "}
+    params:
+      query: {type: string, pattern: "^[A-Za-z0-9 '.\\-]{1,60}$", default: "Hogwarts"}
+    cache_ttl_s: 86400
+    min_client_refresh_s: 86400
+    limits:
+      per_ip_per_min: 10
+      upstream_per_min: 20
+    project_fields:
+      root: results
+      fields: [set_num, name, year, num_parts, set_img_url]
+    content_type: application/json
+    access: {tier: public, scope: "data:rebrickable_set_search:read"}
+    consumers: [brick_build_3d]
+
   rebrickable_set_parts:
     description: A set's parts inventory (part, colour, quantity), one page of up to 1000 part/colour rows, via
       Rebrickable. Sets with more than 1000 distinct part/colour rows are truncated, and `next` is not passed on.
