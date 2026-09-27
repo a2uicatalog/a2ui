@@ -285,6 +285,26 @@ OVERRIDES = {
     "11211": [box(-20, 20, 0, 24, -10, 10)],
     # Jumper plate: full 1x2 plate body; its single stud is off-grid and handled by STUD_OVERRIDES below, not occupancy.
     "15573": [box(-20, 20, 0, 8, -10, 10)],
+    # Studless slopes: verified against real resolved geometry and ray-cast solidity proofs (spec §3).
+    # 28192 "Slope Brick 45  2 x  1 with Cutout and without Stud": bounds (-10, 0, -30)..(10, 24, 10). Outer shape
+    # is identical to 3040b (Slope Brick 45 2 x 1) with the same flat back wall x:[-10, 10], y:[0, 24], z:[-10, 10],
+    # but lacks the top stud. Ray-cast solid fraction: 0.271 >= STUD_CELL_MIN_SOLID. Bottom socket at (0, 24, 0).
+    "28192": [box(-10, 10, 0, 24, -10, 10)],
+    # 35464 "Slope Brick 45  1 x  1 Double": bounds (-10, -16, -10)..(10, 0, 10). Ridge peak at y=-16 along z=0;
+    # vertical base skirt spans y:[-4, 0] over the full 1x1 footprint (measured solid fraction: 0.630). Single
+    # bottom socket at (0, 0, 0) mating with an upward-facing stud on the baseplate grid.
+    "35464": [box(-10, 10, -4, 0, -10, 10)],
+    # 22388 "Slope Brick 50  1 x  1 x  0.667 Quadruple": bounds (-10, -16, -10)..(10, 0, 10). Pyramid cap peaking
+    # at (0, -16, 0); vertical base skirt spans y:[-4, 0] over full 1x1 footprint (measured solid fraction: 0.630).
+    # Single bottom socket at (0, 0, 0).
+    "22388": [box(-10, 10, -4, 0, -10, 10)],
+    # 3048b "Slope Brick 45  1 x  2 Triple": bounds (-20, 0, -10)..(20, 24, 10). Hip roof end peaking at (0, 0, 10);
+    # vertical base skirt spans y:[20, 24] over the full 1x2 footprint (measured solid fraction: 0.590). Generates
+    # the two standard 1x2 bottom sockets at (-10, 24, 0) and (10, 24, 0).
+    "3048b": [box(-20, 20, 20, 24, -10, 10)],
+    # 15571 "Slope Brick 45  1 x  2 Triple with Bottom Stud Holder": bounds (-20, 0, -10)..(20, 24, 10). Variant
+    # of 3048b with identical outer skirt y:[20, 24] (measured solid fraction: 0.550) and twin bottom sockets.
+    "15571": [box(-20, 20, 20, 24, -10, 10)],
 }
 
 # Parts whose generated stud/socket connectors from geometry are wrong or incomplete for our purposes, replaced

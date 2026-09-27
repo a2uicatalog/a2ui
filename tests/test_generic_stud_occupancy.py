@@ -512,3 +512,62 @@ def test_slope_double_parts_resolved_geometry(pid, expected_y_top, expected_half
         assert abs(pos[2]) == pytest.approx(10.0)  # z is +/-10 on the 2-stud-deep grid
 
 
+# ── Studless Slope Overrides ──────────────────────────────────────────────────
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_box,expected_sockets", [
+    ("28192", (-10, 10, 0, 24, -10, 10), [((0, 24, 0), (0, 1, 0))]),
+    ("35464", (-10, 10, -4, 0, -10, 10), [((0, 0, 0), (0, 1, 0))]),
+    ("22388", (-10, 10, -4, 0, -10, 10), [((0, 0, 0), (0, 1, 0))]),
+    ("3048b", (-20, 20, 20, 24, -10, 10), [((-10, 24, 0), (0, 1, 0)), ((10, 24, 0), (0, 1, 0))]),
+    ("15571", (-20, 20, 20, 24, -10, 10), [((-10, 24, 0), (0, 1, 0)), ((10, 24, 0), (0, 1, 0))]),
+])
+def test_studless_slope_overrides_resolved_geometry(pid, expected_box, expected_sockets):
+    """Studless slope overrides: provably solid sub-regions (solid fraction >= 0.15), valid sockets,
+    and strict compliance with part's real bounds."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    assert len(part.studs) == 0, "%s is studless" % pid
+
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ == [expected_box]
+    assert sockets == expected_sockets
+    assert P._boxes_within_bounds(occ, part.min, part.max)
+    assert P._stud_box_solid_fraction(part.tris, occ[0]) >= P.STUD_CELL_MIN_SOLID
+
+
+# ── Excluded Slope Variants (Open Centre, Hollow Bottom, Irregular Cutouts) ───
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "30283",  # Slope Brick 45  6 x  4 Double Inverted with Open Centre
+    "32802",  # Slope Brick 45  4 x  1 Double Inverted with Open Centre
+    "4854",   # Slope Brick 45  4 x  4 Double Inverted with Open Centre
+    "4871",   # Slope Brick 45  4 x  2 Double Inverted with Open Centre
+    "3044a",  # Slope Brick 45  2 x  1 Double with Hollow Bottom (lacks internal stud tube)
+    "3048a",  # Slope Brick 45  1 x  2 Triple without Bottom Stud
+    "2310",   # Slope Brick 45  2 x  1 Inverted with 0.667 Cutout
+    "29119",  # Slope Brick Curved  2 x  1 with Cutout Right (asymmetric cutout)
+    "29120",  # Slope Brick Curved  2 x  1 with Cutout Left
+])
+def test_excluded_open_centre_and_hollow_slopes_remain_rejected(pid):
+    """Open Centre, hollow bottom, and irregular cutout slope parts cannot be safely approximated
+    by solid wedge/back-wall boxes and must remain rejected (needs_occupancy=True)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, "%s should remain rejected (needs_occupancy=True)" % pid
+    assert occ is None
+
+
+
+
