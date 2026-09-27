@@ -3,7 +3,7 @@
 ## LATEST — 2026-09-27 evening: catalogue-completion session (read this first)
 
 Same-day follow-on to the second expansion below. Landed this session, on `local/bar-grip-connector`
-(uncommitted as of writing — see the working tree), building on the day's earlier stud-relaxation /
+(committed there, not yet merged/pushed), building on the day's earlier stud-relaxation /
 hole-channel-generalisation / bar-grip-detection work already in `scripts/ldraw/parts.py`:
 
 - **`bar_grip_points()`** (was `has_bar_grip`, a bool): now returns real `[(pos, dir), ...]` for every
@@ -27,6 +27,24 @@ hole-channel-generalisation / bar-grip-detection work already in `scripts/ldraw/
   primitives (`clip1.dat`...`clip16.dat` in `p/`, same filename-primitive pattern `holes`/`pins` already
   use) the same way `has_bar_grip`'s cylinder detection works, then extend `validate_parts`'s adjacency
   graph with a bar-to-clip proximity match parallel to the existing stud-to-socket one.
+
+**Also landed this session, on `local/technic-axle`:** Technic axle-hole detection. Investigated the real
+LDraw representation of an axle cross-section (`p/axleconnect.dat`, built from four radius-9 quarter-
+cylinder arcs — the male rod) and the receiving axle hole in real "... with Axle Holes" Liftarm/Beam parts
+(`p/axl2hole.dat`/`axl3hole.dat`/`axl4hole.dat`). Key finding: an axle hole's outer bore is a plain circle
+of radius 6 LDU (measured directly from `axl2hol2.dat`'s own boundary vertices and `axl4hole.dat`'s
+`1-4cyli.dat` scale) — **identical** to `peghole.dat`'s radius. The cross shape that actually grips a real
+axle is an inner detail; the material removed by the bore is the same round shape a peg hole removes. So
+this needed **no new occupancy function at all** — just teaching `resolve.py`'s hole detection
+(`AXLE_HOLE_RE`) to also recognise the three `axl*hole.dat` primitives alongside `peghole.dat`, populating
+the same `part.holes` list the already-landed `generic_hole_channel_occupancy` already consumes. Verified
+against 4 real Liftarm parts (11478, 33299a, 33299b, 2825 — all now `needs_occupancy=False`) and confirmed
+2391 ("Beam 7 with Alternating Holes", 14 holes in a pattern the single-shared-axis channel model can't
+safely express) correctly stays rejected, not falsely accepted. 8 new tests in
+`test_generic_stud_occupancy.py` (28/28 passing). **Real full-catalogue unlock count: 479 additional
+parts**, concentrated exactly where expected — Wheel (32), ~Technic (30), Technic Beam (26), Electric
+Mindstorms (24), ~Electric (23), Technic Pneumatic (23), Technic Gear (20), =Technic (18), Electric Power
+(16), Constraction (15), Slope Brick (11), Vehicle/Technic Steering/Technic Cross/Technic Chain (10 each).
 
 ---
 

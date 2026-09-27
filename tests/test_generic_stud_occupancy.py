@@ -203,3 +203,50 @@ def test_bar_grip_points_empty_on_real_non_grip_parts(pid):
     colours = ColourTable(lib)
     part = resolve_part(lib, colours, pid + ".dat")
     assert P.bar_grip_points(part.min, part.max, part.cylinders, part.tris) == []
+
+
+# Technic axle-hole detection (2026-09-27): axl2hole.dat/axl3hole.dat/axl4hole.dat (the receiving axle hole in
+# real "... with Axle Holes" Liftarm/Beam parts) are now recognised by resolve.py's AXLE_HOLE_RE alongside
+# peghole.dat, populating the same part.holes list -- verified real outer bore radius (6 LDU, measured from
+# axl2hol2.dat's own boundary vertices and axl4hole.dat's 1-4cyli.dat scale) matches peghole.dat's radius
+# exactly, so no new occupancy math was needed: the existing generic_hole_channel_occupancy already handles
+# these once resolve.py hands it the hole positions.
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expect_holes", [("11478", 6), ("33299a", 2), ("33299b", 1)])
+def test_axle_holes_populate_part_holes(pid, expect_holes):
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    assert len(part.holes) == expect_holes
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["11478", "33299a", "33299b", "2825"])
+def test_real_axle_hole_liftarms_get_accepted(pid):
+    """Real 'Liftarm with Axle Hole(s)' parts, previously rejected (no round-hole-only detection reached
+    them), now accepted via the existing generic_hole_channel_occupancy -- no axle-specific occupancy
+    function needed, since the axle hole's outer bore is geometrically identical to a peg hole's."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, part.title or pid, part.min, part.max,
+                                                            part.holes, part.studs, part.tris, part.cylinders)
+    assert needs is False, "%s should be accepted now that axle holes are detected" % pid
+    assert occ
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+def test_real_alternating_hole_beam_stays_safely_rejected():
+    """2391 'Technic Beam 7 with Alternating Holes' has 14 holes in a pattern the single-shared-axis channel
+    model can't safely express -- must stay needs_occupancy=True (a safe non-acceptance), not get a wrong or
+    guessed box. Confirms the axle-hole change didn't loosen the channel model's own safety checks."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, "2391.dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("2391", part.title or "2391", part.min, part.max,
+                                                            part.holes, part.studs, part.tris, part.cylinders)
+    assert needs is True
+    assert occ is None

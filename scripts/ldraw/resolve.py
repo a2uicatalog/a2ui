@@ -15,6 +15,7 @@ LD = os.environ.get("LDRAW_DIR") or os.path.join(os.path.dirname(__file__), "_ld
 SEARCH_DIRS = ["parts", "parts/s", "p", "p/48", "p/8"]
 STUD_RE = re.compile(r"^stud(2a?|10|15)?\.dat$")
 CYL_RE = re.compile(r"^\d+-\d+cyl[io]2?\.dat$")
+AXLE_HOLE_RE = re.compile(r"^axl\d*hole\.dat$")
 
 ID = (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)   # 3x4 affine: a..i (rotation/scale), x,y,z
 
@@ -204,7 +205,15 @@ def _walk(lib, colours, part, name, M, colour_code, winding_ccw, invert, bake_st
             resolved_code = code if code not in (16, 24) else colour_code
             if not bake_studs and STUD_RE.match(sub_base):
                 part.studs.append((apply(N, (0, 0, 0)), (-N[1], -N[4], -N[7])))
-            elif sub_base == "peghole.dat":
+            elif sub_base == "peghole.dat" or AXLE_HOLE_RE.match(sub_base):
+                # Technic axle holes (axl2hole.dat/axl3hole.dat/axl4hole.dat -- real beam/liftarm parts'
+                # "with Axle Holes" variants reference these) share peghole.dat's exact list shape AND its
+                # real outer bore radius: measured directly from axl2hol2.dat's own boundary vertices
+                # (radius 6, verified 2026-09-27) and axl4hole.dat's 1-4cyli.dat scale (also 6) -- the cross
+                # shape that grips a real axle is an INNER detail; the outer material removed by the bore is
+                # the same round radius as a peg hole, so treating axle holes as holes lets the existing
+                # hole-channel occupancy math (generic_hole_channel_occupancy) apply unchanged, no new
+                # geometry needed.
                 part.holes.append((apply(N, (0, 0, 0)), (N[1], N[4], N[7])))
                 _walk(lib, colours, part, sub_name, N, resolved_code, sub_ccw, sub_invert, bake_studs, depth + 1)
             elif re.match(r"confric\d*\.dat$", sub_base):
