@@ -649,3 +649,26 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 ## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
 - Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
 - **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
+
+## 2026-09-27: Slope Brick Occupancy Extension (cloud agent, `agent/slope-bricks`)
+
+- **Task**: Extend real occupancy support for Slope Brick parts (`scripts/ldraw/parts.py`).
+- **Survey & Categorization**:
+  - Initial rejects survey (`scripts/ldraw/survey_rejects.py`) showed 92 total Slope-category candidate parts rejected (`needs_occupancy=True`), including 54 in `Slope Brick`, 20 in `Slope`, 13 in `=Slope`, 2 in `Duplo Slope`, and 3 across specialized slope categories.
+  - Analysis of the 23 rejects appearing in real sets revealed distinct structural sub-groups requiring tailored treatment rather than a single uniform assumption:
+    1. **Stud-bearing, non-inverted, non-hollow slopes**: e.g., `2875` ("Slope Brick 45  2 x  6 x  0.667"). Features 6 studs flush at y=8.0 on a flat back shelf. Generalized `stud_cell_occupancy_and_sockets` to compute cell heights starting from each stud's own vertical plane `p[1]` down to `module_h` (`bounds_max[1]`). Added `2875` to `SLOPE_BACK_WALL_PARTS`. Columns beneath studs span y: [8.0, 24.0] with measured ray-cast solid fractions between 0.333 and 0.542 (exceeding `STUD_CELL_MIN_SOLID = 0.15`).
+    2. **Double slope roof bricks (45° and 33°)**: `3044b` (2x1 Double), `3042` (2x3 Double), `3041` (2x4 Double), `3300` (2x2 Double 33), `3299` (2x4 Double 33). These peak at a narrow central ridge (z=0) with no studs on top. Introduced `SLOPE_DOUBLE_PARTS` family defining a central solid core box spanning z: [-10, 10] and y: [y_top, 24] (y_top=10 for 45°, y_top=18 for 33°), safely under-approximating the wedge while guaranteeing solid material (solid fractions 0.250-0.580). Sockets are generated across the full 2 x N bottom footprint on the standard 20 LDU grid at y=24, matching the `ROUND_PARTS` full-footprint socket pattern.
+    3. **Studless slope overrides**:
+       - `28192` ("Slope Brick 45  2 x  1 with Cutout and without Stud"): outer geometry is identical to `3040b` with the exact same flat back wall spanning x:[-10, 10], y:[0, 24], z:[-10, 10] (solid fraction 0.271 >= 0.15). Added to `OVERRIDES` with bottom socket at (0, 24, 0).
+       - `35464` ("Slope Brick 45  1 x  1 Double") & `22388` ("Slope Brick 50  1 x  1 x  0.667 Quadruple"): 1x1 double and pyramid roof caps peaking at y=-16. Both feature a solid vertical base skirt spanning y:[-4, 0] over the full 1x1 footprint (solid fraction 0.630). Single downward-facing socket at local origin (0, 0, 0). Added to `OVERRIDES`.
+       - `3048b` ("Slope Brick 45  1 x  2 Triple") & `15571` ("Slope Brick 45  1 x  2 Triple with Bottom Stud Holder"): 1x2 hip roof ends peaking at (0, 0, 10) with a vertical base skirt spanning y:[20, 24] over the full 1x2 footprint (solid fractions 0.590 and 0.550). Generates the standard twin bottom sockets at (-10, 24, 0) and (10, 24, 0). Added to `OVERRIDES`.
+    4. **Structural exclusions (kept rejected as `needs_occupancy=True`)**:
+       - *Double Inverted with Open Centre* (`30283`, `32802`, `4854`, `4871`): inverted slope canopy frames with open center apertures and multi-level recessed studs (y=4, y=16). Cannot be safely boxed without intruding into the open center or breaching inverted slope clearances; follows the existing exclusion rationale established for inverted slopes `3665a`/`3660a`.
+       - *Hollow Bottom without Stud Tubes* (`3044a`, `3048a`): vintage hollow variants lacking standard internal anti-stud tubes.
+       - *Inverted with Cutouts / Irregular Cutouts* (`2310`, `29119`, `29120`): asymmetric, non-axis-aligned, or curved cutouts that cannot be reliably approximated by rectilinear boxes without guessing.
+- **Catalogue Impact**:
+  - `Slope Brick` category reject count dropped from **54 to 43** (11 real slope parts unlocked).
+  - Total Slope-category rejects dropped from **92 to 81** (accepted count increased from 50 to 61).
+- **Verification**:
+  - All 71 tests in `tests/test_generic_stud_occupancy.py` pass cleanly (19 new tests added covering stud-bearing slopes, double slope families, studless overrides, and asserting proper rejection of structural exclusions).
+
