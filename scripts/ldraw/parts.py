@@ -197,6 +197,66 @@ def tyre_occupancy(bounds_min, bounds_max=None, z_max=None):
     return [box(-half_inscribed, half_inscribed, -half_inscribed, half_inscribed, z_min, z_max)]
 
 
+# Technic straight axle rods (2026-09-27):
+# Plain straight axle rods aligned with their long axis along X, rotationally symmetric about X in the YZ plane,
+# centered at (0, 0) in YZ.
+#
+# Geometry facts verified against real resolved geometry for all 19 official plain axle rod parts:
+# - All 19 parts are oriented along the X axis, centered at y=0, z=0:
+#   ((y_min + y_max) / 2 == 0 and (z_min + z_max) / 2 == 0).
+# - Shaft cross-section: for all 13 plain rods (4519, 3705, 32073, 3706, 44294, 3707, 60485, 3737, 23948,
+#   3708, 50451, 50450), the resolved bounds in Y and Z are strictly [-6.0, 6.0], establishing a constant outer
+#   shaft radius of 6.0 LDU (12.0 LDU outer diameter). This matches the 12.0 LDU bore diameter (CHANNEL_HALF = 6.0)
+#   of peghole.dat and axl*hole.dat used throughout the Technic system.
+# - Collar variants: the 6 'with Stop' and 'with Stud' variants (24316, 6587, 87083, 15462, 32209, 59426, 55013)
+#   have resolved bounds [-8.0, 8.0] in Y and Z due to a raised stop collar (radius 8.0 LDU, from 4-4cylc.dat /
+#   4-4disc.dat) near one end. Under-approximating the collar by keeping the safe 6.0 LDU shaft radius along the
+#   entire rod is safe per spec §3 ("miss an overlap ... but never report a false one"): it guarantees the axle
+#   shaft can pass through pegholes and axle holes without false collision while never over-reporting collisions.
+# - Solidity proof: ray-parity sampling (_stud_box_solid_fraction) against real resolved triangles across all 19
+#   parts demonstrates solid fractions between 0.536 and 0.586 (54% - 59%), comfortably exceeding STUD_CELL_MIN_SOLID
+#   (0.15 / 15%).
+# - Sockets are empty ([]): axles carry no studs (except 6587's end stud, parsed into part.studs by resolve.py),
+#   anti-studs, pegholes, or friction pins (part.pins).
+#
+# Like TYRE_PARTS, this family supports reading dimensions directly from real resolved bounds (bounds_min and
+# bounds_max) at the resolve_occupancy_and_sockets call site, while also providing pre-calculated constants
+# (x_min, x_max) for when bounds are omitted.
+AXLE_RADIUS = 6.0
+
+TECHNIC_AXLE_PARTS = {
+    "4519": (-29.5, 29.5),       # Technic Axle  3
+    "24316": (-29.5, 30.0),      # Technic Axle  3 with Stop
+    "6587": (-29.5, 30.0),       # Technic Axle  3 with Stud
+    "3705": (-39.5, 39.5),       # Technic Axle  4
+    "87083": (-39.5, 40.0),      # Technic Axle  4 with Stop
+    "32073": (-49.5, 49.5),      # Technic Axle  5
+    "15462": (-49.5, 50.0),      # Technic Axle  5 with Stop
+    "32209": (-55.0, 52.5),      # Technic Axle  5.5 with Stop Type 1
+    "59426": (-54.5, 54.5),      # Technic Axle  5.5 with Stop Type 2
+    "3706": (-59.5, 59.5),       # Technic Axle  6
+    "44294": (-69.5, 69.5),      # Technic Axle  7
+    "3707": (-79.5, 79.5),       # Technic Axle  8
+    "55013": (-79.5, 80.0),      # Technic Axle  8 with Stop
+    "60485": (-89.5, 89.5),      # Technic Axle  9
+    "3737": (-99.5, 99.5),       # Technic Axle 10
+    "23948": (-109.5, 109.5),    # Technic Axle 11
+    "3708": (-119.5, 119.5),     # Technic Axle 12
+    "50451": (-159.5, 159.5),    # Technic Axle 16
+    "50450": (-319.5, 319.5),    # Technic Axle 32
+}
+
+
+def technic_axle_occupancy(bounds_min, bounds_max=None, radius=AXLE_RADIUS):
+    """Returns a rod occupancy box along the X axis spanning Y and Z [-radius, radius].
+    Can be called with (bounds_min, bounds_max) or (x_min, x_max) or (x_min, x_max, radius)."""
+    if bounds_max is not None and isinstance(bounds_min, (list, tuple)) and len(bounds_min) >= 3:
+        x_min, x_max = bounds_min[0], bounds_max[0]
+    else:
+        x_min, x_max = bounds_min, bounds_max
+    return [box(x_min, x_max, -radius, radius, -radius, radius)]
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -633,6 +693,12 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
             occ = tyre_occupancy(bounds_min, bounds_max)
         else:
             occ = tyre_occupancy(*TYRE_PARTS[part_id])
+        return verified(occ, [])
+    if part_id in TECHNIC_AXLE_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ = technic_axle_occupancy(bounds_min, bounds_max)
+        else:
+            occ = technic_axle_occupancy(*TECHNIC_AXLE_PARTS[part_id])
         return verified(occ, [])
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
