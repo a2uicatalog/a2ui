@@ -108,55 +108,67 @@ def snitch():
 
 
 # ---------------------------------------------------------------- Microduck
-# A proportion- and palette-accurate stand-in for the real reference this whole project started from: Victor
-# Mustar's "Microduck" booklet (huggingface.co/buckets/victor/microduck-lego-booklet) is NOT a bird -- it's Pollen
-# Robotics' small biped robot (dome helmet head with a big round "eye"/visor, boxy torso, two jointed robot legs
-# with flared feet), 1113 real parts / 243 steps, 27cm tall x 14cm wide x 12cm deep, in exactly 6 real LEGO
-# colours (found and confirmed 2026-09-27 by reading the actual PDF -- the old version of this function built an
-# organic bird shape that shares nothing with the reference it was named after). This is NOT a step-for-step
-# transcription of the real booklet (no machine-readable source exists, only 138 page images) -- it is a fresh
-# shape built at the real model's proportions and colours, in this repo's own voxel-to-brick style. Real height
-# 27cm / 9.6mm per brick-layer =~ 28 layers; 14cm / 8mm per stud =~ 17-18 studs wide -- used as the scale target.
+# Victor Mustar's "Microduck" booklet (huggingface.co/buckets/victor/microduck-lego-booklet) is NOT a bird -- it's
+# Pollen Robotics' small biped robot (dome-helmet head with a big round "eye"/visor, boxy torso, two jointed robot
+# legs with flared feet, NO ARMS -- the real robot picks things up with its beak), 1113 real parts / 243 steps,
+# 27cm tall x 14cm wide x 12cm deep, in exactly 6 real LEGO colours. The 2026-09-27 rewrite of this function was a
+# proportion/palette-accurate stand-in built from the parts-list TEXT alone (never having viewed a single page
+# image); THIS version was built after actually reading the booklet's own clean reference renders -- the cover
+# (p1), the "build overview" full-figure render (p4), and each section's own finished-sub-assembly picture (Trunk
+# p5, Left foot p28, Left shin p33, Left thigh p41, Left leg p48, Head p79, Neck p116, Final assembly p126) -- so
+# shape AND colour per body part are now matched to the real geometry, not guessed from a one-line description.
+# Two real fixes the text-only version got backwards: the eye is BRIGHT LIGHT ORANGE with the head's own
+# lower-shell band in plain ORANGE (the old code had these swapped), and the trunk carries NO orange at all --
+# it's white/black/grey (section 1's own subtitle: "White shell, dark grey battery, black base, grey hip
+# brackets"); the old code's orange "belt" and shoulder-stub "arms" were both inventions with no basis in the
+# reference. Still not a literal step-for-step transcription (that needs reading all 243 individual steps, a real
+# multi-session undertaking with no machine-readable source -- only page images exist) -- the leg is a straight
+# column rather than the real model's bent-knee pose, and exact stud-level part choices are this repo's own
+# generic tiler, not the booklet's real part IDs. Real height 27cm / 9.6mm per brick-layer =~ 28 layers; 14cm /
+# 8mm per stud =~ 17-18 studs wide -- used as the scale target, matched by y0-29 below.
 BOT_WHITE, BOT_ORG, BOT_BLORG, BOT_DGRY, BOT_LGRY, BOT_BLK = "#f2f3f2", "#fe8a18", "#f8ab3d", "#59605f", "#a3a2a4", "#1b1b1b"
 
 
 def duck():
     S = {}
-    # Torso: a boxy white body with an orange belt and a dark centre seam, y13-19.
+    # Trunk (p5): white shell, y13-19, with a dark-grey "battery" band low on the front and a black base below
+    # it (y12). No orange anywhere on the trunk, and no arms -- both real per the section's own subtitle/photo.
     for x in range(-6, 7):
         for y in range(13, 20):
             for z in range(-3, 4):
-                if abs(x) <= 6 and abs(z) <= 3: S[(x, y, z)] = BOT_WHITE
-    for x in range(-6, 7):                                   # belt stripe
-        for z in (-3, 3): S[(x, 15, z)] = BOT_ORG
-        for z in range(-2, 3): S[(x, 15, z)] = BOT_ORG if abs(x) == 6 else S.get((x, 15, z), BOT_ORG)
-    for y in range(13, 20): S[(0, y, 3)] = BOT_DGRY          # centre seam, front face
-    for sx in (-1, 1):                                       # shoulder stubs
-        for y in range(17, 19):
-            for x in range(6, 8): S[(sx * x, y, 0)] = BOT_DGRY
-        S[(sx * 7, 17, 0)] = BOT_BLK                          # shoulder joint dot
-    # Neck: a narrow grey collar, y20-21.
+                S[(x, y, z)] = BOT_DGRY if y == 14 else BOT_WHITE
+    for x in range(-6, 7):                                   # black base, under the trunk
+        for z in range(-3, 4): S[(x, 12, z)] = BOT_BLK
+    # Neck (p116): dark grey collar, y20-21, with a lighter ring at the top (the joint collar between neck and
+    # head visible in the reference).
     for x in range(-3, 4):
-        for y in (20, 21):
-            for z in range(-2, 3): S[(x, y, z)] = BOT_LGRY
-    # Head: a rounded white dome (hemisphere-ish, narrower at the neck, widest a third of the way up, rounding
-    # inward at the crown) with a front orange visor band and a big round orange "eye" with a black pupil --
-    # the real robot's most recognisable feature, and the reason it reads as duck-billed/beaked at a glance.
+        for z in range(-2, 3):
+            S[(x, 20, z)] = BOT_DGRY
+            S[(x, 21, z)] = BOT_LGRY
+    # Head (p79, p1): NOT a hemisphere -- a barrel/arch dome (flat bottom, rounded top, roughly constant
+    # cross-section front-to-back, like a covered wagon), tapering slightly only at the very front/back for
+    # rounded corners. White shell; a plain-orange lower-shell band and the big bright-light-orange eye (dark
+    # centre) are painted on the frontmost surface, the same front_z technique hat() uses for its face.
     head = {}
-    for x in range(-7, 8):
-        for y in range(22, 29):
-            for z in range(-6, 7):
-                if ell(x, y, z, 0, 24, 0, 7.2, 5.0, 6.6): head[(x, y, z)] = BOT_WHITE
+    HY0, HH, HW = 22, 7, 7                                   # base y, arch height, half-width
+    for z in range(-6, 7):
+        taper = 0.8 if abs(z) >= 6 else 1.0
+        hw = HW * taper
+        for x in range(-7, 8):
+            if abs(x) > hw: continue
+            top = HY0 + HH * math.sqrt(max(0.0, 1 - (x / hw) ** 2)) * taper
+            for y in range(HY0, int(round(top)) + 1):
+                head[(x, y, z)] = BOT_WHITE
     zf = front_z(head)
-    for x in range(-3, 4):                                  # visor band across the lower-front of the dome
-        for y in (22, 23):
+    for x in range(-4, 5):                                  # lower-shell band across the front of the dome
+        for y in (HY0, HY0 + 1):
             z = zf.get((x, y))
-            if z is not None: head[(x, y, z)] = BOT_BLORG
+            if z is not None: head[(x, y, z)] = BOT_ORG
     eye = {}
-    for x in range(-2, 3):                                  # the big round eye, centred on the visor band
-        for y in (23, 24, 25):
-            if ell(x, y, 0, 0, 24, 0, 2.4, 1.6, 1): eye[(x, y)] = BOT_ORG
-    for x, y in [(0, 24)]: eye[(x, y)] = BOT_BLK             # pupil, dead centre
+    for x in range(-2, 3):                                  # the big round eye, centred on the lower-shell band
+        for y in (HY0 + 1, HY0 + 2, HY0 + 3):
+            if ell(x, y, 0, 0, HY0 + 2, 0, 2.4, 1.6, 1): eye[(x, y)] = BOT_BLORG
+    eye[(0, HY0 + 2)] = BOT_BLK                              # pupil, dead centre
     for (x, y), c in eye.items():
         z = zf.get((x, y))
         if z is not None: head[(x, y, z)] = c
@@ -165,19 +177,26 @@ def duck():
     def legs_and_feet(V):                                    # added after hollowing so the floor rests on them
         for sx in (-1, 1):
             cx = sx * 4
-            for y in range(3, 11):                           # legs: grey, tapering slightly is skipped for
-                for x in range(cx - 1, cx + 2):               # simplicity -- a plain column reads fine at this
-                    for z in range(0, 3): V[(x, y, z)] = BOT_LGRY if y < 7 else BOT_DGRY
-            V[(cx, 6, 1)] = BOT_BLK                            # knee joint dot
-            for x in range(cx - 2, cx + 3):                   # hip bridge over the leg gap
+            for y in range(9, 12):                           # thigh (p41): white shell + a dark-grey knee-servo
+                for x in range(cx - 1, cx + 2):               # accent on the column's inner (body-facing) side
+                    inner = x == (cx - 1 if sx > 0 else cx + 1)
+                    for z in range(0, 3): V[(x, y, z)] = BOT_DGRY if inner else BOT_WHITE
+            for y in range(3, 9):                            # shin (p33): grey link with a lighter top cap
+                for x in range(cx - 1, cx + 2):               # (the ankle-servo detail)
+                    for z in range(0, 3): V[(x, y, z)] = BOT_LGRY if y >= 8 else BOT_DGRY
+            for x in range(cx - 2, cx + 3):                   # hip bridge over the leg gap (grey hip brackets)
                 for z in range(0, 3): V[(x, 11, z)] = BOT_DGRY
                 for z in range(0, 3): V[(x, 12, z)] = BOT_DGRY
-            for x in range(cx - 3, cx + 4):                   # flared foot -- wider than the leg above it, the
-                for z in range(-2, 5):                        # single detail that most reads as "duck feet"
-                    if abs(x - cx) <= (3 if z >= 0 else 1): V[(x, 0, z)] = BOT_ORG; V[(x, 1, z)] = BOT_ORG
+            for x in range(cx - 3, cx + 4):                   # foot (p28): orange body on a bright-light-orange
+                for z in range(-2, 5):                        # sole, a stepped/flared footprint -- the single
+                    if abs(x - cx) <= (3 if z >= 0 else 1):    # detail that most reads as a chunky robot foot
+                        V[(x, 0, z)] = BOT_BLORG
+                        V[(x, 1, z)] = BOT_ORG
             for x in range(cx - 3, cx + 4):
                 for z in range(-2, 5):
                     if abs(x - cx) <= (3 if z >= 0 else 1): V[(x, 2, z)] = BOT_ORG
+            for x in (cx - 2, cx + 2):                        # raised back corner nubs (the ankle-post look)
+                V[(x, 3, -1)] = BOT_ORG
     return build(S, "microduck", do_hollow=False, post=legs_and_feet, out_dir=OUT)
 
 
