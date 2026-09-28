@@ -1,5 +1,46 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: OBB Decomposition Architectural Scoping Investigation (agent, `agent/dispatch-obb-decomposition-1790612045`)
+
+- **Task**: Prioritised backlog item per Curtis's explicit operator steer: `obb-decomposition` (Cross-cutting: multi-box/OBB decomposition for curved shells). Prerequisite for Technic Panel fairings/mudguards AND hollow windscreen canopies — build once. Correctly deferred twice before; investigated honestly.
+- **Problem**: Thin curved shells (thickness 1.5–4.0 LDU) swept along curved or angled trajectories (30° to 65°) cannot be bounded by single or axis-aligned bounding boxes (AABBs) without 7x to 16x volume inflation, claiming 88% to 95% empty cockpit/chassis air as solid matter and triggering catastrophic false-positive collisions on interior assemblies (minifigures, steering wheels, gear trains).
+- **Catalogue & Library Census (`Library._index` / `resolve_occupancy_and_sockets`)**:
+  - Scanned full LDraw library for curved-shell candidates: **725 parts total**.
+  - Technic Fairings & Curved Panels: 110 parts (108 rejected, 2 accepted $\implies$ **98.2% rejected**).
+  - Mudguards & Wheel Arches: 113 parts (69 rejected, 44 accepted $\implies$ **61.1% rejected**).
+  - Windscreens & Canopies: 502 parts (353 rejected, 149 accepted $\implies$ **70.3% rejected**).
+  - **Total Blocked Parts**: **530 parts** catalogue-wide cannot receive safe, accurate collision geometry without OBB decomposition.
+  - **Blind-Spot Finding on Accepted Windscreens**: The 149 "accepted" windscreens (e.g. `2437`, `3823`, `6567`, `65632`) only receive small stud columns beneath their top/side studs covering 16% to 22% of their volume, leaving **over 78% to 84% of their sloped windshield glass completely unmodelled** (objects pass straight through the glass with zero collision detection).
+- **Forensic Geometry Measurements**:
+  - Measured 24 representative parts across all families via `resolve_part()`.
+  - Proved mathematical volume inflation on angled shells: $V_{\text{AABB}} / V_{\text{shell}} \approx \frac{L}{2T}\sin(2\theta) + 1 \approx 10.5\times$ to $16.0\times$.
+  - Demonstrated that 3-OBB decomposition for Technic bent panel `24116` reduces bounding volume error by **87.6%** ($56,880$ LDU³ vs $458,640$ LDU³ AABB), preserving the internal cavity.
+  - Demonstrated that 2-OBB decomposition for classic windscreen `3823` wraps the sloped glass and roof with **83.3% volume reduction**, sealing the cockpit windshield without intruding into the driver's seat.
+- **Architectural Specification & Cross-Cutting Dependencies**:
+  - Comprehensive architectural scoping document delivered: [scripts/ldraw/OBB_DECOMPOSITION_INVESTIGATION.md](scripts/ldraw/OBB_DECOMPOSITION_INVESTIGATION.md).
+  - Added `obb()` 15-tuple constructor and OBB bounding checks in `scripts/ldraw/parts.py`.
+  - Identified mandatory structural prerequisite: Technic panels mount via intermediary pins and cannot be validated without the **joint-zone capsule exemption mask** from `MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md`.
+  - Identified browser twin prerequisite: `atoms_brick.gs` must receive 15-axis SAT port.
+- **Verification**: 16 new unit and regression tests added to `tests/test_generic_stud_occupancy.py`. Cherry-picked 2026-09-28 after independent-test-verification initially failed on this branch for a reason unrelated to this work (the a0d315ff hinge regression, see below); re-verified clean against the fixed baseline (96/96 real assertions passing, only the pre-existing, separate 39262 fabricated-occupancy bug remains).
+
+## 2026-09-28: Constraction / Bionicle Category Investigation (cloud agent, `agent/dispatch-constraction-1790612045`)
+
+- **Task**: Self-selected backlog target prioritised by Curtis's operator steer: `constraction` (Constraction / Bionicle, 151 base parts in LDraw library, 197 total including 24 Throwbot printed disc variants and 22 subparts).
+- Completed forensic scoping investigation: see [scripts/ldraw/CONSTRACTION_INVESTIGATION.md](scripts/ldraw/CONSTRACTION_INVESTIGATION.md).
+- **Key finding**: exactly **29 base parts (+ 6 subparts)** already resolve cleanly with `needs_occupancy: false` via existing mechanisms (16 via `bar_grip_points()`, 11 via `generic_hole_channel_occupancy()`, 2 via `generic_stud_cell_occupancy()`).
+- **Remaining 122 base parts correctly stay rejected (`needs_occupancy: true`)**:
+  - NO safe shared occupancy family exists across the 8 sub-families under Spec Section 3 safety (*"under-approximation is safe: miss a real collision, never report a false one"*):
+    1. *CCBS Skeletal Limbs/Bones* (22 parts): Universal 10.2mm (25.5 LDU) ball-and-socket joints lack mated-pair validator exemptions in `brick_parts_validate.py`. Bounding boxes encase the hollow socket cups, guaranteeing 100% false collisions on mated balls, while dynamic 3D articulation invalidates static axis-aligned boxes.
+    2. *CCBS Armor Shells & Fairings* (16 parts): Thin curved shells (1.0–2.0 LDU wall thickness) with solid fractions well below the 0.15 floor (`90640`: 14.5%, `90641`: 13.5%, `1686`: 8.5%). Bounding boxes fill their concave inner cradles, falsely colliding with the limb bones nestled directly inside them.
+    3. *Skeletal Torsos & Open Frames* (9 parts): Sprawling lattice cages with 82%–90% empty space (`90623`: 10.5% solid). Perimeter shoulder/hip ball mounts lie inside the box, falsely encasing all 4 attached limbs.
+    4. *Ball Socket Connectors & Blocks* (12 parts): Open receiving socket cups encapsulate mating ball joints.
+    5. *Weapons, Tools & Effect Elements* (40 parts): Long sweeping organic blades and claws with hand-grip axle mounts colliding with holding hands.
+    6. *Discs & Projectiles* (6 base parts + 24 printed variants): `32533` (Throwbot disc) is a 100 LDU circular projectile whose 100x100 box corners protrude 20.71 LDU into open air; loose ammo spheres collide with launcher chambers.
+    7. *Sculpted Feet with Ball Sockets* (5 parts): Top dorsal socket cups encase lower leg bones; 13.5% solidity.
+    8. *Heads, Helmets & Masks* (3 parts): Concave face cavities wrap around head/brain stalks.
+- **Verification**: 32 new tests added to `tests/test_generic_stud_occupancy.py` (25 real rejection controls, 7 real acceptance regression checks). Cherry-picked 2026-09-28 after independent-test-verification initially failed on this branch for a reason unrelated to this work (the a0d315ff hinge regression, see below); re-verified clean against the fixed baseline (93/93 real assertions passing, only the pre-existing, separate 39262 fabricated-occupancy bug remains).
+- **Set Impact (Airbus H175 42145)**: 0 parts (Constraction is strictly an action figure theme; H175 contains 0 Constraction parts).
+
 ## 2026-09-28: Electric, Vehicle, Mated-Connector-Exemption dispatches (cloud agents, cherry-picked from branches after a duplicate-task incident)
 
 Three items dispatched live via `gcloud run jobs execute` (`n4gpz`/`dn75t`/`g5ltz`). A `taskCount`

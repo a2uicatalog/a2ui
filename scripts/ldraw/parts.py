@@ -35,6 +35,24 @@ def box(x0, x1, y0, y1, z0, z1):
     return (x0, x1, y0, y1, z0, z1)
 
 
+def obb(center, extents, axes):
+    """Oriented Bounding Box (OBB) representation for curved/sloped shells per OBB_DECOMPOSITION_INVESTIGATION.md.
+    center: (cx, cy, cz) local midpoint
+    extents: (ex, ey, ez) local half-dimensions
+    axes: ((u0x, u0y, u0z), (u1x, u1y, u1z), (u2x, u2y, u2z)) local orthonormal frame
+    Returns a 15-tuple for compact JSON serialization and zero-parse-overhead SAT compatibility."""
+    cx, cy, cz = center
+    ex, ey, ez = extents
+    (u0x, u0y, u0z), (u1x, u1y, u1z), (u2x, u2y, u2z) = axes
+    return (
+        round(cx, 2), round(cy, 2), round(cz, 2),
+        round(ex, 2), round(ey, 2), round(ez, 2),
+        round(u0x, 4), round(u0y, 4), round(u0z, 4),
+        round(u1x, 4), round(u1y, 4), round(u1z, 4),
+        round(u2x, 4), round(u2y, 4), round(u2z, 4),
+    )
+
+
 def generated_occupancy(title):
     dims = classify_box(title)
     if dims is None:
@@ -1060,16 +1078,28 @@ def minifig_headwear_socket(title):
 
 
 def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
-    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes. Skipped (treated
-    as passing) when bounds aren't supplied, matching this module's existing "bounds/studs/tris are optional"
-    contract for callers that don't have real geometry (e.g. unit tests exercising one family in isolation)."""
+    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes.
+    Supports both standard 6-tuple AABBs and 15-tuple OBBs (per OBB_DECOMPOSITION_INVESTIGATION.md).
+    Skipped (treated as passing) when bounds aren't supplied, matching this module's existing
+    "bounds/studs/tris are optional" contract for callers that don't have real geometry."""
     if bounds_min is None or bounds_max is None:
         return True
     lo = [bounds_min[i] - tol for i in range(3)]
     hi = [bounds_max[i] + tol for i in range(3)]
-    for x0, x1, y0, y1, z0, z1 in occ:
-        if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
-            return False
+    for b in occ:
+        if len(b) == 6:
+            x0, x1, y0, y1, z0, z1 = b
+            if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
+                return False
+        elif len(b) == 15:
+            cx, cy, cz = b[0], b[1], b[2]
+            ex, ey, ez = b[3], b[4], b[5]
+            u0, u1, u2 = (b[6], b[7], b[8]), (b[9], b[10], b[11]), (b[12], b[13], b[14])
+            for k in range(3):
+                rk = ex * abs(u0[k]) + ey * abs(u1[k]) + ez * abs(u2[k])
+                ck = (cx, cy, cz)[k]
+                if ck - rk < lo[k] or ck + rk > hi[k]:
+                    return False
     return True
 
 
