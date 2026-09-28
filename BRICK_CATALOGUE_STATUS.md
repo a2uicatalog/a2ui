@@ -1032,3 +1032,44 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 - **Still open**: 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved -- no equivalent
   already-cross-validated evidence was found for these in a quick check; they'd need the same real-set
   search this pair's original derivation (or tonight's 2429/2430 search) used.
+
+
+## 2026-09-28: H175 Mechanism & Electronics Parts Investigation (cloud agent, `agent/dispatch-h175-mechanism-parts-1790593245`)
+
+- **Task**: Self-selected backlog item prioritized by Curtis's operator steer: `h175-mechanism-parts`
+  (remaining mechanical and electronic parts from LEGO Technic 42145 Airbus H175 Rescue Helicopter:
+  universal joints, crankshafts, driving rings, and Powered Up motors/hubs).
+- Completed forensic scoping investigation: see [scripts/ldraw/H175_MECHANISM_INVESTIGATION.md](scripts/ldraw/H175_MECHANISM_INVESTIGATION.md).
+- **Key finding**: NO safe occupancy family or axis-aligned bounding box override exists across these 4 families.
+  Every candidate box violates Spec Section 3 ("under-approximation is always safe: miss a real collision on the dropped area, never report a false one"):
+  1. *Engine Crankshafts* (`2853`, `2853a`–`c`, `2854`): Asymmetric offset throw ($x = -10.0$ LDU). A full bounding
+     box encases the crank pin where the connecting rod big end (`2852`) mounts, guaranteeing a 100% false
+     collision on any installed rod. An inscribed central shaft box has solidity only 0.1150 (< 0.15 threshold).
+     Dynamic rotation sweeps a cylindrical envelope rather than a static box.
+  2. *Universal Joints* (`61903`, `62520`, `62519`, `9244`, `3712`, `575`): Axles insert 20 LDU into both ends; any
+     solid box on either end collides with inserted axles. The center is an open cross gimbal. Operating angles up to
+     45° in real sets render an axis-aligned box physically invalid during articulation.
+  3. *Driving Rings & Transmission Joiners* (`18947`, `18948`, `6539`, `32187`): `18948` is an internal joiner sleeve
+     with an open through-axle bore ($[-6, 6] \times [-6, 6]$). `18947` is an outer sliding collar ($r \approx 10..12$)
+     with a deep outer selector fork groove. Concentric co-location means any solid box on either part falsely
+     collides with the mating part, the through-axle, and the selector fork (`18946`).
+  4. *Powered Up Electronics* (`22169c01`, `22169`, `85825`, `22127`): Motor `22169c01` includes a coiled cable
+     spanning a 3,612,711 LDU³ box with ray-parity solidity of only 7.5% (92.5% empty air). Hub `85825` has 24
+     mounting pin holes penetrating across orthogonal planes ($X$ and $Y$). Single-axis channels cannot accommodate
+     perpendicular mounting pins without multi-axis carving and mated-connector collision exemptions.
+- **Set Impact (LEGO Technic 42145)**:
+  - Confirmed 1x `85825` Hub, 1x `22169c01` Motor, 1x `61903` Universal Joint, 2x `18947` Driving Ring,
+    2x `18948` Axle Joiner, 1x `2853a` Crankshaft honestly stay `needs_occupancy=True`.
+  - Zero false collisions produced in 42145's high-density motorized gearbox and rotor mast.
+- **Catalogue Reject Survey (`scripts/ldraw/survey_rejects.py`)**:
+  - Survey across mechanism/electronic categories confirms:
+    - Technic Engine crankshafts (`2853`, `2853a`, `2853b`, `2853c`, `2854`) stay rejected: 5 parts.
+    - Technic Universal Joints (`61903`, `62520`, `62519`, `9244`, `3712`, `575`) stay rejected: 6 parts.
+    - Technic Transmission driving rings (`18947`, `18948`, `6539`, `32187`, `2473a`) stay rejected: 5 parts.
+    - Powered Up / Control+ motors & battery boxes (`22169c01`, `22169`, `85825`, `22127`, `22172`, `22172c01`) stay rejected: 6 parts.
+    - Total: 22 real mechanism/electronic parts verified correctly and safely rejected.
+- **Verification**:
+  - Added regression test `test_h175_mechanism_and_electronic_parts_stay_safely_rejected` to `tests/test_generic_stud_occupancy.py`.
+  - Unit test suite: **278 passed** in `tests/test_generic_stud_occupancy.py` (up from 270, 8 representative parts verified, 0 failures).
+  - Fast test suite: **319 passed, 1 deselected** across generic stud occupancy, brick parts validate, and ldraw parts.
+
