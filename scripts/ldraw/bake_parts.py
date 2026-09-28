@@ -10,6 +10,11 @@ Declared process: ldraw-parts-build (a2ui-private/ops/project-ops.yaml). Run:
     python3 scripts/ldraw/fetch_library.py     # once, or whenever the pin changes
     python3 scripts/ldraw/bake_parts.py
     python3 scripts/ldraw/bake_parts.py --characters-only   # just the minifig characters (characters.py)
+    python3 scripts/ldraw/bake_parts.py --new-only          # only ids in CURATED not already in index.json
+                                                              # (2026-09-28: a full bake takes ~20 minutes;
+                                                              # this only regenerates genuinely new entries and
+                                                              # patches index.json, leaving every existing baked
+                                                              # part file untouched -- smaller diff, faster).
 """
 import json
 import os
@@ -119,7 +124,7 @@ def character_entries(lib):
     return entries
 
 
-def main(characters_only=False):
+def main(characters_only=False, new_only=False):
     lib = Library()
     colours = ColourTable(lib)
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -130,6 +135,14 @@ def main(characters_only=False):
         index = json.load(open(os.path.join(OUT_DIR, "index.json")))
         index["parts"] = {k: v for k, v in index["parts"].items() if "character" not in v}
         todo = character_entries(lib)
+    elif new_only:
+        # only ids added to CURATED since the last bake -- existing baked files/index entries are left exactly
+        # as they are (not re-baked, not re-ordered), so this is a strict additive patch, not a rebuild.
+        index = json.load(open(os.path.join(OUT_DIR, "index.json")))
+        curated = json.load(open(CURATED))
+        todo = [e for e in curated if e["id"] not in index["parts"]]
+        print("%d new id(s) to bake (%d already in index.json, skipped)" % (
+            len(todo), len(curated) - len(todo)), file=sys.stderr)
     else:
         todo = json.load(open(CURATED)) + character_entries(lib)
     errors = []
@@ -175,4 +188,4 @@ def main(characters_only=False):
 
 
 if __name__ == "__main__":
-    main(characters_only="--characters-only" in sys.argv[1:])
+    main(characters_only="--characters-only" in sys.argv[1:], new_only="--new-only" in sys.argv[1:])
