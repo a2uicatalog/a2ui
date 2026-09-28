@@ -383,3 +383,123 @@ def test_hinge_3830_3831_mates_flat():
     report = validate_parts(parts, {'3830': mesh_3830, '3831': mesh_3831})
     assert report['hingeConnections'] == 1
     assert report['overlaps'] == 0
+
+
+# --- axle-through-hole mated-pair collision exemption (2026-09-28) -------------------------------
+
+def test_axle_through_hole_mates_and_exempts_collision():
+    """A real Technic Axle 2 (3704) passing through a real Technic Brick 1x2 with Hole (3700):
+    the axle is collinear with the hole axis, longitudinal overlap spans the full hole depth (20 LDU),
+    registering an axle connection, anchoring the axle, and exempting the pair from collisions."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    # 3700 at (0, -24, 0), hole at local (0, 10, 0) -> world (0, -14, 0)
+    # 3704 rotated with r=1 (local X -> world -Z) placed at world (0, -14, 0)
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_axle_through_hole_grounded_anchors_axle():
+    """When a Technic brick is grounded on a baseplate brick, an inserted axle reaches the baseplate
+    through the axle-hole connection graph edge (adj[i].add(j)), clearing the floating check."""
+    mesh_3001 = _load_mesh('3001')
+    mesh_3700 = _load_mesh('3700')
+    mesh_3704 = _load_mesh('3704')
+    # 3001 at y=-24 has studs at z=+10 and z=-10. Placing 3700 at z=10 aligns with stud row.
+    parts = [
+        {'p': '3001', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3700', 'x': 0.0, 'y': -48.0, 'z': 10.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -38.0, 'z': 10.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'3001': mesh_3001, '3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 1
+    assert report['studConnections'] >= 2
+    assert report['floating'] == []
+    assert report['overlaps'] == 0
+    assert report['ok'] is True
+
+
+def test_axle_parallel_offset_does_not_falsely_mate():
+    """An axle parallel to the hole axis but offset by 20 LDU (not collinear) must NOT register
+    an axle connection."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 20.0, 'y': -14.0, 'z': 0.0, 'r': 1},  # Offset by 20 in X
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 0
+
+
+def test_axle_perpendicular_crossing_does_not_falsely_mate_and_collides():
+    """An axle placed perpendicular to the hole (e.g. crossing along X instead of Z) through the
+    solid body of 3700 must NOT register an axle connection and MUST report a collision."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    # r=0: 3704 spans along world X, perpendicular to the hole axis along Z
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 0
+    assert report['overlaps'] > 0
+    assert [0, 1] in report['collisions']
+
+
+def test_axle_collinear_separated_does_not_falsely_mate():
+    """An axle sharing the hole axis line but shifted far along Z (separated longitudinally)
+    does not penetrate the hole and must not register a connection."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -14.0, 'z': 100.0, 'r': 1},  # Far away along Z
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 0
+
+
+def test_axle_pin_hybrid_mates_axle_side():
+    """A real Technic Axle Pin with Friction (43093) has an axle portion on one side:
+    mating the axle side into Technic Beam 1x4 (3701) registers an axle connection without collision."""
+    mesh_3701, mesh_43093 = _load_mesh('3701'), _load_mesh('43093')
+    # 3701 has holes along Z at local y=10, x in {-20, 0, 20}.
+    # Placed at world x=0, y=-24, z=0: central hole is at (0, -14, 0).
+    # 43093 at world x=0, y=-14, z=0 with r=1 mates its axle into this central hole.
+    parts = [
+        {'p': '3701', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '43093', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'3701': mesh_3701, '43093': mesh_43093})
+    assert report['axleConnections'] >= 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_explicit_connectors_axles_mesh_supported():
+    """A mesh explicitly declaring connectors.axles (in quantized LDU format) mates cleanly."""
+    mesh_3700 = _load_mesh('3700')
+    # Custom part with explicit axles dictionary (pos/dir/len)
+    custom_axle = {
+        'id': 'custom_axle',
+        'title': 'Custom Axle Rod',
+        'quant': 16,
+        'connectors': {
+            'axles': [{'pos': [0, 0, -320], 'dir': [0.0, 0.0, 1.0], 'len': 40.0}],
+            'studs': [], 'sockets': [], 'holes': [], 'pins': [], 'hinges': [],
+        },
+        'occupancy': [[-6.0, 6.0, -6.0, 6.0, -20.0, 20.0]],
+    }
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': 'custom_axle', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, 'custom_axle': custom_axle})
+    assert report['axleConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+

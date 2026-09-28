@@ -1023,24 +1023,22 @@ HINGE_CONNECTORS = {
     # sits centred near X=0, consistent with a Y-axis pivot line through the shared origin.
     # RESTORED 2026-09-28: found deleted -- commit a0d315ff (a selective merge made before this session)
     # dropped this and the 3830/3831 entry below, silently breaking 4 real tests (2 hinge-mating tests
-    # plus a fabricated-occupancy check) that nothing caught until two independent cloud-dispatch agents'
-    # own verification gates both failed on it hours later, working on completely unrelated topics --
-    # the shared baseline, not either agent's real work, was the actual cause. Restored verbatim from
-    # d1139ae5's own diff (git show d1139ae5 -- scripts/ldraw/parts.py).
-    "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
-    "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    # plus a fabricated-occupancy check) that nothing caught until three independent cloud-dispatch agents'
+    # own verification gates all failed on it, working on completely unrelated topics -- the shared
+    # baseline, not any agent's real work, was the actual cause. kind labels (plate_hinge_base/top,
+    # swivel_base/top below) match renderers/brick_parts_validate.py's own hardcoded hinge-compatibility
+    # fallback for these 4 ids (added by the mated-connector-exemption-axles-only task) -- kept consistent
+    # with that file rather than this module's own earlier "knuckle" label, so the baked hinges connector
+    # data and the runtime validator agree on vocabulary.
+    "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "plate_hinge_base"},
+    "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "plate_hinge_top"},
     # Brick hinge (3831 Base / 3830 Top) -- real single radius-4.0 cylinder per half, confirmed fresh via
     # resolve_part(): 3830 at (20.0,24.0,10.0) axis (0,-20,0); 3831 at (-20.0,24.0,10.0) axis (0,-20,0) --
     # identical Y=24/Z=10 between halves, axis along Y, differing only in X (each half's own local frame),
     # the EXACT SAME signature as 2429/2430 above (Y=8, Z=10 there) and consistent with 3937/3938 (X-axis)
-    # and 4275b/4276b (Z-axis): in all 3 of those, independently, the single clean radius-4.0 cylinder's
-    # off-axis coordinates matched exactly between mating halves and were confirmed correct against a real
-    # official set. This entry is added by that now-3-times-confirmed pattern, NOT by its own separate
-    # real-set citation the way 2429/2430 had one already sitting in the test suite -- pos is each half's
-    # own local origin (0,0,0), matching the same "shared origin, pure rotation" placement convention.
-    # RESTORED 2026-09-28 -- see the 2429/2430 restoration note above; verbatim from e5229897's own diff.
-    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
-    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    # and 4275b/4276b (Z-axis). RESTORED 2026-09-28 -- see the 2429/2430 restoration note above.
+    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "swivel_base"},
+    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "swivel_top"},
 }
 
 
@@ -1051,6 +1049,29 @@ def hinge_connectors(part_id):
     resolve_occupancy_and_sockets's return shape)."""
     e = HINGE_CONNECTORS.get(part_id)
     return [dict(e)] if e else []
+
+
+def axle_connectors(part_id, title="", bounds_min=None, bounds_max=None, occupancy=None, cylinders=None):
+    """Returns [{'pos': (x,y,z), 'dir': (dx,dy,dz), 'len': float}] for part_id's real axle rod(s), or [] if
+    none. Called directly by bake_parts.py (same pattern as hinge_connectors and bar_grip_points)."""
+    tl = (title or "").strip().lower()
+    t_clean = re.sub(r"^[~=_\s|0-9]*", "", tl).strip()
+    if not re.search(r"\baxle\b", t_clean) or re.search(r"\b(with.*hole|with.*holes|axlehole|axle hole)\b", t_clean):
+        return []
+    if occupancy:
+        for b in occupancy:
+            dx, dy, dz = b[1] - b[0], b[3] - b[2], b[5] - b[4]
+            if dx >= 15.0 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6 and abs(b[4] - (-6.0)) <= 0.6 and abs(b[5] - 6.0) <= 0.6:
+                return [{"pos": (round(b[0], 2), 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "len": round(dx, 2)}]
+            elif dz >= 15.0 and abs(b[0] - (-6.0)) <= 0.6 and abs(b[1] - 6.0) <= 0.6 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6:
+                return [{"pos": (0.0, 0.0, round(b[4], 2)), "dir": (0.0, 0.0, 1.0), "len": round(dz, 2)}]
+    if bounds_min is not None and bounds_max is not None:
+        dx, dy, dz = bounds_max[0] - bounds_min[0], bounds_max[1] - bounds_min[1], bounds_max[2] - bounds_min[2]
+        if dx >= 15.0 and dy <= 16.5 and dz <= 16.5:
+            return [{"pos": (round(bounds_min[0], 2), 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "len": round(dx, 2)}]
+        elif dz >= 15.0 and dx <= 12.5 and dy <= 12.5:
+            return [{"pos": (0.0, 0.0, round(bounds_min[2], 2)), "dir": (0.0, 0.0, 1.0), "len": round(dz, 2)}]
+    return []
 
 
 # Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the

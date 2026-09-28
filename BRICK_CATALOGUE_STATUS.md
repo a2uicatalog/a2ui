@@ -1,5 +1,17 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: Mated-Connector Exemption — Axles Only (agent, `agent/dispatch-mated-connector-exemption-axles-only-1790621653`)
+
+- **Task**: Focused implementation of backlog item `mated-connector-exemption-axles-only` per Curtis's operator steer -- deliberately scoped down after the broader `mated-connector-exemption-implementation` task's first attempt (Claude engine) produced no changes after a real ~50min session.
+- **Scope**: Recognise when an axle passes through a real hole/peghole and add that pair to the SAME `mated_pairs` exemption mechanism `renderers/brick_parts_validate.py` already has for pin/hole and hinge pairs. Explicitly leaves clips, towballs, whole-pair blind-spot, and indirect-joint blindness to their separate backlog items.
+- **Implementation**:
+  - Added `_axles_world(mesh, r, ex, ey, ez)` in `renderers/brick_parts_validate.py` (and JavaScript twin `axlesWorld` in `apps-script-surface/gas-wired-renderer/atoms_brick.gs` -- real JS-twin parity, not left as a follow-up gap).
+  - Supports explicit `connectors.axles` (both `pos`/`dir`/`len` and `a`/`b` formats) and dynamic fallback recognition from unbaked/curated axle parts (titles containing `\baxle\b` with occupancy boxes having $\pm 6.0$ LDU cross section and length $\ge 15.0$ LDU).
+  - Evaluates geometric mating between axle segment and hole segment in world space: collinearity (axes parallel, $|\hat{\mathbf{u}}_s \cdot \hat{\mathbf{u}}_h| > 0.99$, hole endpoints within 0.5 LDU of the axle axis line) and longitudinal overlap ($\ge 1.0$ LDU).
+  - On match: increments `axle_conn`, connects parts in graph adjacency (anchoring axles to grounded assemblies, solving the connectivity gap noted in `generic_axle_occupancy`), and exempts the pair from false-positive collisions via `mated_pairs`.
+  - Added `axle_connectors` helper to `scripts/ldraw/parts.py` and wired into `scripts/ldraw/bake_parts.py`.
+- **Verification**: 7 new tests in `tests/test_brick_parts_validate.py` (real mating + exemption with `3700`/`3704`, grounded axle anchoring, non-collinear/perpendicular/longitudinal-separation rejection controls, axle-pin hybrid `43093`, explicit `connectors.axles` format) + a JS validator test in `tests/test_brick_parts_validate.mjs` (15/15 pre-existing fixtures + the new axle test, all passing). Its own independent-verification gate initially failed for a reason unrelated to this work (inherited the a0d315ff hinge regression from its fork point) -- verified clean in an isolated worktree against the fixed baseline.
+
 ## 2026-09-28: OBB Decomposition Architectural Scoping Investigation (agent, `agent/dispatch-obb-decomposition-1790612045`)
 
 - **Task**: Prioritised backlog item per Curtis's explicit operator steer: `obb-decomposition` (Cross-cutting: multi-box/OBB decomposition for curved shells). Prerequisite for Technic Panel fairings/mudguards AND hollow windscreen canopies — build once. Correctly deferred twice before; investigated honestly.

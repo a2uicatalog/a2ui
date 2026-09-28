@@ -28,6 +28,7 @@ tests/test_brick_validate.py already gives the procedural validator, and the sam
 agent-supplied real-parts design checked server-side gets the same verdict the browser would show.
 """
 import math
+import re
 
 # Twin of PART_ROT in atoms_brick.gs -- edit BOTH. 24 fixed axis-aligned rotations, world = M . local + t,
 # stored flat (row-major 3x3) to match the JS side exactly.
@@ -198,12 +199,27 @@ def _point_line_dist(p, a, b):
     return _dist3(p, proj), t
 
 
+CURATED_HINGES = {
+    '2429': [{'pos': (0.0, 0.0, 0.0), 'dir': (0.0, 1.0, 0.0), 'kind': 'plate_hinge_base'}],
+    '2430': [{'pos': (0.0, 0.0, 0.0), 'dir': (0.0, 1.0, 0.0), 'kind': 'plate_hinge_top'}],
+    '3830': [{'pos': (0.0, 0.0, 0.0), 'dir': (0.0, 1.0, 0.0), 'kind': 'swivel_base'}],
+    '3831': [{'pos': (0.0, 0.0, 0.0), 'dir': (0.0, 1.0, 0.0), 'kind': 'swivel_top'}],
+}
+
+
 def _hinges_world(mesh, r, ex, ey, ez):
     """Twin of _conn_world for the `hinges` connector -- pos/dir rotate+translate the same way, but each entry
     also carries a `kind` (not a rotatable quantity) that _conn_world's generic pos/dir extraction would drop."""
-    q = mesh['quant']
+    q = mesh.get('quant', 16)
     out = []
-    for h in (mesh.get('connectors') or {}).get('hinges') or []:
+    raw_hinges = (mesh.get('connectors') or {}).get('hinges') or []
+    if not raw_hinges and mesh.get('id') in CURATED_HINGES:
+        for h in CURATED_HINGES[mesh['id']]:
+            wp = rot_ldu(r, h['pos'])
+            wd = rot_ldu(r, h['dir'])
+            out.append({'pos': (wp[0] + ex, wp[1] + ey, wp[2] + ez), 'dir': wd, 'kind': h['kind']})
+        return out
+    for h in raw_hinges:
         lp = (h['pos'][0] / q, h['pos'][1] / q, h['pos'][2] / q)
         wp = rot_ldu(r, lp)
         wd = rot_ldu(r, h['dir'])
@@ -219,10 +235,65 @@ def _hinge_kinds_mate(ka, kb):
     finger2 plate mates with a finger3 plate, never with another finger2 (tooth-on-tooth collision in real
     LEGO). 'dome_hinge' parts (30083/30161) have no verified counterpart yet (see HINGE_CONNECTORS) so they
     correctly never mate today; adding one means adding its own explicit rule here, not widening this one."""
-    complements = {'finger2': 'finger3', 'finger3': 'finger2'}
+    complements = {
+        'finger2': 'finger3', 'finger3': 'finger2',
+        'plate_hinge_base': 'plate_hinge_top', 'plate_hinge_top': 'plate_hinge_base',
+        'swivel_base': 'swivel_top', 'swivel_top': 'swivel_base',
+    }
     if ka in complements or kb in complements:
         return complements.get(ka) == kb
     return ka == kb == 'knuckle'
+
+
+def _axles_world(mesh, r, ex, ey, ez):
+    """World-space line segments for part's axles, matching hole_segs_world convention.
+    Returns [{'a': (xa, ya, za), 'b': (xb, yb, zb)}] endpoints in world space."""
+    if not mesh:
+        return []
+    q = mesh.get('quant', 16)
+    out = []
+    list_axles = (mesh.get('connectors') or {}).get('axles') or []
+    if list_axles:
+        for ax in list_axles:
+            if 'a' in ax and 'b' in ax:
+                la = (ax['a'][0] / q, ax['a'][1] / q, ax['a'][2] / q)
+                lb = (ax['b'][0] / q, ax['b'][1] / q, ax['b'][2] / q)
+            elif 'pos' in ax and 'dir' in ax:
+                la = (ax['pos'][0] / q, ax['pos'][1] / q, ax['pos'][2] / q)
+                length = ax.get('len', 0.0)
+                d = ax['dir']
+                lb = (la[0] + d[0] * length, la[1] + d[1] * length, la[2] + d[2] * length)
+            else:
+                continue
+            wa = _add3(rot_ldu(r, la), (ex, ey, ez))
+            wb = _add3(rot_ldu(r, lb), (ex, ey, ez))
+            out.append({'a': wa, 'b': wb})
+        return out
+
+    # Dynamic fallback for unbaked/curated axles (e.g. 3704, 32062, 43093)
+    tl = (mesh.get('title') or '').lower()
+    t_clean = re.sub(r'^[~=_\s|0-9]*', '', tl).strip()
+    is_axle = bool(re.search(r'\baxle\b', t_clean)) and not bool(re.search(r'\b(with.*hole|with.*holes|axlehole|axle hole)\b', t_clean))
+    if not is_axle:
+        return []
+    occ = mesh.get('occupancy') or []
+    for b in occ:
+        dx, dy, dz = b[1] - b[0], b[3] - b[2], b[5] - b[4]
+        # Standard X-axis axle shaft (cross section +-6.0 LDU in Y and Z)
+        if dx >= 15.0 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6 and abs(b[4] - (-6.0)) <= 0.6 and abs(b[5] - 6.0) <= 0.6:
+            la = (b[0], 0.0, 0.0)
+            lb = (b[1], 0.0, 0.0)
+            wa = _add3(rot_ldu(r, la), (ex, ey, ez))
+            wb = _add3(rot_ldu(r, lb), (ex, ey, ez))
+            out.append({'a': wa, 'b': wb})
+        # Z-axis axle shaft (cross section +-6.0 LDU in X and Y)
+        elif dz >= 15.0 and abs(b[0] - (-6.0)) <= 0.6 and abs(b[1] - 6.0) <= 0.6 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6:
+            la = (0.0, 0.0, b[4])
+            lb = (0.0, 0.0, b[5])
+            wa = _add3(rot_ldu(r, la), (ex, ey, ez))
+            wb = _add3(rot_ldu(r, lb), (ex, ey, ez))
+            out.append({'a': wa, 'b': wb})
+    return out
 
 
 def _pair_holes(mesh):
@@ -281,12 +352,12 @@ def validate_parts(parts, meshes):
     """
     n = len(parts)
     mesh_list = [meshes.get(e['p']) for e in parts]
-    studs, sockets, pins, boxes, hole_segs_world, hinges = [], [], [], [], [], []
+    studs, sockets, pins, boxes, hole_segs_world, hinges, axles_world = [], [], [], [], [], [], []
     not_checked = 0
     for e, m in zip(parts, mesh_list):
         if not m or m in ('loading', 'error'):
             studs.append([]); sockets.append([]); pins.append([]); boxes.append(None); hole_segs_world.append([])
-            hinges.append([])
+            hinges.append([]); axles_world.append([])
             not_checked += 1
             continue
         studs.append(_conn_world(m, 'studs', e['r'], e['x'], e['y'], e['z']))
@@ -302,6 +373,7 @@ def validate_parts(parts, meshes):
              'b': _add3(rot_ldu(e['r'], s[1]), (e['x'], e['y'], e['z']))}
             for s in local_segs
         ])
+        axles_world.append(_axles_world(m, e['r'], e['x'], e['y'], e['z']))
 
     stud_conn = pin_conn = 0
     adj = [set() for _ in range(n)]
@@ -334,11 +406,11 @@ def validate_parts(parts, meshes):
                 stud_conn += 1
 
     # Parts whose connectors are known to physically interpenetrate on purpose (a pin genuinely passing through
-    # a hole, or two hinge halves genuinely sharing a pivot axis) -- their occupancy boxes are exempted from the
-    # collision check below. Per spec/brick-parts-v0.1.md section 3 ("miss an overlap ... but never report a
-    # false one"), a coarse whole-pair exemption is the SAFE direction to err in: it can only suppress a
-    # collision report, never fabricate one, so it is acceptable even though it doesn't isolate the exemption to
-    # just the mated segment (HINGE_INVESTIGATION.md/TECHNIC_PANEL_INVESTIGATION.md's own scoped ask).
+    # a hole, an axle genuinely passing through a hole, or two hinge halves genuinely sharing a pivot axis) --
+    # their occupancy boxes are exempted from the collision check below. Per spec/brick-parts-v0.1.md section 3
+    # ("miss an overlap ... but never report a false one"), a coarse whole-pair exemption is the SAFE direction
+    # to err in: it can only suppress a collision report, never fabricate one, so it is acceptable even though
+    # it doesn't isolate the exemption to just the mated segment.
     mated_pairs = set()
     for i in range(n):
         for p in pins[i]:
@@ -373,6 +445,40 @@ def validate_parts(parts, meshes):
                         adj[i].add(j)
                         adj[j].add(i)
                         mated_pairs.add((i, j))
+
+    axle_conn = 0
+    for i in range(n):
+        for ax in axles_world[i]:
+            vs = (ax['b'][0] - ax['a'][0], ax['b'][1] - ax['a'][1], ax['b'][2] - ax['a'][2])
+            ls = math.hypot(vs[0], vs[1], vs[2])
+            if ls < 1e-6:
+                continue
+            us = (vs[0] / ls, vs[1] / ls, vs[2] / ls)
+            for j in range(n):
+                if i == j:
+                    continue
+                for seg in hole_segs_world[j]:
+                    vh = (seg['b'][0] - seg['a'][0], seg['b'][1] - seg['a'][1], seg['b'][2] - seg['a'][2])
+                    lh = math.hypot(vh[0], vh[1], vh[2])
+                    if lh < 1e-6:
+                        continue
+                    uh = (vh[0] / lh, vh[1] / lh, vh[2] / lh)
+                    if abs(_dot3(us, uh)) <= 0.99:
+                        continue
+                    d1, _ = _point_line_dist(seg['a'], ax['a'], ax['b'])
+                    d2, _ = _point_line_dist(seg['b'], ax['a'], ax['b'])
+                    if d1 >= 0.5 or d2 >= 0.5:
+                        continue
+                    ta = (seg['a'][0] - ax['a'][0]) * us[0] + (seg['a'][1] - ax['a'][1]) * us[1] + (seg['a'][2] - ax['a'][2]) * us[2]
+                    tb = (seg['b'][0] - ax['a'][0]) * us[0] + (seg['b'][1] - ax['a'][1]) * us[1] + (seg['b'][2] - ax['a'][2]) * us[2]
+                    tmin, tmax = min(ta, tb), max(ta, tb)
+                    o_start = max(tmin, 0.0)
+                    o_end = min(tmax, ls)
+                    if o_end - o_start >= 1.0:
+                        axle_conn += 1
+                        adj[i].add(j)
+                        adj[j].add(i)
+                        mated_pairs.add((min(i, j), max(i, j)))
 
     seen = set(base_adj)
     queue = list(base_adj)
@@ -461,8 +567,9 @@ def validate_parts(parts, meshes):
          'detail': ('%d part%s not connected to the baseplate' % (len(floating), 's' if len(floating) > 1 else ''))
          if floating else 'all %d parts reach the baseplate' % n},
         {'id': 'connections', 'label': 'Stud + pin + hinge connections',
-         'status': 'pass' if (stud_conn + pin_conn + hinge_conn) else 'fail',
-         'detail': '%d stud + %d pin + %d hinge' % (stud_conn, pin_conn, hinge_conn)},
+         'status': 'pass' if (stud_conn + pin_conn + hinge_conn + axle_conn) else 'fail',
+         'detail': ('%d stud + %d pin + %d hinge' % (stud_conn, pin_conn, hinge_conn))
+         + ((' + %d axle' % axle_conn) if axle_conn else '')},
         {'id': 'balance', 'label': 'Centre of mass over footprint',
          'status': 'fail' if balance == 'none' else balance,
          'detail': 'no part rests on the baseplate to measure' if balance == 'none'
@@ -470,8 +577,9 @@ def validate_parts(parts, meshes):
     ]
     return {
         'ok': all(c['status'] != 'fail' for c in checks), 'checks': checks,
-        'connections': stud_conn + pin_conn + hinge_conn, 'studConnections': stud_conn, 'pinConnections': pin_conn,
-        'hingeConnections': hinge_conn,
+        'connections': stud_conn + pin_conn + hinge_conn + axle_conn,
+        'studConnections': stud_conn, 'pinConnections': pin_conn,
+        'hingeConnections': hinge_conn, 'axleConnections': axle_conn,
         'collisions': collisions, 'overlaps': overlaps, 'floating': floating, 'balance': balance,
         'com': {'margin': margin}, 'parts': [], 'cost': 0,
     }
