@@ -9,7 +9,7 @@ descending -- ranked, not gated at a single yes/no threshold, so the honest grad
 than hidden behind a pass/fail cutoff.
 
 Usage:
-    python3 scripts/ldraw/gen_set_gallery.py --coverage /tmp/set_coverage_now.json --out public/set_gallery.json
+    python3 scripts/ldraw/gen_set_gallery.py --coverage /tmp/set_coverage_now.json --out public/bricksdemo/set_gallery.json
 
 Rebrickable calls are rate-limited to ~1/sec (same real constraint as gemini_qa.py's _fetch_ref) and
 cached to a local dir so a re-run only fetches new/changed sets.

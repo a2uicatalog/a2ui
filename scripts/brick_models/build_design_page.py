@@ -376,7 +376,7 @@ $('omrgo').onclick=function(){importSet($('omrset').value.trim(),$('omrnote'))};
 // coverage %, not gated behind a single pass/fail line -- the gradient is the point. Clicking a card reuses
 // importSet() exactly like a hand-typed set number or a search-result chip; this panel is just a curated,
 // pre-scored starting point, not a separate import path.
-fetch('/set_gallery.json').then(function(r){return r.json()}).then(function(j){
+fetch('/bricksdemo/set_gallery.json').then(function(r){return r.json()}).then(function(j){
   var sets=j.sets||[];
   var box=$('gallery');box.innerHTML='';
   sets.forEach(function(s){
