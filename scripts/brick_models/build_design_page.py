@@ -67,6 +67,14 @@ textarea{width:100%;min-height:64px;resize:vertical;font:inherit;color:inherit;b
 .row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font:inherit;font-size:12px;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:99px;padding:3px 10px;cursor:pointer}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;max-height:440px;overflow-y:auto;padding-right:4px}
+.gcard{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--bg);cursor:pointer;text-align:left;font:inherit;color:inherit;padding:0;display:flex;flex-direction:column}
+.gcard:hover{border-color:var(--acc)}
+.gcard img{width:100%;aspect-ratio:1;object-fit:contain;background:#fff;display:block}
+.gcard .gc-body{padding:6px 8px;display:flex;flex-direction:column;gap:2px}
+.gcard .gc-title{font-size:12px;font-weight:600;line-height:1.25;max-height:2.5em;overflow:hidden;color:var(--fg)}
+.gcard .gc-pct{font-size:11px;font-variant-numeric:tabular-nums;color:var(--acc)}
+.gcard .gc-pct.hi{color:var(--ok)}
 label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 select,button.go{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--rule);border-radius:6px;padding:6px 10px}
 button.go{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600;cursor:pointer}
@@ -135,6 +143,11 @@ a{color:inherit}
 <input id="csearch" type="search" placeholder="e.g. 3001, slope, arch, knight, plate 2 x 4" aria-label="Search the parts catalogue" autocomplete="off">
 <div class="chips" id="cres" aria-live="polite"></div>
 <div class="row"><button class="go alt" id="cclear" type="button" hidden>Remove added parts</button><span class="note" id="cnote"></span></div>
+</section>
+<section class="panel">
+<label><b>Browse real sets by coverage</b> <span class="note">honestly ranked by how much of each real official set this catalogue can render today (50%+ shown, nothing hidden behind a pass/fail cutoff) -- click a card to import it</span></label>
+<div class="gallery" id="gallery"></div>
+<p class="note" id="gallerynote">Loading…</p>
 </section>
 <section class="panel">
 <label for="setsearch"><b>Find a real LEGO set</b> <span class="note">search by name (e.g. "Harry Potter", "Hogwarts", "Millennium Falcon") via Rebrickable, then pick one to import -- replaces the current build</span></label>
@@ -358,6 +371,27 @@ function importSet(id,note){
   .catch(function(){note.textContent='Could not reach the import service.'})
   .then(function(){$('omrgo').disabled=false;$('omrgo').textContent='Import set'})}
 $('omrgo').onclick=function(){importSet($('omrset').value.trim(),$('omrnote'))};
+// ---- Set gallery: GET /set_gallery.json, a static manifest built by scripts/ldraw/gen_set_gallery.py from a
+// real real_set_coverage.py run (live OMR-vs-catalogue diff) + real Rebrickable titles/images. Ranked by honest
+// coverage %, not gated behind a single pass/fail line -- the gradient is the point. Clicking a card reuses
+// importSet() exactly like a hand-typed set number or a search-result chip; this panel is just a curated,
+// pre-scored starting point, not a separate import path.
+fetch('/set_gallery.json').then(function(r){return r.json()}).then(function(j){
+  var sets=j.sets||[];
+  var box=$('gallery');box.innerHTML='';
+  sets.forEach(function(s){
+    var b=document.createElement('button');b.type='button';b.className='gcard';
+    b.title=s.set+' -- '+n(s.instances)+' piece instances';
+    var img=s.img_url?'<img src="'+esc(s.img_url)+'" alt="" loading="lazy">':'';
+    var pctClass=s.coverage_pct>=90?'hi':'';
+    b.innerHTML=img+'<div class="gc-body"><div class="gc-title">'+esc(s.title)+'</div>'
+      +'<div class="gc-pct '+pctClass+'">'+s.coverage_pct+'% renderable</div></div>';
+    b.onclick=function(){$('gallerynote').textContent='Importing '+s.title+'…';importSet(s.set,$('gallerynote'))};
+    box.appendChild(b)});
+  $('gallerynote').textContent=sets.length?
+    (n(sets.length)+' real sets, ranked by honest catalogue coverage as of '+(j.generatedAt||'').slice(0,10)+' (50%+ shown; hundreds more fall below that line today).'):
+    'No sets currently clear the coverage floor.';
+}).catch(function(){$('gallerynote').textContent='Could not load the set gallery.'});
 // ---- Set search: GET /api/data/rebrickable_set_search?query=<name> (declared in atoms/data-sources.yaml, real
 // Rebrickable set data -- NOT every result has a matching OMR file; importSet() reports that honestly per-click,
 // same as a hand-typed set number, rather than pre-filtering results against the OMR library on every keystroke.
