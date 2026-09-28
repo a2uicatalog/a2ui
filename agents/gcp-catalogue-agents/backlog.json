@@ -120,10 +120,11 @@
     },
     {
       "id": "technic-axle-pins",
-      "status": "pending",
-      "note": "Coaxial axle-pin hybrids (43093, 11214, 18651, 3749). Single largest remaining piece count on priority set H175 (42145) with 163 instances. High confidence: rigid coaxial pin+axle geometry with well-defined shaft and flange bounds.",
-      "real_set_impact": "H175 (42145): 163 pieces (43093: 87, 11214: 48, 18651: 19, 3749: 9)",
-      "catalogue_wide_impact": "Used across hundreds of official Technic sets"
+      "status": "done",
+      "note": "Coaxial axle-pin hybrids (43093, 11214, 18651, 3749, 6562, 65249) implemented with core 12x12 LDU shaft box under-approximation, clearing 52.1% - 60.4% ray-parity solid fraction floor with zero peghole/axlehole collision risk.",
+      "real_set_impact": "H175 (42145): 1,176 -> 1,339 (+163) renderable pieces with verified occupancy (58.4% -> 66.5% coverage; 43093: 87, 11214: 48, 18651: 19, 3749: 9)",
+      "catalogue_wide_impact": "Technic Axle category: 43093, 11214, 18651 resolved; obsolete alias 4206482 resolved; 4 parts (3749, 6562, 4186017, 65249) previously carrying empty occupancy now possess real solid collision bounds",
+      "doc": "BRICK_CATALOGUE_STATUS.md § 2026-09-28: Technic Axle Pin Occupancy Family"
     },
     {
       "id": "h175-cross-blocks",
