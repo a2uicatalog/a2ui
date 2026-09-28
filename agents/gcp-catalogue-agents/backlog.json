@@ -177,11 +177,11 @@
     {
       "id": "minifig-accessory",
       "family": "Minifig Accessory",
-      "status": "in_progress",
-      "catalogue_wide_impact": "not re-measured since the 2026-09-27 22:33 snapshot (was cited then as a large real reject count, exact number not carried forward -- re-run survey_rejects.py before scoping)",
+      "status": "rejected",
+      "catalogue_wide_impact": "820 total parts in LDraw library; 417 accepted (361 via bar_grip_points, 99 via stud_cell, 9 via headwear); 403 safely remain rejected (needs_occupancy: true)",
       "real_set_impact": null,
-      "note": "Carried over from the 3am overnight-watcher candidates list, never scoped. Dispatched 2026-09-28 via live GO endpoint, engine gemini, $10 budget, real bar_grip_points hypothesis given as context.",
-      "doc": null
+      "note": "Investigated 2026-09-28. Operator bar_grip_points hypothesis confirmed (361 parts already cleanly resolved, e.g. 10050, 11439, 12885, 11640, 11103, 11250, 13571, 15391). Category-wide occupancy family strictly rejected across all remaining sub-families: shields (80-90% open air, handle in concave interior), swords with pommels/crossguards (80-95% open air), cups/trophies (hollow drinking cavities), sacks/satchels (wrapping torso, 7% solid), instruments (16% solid), food (organic loops), misfiled animals (ANIMAL_INVESTIGATION.md), and stud accessories failing bounds containment.",
+      "doc": "MINIFIG_ACCESSORY_INVESTIGATION.md, BRICK_CATALOGUE_STATUS.md#2026-09-28-minifig-accessory-category-investigation"
     },
     {
       "id": "electric",
