@@ -570,8 +570,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 15879,
+   "bytes": 15953,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "2430": {
@@ -592,8 +594,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 30884,
+   "bytes": 30958,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3937": {

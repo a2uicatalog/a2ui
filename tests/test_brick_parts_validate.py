@@ -338,3 +338,32 @@ def test_pin_in_hole_exemption_does_not_suppress_unrelated_collision():
     assert report['pinConnections'] > 0
     assert report['overlaps'] == 0
     assert [0, 1] not in report['collisions']
+
+
+# --- 2429/2430 classic plate hinge (2026-09-28) -- real evidence for this pair was already sitting in this
+# file's own M_HINGE_29 fixture (a pure Y-axis rotation, real official set 8880-1 Super Car cited above at
+# its first use); this just connects it to the hinges registry itself.
+
+def test_hinge_2429_2430_mates_flat():
+    mesh_2429, mesh_2430 = _load_mesh('2429'), _load_mesh('2430')
+    parts = [
+        {'p': '2429', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '2430', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'2429': mesh_2429, '2430': mesh_2430})
+    assert report['hingeConnections'] == 1
+    assert report['overlaps'] == 0
+
+
+def test_hinge_2429_2430_mates_at_real_cited_bent_angle():
+    """Real official-set angle (8880-1 Super Car): 2430 rotated by M_HINGE_29 around the shared origin --
+    the hinge connector must still register the mate (axis unaffected by a pure Y-axis rotation) and the
+    two halves must not falsely collide at this real open angle."""
+    mesh_2429, mesh_2430 = _load_mesh('2429'), _load_mesh('2430')
+    parts = [
+        {'p': '2429', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '2430', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': M_HINGE_29},
+    ]
+    report = validate_parts(parts, {'2429': mesh_2429, '2430': mesh_2430})
+    assert report['hingeConnections'] == 1
+    assert report['overlaps'] == 0

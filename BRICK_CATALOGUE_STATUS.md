@@ -1008,3 +1008,27 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
   - Test suite pass count: **270 passed** in `tests/test_generic_stud_occupancy.py` (up from 213, 57 new tests added, 0 failures).
   - LDraw test suite: **10 passed, 1 skipped** in `tests/test_ldraw_parts.py`.
 
+
+## 2026-09-28: `2429`/`2430` classic plate hinge -- connecting evidence that was already there
+
+- **Task**: resolve one of the hinge families deliberately left out of `HINGE_CONNECTORS` earlier tonight
+  (2429/2430, 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 -- axis not confidently resolved from
+  radius-4.0 cylinder clustering alone).
+- **Real finding**: the real evidence already existed, unconnected. `tests/test_brick_parts_validate.py`'s
+  own `M_HINGE_29 = (-0.868, 0.0, 0.496, 0.0, 1.0, 0.0, -0.496, 0.0, -0.868)` leaves the Y-axis unchanged
+  (row/column 2 is exactly `(0,1,0)`) -- the algebraic signature of a pure Y-axis rotation -- and the
+  test's own comment cites a real official set: "In 8880-1 Super Car, hinge 2429 (Base) and 2430 (Top) are
+  mated at (0, 0, 0)". Both halves are placed at the same world origin with 2430 rotated `M_HINGE_29`
+  around it -- meaning each part's own local origin already sits on the real physical pivot line, and the
+  axis is Y. This was derived from a real set by the earlier OBB/SAT geometry task; it just hadn't been
+  connected to the hinge connector registry.
+- **Added**: `2429`/`2430` to `HINGE_CONNECTORS` (`pos=(0,0,0)`, `dir=(0,1,0)`, `kind="knuckle"` -- same
+  physical mating pattern as 3937/3938). Occupancy unchanged (verified via git diff against the pre-rebake
+  files: only the new `hinges` connector field was added).
+- **Verification**: real `validate_parts()` checks, both flat (`r=0`/`r=0`) and at the actual cited bent
+  angle from set 8880-1 (`M_HINGE_29`) -- both register `hingeConnections: 1` with zero false collisions.
+  30/30 `tests/test_brick_parts_validate.py` (2 new tests), 15/15 JS parity fixtures, 270/270
+  `tests/test_generic_stud_occupancy.py`, 10/10 `tests/test_ldraw_parts.py`.
+- **Still open**: 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved -- no equivalent
+  already-cross-validated evidence was found for these in a quick check; they'd need the same real-set
+  search this pair's original derivation (or tonight's 2429/2430 search) used.
