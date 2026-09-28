@@ -1,0 +1,11 @@
+[
+  {
+    "id": "electric",
+    "name": "Electric",
+    "status": "rejected",
+    "note": "Carried over from the 3am overnight-watcher candidates list; scoped and investigated 2026-09-28. No safe shared occupancy family exists: 756 rejected parts span flexible cables/wires (>96% empty air), motors with rotating output hubs, hollow battery boxes (5.8-11.6% solid), moving switches, and subparts. Stud-bearing electric bricks (245 accepted) already resolve safely via generic_stud_cell_occupancy. Forcing bounding boxes on remainder would cause severe false collisions violating spec section 3.",
+    "catalogue_wide_impact": "0 parts unlocked; 245/1001 accepted, 756/1001 rejected confirmed safe",
+    "real_set_impact": "0 additional parts in 42145 (Powered Up battery box and L motor confirmed safely needs_occupancy=True)",
+    "doc": "scripts/ldraw/ELECTRIC_INVESTIGATION.md"
+  }
+]
