@@ -1,0 +1,11 @@
+[
+  {
+    "id": "vehicle",
+    "title": "Vehicle (base/chassis parts)",
+    "status": "rejected",
+    "note": "Carried over from the 3am overnight-watcher candidates list; never scoped. Forensic investigation (scripts/ldraw/VEHICLE_INVESTIGATION.md) completed: all 57 standard System vehicle bases/chassis are already accepted with needs_occupancy=False. The 86 remaining rejected parts in category Vehicle are 100% accounted for as non-chassis irregular/hollow components (29 Duplo parts, 18 motorcycle/scooter frames at 1-2% solidity, 16 motor casings, 13 forklift masts/forks, 10 caterpillar tracks, 9 excavator buckets at 6-15% solidity, 7 tractor steering linkages, and 1 stepped-stud base with transverse axle tunnels). No safe shared occupancy family exists; correctly left needs_occupancy=True per spec §3.",
+    "catalogue_wide_impact": "0 parts unlocked (57 chassis parts already accepted; 86 Vehicle category parts correctly remain rejected)",
+    "real_set_impact": "0 official set impact (all standard car bases already in curated set or resolved)",
+    "doc": "scripts/ldraw/VEHICLE_INVESTIGATION.md"
+  }
+]

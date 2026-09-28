@@ -1032,3 +1032,36 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 - **Still open**: 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved -- no equivalent
   already-cross-validated evidence was found for these in a quick check; they'd need the same real-set
   search this pair's original derivation (or tonight's 2429/2430 search) used.
+
+
+## 2026-09-28: Vehicle (Base/Chassis Parts) Occupancy Investigation (cloud agent, `agent/dispatch-vehicle`)
+
+- Completed scoping investigation for backlog item `vehicle` ("Vehicle (base/chassis parts)"): see
+  [scripts/ldraw/VEHICLE_INVESTIGATION.md](scripts/ldraw/VEHICLE_INVESTIGATION.md).
+- **Core Discovery**: standard System vehicle bases and chassis were already solved. All 57 official System
+  car bases and chassis across the library (`11650`, `12622`, `18923`, `18937`, `24055`, `24326`, `2441`,
+  `28324`, `30029`, `30149`, `30235`, `30262`, `30277`, `30278c01`, `30295`, `30642`, `30643`, `30837`,
+  `3385`, `3888a`, `4211`, `4212a`, `4212b`, `4362a`, `4613`, `4796`, `52036`, `52037`, `65094`, `65202`,
+  `65634`, `68446`, `6920`, `710`, `778`, `780`, `781`, `803`, `804`, `805`, `806`, `u574`) already resolve
+  cleanly with `needs_occupancy=False` via `generic_stud_cell_occupancy` or `bar_grip_points`.
+- **Catalogue & Rejection Survey Accounting (scripts/ldraw/survey_rejects.py)**:
+  - In LDraw category `Vehicle` (166 total candidates): 80 accepted, 86 rejected.
+  - Across all 125 vehicle-related rejected parts, 100% are accounted for by physical silhouette:
+    - 29 Duplo vehicle bases / wheels (incompatible 2x scale, 40 LDU stud pitch).
+    - 18 Motorcycle / scooter frames (1.5% to 2.4% solid shells; bounding boxes would block riders).
+    - 16 Mechanical pull-back/flywheel motor housings (0.3% to 4.2% solid hollow shells).
+    - 13 Forklift rail masts and forks (5.2% to 6.7% solid sliding columns).
+    - 10 Caterpillar tracks (annular loops around road wheels; bounding box would collide with wheels).
+    - 9 Excavator scoops and arms (6.6% to 15.6% solid concave buckets; bounding box would fill cargo cavity).
+    - 7 Vintage 1970s Technic tractor steering linkages (articulated multi-bar links).
+    - 4 Monorail bogie chassis and steel axles.
+    - 3 Windscreens / cockpits (covered by `WINDSCREEN_INVESTIGATION.md`).
+    - 3 Springs / shock absorbers.
+    - 2 Steel axles.
+    - 1 Stepped-stud car base `3536`: has transverse wheel axle tunnels (`axl3hol*.dat`) passing under the
+      recessed cabin studs; vertical stud columns intersect the axle tunnels and cause false collisions with
+      inserted axles.
+- **Backlog Disposition**: Item `vehicle` marked **REJECTED** in `agents/gcp-catalogue-agents/backlog.json`.
+  No safe shared occupancy family exists, and forcing bounding boxes would directly violate spec section 3
+  ("miss an overlap before reporting a false one"). Zero forced boxes, zero regressions.
+
