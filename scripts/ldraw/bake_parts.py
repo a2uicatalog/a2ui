@@ -26,7 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from resolve import Library, ColourTable, resolve_part  # noqa: E402
-from parts import resolve_occupancy_and_sockets, bar_grip_points, hinge_connectors, HINGE_CONNECTORS  # noqa: E402
+from parts import resolve_occupancy_and_sockets, bar_grip_points, hinge_connectors, HINGE_CONNECTORS, axle_connectors, clip_connectors  # noqa: E402
 import characters  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -89,7 +89,7 @@ def bake_one(lib, colours, entry):
         # CONNECTORS exclusion as that call site, for the same real reason (2026-09-28): a verified hinge
         # pivot's cylinders are not a hand-graspable bar, and this is a separate call site that would
         # otherwise still tag e.g. 3937 with a bogus `bars` connector even after that one is fixed.
-        bars = [] if pid in HINGE_CONNECTORS else bar_grip_points(part.min, part.max, part.cylinders, part.tris)
+        bars = [] if (pid in HINGE_CONNECTORS or clip_connectors(pid, title, part.min, part.max, part.cylinders)) else bar_grip_points(part.min, part.max, part.cylinders, part.tris)
 
     mesh = {
         "id": pid,
@@ -106,9 +106,7 @@ def bake_one(lib, colours, entry):
             "holes": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in part.holes],
             "pins": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in part.pins],
             # A held/clip-mounted connector (2026-09-27): geometrically the same "rod inserts into a
-            # receiving feature" shape as pins/holes, just clip/hand-held instead of pin/hole-mated. No
-            # renderer-side matching logic consumes this yet (the receiving clip side isn't detected at
-            # all currently) -- documented as real, deliberate scope left for later, not silently dropped.
+            # receiving feature" shape as pins/holes, just clip/hand-held instead of pin/hole-mated.
             "bars": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in bars],
             # Real hinge pivot(s), curated in parts.py's HINGE_CONNECTORS -- [] for every part not in that
             # registry (not a per-part geometry computation, so cheap to call unconditionally here).
@@ -117,6 +115,9 @@ def bake_one(lib, colours, entry):
             # Real axle centerline segment(s) for Technic axles and axle-rod parts
             "axles": [{"pos": qpt(a["pos"]), "dir": [round(d, 3) for d in a["dir"]], "len": a["len"]}
                       for a in axle_connectors(pid, title, part.min, part.max, occ, part.cylinders)],
+            # Real clip jaw(s) for clip parts (Plate with Clip, Brick with Clip, Tile with Clip)
+            "clips": [{"pos": qpt(c["pos"]), "dir": [round(d, 3) for d in c["dir"]]}
+                      for c in clip_connectors(pid, title, part.min, part.max, part.cylinders)],
         },
         "occupancy": [list(b) for b in occ] if occ else None,
         "needs_occupancy": needs_occ,

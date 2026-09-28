@@ -1,5 +1,32 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: Mated-Connector Exemption — Clips Only (agent, `agent/dispatch-mated-connector-exemption-clips-only-1790626653`)
+
+- **Task**: Focused implementation of backlog item `mated-connector-exemption-clips-only` per Curtis's operator steer.
+- **Scope**: Recognise when a clip part grips a real bar and add that pair to the SAME `mated_pairs` exemption mechanism `renderers/brick_parts_validate.py` already has for pin/hole, hinge, and axle pairs. Explicitly leaves towballs, whole-pair blind-spot, and indirect-joint blindness to their separate backlog items.
+- **Implementation**:
+  - Added `_clips_world(mesh, r, ex, ey, ez)` and `_bars_world(mesh, r, ex, ey, ez)` in `renderers/brick_parts_validate.py` (and JavaScript twins `clipsWorld` and `barsWorld` in `apps-script-surface/gas-wired-renderer/atoms_brick.gs`).
+  - Added `CURATED_CLIPS` covering 19 canonical clip parts (`4085a-c`, `60897`, `6019`, `61252`, `60476`, `60470a-b`, `11476`, `44861`, `92280`, `78256`, `15712`, `2555`, `30237`, `60475a-b`, `95820`) and `CURATED_BARS` covering 10 canonical bar/handle parts (`2540`, `2921`, `292126`, `30236`, `48336`, `30374`, `4095`, `63965`, `2714a`, `25893a`).
+  - Supports explicit `connectors.clips` and `connectors.bars` (both segment `a`/`b`, length `pos`/`dir`/`len`, and two-endpoint grip formats), with dynamic fallback for unbaked/curated meshes.
+  - Excludes clip parts from receiving false `bars` connectors, ensuring clip parts do not falsely act as bars.
+  - Evaluates geometric mating between clip jaw cylinder and bar segment in world space:
+    - Collinearity: jaw cylinder axis parallel to bar axis ($|\hat{\mathbf{u}}_c \cdot \hat{\mathbf{u}}_b| > 0.99$) and clip position within 0.5 LDU distance of the bar line.
+    - Longitudinal projection: clip position projects onto the bar segment within $[-2.0, L + 2.0]$ LDU of the bar span.
+  - On match: increments `clip_conn`, connects parts in graph adjacency `adj[i].add(j)` (anchoring clip parts to grounded assemblies via the bar), and adds `(min(i, j), max(i, j))` to `mated_pairs` to exempt the pair from false-positive collisions.
+  - Added `clipConnections` to the return envelope and formatted connections detail string in both Python and JS.
+  - Added `clip_connectors` helper to `scripts/ldraw/parts.py` and wired into `scripts/ldraw/bake_parts.py`.
+  - Rebuilt `public/bricksdemo/design/index.html` via `build_design_page.py`.
+- **Verification**:
+  - Added 9 new tests in `tests/test_brick_parts_validate.py` (real `4085c` on `2921`, grounded clip anchoring with `3001`+`2921`+`4085c`, rotated clip angles, horizontal clip `61252` on handle plate `2540`, dual clips `60470a` on `48336`, perpendicular collision detection, non-collinear offset rejection, longitudinal separation rejection, and explicit `connectors.clips`/`bars` format support).
+  - Added JS validator test in `tests/test_brick_parts_validate.mjs`.
+  - Pass counts:
+    - `tests/test_brick_parts_validate.py`: **47/47 passed** (0 failures).
+    - `tests/test_brick_parts_validate_js.py` / `test_brick_parts_validate.mjs`: **15/15 fixtures + axle test + clip test passed** (0 failures).
+    - `tests/test_brick_*.py`: **90/90 passed** (0 failures).
+    - `tests/test_generic_stud_occupancy.py`: **367/367 passed** (0 failures).
+    - `tests/test_ldraw_parts.py`: **9/9 passed, 2 skipped** (0 failures).
+    - Fast test suite total: **424 passed in 100s**.
+
 ## 2026-09-28: Mated-Connector Exemption — Axles Only (agent, `agent/dispatch-mated-connector-exemption-axles-only-1790621653`)
 
 - **Task**: Focused implementation of backlog item `mated-connector-exemption-axles-only` per Curtis's operator steer -- deliberately scoped down after the broader `mated-connector-exemption-implementation` task's first attempt (Claude engine) produced no changes after a real ~50min session.

@@ -296,6 +296,137 @@ def _axles_world(mesh, r, ex, ey, ez):
     return out
 
 
+# Curated clip jaw positions and axis directions (pos in local LDU, dir unit vector along jaw cylinder axis)
+CURATED_CLIPS = {
+    '4085a': [{'pos': (0.0, 4.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '4085b': [{'pos': (0.0, 4.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '4085c': [{'pos': (0.0, 4.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '60897': [{'pos': (0.0, 4.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '6019':  [{'pos': (0.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)}],
+    '61252': [{'pos': (0.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)}],
+    '60476': [{'pos': (0.0, 10.0, -20.0), 'dir': (1.0, 0.0, 0.0)}],
+    '60470a': [{'pos': (-10.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)},
+               {'pos': (10.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)}],
+    '60470b': [{'pos': (-10.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)},
+               {'pos': (10.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)}],
+    '11476': [{'pos': (0.0, 2.0, -20.0), 'dir': (1.0, 0.0, 0.0)}],
+    '44861': [{'pos': (10.0, -6.0, 0.0), 'dir': (0.0, 0.0, 1.0)}],
+    '92280': [{'pos': (10.0, -6.0, 0.0), 'dir': (0.0, 0.0, 1.0)}],
+    '78256': [{'pos': (30.0, 4.0, 0.0), 'dir': (0.0, 1.0, 0.0)}],
+    '15712': [{'pos': (0.0, -6.0, 0.0), 'dir': (0.0, 0.0, 1.0)}],
+    '2555':  [{'pos': (0.0, -6.0, 0.0), 'dir': (0.0, 0.0, 1.0)}],
+    '30237': [{'pos': (0.0, 12.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '60475a': [{'pos': (0.0, 12.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '60475b': [{'pos': (0.0, 12.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+    '95820': [{'pos': (0.0, 12.0, -20.0), 'dir': (0.0, 1.0, 0.0)}],
+}
+
+# Curated bar segments (a and b endpoints in local LDU)
+CURATED_BARS = {
+    '2540':   [{'a': (-20.0, 2.0, -20.0), 'b': (20.0, 2.0, -20.0)}],
+    '2921':   [{'a': (0.0, 0.0, -20.0), 'b': (0.0, 24.0, -20.0)}],
+    '292126': [{'a': (0.0, 0.0, -20.0), 'b': (0.0, 24.0, -20.0)}],
+    '30236':  [{'a': (-20.0, 10.0, -20.0), 'b': (20.0, 10.0, -20.0)}],
+    '48336':  [{'a': (-14.0, 2.0, -20.0), 'b': (14.0, 2.0, -20.0)}],
+    '30374':  [{'a': (0.0, 0.0, 0.0), 'b': (0.0, 80.0, 0.0)}],
+    '4095':   [{'a': (0.0, -120.0, 0.0), 'b': (0.0, 12.0, 0.0)}],
+    '63965':  [{'a': (0.0, -102.5, 0.0), 'b': (0.0, 18.0, 0.0)}],
+    '2714a':  [{'a': (0.0, -137.5, 0.0), 'b': (0.0, 18.0, 0.0)}],
+    '25893a': [{'a': (-10.0, 8.0, 0.0), 'b': (10.0, 8.0, 0.0)}],
+}
+
+
+def _clips_world(mesh, r, ex, ey, ez):
+    """World-space position and axis direction for part's clips.
+    Returns [{'pos': (x, y, z), 'dir': (dx, dy, dz)}] in world space."""
+    if not mesh:
+        return []
+    pid = mesh.get('id')
+    q = mesh.get('quant', 16)
+    out = []
+    raw_clips = (mesh.get('connectors') or {}).get('clips') or []
+    if raw_clips:
+        for c in raw_clips:
+            lp = (c['pos'][0] / q, c['pos'][1] / q, c['pos'][2] / q)
+            wp = _add3(rot_ldu(r, lp), (ex, ey, ez))
+            wd = rot_ldu(r, c['dir'])
+            out.append({'pos': wp, 'dir': wd})
+        return out
+    if pid in CURATED_CLIPS:
+        for c in CURATED_CLIPS[pid]:
+            wp = _add3(rot_ldu(r, c['pos']), (ex, ey, ez))
+            wd = rot_ldu(r, c['dir'])
+            out.append({'pos': wp, 'dir': wd})
+        return out
+    tl = (mesh.get('title') or '').lower()
+    if 'clip' in tl and 'clipboard' not in tl:
+        raw_bars = (mesh.get('connectors') or {}).get('bars') or []
+        for b in raw_bars:
+            lp = (b['pos'][0] / q, b['pos'][1] / q, b['pos'][2] / q)
+            wp = _add3(rot_ldu(r, lp), (ex, ey, ez))
+            wd = rot_ldu(r, b['dir'])
+            out.append({'pos': wp, 'dir': wd})
+    return out
+
+
+def _bars_world(mesh, r, ex, ey, ez):
+    """World-space line segments for part's bars.
+    Returns [{'a': (xa, ya, za), 'b': (xb, yb, zb)}] in world space."""
+    if not mesh:
+        return []
+    pid = mesh.get('id')
+    q = mesh.get('quant', 16)
+    out = []
+    tl = (mesh.get('title') or '').lower()
+    if ('clip' in tl and 'clipboard' not in tl) or pid in CURATED_CLIPS:
+        return []
+    if pid in CURATED_BARS:
+        for b in CURATED_BARS[pid]:
+            wa = _add3(rot_ldu(r, b['a']), (ex, ey, ez))
+            wb = _add3(rot_ldu(r, b['b']), (ex, ey, ez))
+            out.append({'a': wa, 'b': wb})
+        return out
+    raw_bars = (mesh.get('connectors') or {}).get('bars') or []
+    if raw_bars:
+        if any('a' in b and 'b' in b for b in raw_bars):
+            for b in raw_bars:
+                if 'a' in b and 'b' in b:
+                    la = (b['a'][0] / q, b['a'][1] / q, b['a'][2] / q)
+                    lb = (b['b'][0] / q, b['b'][1] / q, b['b'][2] / q)
+                    out.append({'a': _add3(rot_ldu(r, la), (ex, ey, ez)),
+                                'b': _add3(rot_ldu(r, lb), (ex, ey, ez))})
+            return out
+        if any('len' in b for b in raw_bars):
+            for b in raw_bars:
+                la = (b['pos'][0] / q, b['pos'][1] / q, b['pos'][2] / q)
+                blen = b.get('len', 0.0)
+                d = b.get('dir', (1.0, 0.0, 0.0))
+                lb = (la[0] + d[0] * blen, la[1] + d[1] * blen, la[2] + d[2] * blen)
+                out.append({'a': _add3(rot_ldu(r, la), (ex, ey, ez)),
+                            'b': _add3(rot_ldu(r, lb), (ex, ey, ez))})
+            return out
+        if len(raw_bars) >= 2:
+            p0 = (raw_bars[0]['pos'][0] / q, raw_bars[0]['pos'][1] / q, raw_bars[0]['pos'][2] / q)
+            p1 = (raw_bars[1]['pos'][0] / q, raw_bars[1]['pos'][1] / q, raw_bars[1]['pos'][2] / q)
+            out.append({'a': _add3(rot_ldu(r, p0), (ex, ey, ez)),
+                        'b': _add3(rot_ldu(r, p1), (ex, ey, ez))})
+            return out
+        if len(raw_bars) == 1 and mesh.get('bounds'):
+            p0 = (raw_bars[0]['pos'][0] / q, raw_bars[0]['pos'][1] / q, raw_bars[0]['pos'][2] / q)
+            d = raw_bars[0].get('dir', (1.0, 0.0, 0.0))
+            bmin = (mesh['bounds']['min'][0] / q, mesh['bounds']['min'][1] / q, mesh['bounds']['min'][2] / q)
+            bmax = (mesh['bounds']['max'][0] / q, mesh['bounds']['max'][1] / q, mesh['bounds']['max'][2] / q)
+            axis = 0 if abs(d[0]) > 0.5 else 1 if abs(d[1]) > 0.5 else 2
+            la = list(p0)
+            lb = list(p0)
+            la[axis] = bmin[axis]
+            lb[axis] = bmax[axis]
+            out.append({'a': _add3(rot_ldu(r, tuple(la)), (ex, ey, ez)),
+                        'b': _add3(rot_ldu(r, tuple(lb)), (ex, ey, ez))})
+            return out
+    return out
+
+
 def _pair_holes(mesh):
     """Pair a mesh's local hole entries (one {pos,dir} per face) into (a,b) segments: greedy nearest
     opposite-direction match, in LOCAL (unquantised LDU) space -- spec section 2's "the segment between the
@@ -352,12 +483,13 @@ def validate_parts(parts, meshes):
     """
     n = len(parts)
     mesh_list = [meshes.get(e['p']) for e in parts]
-    studs, sockets, pins, boxes, hole_segs_world, hinges, axles_world = [], [], [], [], [], [], []
+    studs, sockets, pins, boxes, hole_segs_world, hinges, axles_world, clips_world, bars_world = (
+        [], [], [], [], [], [], [], [], [])
     not_checked = 0
     for e, m in zip(parts, mesh_list):
         if not m or m in ('loading', 'error'):
             studs.append([]); sockets.append([]); pins.append([]); boxes.append(None); hole_segs_world.append([])
-            hinges.append([]); axles_world.append([])
+            hinges.append([]); axles_world.append([]); clips_world.append([]); bars_world.append([])
             not_checked += 1
             continue
         studs.append(_conn_world(m, 'studs', e['r'], e['x'], e['y'], e['z']))
@@ -374,6 +506,8 @@ def validate_parts(parts, meshes):
             for s in local_segs
         ])
         axles_world.append(_axles_world(m, e['r'], e['x'], e['y'], e['z']))
+        clips_world.append(_clips_world(m, e['r'], e['x'], e['y'], e['z']))
+        bars_world.append(_bars_world(m, e['r'], e['x'], e['y'], e['z']))
 
     stud_conn = pin_conn = 0
     adj = [set() for _ in range(n)]
@@ -480,6 +614,34 @@ def validate_parts(parts, meshes):
                         adj[j].add(i)
                         mated_pairs.add((min(i, j), max(i, j)))
 
+    clip_conn = 0
+    for i in range(n):
+        for c in clips_world[i]:
+            lc = math.hypot(c['dir'][0], c['dir'][1], c['dir'][2])
+            if lc < 1e-6:
+                continue
+            uc = (c['dir'][0] / lc, c['dir'][1] / lc, c['dir'][2] / lc)
+            for j in range(n):
+                if i == j:
+                    continue
+                for bar in bars_world[j]:
+                    vb = (bar['b'][0] - bar['a'][0], bar['b'][1] - bar['a'][1], bar['b'][2] - bar['a'][2])
+                    lb = math.hypot(vb[0], vb[1], vb[2])
+                    if lb < 1e-6:
+                        continue
+                    ub = (vb[0] / lb, vb[1] / lb, vb[2] / lb)
+                    if abs(_dot3(uc, ub)) <= 0.99:
+                        continue
+                    dist, t = _point_line_dist(c['pos'], bar['a'], bar['b'])
+                    if dist >= 0.5:
+                        continue
+                    t_dist = t * lb
+                    if -2.0 <= t_dist <= lb + 2.0:
+                        clip_conn += 1
+                        adj[i].add(j)
+                        adj[j].add(i)
+                        mated_pairs.add((min(i, j), max(i, j)))
+
     seen = set(base_adj)
     queue = list(base_adj)
     while queue:
@@ -567,9 +729,10 @@ def validate_parts(parts, meshes):
          'detail': ('%d part%s not connected to the baseplate' % (len(floating), 's' if len(floating) > 1 else ''))
          if floating else 'all %d parts reach the baseplate' % n},
         {'id': 'connections', 'label': 'Stud + pin + hinge connections',
-         'status': 'pass' if (stud_conn + pin_conn + hinge_conn + axle_conn) else 'fail',
+         'status': 'pass' if (stud_conn + pin_conn + hinge_conn + axle_conn + clip_conn) else 'fail',
          'detail': ('%d stud + %d pin + %d hinge' % (stud_conn, pin_conn, hinge_conn))
-         + ((' + %d axle' % axle_conn) if axle_conn else '')},
+         + ((' + %d axle' % axle_conn) if axle_conn else '')
+         + ((' + %d clip' % clip_conn) if clip_conn else '')},
         {'id': 'balance', 'label': 'Centre of mass over footprint',
          'status': 'fail' if balance == 'none' else balance,
          'detail': 'no part rests on the baseplate to measure' if balance == 'none'
@@ -577,9 +740,10 @@ def validate_parts(parts, meshes):
     ]
     return {
         'ok': all(c['status'] != 'fail' for c in checks), 'checks': checks,
-        'connections': stud_conn + pin_conn + hinge_conn + axle_conn,
+        'connections': stud_conn + pin_conn + hinge_conn + axle_conn + clip_conn,
         'studConnections': stud_conn, 'pinConnections': pin_conn,
         'hingeConnections': hinge_conn, 'axleConnections': axle_conn,
+        'clipConnections': clip_conn,
         'collisions': collisions, 'overlaps': overlaps, 'floating': floating, 'balance': balance,
         'com': {'margin': margin}, 'parts': [], 'cost': 0,
     }
