@@ -357,6 +357,121 @@ function _brickKit() {
     }
     return out;
   }
+  var CURATED_CLIPS={
+    '4085a':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '4085b':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '4085c':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '60897':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '6019': [{pos:[0,2,-20],dir:[1,0,0]}],
+    '61252':[{pos:[0,2,-20],dir:[1,0,0]}],
+    '60476':[{pos:[0,10,-20],dir:[1,0,0]}],
+    '60470a':[{pos:[-10,2,-20],dir:[1,0,0]},{pos:[10,2,-20],dir:[1,0,0]}],
+    '60470b':[{pos:[-10,2,-20],dir:[1,0,0]},{pos:[10,2,-20],dir:[1,0,0]}],
+    '11476':[{pos:[0,2,-20],dir:[1,0,0]}],
+    '44861':[{pos:[10,-6,0],dir:[0,0,1]}],
+    '92280':[{pos:[10,-6,0],dir:[0,0,1]}],
+    '78256':[{pos:[30,4,0],dir:[0,1,0]}],
+    '15712':[{pos:[0,-6,0],dir:[0,0,1]}],
+    '2555': [{pos:[0,-6,0],dir:[0,0,1]}],
+    '30237':[{pos:[0,12,-20],dir:[0,1,0]}],
+    '60475a':[{pos:[0,12,-20],dir:[0,1,0]}],
+    '60475b':[{pos:[0,12,-20],dir:[0,1,0]}],
+    '95820':[{pos:[0,12,-20],dir:[0,1,0]}]
+  };
+  var CURATED_BARS={
+    '2540':   [{a:[-20,2,-20],b:[20,2,-20]}],
+    '2921':   [{a:[0,0,-20],b:[0,24,-20]}],
+    '292126': [{a:[0,0,-20],b:[0,24,-20]}],
+    '30236':  [{a:[-20,10,-20],b:[20,10,-20]}],
+    '48336':  [{a:[-14,2,-20],b:[14,2,-20]}],
+    '30374':  [{a:[0,0,0],b:[0,80,0]}],
+    '4095':   [{a:[0,-120,0],b:[0,12,0]}],
+    '63965':  [{a:[0,-102.5,0],b:[0,18,0]}],
+    '2714a':  [{a:[0,-137.5,0],b:[0,18,0]}],
+    '25893a': [{a:[-10,8,0],b:[10,8,0]}]
+  };
+  function clipsWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var pid=mesh.id,q=mesh.quant||16,out=[];
+    var list=(mesh.connectors&&mesh.connectors.clips)||[];
+    if(list.length){
+      list.forEach(function(c){
+        var lp=[c.pos[0]/q,c.pos[1]/q,c.pos[2]/q];
+        var wp=add3(rotLDU(r,lp),[ex,ey,ez]);
+        var wd=rotLDU(r,c.dir);
+        out.push({pos:wp,dir:wd});
+      });
+      return out;
+    }
+    if(CURATED_CLIPS[pid]){
+      CURATED_CLIPS[pid].forEach(function(c){
+        var wp=add3(rotLDU(r,c.pos),[ex,ey,ez]);
+        var wd=rotLDU(r,c.dir);
+        out.push({pos:wp,dir:wd});
+      });
+      return out;
+    }
+    var tl=(mesh.title||'').toLowerCase();
+    if(tl.indexOf('clip')!==-1&&tl.indexOf('clipboard')===-1){
+      var rawBars=(mesh.connectors&&mesh.connectors.bars)||[];
+      rawBars.forEach(function(b){
+        var lp=[b.pos[0]/q,b.pos[1]/q,b.pos[2]/q];
+        var wp=add3(rotLDU(r,lp),[ex,ey,ez]);
+        var wd=rotLDU(r,b.dir);
+        out.push({pos:wp,dir:wd});
+      });
+    }
+    return out;
+  }
+  function barsWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var pid=mesh.id,q=mesh.quant||16,out=[];
+    var tl=(mesh.title||'').toLowerCase();
+    if((tl.indexOf('clip')!==-1&&tl.indexOf('clipboard')===-1)||CURATED_CLIPS[pid])return [];
+    if(CURATED_BARS[pid]){
+      CURATED_BARS[pid].forEach(function(b){
+        out.push({a:add3(rotLDU(r,b.a),[ex,ey,ez]),b:add3(rotLDU(r,b.b),[ex,ey,ez])});
+      });
+      return out;
+    }
+    var rawBars=(mesh.connectors&&mesh.connectors.bars)||[];
+    if(!rawBars.length)return [];
+    if(rawBars.some(function(b){return b.a&&b.b;})){
+      rawBars.forEach(function(b){
+        if(b.a&&b.b){
+          var la=[b.a[0]/q,b.a[1]/q,b.a[2]/q],lb=[b.b[0]/q,b.b[1]/q,b.b[2]/q];
+          out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+        }
+      });
+      return out;
+    }
+    if(rawBars.some(function(b){return b.len;})){
+      rawBars.forEach(function(b){
+        var la=[b.pos[0]/q,b.pos[1]/q,b.pos[2]/q],blen=b.len||0,d=b.dir||[1,0,0];
+        var lb=[la[0]+d[0]*blen,la[1]+d[1]*blen,la[2]+d[2]*blen];
+        out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+      });
+      return out;
+    }
+    if(rawBars.length>=2){
+      var p0=[rawBars[0].pos[0]/q,rawBars[0].pos[1]/q,rawBars[0].pos[2]/q];
+      var p1=[rawBars[1].pos[0]/q,rawBars[1].pos[1]/q,rawBars[1].pos[2]/q];
+      out.push({a:add3(rotLDU(r,p0),[ex,ey,ez]),b:add3(rotLDU(r,p1),[ex,ey,ez])});
+      return out;
+    }
+    if(rawBars.length===1&&mesh.bounds){
+      var p0=[rawBars[0].pos[0]/q,rawBars[0].pos[1]/q,rawBars[0].pos[2]/q];
+      var d=rawBars[0].dir||[1,0,0];
+      var bmin=[mesh.bounds.min[0]/q,mesh.bounds.min[1]/q,mesh.bounds.min[2]/q];
+      var bmax=[mesh.bounds.max[0]/q,mesh.bounds.max[1]/q,mesh.bounds.max[2]/q];
+      var axis=Math.abs(d[0])>0.5?0:Math.abs(d[1])>0.5?1:2;
+      var la=p0.slice(),lb=p0.slice();
+      la[axis]=bmin[axis];lb[axis]=bmax[axis];
+      out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+      return out;
+    }
+    return out;
+  }
   // Pair a mesh's local hole entries (one {pos,dir} per face) into {a,b} segments: greedy nearest
   // opposite-direction match, in LOCAL (unquantised LDU) space -- spec §2's "the segment between the pair is
   // the hole axis".
@@ -381,15 +496,17 @@ function _brickKit() {
   function validateParts(list){
     var n=list.length,i,j;
     var meshes=list.map(function(e){return partMeshCache[e.p];});
-    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],axles=[],notChecked=0;
+    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],axles=[],clips=[],bars=[],notChecked=0;
     for(i=0;i<n;i++){
       var e=list[i],m=meshes[i];
-      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);axles.push([]);notChecked++;continue;}
+      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);axles.push([]);clips.push([]);bars.push([]);notChecked++;continue;}
       studs.push(connWorld(m,'studs',e.r,e.x,e.y,e.z));
       sockets.push(connWorld(m,'sockets',e.r,e.x,e.y,e.z));
       pins.push(connWorld(m,'pins',e.r,e.x,e.y,e.z));
       hinges.push(hingesWorld(m,e.r,e.x,e.y,e.z));
       axles.push(axlesWorld(m,e.r,e.x,e.y,e.z));
+      clips.push(clipsWorld(m,e.r,e.x,e.y,e.z));
+      bars.push(barsWorld(m,e.r,e.x,e.y,e.z));
       boxes.push(worldBoxes(m,e.r,e.x,e.y,e.z));
       if(!m.occupancy)notChecked++;
       var localSegs=pairHoles(m);
@@ -483,6 +600,33 @@ function _brickKit() {
         }
       });
     }
+    var clipConn=0;
+    for(i=0;i<n;i++){
+      clips[i].forEach(function(c){
+        var lc=Math.hypot(c.dir[0],c.dir[1],c.dir[2]);
+        if(lc<1e-6)return;
+        var uc=[c.dir[0]/lc,c.dir[1]/lc,c.dir[2]/lc];
+        for(j=0;j<n;j++){
+          if(i===j)continue;
+          bars[j].forEach(function(bar){
+            var vb=[bar.b[0]-bar.a[0],bar.b[1]-bar.a[1],bar.b[2]-bar.a[2]];
+            var lb=Math.hypot(vb[0],vb[1],vb[2]);
+            if(lb<1e-6)return;
+            var ub=[vb[0]/lb,vb[1]/lb,vb[2]/lb];
+            if(Math.abs(dot3(uc,ub))<=0.99)return;
+            var pld=pointLineDist(c.pos,bar.a,bar.b);
+            if(pld.dist>=0.5)return;
+            var tDist=pld.t*lb;
+            if(tDist>=-2.0&&tDist<=lb+2.0){
+              clipConn++;
+              adj[i][j]=1;
+              adj[j][i]=1;
+              matedPairs[Math.min(i,j)+','+Math.max(i,j)]=1;
+            }
+          });
+        }
+      });
+    }
     var seen={},queue=Object.keys(baseAdj).map(Number);
     queue.forEach(function(k){seen[k]=1;});
     while(queue.length){var c=queue.pop();for(var nb in adj[c])if(!seen[nb]){seen[nb]=1;queue.push(+nb);}}
@@ -536,14 +680,14 @@ function _brickKit() {
         detail:(np?np+' part pair'+(np>1?'s':'')+' overlap':'0 overlaps')+(notChecked?' ('+notChecked+' part'+(notChecked>1?'s':'')+' not checked, no occupancy data yet)':'')},
       {id:'anchored',label:'Every part anchored',status:floating.length?'fail':'pass',
         detail:floating.length?floating.length+' part'+(floating.length>1?'s':'')+' not connected to the baseplate':'all '+n+' parts reach the baseplate'},
-      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn+axleConn)?'pass':'fail',
-        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'+(axleConn?' + '+axleConn+' axle':'')},
+      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn+axleConn+clipConn)?'pass':'fail',
+        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'+(axleConn?' + '+axleConn+' axle':'')+(clipConn?' + '+clipConn+' clip':'')},
       {id:'balance',label:'Centre of mass over footprint',status:balance==='none'?'fail':balance,
         detail:balance==='none'?'no part rests on the baseplate to measure':
           '('+ (margin!==null?'margin '+Math.abs(margin).toFixed(2):'')+' studs'+(balance==='fail'?', outside footprint':'')+')'}
     ];
-    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn+axleConn,
-      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,axleConnections:axleConn,collisions:collisions,
+    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn+axleConn+clipConn,
+      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,axleConnections:axleConn,clipConnections:clipConn,collisions:collisions,
       overlaps:np,floating:floating,balance:balance,com:{margin:margin},parts:[],cost:0};
   }
   var SHAPES={

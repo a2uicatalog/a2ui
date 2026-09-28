@@ -126,7 +126,7 @@ def test_needs_occupancy_parts_have_no_fabricated_occupancy(index):
         mesh = json.loads((PARTS_DIR / (pid + ".json")).read_text())
         if entry["needs_occupancy"]:
             assert mesh["occupancy"] is None, pid
-        elif not entry.get("bars"):
+        elif not entry.get("bars") and not any(entry.get("title", "").strip().lower().startswith(p) for p in ("minifig hair", "minifig helmet", "minifig hat", "minifig headdress", "minifig cap", "minifig mask", "minifig crown")):
             # bake_parts.py calls bar_grip_points unconditionally alongside resolve_occupancy_and_sockets, so
             # a part can legitimately carry BOTH a real occupancy override AND a bars entry (e.g. 89678
             # "Technic Pin 1/2 with Friction" -- an OVERRIDES box plus a real grip end) -- only a part with

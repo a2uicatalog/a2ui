@@ -1,13 +1,19 @@
 # Mated-Connector Collision Exemption Generalisation: Architectural Scoping Investigation (2026-09-28)
 
-## Status: PARTIAL IMPLEMENTATION LANDED (2026-09-28: mated-connector-exemption-axles-only)
+## Status: PARTIAL IMPLEMENTATION LANDED (2026-09-28: mated-connector-exemption-axles-only, mated-connector-exemption-clips-only)
 - **Axles-Only Exemption**: Landed on 2026-09-28 (`agent/dispatch-mated-connector-exemption-axles-only-1790621653`).
   - Added axle segment extraction (`_axles_world` / `axlesWorld`) with explicit `connectors.axles` support and dynamic fallback for unbaked/curated axles.
   - Implemented collinearity + longitudinal overlap detection between axles and hole segments in `validate_parts` (Python) and `validateParts` (JS `atoms_brick.gs`).
   - Added mated axle/hole pairs to `mated_pairs` (collision exemption), linked in `adj` (graph anchoring), and reported `axleConnections`.
   - Added curated hinge fallback in validator for `2429`/`2430` and `3830`/`3831`.
   - Verified with 38 unit tests in `tests/test_brick_parts_validate.py` and JS twin test.
-- **Pending Follow-ups**: Clips, towballs, whole-pair blind spot mitigation, and indirect-joint blindness (Technic panels) remain separate backlog items.
+- **Clips-Only Exemption**: Landed on 2026-09-28 (`agent/dispatch-mated-connector-exemption-clips-only-1790626653`).
+  - Added clip jaw extraction (`_clips_world` / `clipsWorld`) and bar segment extraction (`_bars_world` / `barsWorld`) with `CURATED_CLIPS` and `CURATED_BARS` registries, explicit `connectors.clips` and `connectors.bars` support, and dynamic fallback.
+  - Implemented collinearity + perpendicular distance (< 0.5 LDU) + longitudinal bar span projection detection between clip jaws and bar segments in `validate_parts` (Python) and `validateParts` (JS `atoms_brick.gs`).
+  - Added mated clip/bar pairs to `mated_pairs` (collision exemption), linked in `adj` (graph anchoring), and reported `clipConnections`.
+  - Wired `clip_connectors` helper to `scripts/ldraw/parts.py` and `scripts/ldraw/bake_parts.py`, preventing clip parts from receiving bogus `bars` connectors.
+  - Verified with 47 unit tests in `tests/test_brick_parts_validate.py` and JS twin test.
+- **Pending Follow-ups**: Towballs, whole-pair blind spot mitigation, and indirect-joint blindness (Technic panels) remain separate backlog items.
 
 ---
 

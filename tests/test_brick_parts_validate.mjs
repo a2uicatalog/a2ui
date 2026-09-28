@@ -74,3 +74,16 @@ if (rAxle.axleConnections !== 1 || rAxle.overlaps !== 0 || rAxle.collisions.leng
 }
 console.log("  ✓ axle_through_hole_mating_and_exemption");
 
+// Clip-around-bar mated pair exemption test (2026-09-28)
+loadMesh('2921');
+loadMesh('4085c');
+const rClip = kit.validateParts([
+  {p: '2921', x: 0, y: -24, z: 0, r: 0},
+  {p: '4085c', x: 0, y: -24, z: 0, r: 0}
+]);
+if (rClip.clipConnections !== 1 || rClip.overlaps !== 0 || rClip.collisions.length !== 0) {
+  console.error("Clip-around-bar test failed:", rClip);
+  process.exit(1);
+}
+console.log("  ✓ clip_around_bar_mating_and_exemption");
+

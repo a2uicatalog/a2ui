@@ -1033,6 +1033,68 @@ def axle_connectors(part_id, title="", bounds_min=None, bounds_max=None, occupan
     return []
 
 
+# Clip connectors (2026-09-28, mated-connector-exemption-clips-only):
+# Real measured positions and axis directions of bar-receiving clip jaws on standard LEGO clip parts.
+# The cylindrical inner jaws have radius 4.0 LDU (matching standard bar radius 4.0 LDU), confirmed by
+# direct resolve_part() sampling across official LDraw geometry.
+CLIP_CONNECTORS = {
+    # Plate 1 x 1 with Clip Vertical (4085a Thin C-Clip, 4085b Thin U-Clip, 4085c Thick U-Clip, 60897 Thick C-Clip)
+    "4085a": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "4085b": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "4085c": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "60897": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    # Plate 1 x 1 with Clip Horizontal (6019 Thick U-Clip, 61252 Thick C-Clip)
+    "6019":  [{"pos": (0.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    "61252": [{"pos": (0.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Brick 1 x 1 with Clip Horizontal (60476)
+    "60476": [{"pos": (0.0, 10.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Plate 1 x 2 with 2 Clips Horizontal (60470a Thick U-Clips, 60470b Thick C-Clips)
+    "60470a": [{"pos": (-10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)},
+               {"pos": (10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    "60470b": [{"pos": (-10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)},
+               {"pos": (10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Plate 1 x 2 with Clip Horizontal on Side (11476)
+    "11476": [{"pos": (0.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Plate 1 x 2 with Single Clip on Top (44861, 92280)
+    "44861": [{"pos": (10.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    "92280": [{"pos": (10.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    # Plate 1 x 2 with Clip Vertical on End (78256)
+    "78256": [{"pos": (30.0, 4.0, 0.0), "dir": (0.0, 1.0, 0.0)}],
+    # Tile 1 x 1 with Clip (15712 Thick C-Clip, 2555)
+    "15712": [{"pos": (0.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    "2555":  [{"pos": (0.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    # Brick 1 x 2 with Clip Vertical (30237, 95820)
+    "30237": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "95820": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    # Brick 1 x 1 with Clip Vertical (60475a, 60475b)
+    "60475a": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "60475b": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+}
+
+
+def clip_connectors(part_id, title="", bounds_min=None, bounds_max=None, cylinders=None):
+    """Returns [{'pos': (x,y,z), 'dir': (dx,dy,dz)}] for part_id's real clip jaws, or [] if none.
+    Called directly by bake_parts.py (same pattern as hinge_connectors and axle_connectors)."""
+    e = CLIP_CONNECTORS.get(part_id)
+    if e:
+        return [dict(x) for x in e]
+    tl = (title or "").strip().lower()
+    if "clip" not in tl or "clipboard" in tl or not cylinders:
+        return []
+    r4 = [c for c in cylinders if abs(c[2] - BAR_RADIUS) <= BAR_RADIUS_TOL]
+    out = []
+    for c in r4:
+        length = (c[1][0] ** 2 + c[1][1] ** 2 + c[1][2] ** 2) ** 0.5
+        if length < 4.0:
+            continue
+        center = (c[0][0] + c[1][0] * 0.5, c[0][1] + c[1][1] * 0.5, c[0][2] + c[1][2] * 0.5)
+        cdir = (c[1][0] / length, c[1][1] / length, c[1][2] / length)
+        if not any(math.dist(x['pos'], center) < 2.0 for x in out):
+            out.append({'pos': (round(center[0], 2), round(center[1], 2), round(center[2], 2)),
+                        'dir': (round(cdir[0], 3), round(cdir[1], 3), round(cdir[2], 3))})
+    return out
+
+
 # Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
 # head's own real top stud (confirmed live: the curated head part 3626bp01's own title literally says
 # "Blocked Hollow Stud") -- so it needs a socket, not occupancy (nothing is ever stacked on top of a hat in
