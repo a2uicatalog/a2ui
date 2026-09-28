@@ -107992,6 +107992,1230 @@
    "needs_occupancy": false,
    "bytes": 25521,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "12589": {
+   "title": "~Duplo Wheel Rim 11 x 17",
+   "bounds": {
+    "min": [
+     -336,
+     -336,
+     -448
+    ],
+    "max": [
+     336,
+     336,
+     0
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 115343,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32193": {
+   "title": "Wheel 14 x 21 Solid Rubber with Axlehole",
+   "bounds": {
+    "min": [
+     -414,
+     -416,
+     -256
+    ],
+    "max": [
+     414,
+     416,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 53612,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32247": {
+   "title": "Wheel 41mm Znap",
+   "bounds": {
+    "min": [
+     -864,
+     -858,
+     -480
+    ],
+    "max": [
+     864,
+     858,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 109655,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "37383": {
+   "title": "Wheel Rim 42 x 62 with 10 Spokes and  3 Pins",
+   "bounds": {
+    "min": [
+     -1327,
+     -1327,
+     -538
+    ],
+    "max": [
+     1327,
+     1327,
+     1254
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 398004,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4288": {
+   "title": "Wheel 13 x 20 Solid Rubber with Axle Hole",
+   "bounds": {
+    "min": [
+     -400,
+     -399,
+     -272
+    ],
+    "max": [
+     400,
+     399,
+     260
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 124214,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "49098": {
+   "title": "Wheel Rim 11 x 18 Side with Tyre Widener",
+   "bounds": {
+    "min": [
+     -448,
+     -448,
+     -128
+    ],
+    "max": [
+     448,
+     448,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 130414,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "50254": {
+   "title": "Train Wheel Small with Notched Hole",
+   "bounds": {
+    "min": [
+     -288,
+     -288,
+     -64
+    ],
+    "max": [
+     288,
+     288,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 31675,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "5428": {
+   "title": "Wheel Rim 41 x 75 with  10 Spokes and  3 Pins",
+   "bounds": {
+    "min": [
+     -1504,
+     -1504,
+     -336
+    ],
+    "max": [
+     1504,
+     1504,
+     1280
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 647186,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "59521": {
+   "title": "Wheel 28 x 158 with 3 Spokes",
+   "bounds": {
+    "min": [
+     -3166,
+     -3166,
+     -576
+    ],
+    "max": [
+     3166,
+     3166,
+     576
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 374391,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64711": {
+   "title": "Wheel 20 x 64 with Spikes and 13 Pegholes",
+   "bounds": {
+    "min": [
+     -1224,
+     -1232,
+     -320
+    ],
+    "max": [
+     1224,
+     1232,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 26,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 681152,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64712": {
+   "title": "Wheel 32 x 64 Conical with Spikes and Inner 48 Tooth Gear",
+   "bounds": {
+    "min": [
+     -1246,
+     -1237,
+     -464
+    ],
+    "max": [
+     1246,
+     1232,
+     800
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 676561,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "68577": {
+   "title": "Wheel Rim 42 x 62 with 20 Spokes and  3 Pins",
+   "bounds": {
+    "min": [
+     -1328,
+     -1328,
+     -538
+    ],
+    "max": [
+     1328,
+     1328,
+     1254
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 632439,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "73389": {
+   "title": "Wheel Rim 41 x 75 with  5 Spokes and  3 Pins #2 (Right)",
+   "bounds": {
+    "min": [
+     -1504,
+     -1504,
+     -352
+    ],
+    "max": [
+     1504,
+     1504,
+     1280
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 360958,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "73398": {
+   "title": "Wheel Rim 41 x 75 with  5 Spokes and  3 Pins #1 (Left)",
+   "bounds": {
+    "min": [
+     -1504,
+     -1504,
+     -352
+    ],
+    "max": [
+     1504,
+     1504,
+     1280
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 361448,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "92851": {
+   "title": "Wheel Minifig Bicycle with Integral Rubber Black Tyre",
+   "bounds": {
+    "min": [
+     -339,
+     -339,
+     -104
+    ],
+    "max": [
+     339,
+     339,
+     104
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 182517,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "89678": {
+   "title": "Technic Pin  1/2 with Friction",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     0,
+     128,
+     128
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 36595,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4459": {
+   "title": "Technic Pin with Friction",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     320,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 2,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 87381,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "61332": {
+   "title": "Technic Pin with Friction Type 2",
+   "bounds": {
+    "min": [
+     -320,
+     -118,
+     -128
+    ],
+    "max": [
+     320,
+     118,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 56000,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32002": {
+   "title": "Technic Pin  3/4",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     160,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 50075,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32556a": {
+   "title": "Technic Pin Long without Friction with Single Slot",
+   "bounds": {
+    "min": [
+     -480,
+     -128,
+     -128
+    ],
+    "max": [
+     480,
+     118,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 82553,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32556b": {
+   "title": "Technic Pin Long without Friction with Dual Slots",
+   "bounds": {
+    "min": [
+     -480,
+     -118,
+     -128
+    ],
+    "max": [
+     480,
+     118,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 87473,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "39888": {
+   "title": "Technic Pin Long without Friction Type 2",
+   "bounds": {
+    "min": [
+     -480,
+     -118,
+     -128
+    ],
+    "max": [
+     480,
+     118,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 76899,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "42924": {
+   "title": "Technic Pin Long with Friction Type 2",
+   "bounds": {
+    "min": [
+     -480,
+     -118,
+     -128
+    ],
+    "max": [
+     480,
+     118,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 80981,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "77765": {
+   "title": "Technic Pin Long with End Stop",
+   "bounds": {
+    "min": [
+     -480,
+     -128,
+     -128
+    ],
+    "max": [
+     480,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 51127,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "65304": {
+   "title": "Technic Pin Long with Stop Bush Type 2",
+   "bounds": {
+    "min": [
+     -480,
+     -133,
+     -144
+    ],
+    "max": [
+     480,
+     133,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 1,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 85835,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973": {
+   "title": "Minifig Torso",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 21351,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "43370": {
+   "title": "Minifig Torso with Arm Locking Notches",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 27184,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d01": {
+   "title": "Minifig Torso with \"TINE\" Stickers",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -164
+    ],
+    "max": [
+     304,
+     512,
+     164
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 58343,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d02": {
+   "title": "Minifig Torso with Yellow Buttons and Grey Belt Sticker",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -164
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 29968,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d03": {
+   "title": "Minifig Torso with White Buttons and Police Badge Plain Sticker",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -164
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 36453,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d04": {
+   "title": "Minifig Torso with Shell Logo on White Background Sticker",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -164
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 31023,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d06": {
+   "title": "Minifig Torso with Rear Sticker White \"1\" on Transparent Background",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     164
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 22496,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d07": {
+   "title": "Minifig Torso with Red Cross Sticker",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -164
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 24550,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973d0f": {
+   "title": "Minifig Torso with MD Foods Logo Sticker on Both Sides",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -164
+    ],
+    "max": [
+     304,
+     512,
+     164
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 75706,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p01": {
+   "title": "Minifig Torso with Vertical Striped Red/Blue Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 22008,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p04": {
+   "title": "Minifig Torso with Six Button Suit and Airplane Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 37838,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p0a": {
+   "title": "Minifig Torso with White Diagonal Zip and Pocket Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41036,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p14": {
+   "title": "Minifig Torso with \"S\" Logo Red / Black Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 25023,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p18": {
+   "title": "Minifig Torso with Suit and Tie Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 27577,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p1f": {
+   "title": "Minifig Torso with Buttons and Police Badge Plain Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 47268,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p21": {
+   "title": "Minifig Torso with Fire Fighter Five Button Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 32348,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p2a": {
+   "title": "Minifig Torso with Chef Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 39288,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p31": {
+   "title": "Minifig Torso with Pirate Stripes Red/White Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 23624,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p36": {
+   "title": "Minifig Torso with Pirate Captain Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41850,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p42": {
+   "title": "Minifig Torso with Castle Crossed Pikes Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 29012,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p46": {
+   "title": "Minifig Torso with Forestman and Purse Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 38821,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p4f": {
+   "title": "Minifig Torso with Lion Gold on Blue Shield Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 48441,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p4j": {
+   "title": "Minifig Torso with Crown on DarkBlue/MediumBlue Quarters Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 109543,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p90": {
+   "title": "Minifig Torso with Classic Space Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 50410,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p2q": {
+   "title": "Minifig Torso with Viking Armour, Medium Nougat Leather, Olive Green Cloak, Necklace and Belt with Silver Disk Pattern",
+   "bounds": {
+    "min": [
+     -306,
+     -192,
+     -160
+    ],
+    "max": [
+     306,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 153243,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p8j": {
+   "title": "Minifig Torso with Town Vest with Pockets and Striped Tie Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     514,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 46498,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   }
  }
 }
