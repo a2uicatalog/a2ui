@@ -614,8 +614,10 @@
    "sockets": 0,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": true,
-   "bytes": 20431,
+   "bytes": 20507,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3938": {
@@ -636,8 +638,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 27127,
+   "bytes": 27203,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "60478": {
@@ -36562,8 +36566,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 34930,
+   "bytes": 35007,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "4276": {
@@ -36628,8 +36634,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 34498,
+   "bytes": 34575,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "42819": {
@@ -104902,6 +104910,3088 @@
      "smiley"
     ]
    }
+  },
+  "10202": {
+   "title": "Tile  6 x  6 with Groove and Underside Studs",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -960
+    ],
+    "max": [
+     960,
+     128,
+     960
+    ]
+   },
+   "studs": 0,
+   "sockets": 36,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 198515,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "10202p04": {
+   "title": "Tile  6 x  6 with \"Soap Suds Cleans it all\" Pattern",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -960
+    ],
+    "max": [
+     960,
+     128,
+     960
+    ]
+   },
+   "studs": 0,
+   "sockets": 36,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 338251,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "10202p05": {
+   "title": "Tile  6 x  6 with Minifig and Washing Machine Pattern",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -960
+    ],
+    "max": [
+     960,
+     128,
+     960
+    ]
+   },
+   "studs": 0,
+   "sockets": 36,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 365527,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "10928": {
+   "title": "Technic Gear  8 Tooth Reinforced",
+   "bounds": {
+    "min": [
+     -199,
+     -199,
+     -160
+    ],
+    "max": [
+     199,
+     199,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 35691,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "14719": {
+   "title": "Tile  2 x  2 Corner",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     128,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 11864,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14719p00": {
+   "title": "Tile  2 x  2 Corner with Orange and Yellow Diamonds, Blue Star and Dark Turquoise Lines Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     128,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 16427,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14769p0a": {
+   "title": "Tile  2 x  2 Round with Round Underside Stud with Clock and Roman Numerals Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 85665,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14769p0b": {
+   "title": "Tile  2 x  2 Round with Round Underside Stud with Dart Board Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 54285,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14769p0c": {
+   "title": "Tile  2 x  2 Round with Round Underside Stud with Octan Logo and Classic \"OCTAN GAS\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 63808,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14769p0m": {
+   "title": "Tile  2 x  2 Round with Round Underside Stud with Clock Pattern with Red Second Hand Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 42084,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14769px2": {
+   "title": "Tile  2 x  2 Round with Round Underside Stud with Metallic Silver Mechanical Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 50306,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15207": {
+   "title": "Panel  1 x  4 x  1 with Rounded Corners, Thin Wall",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 16308,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "18575": {
+   "title": "Technic Gear 20 Tooth Double Bevel Reinforced",
+   "bounds": {
+    "min": [
+     -432,
+     -432,
+     -160
+    ],
+    "max": [
+     432,
+     432,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 176426,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "23950": {
+   "title": "Panel  1 x  3 x  1 with Rounded Corners",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 12393,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "23969": {
+   "title": "Panel  1 x  2 x  1 Double Corner with Rounded Corners",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 9402,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2412a": {
+   "title": "Tile  1 x  2 Grille without Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 7576,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431p02": {
+   "title": "Tile  1 x  4 with Red Danger Stripes Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 15929,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431p12": {
+   "title": "Tile  1 x  4 with Radar Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 26212,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431p27": {
+   "title": "Tile  1 x  4 with Entwined Snakes Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 62784,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431p52": {
+   "title": "Tile  1 x  4 with Black Danger Stripes Type 2 Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 15938,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431pc0": {
+   "title": "Tile  1 x  4 with Train Controls Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 92889,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431pc1": {
+   "title": "Tile  1 x  4 with Control Panel Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 51834,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431pt2": {
+   "title": "Tile  1 x  4 with \"Octan\" Text Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 42241,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2431pt7": {
+   "title": "Tile  1 x  4 with White \"POLICE\" with Black Outline Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 32260,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2470": {
+   "title": "Wheel  2.8 x 27 with  8 Spokes",
+   "bounds": {
+    "min": [
+     -544,
+     -544,
+     -192
+    ],
+    "max": [
+     544,
+     544,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 171942,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2593": {
+   "title": "Wheel 30 x 35 with Tread on Sidewall",
+   "bounds": {
+    "min": [
+     -701,
+     -701,
+     -608
+    ],
+    "max": [
+     701,
+     701,
+     608
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 233782,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2695": {
+   "title": "Wheel Rim 12.7 x 30 Stepped",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -384
+    ],
+    "max": [
+     608,
+     608,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 211101,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "27263": {
+   "title": "Tile  2 x  2 Corner without Corner",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     128,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 8394,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2903": {
+   "title": "Wheel Rim 14 x 62 Motorcycle",
+   "bounds": {
+    "min": [
+     -1268,
+     -1268,
+     -271
+    ],
+    "max": [
+     1268,
+     1268,
+     271
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 484924,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2994": {
+   "title": "Wheel 12 x 20 with Technic Axle Hole and 6 Pegholes",
+   "bounds": {
+    "min": [
+     -480,
+     -480,
+     -240
+    ],
+    "max": [
+     480,
+     480,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 126441,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30039": {
+   "title": "=Tile  1 x  1 with Groove",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 3271,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30155": {
+   "title": "Wheel Rim  8 x 18 with 12 Spokes and Peghole",
+   "bounds": {
+    "min": [
+     -352,
+     -352,
+     -128
+    ],
+    "max": [
+     352,
+     352,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 50435,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30244": {
+   "title": "=Tile  1 x  2 Grille with Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 9180,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30413": {
+   "title": "Panel  1 x  4 x  1 with Rounded Corners, Thick Wall",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 16196,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068a": {
+   "title": "Tile  2 x  2 without Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 9354,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp05": {
+   "title": "Tile  2 x  2 with Diagonal Arrow on Blue Disc Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 13719,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp06": {
+   "title": "Tile  2 x  2 with Red Warning Triangle Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 16632,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp0c": {
+   "title": "Tile  2 x  2 with Gold Star with Brick in Center Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 16870,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp0y": {
+   "title": "Tile  2 x  2 with Orange and Dark Turquoise Chevrons, Yellow Diamonds and Blue Star Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 21287,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp17": {
+   "title": "Tile  2 x  2 with Centered Black Disc (28 LDU Diameter) Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 13346,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp26": {
+   "title": "Tile  2 x  2 with White V Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 12151,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp51": {
+   "title": "Tile  2 x  2 with Spyrius Machinery Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 27753,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp57": {
+   "title": "Tile  2 x  2 with Fire Logo Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 21380,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp69": {
+   "title": "Tile  2 x  2 with Space Police II Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 41370,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp70": {
+   "title": "Tile  2 x  2 with Gauges Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 72124,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp71": {
+   "title": "Tile  2 x  2 with Ship Portrait Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 61551,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp73": {
+   "title": "Tile  2 x  2 with Green Monitor Screen, Black Button, Dark Bluish Grey Window Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 63300,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp74": {
+   "title": "Tile  2 x  2 with Suspension Bridge Portrait Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 41106,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp76": {
+   "title": "Tile  2 x  2 with Map Street Level with Red \"X\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 46531,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp77": {
+   "title": "Tile  2 x  2 with \"WANTED\" Sign, Minifig Front and Side Mugshots Poster Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 132410,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bp83": {
+   "title": "Tile  2 x  2 with White Bold \"2\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 18233,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bpt3": {
+   "title": "Tile  2 x  2 with Newspaper 'THE LEGO NEWS' Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 164465,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bpt5": {
+   "title": "Tile  2 x  2 with Newspaper \"THE LEGO NEWS\" and \"The greatest hero ever!\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 270774,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bptc": {
+   "title": "Tile  2 x  2 with Dark Red Gothic \"News\" Newspaper Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 46581,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3068bptd": {
+   "title": "Tile  2 x  2 with Newspaper \"The Daily Brick\" and \"DONUT THIEF STILL HUNGRY\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 101569,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069a": {
+   "title": "Tile  1 x  2 without Groove",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 2296,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp01": {
+   "title": "Tile  1 x  2 with Letter Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4402,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp02": {
+   "title": "Tile  1 x  2 with Tape Reels Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 17755,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp05": {
+   "title": "Tile  1 x  2 with Black Grille with  7 Stripes Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 5577,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp06": {
+   "title": "Tile  1 x  2 with Arrow Long Yellow with Black Border Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4423,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp08": {
+   "title": "Tile  1 x  2 with Digital Clock Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 9798,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp09": {
+   "title": "Tile  1 x  2 with Danger Stripes Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4634,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp0a": {
+   "title": "Tile  1 x  2 with Partial White Stripes Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 3836,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp0c": {
+   "title": "Tile  1 x  2 with Letter and Seal Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 17662,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp0y": {
+   "title": "Tile  1 x  2 with Orange, Yellow and Blue Diamonds and Dark Turquoise Lines Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 6088,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp13": {
+   "title": "Tile  1 x  2 with Arrow Short Yellow with Black Border Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4585,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp21": {
+   "title": "Tile  1 x  2 with Arrow Short Yellow Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4538,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp25": {
+   "title": "Tile  1 x  2 with Computer Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 12565,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp28": {
+   "title": "Tile  1 x  2 with Blue Screen, Red and Silver Panel Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 34416,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp52": {
+   "title": "Tile  1 x  2 with Telemetry Computer Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 30968,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp61": {
+   "title": "Tile  1 x  2 with Ice Planet Control Panel Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 23773,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp68": {
+   "title": "Tile  1 x  2 with Red & Yellow Controls Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 14465,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp80": {
+   "title": "Tile  1 x  2 with 28-Key 'QERYUIOP' Keyboard Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 87206,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bp82": {
+   "title": "Tile  1 x  2 with \"TICKET\" and \"0937\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 36915,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bpa1": {
+   "title": "Tile  1 x  2 with White \"HC514\" Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 11623,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bpc0": {
+   "title": "Tile  1 x  2 with 56-Key 'QWERTYUIOP' Keyboard Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 120266,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bpc1": {
+   "title": "Tile  1 x  2 with Yellow Buttons and Knob Controls Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 21643,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bpc3": {
+   "title": "Tile  1 x  2 with Red \"82\" and Yellow and White Gauges Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 24165,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bps1": {
+   "title": "Tile  1 x  2 with SW Computer Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 8319,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bps6": {
+   "title": "Tile  1 x  2 with SW Jedi Starfighter Controls Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 66149,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bpt5": {
+   "title": "Tile  1 x  2 with Black \"Once upon a time...\" and Gold Scrolls Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 58053,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3069bpw2": {
+   "title": "Tile  1 x  2 with \"100\" Money Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 49325,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070a": {
+   "title": "Tile  1 x  1 without Groove",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 2193,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bp01": {
+   "title": "Tile  1 x  1 with Black \"1\" Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4042,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bp02": {
+   "title": "Tile  1 x  1 with Black \"2\" Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 7059,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bp03": {
+   "title": "Tile  1 x  1 with Black \"3\" Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 11913,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bp07": {
+   "title": "Tile  1 x  1 with White and Red Dial, Black Needle and 4 Black Screw Heads Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 15943,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bp08": {
+   "title": "Tile  1 x  1 with Black Bold \"3\" Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 14473,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bp0m": {
+   "title": "Tile  1 x  1 with  4 White Stripes Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 4526,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3070bpc2": {
+   "title": "Tile  1 x  1 with Computer Display Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 10791,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32072": {
+   "title": "Technic Gear  4 Knob",
+   "bounds": {
+    "min": [
+     -480,
+     -480,
+     -160
+    ],
+    "max": [
+     480,
+     480,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 185723,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32077": {
+   "title": "Wheel Rim 28 x 60 with 3 Spokes and 3 Pegholes",
+   "bounds": {
+    "min": [
+     -1200,
+     -1200,
+     -568
+    ],
+    "max": [
+     1200,
+     1200,
+     569
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 374990,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32269": {
+   "title": "Technic Gear 20 Tooth Double Bevel",
+   "bounds": {
+    "min": [
+     -432,
+     -432,
+     -160
+    ],
+    "max": [
+     432,
+     432,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 178595,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "33211": {
+   "title": "Wheel  3.2 x 43 with 10 Spokes Wooden",
+   "bounds": {
+    "min": [
+     -864,
+     -864,
+     -384
+    ],
+    "max": [
+     864,
+     864,
+     0
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 196909,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3482": {
+   "title": "Wheel Rim  8 x 17.5 with Axlehole",
+   "bounds": {
+    "min": [
+     -352,
+     -352,
+     -160
+    ],
+    "max": [
+     352,
+     352,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 51299,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3647": {
+   "title": "Technic Gear  8 Tooth",
+   "bounds": {
+    "min": [
+     -199,
+     -199,
+     -160
+    ],
+    "max": [
+     199,
+     199,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 30747,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3648b": {
+   "title": "Technic Gear 24 Tooth with Single Axle Hole",
+   "bounds": {
+    "min": [
+     -518,
+     -518,
+     -154
+    ],
+    "max": [
+     518,
+     518,
+     154
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 179182,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3649": {
+   "title": "Technic Gear 40 Tooth",
+   "bounds": {
+    "min": [
+     -838,
+     -838,
+     -160
+    ],
+    "max": [
+     838,
+     838,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 362675,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3680": {
+   "title": "Turntable  2 x  2 Plate Base",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 24310,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4019": {
+   "title": "Technic Gear 16 Tooth",
+   "bounds": {
+    "min": [
+     -346,
+     -346,
+     -160
+    ],
+    "max": [
+     346,
+     346,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 90673,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4150": {
+   "title": "Tile  2 x  2 Round with Cross Underside Stud",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 28978,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4150p02": {
+   "title": "Tile  2 x  2 Round with Pizza Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 101402,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4150p03": {
+   "title": "Tile  2 x  2 Round with Clock Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 37604,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4150ps4": {
+   "title": "Tile  2 x  2 Round with Black and Dark Bluish Grey Grid Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 80147,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4150ps7": {
+   "title": "Tile  2 x  2 Round with Hatch Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 77396,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4150ps9": {
+   "title": "Tile  2 x  2 Round with Vent Pattern",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 54304,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4266": {
+   "title": "Wheel Rim 20 x 30 Smooth with 6 Pinholes",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -400
+    ],
+    "max": [
+     608,
+     608,
+     400
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 226592,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "42716": {
+   "title": "Wheel Rim 20 x 30 \"Torq Thrust\" with  5 Spokes and External Ribs",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -400
+    ],
+    "max": [
+     608,
+     608,
+     400
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 281073,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "43337": {
+   "title": "=Panel  1 x  4 x  1 with Rounded Corners",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 16185,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "4489b": {
+   "title": "Wheel  2.8 x 34 with  8 Spokes with Notched Hole for Wheel Holding Pin",
+   "bounds": {
+    "min": [
+     -672,
+     -672,
+     -192
+    ],
+    "max": [
+     672,
+     672,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 160571,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4865a": {
+   "title": "Panel  1 x  2 x  1 with Square Corners",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 6260,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4865b": {
+   "title": "Panel  1 x  2 x  1 with Rounded Corners",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 8313,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "55982": {
+   "title": "Wheel Rim 14 x 18 with Axlehole",
+   "bounds": {
+    "min": [
+     -336,
+     -336,
+     -272
+    ],
+    "max": [
+     336,
+     336,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 105595,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "56145": {
+   "title": "Wheel Rim 20 x 30 with  6 Dual Spokes and External Ribs",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -400
+    ],
+    "max": [
+     608,
+     608,
+     400
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 267355,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60208": {
+   "title": "Wheel Rim 16 x 31 with 6 Pegholes",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -448
+    ],
+    "max": [
+     608,
+     608,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 242635,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6118": {
+   "title": "Wheel 23 x 24 with Tread on Sidewall",
+   "bounds": {
+    "min": [
+     -480,
+     -480,
+     -800
+    ],
+    "max": [
+     480,
+     480,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 101242,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6231": {
+   "title": "Panel  1 x  1 x  1 Corner with Rounded Corners",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 5451,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6589": {
+   "title": "Technic Gear 12 Tooth Bevel",
+   "bounds": {
+    "min": [
+     -256,
+     -256,
+     -48
+    ],
+    "max": [
+     256,
+     256,
+     112
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 80660,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6636p06": {
+   "title": "Tile  1 x  6 with Red/DkRed \"HOTEL\" Pattern",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -160
+    ],
+    "max": [
+     960,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 33467,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "6881b": {
+   "title": "Tile  6 x  6 with Underside Details",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -960
+    ],
+    "max": [
+     960,
+     128,
+     960
+    ]
+   },
+   "studs": 0,
+   "sockets": 36,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 18746,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87079p02": {
+   "title": "Tile  2 x  4 with Orange Triangle Top Left Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 26133,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87079p03": {
+   "title": "Tile  2 x  4 with Orange Triangle Top Right Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 26133,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "88517": {
+   "title": "Wheel 17 x 75 Motorcycle with Holes in Rim",
+   "bounds": {
+    "min": [
+     -1504,
+     -1504,
+     -340
+    ],
+    "max": [
+     1504,
+     1504,
+     340
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 9,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 546369,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "90498": {
+   "title": "Tile  8 x 16 Type 2",
+   "bounds": {
+    "min": [
+     -2560,
+     0,
+     -1280
+    ],
+    "max": [
+     2560,
+     128,
+     1280
+    ]
+   },
+   "studs": 0,
+   "sockets": 128,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 872772,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "93095": {
+   "title": "Panel  1 x  2 x  1 with Thin Central Divider and Rounded Corners",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 10718,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "94925": {
+   "title": "Technic Gear 16 Tooth Reinforced",
+   "bounds": {
+    "min": [
+     -346,
+     -346,
+     -160
+    ],
+    "max": [
+     346,
+     346,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 70555,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "96910": {
+   "title": "Tile  1 x  2 Chamfered with  2 Top Indentations",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 14187,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138p0a": {
+   "title": "Tile  1 x  1 Round with Frosted Cookie Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 26810,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138p0d": {
+   "title": "Tile  1 x  1 Round with Spiral Red Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 26201,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138p0h": {
+   "title": "Tile  1 x  1 Round with Soda Pop Can Top Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 43081,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138p0n": {
+   "title": "Tile  1 x  1 Round with Tan and Dark Tan Tree Stump Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 53542,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138p80": {
+   "title": "Tile  1 x  1 Round with Pink Doughnut Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 91965,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138p87": {
+   "title": "Tile  1 x  1 Round with White Animal Paw on Reddish Brown Background Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 39818,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98138pc1": {
+   "title": "Tile  1 x  1 Round with Groove with Gauge with Red Pointer Pattern",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "needs_occupancy": false,
+   "bytes": 25521,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   }
  }
 }

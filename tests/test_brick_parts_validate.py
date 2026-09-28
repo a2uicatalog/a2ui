@@ -253,3 +253,88 @@ def test_rotated_boxes_deliberate_collision_detected():
     report = validate_parts(parts, {'2429': mesh_2429, '2430': mesh_2430})
     assert report['overlaps'] >= 1
     assert [0, 1] in report['collisions']
+
+
+# --- hinges connector (2026-09-28, HINGE_INVESTIGATION.md section 6) ---------------------------------------
+# Real hinge parts re-baked with the new `hinges` connector: 3937/3938 (classic round-knuckle) and
+# 4275b/4276b (interleaved finger plates). Real verified pivot axes -- see parts.py's HINGE_CONNECTORS.
+
+def test_hinge_knuckle_family_mates_flat():
+    """Neither part touches the baseplate here, so both are correctly still `floating` (that check is about
+    reaching the ground, not about having any connection at all) -- what this proves is the hinge edge itself:
+    hingeConnections registers the mate, and the two halves do not falsely collide."""
+    mesh_3937, mesh_3938 = _load_mesh('3937'), _load_mesh('3938')
+    parts = [
+        {'p': '3937', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3938', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3937': mesh_3937, '3938': mesh_3938})
+    assert report['hingeConnections'] == 1
+    assert report['overlaps'] == 0
+
+
+def test_hinge_knuckle_family_mates_when_folded_open():
+    """A real open-door fold: 3938 rotated 90 deg about the shared pivot axis (local X), with the compensating
+    translation a model builder must supply so the physical pivot point still coincides in world space -- the
+    connector match is on the AXIS LINE, not a fixed point, so it must still detect the mate after this."""
+    mesh_3937, mesh_3938 = _load_mesh('3937'), _load_mesh('3938')
+    parts = [
+        {'p': '3937', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3938', 'x': 0.0, 'y': 20.0, 'z': 0.0, 'r': 21},  # PART_ROT[21] fixes local X, folds Y/Z
+    ]
+    report = validate_parts(parts, {'3937': mesh_3937, '3938': mesh_3938})
+    assert report['hingeConnections'] == 1
+    assert report['overlaps'] == 0
+
+
+def test_hinge_finger_family_mates_complement_only():
+    mesh_a, mesh_b = _load_mesh('4275b'), _load_mesh('4276b')
+    parts = [
+        {'p': '4275b', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '4276b', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'4275b': mesh_a, '4276b': mesh_b})
+    assert report['hingeConnections'] == 1
+    assert report['overlaps'] == 0
+
+
+def test_hinge_finger_family_does_not_mate_with_own_kind():
+    """Real physical rule: a finger2 plate never mates with another finger2 (tooth-on-tooth) -- same real part
+    id twice, at the same placement, must NOT register as a hinge connection."""
+    mesh_b = _load_mesh('4276b')
+    parts = [
+        {'p': '4276b', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '4276b', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'4276b': mesh_b})
+    assert report['hingeConnections'] == 0
+
+
+def test_hinge_axis_misaligned_parts_do_not_falsely_mate():
+    """Two real hinge halves placed with NO shared pivot (arbitrary offset) must not be reported as connected
+    -- the detector must actually check axis+distance, not just kind compatibility."""
+    mesh_3937, mesh_3938 = _load_mesh('3937'), _load_mesh('3938')
+    parts = [
+        {'p': '3937', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3938', 'x': 200.0, 'y': 200.0, 'z': 200.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3937': mesh_3937, '3938': mesh_3938})
+    assert report['hingeConnections'] == 0
+    assert 0 in report['floating']
+
+
+# --- pin/hole mated-pair collision exemption (2026-09-28, TECHNIC_PANEL_INVESTIGATION.md section 5) --------
+
+def test_pin_in_hole_exemption_does_not_suppress_unrelated_collision():
+    """A real friction pin (2780) correctly mated into a real Technic beam's hole (3701) must clear the pin/
+    hole connection AND report zero collisions for that pair -- proves the exemption path is reachable with
+    real baked geometry, not just a synthetic case."""
+    mesh_3701, mesh_2780 = _load_mesh('3701'), _load_mesh('2780')
+    parts = [
+        {'p': '3701', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '2780', 'x': 20.0, 'y': 10.0, 'z': 0.0, 'r': 1},  # PART_ROT[1]: local X (pin axis) -> world -Z
+    ]
+    report = validate_parts(parts, {'3701': mesh_3701, '2780': mesh_2780})
+    assert report['pinConnections'] > 0
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']

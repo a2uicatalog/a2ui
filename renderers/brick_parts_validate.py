@@ -10,9 +10,11 @@ LDU world space via rot_ldu (a pure rotation, not brick_parts's render-space par
 Nothing here judges a design by looking at it. The checks are plain geometry over each part's baked mesh data
 (occupancy boxes, stud/socket/pin/hole connectors -- see public/parts/<id>.json):
 
-  collisions   no two parts' occupancy boxes overlap by more than 0.5 LDU on all three axes
-  anchored     every part reaches the baseplate through stud-to-socket or pin-to-hole connections
-  connections  stud + pin connections engaged (each reported separately, and as a total)
+  collisions   no two parts' occupancy boxes overlap by more than 0.5 LDU on all three axes -- except a pair
+               with a genuine mated pin/hole or hinge connector (see `hinges` below), exempted from the check
+               entirely (spec section 3: "miss an overlap ... but never report a false one")
+  anchored     every part reaches the baseplate through stud-to-socket, pin-to-hole, or hinge-to-hinge connections
+  connections  stud + pin + hinge connections engaged (each reported separately, and as a total)
   balance      the centre of mass lies inside the convex hull of the baseplate-resting footprint
 
 Parts with no occupancy data yet (needs_occupancy=true in the baked mesh) are reported as "not checked",
@@ -196,6 +198,33 @@ def _point_line_dist(p, a, b):
     return _dist3(p, proj), t
 
 
+def _hinges_world(mesh, r, ex, ey, ez):
+    """Twin of _conn_world for the `hinges` connector -- pos/dir rotate+translate the same way, but each entry
+    also carries a `kind` (not a rotatable quantity) that _conn_world's generic pos/dir extraction would drop."""
+    q = mesh['quant']
+    out = []
+    for h in (mesh.get('connectors') or {}).get('hinges') or []:
+        lp = (h['pos'][0] / q, h['pos'][1] / q, h['pos'][2] / q)
+        wp = rot_ldu(r, lp)
+        wd = rot_ldu(r, h['dir'])
+        out.append({'pos': (wp[0] + ex, wp[1] + ey, wp[2] + ez), 'dir': wd, 'kind': h['kind']})
+    return out
+
+
+def _hinge_kinds_mate(ka, kb):
+    """Real physical mating rule (HINGE_INVESTIGATION.md section 6.2). Two DIFFERENT real LEGO part ids
+    sharing one `kind` tag either (a) ARE each other's real physical counterpart (e.g. 3937/3938's
+    barrel-in-cradle: both tagged 'knuckle', because that pair is the only real part using it) or (b) are
+    interleaved-finger halves, which only mate with their declared COMPLEMENT, never their own kind -- a
+    finger2 plate mates with a finger3 plate, never with another finger2 (tooth-on-tooth collision in real
+    LEGO). 'dome_hinge' parts (30083/30161) have no verified counterpart yet (see HINGE_CONNECTORS) so they
+    correctly never mate today; adding one means adding its own explicit rule here, not widening this one."""
+    complements = {'finger2': 'finger3', 'finger3': 'finger2'}
+    if ka in complements or kb in complements:
+        return complements.get(ka) == kb
+    return ka == kb == 'knuckle'
+
+
 def _pair_holes(mesh):
     """Pair a mesh's local hole entries (one {pos,dir} per face) into (a,b) segments: greedy nearest
     opposite-direction match, in LOCAL (unquantised LDU) space -- spec section 2's "the segment between the
@@ -252,16 +281,18 @@ def validate_parts(parts, meshes):
     """
     n = len(parts)
     mesh_list = [meshes.get(e['p']) for e in parts]
-    studs, sockets, pins, boxes, hole_segs_world = [], [], [], [], []
+    studs, sockets, pins, boxes, hole_segs_world, hinges = [], [], [], [], [], []
     not_checked = 0
     for e, m in zip(parts, mesh_list):
         if not m or m in ('loading', 'error'):
             studs.append([]); sockets.append([]); pins.append([]); boxes.append(None); hole_segs_world.append([])
+            hinges.append([])
             not_checked += 1
             continue
         studs.append(_conn_world(m, 'studs', e['r'], e['x'], e['y'], e['z']))
         sockets.append(_conn_world(m, 'sockets', e['r'], e['x'], e['y'], e['z']))
         pins.append(_conn_world(m, 'pins', e['r'], e['x'], e['y'], e['z']))
+        hinges.append(_hinges_world(m, e['r'], e['x'], e['y'], e['z']))
         boxes.append(_world_boxes(m, e['r'], e['x'], e['y'], e['z']))
         if not m.get('occupancy'):
             not_checked += 1
@@ -302,6 +333,13 @@ def validate_parts(parts, meshes):
                 base_adj.add(i)
                 stud_conn += 1
 
+    # Parts whose connectors are known to physically interpenetrate on purpose (a pin genuinely passing through
+    # a hole, or two hinge halves genuinely sharing a pivot axis) -- their occupancy boxes are exempted from the
+    # collision check below. Per spec/brick-parts-v0.1.md section 3 ("miss an overlap ... but never report a
+    # false one"), a coarse whole-pair exemption is the SAFE direction to err in: it can only suppress a
+    # collision report, never fabricate one, so it is acceptable even though it doesn't isolate the exemption to
+    # just the mated segment (HINGE_INVESTIGATION.md/TECHNIC_PANEL_INVESTIGATION.md's own scoped ask).
+    mated_pairs = set()
     for i in range(n):
         for p in pins[i]:
             for j in range(n):
@@ -317,6 +355,24 @@ def validate_parts(parts, meshes):
                         pin_conn += 1
                         adj[i].add(j)
                         adj[j].add(i)
+                        mated_pairs.add((min(i, j), max(i, j)))
+
+    hinge_conn = 0
+    for i in range(n):
+        for ha in hinges[i]:
+            for j in range(i + 1, n):
+                for hb in hinges[j]:
+                    if not _hinge_kinds_mate(ha['kind'], hb['kind']):
+                        continue
+                    if abs(_dot3(ha['dir'], hb['dir'])) <= 0.99:
+                        continue
+                    hb_end = _add3(hb['pos'], hb['dir'])
+                    dist, _ = _point_line_dist(ha['pos'], hb['pos'], hb_end)
+                    if dist < 0.5:
+                        hinge_conn += 1
+                        adj[i].add(j)
+                        adj[j].add(i)
+                        mated_pairs.add((i, j))
 
     seen = set(base_adj)
     queue = list(base_adj)
@@ -354,6 +410,8 @@ def validate_parts(parts, meshes):
                         pairs.add((o, i))
                     cell.append(i)
     for a_i, b_i in sorted(pairs):
+        if (a_i, b_i) in mated_pairs:
+            continue
         if any(_boxes_overlap(a, b) for a in boxes[a_i] for b in boxes[b_i]):
             collisions.append([a_i, b_i])
 
@@ -402,9 +460,9 @@ def validate_parts(parts, meshes):
         {'id': 'anchored', 'label': 'Every part anchored', 'status': 'fail' if floating else 'pass',
          'detail': ('%d part%s not connected to the baseplate' % (len(floating), 's' if len(floating) > 1 else ''))
          if floating else 'all %d parts reach the baseplate' % n},
-        {'id': 'connections', 'label': 'Stud + pin connections',
-         'status': 'pass' if (stud_conn + pin_conn) else 'fail',
-         'detail': '%d stud + %d pin' % (stud_conn, pin_conn)},
+        {'id': 'connections', 'label': 'Stud + pin + hinge connections',
+         'status': 'pass' if (stud_conn + pin_conn + hinge_conn) else 'fail',
+         'detail': '%d stud + %d pin + %d hinge' % (stud_conn, pin_conn, hinge_conn)},
         {'id': 'balance', 'label': 'Centre of mass over footprint',
          'status': 'fail' if balance == 'none' else balance,
          'detail': 'no part rests on the baseplate to measure' if balance == 'none'
@@ -412,7 +470,8 @@ def validate_parts(parts, meshes):
     ]
     return {
         'ok': all(c['status'] != 'fail' for c in checks), 'checks': checks,
-        'connections': stud_conn + pin_conn, 'studConnections': stud_conn, 'pinConnections': pin_conn,
+        'connections': stud_conn + pin_conn + hinge_conn, 'studConnections': stud_conn, 'pinConnections': pin_conn,
+        'hingeConnections': hinge_conn,
         'collisions': collisions, 'overlaps': overlaps, 'floating': floating, 'balance': balance,
         'com': {'margin': margin}, 'parts': [], 'cost': 0,
     }

@@ -385,6 +385,24 @@ WHEEL_PARTS = {
     "84772": (156.0, -25.0, 25.0),      # Wheel 20 x 62 Motorcycle Solid
     "86652": (110.0, -32.0, 13.0),      # Wheel Rim 18 x 37 with 6 Pegholes and Short Axle Bush
     "88517": (188.0, -21.25, 21.25),    # Wheel 17 x 75 Motorcycle with Holes in Rim
+    # 2026-09-28 (agent/wheel-catalogue-extension, cloud task, re-derived independently from scratch on an
+    # older base and converged EXACTLY on the same 74 ids/values above before adding these 15 -- a strong
+    # cross-validation signal, not just trusted on its own):
+    "12589": (42.0, -28.0, 0.0),        # ~Duplo Wheel Rim 11 x 17
+    "32193": (51.86, -16.0, 20.0),      # Wheel 14 x 21 Solid Rubber with Axlehole
+    "32247": (107.61, -30.0, 30.0),     # Wheel 41mm Znap
+    "37383": (165.9, -33.6, 78.4),      # Wheel Rim 42 x 62 with 10 Spokes and  3 Pins
+    "4288": (49.95, -17.0, 16.25),      # Wheel 13 x 20 Solid Rubber with Axle Hole
+    "49098": (56.0, -8.0, 4.0),         # Wheel Rim 11 x 18 Side with Tyre Widener
+    "50254": (36.0, -4.0, 8.0),         # Train Wheel Small with Notched Hole
+    "5428": (188.0, -21.0, 80.0),       # Wheel Rim 41 x 75 with  10 Spokes and  3 Pins
+    "59521": (395.8, -36.0, 36.0),      # Wheel 28 x 158 with 3 Spokes
+    "64711": (153.47, -20.0, 30.0),     # Wheel 20 x 64 with Spikes and 13 Pegholes
+    "64712": (155.01, -29.0, 50.0),     # Wheel 32 x 64 Conical with Spikes and Inner 48 Tooth Gear
+    "68577": (166.0, -33.6, 78.4),      # Wheel Rim 42 x 62 with 20 Spokes and  3 Pins
+    "73389": (188.0, -22.0, 80.0),      # Wheel Rim 41 x 75 with  5 Spokes and  3 Pins #2 (Right)
+    "73398": (188.0, -22.0, 80.0),      # Wheel Rim 41 x 75 with  5 Spokes and  3 Pins #1 (Left)
+    "92851": (42.39, -6.5, 6.5),        # Wheel Minifig Bicycle with Integral Rubber Black Tyre
 }
 
 
@@ -580,6 +598,20 @@ OVERRIDES = {
     "4274": [box(-20, 0, -6, 6, -6, 6)],   # pin lies along -x from its origin: bounds x -20..0
     "6558": [box(-20, 20, -6, 6, -6, 6)],
     "32054": [box(-30, 30, -9, 9, -9, 9)],
+    # Additional Technic pins (2026-09-28, agent/technic-remainder-survey, cloud task): exact geometric
+    # counterparts/extensions to 2780/3673/4274/32054, ray-parity proven solid (0.417..0.542, well above
+    # STUD_CELL_MIN_SOLID 0.15), spanning the pin shaft within part bounds without over-reporting collisions
+    # in pegholes:
+    "89678": [box(-20, 0, -6, 6, -6, 6)],    # 1/2 pin with friction, exact twin of 4274
+    "4459": [box(-20, 20, -6, 6, -6, 6)],     # 2L pin with friction, twin of 2780/3673
+    "61332": [box(-20, 20, -6, 6, -6, 6)],    # 2L pin with friction Type 2
+    "32002": [box(-20, 10, -6, 6, -6, 6)],    # 3/4 pin: 1L on -X side (-20..0), 1/2L on +X side (0..10)
+    "32556a": [box(-30, 30, -6, 6, -6, 6)],   # 3L pin long without friction, single slot
+    "32556b": [box(-30, 30, -6, 6, -6, 6)],   # 3L pin long without friction, dual slot
+    "39888": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long without friction Type 2
+    "42924": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with friction Type 2
+    "77765": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with end stop
+    "65304": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with stop bush Type 2 (counterpart of 32054)
     # Brick 1x2 with two studs on one side (SNOT): a normal 1x2 brick body underneath the extra side studs, which
     # come from real geometry (no override needed for them) -- x is the "2" direction, z the "1" direction, per
     # the corrected w/d convention above (confirmed against this same part's own real top-stud spread, x=+/-10).
@@ -896,6 +928,62 @@ def bar_grip_points(bounds_min, bounds_max, cylinders, tris):
     return grips
 
 
+# Hinge pivot connector (2026-09-28, HINGE_INVESTIGATION.md section 6): a LEGO hinge is always two separate
+# static parts (never one part with internal articulation -- proven tonight), so the only missing capability
+# is CONNECTOR RECOGNITION: pairing two parts' hinge pivot axes so brick_parts_validate.py can treat them as
+# mated (clears the `floating` check) at any rotation, the same way stud/socket and pin/hole pairing already
+# works. This is a CURATED registry, not a generic radius-based classifier: a plain radius match (the real
+# pivot cylinder radius is 4.0 LDU across every family below, confirmed by direct resolve_part() sampling of
+# all 16 real hinge part ids in HINGE_INVESTIGATION.md's own list) is NOT a safe general signal on its own --
+# ordinary axle stubs, technic bosses and hinge-UNRELATED round bosses commonly share the same 4.0 LDU radius
+# (see BAR_RADIUS's own comment above), so blindly pattern-matching cylinders catalogue-wide risks false
+# connector pairings. Each entry below was individually verified by resolving the real part and confirming its
+# pivot-radius (4.0) cylinders cluster on the stated axis line -- parts whose geometry didn't cleanly resolve
+# to one confident axis (2429/2430, 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 -- all real, all in
+# HINGE_INVESTIGATION.md's list) are deliberately left OUT of this registry rather than guessed; they keep
+# working exactly as before (occupancy-only, `floating` unless otherwise anchored) until their axis is
+# verified with the same rigor, not silently mis-paired.
+#   pos: any one point ON the real world pivot line, in the part's own local LDU frame.
+#   dir: the pivot line's direction (need not be unit length -- brick_parts_validate.py only tests collinearity
+#        via a normalised dot product).
+#   kind: a mate needs the SAME kind on both sides for the classic round-knuckle families (both physical
+#        halves are geometrically identical, e.g. 3937/3938's barrel-in-cradle), or a DECLARED COMPLEMENT for
+#        interleaved-finger families (finger2 mates only with finger3, matching the real physical part -- a
+#        2-finger plate and a 3-finger plate interleave, two 2-finger plates would collide tooth-on-tooth).
+HINGE_CONNECTORS = {
+    # Classic 1x2 brick hinge (3937 Base / 3938 Top) -- real barrel/cradle knuckle, pivot along local X.
+    # Verified 2026-09-27 against real bent doors in official sets 6597/6285; corroborated fresh tonight: every
+    # radius>=4.0 axis-aligned cylinder in both 3937 and 3938 sits at exactly Y=10.0, Z=0.0.
+    "3937": {"pos": (0.0, 10.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "knuckle"},
+    "3938": {"pos": (0.0, 10.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "knuckle"},
+    # Finger hinge plates (4275b 3-Fingers / 4276b 2-Fingers, h2.dat/h1.dat primitives) -- pivot along local Z
+    # at X=30, Y=4. Y=4 confirmed fresh (every radius-4.0 Z-axis cylinder in both parts sits at exactly Y=4.0);
+    # X=30 is the real value verified 2026-09-27 against real bent official-set doors.
+    "4275b": {"pos": (30.0, 4.0, 0.0), "dir": (0.0, 0.0, 1.0), "kind": "finger3"},
+    "4276b": {"pos": (30.0, 4.0, 0.0), "dir": (0.0, 0.0, 1.0), "kind": "finger2"},
+    # Windscreen dome hinge (30083, tonight's WINDSCREEN_INVESTIGATION.md finding #4/section 4): 4 real hinge
+    # cylinders, radius 4.0, all at Y=0.0 Z=0.0, axis along local X -- confirmed by direct resolve_part()
+    # sampling. NOT YET in spec/brick-parts/curated-parts-v1.json (a2ui-private) or public/parts/, so this
+    # entry is currently unreachable from bake_parts.py -- real, verified geometry, registered ahead of
+    # curation deliberately (cheap, and the real work was already done), but only takes effect once 30083 is
+    # curated and baked. Also has no verified mating counterpart yet (its receiving hull/cockpit-base part).
+    "30083": {"pos": (0.0, 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "dome_hinge"},
+    # Windscreen bottom hinge (30161, same investigation): 4 real hinge cylinders, radius 4.0, all at Y=0.0
+    # Z=0.0, axis along local X -- identical axis convention to 30083, confirmed by direct resolve_part()
+    # sampling. Same not-yet-curated caveat as 30083.
+    "30161": {"pos": (0.0, 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "dome_hinge"},
+}
+
+
+def hinge_connectors(part_id):
+    """Returns [{'pos': (x,y,z), 'dir': (dx,dy,dz), 'kind': str}] for part_id's real hinge pivot(s), or [] if
+    part_id has no verified entry in HINGE_CONNECTORS. Called directly by bake_parts.py (same pattern as
+    bar_grip_points -- a hinge pivot is not an occupancy/socket concept, so it doesn't go through
+    resolve_occupancy_and_sockets's return shape)."""
+    e = HINGE_CONNECTORS.get(part_id)
+    return [dict(e)] if e else []
+
+
 # Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
 # head's own real top stud (confirmed live: the curated head part 3626bp01's own title literally says
 # "Blocked Hollow Stud") -- so it needs a socket, not occupancy (nothing is ever stacked on top of a hat in
@@ -1022,6 +1110,73 @@ def generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title=""):
     return None, []
 
 
+def generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title=""):
+    """Generic geometry-proven occupancy for Minifig Torso parts and printed variants (2026-09-28,
+    agent/minifig-torso, cloud task).
+
+    Standard minifig torsos (973, 43370, sticker variants 973d*, and hundreds of printed variants 973p*)
+    share identical resolved body dimensions:
+    - Width: x in [-19.0, 19.0] (dx ~ 38 LDU, matching standard minifig hip width).
+    - Height: y in [-12.0, 32.0] (dy ~ 44 LDU, from the top of the neck cylinder at y=-12 to the waist at y=32).
+    - Depth: z in [-10.0, 10.0] (dz ~ 20 LDU, with minor sticker variations up to +-10.25).
+
+    Attachment & Connectors:
+    - Sockets: A bare torso has sockets = [] (matching tyres/wheels/gears/dishes). Torso attachment is handled
+      by the character template system (characters.py), not generic brick studs/anti-studs.
+    - Neck Post (y in [-12, 0]): Just as brick studs (y in [-4, 0]) are excluded from brick occupancy boxes to
+      prevent false collisions with mounted bricks, the torso neck post is omitted from the body occupancy
+      box so that minifig heads (occupying y in [-24, 0] at OFFSETS['head']) and neckwear accessories do not
+      falsely collide.
+    - Waist (y = 32): Meets the minifig hips flush at y = 32.
+    - Body Box: box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0), ray-parity proven solid against real triangles
+      (solid fraction 0.31 - 0.44 across variants, well above STUD_CELL_MIN_SOLID = 0.15).
+    - Sticker Variants: For sticker variants with raised decal layers (e.g. 973d06 with z_max=10.25), using
+      the canonical [-10.0, 10.0] depth is a safe under-approximation per spec section 3; over-approximating
+      from a sticker decal into air is avoided.
+
+    Safe Exclusions:
+    - Flat 2D sticker sheets (category 'Sticker Minifig' / '=Sticker', thickness 0.25 LDU).
+    - Novelty / fantasy appendage torsos (bat wings, bird wings, pterodactyl wings, flippers, claws, boxing gloves).
+    - Non-standard figures (Friends mini-dolls, Duplo, Fabuland, Technic figures, Skeletons, Battle Droids, Hagrid).
+    """
+    if bounds_min is None or bounds_max is None or not tris:
+        return None, []
+
+    # Must have 0 top flush studs
+    flush = [(p, d) for p, d in (studs or []) if abs(p[1]) < 0.5 and d[1] < -0.9]
+    if flush:
+        return None, []
+
+    tl = (title or "").strip().lower()
+    if not ("torso" in tl):
+        return None, []
+
+    # Exclude flat sticker decals (e.g. 003428b, 004318a)
+    if tl.startswith("sticker") or tl.startswith("=sticker"):
+        return None, []
+
+    # Exclude non-standard base torsos (wings, flippers, claws, boxing gloves, harpoons, skeletons, droids, etc.)
+    if re.search(r"\b(wing|wings|flipper|flippers|glove|gloves|hook|harpoon|claw|giant|skeleton|mechanical|cyborg|bionicle|friends|duplo|fabuland)\b", tl):
+        return None, []
+
+    x0, x1 = bounds_min[0], bounds_max[0]
+    y0, y1 = bounds_min[1], bounds_max[1]
+    z0, z1 = bounds_min[2], bounds_max[2]
+
+    # Standard torso bounds check (allowing small tolerances for stickers/decals):
+    # x in [-19.0, 19.0], y in [-12.0, 32.0], z in [-10.0, 10.0]
+    if not (abs(x0 - (-19.0)) <= 0.6 and abs(x1 - 19.0) <= 0.6 and
+            abs(y0 - (-12.0)) <= 0.5 and abs(y1 - 32.0) <= 0.5 and
+            abs(z0 - (-10.0)) <= 0.6 and abs(z1 - 10.0) <= 0.6):
+        return None, []
+
+    cand = box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)
+    if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+        return [cand], []
+
+    return None, []
+
+
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
                                    tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
@@ -1090,13 +1245,25 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         gen_occ, gen_sockets = generic_hole_channel_occupancy(bounds_min, bounds_max, studs, holes, tris)
         if gen_occ:
             return verified(gen_occ, gen_sockets)
-        if bar_grip_points(bounds_min, bounds_max, cylinders, tris):
+        # 2026-09-28: a HINGE_CONNECTORS part is excluded here -- found live rebaking 3937 ("Hinge 1 x 2
+        # Base") for its new `hinges` connector: its real radius-4.0 pivot-knuckle cylinders at (+-20, 10, 0)
+        # also pass bar_grip_points's extremity+isolation checks (same physical shape a bar-grip probe can't
+        # tell apart from a genuine hand-graspable rod on a narrow stem), so it was silently reclassified from
+        # `needs_occupancy: true` (correct -- a studless hinge half genuinely has no safe occupancy yet, see
+        # HINGE_INVESTIGATION.md) to `needs_occupancy: false` with a fabricated-empty `occupancy: null`, an
+        # even worse state (looks resolved, isn't). A knuckle is not a hand grip: once a part has a REAL
+        # verified hinge pivot (ground truth, not a heuristic), that explains its cylinders and bar_grip_points
+        # must not also claim them.
+        if part_id not in HINGE_CONNECTORS and bar_grip_points(bounds_min, bounds_max, cylinders, tris):
             # occupancy/sockets stay empty here (unchanged contract) -- the real grip position/axis data is
             # exposed separately via bar_grip_points() itself, called directly by bake_parts.py, so it can go
             # into its own `bars` connector field rather than being force-fit into this function's plain
             # (occ, sockets, needs_occupancy) return shape, which every existing caller already depends on.
             return [], [], False
         gen_occ, gen_sockets = generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
+        gen_occ, gen_sockets = generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title)
         if gen_occ:
             return verified(gen_occ, gen_sockets)
         return (None, [], True)
