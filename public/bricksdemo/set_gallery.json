@@ -1,0 +1,1023 @@
+{
+ "generatedAt": "2026-09-28T15:11:41Z",
+ "min_fraction": 0.5,
+ "sets": [
+  {
+   "set": "1869-1",
+   "title": "South African Flag",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1869-1/114999.jpg",
+   "coverage_pct": 100.0,
+   "instances": 82,
+   "renderable_instances": 82,
+   "rebrickable_url": "https://rebrickable.com/sets/1869-1/"
+  },
+  {
+   "set": "21010-1",
+   "title": "Robie House",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21010-1/1189.jpg",
+   "coverage_pct": 99.4,
+   "instances": 2277,
+   "renderable_instances": 2264,
+   "rebrickable_url": "https://rebrickable.com/sets/21010-1/"
+  },
+  {
+   "set": "21011-1",
+   "title": "Brandenburg Gate",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21011-1/15846.jpg",
+   "coverage_pct": 98.9,
+   "instances": 362,
+   "renderable_instances": 358,
+   "rebrickable_url": "https://rebrickable.com/sets/21011-1/"
+  },
+  {
+   "set": "10018-1",
+   "title": "Darth Maul",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10018-1/120261.jpg",
+   "coverage_pct": 98.8,
+   "instances": 1865,
+   "renderable_instances": 1843,
+   "rebrickable_url": "https://rebrickable.com/sets/10018-1/"
+  },
+  {
+   "set": "21009-1",
+   "title": "Farnsworth House",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21009-1/11717.jpg",
+   "coverage_pct": 98.3,
+   "instances": 545,
+   "renderable_instances": 536,
+   "rebrickable_url": "https://rebrickable.com/sets/21009-1/"
+  },
+  {
+   "set": "21004-1",
+   "title": "Solomon R. Guggenheim Museum",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21004-1/15192.jpg",
+   "coverage_pct": 98.1,
+   "instances": 208,
+   "renderable_instances": 204,
+   "rebrickable_url": "https://rebrickable.com/sets/21004-1/"
+  },
+  {
+   "set": "21017-1",
+   "title": "Imperial Hotel",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21017-1/15858.jpg",
+   "coverage_pct": 97.8,
+   "instances": 1189,
+   "renderable_instances": 1163,
+   "rebrickable_url": "https://rebrickable.com/sets/21017-1/"
+  },
+  {
+   "set": "21002-1",
+   "title": "Empire State Building",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21002-1/15857.jpg",
+   "coverage_pct": 97.4,
+   "instances": 77,
+   "renderable_instances": 75,
+   "rebrickable_url": "https://rebrickable.com/sets/21002-1/"
+  },
+  {
+   "set": "21005-1",
+   "title": "Fallingwater",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21005-1/15191.jpg",
+   "coverage_pct": 97.0,
+   "instances": 803,
+   "renderable_instances": 779,
+   "rebrickable_url": "https://rebrickable.com/sets/21005-1/"
+  },
+  {
+   "set": "21000-2",
+   "title": "Willis Tower",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21000-2/15213.jpg",
+   "coverage_pct": 95.7,
+   "instances": 69,
+   "renderable_instances": 66,
+   "rebrickable_url": "https://rebrickable.com/sets/21000-2/"
+  },
+  {
+   "set": "21000-1",
+   "title": "Sears Tower",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21000-1/15217.jpg",
+   "coverage_pct": 95.7,
+   "instances": 69,
+   "renderable_instances": 66,
+   "rebrickable_url": "https://rebrickable.com/sets/21000-1/"
+  },
+  {
+   "set": "21001-1",
+   "title": "John Hancock Center",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21001-1/17482.jpg",
+   "coverage_pct": 95.7,
+   "instances": 69,
+   "renderable_instances": 66,
+   "rebrickable_url": "https://rebrickable.com/sets/21001-1/"
+  },
+  {
+   "set": "21013-1",
+   "title": "Big Ben",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21013-1/13705.jpg",
+   "coverage_pct": 95.1,
+   "instances": 346,
+   "renderable_instances": 329,
+   "rebrickable_url": "https://rebrickable.com/sets/21013-1/"
+  },
+  {
+   "set": "21014-1",
+   "title": "Villa Savoye",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21014-1/15856.jpg",
+   "coverage_pct": 94.8,
+   "instances": 659,
+   "renderable_instances": 625,
+   "rebrickable_url": "https://rebrickable.com/sets/21014-1/"
+  },
+  {
+   "set": "21006-1",
+   "title": "The White House",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21006-1/17480.jpg",
+   "coverage_pct": 92.1,
+   "instances": 556,
+   "renderable_instances": 512,
+   "rebrickable_url": "https://rebrickable.com/sets/21006-1/"
+  },
+  {
+   "set": "21029-1",
+   "title": "Buckingham Palace",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21029-1/7908.jpg",
+   "coverage_pct": 91.4,
+   "instances": 777,
+   "renderable_instances": 710,
+   "rebrickable_url": "https://rebrickable.com/sets/21029-1/"
+  },
+  {
+   "set": "21020-1",
+   "title": "Trevi Fountain",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21020-1/13035.jpg",
+   "coverage_pct": 91.4,
+   "instances": 730,
+   "renderable_instances": 667,
+   "rebrickable_url": "https://rebrickable.com/sets/21020-1/"
+  },
+  {
+   "set": "126-1",
+   "title": "Steam Locomotive (Push)",
+   "img_url": "https://cdn.rebrickable.com/media/sets/126-1/7719.jpg",
+   "coverage_pct": 90.0,
+   "instances": 60,
+   "renderable_instances": 54,
+   "rebrickable_url": "https://rebrickable.com/sets/126-1/"
+  },
+  {
+   "set": "21007-1",
+   "title": "Rockefeller Center",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21007-1/11718.jpg",
+   "coverage_pct": 89.6,
+   "instances": 240,
+   "renderable_instances": 215,
+   "rebrickable_url": "https://rebrickable.com/sets/21007-1/"
+  },
+  {
+   "set": "21028-1",
+   "title": "New York City",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21028-1/32836.jpg",
+   "coverage_pct": 88.9,
+   "instances": 597,
+   "renderable_instances": 531,
+   "rebrickable_url": "https://rebrickable.com/sets/21028-1/"
+  },
+  {
+   "set": "21036-1",
+   "title": "Arc de Triomphe",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21036-1/12061.jpg",
+   "coverage_pct": 88.3,
+   "instances": 385,
+   "renderable_instances": 340,
+   "rebrickable_url": "https://rebrickable.com/sets/21036-1/"
+  },
+  {
+   "set": "21018-1",
+   "title": "United Nations Headquarters",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21018-1/1923.jpg",
+   "coverage_pct": 88.1,
+   "instances": 615,
+   "renderable_instances": 542,
+   "rebrickable_url": "https://rebrickable.com/sets/21018-1/"
+  },
+  {
+   "set": "10170-1",
+   "title": "TTX Intermodal Double-Stack Car",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10170-1/86841.jpg",
+   "coverage_pct": 87.9,
+   "instances": 365,
+   "renderable_instances": 321,
+   "rebrickable_url": "https://rebrickable.com/sets/10170-1/"
+  },
+  {
+   "set": "21037-1",
+   "title": "LEGO House",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21037-1/13756.jpg",
+   "coverage_pct": 86.8,
+   "instances": 840,
+   "renderable_instances": 729,
+   "rebrickable_url": "https://rebrickable.com/sets/21037-1/"
+  },
+  {
+   "set": "10253-1",
+   "title": "Big Ben",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10253-1/10737.jpg",
+   "coverage_pct": 86.6,
+   "instances": 4171,
+   "renderable_instances": 3611,
+   "rebrickable_url": "https://rebrickable.com/sets/10253-1/"
+  },
+  {
+   "set": "10214-1",
+   "title": "Tower Bridge",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10214-1/14563.jpg",
+   "coverage_pct": 85.5,
+   "instances": 4281,
+   "renderable_instances": 3661,
+   "rebrickable_url": "https://rebrickable.com/sets/10214-1/"
+  },
+  {
+   "set": "10224-1",
+   "title": "Town Hall",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10224-1/12177.jpg",
+   "coverage_pct": 85.3,
+   "instances": 2797,
+   "renderable_instances": 2387,
+   "rebrickable_url": "https://rebrickable.com/sets/10224-1/"
+  },
+  {
+   "set": "10230-1",
+   "title": "Mini Modulars",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10230-1/17350.jpg",
+   "coverage_pct": 84.2,
+   "instances": 1414,
+   "renderable_instances": 1191,
+   "rebrickable_url": "https://rebrickable.com/sets/10230-1/"
+  },
+  {
+   "set": "10218-1",
+   "title": "Pet Shop",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10218-1/2252.jpg",
+   "coverage_pct": 83.0,
+   "instances": 2042,
+   "renderable_instances": 1694,
+   "rebrickable_url": "https://rebrickable.com/sets/10218-1/"
+  },
+  {
+   "set": "164-1",
+   "title": "Passenger Wagon",
+   "img_url": "https://cdn.rebrickable.com/media/sets/164-1/332.jpg",
+   "coverage_pct": 82.5,
+   "instances": 103,
+   "renderable_instances": 85,
+   "rebrickable_url": "https://rebrickable.com/sets/164-1/"
+  },
+  {
+   "set": "10015-1",
+   "title": "Passenger Wagon",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10015-1/86812.jpg",
+   "coverage_pct": 82.3,
+   "instances": 192,
+   "renderable_instances": 158,
+   "rebrickable_url": "https://rebrickable.com/sets/10015-1/"
+  },
+  {
+   "set": "148-1",
+   "title": "Central Station",
+   "img_url": "https://cdn.rebrickable.com/media/sets/148-1/55998.jpg",
+   "coverage_pct": 82.2,
+   "instances": 303,
+   "renderable_instances": 249,
+   "rebrickable_url": "https://rebrickable.com/sets/148-1/"
+  },
+  {
+   "set": "10020-1",
+   "title": "Santa Fe Super Chief",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10020-1/17555.jpg",
+   "coverage_pct": 81.5,
+   "instances": 444,
+   "renderable_instances": 362,
+   "rebrickable_url": "https://rebrickable.com/sets/10020-1/"
+  },
+  {
+   "set": "21033-1",
+   "title": "Chicago",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21033-1/15369.jpg",
+   "coverage_pct": 81.5,
+   "instances": 443,
+   "renderable_instances": 361,
+   "rebrickable_url": "https://rebrickable.com/sets/21033-1/"
+  },
+  {
+   "set": "21024-1",
+   "title": "Louvre",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21024-1/10706.jpg",
+   "coverage_pct": 81.1,
+   "instances": 694,
+   "renderable_instances": 563,
+   "rebrickable_url": "https://rebrickable.com/sets/21024-1/"
+  },
+  {
+   "set": "20021-1",
+   "title": "Bounty Hunter Assault Gunship",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20021-1/5530.jpg",
+   "coverage_pct": 80.2,
+   "instances": 81,
+   "renderable_instances": 65,
+   "rebrickable_url": "https://rebrickable.com/sets/20021-1/"
+  },
+  {
+   "set": "10256-1",
+   "title": "Taj Mahal",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10256-1/10681.jpg",
+   "coverage_pct": 80.1,
+   "instances": 5962,
+   "renderable_instances": 4777,
+   "rebrickable_url": "https://rebrickable.com/sets/10256-1/"
+  },
+  {
+   "set": "21026-1",
+   "title": "Venice",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21026-1/31687.jpg",
+   "coverage_pct": 80.0,
+   "instances": 210,
+   "renderable_instances": 168,
+   "rebrickable_url": "https://rebrickable.com/sets/21026-1/"
+  },
+  {
+   "set": "10205-1",
+   "title": "Locomotive",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10205-1/120262.jpg",
+   "coverage_pct": 79.9,
+   "instances": 229,
+   "renderable_instances": 183,
+   "rebrickable_url": "https://rebrickable.com/sets/10205-1/"
+  },
+  {
+   "set": "21016-1",
+   "title": "Sungnyemun",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21016-1/15859.jpg",
+   "coverage_pct": 79.7,
+   "instances": 325,
+   "renderable_instances": 259,
+   "rebrickable_url": "https://rebrickable.com/sets/21016-1/"
+  },
+  {
+   "set": "10185-1",
+   "title": "Green Grocer",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10185-1/70981.jpg",
+   "coverage_pct": 79.5,
+   "instances": 2405,
+   "renderable_instances": 1913,
+   "rebrickable_url": "https://rebrickable.com/sets/10185-1/"
+  },
+  {
+   "set": "10194-1",
+   "title": "Emerald Night",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10194-1/14981.jpg",
+   "coverage_pct": 79.5,
+   "instances": 1073,
+   "renderable_instances": 853,
+   "rebrickable_url": "https://rebrickable.com/sets/10194-1/"
+  },
+  {
+   "set": "10241-1",
+   "title": "Maersk Line Triple-E",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10241-1/13792.jpg",
+   "coverage_pct": 79.2,
+   "instances": 1638,
+   "renderable_instances": 1297,
+   "rebrickable_url": "https://rebrickable.com/sets/10241-1/"
+  },
+  {
+   "set": "1632-1",
+   "title": "Motor Boat",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1632-1/4159.jpg",
+   "coverage_pct": 78.6,
+   "instances": 28,
+   "renderable_instances": 22,
+   "rebrickable_url": "https://rebrickable.com/sets/1632-1/"
+  },
+  {
+   "set": "10016-1",
+   "title": "Tanker",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10016-1/120221.jpg",
+   "coverage_pct": 78.3,
+   "instances": 120,
+   "renderable_instances": 94,
+   "rebrickable_url": "https://rebrickable.com/sets/10016-1/"
+  },
+  {
+   "set": "10197-1",
+   "title": "Fire Brigade",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10197-1/51845.jpg",
+   "coverage_pct": 78.1,
+   "instances": 2302,
+   "renderable_instances": 1798,
+   "rebrickable_url": "https://rebrickable.com/sets/10197-1/"
+  },
+  {
+   "set": "10017-1",
+   "title": "Hopper Wagon",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10017-1/120210.jpg",
+   "coverage_pct": 77.4,
+   "instances": 208,
+   "renderable_instances": 161,
+   "rebrickable_url": "https://rebrickable.com/sets/10017-1/"
+  },
+  {
+   "set": "21030-1",
+   "title": "United States Capitol Building",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21030-1/15904.jpg",
+   "coverage_pct": 77.3,
+   "instances": 1031,
+   "renderable_instances": 797,
+   "rebrickable_url": "https://rebrickable.com/sets/21030-1/"
+  },
+  {
+   "set": "21022-1",
+   "title": "Lincoln Memorial",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21022-1/15864.jpg",
+   "coverage_pct": 76.9,
+   "instances": 273,
+   "renderable_instances": 210,
+   "rebrickable_url": "https://rebrickable.com/sets/21022-1/"
+  },
+  {
+   "set": "21035-1",
+   "title": "Solomon R. Guggenheim Museum",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21035-1/13507.jpg",
+   "coverage_pct": 76.8,
+   "instances": 815,
+   "renderable_instances": 626,
+   "rebrickable_url": "https://rebrickable.com/sets/21035-1/"
+  },
+  {
+   "set": "20019-1",
+   "title": "Slave I",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20019-1/4117.jpg",
+   "coverage_pct": 76.3,
+   "instances": 76,
+   "renderable_instances": 58,
+   "rebrickable_url": "https://rebrickable.com/sets/20019-1/"
+  },
+  {
+   "set": "10258-1",
+   "title": "London Bus",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10258-1/17200.jpg",
+   "coverage_pct": 76.2,
+   "instances": 1682,
+   "renderable_instances": 1282,
+   "rebrickable_url": "https://rebrickable.com/sets/10258-1/"
+  },
+  {
+   "set": "10133-1",
+   "title": "Burlington Northern Santa Fe Locomotive",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10133-1/120255.jpg",
+   "coverage_pct": 75.7,
+   "instances": 419,
+   "renderable_instances": 317,
+   "rebrickable_url": "https://rebrickable.com/sets/10133-1/"
+  },
+  {
+   "set": "21032-1",
+   "title": "Sydney",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21032-1/12147.jpg",
+   "coverage_pct": 75.3,
+   "instances": 361,
+   "renderable_instances": 272,
+   "rebrickable_url": "https://rebrickable.com/sets/21032-1/"
+  },
+  {
+   "set": "10183-1",
+   "title": "Hobby Train",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10183-1/8776.jpg",
+   "coverage_pct": 75.1,
+   "instances": 566,
+   "renderable_instances": 425,
+   "rebrickable_url": "https://rebrickable.com/sets/10183-1/"
+  },
+  {
+   "set": "1591-1",
+   "title": "Danone Truck",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1591-1/3950.jpg",
+   "coverage_pct": 75.0,
+   "instances": 40,
+   "renderable_instances": 30,
+   "rebrickable_url": "https://rebrickable.com/sets/1591-1/"
+  },
+  {
+   "set": "165-1",
+   "title": "Cargo Station",
+   "img_url": "https://cdn.rebrickable.com/media/sets/165-1/5536.jpg",
+   "coverage_pct": 74.8,
+   "instances": 282,
+   "renderable_instances": 211,
+   "rebrickable_url": "https://rebrickable.com/sets/165-1/"
+  },
+  {
+   "set": "10019-1",
+   "title": "Rebel Blockade Runner",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10019-1/14107.jpg",
+   "coverage_pct": 74.8,
+   "instances": 1748,
+   "renderable_instances": 1307,
+   "rebrickable_url": "https://rebrickable.com/sets/10019-1/"
+  },
+  {
+   "set": "10184-1",
+   "title": "Town Plan",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10184-1/62219.jpg",
+   "coverage_pct": 74.5,
+   "instances": 2067,
+   "renderable_instances": 1539,
+   "rebrickable_url": "https://rebrickable.com/sets/10184-1/"
+  },
+  {
+   "set": "10014-1",
+   "title": "Caboose",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10014-1/86811.jpg",
+   "coverage_pct": 72.4,
+   "instances": 170,
+   "renderable_instances": 123,
+   "rebrickable_url": "https://rebrickable.com/sets/10014-1/"
+  },
+  {
+   "set": "21027-1",
+   "title": "Berlin",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21027-1/32614.jpg",
+   "coverage_pct": 72.3,
+   "instances": 289,
+   "renderable_instances": 209,
+   "rebrickable_url": "https://rebrickable.com/sets/21027-1/"
+  },
+  {
+   "set": "10158-1",
+   "title": "High Speed Train Car",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10158-1/120260.jpg",
+   "coverage_pct": 71.1,
+   "instances": 173,
+   "renderable_instances": 123,
+   "rebrickable_url": "https://rebrickable.com/sets/10158-1/"
+  },
+  {
+   "set": "20006-1",
+   "title": "Clone Turbo Tank",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20006-1/233.jpg",
+   "coverage_pct": 70.8,
+   "instances": 65,
+   "renderable_instances": 46,
+   "rebrickable_url": "https://rebrickable.com/sets/20006-1/"
+  },
+  {
+   "set": "1831-1",
+   "title": "Maersk Line Container Lorry",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1831-1/2659.jpg",
+   "coverage_pct": 70.8,
+   "instances": 212,
+   "renderable_instances": 150,
+   "rebrickable_url": "https://rebrickable.com/sets/1831-1/"
+  },
+  {
+   "set": "10233-1",
+   "title": "Horizon Express",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10233-1/17552.jpg",
+   "coverage_pct": 70.4,
+   "instances": 1424,
+   "renderable_instances": 1003,
+   "rebrickable_url": "https://rebrickable.com/sets/10233-1/"
+  },
+  {
+   "set": "1854-1",
+   "title": "House with Roof-Windows",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1854-1/13015.jpg",
+   "coverage_pct": 70.1,
+   "instances": 147,
+   "renderable_instances": 103,
+   "rebrickable_url": "https://rebrickable.com/sets/1854-1/"
+  },
+  {
+   "set": "1484-1",
+   "title": "Town Houses",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1484-1/13074.jpg",
+   "coverage_pct": 69.6,
+   "instances": 207,
+   "renderable_instances": 144,
+   "rebrickable_url": "https://rebrickable.com/sets/1484-1/"
+  },
+  {
+   "set": "10190-1",
+   "title": "Market Street",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10190-1/77418.jpg",
+   "coverage_pct": 69.1,
+   "instances": 1484,
+   "renderable_instances": 1026,
+   "rebrickable_url": "https://rebrickable.com/sets/10190-1/"
+  },
+  {
+   "set": "107-2",
+   "title": "Canada Post Mail Truck",
+   "img_url": "https://cdn.rebrickable.com/media/sets/107-2/4098.jpg",
+   "coverage_pct": 67.8,
+   "instances": 143,
+   "renderable_instances": 97,
+   "rebrickable_url": "https://rebrickable.com/sets/107-2/"
+  },
+  {
+   "set": "20011-1",
+   "title": "Garbage Truck",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20011-1/14398.jpg",
+   "coverage_pct": 67.6,
+   "instances": 74,
+   "renderable_instances": 50,
+   "rebrickable_url": "https://rebrickable.com/sets/20011-1/"
+  },
+  {
+   "set": "10242-1",
+   "title": "MINI Cooper",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10242-1/15897.jpg",
+   "coverage_pct": 67.5,
+   "instances": 1088,
+   "renderable_instances": 734,
+   "rebrickable_url": "https://rebrickable.com/sets/10242-1/"
+  },
+  {
+   "set": "10248-1",
+   "title": "Ferrari F40",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10248-1/7510.jpg",
+   "coverage_pct": 66.6,
+   "instances": 1205,
+   "renderable_instances": 803,
+   "rebrickable_url": "https://rebrickable.com/sets/10248-1/"
+  },
+  {
+   "set": "10246-1",
+   "title": "Detective's Office",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10246-1/480.jpg",
+   "coverage_pct": 66.4,
+   "instances": 2906,
+   "renderable_instances": 1931,
+   "rebrickable_url": "https://rebrickable.com/sets/10246-1/"
+  },
+  {
+   "set": "1787-1",
+   "title": "Crater Cruiser",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1787-1/13072.jpg",
+   "coverage_pct": 66.2,
+   "instances": 195,
+   "renderable_instances": 129,
+   "rebrickable_url": "https://rebrickable.com/sets/1787-1/"
+  },
+  {
+   "set": "1572-1",
+   "title": "Super Tow Truck",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1572-1/9231.jpg",
+   "coverage_pct": 65.9,
+   "instances": 85,
+   "renderable_instances": 56,
+   "rebrickable_url": "https://rebrickable.com/sets/1572-1/"
+  },
+  {
+   "set": "10213-1",
+   "title": "Shuttle Adventure",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10213-1/11753.jpg",
+   "coverage_pct": 65.7,
+   "instances": 1254,
+   "renderable_instances": 824,
+   "rebrickable_url": "https://rebrickable.com/sets/10213-1/"
+  },
+  {
+   "set": "10002-1",
+   "title": "Railroad Club Car",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10002-1/86809.jpg",
+   "coverage_pct": 65.4,
+   "instances": 338,
+   "renderable_instances": 221,
+   "rebrickable_url": "https://rebrickable.com/sets/10002-1/"
+  },
+  {
+   "set": "10278-1",
+   "title": "Police Station",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10278-1/76359.jpg",
+   "coverage_pct": 65.0,
+   "instances": 3678,
+   "renderable_instances": 2391,
+   "rebrickable_url": "https://rebrickable.com/sets/10278-1/"
+  },
+  {
+   "set": "1029-1",
+   "title": "Milk Delivery Truck - Tine",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1029-1/16886.jpg",
+   "coverage_pct": 64.9,
+   "instances": 97,
+   "renderable_instances": 63,
+   "rebrickable_url": "https://rebrickable.com/sets/1029-1/"
+  },
+  {
+   "set": "10176-1",
+   "title": "Royal King's Castle",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10176-1/466.jpg",
+   "coverage_pct": 64.7,
+   "instances": 945,
+   "renderable_instances": 611,
+   "rebrickable_url": "https://rebrickable.com/sets/10176-1/"
+  },
+  {
+   "set": "21039-1",
+   "title": "Shanghai",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21039-1/14818.jpg",
+   "coverage_pct": 64.3,
+   "instances": 649,
+   "renderable_instances": 417,
+   "rebrickable_url": "https://rebrickable.com/sets/21039-1/"
+  },
+  {
+   "set": "1489-1",
+   "title": "Mobile Car Crane",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1489-1/8896.jpg",
+   "coverage_pct": 63.2,
+   "instances": 185,
+   "renderable_instances": 117,
+   "rebrickable_url": "https://rebrickable.com/sets/1489-1/"
+  },
+  {
+   "set": "1952-1",
+   "title": "Dairy Tanker",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1952-1/952.jpg",
+   "coverage_pct": 63.2,
+   "instances": 133,
+   "renderable_instances": 84,
+   "rebrickable_url": "https://rebrickable.com/sets/1952-1/"
+  },
+  {
+   "set": "121-1",
+   "title": "Roadster",
+   "img_url": "https://cdn.rebrickable.com/media/sets/121-1/11672.jpg",
+   "coverage_pct": 62.1,
+   "instances": 29,
+   "renderable_instances": 18,
+   "rebrickable_url": "https://rebrickable.com/sets/121-1/"
+  },
+  {
+   "set": "20015-1",
+   "title": "Crocodile",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20015-1/120154.jpg",
+   "coverage_pct": 61.8,
+   "instances": 89,
+   "renderable_instances": 55,
+   "rebrickable_url": "https://rebrickable.com/sets/20015-1/"
+  },
+  {
+   "set": "166-1",
+   "title": "Flat Wagon",
+   "img_url": "https://cdn.rebrickable.com/media/sets/166-1/7616.jpg",
+   "coverage_pct": 60.8,
+   "instances": 51,
+   "renderable_instances": 31,
+   "rebrickable_url": "https://rebrickable.com/sets/166-1/"
+  },
+  {
+   "set": "10277-1",
+   "title": "Crocodile Locomotive",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10277-1/68072.jpg",
+   "coverage_pct": 59.8,
+   "instances": 1555,
+   "renderable_instances": 930,
+   "rebrickable_url": "https://rebrickable.com/sets/10277-1/"
+  },
+  {
+   "set": "1773-1",
+   "title": "Airline Maintenance Vehicle with Trailer",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1773-1/11585.jpg",
+   "coverage_pct": 59.5,
+   "instances": 111,
+   "renderable_instances": 66,
+   "rebrickable_url": "https://rebrickable.com/sets/1773-1/"
+  },
+  {
+   "set": "10359-1",
+   "title": "Fountain Garden",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10359-1/148152.jpg",
+   "coverage_pct": 59.3,
+   "instances": 1373,
+   "renderable_instances": 814,
+   "rebrickable_url": "https://rebrickable.com/sets/10359-1/"
+  },
+  {
+   "set": "1656-1",
+   "title": "Evacuation Team",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1656-1/2419.jpg",
+   "coverage_pct": 59.0,
+   "instances": 256,
+   "renderable_instances": 151,
+   "rebrickable_url": "https://rebrickable.com/sets/1656-1/"
+  },
+  {
+   "set": "1682-1",
+   "title": "Space Shuttle",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1682-1/6295.jpg",
+   "coverage_pct": 58.8,
+   "instances": 560,
+   "renderable_instances": 329,
+   "rebrickable_url": "https://rebrickable.com/sets/1682-1/"
+  },
+  {
+   "set": "1991-1",
+   "title": "Racing Pickup",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1991-1/1504.jpg",
+   "coverage_pct": 58.6,
+   "instances": 87,
+   "renderable_instances": 51,
+   "rebrickable_url": "https://rebrickable.com/sets/1991-1/"
+  },
+  {
+   "set": "1704-1",
+   "title": "Ice Planet Satellite Plough",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1704-1/89862.jpg",
+   "coverage_pct": 58.5,
+   "instances": 53,
+   "renderable_instances": 31,
+   "rebrickable_url": "https://rebrickable.com/sets/1704-1/"
+  },
+  {
+   "set": "10267-1",
+   "title": "Gingerbread House",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10267-1/13993.jpg",
+   "coverage_pct": 58.5,
+   "instances": 1647,
+   "renderable_instances": 963,
+   "rebrickable_url": "https://rebrickable.com/sets/10267-1/"
+  },
+  {
+   "set": "21023-1",
+   "title": "Flatiron Building",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21023-1/13565.jpg",
+   "coverage_pct": 58.3,
+   "instances": 468,
+   "renderable_instances": 273,
+   "rebrickable_url": "https://rebrickable.com/sets/21023-1/"
+  },
+  {
+   "set": "20009-1",
+   "title": "AT-TE Walker",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20009-1/120124.jpg",
+   "coverage_pct": 57.0,
+   "instances": 100,
+   "renderable_instances": 57,
+   "rebrickable_url": "https://rebrickable.com/sets/20009-1/"
+  },
+  {
+   "set": "10212-1",
+   "title": "Imperial Shuttle",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10212-1/9483.jpg",
+   "coverage_pct": 56.6,
+   "instances": 2526,
+   "renderable_instances": 1429,
+   "rebrickable_url": "https://rebrickable.com/sets/10212-1/"
+  },
+  {
+   "set": "1702-1",
+   "title": "Fire Fighter 4 x 4",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1702-1/4245.jpg",
+   "coverage_pct": 55.6,
+   "instances": 63,
+   "renderable_instances": 35,
+   "rebrickable_url": "https://rebrickable.com/sets/1702-1/"
+  },
+  {
+   "set": "106-1",
+   "title": "UNICEF Van",
+   "img_url": "https://cdn.rebrickable.com/media/sets/106-1/3465.jpg",
+   "coverage_pct": 55.4,
+   "instances": 65,
+   "renderable_instances": 36,
+   "rebrickable_url": "https://rebrickable.com/sets/106-1/"
+  },
+  {
+   "set": "10252-1",
+   "title": "Volkswagen Beetle",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10252-1/35138.jpg",
+   "coverage_pct": 55.1,
+   "instances": 1311,
+   "renderable_instances": 722,
+   "rebrickable_url": "https://rebrickable.com/sets/10252-1/"
+  },
+  {
+   "set": "20014-1",
+   "title": "4 x 4 Dynamo",
+   "img_url": "https://cdn.rebrickable.com/media/sets/20014-1/120153.jpg",
+   "coverage_pct": 55.1,
+   "instances": 69,
+   "renderable_instances": 38,
+   "rebrickable_url": "https://rebrickable.com/sets/20014-1/"
+  },
+  {
+   "set": "167-1",
+   "title": "Loading Ramp and Car Transport Wagon",
+   "img_url": "https://cdn.rebrickable.com/media/sets/167-1/8024.jpg",
+   "coverage_pct": 54.4,
+   "instances": 114,
+   "renderable_instances": 62,
+   "rebrickable_url": "https://rebrickable.com/sets/167-1/"
+  },
+  {
+   "set": "10264-1",
+   "title": "Corner Garage",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10264-1/16132.jpg",
+   "coverage_pct": 54.2,
+   "instances": 2587,
+   "renderable_instances": 1402,
+   "rebrickable_url": "https://rebrickable.com/sets/10264-1/"
+  },
+  {
+   "set": "1789-1",
+   "title": "Star Hawk II",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1789-1/9434.jpg",
+   "coverage_pct": 53.8,
+   "instances": 359,
+   "renderable_instances": 193,
+   "rebrickable_url": "https://rebrickable.com/sets/1789-1/"
+  },
+  {
+   "set": "10013-1",
+   "title": "Open Freight Wagon",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10013-1/120236.jpg",
+   "coverage_pct": 52.5,
+   "instances": 162,
+   "renderable_instances": 85,
+   "rebrickable_url": "https://rebrickable.com/sets/10013-1/"
+  },
+  {
+   "set": "1631-1",
+   "title": "Black Racer",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1631-1/3133.jpg",
+   "coverage_pct": 52.2,
+   "instances": 23,
+   "renderable_instances": 12,
+   "rebrickable_url": "https://rebrickable.com/sets/1631-1/"
+  },
+  {
+   "set": "1499-1",
+   "title": "Twin Starfire",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1499-1/171373.jpg",
+   "coverage_pct": 51.5,
+   "instances": 103,
+   "renderable_instances": 53,
+   "rebrickable_url": "https://rebrickable.com/sets/1499-1/"
+  },
+  {
+   "set": "21008-1",
+   "title": "Burj Khalifa",
+   "img_url": "https://cdn.rebrickable.com/media/sets/21008-1/16351.jpg",
+   "coverage_pct": 51.2,
+   "instances": 209,
+   "renderable_instances": 107,
+   "rebrickable_url": "https://rebrickable.com/sets/21008-1/"
+  },
+  {
+   "set": "10175-1",
+   "title": "Vader's TIE Advanced",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10175-1/7144.jpg",
+   "coverage_pct": 50.6,
+   "instances": 1197,
+   "renderable_instances": 606,
+   "rebrickable_url": "https://rebrickable.com/sets/10175-1/"
+  },
+  {
+   "set": "10159-1",
+   "title": "City Airport",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10159-1/16521.jpg",
+   "coverage_pct": 50.3,
+   "instances": 589,
+   "renderable_instances": 296,
+   "rebrickable_url": "https://rebrickable.com/sets/10159-1/"
+  },
+  {
+   "set": "10037-1",
+   "title": "Breezeway Cafe",
+   "img_url": "https://cdn.rebrickable.com/media/sets/10037-1/15889.jpg",
+   "coverage_pct": 50.2,
+   "instances": 221,
+   "renderable_instances": 111,
+   "rebrickable_url": "https://rebrickable.com/sets/10037-1/"
+  },
+  {
+   "set": "1069-1",
+   "title": "Speedboat",
+   "img_url": "https://cdn.rebrickable.com/media/sets/1069-1/6573.jpg",
+   "coverage_pct": 50.0,
+   "instances": 28,
+   "renderable_instances": 14,
+   "rebrickable_url": "https://rebrickable.com/sets/1069-1/"
+  },
+  {
+   "set": "158-1",
+   "title": "Railroad Crossing Gate",
+   "img_url": "https://cdn.rebrickable.com/media/sets/158-1/5657.jpg",
+   "coverage_pct": 50.0,
+   "instances": 8,
+   "renderable_instances": 4,
+   "rebrickable_url": "https://rebrickable.com/sets/158-1/"
+  }
+ ]
+}

@@ -21,6 +21,11 @@ import urllib.request
 import zipfile
 
 URL = "https://library.ldraw.org/library/updates/complete.zip"
+# library.ldraw.org 403s any request with no User-Agent at all (confirmed 2026-09-27: urlretrieve's
+# default header fails, an identical request with a UA succeeds) -- this only went unnoticed because
+# every prior run of this script on this box hit an already-populated cache, never the download path
+# fresh. A real client identifier, not a spoofed browser string, per the library's own attribution norms.
+UA_HEADERS = {"User-Agent": "a2ui-fetch-library (https://github.com/a2uicatalog/a2ui)"}
 LDRAW_SHA256 = "d2a695868ed2b3957c45b022a6451908edab22cc043179dd61d18dd382b35e11"
 CACHE_DIR = os.path.join(os.path.dirname(__file__), "_ldraw_cache")
 ZIP_PATH = os.path.join(CACHE_DIR, "complete.zip")
@@ -41,7 +46,10 @@ def fetch():
         print("cached zip already matches pinned sha256, skipping download")
     else:
         print("downloading %s ..." % URL)
-        urllib.request.urlretrieve(URL, ZIP_PATH)
+        req = urllib.request.Request(URL, headers=UA_HEADERS)
+        with urllib.request.urlopen(req, timeout=60) as resp, open(ZIP_PATH, "wb") as out:
+            for chunk in iter(lambda: resp.read(1 << 20), b""):
+                out.write(chunk)
         got = _hash(ZIP_PATH)
         if got != LDRAW_SHA256:
             os.remove(ZIP_PATH)

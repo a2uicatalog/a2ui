@@ -10,9 +10,11 @@ LDU world space via rot_ldu (a pure rotation, not brick_parts's render-space par
 Nothing here judges a design by looking at it. The checks are plain geometry over each part's baked mesh data
 (occupancy boxes, stud/socket/pin/hole connectors -- see public/parts/<id>.json):
 
-  collisions   no two parts' occupancy boxes overlap by more than 0.5 LDU on all three axes
-  anchored     every part reaches the baseplate through stud-to-socket or pin-to-hole connections
-  connections  stud + pin connections engaged (each reported separately, and as a total)
+  collisions   no two parts' occupancy boxes overlap by more than 0.5 LDU on all three axes -- except a pair
+               with a genuine mated pin/hole or hinge connector (see `hinges` below), exempted from the check
+               entirely (spec section 3: "miss an overlap ... but never report a false one")
+  anchored     every part reaches the baseplate through stud-to-socket, pin-to-hole, or hinge-to-hinge connections
+  connections  stud + pin + hinge connections engaged (each reported separately, and as a total)
   balance      the centre of mass lies inside the convex hull of the baseplate-resting footprint
 
 Parts with no occupancy data yet (needs_occupancy=true in the baked mesh) are reported as "not checked",
@@ -58,7 +60,7 @@ PART_ROT = [
 
 
 def rot_ldu(r, p):
-    m = PART_ROT[r]
+    m = PART_ROT[r] if isinstance(r, int) else r
     return (m[0] * p[0] + m[1] * p[1] + m[2] * p[2],
             m[3] * p[0] + m[4] * p[1] + m[5] * p[2],
             m[6] * p[0] + m[7] * p[1] + m[8] * p[2])
@@ -92,20 +94,90 @@ def _world_boxes(mesh, r, ex, ey, ez):
     if not occ:
         return None
     out = []
-    for b in occ:
-        c0 = rot_ldu(r, (b[0], b[2], b[4]))
-        c1 = rot_ldu(r, (b[1], b[3], b[5]))
-        out.append((min(c0[0], c1[0]) + ex, max(c0[0], c1[0]) + ex,
-                    min(c0[1], c1[1]) + ey, max(c0[1], c1[1]) + ey,
-                    min(c0[2], c1[2]) + ez, max(c0[2], c1[2]) + ez))
+    if isinstance(r, int):
+        for b in occ:
+            c0 = rot_ldu(r, (b[0], b[2], b[4]))
+            c1 = rot_ldu(r, (b[1], b[3], b[5]))
+            out.append((min(c0[0], c1[0]) + ex, max(c0[0], c1[0]) + ex,
+                        min(c0[1], c1[1]) + ey, max(c0[1], c1[1]) + ey,
+                        min(c0[2], c1[2]) + ez, max(c0[2], c1[2]) + ez))
+    else:
+        u0 = (r[0], r[3], r[6])
+        u1 = (r[1], r[4], r[7])
+        u2 = (r[2], r[5], r[8])
+        for b in occ:
+            cloc = ((b[0] + b[1]) * 0.5, (b[2] + b[3]) * 0.5, (b[4] + b[5]) * 0.5)
+            e = (abs(b[1] - b[0]) * 0.5, abs(b[3] - b[2]) * 0.5, abs(b[5] - b[4]) * 0.5)
+            crot = rot_ldu(r, cloc)
+            cw = (crot[0] + ex, crot[1] + ey, crot[2] + ez)
+            rx = e[0] * abs(u0[0]) + e[1] * abs(u1[0]) + e[2] * abs(u2[0])
+            ry = e[0] * abs(u0[1]) + e[1] * abs(u1[1]) + e[2] * abs(u2[1])
+            rz = e[0] * abs(u0[2]) + e[1] * abs(u1[2]) + e[2] * abs(u2[2])
+            aabb = (cw[0] - rx, cw[0] + rx,
+                    cw[1] - ry, cw[1] + ry,
+                    cw[2] - rz, cw[2] + rz)
+            out.append({
+                'center': cw,
+                'extents': e,
+                'axes': (u0, u1, u2),
+                'aabb': aabb,
+            })
     return out
 
 
 def _boxes_overlap(a, b):
-    ox = min(a[1], b[1]) - max(a[0], b[0])
-    oy = min(a[3], b[3]) - max(a[2], b[2])
-    oz = min(a[5], b[5]) - max(a[4], b[4])
-    return ox > 0.5 and oy > 0.5 and oz > 0.5
+    if not isinstance(a, dict) and not isinstance(b, dict):
+        ox = min(a[1], b[1]) - max(a[0], b[0])
+        oy = min(a[3], b[3]) - max(a[2], b[2])
+        oz = min(a[5], b[5]) - max(a[4], b[4])
+        return ox > 0.5 and oy > 0.5 and oz > 0.5
+
+    oa = a if isinstance(a, dict) else {
+        'center': ((a[0] + a[1]) * 0.5, (a[2] + a[3]) * 0.5, (a[4] + a[5]) * 0.5),
+        'extents': (abs(a[1] - a[0]) * 0.5, abs(a[3] - a[2]) * 0.5, abs(a[5] - a[4]) * 0.5),
+        'axes': ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+    }
+    ob = b if isinstance(b, dict) else {
+        'center': ((b[0] + b[1]) * 0.5, (b[2] + b[3]) * 0.5, (b[4] + b[5]) * 0.5),
+        'extents': (abs(b[1] - b[0]) * 0.5, abs(b[3] - b[2]) * 0.5, abs(b[5] - b[4]) * 0.5),
+        'axes': ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+    }
+
+    ca, ea, ua = oa['center'], oa['extents'], oa['axes']
+    cb, eb, ub = ob['center'], ob['extents'], ob['axes']
+    dx = cb[0] - ca[0]
+    dy = cb[1] - ca[1]
+    dz = cb[2] - ca[2]
+
+    axes = [
+        ua[0], ua[1], ua[2],
+        ub[0], ub[1], ub[2],
+        (ua[0][1] * ub[0][2] - ua[0][2] * ub[0][1], ua[0][2] * ub[0][0] - ua[0][0] * ub[0][2], ua[0][0] * ub[0][1] - ua[0][1] * ub[0][0]),
+        (ua[0][1] * ub[1][2] - ua[0][2] * ub[1][1], ua[0][2] * ub[1][0] - ua[0][0] * ub[1][2], ua[0][0] * ub[1][1] - ua[0][1] * ub[1][0]),
+        (ua[0][1] * ub[2][2] - ua[0][2] * ub[2][1], ua[0][2] * ub[2][0] - ua[0][0] * ub[2][2], ua[0][0] * ub[2][1] - ua[0][1] * ub[2][0]),
+        (ua[1][1] * ub[0][2] - ua[1][2] * ub[0][1], ua[1][2] * ub[0][0] - ua[1][0] * ub[0][2], ua[1][0] * ub[0][1] - ua[1][1] * ub[0][0]),
+        (ua[1][1] * ub[1][2] - ua[1][2] * ub[1][1], ua[1][2] * ub[1][0] - ua[1][0] * ub[1][2], ua[1][0] * ub[1][1] - ua[1][1] * ub[1][0]),
+        (ua[1][1] * ub[2][2] - ua[1][2] * ub[2][1], ua[1][2] * ub[2][0] - ua[1][0] * ub[2][2], ua[1][0] * ub[2][1] - ua[1][1] * ub[2][0]),
+        (ua[2][1] * ub[0][2] - ua[2][2] * ub[0][1], ua[2][2] * ub[0][0] - ua[2][0] * ub[0][2], ua[2][0] * ub[0][1] - ua[2][1] * ub[0][0]),
+        (ua[2][1] * ub[1][2] - ua[2][2] * ub[1][1], ua[2][2] * ub[1][0] - ua[2][0] * ub[1][2], ua[2][0] * ub[1][1] - ua[2][1] * ub[1][0]),
+        (ua[2][1] * ub[2][2] - ua[2][2] * ub[2][1], ua[2][2] * ub[2][0] - ua[2][0] * ub[2][2], ua[2][0] * ub[2][1] - ua[2][1] * ub[2][0]),
+    ]
+
+    for lx, ly, lz in axes:
+        l2 = lx * lx + ly * ly + lz * lz
+        if l2 < 1e-9:
+            continue
+        norm_l = math.sqrt(l2)
+        dist = abs(dx * lx + dy * ly + dz * lz)
+        ra = (ea[0] * abs(ua[0][0] * lx + ua[0][1] * ly + ua[0][2] * lz) +
+              ea[1] * abs(ua[1][0] * lx + ua[1][1] * ly + ua[1][2] * lz) +
+              ea[2] * abs(ua[2][0] * lx + ua[2][1] * ly + ua[2][2] * lz))
+        rb = (eb[0] * abs(ub[0][0] * lx + ub[0][1] * ly + ub[0][2] * lz) +
+              eb[1] * abs(ub[1][0] * lx + ub[1][1] * ly + ub[1][2] * lz) +
+              eb[2] * abs(ub[2][0] * lx + ub[2][1] * ly + ub[2][2] * lz))
+        if (ra + rb) - dist <= 0.5 * norm_l:
+            return False
+    return True
 
 
 def _on_grid(v):
@@ -124,6 +196,33 @@ def _point_line_dist(p, a, b):
     t = _dot3(ap, ab) / l2
     proj = (a[0] + ab[0] * t, a[1] + ab[1] * t, a[2] + ab[2] * t)
     return _dist3(p, proj), t
+
+
+def _hinges_world(mesh, r, ex, ey, ez):
+    """Twin of _conn_world for the `hinges` connector -- pos/dir rotate+translate the same way, but each entry
+    also carries a `kind` (not a rotatable quantity) that _conn_world's generic pos/dir extraction would drop."""
+    q = mesh['quant']
+    out = []
+    for h in (mesh.get('connectors') or {}).get('hinges') or []:
+        lp = (h['pos'][0] / q, h['pos'][1] / q, h['pos'][2] / q)
+        wp = rot_ldu(r, lp)
+        wd = rot_ldu(r, h['dir'])
+        out.append({'pos': (wp[0] + ex, wp[1] + ey, wp[2] + ez), 'dir': wd, 'kind': h['kind']})
+    return out
+
+
+def _hinge_kinds_mate(ka, kb):
+    """Real physical mating rule (HINGE_INVESTIGATION.md section 6.2). Two DIFFERENT real LEGO part ids
+    sharing one `kind` tag either (a) ARE each other's real physical counterpart (e.g. 3937/3938's
+    barrel-in-cradle: both tagged 'knuckle', because that pair is the only real part using it) or (b) are
+    interleaved-finger halves, which only mate with their declared COMPLEMENT, never their own kind -- a
+    finger2 plate mates with a finger3 plate, never with another finger2 (tooth-on-tooth collision in real
+    LEGO). 'dome_hinge' parts (30083/30161) have no verified counterpart yet (see HINGE_CONNECTORS) so they
+    correctly never mate today; adding one means adding its own explicit rule here, not widening this one."""
+    complements = {'finger2': 'finger3', 'finger3': 'finger2'}
+    if ka in complements or kb in complements:
+        return complements.get(ka) == kb
+    return ka == kb == 'knuckle'
 
 
 def _pair_holes(mesh):
@@ -182,16 +281,18 @@ def validate_parts(parts, meshes):
     """
     n = len(parts)
     mesh_list = [meshes.get(e['p']) for e in parts]
-    studs, sockets, pins, boxes, hole_segs_world = [], [], [], [], []
+    studs, sockets, pins, boxes, hole_segs_world, hinges = [], [], [], [], [], []
     not_checked = 0
     for e, m in zip(parts, mesh_list):
         if not m or m in ('loading', 'error'):
             studs.append([]); sockets.append([]); pins.append([]); boxes.append(None); hole_segs_world.append([])
+            hinges.append([])
             not_checked += 1
             continue
         studs.append(_conn_world(m, 'studs', e['r'], e['x'], e['y'], e['z']))
         sockets.append(_conn_world(m, 'sockets', e['r'], e['x'], e['y'], e['z']))
         pins.append(_conn_world(m, 'pins', e['r'], e['x'], e['y'], e['z']))
+        hinges.append(_hinges_world(m, e['r'], e['x'], e['y'], e['z']))
         boxes.append(_world_boxes(m, e['r'], e['x'], e['y'], e['z']))
         if not m.get('occupancy'):
             not_checked += 1
@@ -232,6 +333,13 @@ def validate_parts(parts, meshes):
                 base_adj.add(i)
                 stud_conn += 1
 
+    # Parts whose connectors are known to physically interpenetrate on purpose (a pin genuinely passing through
+    # a hole, or two hinge halves genuinely sharing a pivot axis) -- their occupancy boxes are exempted from the
+    # collision check below. Per spec/brick-parts-v0.1.md section 3 ("miss an overlap ... but never report a
+    # false one"), a coarse whole-pair exemption is the SAFE direction to err in: it can only suppress a
+    # collision report, never fabricate one, so it is acceptable even though it doesn't isolate the exemption to
+    # just the mated segment (HINGE_INVESTIGATION.md/TECHNIC_PANEL_INVESTIGATION.md's own scoped ask).
+    mated_pairs = set()
     for i in range(n):
         for p in pins[i]:
             for j in range(n):
@@ -247,6 +355,24 @@ def validate_parts(parts, meshes):
                         pin_conn += 1
                         adj[i].add(j)
                         adj[j].add(i)
+                        mated_pairs.add((min(i, j), max(i, j)))
+
+    hinge_conn = 0
+    for i in range(n):
+        for ha in hinges[i]:
+            for j in range(i + 1, n):
+                for hb in hinges[j]:
+                    if not _hinge_kinds_mate(ha['kind'], hb['kind']):
+                        continue
+                    if abs(_dot3(ha['dir'], hb['dir'])) <= 0.99:
+                        continue
+                    hb_end = _add3(hb['pos'], hb['dir'])
+                    dist, _ = _point_line_dist(ha['pos'], hb['pos'], hb_end)
+                    if dist < 0.5:
+                        hinge_conn += 1
+                        adj[i].add(j)
+                        adj[j].add(i)
+                        mated_pairs.add((i, j))
 
     seen = set(base_adj)
     queue = list(base_adj)
@@ -263,7 +389,8 @@ def validate_parts(parts, meshes):
         if not boxes[i]:
             continue
         for b in boxes[i]:
-            if b[3] > 0.5:
+            y_max = b['aabb'][3] if isinstance(b, dict) else b[3]
+            if y_max > 0.5:
                 collisions.append([-1, i])
                 break
     # Coarse 80-LDU grid over each part's overall AABB (twin of the JS version): only parts sharing a cell are
@@ -272,8 +399,9 @@ def validate_parts(parts, meshes):
     for i in range(n):
         if not boxes[i]:
             continue
-        lo = [min(b[ax * 2] for b in boxes[i]) for ax in range(3)]
-        hi = [max(b[ax * 2 + 1] for b in boxes[i]) for ax in range(3)]
+        b_aabbs = [b['aabb'] if isinstance(b, dict) else b for b in boxes[i]]
+        lo = [min(ab[ax * 2] for ab in b_aabbs) for ax in range(3)]
+        hi = [max(ab[ax * 2 + 1] for ab in b_aabbs) for ax in range(3)]
         for gx in range(math.floor(lo[0] / 80), math.floor(hi[0] / 80) + 1):
             for gy in range(math.floor(lo[1] / 80), math.floor(hi[1] / 80) + 1):
                 for gz in range(math.floor(lo[2] / 80), math.floor(hi[2] / 80) + 1):
@@ -282,6 +410,8 @@ def validate_parts(parts, meshes):
                         pairs.add((o, i))
                     cell.append(i)
     for a_i, b_i in sorted(pairs):
+        if (a_i, b_i) in mated_pairs:
+            continue
         if any(_boxes_overlap(a, b) for a in boxes[a_i] for b in boxes[b_i]):
             collisions.append([a_i, b_i])
 
@@ -293,17 +423,25 @@ def validate_parts(parts, meshes):
             if not boxes[i]:
                 continue
             for b in boxes[i]:
-                vol = (b[1] - b[0]) * (b[3] - b[2]) * (b[5] - b[4])
-                mass += vol
-                cx += (b[0] + b[1]) / 2 * vol
-                cz += (b[4] + b[5]) / 2 * vol
+                if isinstance(b, dict):
+                    e = b['extents']
+                    vol = 8.0 * e[0] * e[1] * e[2]
+                    mass += vol
+                    cx += b['center'][0] * vol
+                    cz += b['center'][2] * vol
+                else:
+                    vol = (b[1] - b[0]) * (b[3] - b[2]) * (b[5] - b[4])
+                    mass += vol
+                    cx += (b[0] + b[1]) / 2 * vol
+                    cz += (b[4] + b[5]) / 2 * vol
         cx /= mass
         cz /= mass
         foot = []
         for k in rest_idx:
             if boxes[k]:
                 for b in boxes[k]:
-                    foot += [(b[0], b[4]), (b[1], b[4]), (b[1], b[5]), (b[0], b[5])]
+                    ab = b['aabb'] if isinstance(b, dict) else b
+                    foot += [(ab[0], ab[4]), (ab[1], ab[4]), (ab[1], ab[5]), (ab[0], ab[5])]
         hp = _hull2(foot)
         margin = 1e9
         for i in range(len(hp)):
@@ -322,9 +460,9 @@ def validate_parts(parts, meshes):
         {'id': 'anchored', 'label': 'Every part anchored', 'status': 'fail' if floating else 'pass',
          'detail': ('%d part%s not connected to the baseplate' % (len(floating), 's' if len(floating) > 1 else ''))
          if floating else 'all %d parts reach the baseplate' % n},
-        {'id': 'connections', 'label': 'Stud + pin connections',
-         'status': 'pass' if (stud_conn + pin_conn) else 'fail',
-         'detail': '%d stud + %d pin' % (stud_conn, pin_conn)},
+        {'id': 'connections', 'label': 'Stud + pin + hinge connections',
+         'status': 'pass' if (stud_conn + pin_conn + hinge_conn) else 'fail',
+         'detail': '%d stud + %d pin + %d hinge' % (stud_conn, pin_conn, hinge_conn)},
         {'id': 'balance', 'label': 'Centre of mass over footprint',
          'status': 'fail' if balance == 'none' else balance,
          'detail': 'no part rests on the baseplate to measure' if balance == 'none'
@@ -332,7 +470,8 @@ def validate_parts(parts, meshes):
     ]
     return {
         'ok': all(c['status'] != 'fail' for c in checks), 'checks': checks,
-        'connections': stud_conn + pin_conn, 'studConnections': stud_conn, 'pinConnections': pin_conn,
+        'connections': stud_conn + pin_conn + hinge_conn, 'studConnections': stud_conn, 'pinConnections': pin_conn,
+        'hingeConnections': hinge_conn,
         'collisions': collisions, 'overlaps': overlaps, 'floating': floating, 'balance': balance,
         'com': {'margin': margin}, 'parts': [], 'cost': 0,
     }

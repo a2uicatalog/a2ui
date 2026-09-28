@@ -29,9 +29,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "8 stud + 0 pin"
+      "detail": "8 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -89,9 +89,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "16 stud + 0 pin"
+      "detail": "16 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -149,9 +149,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "14 stud + 0 pin"
+      "detail": "14 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -209,9 +209,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "16 stud + 0 pin"
+      "detail": "16 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -274,9 +274,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "8 stud + 0 pin"
+      "detail": "8 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -336,9 +336,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "9 stud + 0 pin"
+      "detail": "9 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -404,9 +404,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "9 stud + 0 pin"
+      "detail": "9 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -466,9 +466,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "4 stud + 0 pin"
+      "detail": "4 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -534,9 +534,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "4 stud + 2 pin"
+      "detail": "4 stud + 2 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -594,9 +594,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "12 stud + 0 pin"
+      "detail": "12 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -654,9 +654,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "2 stud + 0 pin"
+      "detail": "2 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -714,9 +714,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "3 stud + 0 pin"
+      "detail": "3 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -766,9 +766,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "fail",
-      "detail": "0 stud + 0 pin"
+      "detail": "0 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -833,9 +833,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "8 stud + 0 pin"
+      "detail": "8 stud + 0 pin + 0 hinge"
      },
      {
       "id": "balance",
@@ -895,9 +895,9 @@
      },
      {
       "id": "connections",
-      "label": "Stud + pin connections",
+      "label": "Stud + pin + hinge connections",
       "status": "pass",
-      "detail": "2 stud + 1 pin"
+      "detail": "2 stud + 1 pin + 0 hinge"
      },
      {
       "id": "balance",

@@ -101,29 +101,36 @@ def test_jumper_plate_has_two_bottom_sockets_and_one_offgrid_top_stud():
 
 
 def test_gzipped_total_fits_the_budget():
-    """Ceiling raised 2026-09-26 from 2MB to 60MB: the catalogue grew from the 116-part curated set (Phase 1-3) to
-    2,854 parts via parts.py's generic_stud_cell_occupancy (a library-wide, geometrically-verified occupancy
-    fallback, not per-part curation) -- a deliberate scope decision, not drift. Measured real total at the time of
-    the change: 44.9MB gzipped for 2,854 parts (some Technic gears run to several hundred KB each, far above the
-    ~8KB/part average the old 2MB budget was sized for). Each part is fetched individually on demand
-    (PART_BASE + id + '.json'), never as one bundle, so this is a repo/hosting storage budget, not a page-load
-    one -- 60MB gives headroom over the measured 44.9MB without being a blank check for unbounded growth. File
-    COUNT (2,854, well under Cloudflare Pages' 20,000-file-per-deployment limit) is not this test's concern."""
+    """Ceiling raised 2026-09-27 from 60MB to 90MB: a second library-wide expansion pass (survey_unbaked.py against
+    the ~21,881 not-yet-baked candidates, resolved with the same generic occupancy fallback) grew the catalogue from
+    2,854 to 4,761 parts. Measured real total at the time of this change: 70.8MB gzipped for 4,761 parts. Each part
+    is fetched individually on demand (PART_BASE + id + '.json'), never as one bundle, so this is a repo/hosting
+    storage budget, not a page-load one -- 90MB gives headroom over the measured 70.8MB without being a blank
+    cheque for unbounded growth. File COUNT (4,761, well under Cloudflare Pages' 20,000-file-per-deployment limit)
+    is not this test's concern. See the 2026-09-26 change this supersedes for the original 2MB -> 60MB rationale."""
     import gzip
     total = 0
     for f in PARTS_DIR.glob("*.json"):
         total += len(gzip.compress(f.read_bytes(), 6))
-    assert total < 60_000_000, "%d bytes gzipped" % total
+    assert total < 90_000_000, "%d bytes gzipped" % total
 
 
 def test_needs_occupancy_parts_have_no_fabricated_occupancy(index):
     """Parts Phase 1 could not classify must carry occupancy=None, never a guessed box (Phase 1 handoff: "don't
-    guess them")."""
+    guess them"). Exception: a genuine held/clip-mounted grip (bar_grip_points, e.g. 32235 "Technic Axle
+    Flexible 19") is a real, documented, needs_occupancy=False case with empty occupancy -- the real position/
+    axis data lives in its own `bars` connector instead (see resolve_occupancy_and_sockets's bar_grip_points
+    branch and bake_parts.py's own comment on why the two aren't merged into one return shape). This exception
+    was never exercised until 2026-09-28, when the first bar-grip part was actually curated+baked."""
     for pid, entry in index["parts"].items():
         mesh = json.loads((PARTS_DIR / (pid + ".json")).read_text())
         if entry["needs_occupancy"]:
             assert mesh["occupancy"] is None, pid
-        else:
+        elif not entry.get("bars"):
+            # bake_parts.py calls bar_grip_points unconditionally alongside resolve_occupancy_and_sockets, so
+            # a part can legitimately carry BOTH a real occupancy override AND a bars entry (e.g. 89678
+            # "Technic Pin 1/2 with Friction" -- an OVERRIDES box plus a real grip end) -- only a part with
+            # bars and NO other occupancy source is expected to have occupancy=None.
             assert mesh["occupancy"], pid
 
 

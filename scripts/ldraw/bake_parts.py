@@ -10,6 +10,15 @@ Declared process: ldraw-parts-build (a2ui-private/ops/project-ops.yaml). Run:
     python3 scripts/ldraw/fetch_library.py     # once, or whenever the pin changes
     python3 scripts/ldraw/bake_parts.py
     python3 scripts/ldraw/bake_parts.py --characters-only   # just the minifig characters (characters.py)
+    python3 scripts/ldraw/bake_parts.py --new-only          # only ids in CURATED not already in index.json
+                                                              # (2026-09-28: a full bake takes ~20 minutes;
+                                                              # this only regenerates genuinely new entries and
+                                                              # patches index.json, leaving every existing baked
+                                                              # part file untouched -- smaller diff, faster).
+    python3 scripts/ldraw/bake_parts.py --ids=3937,3938     # only the listed CURATED ids, re-baked in place
+                                                              # (2026-09-28: for a connector-only change, e.g.
+                                                              # HINGE_CONNECTORS, that doesn't touch occupancy --
+                                                              # avoids a full rebake for a handful of ids).
 """
 import json
 import os
@@ -17,7 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from resolve import Library, ColourTable, resolve_part  # noqa: E402
-from parts import resolve_occupancy_and_sockets  # noqa: E402
+from parts import resolve_occupancy_and_sockets, bar_grip_points, hinge_connectors, HINGE_CONNECTORS  # noqa: E402
 import characters  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -70,9 +79,17 @@ def bake_one(lib, colours, entry):
 
     if template:
         (occ, sockets), needs_occ = characters.occupancy_and_sockets(), False
+        bars = []
     else:
         occ, sockets, needs_occ = resolve_occupancy_and_sockets(pid, title, part.min, part.max, part.holes,
-                                                                part.studs, part.tris)
+                                                                part.studs, part.tris, part.cylinders)
+        # Called directly (not folded into resolve_occupancy_and_sockets's own return) so the grip's real
+        # pos/dir reaches the baked mesh as its own `bars` connector field -- see the call site in parts.py's
+        # resolve_occupancy_and_sockets for why the two aren't merged into one return shape. Same HINGE_
+        # CONNECTORS exclusion as that call site, for the same real reason (2026-09-28): a verified hinge
+        # pivot's cylinders are not a hand-graspable bar, and this is a separate call site that would
+        # otherwise still tag e.g. 3937 with a bogus `bars` connector even after that one is fixed.
+        bars = [] if pid in HINGE_CONNECTORS else bar_grip_points(part.min, part.max, part.cylinders, part.tris)
 
     mesh = {
         "id": pid,
@@ -88,6 +105,15 @@ def bake_one(lib, colours, entry):
             "sockets": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in sockets],
             "holes": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in part.holes],
             "pins": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in part.pins],
+            # A held/clip-mounted connector (2026-09-27): geometrically the same "rod inserts into a
+            # receiving feature" shape as pins/holes, just clip/hand-held instead of pin/hole-mated. No
+            # renderer-side matching logic consumes this yet (the receiving clip side isn't detected at
+            # all currently) -- documented as real, deliberate scope left for later, not silently dropped.
+            "bars": [{"pos": qpt(p), "dir": [round(d, 3) for d in dr]} for p, dr in bars],
+            # Real hinge pivot(s), curated in parts.py's HINGE_CONNECTORS -- [] for every part not in that
+            # registry (not a per-part geometry computation, so cheap to call unconditionally here).
+            "hinges": [{"pos": qpt(h["pos"]), "dir": [round(d, 3) for d in h["dir"]], "kind": h["kind"]}
+                       for h in hinge_connectors(pid)],
         },
         "occupancy": [list(b) for b in occ] if occ else None,
         "needs_occupancy": needs_occ,
@@ -109,17 +135,35 @@ def character_entries(lib):
     return entries
 
 
-def main(characters_only=False):
+def main(characters_only=False, new_only=False, ids=None):
     lib = Library()
     colours = ColourTable(lib)
     os.makedirs(OUT_DIR, exist_ok=True)
 
     index = {"attribution": ATTRIBUTION, "quant": QUANT, "parts": {}}
-    if characters_only:
+    if ids:
+        # re-bake exactly the listed CURATED ids in place -- existing index/entries for every other id are left
+        # untouched, same additive-patch spirit as --new-only but for ids that already exist and need re-baking
+        # (e.g. a connector-only registry addition that doesn't change occupancy).
+        index = json.load(open(os.path.join(OUT_DIR, "index.json")))
+        curated_by_id = {e["id"]: e for e in json.load(open(CURATED))}
+        missing = [i for i in ids if i not in curated_by_id]
+        if missing:
+            sys.exit("--ids: not in curated-parts-v1.json: %s" % ", ".join(missing))
+        todo = [curated_by_id[i] for i in ids]
+    elif characters_only:
         # re-bake just the minifig characters into the existing index (a full bake takes ~20 minutes)
         index = json.load(open(os.path.join(OUT_DIR, "index.json")))
         index["parts"] = {k: v for k, v in index["parts"].items() if "character" not in v}
         todo = character_entries(lib)
+    elif new_only:
+        # only ids added to CURATED since the last bake -- existing baked files/index entries are left exactly
+        # as they are (not re-baked, not re-ordered), so this is a strict additive patch, not a rebuild.
+        index = json.load(open(os.path.join(OUT_DIR, "index.json")))
+        curated = json.load(open(CURATED))
+        todo = [e for e in curated if e["id"] not in index["parts"]]
+        print("%d new id(s) to bake (%d already in index.json, skipped)" % (
+            len(todo), len(curated) - len(todo)), file=sys.stderr)
     else:
         todo = json.load(open(CURATED)) + character_entries(lib)
     errors = []
@@ -140,6 +184,8 @@ def main(characters_only=False):
             "sockets": len(mesh["connectors"]["sockets"]),
             "holes": len(mesh["connectors"]["holes"]),
             "pins": len(mesh["connectors"]["pins"]),
+            "bars": len(mesh["connectors"]["bars"]),
+            "hinges": len(mesh["connectors"]["hinges"]),
             "needs_occupancy": mesh["needs_occupancy"],
             "bytes": len(text),
             "license": mesh["license"],
@@ -164,4 +210,6 @@ def main(characters_only=False):
 
 
 if __name__ == "__main__":
-    main(characters_only="--characters-only" in sys.argv[1:])
+    ids_arg = next((a for a in sys.argv[1:] if a.startswith("--ids=")), None)
+    main(characters_only="--characters-only" in sys.argv[1:], new_only="--new-only" in sys.argv[1:],
+         ids=ids_arg[len("--ids="):].split(",") if ids_arg else None)
