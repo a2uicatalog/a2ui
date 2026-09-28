@@ -58,7 +58,7 @@ PART_ROT = [
 
 
 def rot_ldu(r, p):
-    m = PART_ROT[r]
+    m = PART_ROT[r] if isinstance(r, int) else r
     return (m[0] * p[0] + m[1] * p[1] + m[2] * p[2],
             m[3] * p[0] + m[4] * p[1] + m[5] * p[2],
             m[6] * p[0] + m[7] * p[1] + m[8] * p[2])
@@ -92,20 +92,90 @@ def _world_boxes(mesh, r, ex, ey, ez):
     if not occ:
         return None
     out = []
-    for b in occ:
-        c0 = rot_ldu(r, (b[0], b[2], b[4]))
-        c1 = rot_ldu(r, (b[1], b[3], b[5]))
-        out.append((min(c0[0], c1[0]) + ex, max(c0[0], c1[0]) + ex,
-                    min(c0[1], c1[1]) + ey, max(c0[1], c1[1]) + ey,
-                    min(c0[2], c1[2]) + ez, max(c0[2], c1[2]) + ez))
+    if isinstance(r, int):
+        for b in occ:
+            c0 = rot_ldu(r, (b[0], b[2], b[4]))
+            c1 = rot_ldu(r, (b[1], b[3], b[5]))
+            out.append((min(c0[0], c1[0]) + ex, max(c0[0], c1[0]) + ex,
+                        min(c0[1], c1[1]) + ey, max(c0[1], c1[1]) + ey,
+                        min(c0[2], c1[2]) + ez, max(c0[2], c1[2]) + ez))
+    else:
+        u0 = (r[0], r[3], r[6])
+        u1 = (r[1], r[4], r[7])
+        u2 = (r[2], r[5], r[8])
+        for b in occ:
+            cloc = ((b[0] + b[1]) * 0.5, (b[2] + b[3]) * 0.5, (b[4] + b[5]) * 0.5)
+            e = (abs(b[1] - b[0]) * 0.5, abs(b[3] - b[2]) * 0.5, abs(b[5] - b[4]) * 0.5)
+            crot = rot_ldu(r, cloc)
+            cw = (crot[0] + ex, crot[1] + ey, crot[2] + ez)
+            rx = e[0] * abs(u0[0]) + e[1] * abs(u1[0]) + e[2] * abs(u2[0])
+            ry = e[0] * abs(u0[1]) + e[1] * abs(u1[1]) + e[2] * abs(u2[1])
+            rz = e[0] * abs(u0[2]) + e[1] * abs(u1[2]) + e[2] * abs(u2[2])
+            aabb = (cw[0] - rx, cw[0] + rx,
+                    cw[1] - ry, cw[1] + ry,
+                    cw[2] - rz, cw[2] + rz)
+            out.append({
+                'center': cw,
+                'extents': e,
+                'axes': (u0, u1, u2),
+                'aabb': aabb,
+            })
     return out
 
 
 def _boxes_overlap(a, b):
-    ox = min(a[1], b[1]) - max(a[0], b[0])
-    oy = min(a[3], b[3]) - max(a[2], b[2])
-    oz = min(a[5], b[5]) - max(a[4], b[4])
-    return ox > 0.5 and oy > 0.5 and oz > 0.5
+    if not isinstance(a, dict) and not isinstance(b, dict):
+        ox = min(a[1], b[1]) - max(a[0], b[0])
+        oy = min(a[3], b[3]) - max(a[2], b[2])
+        oz = min(a[5], b[5]) - max(a[4], b[4])
+        return ox > 0.5 and oy > 0.5 and oz > 0.5
+
+    oa = a if isinstance(a, dict) else {
+        'center': ((a[0] + a[1]) * 0.5, (a[2] + a[3]) * 0.5, (a[4] + a[5]) * 0.5),
+        'extents': (abs(a[1] - a[0]) * 0.5, abs(a[3] - a[2]) * 0.5, abs(a[5] - a[4]) * 0.5),
+        'axes': ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+    }
+    ob = b if isinstance(b, dict) else {
+        'center': ((b[0] + b[1]) * 0.5, (b[2] + b[3]) * 0.5, (b[4] + b[5]) * 0.5),
+        'extents': (abs(b[1] - b[0]) * 0.5, abs(b[3] - b[2]) * 0.5, abs(b[5] - b[4]) * 0.5),
+        'axes': ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+    }
+
+    ca, ea, ua = oa['center'], oa['extents'], oa['axes']
+    cb, eb, ub = ob['center'], ob['extents'], ob['axes']
+    dx = cb[0] - ca[0]
+    dy = cb[1] - ca[1]
+    dz = cb[2] - ca[2]
+
+    axes = [
+        ua[0], ua[1], ua[2],
+        ub[0], ub[1], ub[2],
+        (ua[0][1] * ub[0][2] - ua[0][2] * ub[0][1], ua[0][2] * ub[0][0] - ua[0][0] * ub[0][2], ua[0][0] * ub[0][1] - ua[0][1] * ub[0][0]),
+        (ua[0][1] * ub[1][2] - ua[0][2] * ub[1][1], ua[0][2] * ub[1][0] - ua[0][0] * ub[1][2], ua[0][0] * ub[1][1] - ua[0][1] * ub[1][0]),
+        (ua[0][1] * ub[2][2] - ua[0][2] * ub[2][1], ua[0][2] * ub[2][0] - ua[0][0] * ub[2][2], ua[0][0] * ub[2][1] - ua[0][1] * ub[2][0]),
+        (ua[1][1] * ub[0][2] - ua[1][2] * ub[0][1], ua[1][2] * ub[0][0] - ua[1][0] * ub[0][2], ua[1][0] * ub[0][1] - ua[1][1] * ub[0][0]),
+        (ua[1][1] * ub[1][2] - ua[1][2] * ub[1][1], ua[1][2] * ub[1][0] - ua[1][0] * ub[1][2], ua[1][0] * ub[1][1] - ua[1][1] * ub[1][0]),
+        (ua[1][1] * ub[2][2] - ua[1][2] * ub[2][1], ua[1][2] * ub[2][0] - ua[1][0] * ub[2][2], ua[1][0] * ub[2][1] - ua[1][1] * ub[2][0]),
+        (ua[2][1] * ub[0][2] - ua[2][2] * ub[0][1], ua[2][2] * ub[0][0] - ua[2][0] * ub[0][2], ua[2][0] * ub[0][1] - ua[2][1] * ub[0][0]),
+        (ua[2][1] * ub[1][2] - ua[2][2] * ub[1][1], ua[2][2] * ub[1][0] - ua[2][0] * ub[1][2], ua[2][0] * ub[1][1] - ua[2][1] * ub[1][0]),
+        (ua[2][1] * ub[2][2] - ua[2][2] * ub[2][1], ua[2][2] * ub[2][0] - ua[2][0] * ub[2][2], ua[2][0] * ub[2][1] - ua[2][1] * ub[2][0]),
+    ]
+
+    for lx, ly, lz in axes:
+        l2 = lx * lx + ly * ly + lz * lz
+        if l2 < 1e-9:
+            continue
+        norm_l = math.sqrt(l2)
+        dist = abs(dx * lx + dy * ly + dz * lz)
+        ra = (ea[0] * abs(ua[0][0] * lx + ua[0][1] * ly + ua[0][2] * lz) +
+              ea[1] * abs(ua[1][0] * lx + ua[1][1] * ly + ua[1][2] * lz) +
+              ea[2] * abs(ua[2][0] * lx + ua[2][1] * ly + ua[2][2] * lz))
+        rb = (eb[0] * abs(ub[0][0] * lx + ub[0][1] * ly + ub[0][2] * lz) +
+              eb[1] * abs(ub[1][0] * lx + ub[1][1] * ly + ub[1][2] * lz) +
+              eb[2] * abs(ub[2][0] * lx + ub[2][1] * ly + ub[2][2] * lz))
+        if (ra + rb) - dist <= 0.5 * norm_l:
+            return False
+    return True
 
 
 def _on_grid(v):
@@ -263,7 +333,8 @@ def validate_parts(parts, meshes):
         if not boxes[i]:
             continue
         for b in boxes[i]:
-            if b[3] > 0.5:
+            y_max = b['aabb'][3] if isinstance(b, dict) else b[3]
+            if y_max > 0.5:
                 collisions.append([-1, i])
                 break
     # Coarse 80-LDU grid over each part's overall AABB (twin of the JS version): only parts sharing a cell are
@@ -272,8 +343,9 @@ def validate_parts(parts, meshes):
     for i in range(n):
         if not boxes[i]:
             continue
-        lo = [min(b[ax * 2] for b in boxes[i]) for ax in range(3)]
-        hi = [max(b[ax * 2 + 1] for b in boxes[i]) for ax in range(3)]
+        b_aabbs = [b['aabb'] if isinstance(b, dict) else b for b in boxes[i]]
+        lo = [min(ab[ax * 2] for ab in b_aabbs) for ax in range(3)]
+        hi = [max(ab[ax * 2 + 1] for ab in b_aabbs) for ax in range(3)]
         for gx in range(math.floor(lo[0] / 80), math.floor(hi[0] / 80) + 1):
             for gy in range(math.floor(lo[1] / 80), math.floor(hi[1] / 80) + 1):
                 for gz in range(math.floor(lo[2] / 80), math.floor(hi[2] / 80) + 1):
@@ -293,17 +365,25 @@ def validate_parts(parts, meshes):
             if not boxes[i]:
                 continue
             for b in boxes[i]:
-                vol = (b[1] - b[0]) * (b[3] - b[2]) * (b[5] - b[4])
-                mass += vol
-                cx += (b[0] + b[1]) / 2 * vol
-                cz += (b[4] + b[5]) / 2 * vol
+                if isinstance(b, dict):
+                    e = b['extents']
+                    vol = 8.0 * e[0] * e[1] * e[2]
+                    mass += vol
+                    cx += b['center'][0] * vol
+                    cz += b['center'][2] * vol
+                else:
+                    vol = (b[1] - b[0]) * (b[3] - b[2]) * (b[5] - b[4])
+                    mass += vol
+                    cx += (b[0] + b[1]) / 2 * vol
+                    cz += (b[4] + b[5]) / 2 * vol
         cx /= mass
         cz /= mass
         foot = []
         for k in rest_idx:
             if boxes[k]:
                 for b in boxes[k]:
-                    foot += [(b[0], b[4]), (b[1], b[4]), (b[1], b[5]), (b[0], b[5])]
+                    ab = b['aabb'] if isinstance(b, dict) else b
+                    foot += [(ab[0], ab[4]), (ab[1], ab[4]), (ab[1], ab[5]), (ab[0], ab[5])]
         hp = _hull2(foot)
         margin = 1e9
         for i in range(len(hp)):
