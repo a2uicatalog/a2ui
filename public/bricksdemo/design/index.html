@@ -57,11 +57,12 @@ a{color:inherit}
 <main>
 <div>
 <h1>Brick Design Lab</h1>
-<p>Design with Gemini (a free-form prompt, built as a compact voxel grid and tiled with real LEGO parts) or pick a template directly (instant, no model call, zero tokens). The brick_build_3d atom checks collisions, anchoring and balance live.</p>
+<p>Design with Gemini (a free-form prompt, built as a compact voxel grid and tiled with real LEGO parts), sketch with Gemini (the same prompt, but planned as real stud/plate-sized volumes with real carved openings -- better proportions and real windows/doors, fewer, bigger model calls), or pick a template directly (instant, no model call, zero tokens). The brick_build_3d atom checks collisions, anchoring and balance live.</p>
 </div>
 <section class="panel">
 <div class="row" role="tablist" aria-label="Design mode">
 <button class="go alt" id="modeGemini" type="button" aria-pressed="true">Design with Gemini</button>
+<button class="go alt" id="modeSketch" type="button" aria-pressed="false">Sketch with Gemini</button>
 <button class="go alt" id="modeTemplate" type="button" aria-pressed="false">Pick a template</button>
 </div>
 <div id="geminiControls">
@@ -140,14 +141,16 @@ var MODE='gemini';
 function setMode(m){
   MODE=m;
   $('modeGemini').setAttribute('aria-pressed',String(m==='gemini'));
+  $('modeSketch').setAttribute('aria-pressed',String(m==='sketch'));
   $('modeTemplate').setAttribute('aria-pressed',String(m==='template'));
-  $('geminiControls').hidden=m!=='gemini';
+  $('geminiControls').hidden=m==='template';
   $('templateControls').hidden=m!=='template';
-  $('model').disabled=m!=='gemini';
+  $('model').disabled=m==='template';
 }
 $('modeGemini').onclick=function(){setMode('gemini')};
+$('modeSketch').onclick=function(){setMode('sketch')};
 $('modeTemplate').onclick=function(){setMode('template')};
-var LABEL={gemini:'Gemini',template:'Template'};
+var LABEL={gemini:'Gemini',sketch:'Sketch',template:'Template'};
 function costText(j,e){return e==='template'?'free':usd(j.cost_usd)}
 function usd(v){return v==null?'—':(v<0.01?'$'+v.toFixed(5):'$'+v.toFixed(4))}
 function n(v){return v==null?'—':Number(v).toLocaleString('en-GB')}
@@ -385,22 +388,26 @@ var runs=0;
 function logHistory(eng,j,label,u){
   runs++;$('histp').hidden=false;
   var tr=document.createElement('tr');
-  [runs,eng==='gemini'?j.model:'Template',label,n(u.promptTokens),n(u.outputTokens),
+  [runs,eng!=='template'?j.model:'Template',label,n(u.promptTokens),n(u.outputTokens),
    costText(j,eng),n(j.parts),(j.ms/1000).toFixed(1)+' s']
   .forEach(function(v){var td=document.createElement('td');td.textContent=v;tr.appendChild(td)});
   $('hist').tBodies[0].insertBefore(tr,$('hist').tBodies[0].firstChild);
 }
 function howText(eng,j){
   if(eng==='gemini')return 'Designed by '+j.model+' as a voxel grid'+(j.repaired&&j.repaired.dropped_cells?'; '+j.repaired.dropped_cells+' unanchored cells were dropped':'')+'.';
+  if(eng==='sketch'){var r=j.repaired||{};var bits=[];
+    if(r.dropped_shapes)bits.push(r.dropped_shapes+' unsupported shape'+(r.dropped_shapes===1?'':'s')+' were dropped');
+    if(r.dropped_cells)bits.push(r.dropped_cells+' unanchored cell'+(r.dropped_cells===1?'':'s')+' were dropped');
+    return 'Sketched by '+j.model+' as real stud/plate volumes, with carved openings'+(bits.length?'; '+bits.join('; '):'')+'.';}
   var c=j.choice||{};
   return 'Built directly from your picks ("'+c.archetype+'", size '+c.size+') -- no model call, zero tokens.';
 }
 $('go').onclick=function(){
   var body;
-  if(MODE==='gemini'){
+  if(MODE==='gemini'||MODE==='sketch'){
     var prompt=$('prompt').value.trim();
     if(!prompt){$('err').textContent='Describe a build first.';return}
-    body={prompt:prompt,engine:'gemini',model:$('model').value};
+    body={prompt:prompt,engine:MODE,model:$('model').value};
   } else {
     body={engine:'template',archetype:$('tArch').value,colour:$('tColour').value,size:$('tSize').value};
   }
@@ -419,7 +426,7 @@ $('go').onclick=function(){
     $('how').textContent=howText(MODE,j);
     last={j:j,partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
     show(j);
-    var label=MODE==='gemini'?(body.prompt.length>34?body.prompt.slice(0,33)+'…':body.prompt):(body.archetype+'/'+body.colour+'/'+body.size);
+    var label=MODE!=='template'?(body.prompt.length>34?body.prompt.slice(0,33)+'…':body.prompt):(body.archetype+'/'+body.colour+'/'+body.size);
     logHistory(MODE,j,label,u);
   })
   .catch(function(){$('err').textContent='Could not reach the design service.'})
