@@ -992,6 +992,37 @@ HINGE_CONNECTORS = {
     # Z=0.0, axis along local X -- identical axis convention to 30083, confirmed by direct resolve_part()
     # sampling. Same not-yet-curated caveat as 30083.
     "30161": {"pos": (0.0, 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "dome_hinge"},
+    # Classic 1x4 plate hinge (2429 Base / 2430 Top) -- real barrel/cradle knuckle, pivot along local Y.
+    # Evidence found 2026-09-28 sitting unconnected in tests/test_brick_parts_validate.py's own
+    # M_HINGE_29 = (-0.868,0,0.496, 0,1,0, -0.496,0,-0.868): that matrix leaves the Y-axis unchanged (row/
+    # column 2 is exactly (0,1,0)), the algebraic signature of a pure Y-axis rotation, and the test's own
+    # comment cites a REAL official set ("In 8880-1 Super Car, hinge 2429 (Base) and 2430 (Top) are mated
+    # at (0, 0, 0)") -- both halves placed at the same world origin with 2430 rotated M_HINGE_29 around
+    # it, i.e. each part's own local origin already sits on the real physical pivot line. Real, already
+    # cross-validated against a real set by the earlier OBB/SAT task; this entry only had to be connected
+    # to the hinge registry, not re-derived. Bounds confirmed fresh via resolve_part(): 2429 spans
+    # X in [-40,8], 2430 X in [-8,40], both Y in [0,8] Z in [-8,20] -- the interlocking knuckle barrel
+    # sits centred near X=0, consistent with a Y-axis pivot line through the shared origin.
+    # RESTORED 2026-09-28: found deleted -- commit a0d315ff (a selective merge made before this session)
+    # dropped this and the 3830/3831 entry below, silently breaking 4 real tests (2 hinge-mating tests
+    # plus a fabricated-occupancy check) that nothing caught until two independent cloud-dispatch agents'
+    # own verification gates both failed on it hours later, working on completely unrelated topics --
+    # the shared baseline, not either agent's real work, was the actual cause. Restored verbatim from
+    # d1139ae5's own diff (git show d1139ae5 -- scripts/ldraw/parts.py).
+    "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    # Brick hinge (3831 Base / 3830 Top) -- real single radius-4.0 cylinder per half, confirmed fresh via
+    # resolve_part(): 3830 at (20.0,24.0,10.0) axis (0,-20,0); 3831 at (-20.0,24.0,10.0) axis (0,-20,0) --
+    # identical Y=24/Z=10 between halves, axis along Y, differing only in X (each half's own local frame),
+    # the EXACT SAME signature as 2429/2430 above (Y=8, Z=10 there) and consistent with 3937/3938 (X-axis)
+    # and 4275b/4276b (Z-axis): in all 3 of those, independently, the single clean radius-4.0 cylinder's
+    # off-axis coordinates matched exactly between mating halves and were confirmed correct against a real
+    # official set. This entry is added by that now-3-times-confirmed pattern, NOT by its own separate
+    # real-set citation the way 2429/2430 had one already sitting in the test suite -- pos is each half's
+    # own local origin (0,0,0), matching the same "shared origin, pure rotation" placement convention.
+    # RESTORED 2026-09-28 -- see the 2429/2430 restoration note above; verbatim from e5229897's own diff.
+    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
 }
 
 
