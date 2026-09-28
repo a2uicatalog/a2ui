@@ -582,3 +582,127 @@ def test_real_tile_feature_exclusions_stay_rejected(pid):
     assert needs is True, f"{pid} should remain needs_occupancy=True"
     assert occ is None
 
+
+# ── Flat Wall Panels Family (PANEL_FLAT_WALL_PARTS) ──────────────────────────────
+
+def test_panel_flat_wall_occupancy_pure_math():
+    """Flat wall panel occupancy is a rectangular box spanning the part's footprint and 24 LDU height."""
+    # 1 x 2 x 1 panel: x in [-20, 20], y in [0, 24], z in [-10, 10]
+    occ, sockets = P.panel_flat_wall_occupancy_and_sockets(-20.0, 20.0, 0.0, 24.0, -10.0, 10.0)
+    assert occ == [(-20.0, 20.0, 0.0, 24.0, -10.0, 10.0)]
+    assert sockets == [((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0))]
+
+    # Calling with bounds tuples
+    occ_b, sockets_b = P.panel_flat_wall_occupancy_and_sockets((-30.0, 0.0, -10.0), (30.0, 24.0, 10.0))
+    assert occ_b == [(-30.0, 30.0, 0.0, 24.0, -10.0, 10.0)]
+    assert sockets_b == [((-20.0, 24.0, 0.0), (0, 1, 0)), ((0.0, 24.0, 0.0), (0, 1, 0)), ((20.0, 24.0, 0.0), (0, 1, 0))]
+
+
+@pytest.mark.parametrize("pid,expected_box,expected_sockets", [
+    ("4865a", (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0), [((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0))]),
+    ("23950", (-30.0, 30.0, 0.0, 24.0, -10.0, 10.0), [((-20.0, 24.0, 0.0), (0, 1, 0)), ((0.0, 24.0, 0.0), (0, 1, 0)), ((20.0, 24.0, 0.0), (0, 1, 0))]),
+    ("15207", (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0), [((-30.0, 24.0, 0.0), (0, 1, 0)), ((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0)), ((30.0, 24.0, 0.0), (0, 1, 0))]),
+    ("23969", (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0), [((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0))]),
+    ("30413", (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0), [((-30.0, 24.0, 0.0), (0, 1, 0)), ((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0)), ((30.0, 24.0, 0.0), (0, 1, 0))]),
+    ("6231",  (-10.0, 10.0, 0.0, 24.0, -10.0, 10.0), [((0.0, 24.0, 0.0), (0, 1, 0))]),
+])
+def test_dispatcher_resolves_panel_flat_wall_parts_without_bounds(pid, expected_box, expected_sockets):
+    """PANEL_FLAT_WALL_PARTS resolves to full 1-brick box with downward sockets at y=24 and needs_occupancy=False."""
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, f"Panel {pid}")
+    assert needs is False
+    assert occ == [expected_box]
+    assert sockets == expected_sockets
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_w,expected_sockets_count", [
+    ("4865a", 40.0, 2),
+    ("4865b", 40.0, 2),
+    ("4865",  40.0, 2),
+    ("23969", 40.0, 2),
+    ("93095", 40.0, 2),
+    ("30010", 40.0, 2),
+    ("23950", 60.0, 3),
+    ("15207", 80.0, 4),
+    ("30413", 80.0, 4),
+    ("43337", 80.0, 4),
+    ("6231",  20.0, 1),
+])
+def test_real_resolved_flat_wall_panels(pid, expected_w, expected_sockets_count):
+    """All 11 flat wall panel parts verified against real resolved geometry, bounds, and ray-cast solidity."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Real geometry facts: flat wall panels have zero studs
+    assert len(part.studs) == 0, f"{pid} should have 0 studs"
+
+    # Bounds dimensions: width matches expected_w, height is 24 LDU (1 brick), depth is 20 LDU (1 stud)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    dz = part.max[2] - part.min[2]
+    assert dx == pytest.approx(expected_w, abs=0.1)
+    assert dy == pytest.approx(24.0, abs=0.1)
+    assert dz == pytest.approx(20.0, abs=0.5)
+
+    # Ray-cast solidity proof: bounding box must exceed STUD_CELL_MIN_SOLID (0.15)
+    bbox = P.box(part.min[0], part.max[0], part.min[1], part.max[1], part.min[2], part.max[2])
+    solid_frac = P._stud_box_solid_fraction(part.tris, bbox, n=200)
+    assert solid_frac >= P.STUD_CELL_MIN_SOLID, f"{pid} solidity {solid_frac:.3f} below {P.STUD_CELL_MIN_SOLID}"
+
+    # Dispatcher resolution with real geometry
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ is not None and len(occ) == 1
+    assert len(sockets) == expected_sockets_count
+    # All sockets face downward at y=24
+    for pos, direction in sockets:
+        assert pos[1] == pytest.approx(24.0, abs=0.1)
+        assert direction == (0, 1, 0)
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["4865ap01", "23969p01"])
+def test_panel_flat_wall_patterned_parts(pid):
+    """Patterned versions of flat wall panels resolve to valid occupancy via clean_id mapping."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert len(occ) == 1
+    assert len(sockets) == 2
+
+
+# ── Sub-family 2: Corner/Curved Wall Panels with Studs (Safely Unresolved) ──────
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,reason", [
+    ("2345", "crenellated castle wall with studs at y=24, not y=0; stud columns are thin shell (solids 0.06-0.23)"),
+    ("2409", "10x10x12 rock corner; full 288 LDU height column is hollow cave interior (solidity 0.01-0.03)"),
+    ("2448", "airplane panel with studs at two heights (y=0 and y=128), bounds min Y is -8.0"),
+    ("2466", "airplane panel with bounds min Y=-8.0; full-height column solidity is only 0.07 (< 0.15)"),
+    ("2468", "corner convex panel with bounds min Y=-8.0; column solidity is only 0.07 (< 0.15)"),
+    ("2571", "curved top panel; thin shell fuselage gives column solidity of 0.03-0.04 (< 0.15)"),
+    ("2572", "curved top panel; thin shell fuselage gives column solidity of 0.01-0.03 (< 0.15)"),
+])
+def test_corner_curved_wall_panels_with_studs_stay_safely_rejected(pid, reason):
+    """Sub-family 2 parts must remain needs_occupancy=True: none can be safely approximated by
+    stud_cell_occupancy_and_sockets without over-reporting collisions in empty air (spec section 3)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should stay needs_occupancy=True ({reason})"
+    assert occ is None

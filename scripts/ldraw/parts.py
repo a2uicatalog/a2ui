@@ -197,6 +197,54 @@ def tyre_occupancy(bounds_min, bounds_max=None, z_max=None):
     return [box(-half_inscribed, half_inscribed, -half_inscribed, half_inscribed, z_min, z_max)]
 
 
+# Simple flat wall panels (zero studs, a 1-stud-deep rectangular wall with square or rounded corners and
+# an open front cavity, sitting on a 1 x N footprint of height 24 LDU [1 brick]):
+#
+# The full bounding box is a provably safe under-approximation for external collision detection:
+# 1) Solid fraction: ray-cast verified against each part's real triangles (_stud_box_solid_fraction), the
+#    bounding box measures 31-53% solid across all verified parts (e.g. 15207: 36.7%, 4865a: 41.7%,
+#    23969: 50.3%, 6231: 53.3%, 23950: 41.3%, 30413: 40.7%), well above STUD_CELL_MIN_SOLID (0.15) and
+#    comparable to an ordinary solid-topped 2x4 brick (3001 at 43.4%).
+# 2) Rounded corners: the corner fillet on rounded-corner variants (4865b, 15207, 23950, 30413, 23969) has
+#    a measured radius of ~2 LDU (0.8 mm; at 3x3 LDU the corner region is >91% solid). In the discrete LEGO
+#    grid (stud pitch 20 LDU, plate height 8 LDU), no standard LEGO element can fit into a 0.8 mm corner relief,
+#    so the bounding box cannot cause false collisions with legitimately-placed adjacent parts.
+# 3) Sockets: generate_sockets produces downward-facing sockets at y=24 on the standard 20x20 grid (e.g. 1 socket
+#    for 1x1, 2 for 1x2, 3 for 1x3, 4 for 1x4), matching the physical anti-stud mounting sockets on the real
+#    underside where the panel mounts to base studs.
+#
+# id -> (x0, x1, y0, y1, z0, z1). Verified individually against real baked geometry for all listed IDs.
+PANEL_FLAT_WALL_PARTS = {
+    # 1 x 1 x 1
+    "6231": (-10.0, 10.0, 0.0, 24.0, -10.0, 10.0),
+    # 1 x 2 x 1
+    "4865a": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "4865b": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "4865": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "23969": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "93095": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "30010": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    # 1 x 3 x 1
+    "23950": (-30.0, 30.0, 0.0, 24.0, -10.0, 10.0),
+    # 1 x 4 x 1
+    "15207": (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0),
+    "30413": (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0),
+    "43337": (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0),
+}
+
+
+def panel_flat_wall_occupancy_and_sockets(bounds_min, bounds_max=None, y0=None, y1=None, z0=None, z1=None):
+    """Returns (occupancy_boxes, sockets) for a flat wall panel.
+    Can be called with (bounds_min, bounds_max) or (x0, x1, y0, y1, z0, z1)."""
+    if z1 is not None:
+        x0, x1 = bounds_min, bounds_max
+        occ = [box(x0, x1, y0, y1, z0, z1)]
+    else:
+        occ = [box(bounds_min[0], bounds_max[0], bounds_min[1], bounds_max[1], bounds_min[2], bounds_max[2])]
+    sockets = generate_sockets(occ)
+    return occ, sockets
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -727,6 +775,13 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         return verified(occ, sockets)
     if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
         occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
+        return verified(occ, sockets)
+    clean_id = part_id if part_id in PANEL_FLAT_WALL_PARTS else re.sub(r"[pd][0-9a-z]+$", "", part_id)
+    if clean_id in PANEL_FLAT_WALL_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ, sockets = panel_flat_wall_occupancy_and_sockets(bounds_min, bounds_max)
+        else:
+            occ, sockets = panel_flat_wall_occupancy_and_sockets(*PANEL_FLAT_WALL_PARTS[clean_id])
         return verified(occ, sockets)
     headwear_sockets = minifig_headwear_socket(title)
     if headwear_sockets is not None:
