@@ -1,0 +1,232 @@
+{
+  "_comment": "Declared backlog for the catalogue-completion agent pipeline (a2ui-private). Source of truth for what's done, what's rejected-with-reason, and what's pending. Published live to gs://<bucket>/backlog.json for the Cloud Run dashboard's Backlog tab (see agents/gcp-catalogue-agents/publish_backlog.py) -- update THIS file and republish, don't edit the GCS copy directly. status: done | rejected | in_progress | pending.",
+  "generated_from": "real session history 2026-09-27/28 -- BRICK_CATALOGUE_STATUS.md, HINGE_INVESTIGATION.md, TECHNIC_PANEL_INVESTIGATION.md, WINDSCREEN_INVESTIGATION.md, ANIMAL_INVESTIGATION.md, TECHNIC_REMAINDER_SURVEY.md, and the H175 (42145) Rebrickable gap analysis",
+  "budget": {
+    "note": "usd_budget figures in tasks.json are per-task DECLARED CAPS at dispatch time, not metered spend. spent_usd_real below is real metered spend instead, computed from each task's own gemini-cli usage/stats log line (real gemini-3.8-flash pricing, Google Cloud's own docs: $0.75/1M input, $3.75/1M output, $0.07/1M cached-input) via agents/gcp-catalogue-agents/real_cost.py -- re-run `python3 real_cost.py --all-today` and update this field before each new dispatch decision.",
+    "ceiling_usd": 75,
+    "ceiling_scope": "global, standing, set 2026-09-28 -- applies from now on, not a full-night historical reconstruction (spent_usd_real below only covers executions from today/UTC onward, per Curtis's own framing).",
+    "spent_usd_real": 23.1947,
+    "spent_usd_real_as_of": "2026-09-28T10:06:26Z -- real_cost.py --all-today, covers brick-catalogue-agents-t65px (8 tasks), -7mhkc, -w7rxx",
+    "remaining_usd": 51.8053,
+    "enforcement_note": "Not yet wired into an automatic pre-dispatch check -- the real number now exists (this field), but nothing currently refuses a dispatch that would exceed it. That's the next real piece, not yet built."
+  },
+  "items": [
+    {
+      "id": "tile-family",
+      "family": "Tile (printed variants)",
+      "status": "done",
+      "catalogue_wide_impact": "57 -> 1,879 accepted (of 2,290)",
+      "real_set_impact": null,
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-27-generic-tile-occupancy--printed-variant-unlock"
+    },
+    {
+      "id": "panel-family",
+      "family": "Panel (System, flat-wall)",
+      "status": "done",
+      "catalogue_wide_impact": "see BRICK_CATALOGUE_STATUS.md",
+      "real_set_impact": null,
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-27-panel_flat_wall_parts-occupancy-family--investigation"
+    },
+    {
+      "id": "wheel-rims",
+      "family": "Wheel rims",
+      "status": "done",
+      "catalogue_wide_impact": "74 ids (base), extended to 89 on 2026-09-28",
+      "real_set_impact": null,
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-27-wheel_parts-occupancy-family"
+    },
+    {
+      "id": "wheel-catalogue-extension",
+      "family": "Wheel rims (extension)",
+      "status": "done",
+      "catalogue_wide_impact": "Wheel category rejects 139 -> 125 (280 total); WHEEL_PARTS 74 -> 89",
+      "real_set_impact": null,
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-28-wheel_parts-extension"
+    },
+    {
+      "id": "technic-gears",
+      "family": "Technic gears",
+      "status": "done",
+      "catalogue_wide_impact": "51 -> 71 tests passing, see doc",
+      "real_set_impact": null,
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-27-technic_gear_parts-occupancy-family"
+    },
+    {
+      "id": "obb-sat-core-geometry",
+      "family": "Rotation/placement (OBB+SAT collision geometry)",
+      "status": "done",
+      "catalogue_wide_impact": "zero baked-data changes needed; 22/22 tests",
+      "real_set_impact": "unlocks the 19.9pp rotation gap (Python side)",
+      "note": "JS twin (atoms_brick.gs) NOT yet ported -- confirmed missing live 2026-09-28. Real remaining lever for the rotation gap in the browser.",
+      "doc": "BRICK_CATALOGUE_STATUS.md, ROTATION_MODEL_INVESTIGATION.md"
+    },
+    {
+      "id": "js-twin-obb-sat",
+      "family": "Rotation/placement (JS port)",
+      "status": "rejected",
+      "note": "Dispatched 2026-09-28 morning batch, task 1 -- agent session completed with 'no changes produced'. Real gap remains open, not yet re-attempted.",
+      "catalogue_wide_impact": null,
+      "real_set_impact": null,
+      "doc": null
+    },
+    {
+      "id": "omr-importer-rotation",
+      "family": "Rotation/placement (omr_import.py consumer wiring)",
+      "status": "done",
+      "catalogue_wide_impact": null,
+      "real_set_impact": "wires continuous (non-axis-aligned) rotation matrices into set import, consuming the OBB/SAT core",
+      "doc": null
+    },
+    {
+      "id": "hinges-connector",
+      "family": "Physics/articulation (hinge pivot connector)",
+      "status": "done",
+      "catalogue_wide_impact": "4 real curated pivot pairs (3937/3938, 4275b/4276b); 30083/30161 registered but not yet curated",
+      "real_set_impact": null,
+      "note": "Built both Python and JS twin 2026-09-28, plus mated-pair pin/hole collision exemption. 2429/2430, 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 investigated but deliberately excluded -- axis not confidently resolved.",
+      "doc": "HINGE_INVESTIGATION.md, BRICK_CATALOGUE_STATUS.md#2026-09-28-hinges-connector--pinhole-collision-exemption"
+    },
+    {
+      "id": "hinge-registry-expansion",
+      "family": "Physics/articulation (remaining hinge families)",
+      "status": "done",
+      "catalogue_wide_impact": "2429/2430 (classic plate hinge) added -- real evidence found already sitting in tests/test_brick_parts_validate.py, cross-validated against real official set 8880-1 Super Car. 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved, no equivalent evidence found for those.",
+      "real_set_impact": null,
+      "note": "Needs the same real-axis-verification rigor as the 4 already-landed pairs -- do not guess from radius-4.0 cylinder clustering alone (real false-positive risk, see bar_grip_points collision found 2026-09-28).",
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-28-24292430-classic-plate-hinge----connecting-evidence-that-was-already-there"
+    },
+    {
+      "id": "windscreen-investigation",
+      "family": "Windscreen",
+      "status": "rejected",
+      "note": "No shared occupancy family exists (canopies 85-96% hollow air, hinge-articulated domes belong to hinge connector work instead). Correctly left needs_occupancy=True.",
+      "catalogue_wide_impact": null,
+      "real_set_impact": null,
+      "doc": "WINDSCREEN_INVESTIGATION.md"
+    },
+    {
+      "id": "technic-panel-investigation",
+      "family": "Technic Panel / Fairing",
+      "status": "rejected",
+      "note": "No shared occupancy family exists across all 71 real ids (thin curved shells, perforated flat panels with illegal socket/pin-hole implications). Needs a mated-connector exemption mask AND multi-box OBB decomposition as real prerequisites, neither built yet.",
+      "catalogue_wide_impact": null,
+      "real_set_impact": null,
+      "doc": "TECHNIC_PANEL_INVESTIGATION.md"
+    },
+    {
+      "id": "animal-investigation",
+      "family": "Animal",
+      "status": "rejected",
+      "note": "No shared occupancy family exists (2-9% solid hollow shells; the one near-solid candidate, Animal Egg, still fails on containment).",
+      "catalogue_wide_impact": null,
+      "real_set_impact": null,
+      "doc": "ANIMAL_INVESTIGATION.md"
+    },
+    {
+      "id": "technic-remainder-survey",
+      "family": "Technic remainder (pins, bushes, cross blocks)",
+      "status": "done",
+      "catalogue_wide_impact": "+10 real Technic Pin OVERRIDES entries",
+      "real_set_impact": null,
+      "note": "Bush family (3713, 6590, and wider) investigated and correctly rejected within this task -- do not re-open.",
+      "doc": "TECHNIC_REMAINDER_SURVEY.md, BRICK_CATALOGUE_STATUS.md#2026-09-27-technic-remainder-survey--pin-overrides"
+    },
+    {
+      "id": "minifig-torso",
+      "family": "Minifig Torso (base + printed variants)",
+      "status": "done",
+      "catalogue_wide_impact": "972 -> 1,762 accepted (of 1,872 non-sticker); 790 newly unlocked catalogue-wide",
+      "real_set_impact": null,
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-28-minifig-torso-occupancy--printed-variant-unlock"
+    },
+    {
+      "id": "h175-priority-set-curation",
+      "family": "H175 (42145) real-BOM-driven curation",
+      "status": "done",
+      "catalogue_wide_impact": "51 + 60 real ids curated+baked, all already-solvable by existing code",
+      "real_set_impact": "H175 instance coverage 37.0% -> 70.8%",
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-28-priority-target-set--lego-technic-42145-airbus-h175-rescue-helicopter"
+    },
+    {
+      "id": "technic-axle-occupancy",
+      "family": "Technic Axles (plain, solid rods)",
+      "status": "done",
+      "catalogue_wide_impact": "Technic Axle category 10 -> 34 accepted, 37 -> 13 rejected (64.9% reject reduction); 38 distinct axle parts accepted catalogue-wide (plain, with-stop, threaded, obsolete)",
+      "real_set_impact": "H175: plain/with-stop/threaded axles now covered (4519, 3705, 32073, 44294, 15462, 24316, etc.)",
+      "note": "Dispatched 2026-09-28, execution brick-catalogue-agents-7mhkc, engine gemini-express, $12 budget. Independently re-verified (not trusted on self-report): real resolve_part() checks on 8 real ids confirmed exact expected boxes; 270/270 tests pass against the real LDraw library. Real connectivity gap noted as honest follow-up: plain axles register zero connectors (no stud/hole/pin), so they don't yet participate in brick_parts_validate.py's anchoring graph.",
+      "doc": "BRICK_CATALOGUE_STATUS.md#2026-09-28-technic-axle-occupancy-family"
+    },
+    {
+      "id": "h175-secondary-connectors",
+      "family": "H175 remaining: ball joints, axle-pin hybrids, turntables",
+      "status": "in_progress",
+      "catalogue_wide_impact": "1938/32474 (ball joints), 11214/18651/61184 (axle-pin hybrids, may overlap technic-axle-occupancy), 1936/1937/99010 (turntables)",
+      "real_set_impact": "H175: secondary gap after axles",
+      "note": "Not yet scoped into a real prompt. Dispatched 2026-09-28 via the live GO endpoint, execution brick-catalogue-agents-596q2, engine gemini, $8 budget.",
+      "doc": null
+    },
+    {
+      "id": "h175-mechanism-parts",
+      "family": "H175 remaining: universal joints, crankshafts, driving rings, Powered Up motors/hubs",
+      "status": "rejected",
+      "catalogue_wide_impact": "22 real mechanism/electronic parts verified safely rejected: 5 crankshafts (2853/2853a-c, 2854), 6 universal joints (61903, 62520, 62519, 9244, 3712, 575), 5 driving ring transmission parts (18947, 18948, 6539, 32187, 2473a), 6 Powered Up motors/hubs (22169c01, 22169, 85825, 22127, 22172, 22172c01)",
+      "real_set_impact": "H175: 1x 85825, 1x 22169c01, 1x 61903, 2x 18947, 2x 18948, 1x 2853a confirmed honestly unboxable; zero false collisions across motorized transmission and rotor head",
+      "note": "Forensic investigation proves no safe axis-aligned bounding box occupancy family exists under Spec Section 3 safety (under-approximation is safe: miss a real collision, never report a false one). Crankshafts have offset throws and sweep dynamic cylindrical volumes; universal joints articulate at up to 45 deg and have axle bores at both ends; driving rings are sliding annular collars co-located over joiners/through-axles with outer selector fork channels; Powered Up motors/hubs have sprawling coiled cables (7.5% solid) and multi-axial orthogonal pin bores requiring mated-connector exemptions.",
+      "doc": "scripts/ldraw/H175_MECHANISM_INVESTIGATION.md, BRICK_CATALOGUE_STATUS.md#2026-09-28-h175-mechanism--electronics-parts-investigation"
+    },
+    {
+      "id": "minifig-accessory",
+      "family": "Minifig Accessory",
+      "status": "rejected",
+      "catalogue_wide_impact": "820 total parts in LDraw library; 417 accepted (361 via bar_grip_points, 99 via stud_cell, 9 via headwear); 403 safely remain rejected (needs_occupancy: true)",
+      "real_set_impact": null,
+      "note": "Investigated 2026-09-28. Operator bar_grip_points hypothesis confirmed (361 parts already cleanly resolved, e.g. 10050, 11439, 12885, 11640, 11103, 11250, 13571, 15391). Category-wide occupancy family strictly rejected across all remaining sub-families: shields (80-90% open air, handle in concave interior), swords with pommels/crossguards (80-95% open air), cups/trophies (hollow drinking cavities), sacks/satchels (wrapping torso, 7% solid), instruments (16% solid), food (organic loops), misfiled animals (ANIMAL_INVESTIGATION.md), and stud accessories failing bounds containment.",
+      "doc": "MINIFIG_ACCESSORY_INVESTIGATION.md, BRICK_CATALOGUE_STATUS.md#2026-09-28-minifig-accessory-category-investigation"
+    },
+    {
+      "id": "electric",
+      "family": "Electric",
+      "status": "pending",
+      "catalogue_wide_impact": "not measured",
+      "real_set_impact": null,
+      "note": "Carried over from the 3am overnight-watcher candidates list, never scoped.",
+      "doc": null
+    },
+    {
+      "id": "vehicle",
+      "family": "Vehicle (base/chassis parts)",
+      "status": "pending",
+      "catalogue_wide_impact": "not measured",
+      "real_set_impact": null,
+      "note": "Carried over from the 3am overnight-watcher candidates list, never scoped.",
+      "doc": null
+    },
+    {
+      "id": "constraction",
+      "family": "Constraction / Bionicle",
+      "status": "rejected",
+      "catalogue_wide_impact": "151 base parts surveyed (197 total); 29 base parts (+ 6 subparts) confirmed cleanly accepted via existing bar_grip_points, generic_hole_channel_occupancy, and generic_stud_cell_occupancy; 122 base parts safely remain rejected (needs_occupancy: true)",
+      "real_set_impact": "0 parts in 42145 (Constraction is strictly action figures; 42145 is a Technic aircraft)",
+      "note": "Scoped and investigated 2026-09-28 per operator steer. No safe shared occupancy family exists across the 8 sub-families under Spec Section 3 safety (under-approximation is safe: miss a real collision, never report a false one). CCBS ball sockets encapsulate mating balls with zero mated-connector validator exemption; thin curved armor shells have concave inner cradles wrapping limb bones with solidity < 15%; skeletal torsos are 89.5% open air; and dynamic 3D articulation invalidates static axis-aligned bounding boxes.",
+      "doc": "scripts/ldraw/CONSTRACTION_INVESTIGATION.md, BRICK_CATALOGUE_STATUS.md#2026-09-28-constraction--bionicle-category-investigation"
+    },
+    {
+      "id": "mated-connector-exemption-generalisation",
+      "family": "Cross-cutting: mated-connector collision exemption",
+      "status": "pending",
+      "catalogue_wide_impact": "prerequisite for ANY future perforated-part occupancy (Technic Panel and beyond)",
+      "real_set_impact": null,
+      "note": "Currently only pin/hole and hinge mated pairs are exempted (built 2026-09-28). TECHNIC_PANEL_INVESTIGATION.md's own architecture recommendation -- scope its real catalogue-wide impact before prioritising.",
+      "doc": "TECHNIC_PANEL_INVESTIGATION.md"
+    },
+    {
+      "id": "obb-decomposition",
+      "family": "Cross-cutting: multi-box/OBB decomposition for curved shells",
+      "status": "pending",
+      "catalogue_wide_impact": "prerequisite for Technic Panel fairings/mudguards AND hollow windscreen canopies -- same lever needed by both, build once",
+      "real_set_impact": null,
+      "note": "Highest-effort item on this whole backlog. Correctly deferred both times it came up (Technic Panel, Windscreen investigations).",
+      "doc": "TECHNIC_PANEL_INVESTIGATION.md, WINDSCREEN_INVESTIGATION.md"
+    }
+  ]
+}
