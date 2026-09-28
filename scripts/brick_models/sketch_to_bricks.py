@@ -219,6 +219,34 @@ PLACE_SHAPE_TOOL = {
     },
 }
 
+CARVE_OPENING_TOOL = {
+    "name": "carve_opening",
+    "description": (
+        "Remove material to cut a real opening -- a window, a door, a wheel well, a cockpit recess -- out "
+        "of volume(s) already placed with place_shape. Call this AFTER the solid volume you want to cut "
+        "into already exists. Unlike place_shape this only ever REMOVES cells; it never adds new colour."
+    ),
+    "parameters": {
+        "type": "OBJECT",
+        "properties": {
+            "svg_fragment": {
+                "type": "STRING",
+                "description": (
+                    "Exactly one raw SVG element describing the opening's FOOTPRINT, same coordinate "
+                    "system and allowed tags as place_shape (rect, circle, ellipse, polygon, g), in STUDS. "
+                    "fill is ignored (removing material has no colour). e.g. a window: "
+                    "'<rect x=\"6\" y=\"4\" width=\"2\" height=\"2\"/>' with a y0/height matching where in "
+                    "the wall it should be cut."
+                ),
+            },
+            "y0": {"type": "INTEGER", "description": "Base height in PLATES of the opening."},
+            "height": {"type": "INTEGER", "description": "How tall the opening is, in PLATES (>= 1)."},
+            "label": {"type": "STRING", "description": "3-6 words describing the opening, e.g. 'front door opening'."},
+        },
+        "required": ["svg_fragment", "y0", "height", "label"],
+    },
+}
+
 FINISH_TOOL = {
     "name": "finish",
     "description": "Call once the model is complete and represents the topic well.",
@@ -253,6 +281,38 @@ def _system_prompt(topic: str, plate_w: int, plate_d: int) -> str:
         "h=4 at y0=24,height=2 (narrower still), then a final thin ridge on top. A single flat-topped box "
         "for a roof looks wrong -- always step it down in at least 3-4 shrinking stages. The same rule "
         "applies to any other tapering form (a spire, a rocket nose, a dome).\n\n"
+        "OPENINGS: place_shape only ever ADDS solid material -- a 'window' placed as a small coloured "
+        "rect is just a coloured patch on the surface, not a real opening, and looks wrong. For a real "
+        "window, door, wheel well, or cockpit recess: first place_shape the solid volume (the wall, the "
+        "car body), THEN call carve_opening with a smaller footprint at the right y0/height to cut an "
+        "actual hole out of it. carve_opening only removes, never adds colour. Use it for anything that "
+        "should read as a hole or recess rather than a coloured mark -- this applies to vehicles just as "
+        "much as buildings (wheel wells, window cutouts, cockpit openings).\n\n"
+        "HOLLOW INTERIORS for anything with rooms: place_shape's walls are SOLID -- if you only carve small "
+        "window/door holes into a solid block, those holes open onto more solid material behind them, not "
+        "into a real room. For any building, after placing the solid exterior walls, ALSO call "
+        "carve_opening with a LARGE footprint inset from the outer walls by the wall thickness (e.g. walls "
+        "2 studs thick on a 16x16 footprint -> carve the interior at x=2,y=2,width=12,height=12), spanning "
+        "most of the interior height, to hollow the whole inside out into one open room BEFORE (or after -- "
+        "order doesn't matter) carving the smaller window/door holes that connect that hollow room to the "
+        "outside. Do this for every floor. Skipping this step is the single most common mistake -- a "
+        "building that is not hollowed out this way looks wrong no matter how good its window cutouts are.\n\n"
+        f"PROPORTIONS -- HARD LIMIT: the TOTAL height of the model, ground to its single highest point "
+        f"(roof ridge, chimney, antenna, anything), must not exceed {max(18, min(plate_w, plate_d))} "
+        "plates, UNLESS the topic is explicitly a tower/spire/skyscraper/rocket. This is a hard budget, "
+        "not a suggestion -- plan it before you start placing: e.g. one storey of wall = 8 plates, a roof "
+        "= 3 tapering steps of 2 plates each (6 plates) is already a complete, good-looking roof. Do NOT "
+        "add a 5th or 6th roof tier just because tapering is good -- 3 steps (occasionally 4 for a large "
+        "building) is enough; more steps must come out of the SAME total height budget, not add to it. If "
+        "you are about to exceed the limit, make existing volumes shorter, not add more of them.\n\n"
+        "SYMMETRY: when a face has more than one similar opening (windows) or feature, place them "
+        "symmetrically about that face's own centreline unless the topic explicitly calls for an "
+        "asymmetric design -- e.g. a centred door with one matching window mirrored on each side, and the "
+        "SAME window arrangement repeated at the same x/z position on every floor (just at a different "
+        "y0). Before calling finish, check: does every floor of the same face have the same number of "
+        "openings in mirrored positions? A lopsided arrangement (a window on one side of a door but not "
+        "the other, or windows on one floor but not the matching floor above it) looks like a mistake, "
+        "not a design choice.\n\n"
         "When done, call finish with a one-sentence summary."
     )
 
@@ -261,7 +321,7 @@ def _call_gemini(key: str, contents: List[Dict], system_prompt: str) -> Dict:
     body = {
         "contents": contents,
         "systemInstruction": {"parts": [{"text": system_prompt}]},
-        "tools": [{"functionDeclarations": [PLACE_SHAPE_TOOL, FINISH_TOOL]}],
+        "tools": [{"functionDeclarations": [PLACE_SHAPE_TOOL, CARVE_OPENING_TOOL, FINISH_TOOL]}],
         "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
         # thinkingBudget=0: same real fix as scripts/ldraw/gemini_qa.py's ask() -- found live, first real
         # run here, that default (extended) thinking burns ~2000 tokens then produces a
@@ -294,8 +354,19 @@ def run_sketch_to_bricks(topic: str, name: str, out_dir: str = ".", plate_w: int
     finished = False
 
     for turn in range(max_turns):
-        resp = _call_gemini(key, contents, system_prompt)
-        cand = resp["candidates"][0]
+        # MALFORMED_FUNCTION_CALL is an intermittent real failure mode under forced tool_config mode=ANY
+        # (found live: thinkingBudget=0 isn't always fully honoured -- thoughtsTokenCount showed ~2000
+        # even with it set). It's a same-turn retry, not a fresh turn -- contents is NOT appended to on a
+        # malformed attempt, so a retry just re-asks the same question rather than burning a real turn.
+        for attempt in range(3):
+            resp = _call_gemini(key, contents, system_prompt)
+            cand = resp["candidates"][0]
+            if cand.get("finishReason") != "MALFORMED_FUNCTION_CALL":
+                break
+            log.append("retry %d/3: MALFORMED_FUNCTION_CALL on turn %d" % (attempt + 1, turn))
+        else:
+            raise RuntimeError("MALFORMED_FUNCTION_CALL 3x in a row on turn %d -- giving up. Log:\n%s" %
+                               (turn, "\n".join(log)))
         parts = cand["content"]["parts"]
         contents.append({"role": "model", "parts": parts})
         fn_responses = []
@@ -309,7 +380,7 @@ def run_sketch_to_bricks(topic: str, name: str, out_dir: str = ".", plate_w: int
                 finished = True
                 fn_responses.append({"functionResponse": {"name": fn_name, "response": {"ok": True}}})
                 continue
-            if fn_name != "place_shape":
+            if fn_name not in ("place_shape", "carve_opening"):
                 fn_responses.append({"functionResponse": {"name": fn_name, "response": {"ok": False, "error": "unknown tool"}}})
                 continue
             root = validate_svg_fragment(args.get("svg_fragment", ""))
@@ -320,14 +391,6 @@ def run_sketch_to_bricks(topic: str, name: str, out_dir: str = ".", plate_w: int
                                            "with x,y,width,height,cx,cy,r,rx,ry,points,fill are allowed, no path"}}})
                 continue
             y0, height = int(args.get("y0", 0)), max(1, int(args.get("height", 1)))
-            code = nearest_colour_code(_first_fill(root))
-            # brickgen.tile() does `if not c: continue` -- LDraw colour code 0 (Black) is falsy in Python,
-            # so every Black-coded cell was silently dropped from the tiled output (found live: an
-            # all-black-heavy model collapsed to zero surviving bricks). Store the hex string instead of
-            # the bare int code -- a non-empty string is always truthy, and hex is already a valid `c`
-            # representation downstream (see _brick_parts_model_sanitise's own docstring). brickgen.py
-            # itself is untouched; every other existing caller just never happened to place code-0 cells.
-            stored_colour = _LDRAW_COLOURS[code]
             cells = _footprint(root)
             cells = [(x, z) for x, z in cells if 0 <= x < plate_w and 0 <= z < plate_d]
             label = args.get("label", "")
@@ -337,6 +400,30 @@ def run_sketch_to_bricks(topic: str, name: str, out_dir: str = ".", plate_w: int
                     "ok": False, "error": "footprint is empty after clamping to the plate bounds "
                                            "(0..%d x 0..%d) -- check the shape's coordinates" % (plate_w - 1, plate_d - 1)}}})
                 continue
+
+            if fn_name == "carve_opening":
+                # Pure removal -- no support check needed (you can't make a hole float), no colour. Silent
+                # no-op cells (nothing was there to remove) are reported honestly rather than pretended away,
+                # so the model can tell "I cut the window" apart from "I aimed at empty air".
+                removed = 0
+                for x, z in cells:
+                    for y in range(y0, y0 + height):
+                        if S.pop((x, y, z), None) is not None:
+                            removed += 1
+                log.append("carved %r: %d/%d cells actually removed, y%d-%d" % (
+                    label, removed, len(cells) * height, y0, y0 + height - 1))
+                fn_responses.append({"functionResponse": {"name": fn_name, "response": {
+                    "ok": True, "cells_removed": removed}}})
+                continue
+
+            code = nearest_colour_code(_first_fill(root))
+            # brickgen.tile() does `if not c: continue` -- LDraw colour code 0 (Black) is falsy in Python,
+            # so every Black-coded cell was silently dropped from the tiled output (found live: an
+            # all-black-heavy model collapsed to zero surviving bricks). Store the hex string instead of
+            # the bare int code -- a non-empty string is always truthy, and hex is already a valid `c`
+            # representation downstream (see _brick_parts_model_sanitise's own docstring). brickgen.py
+            # itself is untouched; every other existing caller just never happened to place code-0 cells.
+            stored_colour = _LDRAW_COLOURS[code]
             # Real physical-connectivity check, not just a prompt-text warning (a text-only warning was
             # tried first and was NOT enough -- Gemini placed disconnected geometry anyway; found live,
             # the whole model collapsed to zero surviving bricks after brickgen's own anchoring pass ran
