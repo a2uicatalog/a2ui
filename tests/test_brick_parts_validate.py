@@ -367,3 +367,19 @@ def test_hinge_2429_2430_mates_at_real_cited_bent_angle():
     report = validate_parts(parts, {'2429': mesh_2429, '2430': mesh_2430})
     assert report['hingeConnections'] == 1
     assert report['overlaps'] == 0
+
+
+# --- 3830/3831 brick hinge (2026-09-28) -- pattern-matched, not independently real-set-cited: identical
+# single-radius-4.0-cylinder signature to 2429/2430 (same X bounds, Y/Z match between halves, axis Y),
+# the 3rd real confirmation of this exact pattern (3937/3938 X-axis, 4275b/4276b Z-axis both real-set
+# cited). Flat-mate only -- no equivalent bent-angle fixture exists for this pair yet.
+
+def test_hinge_3830_3831_mates_flat():
+    mesh_3830, mesh_3831 = _load_mesh('3830'), _load_mesh('3831')
+    parts = [
+        {'p': '3830', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3831', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3830': mesh_3830, '3831': mesh_3831})
+    assert report['hingeConnections'] == 1
+    assert report['overlaps'] == 0

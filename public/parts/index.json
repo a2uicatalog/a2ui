@@ -30102,8 +30102,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 31644,
+   "bytes": 31718,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3831": {
@@ -30124,8 +30126,10 @@
    "sockets": 2,
    "holes": 0,
    "pins": 0,
+   "bars": 0,
+   "hinges": 1,
    "needs_occupancy": false,
-   "bytes": 18152,
+   "bytes": 18226,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3831d01": {

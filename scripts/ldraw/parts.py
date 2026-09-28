@@ -985,6 +985,17 @@ HINGE_CONNECTORS = {
     # sits centred near X=0, consistent with a Y-axis pivot line through the shared origin.
     "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
     "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    # Brick hinge (3831 Base / 3830 Top) -- real single radius-4.0 cylinder per half, confirmed fresh via
+    # resolve_part(): 3830 at (20.0,24.0,10.0) axis (0,-20,0); 3831 at (-20.0,24.0,10.0) axis (0,-20,0) --
+    # identical Y=24/Z=10 between halves, axis along Y, differing only in X (each half's own local frame),
+    # the EXACT SAME signature as 2429/2430 above (Y=8, Z=10 there) and consistent with 3937/3938 (X-axis)
+    # and 4275b/4276b (Z-axis): in all 3 of those, independently, the single clean radius-4.0 cylinder's
+    # off-axis coordinates matched exactly between mating halves and were confirmed correct against a real
+    # official set. This entry is added by that now-3-times-confirmed pattern, NOT by its own separate
+    # real-set citation the way 2429/2430 had one already sitting in the test suite -- pos is each half's
+    # own local origin (0,0,0), matching the same "shared origin, pure rotation" placement convention.
+    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
 }
 
 
