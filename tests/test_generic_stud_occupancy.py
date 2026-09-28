@@ -1066,5 +1066,211 @@ def test_deliberately_excluded_gear_subgroups_remain_rejected(pid):
     assert occ is None
 
 
+# -----------------------------------------------------------------------------
+# Wheel catalogue extension (2026-09-28, agent/wheel-catalogue-extension, cloud task)
+# -----------------------------------------------------------------------------
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+def test_duplo_wheel_bore_verification():
+    """Verify that 12589 safely uses the standard 8.0 LDU bore exclusion (matching its 12588 axle
+    shaft radius 8.0), whereas 15315 requires an oversized 10.0 LDU bore (matching 15316 axle) and
+    thus properly remains excluded from standard WHEEL_BORE_HALF occupancy."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+
+    # 12589 is accepted
+    p12589 = resolve_part(lib, colours, "12589.dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        "12589", p12589.title, p12589.min, p12589.max, p12589.holes, p12589.studs, p12589.tris, p12589.cylinders
+    )
+    assert needs is False
+    assert len(occ) == 4
+    # All 4 boxes strictly outside the Duplo 12588 axle radius of 8.0
+    for b in occ:
+        overlap_duplo_axle = (b[0] < 8.0 and b[1] > -8.0 and b[2] < 8.0 and b[3] > -8.0)
+        assert not overlap_duplo_axle, f"Box {b} overlaps Duplo axle!"
+
+    # 15315 remains rejected because standard bore (8.0) would collide with its 10.0 LDU radius axle
+    p15315 = resolve_part(lib, colours, "15315.dat")
+    occ15, _, needs15 = P.resolve_occupancy_and_sockets(
+        "15315", p15315.title, p15315.min, p15315.max, p15315.holes, p15315.studs, p15315.tris, p15315.cylinders
+    )
+    assert needs15 is True
+    assert occ15 is None
+
+
+# -----------------------------------------------------------------------------
+# Technic remainder survey (2026-09-28, agent/technic-remainder-survey, cloud task)
+# -----------------------------------------------------------------------------
+
+TECHNIC_PIN_OVERRIDES = [
+    ("89678", [P.box(-20, 0, -6, 6, -6, 6)], 1),
+    ("4459", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("61332", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("32002", [P.box(-20, 10, -6, 6, -6, 6)], 1),
+    ("32556a", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("32556b", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("39888", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("42924", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("77765", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("65304", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+]
+
+
+@pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_PIN_OVERRIDES)
+def test_technic_pin_overrides_synthetics(pid, expected_boxes, expected_sockets):
+    """Direct dispatcher test: each added pin override returns its verified box and sockets without library."""
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, "Technic Pin", [-30, -10, -10], [30, 10, 10], [], [], [], [])
+    assert needs is False
+    assert occ == expected_boxes
+    assert len(sockets) == expected_sockets
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_PIN_OVERRIDES)
+def test_technic_pin_overrides_real_geometry(pid, expected_boxes, expected_sockets):
+    """Real geometry test: verified against resolved LDraw meshes for bounds containment and ray-parity solidity."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ == expected_boxes
+    assert len(sockets) == expected_sockets
+    assert P._boxes_within_bounds(occ, part.min, part.max)
+    for b in occ:
+        sol = P._stud_box_solid_fraction(part.tris, b)
+        assert sol >= P.STUD_CELL_MIN_SOLID, f"Part {pid} box {b} solid fraction {sol:.3f} below {P.STUD_CELL_MIN_SOLID}"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    # Bushes: hollow axle bore down center / tri-axial star
+    "3713", "4265a", "57585",
+    # Cross blocks: orthogonal hole bores along Z vs X; thin corner slivers fail solidity floor
+    "32291", "32557", "63869", "98989",
+    # Representative irregular / complex mechanical components
+    "32039", "32126", "2736", "4716", "64451",
+])
+def test_technic_remainder_honestly_rejected_parts(pid):
+    """Technic remainder survey controls: parts where geometry or insertion physics forbids simple box occupancy
+    must strictly remain needs_occupancy=True rather than being guessed."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"Part {pid} ({part.title}) was falsely accepted"
+    assert occ is None
+    assert sockets == []
+
+
+# -----------------------------------------------------------------------------
+# Minifig Torso generic occupancy (2026-09-28, agent/minifig-torso, cloud task)
+# -----------------------------------------------------------------------------
+
+def test_generic_torso_occupancy_synthetic():
+    """Synthetic standard minifig torso: [-19, 19, -12, 32, -10, 10] with solid triangles."""
+    tris = _box_tris(-19, 19, -12, 32, -10, 10)
+    occ, sockets = P.generic_torso_occupancy((-19.0, -12.0, -10.0), (19.0, 32.0, 10.0), [], tris, "Minifig Torso")
+    assert occ == [(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)]
+    assert sockets == []
+
+
+def test_generic_torso_occupancy_synthetic_exclusions():
+    """Exclusions required by spec §3 (under-approximate, never guess)."""
+    tris = _box_tris(-19, 19, -12, 32, -10, 10)
+
+    # Top studs must not enter torso path
+    top_studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.generic_torso_occupancy((-19, -12, -10), (19, 32, 10), top_studs, tris, "Minifig Torso") == (None, [])
+
+    # Flat sticker sheet
+    assert P.generic_torso_occupancy((-18, -0.25, -15), (18, 0, 15), [], tris, "Sticker Minifig Torso") == (None, [])
+
+    # Appendages / fantasy non-standard torsos
+    assert P.generic_torso_occupancy((-56, -22, -10), (56, 35, 10), [], tris, "Minifig Torso with Bat Wing Arms") == (None, [])
+    assert P.generic_torso_occupancy((-37, -12, -12), (37, 45, 12), [], tris, "Minifig Torso with Flipper Arms") == (None, [])
+    assert P.generic_torso_occupancy((-34, -12, -30), (34, 46, 10), [], tris, "Minifig Torso with Arms and Boxing Gloves") == (None, [])
+
+    # Non-torso title
+    assert P.generic_torso_occupancy((-19, -12, -10), (19, 32, 10), [], tris, "Brick 2 x 4") == (None, [])
+
+    # Non-matching dimensions (e.g. wrong height or width)
+    assert P.generic_torso_occupancy((-10, -12, -10), (10, 32, 10), [], tris, "Minifig Torso") == (None, [])
+    assert P.generic_torso_occupancy((-19, 0, -10), (19, 24, 10), [], tris, "Minifig Torso") == (None, [])
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "973",       # Base Minifig Torso
+    "43370",     # Minifig Torso with Arm Locking Notches
+    "973d01",    # Minifig Torso with "TINE" Stickers
+    "973d02",    # Minifig Torso with Yellow Buttons and Grey Belt Sticker
+    "973d03",    # Minifig Torso with White Buttons and Police Badge Plain Sticker
+    "973d04",    # Minifig Torso with Shell Logo on White Background Sticker
+    "973d06",    # Minifig Torso with Rear Sticker White "1" on Transparent Background
+    "973d07",    # Minifig Torso with Red Cross Sticker
+    "973d0f",    # Minifig Torso with MD Foods Logo Sticker on Both Sides
+    "973p01",    # Minifig Torso with Vertical Striped Red/Blue Pattern
+    "973p04",    # Minifig Torso with Six Button Suit and Airplane Pattern
+    "973p0a",    # Minifig Torso with White Diagonal Zip and Pocket Pattern
+    "973p14",    # Minifig Torso with "S" Logo Red / Black Pattern
+    "973p18",    # Minifig Torso with Suit and Tie Pattern
+    "973p1f",    # Minifig Torso with Police Officer Pattern
+    "973p21",    # Minifig Torso with Firefighter Pattern
+    "973p2a",    # Minifig Torso with Chef Pattern
+    "973p31",    # Minifig Torso with Pirate Pattern
+    "973p36",    # Minifig Torso with Pirate Captain Pattern
+    "973p42",    # Minifig Torso with Castle Knight Pattern
+    "973p46",    # Minifig Torso with Forestman Pattern
+    "973p4f",    # Minifig Torso with Lion Knight Pattern
+    "973p4j",    # Minifig Torso with King Pattern
+    "973p90",    # Minifig Torso with Classic Space Astronaut Pattern
+    "973p2q",    # Minifig Torso with Viking Armour (x=19.11)
+    "973p8j",    # Minifig Torso with Town Vest (y=32.1)
+])
+def test_real_torso_parts_accepted(pid):
+    """Real minifig torso parts (base, sticker, and printed variants) verified via resolve_part."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should be accepted"
+    assert occ == [(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)]
+    assert sockets == []
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "10677",     # Minifig Torso with Bat Wing Arms
+    "11938",     # Minifig Torso with Bird Wing Arms
+    "24319",     # Minifig Torso with Flipper Arms
+    "97149",     # Minifig Torso with Arms and Boxing Gloves
+    "37777",     # Minifig Torso Half Giant
+    "003428b",   # Sticker Minifig Torso with Shirt
+])
+def test_real_torso_feature_exclusions_stay_rejected(pid):
+    """Feature-bearing or novelty torsos that cannot safely use standard rectangular torso occupancy."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+
 
 

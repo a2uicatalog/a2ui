@@ -1,5 +1,32 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: Priority target set — LEGO Technic 42145 Airbus H175 Rescue Helicopter
+
+Curtis asked to track this as a priority real-set reference for the occupancy-family backlog. Real,
+verified set data (WebSearch, 2026-09-28 — LEGO's and Rebrickable's own product pages 403'd a direct
+fetch, so citing the search results directly rather than an unfetched page):
+- Set number **42145-1**, "Airbus H175 Rescue Helicopter", LEGO **Technic** theme, released 2022.
+- **2,001 pieces** (per its Amazon retail listing — LEGO's own page blocked the fetch, so this one figure
+  is third-party-sourced, not LEGO's own copy; treat as approximate, not exact, until confirmed otherwise).
+- Rebrickable inventory page: https://rebrickable.com/sets/42145-1/airbus-h175-rescue-helicopter/ (real
+  per-part BOM with colour + quantity — the right source to diff against the catalogue directly, since it
+  needs no LDraw/OMR model at all, just the parts list).
+- **No LDraw/OMR model confirmed for this set** (checked `library.ldraw.org/omr`, no indexed match found
+  2026-09-28) — so it cannot feed `scripts/ldraw/real_set_coverage.py` today the way the 133/183-set OMR
+  sample does. A real next step, not yet done: pull 42145's real part list from Rebrickable (needs a
+  `REBRICKABLE_API_KEY` or the public inventory page) and diff it against `public/parts/index.json`
+  directly — no OMR/MPD import needed for that, just a parts-list diff.
+- **Why this is a well-justified priority, not an arbitrary pick**: a real official Technic helicopter
+  model is exactly the part-family mix under active investigation tonight — spinning rotor hub (gears),
+  motorized drivetrain (Technic gears/axles), fairings/body panels (Technic Panel family, tonight's
+  `TECHNIC_PANEL_INVESTIGATION.md` — still `needs_occupancy=True`, see below), and likely real hinges
+  (rotor blade fold, cabin doors) — directly exercising `HINGE_CONNECTORS` (this session, see next entry).
+  A real, currently-uncovered official set is a much stronger prioritisation signal than an abstract
+  catalogue-wide reject count alone.
+- **Not yet done**: pulling the real 42145 part list and checking it against current coverage. Flagged
+  here as the next concrete step, not executed this session (out of tonight's scope, which was the
+  `hinges` connector + pin/hole collision exemption below).
+
 ## LATEST — 2026-09-27 evening: catalogue-completion session (read this first)
 
 Same-day follow-on to the second expansion below. Landed this session, on `local/bar-grip-connector`
@@ -787,3 +814,147 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
     - Real resolved geometry tests for 13 representative Technic gears (`10928`, `3647`, `94925`, `4019`, `6589`, `18575`, `32269`, `32072`, `3648b`, `3649`, `3650a`, `4143`, `32198a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
     - Deliberate exclusion tests for 5 parts across unaddressed sub-groups (`3743`, `24014`, `18940`, `24121`, `32167`) asserting `needs_occupancy=True`.
   - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **71 passed, 0 failed** (up from 51 passed before this change).
+
+## 2026-09-28: `hinges` Connector & Pin/Hole Collision Exemption (interactive session, built directly)
+
+- **Task**: Implement HINGE_INVESTIGATION.md's own scoped follow-up plan ("the only missing capability is
+  connector recognition") in `renderers/brick_parts_validate.py` (+ its JS twin `atoms_brick.gs`), plus the
+  parallel "mated-connector exemption mask" TECHNIC_PANEL_INVESTIGATION.md recommended.
+- **`HINGE_CONNECTORS`** (`scripts/ldraw/parts.py`): a CURATED registry, not a generic radius-based
+  classifier — every real hinge part's pivot cylinders measure radius 4.0 LDU, but that radius alone is not
+  a safe general signal (ordinary axle stubs/bosses share it). 4 real ids verified by direct `resolve_part()`
+  sampling: `3937`/`3938` (classic knuckle, axis X through Y=10,Z=0 — matches 2026-09-27's real hinge-axis
+  verification against official-set bent doors) and `4275b`/`4276b` (finger plates, axis Z through X=30,Y=4).
+  `30083`/`30161` (tonight's windscreen-investigation hinge finds) are registered too but not yet curated/
+  baked, so currently unreachable — real geometry, ready once added. `2429`/`2430`, `3830`/`3831`,
+  `44301a`/`44302a`, `44567a`/`44568`, `30552`/`30553` were investigated and deliberately left OUT — their
+  pivot geometry didn't resolve to one confident axis from available signals, not guessed.
+- **A real bug found and fixed along the way**: rebaking 3937/3938 for the new connector silently flipped
+  3937 from `needs_occupancy: true` (correct) to `needs_occupancy: false, occupancy: null` (worse — looks
+  resolved, isn't) — its hinge-knuckle cylinders also pass `bar_grip_points`'s extremity+isolation checks (a
+  knuckle looks like a graspable rod on a narrow stem to that heuristic). Fixed by excluding any
+  `HINGE_CONNECTORS` part from `bar_grip_points` classification at both call sites (`resolve_occupancy_and_
+  sockets` and `bake_parts.py`'s own separate `bars` call) — a verified hinge pivot explains the cylinders,
+  so the bar-grip heuristic must not also claim them. Caught by `tests/test_ldraw_parts.py`'s existing
+  `test_needs_occupancy_parts_have_no_fabricated_occupancy`, not by inspection.
+- **Pin/hole + hinge mated-pair collision exemption**: parts with a genuine mated pin/hole or hinge
+  connector are exempted from the AABB/OBB collision check entirely for that pair — a coarse, whole-pair
+  exemption, deliberately, since spec section 3 ("miss an overlap, never report a false one") makes that the
+  safe direction to err in over a more surgical per-segment exemption. Verified against real baked geometry
+  (`3701`/`2780`, a Technic beam + friction pin), not just synthetic boxes.
+- **Verification**: 28/28 Python tests (`tests/test_brick_parts_validate.py`, 6 new: knuckle mate flat +
+  folded-open with compensating translation, finger mate, same-kind-does-not-mate control, axis-misaligned
+  control, pin/hole exemption), 15/15 JS parity fixtures (regenerated via `scripts/gen_parts_parity_cases.mjs`
+  after the JS twin's own connections-label text changed), 10/10 `tests/test_ldraw_parts.py`, 213/213
+  `tests/test_generic_stud_occupancy.py`.
+- **Deliberately not done**: the `bars` field exclusion and hinge registry are per-id, not general — a part
+  added to `HINGE_CONNECTORS` later needs its own axis verified the same way, not inferred from radius alone.
+
+## 2026-09-28: Animal-Category Occupancy Investigation (cloud agent, `agent/animal-investigation`)
+
+- Completed scoping investigation for Animal-category parts: see
+  [scripts/ldraw/ANIMAL_INVESTIGATION.md](scripts/ldraw/ANIMAL_INVESTIGATION.md).
+- **Key finding**: no shared occupancy family exists. Individually-sculpted animal figures are hollow shells
+  2-9% solid by ray-parity (e.g. `30103` Bat 2.6%, `40232` Owl 2.5%, `4493c01` Horse 9.3%) — an axis-aligned
+  box would claim phantom plastic across 90%+ open air, violating spec section 3. The one near-solid
+  candidate (`24946` Animal Egg) still fails: any box large enough to cover its widest point protrudes 3x
+  past its tapered top, and a box small enough to fit falls entirely into a real hollow interior cavity.
+  Correctly left `needs_occupancy=True`, zero forced boxes.
+
+
+## 2026-09-28: WHEEL_PARTS Extension: Catalogue-Wide Wheel Rims (agent, `agent/wheel-catalogue-extension`)
+
+- **Task**: Extend `WHEEL_PARTS` to all remaining real wheel rims across the library.
+- **Survey Findings (scripts/ldraw/survey_rejects.py)**:
+  - Baseline Wheel-category survey showed 139 rejected parts (141 accepted, total 280 Wheel parts).
+  - Exhaustive inspection of all 139 rejected parts revealed:
+    - **14 valid real wheel rims** matching the annular inscribed-square model with verified axle/pin bore clearance:
+      - `12589`: Duplo Wheel Rim 11 x 17 ($D=42.0$, $z \in [-28.0, 0.0]$) — empirical check confirms its Duplo axle `12588` has shaft radius 8.0 LDU, which perfectly matches `WHEEL_BORE_HALF = 8.0` LDU.
+      - `32193`: Wheel 14 x 21 Solid Rubber with Axlehole ($D=51.86$, $z \in [-16.0, 20.0]$) — standard Technic axle hole.
+      - `32247`: Wheel 41mm Znap ($D=107.61$, $z \in [-30.0, 30.0]$) — inner pin/axle hole $r=6.0$ LDU.
+      - `37383`: Wheel Rim 42 x 62 with 10 Spokes and 3 Pins ($D=165.9$, $z \in [-33.6, 78.4]$) — Technic supercar rim; central stud `stud2.dat` for cap tile, clear center.
+      - `4288`: Wheel 13 x 20 Solid Rubber with Axle Hole ($D=49.95$, $z \in [-17.0, 16.25]$) — standard Technic axle hole.
+      - `49098`: Wheel Rim 11 x 18 Side with Tyre Widener ($D=56.0$, $z \in [-8.0, 4.0]$) — motorcycle side rim with inner pin hole $r=6.0$ LDU.
+      - `50254`: Train Wheel Small with Notched Hole ($D=36.0$, $z \in [-4.0, 8.0]$) — standard wheel pin hole (`wpinhole.dat`, $r=4.0$ LDU).
+      - `5428`: Wheel Rim 41 x 75 with 10 Spokes and 3 Pins ($D=188.0$, $z \in [-21.0, 80.0]$) — McLaren P1 supercar rim; central stud `stud2.dat` for cap tile.
+      - `64711`: Wheel 20 x 64 with Spikes and 13 Pegholes ($D=153.47$, $z \in [-20.0, 30.0]$) — standard Technic pin hole at center (`connhole.dat`).
+      - `64712`: Wheel 32 x 64 Conical with Spikes and Inner 48 Tooth Gear ($D=155.01$, $z \in [-29.0, 50.0]$) — standard Technic pin hole at center (`connhole.dat`).
+      - `68577`: Wheel Rim 42 x 62 with 20 Spokes and 3 Pins ($D=166.0$, $z \in [-33.6, 78.4]$) — Technic supercar rim; central stud `stud2.dat` for cap tile.
+      - `73389`: Wheel Rim 41 x 75 with 5 Spokes and 3 Pins #2 (Right) ($D=188.0$, $z \in [-22.0, 80.0]$) — supercar directional rim.
+      - `73398`: Wheel Rim 41 x 75 with 5 Spokes and 3 Pins #1 (Left) ($D=188.0$, $z \in [-22.0, 80.0]$) — supercar directional rim.
+      - `92851`: Wheel Minifig Bicycle with Integral Rubber Black Tyre ($D=42.39$, $z \in [-6.5, 6.5]$) — minifig bicycle axle hole ($r=2.0$ LDU).
+    - Additionally unlocked `59521` (Wheel 28 x 158 with 3 Spokes, $D=395.8$, $z \in [-36.0, 36.0]$), a massive real Technic wheel rim from set 8108 categorized under `Technic` with standard central peghole.
+  - **Account of Remaining 125 Excluded Wheel Parts**:
+    - *Composite shortcut assemblies* (81 parts, e.g. `11208c01`, `12589c01-c03`, `15038c01`, `22253c01-c02`, `22969ac01-c02`, `23800c01`, `2688`, `2695c01`, `2903c01-c02`, `2996c01`, `30027ac01/bc01`, `30155c01`, `30190c01`, `32004bc01`, `32020c01`, `32248`, `3464c01-c03`, `3482c01-c05`, `37383c01`, `3739c01`, `41896c01`, `42610c01-c03`, `4266c01-c02`, `44293`, `44772c01-c02`, `4624c03/c05`, `46334c01`, `49294c01`, `50862c01`, `50944c01-c02`, `51719c01`, `55981c01-c06`, `56908c01-c03`, `57877c01`, `6014ac01`, `6014bc01-c03`, `6580ac01/bc01`, `6582c01`, `6595c01-c02`, `68577c01`, `70720c01`, `71720c01-c02`, `74967c01`, `86652c01`, `88517c01-c03`, `93595c01`, `u9081c01`, `u9132c01`): multi-part CAD shortcuts combining a rim and tyre (and/or axle); in official inventory rims and tyres are separate parts.
+    - *Small wheel rims* ($D \le 28.0$ LDU, $W \le 9.90$ LDU, 13 parts: `30027a-d`, `34337`, `42610`, `50944`, `6014a/b`, `74967`, `93593-93595`): inscribed half-width $W \le 9.90$ LDU is too small for standard bore exclusion $B=8.0$ (for $D=20.0$, $W=7.07 < 8.0$ so 4 boxes cannot exist; for $D=28.0$, rim width is under 1.9 LDU).
+    - *Steel axles* (10 parts: `12588`, `15316`, `4108`, `57877`, `70081`, `70720`, `944`, `u9132`, `u9133`, `u9185`): steel shafts miscategorized under Wheel in LDraw.
+    - *Integral or stub axles* (5 parts: `30190`, `3464b`, `50862`, `u9163`, `u9167`): protruding solid axle shafts requiring dedicated modeling.
+    - *Decorative covers* (5 parts: `54086`, `58088`, `61738`, `62359`, `62701`): cosmetic face clips.
+    - *Non-symmetric or off-center* (4 parts: `24869` roller coaster wheels $dx \ne dy$, `2496` trolley, `277` wheelbarrow, `3739` off-center).
+    - *Duplo non-standard bore / subparts* (3 parts: `15315` requires oversized 10.0 LDU radius bore for `15316` axle; `2313a`/`2313b` car base internal subparts with 10-12.5 LDU bore).
+    - *Tyres in Wheel category* (2 parts: `12590`, `15317`): rubber tyres miscategorized under Wheel in LDraw.
+    - *Hollow gear hoops* (1 part: `44556` Hailfire droid 168-tooth gear hoop $D=530.82$ with empty center $r < 214$ LDU).
+    - *Incomplete parts* (1 part: `55981` marked 'Needs Work').
+- **Catalogue Impact**:
+  - `Wheel` category reject count dropped from **139 to 125** (accepted grew from **141 to 155**, out of 280 total).
+  - Across the whole library, `WHEEL_PARTS` now covers **89 real wheel rim parts** (up from 74).
+- **Verification**:
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **96 passed, 0 failed, 0 skipped** (up from 73 passed).
+  - All 15 added parts verified against real resolved LDraw geometry: rotational symmetry, outer cylinder containment, bounds containment, and zero collision with simulated Technic axle.
+  - Dedicated Duplo bore test (`test_duplo_wheel_bore_verification`) verifying safe 8.0 LDU bore clearance on `12589` and proper exclusion of oversized-bore `15315`.
+
+
+## 2026-09-27: Technic Remainder Survey & Pin Overrides (cloud agent, `agent/technic-remainder-survey`)
+- **Task**: Survey remaining ~90 Technic parts for viable occupancy sub-patterns and implement safe overrides if proven (investigation-first).
+- **Survey Findings**: See full report in [scripts/ldraw/TECHNIC_REMAINDER_SURVEY.md](scripts/ldraw/TECHNIC_REMAINDER_SURVEY.md).
+  - **Cross Blocks** (`32291`, `32557`, `63869`, `98989`): Must remain `needs_occupancy=True`. They feature orthogonal hole bores along both Z and X axes. To permit non-colliding pin/axle insertions through both planes, channels must be opened along both axes. Subtracting intersecting 12x12 channels leaves only thin 3 LDU outer wall margins, which fail ray-parity solidity (`sol = 0.062 < 0.15`) because outer Technic lobes are rounded semicylinders rather than square corners.
+  - **Bushes** (`3713`, `4265a/b/c`, `6577`, `584`, `585`, `57585`): Must remain `needs_occupancy=True`. Inscribed-square bounding fails on physical principles: bushes are hollow annular collars with an open axle bore through the center (core solidity 0.000). A solid bounding box over the center would cause false collision detection whenever an axle rod passes through the bush. Multi-axle bushes like `57585` are tri-axial stars with no cylindrical symmetry.
+  - **Irregular / Mechanical Components** (universal joints, steering links, suspension arms, towballs, ball joints, chain links, worm gears, sprockets): Must remain `needs_occupancy=True` due to articulation, dynamic kinematics, non-orthogonal angles, or thin bridges failing the solidity threshold.
+  - **Technic Pins**: **10 official parts** identified and proven as safe, direct geometric counterparts/extensions of existing landed overrides (`2780`, `3673`, `4274`, `32054`):
+    - `89678` (Pin 1/2 with Friction) -> exact twin of `4274` (`box(-20, 0, -6, 6, -6, 6)`, sol 0.417)
+    - `4459` (Pin with Friction) -> twin of `2780`/`3673` (`box(-20, 20, -6, 6, -6, 6)`, sol 0.521)
+    - `61332` (Pin with Friction Type 2) -> twin of `2780` (`box(-20, 20, -6, 6, -6, 6)`, sol 0.458)
+    - `32002` (Pin 3/4) -> 1L + 0.5L pin body (`box(-20, 10, -6, 6, -6, 6)`, sol 0.479)
+    - `32556a` (Pin Long without Friction, Single Slot) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.500)
+    - `32556b` (Pin Long without Friction, Dual Slots) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.542)
+    - `39888` (Pin Long without Friction Type 2) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.542)
+    - `42924` (Pin Long with Friction Type 2) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.500)
+    - `77765` (Pin Long with End Stop) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.521)
+    - `65304` (Pin Long with Stop Bush Type 2) -> counterpart of `32054` (`box(-30, 30, -6, 6, -6, 6)`, sol 0.479)
+- **Implementation**:
+  - Added all 10 verified pin parts to `OVERRIDES` in `scripts/ldraw/parts.py`.
+  - Added 32 new unit tests in `tests/test_generic_stud_occupancy.py` covering synthetic dispatcher resolution, real resolved geometry validation (bounds containment and ray-parity solidity verification), and negative rejection control assertions. Full test suite: **83/83 tests pass**.
+
+## 2026-09-28: Minifig Torso Occupancy & Printed Variant Unlock (cloud agent, `agent/minifig-torso`)
+
+- **Task**: Real occupancy for Minifig Torso parts, especially printed variants (`scripts/ldraw/parts.py`).
+- **Core Insights & Geometric Verification**:
+  - **Connector Geometry & Sockets**: An individual bare torso has `sockets = []`, matching wheels, tyres, dishes, and gears. Minifig torsos do not carry standard 20x20 LDU studs or anti-studs; their inter-part attachment (neck post to head, side sockets to arms, bottom cavity to hips) is handled via the character template system (`scripts/ldraw/characters.py`), not generic stud grid generation.
+  - **Neck Post Connector Exemption**: The neck post ($y \in [-12.0, 0.0]$, radius 6 LDU cylinder) is male connector geometry, directly analogous to brick studs ($y \in [-4.0, 0.0]$). Standard brick occupancy boxes deliberately omit studs to prevent collisions with stacked bricks. Torso occupancy similarly starts at $y = 0.0$ and ends at $y = 32.0$ (hips flush mating plane). Extending the box up to $y = -12.0$ would cause a 12 LDU collision with mounted minifig heads (which occupy $y \in [-24.0, 0.0]$ at `OFFSETS['head']`) and neckwear accessories (capes, armor, backpacks).
+  - **Solidity**: Ray-parity point-in-mesh verification (`_stud_box_solid_fraction`) on the candidate body box `box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)` measured 0.438 (43.8% solid) across all standard torso variants (`973`, `973p01`, `973p04`, `973p14`, `973p18`, `973d06`, etc.) and 0.312 (31.2% solid) for `43370` (torso with arm locking notches). Both comfortably exceed `STUD_CELL_MIN_SOLID = 0.15` by > 2x margin.
+  - **Bounds & Decal/Sticker Variations**:
+    - Canonical torso body bounds: $x \in [-19.0, 19.0]$ (38 LDU width), $y \in [-12.0, 32.0]$ (44 LDU height with neck, body $y \in [0.0, 32.0]$), $z \in [-10.0, 10.0]$ (20 LDU depth).
+    - Sticker variants (e.g. `973d06` with $z_{max} = 10.25$, `973d01` with $z \in [-10.25, 10.25]$): using canonical $z \in [-10.0, 10.0]$ under-approximates sticker thickness by 0.25 LDU, provably safe per spec §3 ("under-approximation is always safe: miss an overlap before reporting a false one"). Over-approximating into air based on a decal is avoided.
+    - Minor authoring variations (e.g. `973p2q` with $x \in [-19.11, 19.11]$, `973p8j` with $y_{max} = 32.1$) fit cleanly within $\pm 0.6$ LDU bounds check tolerance and canonical box is completely contained within their physical envelopes.
+- **Implementation**:
+  - Added `generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title="")` in `scripts/ldraw/parts.py` and connected it in `resolve_occupancy_and_sockets`.
+  - Generates body occupancy `[box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)]` with `sockets = []` when bounds match standard torso dimensions and ray-parity solidity clears 15%.
+- **Safe Exclusions (Honest account per spec §3)**:
+  - Flat 2D sticker decal sheets (categories `Sticker Minifig` / `=Sticker`, 28 rejects, e.g. `003428b`, `004318a`): 0.25 LDU thick decals, correctly excluded.
+  - Novelty / fantasy appendage torsos (14 rejects): bat wings (`10677`), bird wings (`11938`), flipper arms (`24319`), pterodactyl wings (`u9090`), boxing gloves (`97149`), baseball glove (`12896`), harpoon (`66614`), crab claw (`98642`), giant torso (`37777` Hagrid), folded arms (`25767`), Fabrik arms (`43418-f1`/`f2`), robotic arm (`63208`), ridged extended front (`98127`).
+  - Non-standard figure systems: Friends mini-dolls (`92241`, `92456`, `73152`), Duplo (`47203`, `47392`), Fabuland (`u9102`), Technic figures (`2698`), Skeletons (`60115`, `6260`), Battle Droids / Cyborgs (`30375`, `87566`), Constraction / Bionicle.
+- **Catalogue Impact**:
+  - `survey_rejects.py` unprinted candidates:
+    - `Sticker Shortcut`: 15 -> 0 rejects (100% resolved: `973d01`, `973d02`, `973d03`, `973d04`, `973d06`, `973d07`, `973d08`, `973d09`, `973d0a`, `973d0b`, `973d0c`, `973d0d`, `973d0e`, `973d0f`, `973d0g`).
+    - `Minifig Torso`: 16 -> 14 rejects (unprinted base torso `973` and arm-locking notches `43370` resolved; remaining 14 are strictly novelty appendage torsos).
+  - Full catalogue impact across all 1,872 non-sticker torso parts in LDraw:
+    - Prior to change: 972 accepted (mostly assembly parts matching bar_grip_points), 900 rejected.
+    - Post-implementation: **1,762 accepted** (790 newly unlocked standard torsos and printed variants).
+    - Only 110 non-standard / specialty torsos (mini-dolls, droids, appendages) safely remain `needs_occupancy=True`.
+- **Verification**:
+  - Added synthetic and real test suite in `tests/test_generic_stud_occupancy.py`:
+    - `test_generic_torso_occupancy_synthetic`
+    - `test_generic_torso_occupancy_synthetic_exclusions`
+    - `test_real_torso_parts_accepted` (26 real parts: `973`, `43370`, sticker `973d*`, and printed variants `973p*` across all major LEGO themes)
+    - `test_real_torso_feature_exclusions_stay_rejected` (`10677`, `11938`, `24319`, `97149`, `37777`, `003428b`)
+  - Test suite pass count: **111 passed** in `tests/test_generic_stud_occupancy.py` (up from 77, 34 new tests added).
