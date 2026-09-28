@@ -1,5 +1,23 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: Constraction / Bionicle Category Investigation (cloud agent, `agent/dispatch-constraction-1790612045`)
+
+- **Task**: Self-selected backlog target prioritised by Curtis's operator steer: `constraction` (Constraction / Bionicle, 151 base parts in LDraw library, 197 total including 24 Throwbot printed disc variants and 22 subparts).
+- Completed forensic scoping investigation: see [scripts/ldraw/CONSTRACTION_INVESTIGATION.md](scripts/ldraw/CONSTRACTION_INVESTIGATION.md).
+- **Key finding**: exactly **29 base parts (+ 6 subparts)** already resolve cleanly with `needs_occupancy: false` via existing mechanisms (16 via `bar_grip_points()`, 11 via `generic_hole_channel_occupancy()`, 2 via `generic_stud_cell_occupancy()`).
+- **Remaining 122 base parts correctly stay rejected (`needs_occupancy: true`)**:
+  - NO safe shared occupancy family exists across the 8 sub-families under Spec Section 3 safety (*"under-approximation is safe: miss a real collision, never report a false one"*):
+    1. *CCBS Skeletal Limbs/Bones* (22 parts): Universal 10.2mm (25.5 LDU) ball-and-socket joints lack mated-pair validator exemptions in `brick_parts_validate.py`. Bounding boxes encase the hollow socket cups, guaranteeing 100% false collisions on mated balls, while dynamic 3D articulation invalidates static axis-aligned boxes.
+    2. *CCBS Armor Shells & Fairings* (16 parts): Thin curved shells (1.0–2.0 LDU wall thickness) with solid fractions well below the 0.15 floor (`90640`: 14.5%, `90641`: 13.5%, `1686`: 8.5%). Bounding boxes fill their concave inner cradles, falsely colliding with the limb bones nestled directly inside them.
+    3. *Skeletal Torsos & Open Frames* (9 parts): Sprawling lattice cages with 82%–90% empty space (`90623`: 10.5% solid). Perimeter shoulder/hip ball mounts lie inside the box, falsely encasing all 4 attached limbs.
+    4. *Ball Socket Connectors & Blocks* (12 parts): Open receiving socket cups encapsulate mating ball joints.
+    5. *Weapons, Tools & Effect Elements* (40 parts): Long sweeping organic blades and claws with hand-grip axle mounts colliding with holding hands.
+    6. *Discs & Projectiles* (6 base parts + 24 printed variants): `32533` (Throwbot disc) is a 100 LDU circular projectile whose 100x100 box corners protrude 20.71 LDU into open air; loose ammo spheres collide with launcher chambers.
+    7. *Sculpted Feet with Ball Sockets* (5 parts): Top dorsal socket cups encase lower leg bones; 13.5% solidity.
+    8. *Heads, Helmets & Masks* (3 parts): Concave face cavities wrap around head/brain stalks.
+- **Verification**: 32 new tests added to `tests/test_generic_stud_occupancy.py` (25 real rejection controls, 7 real acceptance regression checks). 399/399 tests pass.
+- **Set Impact (Airbus H175 42145)**: 0 parts (Constraction is strictly an action figure theme; H175 contains 0 Constraction parts).
+
 ## 2026-09-28: Electric, Vehicle, Mated-Connector-Exemption dispatches (cloud agents, cherry-picked from branches after a duplicate-task incident)
 
 Three items dispatched live via `gcloud run jobs execute` (`n4gpz`/`dn75t`/`g5ltz`). A `taskCount`
