@@ -1,0 +1,141 @@
+{
+  "_comment": "Hand-maintained record of brick catalogue occupancy & connector tasks: done, investigated & rejected, and pending. Priority order: real_set_impact on named priority sets > catalogue_wide_impact > confidence.",
+  "items": [
+    {
+      "id": "minifig-anatomy",
+      "status": "done",
+      "note": "Minifig head, headwear, hair, and accessories anatomy classification.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "bar-grip-connector",
+      "status": "done",
+      "note": "Bar grip detection (extremity + isolation) and bars connector emission.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "tyres",
+      "status": "done",
+      "note": "TYRE_PARTS occupancy family (inscribed square in outer circle).",
+      "catalogue_wide_impact": "92 real tyre parts unlocked",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "hinge-investigation",
+      "status": "rejected",
+      "note": "True hinges require pose parameter / dynamic joint model; fixed static occupancy impossible without false collisions. Solved as hinges connector matcher instead.",
+      "doc": "scripts/ldraw/HINGE_INVESTIGATION.md"
+    },
+    {
+      "id": "wheel-rims",
+      "status": "done",
+      "note": "WHEEL_PARTS occupancy family with 4-box central bore exclusion.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "slope-bricks",
+      "status": "done",
+      "note": "SLOPE_PARTS occupancy family extension.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "tile-family",
+      "status": "done",
+      "note": "Generic tile occupancy and printed/decorated variant unlock.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "panel-family",
+      "status": "done",
+      "note": "PANEL_FLAT_WALL_PARTS occupancy family.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "technic-gears",
+      "status": "done",
+      "note": "TECHNIC_GEAR_PARTS occupancy family with 4-box axle bore exclusion.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "obb-sat-core-geometry",
+      "status": "done",
+      "note": "OBB + 15-axis SAT collision geometry in Python.",
+      "doc": "scripts/ldraw/OBB_SAT_IMPLEMENTATION.md"
+    },
+    {
+      "id": "omr-importer-rotation",
+      "status": "done",
+      "note": "Continuous rotation wiring in OMR importer.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "js-twin-obb-sat",
+      "status": "done",
+      "note": "OBB + SAT collision geometry ported to JavaScript twin.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "windscreen-investigation",
+      "status": "rejected",
+      "note": "Curved 3D compound surfaces, hollow cockpits, and thin non-uniform glass shells mean no axis-aligned box can clear solid fraction floor without severe empty-space overclaims.",
+      "doc": "scripts/ldraw/WINDSCREEN_INVESTIGATION.md"
+    },
+    {
+      "id": "wheel-catalogue-extension",
+      "status": "done",
+      "note": "WHEEL_PARTS extended to 15 more real wheel rims catalogue-wide.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "technic-panel-investigation",
+      "status": "rejected",
+      "note": "Thin curved shells (1-2 LDU thick) with extensive hollow cutouts and multi-axis mounting holes fail minimum solid fraction; boxing would cause false collisions.",
+      "doc": "scripts/ldraw/TECHNIC_PANEL_INVESTIGATION.md"
+    },
+    {
+      "id": "animal-investigation",
+      "status": "rejected",
+      "note": "Organic sculpted creature meshes lack shared geometric invariants; boxing would falsely collide with minifig hands and mounts.",
+      "doc": "scripts/ldraw/ANIMAL_INVESTIGATION.md"
+    },
+    {
+      "id": "technic-remainder-survey",
+      "status": "done",
+      "note": "Survey of remaining Technic parts; pin overrides 61184 and 89678 added; bushes and complex linkages rejected.",
+      "doc": "scripts/ldraw/TECHNIC_REMAINDER_SURVEY.md"
+    },
+    {
+      "id": "minifig-torso",
+      "status": "done",
+      "note": "Minifig torso occupancy and printed variant unlock.",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "technic-axle-occupancy",
+      "status": "done",
+      "note": "Plain Technic axles (3704-50450) and with-stop variants (24316, 87083, etc.) implemented with two-box decomposition.",
+      "real_set_impact": "H175 (42145): 180+ piece instances",
+      "catalogue_wide_impact": "37 -> 13 rejects in survey",
+      "doc": "BRICK_CATALOGUE_STATUS.md"
+    },
+    {
+      "id": "technic-axle-pins",
+      "status": "pending",
+      "note": "Coaxial axle-pin hybrids (43093, 11214, 18651, 3749). Single largest remaining piece count on priority set H175 (42145) with 163 instances. High confidence: rigid coaxial pin+axle geometry with well-defined shaft and flange bounds.",
+      "real_set_impact": "H175 (42145): 163 pieces (43093: 87, 11214: 48, 18651: 19, 3749: 9)",
+      "catalogue_wide_impact": "Used across hundreds of official Technic sets"
+    },
+    {
+      "id": "h175-cross-blocks",
+      "status": "pending",
+      "note": "Technic Cross Blocks (6536 90° 1x2 Axle/Pin, 32184 1x3 Two Axle Holes, 42003 1x3, 32291, 63869). Total 149 instances in H175. Medium confidence: multi-axis pin/axle holes make solid fraction and collision bounds tricky.",
+      "real_set_impact": "H175 (42145): 149 pieces"
+    },
+    {
+      "id": "h175-mechanism-parts",
+      "status": "pending",
+      "note": "Moving mechanisms, motors, turntables, universal joints, linear actuators in H175 (42145). Low confidence: real moving mechanisms and electronics are unlikely to be safely boxable.",
+      "real_set_impact": "H175 (42145): ~30 pieces"
+    }
+  ]
+}
