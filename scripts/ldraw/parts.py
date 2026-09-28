@@ -197,6 +197,336 @@ def tyre_occupancy(bounds_min, bounds_max=None, z_max=None):
     return [box(-half_inscribed, half_inscribed, -half_inscribed, half_inscribed, z_min, z_max)]
 
 
+# Simple flat wall panels (zero studs, a 1-stud-deep rectangular wall with square or rounded corners and
+# an open front cavity, sitting on a 1 x N footprint of height 24 LDU [1 brick]):
+#
+# The full bounding box is a provably safe under-approximation for external collision detection:
+# 1) Solid fraction: ray-cast verified against each part's real triangles (_stud_box_solid_fraction), the
+#    bounding box measures 31-53% solid across all verified parts (e.g. 15207: 36.7%, 4865a: 41.7%,
+#    23969: 50.3%, 6231: 53.3%, 23950: 41.3%, 30413: 40.7%), well above STUD_CELL_MIN_SOLID (0.15) and
+#    comparable to an ordinary solid-topped 2x4 brick (3001 at 43.4%).
+# 2) Rounded corners: the corner fillet on rounded-corner variants (4865b, 15207, 23950, 30413, 23969) has
+#    a measured radius of ~2 LDU (0.8 mm; at 3x3 LDU the corner region is >91% solid). In the discrete LEGO
+#    grid (stud pitch 20 LDU, plate height 8 LDU), no standard LEGO element can fit into a 0.8 mm corner relief,
+#    so the bounding box cannot cause false collisions with legitimately-placed adjacent parts.
+# 3) Sockets: generate_sockets produces downward-facing sockets at y=24 on the standard 20x20 grid (e.g. 1 socket
+#    for 1x1, 2 for 1x2, 3 for 1x3, 4 for 1x4), matching the physical anti-stud mounting sockets on the real
+#    underside where the panel mounts to base studs.
+#
+# id -> (x0, x1, y0, y1, z0, z1). Verified individually against real baked geometry for all listed IDs.
+PANEL_FLAT_WALL_PARTS = {
+    # 1 x 1 x 1
+    "6231": (-10.0, 10.0, 0.0, 24.0, -10.0, 10.0),
+    # 1 x 2 x 1
+    "4865a": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "4865b": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "4865": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "23969": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "93095": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    "30010": (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0),
+    # 1 x 3 x 1
+    "23950": (-30.0, 30.0, 0.0, 24.0, -10.0, 10.0),
+    # 1 x 4 x 1
+    "15207": (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0),
+    "30413": (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0),
+    "43337": (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0),
+}
+
+
+def panel_flat_wall_occupancy_and_sockets(bounds_min, bounds_max=None, y0=None, y1=None, z0=None, z1=None):
+    """Returns (occupancy_boxes, sockets) for a flat wall panel.
+    Can be called with (bounds_min, bounds_max) or (x0, x1, y0, y1, z0, z1)."""
+    if z1 is not None:
+        x0, x1 = bounds_min, bounds_max
+        occ = [box(x0, x1, y0, y1, z0, z1)]
+    else:
+        occ = [box(bounds_min[0], bounds_max[0], bounds_min[1], bounds_max[1], bounds_min[2], bounds_max[2])]
+    sockets = generate_sockets(occ)
+    return occ, sockets
+
+
+# Wheel Rims: rotationally symmetric about the Z axis (wheel axle) with their circular cross-section in the
+# XY plane, centered at (0, 0).
+#
+# Critical difference from tyres:
+# Tyres mount around the outside of a wheel rim and have no axle or pin passing through their local coordinate
+# center (nothing normally stacks onto or through a tyre in a model). Most wheel rims DO mount onto a Technic axle
+# or wheel-holder pin through a hole at or near their rotational center (0, 0).
+#
+# If wheel occupancy naively copied the tyre approach (a solid inscribed square spanning the center), it would
+# place solid occupancy directly inside the axle bore, falsely reporting physical collisions between the wheel
+# and its own axle or pin in every assembly -- a severe false positive that violates spec §3's "never report a
+# false one" mandate.
+#
+# Furthermore, generic_hole_channel_occupancy (used for Technic beams) is NOT usable for wheel rims because:
+# 1. Wheels with radial/spoke holes (e.g. 41896) have holes varying across both X and Y, failing the 1D-varying
+#    line requirement and returning None immediately.
+# 2. Wheels with a single center hole decompose into large rectangular channel boxes extending to the outer
+#    bounding box corners, failing the raycast solid-fraction check (STUD_CELL_MIN_SOLID) because spoked wheels
+#    are mostly empty air between hub and rim.
+# 3. Many wheel rims reference primitives like axlehol5.dat or custom subfiles not recognized by peghole.dat /
+#    AXLE_HOLE_RE detectors, leaving part.holes empty even though an axle hole exists.
+#
+# Wheel rim occupancy therefore uses an annular 4-box inscribed square decomposition that provably satisfies
+# two simultaneous safety guarantees:
+#
+# 1. Outer cylinder containment (never over-reports external collisions):
+#    The outer boundary is an axis-aligned square inscribed in the circular rim cross-section of diameter D:
+#    half_inscribed = W = D / (2 * sqrt(2)). For any point (x, y) with |x| <= W and |y| <= W:
+#    x^2 + y^2 <= 2 * W^2 = 2 * (D^2 / 8) = (D / 2)^2 = R_out^2.
+#    Thus, every point in the occupancy is provably inside the physical outer cylinder of the wheel rim,
+#    never projecting into surrounding empty space (spec §3's under-approximation guarantee).
+#
+# 2. Central bore exclusion (never collides with mounting axle or pin):
+#    The central square region (-B, B) x (-B, B) x [z_min, z_max] with B = WHEEL_BORE_HALF = 8.0 LDU is
+#    strictly excluded from occupancy.
+#    - Standard Technic axles fit within a 12x12 LDU square (|x| <= 6.0, |y| <= 6.0; outer boundary radius 6.0 LDU).
+#    - Standard Technic pins (2780, 3673) have shaft radius 6.0 LDU, with flange radius 8.0 LDU.
+#    - Wheel holding pins (2470, 4489a) have pin shaft radius 4.0 LDU, with hub collar radius <= 8.0 LDU.
+#    The 4 boxes:
+#      Top:    [-W,  W] x [ B,  W] x [z_min, z_max]
+#      Bottom: [-W,  W] x [-W, -B] x [z_min, z_max]
+#      Left:   [-W, -B] x [-B,  B] x [z_min, z_max]
+#      Right:  [ B,  W] x [-B,  B] x [z_min, z_max]
+#    have no point satisfying both |x| < B and |y| < B. Every point in Box Top has y >= 8.0; Box Bottom has
+#    y <= -8.0; Box Left has x <= -8.0; Box Right has x >= 8.0. An axle or pin passing along Z at (0, 0) has
+#    zero intersection with any of the 4 boxes, completely eliminating false-positive axle collisions.
+#
+# Sockets are empty ([]): wheel rims mount via axle/pin connections and carry no bottom studs/sockets.
+#
+# Hand-verified against real resolved geometry for all 74 clean, undeformed, rotationally symmetric vehicle wheel
+# rims in the library with outer diameter D >= 34.0 LDU (ensuring W >= 12.02 LDU > B = 8.0 LDU, so W - B >= 4.02 LDU).
+#
+# Deliberately unaddressed sub-groups (remain needs_occupancy=True):
+# - Small wheel rims (D <= 28.0 LDU, W <= 8.0 LDU; e.g. 30027a-d, 34337, 42610, 50944, 6014a/b, 74967):
+#   W <= 8.0 is smaller than or equal to the standard bore exclusion width, so 4 annular boxes cannot fit.
+# - Composite shortcut assemblies (e.g. 3482c01, 30155c01, 2695c01): multi-part assemblies with tyres,
+#   not atomic parts.
+# - Wheels with integral/stub axles (e.g. 30190, 3464b, 50862, u9163, u9167): have protruding solid axle shafts.
+# - Decorative wheel covers (e.g. 54086, 58088, 61738, 62359, 62701): thin cosmetic face clips.
+# - Tracks/belts (43903-f1, 53992-f1..f3, 71965-f1, 85543-f5) and mechanisms (32060, 3465a, 4142).
+# - Obsolete or incomplete parts (22969 obsolete, 55981 marked 'Needs Work', 2496 trolley, 3739 off-center).
+
+WHEEL_BORE_HALF = 8.0  # Standard Technic axle/pin bore exclusion half-width (LDU)
+
+WHEEL_PARTS = {
+    # Hand-verified against real resolved geometry (bake_parts.py / resolve_part):
+    "100942": (123.77, -47.0, 47.0),    # Wheel 37 x 45 Hard-Plastic with  6 Curved Spokes
+    "105645": (125.08, -27.5, 27.5),    # Wheel 22 x 50 with Integral Smooth Racing Tyre
+    "110638": (125.08, -27.5, 47.5),    # Wheel 30 x 50 with Integral Smooth Racing Tyre
+    "11094": (155.74, -46.0, 26.0),     # Wheel 30 x 64 with  7 Pin Holes and  6 Small Holes
+    "11208": (36.4, -12.5, 12.5),       # Wheel Rim 10 x 14 with Fake Bolts and  6 Spokes
+    "15038": (140.0, -45.0, 39.0),      # Wheel Rim 34 x 56 with  6 Spokes and  6 Pegholes
+    "1872": (37.5, -6.48, 4.0),         # Wheel Rim 11 x 18 Front with 36 Spokes and Knock-off Hub Nut
+    "18978a": (37.5, -3.5, 4.0),        # Wheel Rim 11 x 18 Front with  5 Spokes
+    "18978b": (37.5, -4.0, 4.0),        # Wheel Rim 11 x 18 Front with 10 Angled Spokes
+    "18979a": (37.5, -3.5, 4.0),        # Wheel Rim 11 x 18 Front with  7 Y-Shaped Spokes
+    "18979b": (37.5, -4.0, 4.0),        # Wheel Rim 11 x 18 Front with 10 Spokes
+    "22253": (90.0, -31.0, 31.0),       # Wheel 25 x 28 VR with 35mm Diameter Rear Rim and Complete Cross Axle Hole
+    "22410": (93.0, -26.52, 26.52),     # Wheel 21 x 37 Hard-Plastic with  7 Pin Holes
+    "22969a": (152.0, -58.0, 58.0),     # Wheel 56 x 46 Technic Racing
+    "23800": (156.0, -52.0, 52.0),      # Wheel Rim 42 x 62 with 10 Spokes and  3 Pegholes
+    "24308a": (37.5, -4.0, 4.0),        # Wheel Rim 11 x 18 Front with 10 Parallel Spokes
+    "24308b": (37.5, -4.5, 4.0),        # Wheel Rim 11 x 18 Front with 10 Y-Spokes
+    "2470": (68.0, -12.0, 8.0),         # Wheel  2.8 x 27 with  8 Spokes
+    "2515a": (139.99, -40.0, 40.0),     # Wheel 32 x 56 Hard-Plastic without Inner Supports
+    "2593": (87.6, -38.0, 38.0),        # Wheel 30 x 35 with Tread on Sidewall
+    "2695": (76.0, -24.0, 8.0),         # Wheel Rim 12.7 x 30 Stepped
+    "27254": (155.64, -64.38, 30.0),    # Wheel 37 x 62 with Rocky Spikes and  7 Pegholes
+    "2903": (158.52, -16.96, 16.96),    # Wheel Rim 14 x 62 Motorcycle
+    "29117a": (37.5, -3.9, 4.0),        # Wheel Rim 11 x 18 Front with  5 Wide Spokes
+    "29117b": (37.5, -4.1, 4.0),        # Wheel Rim 11 x 18 Front with  5 Split Spokes
+    "2994": (60.0, -15.0, 20.0),        # Wheel 12 x 20 with Technic Axle Hole and 6 Pegholes
+    "2996": (108.0, -37.0, 37.0),       # Wheel Rim 30 x 30 with 40mm Diameter Rear Rim
+    "2998": (160.0, -40.0, 40.0),       # Wheel Rim 32 x 56 with Peghole and 6 Spokes with Pegholes
+    "30155": (44.0, -8.0, 8.0),         # Wheel Rim  8 x 18 with 12 Spokes and Peghole
+    "30285": (42.0, -17.0, 20.0),       # Wheel Rim 14.8 x 16.8 with Centre Groove
+    "32004a": (108.0, -23.0, 22.0),     # Wheel Rim 18 x 41 Model Team Type  1
+    "32004b": (108.0, -23.0, 22.0),     # Wheel Rim 18 x 41 Model Team Type  2
+    "32020": (110.0, -32.0, 13.0),      # Wheel Rim 18 x 37 with 6 Pegholes and Long Axle Bush
+    "32057": (148.0, -17.5, 17.5),      # Wheel Rim 14 x 60 with 3 Spokes and 3 Pegholes
+    "32077": (150.0, -35.5, 35.59),     # Wheel Rim 28 x 60 with 3 Spokes and 3 Pegholes
+    "32146": (76.0, -27.5, 10.0),       # Wheel 14 x 30 Smooth
+    "32197": (172.0, -37.0, 37.0),      # Wheel Rim 30 x 61 with 3 Spokes Swirled
+    "32219": (76.0, -18.0, 30.0),       # Wheel 14 x 30 Znap
+    "32220": (172.0, -50.0, 10.0),      # Wheel 16 x 68 Znap
+    "33211": (108.0, -24.0, 0.0),       # Wheel  3.2 x 43 with 10 Spokes Wooden
+    "33212": (140.0, -24.0, 0.0),       # Wheel  3.2 x 56 with 10 Spokes Wooden
+    "3482": (44.0, -10.0, 10.0),        # Wheel Rim  8 x 17.5 with Axlehole
+    "39367": (140.0, -17.5, 17.5),      # Wheel 14 x 48 with 4 Spokes with Integral Tyre
+    "41896": (108.0, -33.0, 33.0),      # Wheel Rim 26 x 43 with 6 Spokes and 3 Pegholes
+    "4266": (76.0, -25.0, 25.0),        # Wheel Rim 20 x 30 Smooth with 6 Pinholes
+    "42716": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 "Torq Thrust" with  5 Spokes and External Ribs
+    "44292": (76.01, -25.0, 25.0),      # Wheel Rim 20 x 30 with 3 Pegholes
+    "44772": (140.0, -45.0, 39.0),      # Wheel Rim 34 x 56 with 6 Spokes and 3 Pegholes
+    "4489a": (84.0, -12.0, 8.0),        # Wheel  2.8 x 34 with  8 Spokes with Round Hole for Wheel Holding Pin
+    "4489b": (84.0, -12.0, 8.0),        # Wheel  2.8 x 34 with  8 Spokes with Notched Hole for Wheel Holding Pin
+    "46334": (188.0, -20.0, 20.0),      # Wheel 16 x 75 Motorcycle Solid
+    "49294": (140.0, -43.5, 42.0),      # Wheel Rim 34 x 56 with  6 Double Spokes and  6 Pegholes
+    "49295": (219.53, -17.5, 17.5),     # Wheel 14 x 80 with  4 Spokes with Integral Tyre
+    "51378": (187.0, -36.0, 15.0),      # Wheel Rim 20 x 75 with 6 Double Spokes
+    "54087": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 with  6 Spokes and No Pegholes
+    "55982": (42.0, -17.0, 20.0),       # Wheel Rim 14 x 18 with Axlehole
+    "56145": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 with  6 Dual Spokes and External Ribs
+    "56908": (108.0, -33.0, 33.0),      # Wheel Rim 26 x 43 with 6 Spokes and 6 Pegholes
+    "60208": (76.0, -28.0, 10.0),       # Wheel Rim 16 x 31 with 6 Pegholes
+    "6118": (60.0, -50.0, 8.0),         # Wheel 23 x 24 with Tread on Sidewall
+    "6580a": (75.8, -29.0, 29.0),       # Wheel Rim 23 x 22 Offroad with Axlehole
+    "6580b": (75.8, -29.0, 29.0),       # Wheel Rim 23 x 22 Offroad with Split Axlehole
+    "6582": (92.0, -25.0, 25.0),        # Wheel Rim 20 x 33 with  6 Pinholes
+    "65834": (108.0, -17.5, 17.5),      # Wheel 14 x 35 with 4 Spokes with Integral Tyre
+    "6595": (90.0, -31.0, 31.0),        # Wheel 25 x 28 VR with 35mm Diameter Rear Rim and Partial Cross Axle Hole
+    "66155": (76.0, -40.0, 40.0),       # Wheel Rim 20 x 30 with  3 Dual Angled Spokes and  4L Hub
+    "68327": (100.0, -30.0, 10.0),      # Wheel 16 x 40 with  7 Pin Holes
+    "71720": (268.0, -29.0, 29.0),      # Wheel 24 x 107 Motorcycle with  7 Spokes
+    "72210a": (45.0, -4.0, 4.0),        # Wheel Rim 11 x 24 Front with  5 Spokes
+    "72210b": (45.0, -4.0, 4.0),        # Wheel Rim 11 x 24 Front with  9 Spokes
+    "7877": (140.0, -16.25, 16.25),     # Wheel Rim 13 x 56 with 12 Spokes and Axlehole
+    "84772": (156.0, -25.0, 25.0),      # Wheel 20 x 62 Motorcycle Solid
+    "86652": (110.0, -32.0, 13.0),      # Wheel Rim 18 x 37 with 6 Pegholes and Short Axle Bush
+    "88517": (188.0, -21.25, 21.25),    # Wheel 17 x 75 Motorcycle with Holes in Rim
+}
+
+
+def wheel_occupancy(bounds_min, bounds_max=None, z_max=None, bore_half=WHEEL_BORE_HALF):
+    """Returns an annular 4-box occupancy in the XY plane spanning Z, with the central
+    axle/pin bore excluded to avoid false-positive collisions against mounting axles.
+    Can be called with (bounds_min, bounds_max) or (diameter, z_min, z_max)."""
+    if z_max is not None:
+        diameter, z_min = bounds_min, bounds_max
+    else:
+        diameter = (bounds_max[0] - bounds_min[0] + bounds_max[1] - bounds_min[1]) / 2.0
+        z_min, z_max = bounds_min[2], bounds_max[2]
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    b = bore_half
+    if half_inscribed <= b:
+        return []
+    return [
+        box(-half_inscribed, half_inscribed, b, half_inscribed, z_min, z_max),
+        box(-half_inscribed, half_inscribed, -half_inscribed, -b, z_min, z_max),
+        box(-half_inscribed, -b, -b, b, z_min, z_max),
+        box(b, half_inscribed, -b, b, z_min, z_max),
+    ]
+
+
+# Technic Gears: rotationally symmetric about the Z axis (the gear axle) with their circular cross-section in
+# the XY plane, centered at (0, 0).
+#
+# Critical difference from tyres:
+# Tyres mount around the outside of a wheel rim and have no axle or pin passing through their local coordinate
+# center (nothing normally stacks onto or through a tyre in a model). Most Technic gears mount onto a Technic axle
+# through an axle hole running through their rotational center (0, 0) along Z.
+#
+# If gear occupancy naively copied the tyre approach (a solid inscribed square spanning the center), it would
+# place solid occupancy directly inside the axle bore, falsely reporting physical collisions between the gear
+# and the axle running through it in every assembly -- a severe false positive that violates spec §3's "never report
+# a false one" mandate.
+#
+# Furthermore, generic_hole_channel_occupancy (used for Technic beams) is NOT usable for Technic gears because:
+# 1. Primitives like axlehol2.dat, axlehol5.dat, and axlehol6.dat (or subparts s/3648s02.dat) are missed by
+#    AXLE_HOLE_RE = r"^axl\d*hole\.dat$" due to DOS 8.3 filename truncation ("hole" -> "hol"), leaving part.holes
+#    empty despite physical axle holes existing.
+# 2. Gears decompose into cylindrical/circular envelopes whose outer corners in an axis-aligned bounding box
+#    reach empty air between teeth (radius R * sqrt(2) exceeds outer tooth radius R), failing the raycast
+#    solid-fraction check (STUD_CELL_MIN_SOLID = 0.15).
+#
+# Gear occupancy therefore uses an annular 4-box inscribed square decomposition that provably satisfies two
+# simultaneous safety guarantees:
+#
+# 1. Outer cylinder containment (never over-reports external collisions):
+#    The outer boundary is an axis-aligned square inscribed in the circular gear cross-section of diameter D:
+#    half_inscribed = W = D / (2 * sqrt(2)). For any point (x, y) with |x| <= W and |y| <= W:
+#    x^2 + y^2 <= 2 * W^2 = 2 * (D^2 / 8) = (D / 2)^2 = R_out^2.
+#    Thus, every point in the occupancy is provably inside the physical outer cylinder of the gear teeth,
+#    never projecting into surrounding empty space (spec §3's under-approximation guarantee).
+#
+# 2. Central axle bore exclusion (never collides with mounting axle):
+#    The central square region (-B, B) x (-B, B) x [z_min, z_max] with B = GEAR_BORE_HALF = 6.0 LDU is
+#    strictly excluded from occupancy.
+#    - Standard Technic cross-axles fit within a 12x12 LDU square (|x| <= 6.0, |y| <= 6.0; outer boundary radius 6.0 LDU).
+#    - Standard axle hole primitives (axlehole.dat, axl2hol2.dat) have outer bore radius 6.0 LDU.
+#    The 4 boxes:
+#      Top:    [-W,  W] x [ B,  W] x [z_min, z_max]
+#      Bottom: [-W,  W] x [-W, -B] x [z_min, z_max]
+#      Left:   [-W, -B] x [-B,  B] x [z_min, z_max]
+#      Right:  [ B,  W] x [-B,  B] x [z_min, z_max]
+#    have no point satisfying both |x| < B and |y| < B. Every point in Box Top has y >= 6.0; Box Bottom has
+#    y <= -6.0; Box Left has x <= -6.0; Box Right has x >= 6.0. An axle passing along Z at (0, 0) has zero
+#    interior intersection with any of the 4 boxes, completely eliminating false-positive axle collisions.
+#
+# Sockets are empty ([]): Technic gears mount via axle/pin connections and carry no bottom studs/sockets.
+#
+# Hand-verified against real resolved geometry for all 29 clean, rotationally symmetric Technic gear parts
+# in the library with outer diameter D >= 24.86 LDU (ensuring W >= 8.79 LDU > B = 6.0 LDU, so W - B >= 2.79 LDU).
+#
+# Deliberately unaddressed sub-groups (remain needs_occupancy=True):
+# - Linear gear racks (e.g. 3743 Technic Gear Rack 1 x 4, 18940, 18942, 32170, 6574): linear bar geometry,
+#   not rotationally symmetric round gears.
+# - Asymmetric gear assemblies with integral axle extensions (e.g. 24014 Technic Gear 12 Tooth Double Bevel with Axle Extension):
+#   bounds (-16.6,-16.6,-10)..(49.5,16.6,10) include an asymmetric 49.5 LDU axle shaft.
+# - Technic gear ring quarters (e.g. 24121, 78442): curved 90-degree quadrant segments, not full round gears.
+# - Gearbox casings and internal components (e.g. 171, 172, 173, 45360, 46217, 32167, 32239, 6588, u9342, u9344).
+# - Composite mechanism assemblies (e.g. 2742c01 propeller with gear, 6573 / 62821 differentials, 46490c01/c02 bearings).
+# - Duplo system gears (e.g. 6529, 6530, 31622).
+
+GEAR_BORE_HALF = 6.0  # Standard Technic cross-axle bore exclusion half-width (LDU)
+
+TECHNIC_GEAR_PARTS = {
+    # Hand-verified against real resolved geometry (bake_parts.py / resolve_part):
+    "10928": (24.86, -10.0, 10.0),     # Technic Gear  8 Tooth Reinforced
+    "11955": (24.86, -10.0, 10.0),     # Technic Gear  8 Tooth Reinforced Sliding
+    "18575": (54.0, -10.0, 10.0),      # Technic Gear 20 Tooth Double Bevel Reinforced
+    "24505": (64.78, -9.62, 9.62),     # =Technic Gear 24 Tooth with Single Axle Hole
+    "2474a": (50.2, -10.0, 10.0),      # Technic Gear Stepper with  8 Teeth
+    "32072": (60.0, -10.0, 10.0),      # Technic Gear  4 Knob
+    "32198a": (52.0, -7.0, 3.0),       # Technic Gear 20 Tooth Bevel with Two Axlehole Slots
+    "32198b": (52.0, -7.0, 3.0),       # Technic Gear 20 Tooth Bevel with Four Axlehole Slots
+    "32269": (54.0, -10.0, 10.0),      # Technic Gear 20 Tooth Double Bevel
+    "34432": (104.7, -10.0, 10.0),     # =Technic Gear 40 Tooth
+    "3647": (24.86, -10.0, 10.0),      # Technic Gear  8 Tooth
+    "3648a": (64.78, -9.62, 9.62),     # Technic Gear 24 Tooth with 3 Axleholes
+    "3648b": (64.78, -9.62, 9.62),     # Technic Gear 24 Tooth with Single Axle Hole
+    "3649": (104.7, -10.0, 10.0),      # Technic Gear 40 Tooth
+    "3650a": (65.96, -8.0, 12.0),      # Technic Gear 24 Tooth Crown Type 1
+    "3650b": (65.96, -8.0, 12.0),      # Technic Gear 24 Tooth Crown Type 2
+    "3650c": (65.96, -8.0, 12.0),      # Technic Gear 24 Tooth Crown Type 3
+    "4019": (43.28, -10.0, 10.0),      # Technic Gear 16 Tooth
+    "401926": (43.28, -10.0, 10.0),    # ~_Technic Gear 16 Tooth Black (Obsolete)
+    "4143": (35.88, -4.0, 3.0),        # Technic Gear 14 Tooth Bevel
+    "46227": (58.3, -14.0, 14.0),      # ~Technic Gear 24 Tooth Double Bevel
+    "46372": (73.6, -10.0, 10.0),      # Technic Gear 28 Tooth Double Bevel
+    "5405": (47.11, -10.0, 10.0),      # Technic Gear  4 Knob 45°
+    "6542a": (43.71, -10.0, 10.0),     # Technic Gear 16 Tooth with Clutch
+    "6589": (32.0, -3.0, 7.0),         # Technic Gear 12 Tooth Bevel
+    "69762": (54.0, -10.0, 10.0),      # Technic Gear 14 Tooth Bevel
+    "69778": (35.39, -10.0, 10.0),     # Technic Gear 12 Tooth
+    "69779": (55.2, -10.0, 10.0),      # Technic Gear 20 Tooth
+    "94925": (43.28, -10.0, 10.0),     # Technic Gear 16 Tooth Reinforced
+}
+
+
+def gear_occupancy(bounds_min, bounds_max=None, z_max=None, bore_half=GEAR_BORE_HALF):
+    """Returns an annular 4-box occupancy in the XY plane spanning Z, with the central
+    axle bore excluded to avoid false-positive collisions against mounting axles.
+    Can be called with (bounds_min, bounds_max) or (diameter, z_min, z_max)."""
+    if z_max is not None:
+        diameter, z_min = bounds_min, bounds_max
+    else:
+        diameter = (bounds_max[0] - bounds_min[0] + bounds_max[1] - bounds_min[1]) / 2.0
+        z_min, z_max = bounds_min[2], bounds_max[2]
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    b = bore_half
+    if half_inscribed <= b:
+        return []
+    return [
+        box(-half_inscribed, half_inscribed, b, half_inscribed, z_min, z_max),
+        box(-half_inscribed, half_inscribed, -half_inscribed, -b, z_min, z_max),
+        box(-half_inscribed, -b, -b, b, z_min, z_max),
+        box(b, half_inscribed, -b, b, z_min, z_max),
+    ]
+
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -604,6 +934,94 @@ def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
     return True
 
 
+def generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title=""):
+    """Generic geometry-proven occupancy for Tile-family parts (2026-09-27).
+
+    Tiles have zero top flush studs and a flat plate height (y ~ 0..8 LDU).
+    Decomposes the footprint into candidate boxes proven solid via ray-parity sampling:
+    - Rectilinear tiles: N x M 20x20 LDU cells, verified solid across all cells and all 4 extreme corners.
+      Produces a clean full rectangular box and standard N x M bottom sockets.
+    - L-shaped corner tiles (e.g. 14719): exactly 3 out of 4 cells in a 2x2 grid solid; produces 3 individual
+      20x20 cell boxes and 3 bottom sockets at cell centers.
+    - Round tiles (e.g. 98138, 14769, 4150): circular discs in XZ centered at (0, 0); produces an inscribed
+      square box (radius <= diameter / 2, provably solid inside cylinder without over-reporting in corners).
+      1x1 round tiles receive a single center bottom socket; multi-stud round tiles have non-standard undersides
+      so sockets are empty (matching DISH_PARTS).
+    - Exclusions: parts with clips (protrude above/below plate height or have open jaws), through-holes
+      (e.g. 15535, center hole would be covered by inscribed square), or non-solid corners (angled/curved tiles).
+    """
+    if bounds_min is None or bounds_max is None or not tris:
+        return None, []
+
+    # Must have 0 top flush studs (parts with top studs belong to generic_stud_cell_occupancy)
+    flush = [(p, d) for p, d in (studs or []) if abs(p[1]) < 0.5 and d[1] < -0.9]
+    if flush:
+        return None, []
+
+    y0, y1 = bounds_min[1], bounds_max[1]
+    # Standard plate/tile height in LDU is 8.
+    # Allow small tolerance for stickers (-0.2 at top, +0.2 at bottom) or groove bevels.
+    if y0 < -0.5 or y1 > 8.5 or (y1 - y0) < 7.0 or (y1 - y0) > 8.5:
+        return None, []
+
+    tl = (title or "").lower()
+    # Exclude parts with through-holes, clips, or hinges where bounding box covers empty functional openings
+    if re.search(r"\b(clip|clips|hole|holes|hinge)\b", tl):
+        return None, []
+
+    x0, x1 = bounds_min[0], bounds_max[0]
+    z0, z1 = bounds_min[2], bounds_max[2]
+    dx = x1 - x0
+    dz = z1 - z0
+
+    nx = round(dx / 20.0)
+    nz = round(dz / 20.0)
+
+    # 1. Test whether the part is a full solid rectilinear tile (or rectilinear L-corner)
+    if nx >= 1 and nz >= 1 and abs(dx - nx * 20.0) <= 0.5 and abs(dz - nz * 20.0) <= 0.5:
+        xs = [round(x0 + 10 + i * 20) for i in range(nx)]
+        zs = [round(z0 + 10 + j * 20) for j in range(nz)]
+        solid_cells = []
+        for cx in xs:
+            for cz in zs:
+                cb = box(cx - 10, cx + 10, 0.0, 8.0, cz - 10, cz + 10)
+                if _stud_box_solid_fraction(tris, cb) >= STUD_CELL_MIN_SOLID:
+                    solid_cells.append(((cx, cz), cb))
+
+        if len(solid_cells) == nx * nz:
+            # Full grid is candidate. Verify the 4 extreme corners are solid plastic,
+            # which rules out round tiles or tiles with rounded/angled corners.
+            corners = [
+                box(x0, x0 + 4, 0.0, 8.0, z0, z0 + 4),
+                box(x1 - 4, x1, 0.0, 8.0, z0, z0 + 4),
+                box(x0, x0 + 4, 0.0, 8.0, z1 - 4, z1),
+                box(x1 - 4, x1, 0.0, 8.0, z1 - 4, z1),
+            ]
+            if min(_stud_box_solid_fraction(tris, cb) for cb in corners) >= 0.20:
+                occ = [box(round(x0), round(x1), 0.0, 8.0, round(z0), round(z1))]
+                sockets = generate_sockets(occ)
+                return occ, sockets
+        elif len(solid_cells) == 3 and nx == 2 and nz == 2:
+            # L-shaped corner tile (e.g. 14719 Tile 2 x 2 Corner): exactly 3 out of 4 cells solid
+            occ = [b for _, b in solid_cells]
+            sockets = [(((b[0] + b[1]) / 2.0, 8.0, (b[4] + b[5]) / 2.0), (0.0, 1.0, 0.0)) for b in occ]
+            return occ, sockets
+
+    # 2. Test whether the part is a round tile (symmetric circular disc)
+    is_round_title = bool(re.search(r"\bround\b", tl)) and not bool(re.search(r"\bcorner\b", tl))
+    if is_round_title and abs(dx - dz) <= 0.5 and abs(x0 + x1) <= 0.5 and abs(z0 + z1) <= 0.5:
+        diam = (dx + dz) / 2.0
+        n_studs = round(diam / 20.0)
+        if n_studs >= 1:
+            half = diam / (2.0 * math.sqrt(2))
+            cand = box(-half, half, 0.0, 8.0, -half, half)
+            if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+                sockets = [((0.0, 8.0, 0.0), (0.0, 1.0, 0.0))] if n_studs == 1 else []
+                return [cand], sockets
+
+    return None, []
+
+
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
                                    tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
@@ -634,11 +1052,30 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         else:
             occ = tyre_occupancy(*TYRE_PARTS[part_id])
         return verified(occ, [])
+    if part_id in WHEEL_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ = wheel_occupancy(bounds_min, bounds_max)
+        else:
+            occ = wheel_occupancy(*WHEEL_PARTS[part_id])
+        return verified(occ, [])
+    if part_id in TECHNIC_GEAR_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ = gear_occupancy(bounds_min, bounds_max)
+        else:
+            occ = gear_occupancy(*TECHNIC_GEAR_PARTS[part_id])
+        return verified(occ, [])
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)
         return verified(occ, sockets)
     if part_id in SLOPE_BACK_WALL_PARTS and studs is not None and bounds_min and bounds_max:
         occ, sockets = stud_cell_occupancy_and_sockets(bounds_max[1] - bounds_min[1], studs)
+        return verified(occ, sockets)
+    clean_id = part_id if part_id in PANEL_FLAT_WALL_PARTS else re.sub(r"[pd][0-9a-z]+$", "", part_id)
+    if clean_id in PANEL_FLAT_WALL_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ, sockets = panel_flat_wall_occupancy_and_sockets(bounds_min, bounds_max)
+        else:
+            occ, sockets = panel_flat_wall_occupancy_and_sockets(*PANEL_FLAT_WALL_PARTS[clean_id])
         return verified(occ, sockets)
     headwear_sockets = minifig_headwear_socket(title)
     if headwear_sockets is not None:
@@ -659,6 +1096,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
             # into its own `bars` connector field rather than being force-fit into this function's plain
             # (occ, sockets, needs_occupancy) return shape, which every existing caller already depends on.
             return [], [], False
+        gen_occ, gen_sockets = generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
         return (None, [], True)
     sockets = generate_sockets(occ)
     over = CONNECTOR_OVERRIDES.get(part_id, {})

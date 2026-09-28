@@ -6,6 +6,7 @@ candidate is only ever accepted once it is actually geometrically demonstrated, 
 alone. These tests use synthetic geometry (no LDraw library needed, so they run in CI) plus, where the fetched
 library is present, real curated parts to prove parity with the hand-verified tables it is meant to subsume."""
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -14,7 +15,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "ldraw"))
 import parts as P  # noqa: E402
 
-LDRAW_CACHE = Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"
+LDRAW_CACHE = Path(os.environ.get("LDRAW_DIR") or (Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"))
 
 
 def _box_tris(x0, x1, y0, y1, z0, z1):
@@ -283,6 +284,165 @@ def test_excluded_deformed_tyres_remain_rejected(pid):
     assert occ is None
 
 
+# ── Wheel Rims Family (WHEEL_PARTS) ──────────────────────────────────────────
+
+def test_wheel_occupancy_pure_math():
+    """Wheel occupancy is an annular 4-box inscribed square in the circular cross-section (XY plane),
+    spanning Z width, with the central axle/pin bore (B=8.0) strictly excluded."""
+    # Symmetric 68 LDU diameter, z in [-12, 8], default bore_half=8.0
+    half68 = 68.0 / (2 * math.sqrt(2))  # ~24.0416
+    occ = P.wheel_occupancy(68.0, -12.0, 8.0)
+    assert len(occ) == 4
+    # Top, Bottom, Left, Right
+    b_top, b_bot, b_left, b_right = occ
+    assert b_top == (-half68, half68, 8.0, half68, -12.0, 8.0)
+    assert b_bot == (-half68, half68, -half68, -8.0, -12.0, 8.0)
+    assert b_left == (-half68, -8.0, -8.0, 8.0, -12.0, 8.0)
+    assert b_right == (8.0, half68, -8.0, 8.0, -12.0, 8.0)
+
+    # Prove bore exclusion: no box covers any point in (-8, 8) x (-8, 8)
+    for b in occ:
+        # A box overlaps the bore square if:
+        # b[0] < 8 and b[1] > -8 and b[2] < 8 and b[3] > -8
+        overlap_bore = (b[0] < 8.0 and b[1] > -8.0 and b[2] < 8.0 and b[3] > -8.0)
+        assert not overlap_bore, f"Box {b} overlaps central bore!"
+
+    # Prove outer cylinder containment: all corners have r <= diameter / 2
+    r_out = 68.0 / 2.0
+    for b in occ:
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-6
+
+    # From bounds: diameter = 76, z_min = -24, z_max = 8
+    half76 = 76.0 / (2 * math.sqrt(2))
+    occ_bounds = P.wheel_occupancy((-38.0, -38.0, -24.0), (38.0, 38.0, 8.0))
+    assert len(occ_bounds) == 4
+    assert occ_bounds[0] == (-half76, half76, 8.0, half76, -24.0, 8.0)
+
+    # Small wheel edge case where half_inscribed <= bore_half returns empty list []
+    assert P.wheel_occupancy(20.0, -10.0, 10.0, bore_half=8.0) == []
+
+
+def test_dispatcher_resolves_wheel_parts_with_exact_values():
+    """WHEEL_PARTS resolves to 4 annular boxes in XY, spanning Z, with empty sockets and needs_occupancy=False."""
+    # Sample from prompt:
+    # 2470: "Wheel  2.8 x 27 with  8 Spokes" -- diameter 68.0 LDU, z: [-12.0, 8.0]
+    half_2470 = 68.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("2470", "Wheel  2.8 x 27 with  8 Spokes")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_2470, half_2470, 8.0, half_2470, -12.0, 8.0)
+
+    # 2695: "Wheel Rim 12.7 x 30 Stepped" -- diameter 76.0 LDU, z: [-24.0, 8.0]
+    half_2695 = 76.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("2695", "Wheel Rim 12.7 x 30 Stepped")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_2695, half_2695, 8.0, half_2695, -24.0, 8.0)
+
+    # 30155: "Wheel Rim  8 x 18 with 12 Spokes and Peghole" -- diameter 44.0 LDU, z: [-8.0, 8.0]
+    half_30155 = 44.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("30155", "Wheel Rim  8 x 18 with 12 Spokes and Peghole")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_30155, half_30155, 8.0, half_30155, -8.0, 8.0)
+
+    # 3482: "Wheel Rim  8 x 17.5 with Axlehole" -- diameter 44.0 LDU, z: [-10.0, 10.0]
+    half_3482 = 44.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3482", "Wheel Rim  8 x 17.5 with Axlehole")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_3482, half_3482, 8.0, half_3482, -10.0, 10.0)
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_d,expected_z0,expected_z1", [
+    ("2470", 68.0, -12.0, 8.0),
+    ("2695", 76.0, -24.0, 8.0),
+    ("30155", 44.0, -8.0, 8.0),
+    ("32077", 150.0, -35.5, 35.59),
+    ("33211", 108.0, -24.0, 0.0),
+    ("42716", 76.0, -25.0, 25.0),
+    ("3482", 44.0, -10.0, 10.0),
+    ("4266", 76.0, -25.0, 25.0),
+    ("4489a", 84.0, -12.0, 8.0),
+    ("41896", 108.0, -33.0, 33.0),
+    ("7877", 140.0, -16.25, 16.25),
+    ("6580a", 75.8, -29.0, 29.0),
+])
+def test_real_resolved_wheel_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
+    """Representative sample of 12 real wheel rim parts verified against real resolved geometry."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Rotational symmetry in XY: dx == dy, centered at (0, 0)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    assert abs(dx - dy) < 0.25, "%s should be rotationally symmetric in XY (dx=%f, dy=%f)" % (pid, dx, dy)
+    assert abs((part.min[0] + part.max[0]) / 2.0) < 0.5, "%s should be centered at X=0" % pid
+    assert abs((part.min[1] + part.max[1]) / 2.0) < 0.5, "%s should be centered at Y=0" % pid
+
+    # Resolved diameter and Z bounds match expected constants
+    assert round((dx + dy) / 2.0, 2) == expected_d
+    assert round(part.min[2], 2) == expected_z0
+    assert round(part.max[2], 2) == expected_z1
+
+    # Dispatcher resolves with real bounds
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+
+    r_out = expected_d / 2.0
+    for b in occ:
+        # Bounds containment
+        assert b[0] >= part.min[0] - 0.5 and b[1] <= part.max[0] + 0.5
+        assert b[2] >= part.min[1] - 0.5 and b[3] <= part.max[1] + 0.5
+        assert b[4] >= part.min[2] - 0.5 and b[5] <= part.max[2] + 0.5
+
+        # Outer cylinder containment: every corner has r <= r_out
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-5, f"{pid}: corner ({x},{y}) exceeds r_out={r_out}"
+
+        # Axle bore clearance: simulated Technic axle ([-6, 6] x [-6, 6]) along Z has zero overlap
+        overlap_axle = (b[0] < 6.0 and b[1] > -6.0 and b[2] < 6.0 and b[3] > -6.0)
+        assert not overlap_axle, f"{pid}: box {b} overlaps inserted axle!"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "30027a",  # Small wheel rim (D=20.0, W=7.07 <= 8.0)
+    "34337",   # Small wheel rim (D=20.0, W=7.07 <= 8.0)
+    "6014a",   # Small wheel rim (D=26.0, W=9.19)
+    "54086",   # Decorative wheel cover (5 Spoke for Wheel 20 x 30)
+    "62359",   # Decorative wheel cover (7 Spoke for Wheel 14 x 18)
+    "30190",   # Wheel Rim with Stub Axles (integral axle)
+    "3464b",   # Wheel Centre with Stub Axles (integral axle)
+    "55981",   # Wheel Rim 14 x 18 marked 'Needs Work'
+])
+def test_deliberately_excluded_wheel_subgroups_remain_rejected(pid):
+    """Deliberately excluded wheel sub-groups must remain rejected (needs_occupancy=True)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, "%s should remain rejected (needs_occupancy=True)" % pid
+    assert occ is None
+
+
 
 # bar_grip_points (2026-09-27): real grip position/axis for held/clip-mounted parts, refactored from the
 # earlier has_bar_grip boolean so the real data (not just a yes/no) reaches the baked mesh's `bars` connector
@@ -440,3 +600,471 @@ def test_snot_studs_on_real_minifig_armour(pid, expect_n):
     assert len(sockets) == expect_n
     for _, d in sockets:
         assert d[1] == 0  # every real stud on these parts is sideways -- no Y-axis socket should appear
+
+
+# -----------------------------------------------------------------------------
+# Tile family generic occupancy (2026-09-27)
+# -----------------------------------------------------------------------------
+
+def _cylinder_tris(r, y0, y1, segments=16):
+    """A closed polygonal cylinder for synthetic round tile tests."""
+    tris = []
+    pts_bot = []
+    pts_top = []
+    for i in range(segments):
+        th = 2 * math.pi * i / segments
+        x = r * math.cos(th)
+        z = r * math.sin(th)
+        pts_bot.append((x, y0, z))
+        pts_top.append((x, y1, z))
+    for i in range(segments):
+        nxt = (i + 1) % segments
+        tris.append(((0, y0, 0), pts_bot[i], pts_bot[nxt]))
+        tris.append(((0, y1, 0), pts_top[nxt], pts_top[i]))
+        tris.append((pts_bot[i], pts_top[i], pts_top[nxt]))
+        tris.append((pts_bot[i], pts_top[nxt], pts_bot[nxt]))
+    return tris
+
+
+def test_generic_tile_occupancy_synthetic_rect():
+    """Synthetic 2x2 rectangular tile with 0 studs and plate height [0, 8]."""
+    tris = _box_tris(-20, 20, 0, 8, -20, 20)
+    occ, sockets = P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), [], tris, "Tile 2 x 2 with Pattern")
+    assert occ == [(-20, 20, 0.0, 8.0, -20, 20)]
+    assert len(sockets) == 4
+    # All sockets face down at y=8
+    for pos, d in sockets:
+        assert pos[1] == 8
+        assert d == (0, 1, 0)
+
+
+def test_generic_tile_occupancy_synthetic_corner_l():
+    """Synthetic 2x2 L-shaped corner tile (3 cells solid, 1 missing)."""
+    tris = (_box_tris(-10, 10, 0, 8, -10, 10) +
+            _box_tris(10, 30, 0, 8, -10, 10) +
+            _box_tris(-10, 10, 0, 8, 10, 30))
+    occ, sockets = P.generic_tile_occupancy((-10, 0, -10), (30, 8, 30), [], tris, "Tile 2 x 2 Corner with Pattern")
+    assert occ is not None and len(occ) == 3
+    assert len(sockets) == 3
+    expected_centers = {(0.0, 0.0), (20.0, 0.0), (0.0, 20.0)}
+    actual_centers = {(pos[0], pos[2]) for pos, _ in sockets}
+    assert actual_centers == expected_centers
+
+
+def test_generic_tile_occupancy_synthetic_round():
+    """Synthetic 2x2 round tile: inscribed square box [-14.14, 14.14], no sockets."""
+    tris = _cylinder_tris(20, 0, 8)
+    occ, sockets = P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), [], tris, "Tile 2 x 2 Round with Pattern")
+    assert occ is not None and len(occ) == 1
+    half = 40.0 / (2 * math.sqrt(2))
+    assert math.isclose(occ[0][0], -half, rel_tol=1e-5)
+    assert math.isclose(occ[0][1], half, rel_tol=1e-5)
+    assert occ[0][2] == 0.0 and occ[0][3] == 8.0
+    assert sockets == []
+
+
+def test_generic_tile_occupancy_synthetic_1x1_round():
+    """Synthetic 1x1 round tile receives a single center socket at (0, 8, 0)."""
+    tris = _cylinder_tris(10, 0, 8)
+    occ, sockets = P.generic_tile_occupancy((-10, 0, -10), (10, 8, 10), [], tris, "Tile 1 x 1 Round with Pattern")
+    assert occ is not None and len(occ) == 1
+    assert sockets == [((0.0, 8.0, 0.0), (0.0, 1.0, 0.0))]
+
+
+def test_generic_tile_occupancy_synthetic_exclusions():
+    """Exclusions required by spec §3 (under-approximate, never guess)."""
+    tris = _box_tris(-20, 20, 0, 8, -20, 20)
+    # Top studs must not enter tile path
+    top_studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), top_studs, tris, "Tile 2 x 2") == (None, [])
+
+    # Functional clip feature
+    assert P.generic_tile_occupancy((-10, -10, -10), (10, 8, 10), [], tris, "Tile 1 x 1 with Clip") == (None, [])
+
+    # Through-hole feature
+    assert P.generic_tile_occupancy((-20, 0, -20), (20, 8, 20), [], tris, "Tile 2 x 2 Round with Hole") == (None, [])
+
+    # Non-plate height bounds
+    assert P.generic_tile_occupancy((-20, 0, -20), (20, 24, 20), [], tris, "Tile 2 x 2") == (None, [])
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expect_n_occ,expect_n_sock", [
+    ("10202", 1, 36),     # Tile 6 x 6 with Groove and Underside Studs
+    ("10202p04", 1, 36),  # Tile 6 x 6 with "Soap Suds Cleans it all" Pattern
+    ("10202p05", 1, 36),  # Tile 6 x 6 with Minifig and Washing Machine Pattern
+    ("14719", 3, 3),      # Tile 2 x 2 Corner
+    ("14719p00", 3, 3),   # Tile 2 x 2 Corner with Orange and Yellow Diamonds Pattern
+    ("14769", 1, 0),      # Tile 2 x 2 Round with Round Underside Stud
+    ("14769p0a", 1, 0),   # Tile 2 x 2 Round with Round Underside Stud with Pattern
+    ("3068bp06", 1, 4),   # Tile 2 x 2 with Red Warning Triangle Pattern
+    ("3068bp09", 1, 4),   # Tile 2 x 2 with Transport Text on Crate Pattern
+    ("3069bp01", 1, 2),   # Tile 1 x 2 with Letter Pattern
+    ("3069bp02", 1, 2),   # Tile 1 x 2 with Tape Reels Pattern
+    ("3070bp01", 1, 1),   # Tile 1 x 1 with Black "1" Pattern
+    ("2431p01", 1, 4),    # Tile 1 x 4 with Wood Grain and 4 Nails Pattern
+    ("6636p01", 1, 6),    # Tile 1 x 6 with "Rockefeller" Pattern
+    ("4150", 1, 0),       # Tile 2 x 2 Round with Cross Underside Stud
+    ("4150p01", 1, 0),    # Tile 2 x 2 Round with Grille Pattern
+    ("98138p01", 1, 1),   # Tile 1 x 1 Round with Venomari Pattern
+])
+def test_real_tile_parts_accepted(pid, expect_n_occ, expect_n_sock):
+    """Real tile parts (including printed variants and base tiles) verified via resolve_part."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should be accepted"
+    assert occ is not None and len(occ) == expect_n_occ
+    assert len(sockets) == expect_n_sock
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "15535",  # Tile 2 x 2 Round with Hole (through-hole)
+    "12825",  # Tile 1 x 1 with Clip with Rounded Tips (functional clip)
+    "22385",  # Tile 3 x 2 with Angled End (angled/cut corner)
+    "27925",  # Tile 2 x 2 Corner Round (curved corner)
+])
+def test_real_tile_feature_exclusions_stay_rejected(pid):
+    """Feature-bearing tiles that cannot be safely under-approximated as plain rectangular/round tiles."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+
+# ── Flat Wall Panels Family (PANEL_FLAT_WALL_PARTS) ──────────────────────────────
+
+def test_panel_flat_wall_occupancy_pure_math():
+    """Flat wall panel occupancy is a rectangular box spanning the part's footprint and 24 LDU height."""
+    # 1 x 2 x 1 panel: x in [-20, 20], y in [0, 24], z in [-10, 10]
+    occ, sockets = P.panel_flat_wall_occupancy_and_sockets(-20.0, 20.0, 0.0, 24.0, -10.0, 10.0)
+    assert occ == [(-20.0, 20.0, 0.0, 24.0, -10.0, 10.0)]
+    assert sockets == [((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0))]
+
+    # Calling with bounds tuples
+    occ_b, sockets_b = P.panel_flat_wall_occupancy_and_sockets((-30.0, 0.0, -10.0), (30.0, 24.0, 10.0))
+    assert occ_b == [(-30.0, 30.0, 0.0, 24.0, -10.0, 10.0)]
+    assert sockets_b == [((-20.0, 24.0, 0.0), (0, 1, 0)), ((0.0, 24.0, 0.0), (0, 1, 0)), ((20.0, 24.0, 0.0), (0, 1, 0))]
+
+
+@pytest.mark.parametrize("pid,expected_box,expected_sockets", [
+    ("4865a", (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0), [((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0))]),
+    ("23950", (-30.0, 30.0, 0.0, 24.0, -10.0, 10.0), [((-20.0, 24.0, 0.0), (0, 1, 0)), ((0.0, 24.0, 0.0), (0, 1, 0)), ((20.0, 24.0, 0.0), (0, 1, 0))]),
+    ("15207", (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0), [((-30.0, 24.0, 0.0), (0, 1, 0)), ((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0)), ((30.0, 24.0, 0.0), (0, 1, 0))]),
+    ("23969", (-20.0, 20.0, 0.0, 24.0, -10.0, 10.0), [((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0))]),
+    ("30413", (-40.0, 40.0, 0.0, 24.0, -10.0, 10.0), [((-30.0, 24.0, 0.0), (0, 1, 0)), ((-10.0, 24.0, 0.0), (0, 1, 0)), ((10.0, 24.0, 0.0), (0, 1, 0)), ((30.0, 24.0, 0.0), (0, 1, 0))]),
+    ("6231",  (-10.0, 10.0, 0.0, 24.0, -10.0, 10.0), [((0.0, 24.0, 0.0), (0, 1, 0))]),
+])
+def test_dispatcher_resolves_panel_flat_wall_parts_without_bounds(pid, expected_box, expected_sockets):
+    """PANEL_FLAT_WALL_PARTS resolves to full 1-brick box with downward sockets at y=24 and needs_occupancy=False."""
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, f"Panel {pid}")
+    assert needs is False
+    assert occ == [expected_box]
+    assert sockets == expected_sockets
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_w,expected_sockets_count", [
+    ("4865a", 40.0, 2),
+    ("4865b", 40.0, 2),
+    ("4865",  40.0, 2),
+    ("23969", 40.0, 2),
+    ("93095", 40.0, 2),
+    ("30010", 40.0, 2),
+    ("23950", 60.0, 3),
+    ("15207", 80.0, 4),
+    ("30413", 80.0, 4),
+    ("43337", 80.0, 4),
+    ("6231",  20.0, 1),
+])
+def test_real_resolved_flat_wall_panels(pid, expected_w, expected_sockets_count):
+    """All 11 flat wall panel parts verified against real resolved geometry, bounds, and ray-cast solidity."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Real geometry facts: flat wall panels have zero studs
+    assert len(part.studs) == 0, f"{pid} should have 0 studs"
+
+    # Bounds dimensions: width matches expected_w, height is 24 LDU (1 brick), depth is 20 LDU (1 stud)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    dz = part.max[2] - part.min[2]
+    assert dx == pytest.approx(expected_w, abs=0.1)
+    assert dy == pytest.approx(24.0, abs=0.1)
+    assert dz == pytest.approx(20.0, abs=0.5)
+
+    # Ray-cast solidity proof: bounding box must exceed STUD_CELL_MIN_SOLID (0.15)
+    bbox = P.box(part.min[0], part.max[0], part.min[1], part.max[1], part.min[2], part.max[2])
+    solid_frac = P._stud_box_solid_fraction(part.tris, bbox, n=200)
+    assert solid_frac >= P.STUD_CELL_MIN_SOLID, f"{pid} solidity {solid_frac:.3f} below {P.STUD_CELL_MIN_SOLID}"
+
+    # Dispatcher resolution with real geometry
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ is not None and len(occ) == 1
+    assert len(sockets) == expected_sockets_count
+    # All sockets face downward at y=24
+    for pos, direction in sockets:
+        assert pos[1] == pytest.approx(24.0, abs=0.1)
+        assert direction == (0, 1, 0)
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", ["4865ap01", "23969p01"])
+def test_panel_flat_wall_patterned_parts(pid):
+    """Patterned versions of flat wall panels resolve to valid occupancy via clean_id mapping."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert len(occ) == 1
+    assert len(sockets) == 2
+
+
+# ── Sub-family 2: Corner/Curved Wall Panels with Studs (Safely Unresolved) ──────
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,reason", [
+    ("2345", "crenellated castle wall with studs at y=24, not y=0; stud columns are thin shell (solids 0.06-0.23)"),
+    ("2409", "10x10x12 rock corner; full 288 LDU height column is hollow cave interior (solidity 0.01-0.03)"),
+    ("2448", "airplane panel with studs at two heights (y=0 and y=128), bounds min Y is -8.0"),
+    ("2466", "airplane panel with bounds min Y=-8.0; full-height column solidity is only 0.07 (< 0.15)"),
+    ("2468", "corner convex panel with bounds min Y=-8.0; column solidity is only 0.07 (< 0.15)"),
+    ("2571", "curved top panel; thin shell fuselage gives column solidity of 0.03-0.04 (< 0.15)"),
+    ("2572", "curved top panel; thin shell fuselage gives column solidity of 0.01-0.03 (< 0.15)"),
+])
+def test_corner_curved_wall_panels_with_studs_stay_safely_rejected(pid, reason):
+    """Sub-family 2 parts must remain needs_occupancy=True: none can be safely approximated by
+    stud_cell_occupancy_and_sockets without over-reporting collisions in empty air (spec section 3)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should stay needs_occupancy=True ({reason})"
+    assert occ is None
+
+# ── Technic Gears Family (TECHNIC_GEAR_PARTS) ───────────────────────────────
+
+def test_gear_occupancy_pure_math():
+    """Gear occupancy is an annular 4-box inscribed square in the circular cross-section (XY plane),
+    spanning Z width, with the central axle bore (B=6.0) strictly excluded."""
+    # 8-tooth gear: diameter 24.86 LDU, z in [-10.0, 10.0], default bore_half=6.0
+    half24 = 24.86 / (2 * math.sqrt(2))  # ~8.7895 LDU
+    occ = P.gear_occupancy(24.86, -10.0, 10.0)
+    assert len(occ) == 4
+    # Top, Bottom, Left, Right
+    b_top, b_bot, b_left, b_right = occ
+    assert b_top == (-half24, half24, 6.0, half24, -10.0, 10.0)
+    assert b_bot == (-half24, half24, -half24, -6.0, -10.0, 10.0)
+    assert b_left == (-half24, -6.0, -6.0, 6.0, -10.0, 10.0)
+    assert b_right == (6.0, half24, -6.0, 6.0, -10.0, 10.0)
+
+    # Prove bore exclusion: no box covers any interior point in (-6, 6) x (-6, 6)
+    for b in occ:
+        overlap_bore = (b[0] < 6.0 and b[1] > -6.0 and b[2] < 6.0 and b[3] > -6.0)
+        assert not overlap_bore, f"Box {b} overlaps central axle bore!"
+
+    # Prove outer cylinder containment: all corners have r <= diameter / 2
+    r_out = 24.86 / 2.0
+    for b in occ:
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-6
+
+    # From bounds: diameter = 54.0 (20-tooth double bevel), z_min = -10.0, z_max = 10.0
+    half54 = 54.0 / (2 * math.sqrt(2))
+    occ_bounds = P.gear_occupancy((-27.0, -27.0, -10.0), (27.0, 27.0, 10.0))
+    assert len(occ_bounds) == 4
+    assert occ_bounds[0] == (-half54, half54, 6.0, half54, -10.0, 10.0)
+
+    # Small gear edge case where half_inscribed <= bore_half returns empty list []
+    assert P.gear_occupancy(16.0, -5.0, 5.0, bore_half=6.0) == []
+
+
+def test_dispatcher_resolves_technic_gear_parts_with_exact_values():
+    """TECHNIC_GEAR_PARTS resolves to 4 annular boxes in XY, spanning Z, with empty sockets and needs_occupancy=False."""
+    # 10928: Technic Gear 8 Tooth Reinforced -- D=24.86, z: [-10.0, 10.0]
+    half_10928 = 24.86 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("10928", "Technic Gear  8 Tooth Reinforced")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_10928, half_10928, 6.0, half_10928, -10.0, 10.0)
+
+    # 3647: Technic Gear 8 Tooth -- D=24.86, z: [-10.0, 10.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3647", "Technic Gear  8 Tooth")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_10928, half_10928, 6.0, half_10928, -10.0, 10.0)
+
+    # 4019: Technic Gear 16 Tooth -- D=43.28, z: [-10.0, 10.0]
+    half_4019 = 43.28 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("4019", "Technic Gear 16 Tooth")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_4019, half_4019, 6.0, half_4019, -10.0, 10.0)
+
+    # 94925: Technic Gear 16 Tooth Reinforced -- D=43.28, z: [-10.0, 10.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("94925", "Technic Gear 16 Tooth Reinforced")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_4019, half_4019, 6.0, half_4019, -10.0, 10.0)
+
+    # 6589: Technic Gear 12 Tooth Bevel -- D=32.0, z: [-3.0, 7.0]
+    half_6589 = 32.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("6589", "Technic Gear 12 Tooth Bevel")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_6589, half_6589, 6.0, half_6589, -3.0, 7.0)
+
+    # 32269: Technic Gear 20 Tooth Double Bevel -- D=54.0, z: [-10.0, 10.0]
+    half_32269 = 54.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("32269", "Technic Gear 20 Tooth Double Bevel")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_32269, half_32269, 6.0, half_32269, -10.0, 10.0)
+
+    # 18575: Technic Gear 20 Tooth Double Bevel Reinforced -- D=54.0, z: [-10.0, 10.0]
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("18575", "Technic Gear 20 Tooth Double Bevel Reinforced")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_32269, half_32269, 6.0, half_32269, -10.0, 10.0)
+
+    # 32072: Technic Gear 4 Knob -- D=60.0, z: [-10.0, 10.0]
+    half_32072 = 60.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("32072", "Technic Gear  4 Knob")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_32072, half_32072, 6.0, half_32072, -10.0, 10.0)
+
+    # 3648b: Technic Gear 24 Tooth with Single Axle Hole -- D=64.78, z: [-9.62, 9.62]
+    half_3648b = 64.78 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3648b", "Technic Gear 24 Tooth with Single Axle Hole")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_3648b, half_3648b, 6.0, half_3648b, -9.62, 9.62)
+
+    # 3649: Technic Gear 40 Tooth -- D=104.70, z: [-10.0, 10.0]
+    half_3649 = 104.70 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3649", "Technic Gear 40 Tooth")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_3649, half_3649, 6.0, half_3649, -10.0, 10.0)
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_d,expected_z0,expected_z1", [
+    ("10928", 24.86, -10.0, 10.0),   # Technic Gear 8 Tooth Reinforced
+    ("3647", 24.86, -10.0, 10.0),    # Technic Gear 8 Tooth
+    ("94925", 43.28, -10.0, 10.0),   # Technic Gear 16 Tooth Reinforced
+    ("4019", 43.28, -10.0, 10.0),    # Technic Gear 16 Tooth
+    ("6589", 32.00, -3.0, 7.0),      # Technic Gear 12 Tooth Bevel
+    ("18575", 54.00, -10.0, 10.0),   # Technic Gear 20 Tooth Double Bevel Reinforced
+    ("32269", 54.00, -10.0, 10.0),   # Technic Gear 20 Tooth Double Bevel
+    ("32072", 60.00, -10.0, 10.0),   # Technic Gear 4 Knob
+    ("3648b", 64.78, -9.62, 9.62),   # Technic Gear 24 Tooth with Single Axle Hole
+    ("3649", 104.70, -10.0, 10.0),   # Technic Gear 40 Tooth
+    ("3650a", 65.96, -8.0, 12.0),    # Technic Gear 24 Tooth Crown Type 1
+    ("4143", 35.88, -4.0, 3.0),      # Technic Gear 14 Tooth Bevel
+    ("32198a", 52.00, -7.0, 3.0),    # Technic Gear 20 Tooth Bevel with Two Axlehole Slots
+])
+def test_real_resolved_technic_gear_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
+    """Representative sample of 13 real Technic gear parts verified against real resolved geometry."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Rotational symmetry in XY: dx == dy, centered at (0, 0)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    assert abs(dx - dy) < 0.25, "%s should be rotationally symmetric in XY (dx=%f, dy=%f)" % (pid, dx, dy)
+    assert abs((part.min[0] + part.max[0]) / 2.0) < 0.5, "%s should be centered at X=0" % pid
+    assert abs((part.min[1] + part.max[1]) / 2.0) < 0.5, "%s should be centered at Y=0" % pid
+
+    # Resolved diameter and Z bounds match expected constants
+    assert round((dx + dy) / 2.0, 2) == pytest.approx(expected_d, abs=0.1)
+    assert round(part.min[2], 2) == pytest.approx(expected_z0, abs=0.1)
+    assert round(part.max[2], 2) == pytest.approx(expected_z1, abs=0.1)
+
+    # Dispatcher resolves with real bounds
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+
+    r_out = (dx + dy) / 4.0
+    for b in occ:
+        # Bounds containment
+        assert b[0] >= part.min[0] - 0.5 and b[1] <= part.max[0] + 0.5
+        assert b[2] >= part.min[1] - 0.5 and b[3] <= part.max[1] + 0.5
+        assert b[4] >= part.min[2] - 0.5 and b[5] <= part.max[2] + 0.5
+
+        # Outer cylinder containment: every corner has r <= r_out
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-5, f"{pid}: corner ({x},{y}) exceeds r_out={r_out}"
+
+        # Axle bore clearance: simulated Technic axle ([-6, 6] x [-6, 6]) along Z has zero overlap
+        overlap_axle = (b[0] < 6.0 and b[1] > -6.0 and b[2] < 6.0 and b[3] > -6.0)
+        assert not overlap_axle, f"{pid}: box {b} overlaps inserted axle!"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "3743",    # Linear gear rack 1 x 4 (bounds: -40,-6,-10 .. 40,8,10)
+    "24014",   # Technic gear 12 tooth double bevel with axle extension (asymmetric X: -16.6 .. 49.5)
+    "18940",   # Technic gear rack 1 x 14 with bottom beam housing (linear rack)
+    "24121",   # Technic gear ring quarter 11 x 11 (90-degree quadrant segment)
+    "32167",   # Technic gear box half
+])
+def test_deliberately_excluded_gear_subgroups_remain_rejected(pid):
+    """Deliberately excluded gear sub-groups (linear racks, asymmetric extensions, quadrants, casings)
+    must remain rejected (needs_occupancy=True)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, "%s should remain rejected (needs_occupancy=True)" % pid
+    assert occ is None
+
+
+
+

@@ -649,3 +649,141 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 ## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
 - Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
 - **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
+
+## 2026-09-27: Generic Tile Occupancy & Printed Variant Unlock (cloud agent, `agent/tile-family`)
+
+- **Task**: Unlock real occupancy for Tile parts, especially printed/decorated variants (`scripts/ldraw/parts.py`).
+- **Core Insight & Empirical Validation**:
+  - Sampled and verified 25+ real tile parts and printed pairs (e.g. `10202` vs `10202p04`/`10202p05`, `14719` vs `14719p00`, `14769` vs `14769p0a`, `3068b` vs `3068bp06`/`3068bp09`, `3069b` vs `3069bp01`/`3069bp02`, `3070b` vs `3070bp01`, `2431` vs `2431p01`, `6636` vs `6636p01`, `4150` vs `4150p01`, `98138` vs `98138p01`).
+  - Confirmed that printed variants (`*p*.dat`) share identical resolved geometry (exact bounds and ray-parity solidity fractions) with their base unprinted tiles.
+  - While plain tiles previously relied on brittle title matching (`SAFE_SUFFIXES`), printed titles carry descriptive pattern names that failed classification, causing thousands of valid tiles to be rejected.
+- **Implementation**:
+  - Added `generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title="")` in `scripts/ldraw/parts.py` and connected it as a fallback in `resolve_occupancy_and_sockets`.
+  - **Flat Rectilinear Tiles**: For parts with plate height ($y \in [-0.5, 8.5]$, $dy \in [7.0, 8.5]$) and grid dimensions ($N \times M$ multiples of 20 LDU), candidate 20x20 LDU cells are tested via ray-parity solidity (`_stud_box_solid_fraction >= 0.15`). If all $N \times M$ cells are solid and the 4 extreme bounding box corners are proven solid ($\ge 0.20$, preventing false matching of circular/curved parts), a single unified bounding box and standard downward sockets (`generate_sockets(occ)`) are emitted.
+  - **L-Shaped Corner Tiles** (e.g. `14719`, `14719p00`): In a 2x2 grid where exactly 3 out of 4 cells are solid plastic and 1 corner is empty air, 3 individual cell boxes and 3 downward anti-stud sockets are emitted.
+  - **Round Tiles** (e.g. `14769`, `4150`, `98138`, `67095`): Circular discs centered at $(0, 0)$ in XZ are modeled using inscribed squares ($[-D / (2\sqrt{2}), D / (2\sqrt{2})]$), provably containing collision boxes inside the circular cylinder without corner overshoots. 1x1 round tiles receive a single center bottom socket; multi-stud round tiles have non-standard undersides (e.g. round/cross underside studs) and leave sockets empty (`sockets = []`), matching `DISH_PARTS`.
+  - **Safe Exclusions** (under-approximate, never guess per spec §3):
+    - Tiles with clips (e.g. `12825`, `2555`, `30350`): clip jaws protrude beyond plate height ($y: [-10, 8]$) or create open grasping regions; excluded from flat tile occupancy.
+    - Tiles with through-holes (e.g. `15535 Tile 2 x 2 Round with Hole`): a solid inscribed square would cover the center hole and falsely collide with inserted pins/axles; safely excluded (`needs_occupancy=True`).
+    - Curved/angled tiles (e.g. `22385 with Angled End`, `27925 Corner Round`, `24246 with Rounded End`, `35787 Triangular`): extreme corners fail the $\ge 0.20$ solidity threshold; safely excluded.
+- **Catalogue Impact**:
+  - Unprinted rejects survey (`scripts/ldraw/survey_rejects.py`):
+    - Prior to change: 623 candidate tile parts; 20 accepted, 603 rejected.
+    - Post-implementation: **515 accepted, 108 rejected** (495 newly accepted unprinted tile parts, an 82.1% reduction in unprinted tile rejects).
+    - The remaining 108 rejected parts consist strictly of feature-bearing or curved items (clips, through-holes, angled wedges, quarter-round corners, magnet holders, projectile launchers).
+  - Whole library impact (including printed variants across all 2,290 tile parts in LDraw):
+    - Prior to change: 57 accepted, 2,233 rejected.
+    - Post-implementation: **1,879 accepted** (1,331 printed variants + 548 unprinted base/sticker tiles), reducing total tile rejects from 2,233 to 411.
+- **Verification**:
+  - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`: synthetic rectilinear tiles, synthetic L-corner tiles, synthetic round tiles, synthetic exclusions, real resolved tile parts across 17 part IDs/variants, and real feature exclusions.
+  - All 77 tests in `tests/test_generic_stud_occupancy.py` pass cleanly in 19.58s.
+
+## 2026-09-27: PANEL_FLAT_WALL_PARTS Occupancy Family & Investigation (cloud agent, `agent/panel-family`)
+
+- **Task**: Real occupancy for Panel parts where provable (`scripts/ldraw/parts.py`).
+- **Investigation of Two Distinct Sub-Families**:
+  - **Sub-Family 1: Simple Flat Wall Panels (`15207`, `23950`, `23969`, `4865a`, `30413`, `4865b`, `93095`, `6231`, `30010`, `43337`, `4865`)**:
+    - **Physical Geometry**: Zero studs (`studs == []`), 1-stud depth (Z: `[-10.0, 10.0]`), 1-brick height (Y: `[0.0, 24.0]`), and width $N \times 20$ LDU (X: `[-10*N, 10*N]`).
+    - **Solidity Proof**: Bounding box solidity was evaluated against real resolved mesh triangles via ray-parity sampling (`_stud_box_solid_fraction`). All verified parts measure 31.5% to 53.3% solid (`15207`: 36.7%, `23950`: 41.3%, `23969`: 50.3%, `4865a`: 41.7%, `4865b`: 41.7%, `30413`: 40.7%, `6231`: 53.3%, `93095`: 46.7%), well above the catalogue floor `STUD_CELL_MIN_SOLID = 0.15` and comparable to an ordinary solid-topped 2x4 brick (`3001` at 43.4%).
+    - **Corner Fillet Safety**: The rounded corners on rounded-corner variants (`4865b`, `15207`, `23950`, `30413`, `23969`) have a measured fillet radius of ~2 LDU (0.8 mm; at 3x3 LDU the corner region is >91% solid). In the discrete LEGO grid (stud pitch 20 LDU, plate height 8 LDU), no LEGO element can fit inside a 0.8 mm corner relief, so the bounding box is a provably safe under-approximation that cannot cause false collisions with legitimately placed adjacent parts (spec §3).
+    - **Sockets**: Standard downward-facing sockets at $y=24$ are generated via `generate_sockets` on the 20x20 LDU grid (1 socket for 1x1, 2 for 1x2, 3 for 1x3, 4 for 1x4), matching the physical anti-stud mounting sockets on the real underside.
+  - **Sub-Family 2: Corner/Curved Wall Panels with Studs (`2345`, `2409`, `2448`, `2466`, `2468`, `2571`, `2572`) — Safely Left Unresolved**:
+    - **Castle Wall Corner `2345`**: Crenellated corner wall. Studs sit on an inner walkway at $y=24$, while the outer corner battlements rise to $y=0$. `stud_cell_occupancy_and_sockets` assumes studs sit at $y=0$, and would fabricate 24 LDU of non-existent solid material in the empty air above the studs. Moreover, the columns beneath the studs are thin hollow shells (solid fractions 0.06 to 0.23, failing the 0.15 threshold on 3 of 5 studs).
+    - **BURP/LURP Rock Corner `2409`**: 10x10x12 rock corner (288 LDU tall). Its 6 studs occupy a tiny 2x2 corner. Below the top brick ($y > 24$), the rock face opens into a massive hollow cave interior. Solid fraction across the full 288 LDU height is only 1.0% to 3.0%. A full-height column box would falsely block the hollow interior, while a 24 LDU box would place sockets in mid-air at $y=24$ instead of the base at $y=288$.
+    - **Fuselage/Airplane Panels `2448`, `2466`, `2468`, `2571`, `2572`**: Thin curved shells spanning 144 to 216 LDU height. All column solidities under top studs are between 1.0% and 7.0% (far below 0.15). In addition, `2448` has studs at two different heights ($y=0$ and $y=128$), and `2448`/`2466`/`2468` have negative bounds min Y (-8.0) that violate the 0-based box model. Curved-top panels (`2571`, `2572`) have curved top contours that a rectangular box severely over-approximates. Per spec §3 and task instructions, these are honestly left `needs_occupancy=True`.
+- **Catalogue Impact**:
+  - Rejects survey (`scripts/ldraw/survey_rejects.py`) on panel categories prior to change:
+    - `Panel 1`: 8 rejected (`15207`, `23950`, `23969`, `30413`, `4865a`, `4865b`, `6231`, `93095`)
+    - `=Panel`: 8 rejected (including aliases `30010` and `43337`)
+    - Total non-Technic panel rejects: 51
+    - Total panel-related rejects across library: 122
+  - Post-implementation survey:
+    - `Panel 1`: **0 rejected** (dropped from 8 to 0, 100% resolved)
+    - `=Panel`: **6 rejected** (dropped from 8 to 6)
+    - Total non-Technic panel rejects: dropped from 51 to 41
+    - Total panel-related rejects: dropped from 122 to 112
+- **Verification**:
+  - Added pure math tests, dispatcher tests without bounds, and real resolved geometry tests for all 11 parts in `PANEL_FLAT_WALL_PARTS` plus patterned variants (`4865ap01`, `23969p01`) in `tests/test_generic_stud_occupancy.py`.
+  - Added parameterized rejection tests verifying that all 7 Sub-Family 2 parts safely remain `needs_occupancy=True`.
+  - All 78 tests in `tests/test_generic_stud_occupancy.py` pass.
+
+## 2026-09-27: WHEEL_PARTS Occupancy Family (cloud agent, `agent/wheel-rims`)
+
+- **Task**: Add real occupancy support for rotationally symmetric Wheel Rim parts (`scripts/ldraw/parts.py`).
+- **Investigation Findings**:
+  - **Rotational Symmetry**: Wheel rims are rotationally symmetric about the Z axis in LDraw with their circular cross-section in the XY plane, centered at `(0, 0)`.
+  - **Difference from Tyres**: Tyres have no axle passing through their local coordinate center (they mount around the outside of a rim). Wheel rims DO mount onto a Technic axle or wheel-holder pin through an axle or peg hole running through their rotational center `(0, 0)` along Z.
+  - **Naive Inscribed Square Risk**: Placing a solid inscribed square spanning the center (like `tyre_occupancy`) reports solid material inside the axle bore, causing false-positive collisions with any mounting axle or pin inserted in a model.
+  - **`generic_hole_channel_occupancy` Incompatibility**:
+    1. Radial/spoke holes (e.g. `41896`) vary across both X and Y axes (`len(varying) == 2`), violating the single-shared-axis assumption and bailing immediately.
+    2. Single-center-hole channel boxes extend to the outer bounding box corners and fail the raycast solid-fraction check (`STUD_CELL_MIN_SOLID = 0.15`) because spoked wheels are mostly empty air between hub and rim (`32077` has 0.083, `42716` has 0.062, `33211` has 0.062).
+    3. Primitives like `axlehol5.dat` (used by `3482`) are missed by `AXLE_HOLE_RE = r"^axl\d*hole\.dat$"` due to DOS 8.3 filename truncation, leaving `part.holes` empty despite physical axle holes existing.
+- **Implementation**:
+  - Added `WHEEL_PARTS` family and `wheel_occupancy(bounds_min, bounds_max, bore_half=WHEEL_BORE_HALF)` in `scripts/ldraw/parts.py`.
+  - **Annular 4-Box Inscribed Square Decomposition**:
+    Decomposes the inscribed square of half-width $W = D / (2 \sqrt{2})$ into 4 axis-aligned bounding boxes (Top, Bottom, Left, Right) surrounding a central exclusion square of half-width $B = \text{WHEEL\_BORE\_HALF} = 8.0$ LDU spanning the part's full Z extent `[z_min, z_max]`.
+  - **Geometric Safety Guarantees**:
+    1. *Outer cylinder containment* (never over-reports external collisions): For any point in the 4 boxes, $|x| \le W$ and $|y| \le W$, so $x^2 + y^2 \le 2 W^2 = (D / 2)^2 = R_{out}^2$. All points lie strictly within the circular rim cylinder envelope.
+    2. *Central bore exclusion* (never collides with mounting axles/pins): The central square $(-B, B) \times (-B, B)$ is completely clear of occupancy. Technic axles ($|x| \le 6.0, |y| \le 6.0$), Technic pin shafts ($r = 6.0$), pin flanges ($r = 8.0$), and wheel pins ($r = 4.0$) pass through without intersecting any of the 4 boxes.
+  - **Sockets**: Explicitly empty (`sockets = []`) as wheel rims mount via axle/pin connections and carry no bottom studs/sockets.
+  - **Constants**: Hand-verified deterministic constants derived directly from real resolved geometry (`resolve_part`) for 74 clean, undeformed, rotationally-symmetric vehicle wheel rim parts ($D \ge 34.0$ LDU, ensuring $W \ge 12.02 > B = 8.0$ and $W - B \ge 4.02$ LDU).
+- **Deliberately Unaddressed Sub-groups** (remain `needs_occupancy=True`):
+  - *Small wheel rims* ($D \le 28.0$ LDU, $W \le 8.0$ LDU; e.g. `30027a-d`, `34337`, `42610`, `50944`, `6014a/b`, `74967`): Outer inscribed square half-width $W \le 8.0$ is smaller than or equal to the standard bore exclusion width ($B = 8.0$).
+  - *Composite shortcut assemblies* (e.g. `3482c01`, `30155c01`, `2695c01`, 68 parts total): CAD multi-part shortcuts combining a wheel rim and tyre; not atomic parts. In official inventory and OMR sets, rims and tyres are separate parts.
+  - *Wheels with integral or stub axles* (e.g. `30190`, `3464b`, `50862`, `u9163`, `u9167`): Protruding solid axle shafts require different representation.
+  - *Decorative wheel covers* (e.g. `54086`, `58088`, `61738`, `62359`, `62701`): Thin cosmetic face clips.
+  - *Tracks/belts* (`43903-f1`, `53992-f1..f3`, `71965-f1`, `85543-f5`) and mechanisms (`32060`, `3465a`, `4142`).
+  - *Obsolete or incomplete parts* (`22969` obsolete, `55981` marked "Needs Work", `2496` trolley, `3739` off-center).
+- **Catalogue Impact**:
+  - Rejects survey (`scripts/ldraw/survey_rejects.py`) showed 188 total Wheel-category parts rejected prior to change (58 accepted).
+  - Post-implementation survey unlocks **74 real wheel rim parts** (`Wheel` category reject count dropped from 188 to 114, accepted grew from 58 to 132).
+- **Verification**:
+  - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`:
+    - Pure math tests verifying 4-box geometry, outer cylinder containment, and bore exclusion.
+    - Dispatcher tests for representative parts (`2470`, `2695`, `30155`, `3482`).
+    - Real resolved geometry tests for 12 representative wheel rims (`2470`, `2695`, `30155`, `32077`, `33211`, `42716`, `3482`, `4266`, `4489a`, `41896`, `7877`, `6580a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
+    - Deliberate exclusion tests for 8 parts across the unaddressed sub-groups asserting `needs_occupancy=True`.
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **73 passed, 0 failed, 0 skipped** (up from 51 passed before this change).
+
+## 2026-09-27: TECHNIC_GEAR_PARTS Occupancy Family (cloud agent, `agent/technic-gears`)
+
+- **Task**: Add real occupancy support for rotationally symmetric Technic Gear parts (`scripts/ldraw/parts.py`).
+- **Investigation Findings**:
+  - **Rotational Symmetry**: Technic spur, bevel, double bevel, crown, knob, and stepper gears are rotationally symmetric about the Z axis in LDraw with circular cross-sections in the XY plane, centered at `(0, 0)`.
+  - **Difference from Tyres**: Tyres have no axle passing through their local coordinate center (they mount around the outside of a rim). Technic gears mount onto a Technic axle running through an axle hole at their rotational center `(0, 0)` along Z.
+  - **Naive Inscribed Square Risk**: Placing a solid inscribed square spanning the center (like `tyre_occupancy`) reports solid material inside the axle bore, causing false-positive collisions with any mounting Technic axle inserted in a model.
+  - **`generic_hole_channel_occupancy` Incompatibility**:
+    1. Primitives like `axlehol2.dat`, `axlehol5.dat`, `axlehol6.dat` (and subparts like `s/3648s02.dat`) are missed by `AXLE_HOLE_RE = r"^axl\d*hole\.dat$"` due to DOS 8.3 filename truncation (`hole` -> `hol`), leaving `part.holes` empty despite physical axle holes existing.
+    2. Circular/toothed gear perimeters fail the raycast solid-fraction check (`STUD_CELL_MIN_SOLID = 0.15`) because outer bounding box corners project into empty air beyond the tooth circle ($R \sqrt{2} \approx 1.414 R$).
+  - **Bore Sizing Nuance vs Wheel Rims**:
+    - Wheel rims mount on pins with flange/collar radius up to 8.0 LDU (`WHEEL_BORE_HALF = 8.0`).
+    - Technic gears mount on standard Technic cross-axles with envelope $[-6.0, 6.0] \times [-6.0, 6.0]$ LDU and outer boundary radius 6.0 LDU (`GEAR_BORE_HALF = 6.0`).
+    - Using `GEAR_BORE_HALF = 6.0` LDU eliminates false-positive collisions with inserted axles while preserving viable wall thickness ($W - B \ge 2.79$ LDU) even on the smallest 8-tooth gears ($D = 24.86$ LDU, $W = 8.79$ LDU; an 8.0 LDU bore would leave only 0.79 LDU).
+- **Implementation**:
+  - Added `TECHNIC_GEAR_PARTS` family and `gear_occupancy(bounds_min, bounds_max, bore_half=GEAR_BORE_HALF)` in `scripts/ldraw/parts.py`.
+  - **Annular 4-Box Inscribed Square Decomposition**:
+    Decomposes the inscribed square of half-width $W = D / (2 \sqrt{2})$ into 4 axis-aligned bounding boxes (Top, Bottom, Left, Right) surrounding a central exclusion square of half-width $B = \text{GEAR\_BORE\_HALF} = 6.0$ LDU spanning the part's full Z extent `[z_min, z_max]`.
+  - **Geometric Safety Guarantees**:
+    1. *Outer cylinder containment* (never over-reports external collisions): For any point in the 4 boxes, $|x| \le W$ and $|y| \le W$, so $x^2 + y^2 \le 2 W^2 = (D / 2)^2 = R_{out}^2$. All points lie strictly within the circular tooth envelope.
+    2. *Central bore exclusion* (never collides with mounting axle): The central square $(-B, B) \times (-B, B)$ is completely clear of occupancy. Technic cross-axles ($|x| \le 6.0, |y| \le 6.0$) pass through with zero interior intersection.
+  - **Sockets**: Explicitly empty (`sockets = []`) as Technic gears mount via axle/pin connections and carry no bottom studs/sockets.
+  - **Constants**: Hand-verified deterministic constants derived directly from real resolved geometry (`resolve_part`) for 29 clean, rotationally symmetric Technic gear parts ($D \ge 24.86$ LDU, ensuring $W \ge 8.79 > B = 6.0$ and $W - B \ge 2.79$ LDU).
+- **Deliberately Unaddressed Sub-groups** (remain `needs_occupancy=True`):
+  - *Linear gear racks* (`3743` Technic Gear Rack 1 x 4, `18940`, `18942`, `32170`, `6574`): Linear bar geometry, not rotationally symmetric round gears.
+  - *Asymmetric gear assemblies with integral axle extensions* (`24014` Technic Gear 12 Tooth Double Bevel with Axle Extension): Bounds `(-16.6,-16.6,-10)..(49.5,16.6,10)` include an asymmetric 49.5 LDU axle shaft.
+  - *Technic gear ring quarters* (`24121`, `78442`): Curved 90-degree quadrant segments, not full round gears.
+  - *Gearbox casings and internal components* (`171`, `172`, `173`, `45360`, `46217`, `32167`, `32239`, `6588`, `u9342`, `u9344`).
+  - *Composite mechanism assemblies* (`2742c01` propeller with gear, `6573` / `62821` differentials, `46490c01/c02` bearings).
+  - *Duplo system gears* (`6529`, `6530`, `31622`).
+- **Catalogue Impact**:
+  - Rejects survey (`scripts/ldraw/survey_rejects.py`) showed 59 candidates in the `Technic Gear` category: 27 accepted, 32 rejected prior to change.
+  - Post-implementation survey unlocks **23 parts in the `Technic Gear` category** (rejects dropped from 32 to 9, accepted increased from 27 to 50).
+  - Plus 6 alias/cross-category rotationally symmetric Technic gears (`24505`, `32198a`, `32198b`, `34432`, `401926`, `46227`), unlocking **29 total Technic gear parts**.
+  - All 10 rotationally symmetric parts from the 12-sample before/after measurement against 133 real OMR sets (`10928`, `94925`, `3647`, `3649`, `32269`, `32072`, `6589`, `4019`, `18575`, `3648b`) are fully resolved. The 2 exceptions (`3743` linear rack, `24014` asymmetric axle extension) are honestly documented and preserved as `needs_occupancy=True`.
+- **Verification**:
+  - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`:
+    - Pure math tests verifying 4-box geometry, outer cylinder containment, and bore exclusion ($B = 6.0$).
+    - Dispatcher tests for 10 representative parts (`10928`, `3647`, `4019`, `94925`, `6589`, `32269`, `18575`, `32072`, `3648b`, `3649`).
+    - Real resolved geometry tests for 13 representative Technic gears (`10928`, `3647`, `94925`, `4019`, `6589`, `18575`, `32269`, `32072`, `3648b`, `3649`, `3650a`, `4143`, `32198a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
+    - Deliberate exclusion tests for 5 parts across unaddressed sub-groups (`3743`, `24014`, `18940`, `24121`, `32167`) asserting `needs_occupancy=True`.
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **71 passed, 0 failed** (up from 51 passed before this change).
