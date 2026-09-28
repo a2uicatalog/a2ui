@@ -156,3 +156,151 @@ def test_baked_output_matches_the_generator(tmp_path):
         assert fresh.exists(), f.name
         assert json.loads(fresh.read_text()) == json.loads(f.read_text()), \
             "%s is stale: run python3 scripts/ldraw/bake_parts.py" % f.name
+
+
+# --- OMR Importer continuous rotation tests ---
+
+def test_omr_rot_index_axis_aligned():
+    """Axis-aligned rotations matching PART_ROT must return integer index 0..23."""
+    from scripts.ldraw.omr_import import rot_index
+    from renderers.brick_parts_validate import PART_ROT
+    assert rot_index((1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)) == 0
+    for idx, r in enumerate(PART_ROT):
+        assert rot_index(r) == idx
+
+
+def test_omr_rot_index_continuous_rotation():
+    """Non-axis-aligned proper rotations return a continuous 9-tuple of rounded floats."""
+    from scripts.ldraw.omr_import import rot_index
+    # 30° Y-rotation from Metroliner 10001-1 locomotive nose
+    m_30 = (0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866)
+    r_30 = rot_index(m_30)
+    assert isinstance(r_30, tuple)
+    assert len(r_30) == 9
+    assert r_30 == (0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866)
+
+    # 16.5° pantograph arm from 10001-1
+    m_panto = (1.0, 0.284, 0.0, -0.284, 1.0, 0.0, 0.0, 0.0, 1.0)
+    r_panto = rot_index(m_panto)
+    assert isinstance(r_panto, tuple)
+    assert r_panto == (1.0, 0.284, 0.0, -0.284, 1.0, 0.0, 0.0, 0.0, 1.0)
+
+    # 33.9° Technic chassis diagonal brace from 8880-1 Super Car
+    m_technic = (0.0, 0.0, -1.0, -0.558, 0.83, 0.0, 0.83, 0.558, 0.0)
+    r_technic = rot_index(m_technic)
+    assert isinstance(r_technic, tuple)
+    assert r_technic == (0.0, 0.0, -1.0, -0.558, 0.83, 0.0, 0.83, 0.558, 0.0)
+
+
+def test_omr_rot_index_rejects_reflections_and_degenerates():
+    """Mirrored parts (det ≈ -1) and singular/scaled matrices must return None."""
+    from scripts.ldraw.omr_import import rot_index
+    # Mirror reflection along X axis
+    m_mirror = (-1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
+    assert rot_index(m_mirror) is None
+
+    # Zero / singular matrix
+    m_zero = (0.0,) * 9
+    assert rot_index(m_zero) is None
+
+    # Scaled matrix (det = 8.0)
+    m_scaled = (2.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 2.0)
+    assert rot_index(m_scaled) is None
+
+
+def test_omr_bottom_y_continuous_rotation():
+    """bottom_y computes the lowest world-Y point (largest Y, LDraw Y down) across all 8 corners."""
+    import math
+    from scripts.ldraw.omr_import import bottom_y
+
+    mesh_3001 = json.loads((PARTS_DIR / "3001.json").read_text())
+    b = mesh_3001["bounds"]
+    q = 16.0
+    leaf = {"t": (0.0, 120.0, 0.0)}
+
+    # Integer rotation (axis-aligned, identity)
+    by_int = bottom_y("3001", leaf, 0, mesh=mesh_3001)
+    assert by_int == 120.0 + b["max"][1] / q
+
+    # Continuous 45° rotation around Z axis
+    theta = math.radians(45)
+    c, s = round(math.cos(theta), 4), round(math.sin(theta), 4)
+    m_tilt = (c, -s, 0.0, s, c, 0.0, 0.0, 0.0, 1.0)
+    by_cont = bottom_y("3001", leaf, m_tilt, mesh=mesh_3001)
+
+    # Analytical cross-check: max Y across all 8 corners
+    corner_ys = [
+        m_tilt[3] * x / q + m_tilt[4] * y / q + m_tilt[5] * z / q
+        for x in (b["min"][0], b["max"][0])
+        for y in (b["min"][1], b["max"][1])
+        for z in (b["min"][2], b["max"][2])
+    ]
+    expected_floor = 120.0 + max(corner_ys)
+    assert math.isclose(by_cont, expected_floor, rel_tol=1e-6)
+    # The lowest point of the tilted brick must be strictly lower (larger Y) than untilted
+    assert by_cont > by_int
+
+
+def test_omr_coverage_counts_continuous_as_renderable():
+    """coverage() counts baked leaves with continuous rotation matrices as renderable."""
+    from scripts.ldraw.omr_import import coverage
+    m_30 = (0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866)
+    leaves = [
+        {"part": "3001", "colour": 1, "m": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0), "t": (0.0, 0.0, 0.0), "step": 1},
+        {"part": "3001", "colour": 4, "m": m_30, "t": (20.0, 0.0, 0.0), "step": 1},
+        {"part": "non_existent_unbaked_part", "colour": 0, "m": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0), "t": (0.0, 0.0, 0.0), "step": 1},
+    ]
+    cov = coverage(leaves)
+    assert cov["parts"] == 3
+    assert cov["baked"] == 2
+    assert cov["renderable"] == 2
+    assert cov["tilted"] == 0
+    assert cov["fraction"] == 2 / 3
+
+
+def test_omr_to_parts_model_preserves_continuous_matrix_and_grounds_floor():
+    """to_parts_model emits rows with continuous matrix intact and grounds lowest point to y=0."""
+    from scripts.ldraw.omr_import import to_parts_model, bottom_y
+    m_30 = (0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866)
+    leaves = [
+        {"part": "3001", "colour": 1, "m": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0), "t": (0.0, 50.0, 0.0), "step": 1},
+        {"part": "3005", "colour": 4, "m": m_30, "t": (20.0, 80.0, 0.0), "step": 1},
+    ]
+    pm = to_parts_model(leaves)
+    assert len(pm) == 2
+    row_3001 = next(r for r in pm if r[0] == "3001")
+    row_3005 = next(r for r in pm if r[0] == "3005")
+    assert isinstance(row_3001[4], int)  # axis-aligned uses int rotation index
+    assert isinstance(row_3005[4], tuple)  # tilted uses 9-tuple continuous matrix
+    assert row_3005[4] == m_30
+    # The lowest point across the entire placed model must sit at y=0 on the baseplate
+    floors = [bottom_y(row[0], {"t": (row[1], row[2], row[3])}, row[4]) for row in pm]
+    assert abs(max(floors)) <= 1.0  # within integer rounding of 0.0 LDU
+
+
+def test_omr_real_metroliner_tilted_leaves_in_parts_model():
+    """Real tilted leaves from Metroliner 10001-1 (Plate 1x4 at 30° and Pantograph 4504 at 16.5°)
+    are included in to_parts_model output with continuous matrices intact."""
+    from scripts.ldraw.omr_import import to_parts_model, coverage
+    # Real leaves extracted from 10001-1.mpd
+    leaves = [
+        # Plate 1x4 (3710) rotated 30° around Y
+        {"part": "3710", "colour": 7, "m": (0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866),
+         "t": (160.0, -96.0, 20.0), "step": 3},
+        # Hinge Control Handle (4504) pantograph arm tilted 16.5°
+        {"part": "4504", "colour": 0, "m": (1.0, 0.284, 0.0, -0.284, 1.0, 0.0, 0.0, 0.0, 1.0),
+         "t": (0.0, -120.0, -50.0), "step": 5},
+    ]
+    cov = coverage(leaves)
+    assert cov["parts"] == 2
+    assert cov["baked"] == 2
+    assert cov["renderable"] == 2
+    assert cov["tilted"] == 0
+
+    pm = to_parts_model(leaves)
+    assert len(pm) == 2
+    assert all(isinstance(r[4], tuple) for r in pm)
+    assert pm[0][4] == (0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866)
+    assert pm[1][4] == (1.0, 0.284, 0.0, -0.284, 1.0, 0.0, 0.0, 0.0, 1.0)
+
+
