@@ -692,6 +692,72 @@ def generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title=""):
     return None, []
 
 
+def generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title=""):
+    """Generic geometry-proven occupancy for Minifig Torso parts and printed variants (2026-09-28).
+
+    Standard minifig torsos (973, 43370, sticker variants 973d*, and hundreds of printed variants 973p*)
+    share identical resolved body dimensions:
+    - Width: x in [-19.0, 19.0] (dx ~ 38 LDU, matching standard minifig hip width).
+    - Height: y in [-12.0, 32.0] (dy ~ 44 LDU, from the top of the neck cylinder at y=-12 to the waist at y=32).
+    - Depth: z in [-10.0, 10.0] (dz ~ 20 LDU, with minor sticker variations up to +-10.25).
+
+    Attachment & Connectors:
+    - Sockets: A bare torso has sockets = [] (matching tyres/wheels/gears/dishes). Torso attachment is handled
+      by the character template system (characters.py), not generic brick studs/anti-studs.
+    - Neck Post (y in [-12, 0]): Just as brick studs (y in [-4, 0]) are excluded from brick occupancy boxes to
+      prevent false collisions with mounted bricks, the torso neck post is omitted from the body occupancy
+      box so that minifig heads (occupying y in [-24, 0] at OFFSETS['head']) and neckwear accessories do not
+      falsely collide.
+    - Waist (y = 32): Meets the minifig hips flush at y = 32.
+    - Body Box: box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0), ray-parity proven solid against real triangles
+      (solid fraction 0.31 - 0.44 across variants, well above STUD_CELL_MIN_SOLID = 0.15).
+    - Sticker Variants: For sticker variants with raised decal layers (e.g. 973d06 with z_max=10.25), using
+      the canonical [-10.0, 10.0] depth is a safe under-approximation per spec section 3; over-approximating
+      from a sticker decal into air is avoided.
+
+    Safe Exclusions:
+    - Flat 2D sticker sheets (category 'Sticker Minifig' / '=Sticker', thickness 0.25 LDU).
+    - Novelty / fantasy appendage torsos (bat wings, bird wings, pterodactyl wings, flippers, claws, boxing gloves).
+    - Non-standard figures (Friends mini-dolls, Duplo, Fabuland, Technic figures, Skeletons, Battle Droids, Hagrid).
+    """
+    if bounds_min is None or bounds_max is None or not tris:
+        return None, []
+
+    # Must have 0 top flush studs
+    flush = [(p, d) for p, d in (studs or []) if abs(p[1]) < 0.5 and d[1] < -0.9]
+    if flush:
+        return None, []
+
+    tl = (title or "").strip().lower()
+    if not ("torso" in tl):
+        return None, []
+
+    # Exclude flat sticker decals (e.g. 003428b, 004318a)
+    if tl.startswith("sticker") or tl.startswith("=sticker"):
+        return None, []
+
+    # Exclude non-standard base torsos (wings, flippers, claws, boxing gloves, harpoons, skeletons, droids, etc.)
+    if re.search(r"\b(wing|wings|flipper|flippers|glove|gloves|hook|harpoon|claw|giant|skeleton|mechanical|cyborg|bionicle|friends|duplo|fabuland)\b", tl):
+        return None, []
+
+    x0, x1 = bounds_min[0], bounds_max[0]
+    y0, y1 = bounds_min[1], bounds_max[1]
+    z0, z1 = bounds_min[2], bounds_max[2]
+
+    # Standard torso bounds check (allowing small tolerances for stickers/decals):
+    # x in [-19.0, 19.0], y in [-12.0, 32.0], z in [-10.0, 10.0]
+    if not (abs(x0 - (-19.0)) <= 0.6 and abs(x1 - 19.0) <= 0.6 and
+            abs(y0 - (-12.0)) <= 0.5 and abs(y1 - 32.0) <= 0.5 and
+            abs(z0 - (-10.0)) <= 0.6 and abs(z1 - 10.0) <= 0.6):
+        return None, []
+
+    cand = box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)
+    if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+        return [cand], []
+
+    return None, []
+
+
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
                                    tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
@@ -748,6 +814,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
             # (occ, sockets, needs_occupancy) return shape, which every existing caller already depends on.
             return [], [], False
         gen_occ, gen_sockets = generic_tile_occupancy(bounds_min, bounds_max, studs, tris, title)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
+        gen_occ, gen_sockets = generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title)
         if gen_occ:
             return verified(gen_occ, gen_sockets)
         return (None, [], True)

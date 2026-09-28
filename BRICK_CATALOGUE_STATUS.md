@@ -677,3 +677,37 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 - **Verification**:
   - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`: synthetic rectilinear tiles, synthetic L-corner tiles, synthetic round tiles, synthetic exclusions, real resolved tile parts across 17 part IDs/variants, and real feature exclusions.
   - All 77 tests in `tests/test_generic_stud_occupancy.py` pass cleanly in 19.58s.
+
+## 2026-09-28: Minifig Torso Occupancy & Printed Variant Unlock (cloud agent, `agent/minifig-torso`)
+
+- **Task**: Real occupancy for Minifig Torso parts, especially printed variants (`scripts/ldraw/parts.py`).
+- **Core Insights & Geometric Verification**:
+  - **Connector Geometry & Sockets**: An individual bare torso has `sockets = []`, matching wheels, tyres, dishes, and gears. Minifig torsos do not carry standard 20x20 LDU studs or anti-studs; their inter-part attachment (neck post to head, side sockets to arms, bottom cavity to hips) is handled via the character template system (`scripts/ldraw/characters.py`), not generic stud grid generation.
+  - **Neck Post Connector Exemption**: The neck post ($y \in [-12.0, 0.0]$, radius 6 LDU cylinder) is male connector geometry, directly analogous to brick studs ($y \in [-4.0, 0.0]$). Standard brick occupancy boxes deliberately omit studs to prevent collisions with stacked bricks. Torso occupancy similarly starts at $y = 0.0$ and ends at $y = 32.0$ (hips flush mating plane). Extending the box up to $y = -12.0$ would cause a 12 LDU collision with mounted minifig heads (which occupy $y \in [-24.0, 0.0]$ at `OFFSETS['head']`) and neckwear accessories (capes, armor, backpacks).
+  - **Solidity**: Ray-parity point-in-mesh verification (`_stud_box_solid_fraction`) on the candidate body box `box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)` measured 0.438 (43.8% solid) across all standard torso variants (`973`, `973p01`, `973p04`, `973p14`, `973p18`, `973d06`, etc.) and 0.312 (31.2% solid) for `43370` (torso with arm locking notches). Both comfortably exceed `STUD_CELL_MIN_SOLID = 0.15` by > 2x margin.
+  - **Bounds & Decal/Sticker Variations**:
+    - Canonical torso body bounds: $x \in [-19.0, 19.0]$ (38 LDU width), $y \in [-12.0, 32.0]$ (44 LDU height with neck, body $y \in [0.0, 32.0]$), $z \in [-10.0, 10.0]$ (20 LDU depth).
+    - Sticker variants (e.g. `973d06` with $z_{max} = 10.25$, `973d01` with $z \in [-10.25, 10.25]$): using canonical $z \in [-10.0, 10.0]$ under-approximates sticker thickness by 0.25 LDU, provably safe per spec §3 ("under-approximation is always safe: miss an overlap before reporting a false one"). Over-approximating into air based on a decal is avoided.
+    - Minor authoring variations (e.g. `973p2q` with $x \in [-19.11, 19.11]$, `973p8j` with $y_{max} = 32.1$) fit cleanly within $\pm 0.6$ LDU bounds check tolerance and canonical box is completely contained within their physical envelopes.
+- **Implementation**:
+  - Added `generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title="")` in `scripts/ldraw/parts.py` and connected it in `resolve_occupancy_and_sockets`.
+  - Generates body occupancy `[box(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)]` with `sockets = []` when bounds match standard torso dimensions and ray-parity solidity clears 15%.
+- **Safe Exclusions (Honest account per spec §3)**:
+  - Flat 2D sticker decal sheets (categories `Sticker Minifig` / `=Sticker`, 28 rejects, e.g. `003428b`, `004318a`): 0.25 LDU thick decals, correctly excluded.
+  - Novelty / fantasy appendage torsos (14 rejects): bat wings (`10677`), bird wings (`11938`), flipper arms (`24319`), pterodactyl wings (`u9090`), boxing gloves (`97149`), baseball glove (`12896`), harpoon (`66614`), crab claw (`98642`), giant torso (`37777` Hagrid), folded arms (`25767`), Fabrik arms (`43418-f1`/`f2`), robotic arm (`63208`), ridged extended front (`98127`).
+  - Non-standard figure systems: Friends mini-dolls (`92241`, `92456`, `73152`), Duplo (`47203`, `47392`), Fabuland (`u9102`), Technic figures (`2698`), Skeletons (`60115`, `6260`), Battle Droids / Cyborgs (`30375`, `87566`), Constraction / Bionicle.
+- **Catalogue Impact**:
+  - `survey_rejects.py` unprinted candidates:
+    - `Sticker Shortcut`: 15 -> 0 rejects (100% resolved: `973d01`, `973d02`, `973d03`, `973d04`, `973d06`, `973d07`, `973d08`, `973d09`, `973d0a`, `973d0b`, `973d0c`, `973d0d`, `973d0e`, `973d0f`, `973d0g`).
+    - `Minifig Torso`: 16 -> 14 rejects (unprinted base torso `973` and arm-locking notches `43370` resolved; remaining 14 are strictly novelty appendage torsos).
+  - Full catalogue impact across all 1,872 non-sticker torso parts in LDraw:
+    - Prior to change: 972 accepted (mostly assembly parts matching bar_grip_points), 900 rejected.
+    - Post-implementation: **1,762 accepted** (790 newly unlocked standard torsos and printed variants).
+    - Only 110 non-standard / specialty torsos (mini-dolls, droids, appendages) safely remain `needs_occupancy=True`.
+- **Verification**:
+  - Added synthetic and real test suite in `tests/test_generic_stud_occupancy.py`:
+    - `test_generic_torso_occupancy_synthetic`
+    - `test_generic_torso_occupancy_synthetic_exclusions`
+    - `test_real_torso_parts_accepted` (26 real parts: `973`, `43370`, sticker `973d*`, and printed variants `973p*` across all major LEGO themes)
+    - `test_real_torso_feature_exclusions_stay_rejected` (`10677`, `11938`, `24319`, `97149`, `37777`, `003428b`)
+  - Test suite pass count: **111 passed** in `tests/test_generic_stud_occupancy.py` (up from 77, 34 new tests added).

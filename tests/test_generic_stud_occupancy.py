@@ -582,3 +582,105 @@ def test_real_tile_feature_exclusions_stay_rejected(pid):
     assert needs is True, f"{pid} should remain needs_occupancy=True"
     assert occ is None
 
+
+# -----------------------------------------------------------------------------
+# Minifig Torso generic occupancy (2026-09-28)
+# -----------------------------------------------------------------------------
+
+def test_generic_torso_occupancy_synthetic():
+    """Synthetic standard minifig torso: [-19, 19, -12, 32, -10, 10] with solid triangles."""
+    tris = _box_tris(-19, 19, -12, 32, -10, 10)
+    occ, sockets = P.generic_torso_occupancy((-19.0, -12.0, -10.0), (19.0, 32.0, 10.0), [], tris, "Minifig Torso")
+    assert occ == [(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)]
+    assert sockets == []
+
+
+def test_generic_torso_occupancy_synthetic_exclusions():
+    """Exclusions required by spec §3 (under-approximate, never guess)."""
+    tris = _box_tris(-19, 19, -12, 32, -10, 10)
+
+    # Top studs must not enter torso path
+    top_studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.generic_torso_occupancy((-19, -12, -10), (19, 32, 10), top_studs, tris, "Minifig Torso") == (None, [])
+
+    # Flat sticker sheet
+    assert P.generic_torso_occupancy((-18, -0.25, -15), (18, 0, 15), [], tris, "Sticker Minifig Torso") == (None, [])
+
+    # Appendages / fantasy non-standard torsos
+    assert P.generic_torso_occupancy((-56, -22, -10), (56, 35, 10), [], tris, "Minifig Torso with Bat Wing Arms") == (None, [])
+    assert P.generic_torso_occupancy((-37, -12, -12), (37, 45, 12), [], tris, "Minifig Torso with Flipper Arms") == (None, [])
+    assert P.generic_torso_occupancy((-34, -12, -30), (34, 46, 10), [], tris, "Minifig Torso with Arms and Boxing Gloves") == (None, [])
+
+    # Non-torso title
+    assert P.generic_torso_occupancy((-19, -12, -10), (19, 32, 10), [], tris, "Brick 2 x 4") == (None, [])
+
+    # Non-matching dimensions (e.g. wrong height or width)
+    assert P.generic_torso_occupancy((-10, -12, -10), (10, 32, 10), [], tris, "Minifig Torso") == (None, [])
+    assert P.generic_torso_occupancy((-19, 0, -10), (19, 24, 10), [], tris, "Minifig Torso") == (None, [])
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "973",       # Base Minifig Torso
+    "43370",     # Minifig Torso with Arm Locking Notches
+    "973d01",    # Minifig Torso with "TINE" Stickers
+    "973d02",    # Minifig Torso with Yellow Buttons and Grey Belt Sticker
+    "973d03",    # Minifig Torso with White Buttons and Police Badge Plain Sticker
+    "973d04",    # Minifig Torso with Shell Logo on White Background Sticker
+    "973d06",    # Minifig Torso with Rear Sticker White "1" on Transparent Background
+    "973d07",    # Minifig Torso with Red Cross Sticker
+    "973d0f",    # Minifig Torso with MD Foods Logo Sticker on Both Sides
+    "973p01",    # Minifig Torso with Vertical Striped Red/Blue Pattern
+    "973p04",    # Minifig Torso with Six Button Suit and Airplane Pattern
+    "973p0a",    # Minifig Torso with White Diagonal Zip and Pocket Pattern
+    "973p14",    # Minifig Torso with "S" Logo Red / Black Pattern
+    "973p18",    # Minifig Torso with Suit and Tie Pattern
+    "973p1f",    # Minifig Torso with Police Officer Pattern
+    "973p21",    # Minifig Torso with Firefighter Pattern
+    "973p2a",    # Minifig Torso with Chef Pattern
+    "973p31",    # Minifig Torso with Pirate Pattern
+    "973p36",    # Minifig Torso with Pirate Captain Pattern
+    "973p42",    # Minifig Torso with Castle Knight Pattern
+    "973p46",    # Minifig Torso with Forestman Pattern
+    "973p4f",    # Minifig Torso with Lion Knight Pattern
+    "973p4j",    # Minifig Torso with King Pattern
+    "973p90",    # Minifig Torso with Classic Space Astronaut Pattern
+    "973p2q",    # Minifig Torso with Viking Armour (x=19.11)
+    "973p8j",    # Minifig Torso with Town Vest (y=32.1)
+])
+def test_real_torso_parts_accepted(pid):
+    """Real minifig torso parts (base, sticker, and printed variants) verified via resolve_part."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should be accepted"
+    assert occ == [(-19.0, 19.0, 0.0, 32.0, -10.0, 10.0)]
+    assert sockets == []
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "10677",     # Minifig Torso with Bat Wing Arms
+    "11938",     # Minifig Torso with Bird Wing Arms
+    "24319",     # Minifig Torso with Flipper Arms
+    "97149",     # Minifig Torso with Arms and Boxing Gloves
+    "37777",     # Minifig Torso Half Giant
+    "003428b",   # Sticker Minifig Torso with Shirt
+])
+def test_real_torso_feature_exclusions_stay_rejected(pid):
+    """Feature-bearing or novelty torsos that cannot safely use standard rectangular torso occupancy."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+
