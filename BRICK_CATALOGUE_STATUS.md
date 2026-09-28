@@ -649,3 +649,24 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 ## 2026-09-27: Hinge Occupancy & Feasibility Investigation (cloud agent, `agent/hinge-investigation`)
 - Completed scoping investigation for LEGO hinge representation and occupancy: see [scripts/ldraw/HINGE_INVESTIGATION.md](scripts/ldraw/HINGE_INVESTIGATION.md).
 - **Key finding**: True hinges do NOT require a pose parameter or a dynamic multi-body occupancy model. In both physical LEGO and LDraw, hinges are two separate static parts (e.g. `2429`/`2430`, `4275b`/`4276b`, `3937`/`3938`). Most hinge halves are already baked with valid static occupancy and do not collide when mated at orthogonal angles. The only missing capability is connector recognition (`hinges` axis pairing) in `brick_parts_validate.py`.
+
+## 2026-09-27: Technic Remainder Survey & Pin Overrides (cloud agent, `agent/technic-remainder-survey`)
+- **Task**: Survey remaining ~90 Technic parts for viable occupancy sub-patterns and implement safe overrides if proven (investigation-first).
+- **Survey Findings**: See full report in [scripts/ldraw/TECHNIC_REMAINDER_SURVEY.md](scripts/ldraw/TECHNIC_REMAINDER_SURVEY.md).
+  - **Cross Blocks** (`32291`, `32557`, `63869`, `98989`): Must remain `needs_occupancy=True`. They feature orthogonal hole bores along both Z and X axes. To permit non-colliding pin/axle insertions through both planes, channels must be opened along both axes. Subtracting intersecting 12x12 channels leaves only thin 3 LDU outer wall margins, which fail ray-parity solidity (`sol = 0.062 < 0.15`) because outer Technic lobes are rounded semicylinders rather than square corners.
+  - **Bushes** (`3713`, `4265a/b/c`, `6577`, `584`, `585`, `57585`): Must remain `needs_occupancy=True`. Inscribed-square bounding fails on physical principles: bushes are hollow annular collars with an open axle bore through the center (core solidity 0.000). A solid bounding box over the center would cause false collision detection whenever an axle rod passes through the bush. Multi-axle bushes like `57585` are tri-axial stars with no cylindrical symmetry.
+  - **Irregular / Mechanical Components** (universal joints, steering links, suspension arms, towballs, ball joints, chain links, worm gears, sprockets): Must remain `needs_occupancy=True` due to articulation, dynamic kinematics, non-orthogonal angles, or thin bridges failing the solidity threshold.
+  - **Technic Pins**: **10 official parts** identified and proven as safe, direct geometric counterparts/extensions of existing landed overrides (`2780`, `3673`, `4274`, `32054`):
+    - `89678` (Pin 1/2 with Friction) -> exact twin of `4274` (`box(-20, 0, -6, 6, -6, 6)`, sol 0.417)
+    - `4459` (Pin with Friction) -> twin of `2780`/`3673` (`box(-20, 20, -6, 6, -6, 6)`, sol 0.521)
+    - `61332` (Pin with Friction Type 2) -> twin of `2780` (`box(-20, 20, -6, 6, -6, 6)`, sol 0.458)
+    - `32002` (Pin 3/4) -> 1L + 0.5L pin body (`box(-20, 10, -6, 6, -6, 6)`, sol 0.479)
+    - `32556a` (Pin Long without Friction, Single Slot) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.500)
+    - `32556b` (Pin Long without Friction, Dual Slots) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.542)
+    - `39888` (Pin Long without Friction Type 2) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.542)
+    - `42924` (Pin Long with Friction Type 2) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.500)
+    - `77765` (Pin Long with End Stop) -> 3L pin (`box(-30, 30, -6, 6, -6, 6)`, sol 0.521)
+    - `65304` (Pin Long with Stop Bush Type 2) -> counterpart of `32054` (`box(-30, 30, -6, 6, -6, 6)`, sol 0.479)
+- **Implementation**:
+  - Added all 10 verified pin parts to `OVERRIDES` in `scripts/ldraw/parts.py`.
+  - Added 32 new unit tests in `tests/test_generic_stud_occupancy.py` covering synthetic dispatcher resolution, real resolved geometry validation (bounds containment and ray-parity solidity verification), and negative rejection control assertions. Full test suite: **83/83 tests pass**.
