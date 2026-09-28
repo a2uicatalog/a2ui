@@ -1,6 +1,13 @@
 # Mated-Connector Collision Exemption Generalisation: Architectural Scoping Investigation (2026-09-28)
 
-## Status: COMPLETE (Scoping Investigation & Architecture Specification)
+## Status: PARTIAL IMPLEMENTATION LANDED (2026-09-28: mated-connector-exemption-axles-only)
+- **Axles-Only Exemption**: Landed on 2026-09-28 (`agent/dispatch-mated-connector-exemption-axles-only-1790621653`).
+  - Added axle segment extraction (`_axles_world` / `axlesWorld`) with explicit `connectors.axles` support and dynamic fallback for unbaked/curated axles.
+  - Implemented collinearity + longitudinal overlap detection between axles and hole segments in `validate_parts` (Python) and `validateParts` (JS `atoms_brick.gs`).
+  - Added mated axle/hole pairs to `mated_pairs` (collision exemption), linked in `adj` (graph anchoring), and reported `axleConnections`.
+  - Added curated hinge fallback in validator for `2429`/`2430` and `3830`/`3831`.
+  - Verified with 38 unit tests in `tests/test_brick_parts_validate.py` and JS twin test.
+- **Pending Follow-ups**: Clips, towballs, whole-pair blind spot mitigation, and indirect-joint blindness (Technic panels) remain separate backlog items.
 
 ---
 

@@ -114,6 +114,9 @@ def bake_one(lib, colours, entry):
             # registry (not a per-part geometry computation, so cheap to call unconditionally here).
             "hinges": [{"pos": qpt(h["pos"]), "dir": [round(d, 3) for d in h["dir"]], "kind": h["kind"]}
                        for h in hinge_connectors(pid)],
+            # Real axle centerline segment(s) for Technic axles and axle-rod parts
+            "axles": [{"pos": qpt(a["pos"]), "dir": [round(d, 3) for d in a["dir"]], "len": a["len"]}
+                      for a in axle_connectors(pid, title, part.min, part.max, occ, part.cylinders)],
         },
         "occupancy": [list(b) for b in occ] if occ else None,
         "needs_occupancy": needs_occ,

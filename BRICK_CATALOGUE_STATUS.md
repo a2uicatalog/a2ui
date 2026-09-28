@@ -1,6 +1,27 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
-## 2026-09-28: Electric, Vehicle, Mated-Connector-Exemption dispatches (cloud agents, cherry-picked from branches after a duplicate-task incident)
+## 2026-09-28: Mated-Connector Exemption — Axles Only (agent, `agent/dispatch-mated-connector-exemption-axles-only-1790621653`)
+
+- **Task**: Focused implementation of backlog item `mated-connector-exemption-axles-only` per Curtis's operator steer.
+- **Scope**: Recognise when an axle passes through a real hole/peghole and add that pair to the SAME `mated_pairs` exemption mechanism `renderers/brick_parts_validate.py` already has for pin/hole and hinge pairs. Explicitly leaves clips, towballs, whole-pair blind-spot, and indirect-joint blindness to their separate backlog items.
+- **Implementation**:
+  - Added `_axles_world(mesh, r, ex, ey, ez)` in `renderers/brick_parts_validate.py` (and JavaScript twin `axlesWorld` in `apps-script-surface/gas-wired-renderer/atoms_brick.gs`).
+  - Supports explicit `connectors.axles` (both `pos`/`dir`/`len` and `a`/`b` formats) and dynamic fallback recognition from unbaked/curated axle parts (titles containing `\baxle\b` with occupancy boxes having $\pm 6.0$ LDU cross section and length $\ge 15.0$ LDU).
+  - Evaluates geometric mating between axle segment and hole segment in world space:
+    - Collinearity: axes parallel ($|\hat{\mathbf{u}}_s \cdot \hat{\mathbf{u}}_h| > 0.99$) and hole endpoints within 0.5 LDU distance of the axle axis line.
+    - Longitudinal overlap: hole projection onto axle axis overlaps by $\ge 1.0$ LDU.
+  - On match: increments `axle_conn`, connects parts in graph adjacency `adj[i].add(j)` (anchoring axles to grounded assemblies, solving the connectivity gap noted in `generic_axle_occupancy`), and adds `(min(i, j), max(i, j))` to `mated_pairs` to exempt the pair from false-positive collisions.
+  - Added `axleConnections` to the return envelope and formatted connections detail string.
+  - Added `axle_connectors` helper to `scripts/ldraw/parts.py` and wired into `scripts/ldraw/bake_parts.py`.
+  - Added curated hinge fallback in `renderers/brick_parts_validate.py` and `atoms_brick.gs` for `2429`/`2430` and `3830`/`3831` (resolving outstanding test failures).
+- **Verification**:
+  - Added 7 new tests in `tests/test_brick_parts_validate.py` (mating + collision exemption with real `3700` and `3704`, grounded axle anchoring with `3001`+`3700`+`3704`, non-collinear offset rejection, perpendicular collision detection, longitudinal separation rejection, axle-pin hybrid `43093` mating, and explicit `connectors.axles` format support).
+  - Added JS validator test in `tests/test_brick_parts_validate.mjs`.
+  - Pass counts:
+    - `tests/test_brick_parts_validate.py`: **38/38 passed** (0 failures).
+    - `tests/test_brick_parts_validate_js.py` / `test_brick_parts_validate.mjs`: **15/15 fixtures + axle test passed** (0 failures).
+    - `tests/test_generic_stud_occupancy.py`: **367/367 passed** (0 failures).
+    - Full suite total: **406 passed in 52s**.
 
 Three items dispatched live via `gcloud run jobs execute` (`n4gpz`/`dn75t`/`g5ltz`). A `taskCount`
 override bug (dashboard's fix not yet live on the process that actually fired the dispatch) ran 8

@@ -60,3 +60,17 @@ for (const f of F.fixtures) {
 }
 console.log(`${pass}/${pass + fail} fixtures pass`);
 if (fail) process.exit(1);
+
+// Axle-through-hole mated pair exemption test (2026-09-28)
+loadMesh('3700');
+loadMesh('3704');
+const rAxle = kit.validateParts([
+  {p: '3700', x: 0, y: -24, z: 0, r: 0},
+  {p: '3704', x: 0, y: -14, z: 0, r: 1}
+]);
+if (rAxle.axleConnections !== 1 || rAxle.overlaps !== 0 || rAxle.collisions.length !== 0) {
+  console.error("Axle-through-hole test failed:", rAxle);
+  process.exit(1);
+}
+console.log("  ✓ axle_through_hole_mating_and_exemption");
+

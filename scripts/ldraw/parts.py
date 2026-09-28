@@ -992,6 +992,12 @@ HINGE_CONNECTORS = {
     # Z=0.0, axis along local X -- identical axis convention to 30083, confirmed by direct resolve_part()
     # sampling. Same not-yet-curated caveat as 30083.
     "30161": {"pos": (0.0, 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "dome_hinge"},
+    # Classic plate hinge (2429 Base / 2430 Top) -- pivot along local Y at origin.
+    "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "plate_hinge_base"},
+    "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "plate_hinge_top"},
+    # Swivel hinge (3830 Base / 3831 Top) -- swivel along local Y at origin.
+    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "swivel_base"},
+    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "swivel_top"},
 }
 
 
@@ -1002,6 +1008,29 @@ def hinge_connectors(part_id):
     resolve_occupancy_and_sockets's return shape)."""
     e = HINGE_CONNECTORS.get(part_id)
     return [dict(e)] if e else []
+
+
+def axle_connectors(part_id, title="", bounds_min=None, bounds_max=None, occupancy=None, cylinders=None):
+    """Returns [{'pos': (x,y,z), 'dir': (dx,dy,dz), 'len': float}] for part_id's real axle rod(s), or [] if
+    none. Called directly by bake_parts.py (same pattern as hinge_connectors and bar_grip_points)."""
+    tl = (title or "").strip().lower()
+    t_clean = re.sub(r"^[~=_\s|0-9]*", "", tl).strip()
+    if not re.search(r"\baxle\b", t_clean) or re.search(r"\b(with.*hole|with.*holes|axlehole|axle hole)\b", t_clean):
+        return []
+    if occupancy:
+        for b in occupancy:
+            dx, dy, dz = b[1] - b[0], b[3] - b[2], b[5] - b[4]
+            if dx >= 15.0 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6 and abs(b[4] - (-6.0)) <= 0.6 and abs(b[5] - 6.0) <= 0.6:
+                return [{"pos": (round(b[0], 2), 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "len": round(dx, 2)}]
+            elif dz >= 15.0 and abs(b[0] - (-6.0)) <= 0.6 and abs(b[1] - 6.0) <= 0.6 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6:
+                return [{"pos": (0.0, 0.0, round(b[4], 2)), "dir": (0.0, 0.0, 1.0), "len": round(dz, 2)}]
+    if bounds_min is not None and bounds_max is not None:
+        dx, dy, dz = bounds_max[0] - bounds_min[0], bounds_max[1] - bounds_min[1], bounds_max[2] - bounds_min[2]
+        if dx >= 15.0 and dy <= 16.5 and dz <= 16.5:
+            return [{"pos": (round(bounds_min[0], 2), 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "len": round(dx, 2)}]
+        elif dz >= 15.0 and dx <= 12.5 and dy <= 12.5:
+            return [{"pos": (0.0, 0.0, round(bounds_min[2], 2)), "dir": (0.0, 0.0, 1.0), "len": round(dz, 2)}]
+    return []
 
 
 # Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
