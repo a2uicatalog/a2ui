@@ -1430,6 +1430,18 @@ def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
     assert sockets == []
 
 
+_SHARED_LIB = None
+_SHARED_COLOURS = None
+
+def _get_shared_lib():
+    global _SHARED_LIB, _SHARED_COLOURS
+    if _SHARED_LIB is None:
+        from resolve import Library, ColourTable
+        _SHARED_LIB = Library(str(LDRAW_CACHE))
+        _SHARED_COLOURS = ColourTable(_SHARED_LIB)
+    return _SHARED_LIB, _SHARED_COLOURS
+
+
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
 @pytest.mark.parametrize("pid", [
     "6587",       # Technic Axle  3 with Stud
@@ -1450,15 +1462,53 @@ def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
 ])
 def test_real_axle_feature_exclusions_stay_rejected(pid):
     """Axle-named components with studs, friction pins, joiner tubes, or flexible cables must remain rejected."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    import gc
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
     )
     assert needs is True, f"{pid} should remain needs_occupancy=True"
     assert occ is None
+    del part
+    lib._lines_cached.cache_clear()
+    gc.collect()
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    # Engine Crankshafts
+    "2853",       # ~Moved to 2853a
+    "2853a",      # Technic Engine Crankshaft with Slot
+    # Universal Joints
+    "61903",      # Technic Universal Joint 3L (Complete)
+    "62520",      # Technic Universal Joint 3L End
+    # Driving Rings & Transmission
+    "18947",      # Technic Transmission Driving Ring  3L
+    "6539",       # Technic Transmission Driving Ring
+    # Powered Up & Control+ Electronics
+    "22169",      # Electric Control+ L Motor
+    "85825",      # Electric Powered Up 2 Port Battery Box with Screw Opening
+])
+def test_h175_mechanism_and_electronic_parts_stay_safely_rejected(pid):
+    """Real moving mechanism parts (crankshafts, universal joints, driving rings) and multi-port
+    Powered Up electronics from set 42145 Airbus H175 must remain needs_occupancy=True.
+    See scripts/ldraw/H175_MECHANISM_INVESTIGATION.md for geometric proof."""
+    import gc
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+    del part
+    lib._lines_cached.cache_clear()
+    gc.collect()
+
+
 
 
 
