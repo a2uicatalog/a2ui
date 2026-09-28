@@ -1032,3 +1032,54 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 - **Still open**: 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved -- no equivalent
   already-cross-validated evidence was found for these in a quick check; they'd need the same real-set
   search this pair's original derivation (or tonight's 2429/2430 search) used.
+
+
+## 2026-09-28: Mated-Connector Collision Exemption Generalisation Investigation (cloud agent, `agent/dispatch-mated-connector-exemption-generalisation`)
+
+- **Task**: Scope how a socket-type-driven generalisation of the mated-connector collision exemption
+  mechanism in `renderers/brick_parts_validate.py` (+ browser twin `atoms_brick.gs`) would work, and measure
+  its real catalogue-wide and set coverage impact, fulfilling backlog item
+  `mated-connector-exemption-generalisation` and following up on `TECHNIC_PANEL_INVESTIGATION.md`'s own
+  architectural recommendation.
+- **Scoping Document**: Completed comprehensive architectural specification and empirical census:
+  see [scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md](scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md).
+- **Core Findings & Status Quo Deficiencies**:
+  - *The Whole-Pair Blind Spot*: The initial 2026-09-28 implementation (`6a976c1`) introduced coarse
+    whole-pair exemptions for `pin/hole` and `hinge`. While safe for small parts (e.g. an isolated 2L pin in
+    a beam), exempting the entire pair $(i, j)$ blinds the validator to legitimate collisions between large
+    parts (e.g. two 1x16 beams pinned at hole 1 can physically slice through each other at hole 16 with zero
+    collisions reported).
+  - *Indirect Joint Blindness (Blocking Technic Panels)*: In real Technic assemblies, structural fairings and
+    panels (`11946`, `11947`, `64782`, `24116`) connect to beams not directly, but via intermediary pins $P$.
+    While $(A, P)$ and $(B, P)$ are exempted, the pair $(A, B)$ is not. Microscopic contact face overlap
+    between the panel flange and beam triggers false collisions, directly blocking Technic Panels from
+    catalogue occupancy (0 currently baked).
+  - *Missing Connector Families (Trapping Bushes, Axles, Clips, Towballs)*: Plain axles currently register
+    zero connectors in LDraw. Bushes (`3713`, `4265c`) and cross-blocks (`32291`) cannot define solid occupancy
+    without colliding with inserted through-axles, and had to be left as `needs_occupancy=True`. Gears and
+    wheels were forced into artificial bore cutouts ($B=6.0$, $B=8.0$ LDU). Clips and towball sockets drop jaws
+    and cups to avoid false collisions.
+- **Real Catalogue & Library Impact (24,735 LDraw library parts surveyed)**:
+  - **979+ parts across 8 connector-dependent categories**: 141 Technic panels (0 baked), 14 bushes (13 unbaked),
+    20 cross-blocks (15 unbaked), 74 axles (63 unbaked), 189 clips, 272 bars, 301 hinges, 81 towballs/sockets.
+  - **774 parts currently blocked or under-approximated** in the catalogue due to the lack of generalized
+    connector exemption.
+  - **Priority Set Impact (LEGO 42145 Airbus H175 Rescue Helicopter, 2,001 parts)**: Set 42145 coverage was
+    pushed from 37.0% to 70.8% in `67ce465` by baking 60 standard beams/pins. The remaining 29.2% is composed
+    almost entirely of over 150 axles, 35 Technic panels, and 80 bushes that cannot pass physical validation
+    without this generalisation.
+- **Architectural Specification**:
+  - *Typed Socket Registry*: Extends `connectors` schema with backward-compatible `"axles"`, `"clips"`, and
+    `"towballs"` fields, governed by a unified `SOCKET_TYPES` table mapping `stud`, `pin`, `axle`, `bar_clip`,
+    `hinge`, and `towball`.
+  - *Two-Tier Exemption*:
+    - **Tier 1 (Fast Pair Exemption)**: Retained for small connector parts whose bounding volume is $\le 15,000$
+      LDU³ (pins, bushes, towballs) where whole-pair exemption is provably unable to cause false negatives.
+    - **Tier 2 (Joint Zone Capsule Mask)**: For large structural parts (beams, panels), localized clearance
+      capsules around the connector segment exempt only the contact interface, preserving collision checking
+      across the rest of the part.
+    - **Co-Joined Triad Resolution**: Parts $A$ and $B$ sharing an intermediary pin/axle joint at the same
+      coordinate are recognized as co-joined, exempting the mounting flange interface and unlocking Technic Panels.
+  - *Performance*: 20-LDU spatial hashing reduces connector pairing from $O(N^2)$ to $O(N)$, ensuring real-time
+    execution in Google Apps Script even for 2,000+ piece models.
+
