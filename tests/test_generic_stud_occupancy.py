@@ -12,9 +12,12 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts" / "ldraw"))
+import os
 import parts as P  # noqa: E402
 
-LDRAW_CACHE = Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"
+_DEFAULT_LD = Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"
+_BOOTSTRAP_LD = Path("/opt/a2ui-bootstrap/_ldraw_cache/ldraw")
+LDRAW_CACHE = Path(os.environ["LDRAW_DIR"]) if os.environ.get("LDRAW_DIR") else (_DEFAULT_LD if _DEFAULT_LD.exists() else _BOOTSTRAP_LD)
 
 
 def _box_tris(x0, x1, y0, y1, z0, z1):
@@ -440,3 +443,73 @@ def test_snot_studs_on_real_minifig_armour(pid, expect_n):
     assert len(sockets) == expect_n
     for _, d in sockets:
         assert d[1] == 0  # every real stud on these parts is sideways -- no Y-axis socket should appear
+
+
+# Technic remainder survey overrides (2026-09-27): 10 hand-verified Technic Pin parts added to OVERRIDES
+# as exact geometric twins/extensions of 2780/3673/4274/32054.
+TECHNIC_PIN_OVERRIDES = [
+    ("89678", [P.box(-20, 0, -6, 6, -6, 6)], 1),
+    ("4459", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("61332", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("32002", [P.box(-20, 10, -6, 6, -6, 6)], 1),
+    ("32556a", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("32556b", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("39888", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("42924", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("77765", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("65304", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+]
+
+
+@pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_PIN_OVERRIDES)
+def test_technic_pin_overrides_synthetics(pid, expected_boxes, expected_sockets):
+    """Direct dispatcher test: each added pin override returns its verified box and sockets without library."""
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, "Technic Pin", [-30, -10, -10], [30, 10, 10], [], [], [], [])
+    assert needs is False
+    assert occ == expected_boxes
+    assert len(sockets) == expected_sockets
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_PIN_OVERRIDES)
+def test_technic_pin_overrides_real_geometry(pid, expected_boxes, expected_sockets):
+    """Real geometry test: verified against resolved LDraw meshes for bounds containment and ray-parity solidity."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ == expected_boxes
+    assert len(sockets) == expected_sockets
+    assert P._boxes_within_bounds(occ, part.min, part.max)
+    for b in occ:
+        sol = P._stud_box_solid_fraction(part.tris, b)
+        assert sol >= P.STUD_CELL_MIN_SOLID, f"Part {pid} box {b} solid fraction {sol:.3f} below {P.STUD_CELL_MIN_SOLID}"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    # Bushes: hollow axle bore down center / tri-axial star
+    "3713", "4265a", "57585",
+    # Cross blocks: orthogonal hole bores along Z vs X; thin corner slivers fail solidity floor
+    "32291", "32557", "63869", "98989",
+    # Representative irregular / complex mechanical components
+    "32039", "32126", "2736", "4716", "64451",
+])
+def test_technic_remainder_honestly_rejected_parts(pid):
+    """Technic remainder survey controls: parts where geometry or insertion physics forbids simple box occupancy
+    must strictly remain needs_occupancy=True rather than being guessed."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"Part {pid} ({part.title}) was falsely accepted"
+    assert occ is None
+    assert sockets == []
+

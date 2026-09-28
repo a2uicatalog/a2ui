@@ -250,6 +250,19 @@ OVERRIDES = {
     "4274": [box(-20, 0, -6, 6, -6, 6)],   # pin lies along -x from its origin: bounds x -20..0
     "6558": [box(-20, 20, -6, 6, -6, 6)],
     "32054": [box(-30, 30, -9, 9, -9, 9)],
+    # Additional Technic pins (2026-09-27 Technic remainder survey): exact geometric counterparts/extensions
+    # to 2780/3673/4274/32054, ray-parity proven solid (0.417..0.542, well above STUD_CELL_MIN_SOLID 0.15),
+    # spanning the pin shaft within part bounds without over-reporting collisions in pegholes:
+    "89678": [box(-20, 0, -6, 6, -6, 6)],    # 1/2 pin with friction, exact twin of 4274
+    "4459": [box(-20, 20, -6, 6, -6, 6)],     # 2L pin with friction, twin of 2780/3673
+    "61332": [box(-20, 20, -6, 6, -6, 6)],    # 2L pin with friction Type 2
+    "32002": [box(-20, 10, -6, 6, -6, 6)],    # 3/4 pin: 1L on -X side (-20..0), 1/2L on +X side (0..10)
+    "32556a": [box(-30, 30, -6, 6, -6, 6)],   # 3L pin long without friction, single slot
+    "32556b": [box(-30, 30, -6, 6, -6, 6)],   # 3L pin long without friction, dual slot
+    "39888": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long without friction Type 2
+    "42924": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with friction Type 2
+    "77765": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with end stop
+    "65304": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with stop bush Type 2 (counterpart of 32054)
     # Brick 1x2 with two studs on one side (SNOT): a normal 1x2 brick body underneath the extra side studs, which
     # come from real geometry (no override needed for them) -- x is the "2" direction, z the "1" direction, per
     # the corrected w/d convention above (confirmed against this same part's own real top-stud spread, x=+/-10).
