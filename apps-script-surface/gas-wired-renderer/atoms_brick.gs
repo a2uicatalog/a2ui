@@ -286,10 +286,23 @@ function _brickKit() {
     var proj=[a[0]+ab[0]*t,a[1]+ab[1]*t,a[2]+ab[2]*t];
     return {dist:dist3(p,proj),t:t};
   }
+  var CURATED_HINGES={
+    '2429':[{pos:[0,0,0],dir:[0,1,0],kind:'plate_hinge_base'}],
+    '2430':[{pos:[0,0,0],dir:[0,1,0],kind:'plate_hinge_top'}],
+    '3830':[{pos:[0,0,0],dir:[0,1,0],kind:'swivel_base'}],
+    '3831':[{pos:[0,0,0],dir:[0,1,0],kind:'swivel_top'}]
+  };
   // Twin of _hinges_world (brick_parts_validate.py) -- pos/dir rotate+translate like connWorld, but each
   // entry also carries a `kind` (not a rotatable quantity) that connWorld's generic pos/dir extraction drops.
   function hingesWorld(mesh,r,ex,ey,ez){
-    var list=(mesh.connectors&&mesh.connectors.hinges)||[],q=mesh.quant;
+    var list=(mesh.connectors&&mesh.connectors.hinges)||[];
+    if(!list.length&&CURATED_HINGES[mesh.id]){
+      return CURATED_HINGES[mesh.id].map(function(h){
+        var wp=rotLDU(r,h.pos),wd=rotLDU(r,h.dir);
+        return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd,kind:h.kind};
+      });
+    }
+    var q=mesh.quant||16;
     return list.map(function(h){
       var lp=[h.pos[0]/q,h.pos[1]/q,h.pos[2]/q],wp=rotLDU(r,lp),wd=rotLDU(r,h.dir);
       return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd,kind:h.kind};
@@ -297,9 +310,52 @@ function _brickKit() {
   }
   // Twin of _hinge_kinds_mate -- see its Python comment for the real physical mating rule.
   function hingeKindsMate(ka,kb){
-    var complements={finger2:'finger3',finger3:'finger2'};
+    var complements={
+      finger2:'finger3',finger3:'finger2',
+      plate_hinge_base:'plate_hinge_top',plate_hinge_top:'plate_hinge_base',
+      swivel_base:'swivel_top',swivel_top:'swivel_base'
+    };
     if(complements[ka]||complements[kb])return complements[ka]===kb;
     return ka===kb&&ka==='knuckle';
+  }
+  // Twin of _axles_world (brick_parts_validate.py)
+  function axlesWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var q=mesh.quant||16,out=[];
+    var list=(mesh.connectors&&mesh.connectors.axles)||[];
+    if(list.length){
+      list.forEach(function(ax){
+        var la,lb;
+        if(ax.a&&ax.b){
+          la=[ax.a[0]/q,ax.a[1]/q,ax.a[2]/q];
+          lb=[ax.b[0]/q,ax.b[1]/q,ax.b[2]/q];
+        }else if(ax.pos&&ax.dir){
+          la=[ax.pos[0]/q,ax.pos[1]/q,ax.pos[2]/q];
+          var len=ax.len||0;
+          lb=[la[0]+ax.dir[0]*len,la[1]+ax.dir[1]*len,la[2]+ax.dir[2]*len];
+        }else{return;}
+        var wa=add3(rotLDU(r,la),[ex,ey,ez]),wb=add3(rotLDU(r,lb),[ex,ey,ez]);
+        out.push({a:wa,b:wb});
+      });
+      return out;
+    }
+    var tl=(mesh.title||'').toLowerCase();
+    var tClean=tl.replace(/^[~=_\s|0-9]*/,'').trim();
+    var isAxle=/\baxle\b/.test(tClean)&&!/\b(with.*hole|with.*holes|axlehole|axle hole)\b/.test(tClean);
+    if(!isAxle)return [];
+    if(mesh.occupancy){
+      mesh.occupancy.forEach(function(b){
+        var dx=b[1]-b[0],dy=b[3]-b[2],dz=b[5]-b[4];
+        if(dx>=15&&Math.abs(b[2]+6)<=0.6&&Math.abs(b[3]-6)<=0.6&&Math.abs(b[4]+6)<=0.6&&Math.abs(b[5]-6)<=0.6){
+          var la=[b[0],0,0],lb=[b[1],0,0];
+          out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+        }else if(dz>=15&&Math.abs(b[0]+6)<=0.6&&Math.abs(b[1]-6)<=0.6&&Math.abs(b[2]+6)<=0.6&&Math.abs(b[3]-6)<=0.6){
+          var la=[0,0,b[4]],lb=[0,0,b[5]];
+          out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+        }
+      });
+    }
+    return out;
   }
   // Pair a mesh's local hole entries (one {pos,dir} per face) into {a,b} segments: greedy nearest
   // opposite-direction match, in LOCAL (unquantised LDU) space -- spec §2's "the segment between the pair is
@@ -325,14 +381,15 @@ function _brickKit() {
   function validateParts(list){
     var n=list.length,i,j;
     var meshes=list.map(function(e){return partMeshCache[e.p];});
-    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],notChecked=0;
+    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],axles=[],notChecked=0;
     for(i=0;i<n;i++){
       var e=list[i],m=meshes[i];
-      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);notChecked++;continue;}
+      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);axles.push([]);notChecked++;continue;}
       studs.push(connWorld(m,'studs',e.r,e.x,e.y,e.z));
       sockets.push(connWorld(m,'sockets',e.r,e.x,e.y,e.z));
       pins.push(connWorld(m,'pins',e.r,e.x,e.y,e.z));
       hinges.push(hingesWorld(m,e.r,e.x,e.y,e.z));
+      axles.push(axlesWorld(m,e.r,e.x,e.y,e.z));
       boxes.push(worldBoxes(m,e.r,e.x,e.y,e.z));
       if(!m.occupancy)notChecked++;
       var localSegs=pairHoles(m);
@@ -366,9 +423,9 @@ function _brickKit() {
       });
     }
     // Parts whose connectors are known to physically interpenetrate on purpose (a pin genuinely passing
-    // through a hole, or two hinge halves genuinely sharing a pivot axis) -- exempted from the collision check
-    // below. Twin of Python's `mated_pairs` -- see its comment for why a coarse whole-pair exemption is the
-    // spec-safe direction to err in.
+    // through a hole, an axle genuinely passing through a hole, or two hinge halves genuinely sharing a pivot axis) --
+    // exempted from the collision check below. Twin of Python's `mated_pairs` -- see its comment for why a coarse
+    // whole-pair exemption is the spec-safe direction to err in.
     var matedPairs={};
     for(i=0;i<n;i++){
       pins[i].forEach(function(p){
@@ -391,6 +448,37 @@ function _brickKit() {
             if(Math.abs(dot3(ha.dir,hb.dir))<=0.99)return;
             var hbEnd=add3(hb.pos,hb.dir),d=pointLineDist(ha.pos,hb.pos,hbEnd);
             if(d.dist<0.5){hingeConn++;adj[i][j]=1;adj[j][i]=1;matedPairs[i+','+j]=1;}
+          });
+        }
+      });
+    }
+    var axleConn=0;
+    for(i=0;i<n;i++){
+      axles[i].forEach(function(ax){
+        var vs=[ax.b[0]-ax.a[0],ax.b[1]-ax.a[1],ax.b[2]-ax.a[2]];
+        var ls=Math.hypot(vs[0],vs[1],vs[2]);
+        if(ls<1e-6)return;
+        var us=[vs[0]/ls,vs[1]/ls,vs[2]/ls];
+        for(j=0;j<n;j++){
+          if(i===j)continue;
+          holeSegsWorld[j].forEach(function(seg){
+            var vh=[seg.b[0]-seg.a[0],seg.b[1]-seg.a[1],seg.b[2]-seg.a[2]];
+            var lh=Math.hypot(vh[0],vh[1],vh[2]);
+            if(lh<1e-6)return;
+            var uh=[vh[0]/lh,vh[1]/lh,vh[2]/lh];
+            if(Math.abs(dot3(us,uh))<=0.99)return;
+            var d1=pointLineDist(seg.a,ax.a,ax.b),d2=pointLineDist(seg.b,ax.a,ax.b);
+            if(d1.dist>=0.5||d2.dist>=0.5)return;
+            var ta=(seg.a[0]-ax.a[0])*us[0]+(seg.a[1]-ax.a[1])*us[1]+(seg.a[2]-ax.a[2])*us[2];
+            var tb=(seg.b[0]-ax.a[0])*us[0]+(seg.b[1]-ax.a[1])*us[1]+(seg.b[2]-ax.a[2])*us[2];
+            var tmin=Math.min(ta,tb),tmax=Math.max(ta,tb);
+            var oStart=Math.max(tmin,0),oEnd=Math.min(tmax,ls);
+            if(oEnd-oStart>=1.0){
+              axleConn++;
+              adj[i][j]=1;
+              adj[j][i]=1;
+              matedPairs[Math.min(i,j)+','+Math.max(i,j)]=1;
+            }
           });
         }
       });
@@ -448,14 +536,14 @@ function _brickKit() {
         detail:(np?np+' part pair'+(np>1?'s':'')+' overlap':'0 overlaps')+(notChecked?' ('+notChecked+' part'+(notChecked>1?'s':'')+' not checked, no occupancy data yet)':'')},
       {id:'anchored',label:'Every part anchored',status:floating.length?'fail':'pass',
         detail:floating.length?floating.length+' part'+(floating.length>1?'s':'')+' not connected to the baseplate':'all '+n+' parts reach the baseplate'},
-      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn)?'pass':'fail',
-        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'},
+      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn+axleConn)?'pass':'fail',
+        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'+(axleConn?' + '+axleConn+' axle':'')},
       {id:'balance',label:'Centre of mass over footprint',status:balance==='none'?'fail':balance,
         detail:balance==='none'?'no part rests on the baseplate to measure':
           '('+ (margin!==null?'margin '+Math.abs(margin).toFixed(2):'')+' studs'+(balance==='fail'?', outside footprint':'')+')'}
     ];
-    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn,
-      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,collisions:collisions,
+    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn+axleConn,
+      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,axleConnections:axleConn,collisions:collisions,
       overlaps:np,floating:floating,balance:balance,com:{margin:margin},parts:[],cost:0};
   }
   var SHAPES={
