@@ -744,3 +744,46 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
     - Real resolved geometry tests for 12 representative wheel rims (`2470`, `2695`, `30155`, `32077`, `33211`, `42716`, `3482`, `4266`, `4489a`, `41896`, `7877`, `6580a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
     - Deliberate exclusion tests for 8 parts across the unaddressed sub-groups asserting `needs_occupancy=True`.
   - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **73 passed, 0 failed, 0 skipped** (up from 51 passed before this change).
+
+## 2026-09-27: TECHNIC_GEAR_PARTS Occupancy Family (cloud agent, `agent/technic-gears`)
+
+- **Task**: Add real occupancy support for rotationally symmetric Technic Gear parts (`scripts/ldraw/parts.py`).
+- **Investigation Findings**:
+  - **Rotational Symmetry**: Technic spur, bevel, double bevel, crown, knob, and stepper gears are rotationally symmetric about the Z axis in LDraw with circular cross-sections in the XY plane, centered at `(0, 0)`.
+  - **Difference from Tyres**: Tyres have no axle passing through their local coordinate center (they mount around the outside of a rim). Technic gears mount onto a Technic axle running through an axle hole at their rotational center `(0, 0)` along Z.
+  - **Naive Inscribed Square Risk**: Placing a solid inscribed square spanning the center (like `tyre_occupancy`) reports solid material inside the axle bore, causing false-positive collisions with any mounting Technic axle inserted in a model.
+  - **`generic_hole_channel_occupancy` Incompatibility**:
+    1. Primitives like `axlehol2.dat`, `axlehol5.dat`, `axlehol6.dat` (and subparts like `s/3648s02.dat`) are missed by `AXLE_HOLE_RE = r"^axl\d*hole\.dat$"` due to DOS 8.3 filename truncation (`hole` -> `hol`), leaving `part.holes` empty despite physical axle holes existing.
+    2. Circular/toothed gear perimeters fail the raycast solid-fraction check (`STUD_CELL_MIN_SOLID = 0.15`) because outer bounding box corners project into empty air beyond the tooth circle ($R \sqrt{2} \approx 1.414 R$).
+  - **Bore Sizing Nuance vs Wheel Rims**:
+    - Wheel rims mount on pins with flange/collar radius up to 8.0 LDU (`WHEEL_BORE_HALF = 8.0`).
+    - Technic gears mount on standard Technic cross-axles with envelope $[-6.0, 6.0] \times [-6.0, 6.0]$ LDU and outer boundary radius 6.0 LDU (`GEAR_BORE_HALF = 6.0`).
+    - Using `GEAR_BORE_HALF = 6.0` LDU eliminates false-positive collisions with inserted axles while preserving viable wall thickness ($W - B \ge 2.79$ LDU) even on the smallest 8-tooth gears ($D = 24.86$ LDU, $W = 8.79$ LDU; an 8.0 LDU bore would leave only 0.79 LDU).
+- **Implementation**:
+  - Added `TECHNIC_GEAR_PARTS` family and `gear_occupancy(bounds_min, bounds_max, bore_half=GEAR_BORE_HALF)` in `scripts/ldraw/parts.py`.
+  - **Annular 4-Box Inscribed Square Decomposition**:
+    Decomposes the inscribed square of half-width $W = D / (2 \sqrt{2})$ into 4 axis-aligned bounding boxes (Top, Bottom, Left, Right) surrounding a central exclusion square of half-width $B = \text{GEAR\_BORE\_HALF} = 6.0$ LDU spanning the part's full Z extent `[z_min, z_max]`.
+  - **Geometric Safety Guarantees**:
+    1. *Outer cylinder containment* (never over-reports external collisions): For any point in the 4 boxes, $|x| \le W$ and $|y| \le W$, so $x^2 + y^2 \le 2 W^2 = (D / 2)^2 = R_{out}^2$. All points lie strictly within the circular tooth envelope.
+    2. *Central bore exclusion* (never collides with mounting axle): The central square $(-B, B) \times (-B, B)$ is completely clear of occupancy. Technic cross-axles ($|x| \le 6.0, |y| \le 6.0$) pass through with zero interior intersection.
+  - **Sockets**: Explicitly empty (`sockets = []`) as Technic gears mount via axle/pin connections and carry no bottom studs/sockets.
+  - **Constants**: Hand-verified deterministic constants derived directly from real resolved geometry (`resolve_part`) for 29 clean, rotationally symmetric Technic gear parts ($D \ge 24.86$ LDU, ensuring $W \ge 8.79 > B = 6.0$ and $W - B \ge 2.79$ LDU).
+- **Deliberately Unaddressed Sub-groups** (remain `needs_occupancy=True`):
+  - *Linear gear racks* (`3743` Technic Gear Rack 1 x 4, `18940`, `18942`, `32170`, `6574`): Linear bar geometry, not rotationally symmetric round gears.
+  - *Asymmetric gear assemblies with integral axle extensions* (`24014` Technic Gear 12 Tooth Double Bevel with Axle Extension): Bounds `(-16.6,-16.6,-10)..(49.5,16.6,10)` include an asymmetric 49.5 LDU axle shaft.
+  - *Technic gear ring quarters* (`24121`, `78442`): Curved 90-degree quadrant segments, not full round gears.
+  - *Gearbox casings and internal components* (`171`, `172`, `173`, `45360`, `46217`, `32167`, `32239`, `6588`, `u9342`, `u9344`).
+  - *Composite mechanism assemblies* (`2742c01` propeller with gear, `6573` / `62821` differentials, `46490c01/c02` bearings).
+  - *Duplo system gears* (`6529`, `6530`, `31622`).
+- **Catalogue Impact**:
+  - Rejects survey (`scripts/ldraw/survey_rejects.py`) showed 59 candidates in the `Technic Gear` category: 27 accepted, 32 rejected prior to change.
+  - Post-implementation survey unlocks **23 parts in the `Technic Gear` category** (rejects dropped from 32 to 9, accepted increased from 27 to 50).
+  - Plus 6 alias/cross-category rotationally symmetric Technic gears (`24505`, `32198a`, `32198b`, `34432`, `401926`, `46227`), unlocking **29 total Technic gear parts**.
+  - All 10 rotationally symmetric parts from the 12-sample before/after measurement against 133 real OMR sets (`10928`, `94925`, `3647`, `3649`, `32269`, `32072`, `6589`, `4019`, `18575`, `3648b`) are fully resolved. The 2 exceptions (`3743` linear rack, `24014` asymmetric axle extension) are honestly documented and preserved as `needs_occupancy=True`.
+- **Verification**:
+  - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`:
+    - Pure math tests verifying 4-box geometry, outer cylinder containment, and bore exclusion ($B = 6.0$).
+    - Dispatcher tests for 10 representative parts (`10928`, `3647`, `4019`, `94925`, `6589`, `32269`, `18575`, `32072`, `3648b`, `3649`).
+    - Real resolved geometry tests for 13 representative Technic gears (`10928`, `3647`, `94925`, `4019`, `6589`, `18575`, `32269`, `32072`, `3648b`, `3649`, `3650a`, `4143`, `32198a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
+    - Deliberate exclusion tests for 5 parts across unaddressed sub-groups (`3743`, `24014`, `18940`, `24121`, `32167`) asserting `needs_occupancy=True`.
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **71 passed, 0 failed** (up from 51 passed before this change).
