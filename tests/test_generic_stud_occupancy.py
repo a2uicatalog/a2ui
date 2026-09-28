@@ -17,6 +17,19 @@ import parts as P  # noqa: E402
 
 LDRAW_CACHE = Path(os.environ.get("LDRAW_DIR") or (Path(__file__).resolve().parent.parent / "scripts" / "ldraw" / "_ldraw_cache" / "ldraw"))
 
+_shared_lib = None
+_shared_colours = None
+
+
+def _get_shared_lib_colours():
+    global _shared_lib, _shared_colours
+    if _shared_lib is None:
+        from resolve import Library, ColourTable
+        _shared_lib = Library(str(LDRAW_CACHE))
+        _shared_colours = ColourTable(_shared_lib)
+    return _shared_lib, _shared_colours
+
+
 
 def _box_tris(x0, x1, y0, y1, z0, z1):
     """A closed 12-triangle box (outward winding doesn't matter for ray-parity, which only counts crossings)."""
@@ -124,9 +137,8 @@ def test_dispatcher_prefers_named_families_and_overrides_over_the_generic_fallba
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 def test_generic_fallback_stays_within_bounds_for_a_non_zero_origin_real_part():
     """Real regression case for the y-bounds bug above: part 809 (Baseplate 24x40 ...), bounds y:[-4,+4]."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, "809.dat")
     occ, sockets = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
     assert occ is not None, "809 should be accepted now that the box spans its real y bounds"
@@ -138,9 +150,8 @@ def test_generic_fallback_stays_within_bounds_for_a_non_zero_origin_real_part():
 
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 def test_generic_fallback_reproduces_the_curated_corner_l_result_exactly():
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, "2357.dat")
     curated_occ, curated_sockets = P.stud_cell_occupancy_and_sockets(P.CORNER_L_PARTS["2357"], part.studs)
     gen_occ, gen_sockets = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
@@ -169,9 +180,8 @@ _RELAXED_REAL_PARTS = {
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 @pytest.mark.parametrize("pid", ["11211", "3665a", "3660a"])
 def test_generic_fallback_keeps_only_the_flush_studs_on_real_non_flush_parts(pid):
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, _ = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
     assert occ is not None, "%s has at least one genuinely flush, solid-proven stud and should not be rejected outright" % pid
@@ -232,9 +242,8 @@ def test_dispatcher_resolves_tyre_parts_with_exact_values():
 ])
 def test_real_resolved_tyre_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
     """Representative sample of 10 real tyre parts verified against real resolved geometry."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
 
     # Real geometry facts verified: tyres have NO studs, holes, or pins
@@ -273,9 +282,8 @@ def test_real_resolved_tyre_sample_matches_geometry_and_remains_within_bounds(pi
 @pytest.mark.parametrize("pid", ["2807", "6578c01"])
 def test_excluded_deformed_tyres_remain_rejected(pid):
     """2807 ('Needs Work') and 6578c01 ('Deformed') must remain rejected (needs_occupancy=True)."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title, part.min, part.max, part.holes, part.studs, part.tris
@@ -377,9 +385,8 @@ def test_dispatcher_resolves_wheel_parts_with_exact_values():
 ])
 def test_real_resolved_wheel_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
     """Representative sample of 12 real wheel rim parts verified against real resolved geometry."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
 
     # Rotational symmetry in XY: dx == dy, centered at (0, 0)
@@ -432,9 +439,8 @@ def test_real_resolved_wheel_sample_matches_geometry_and_remains_within_bounds(p
 ])
 def test_deliberately_excluded_wheel_subgroups_remain_rejected(pid):
     """Deliberately excluded wheel sub-groups must remain rejected (needs_occupancy=True)."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -457,9 +463,8 @@ _REAL_GRIPS = {
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 @pytest.mark.parametrize("pid", ["2714a", "11090", "11103"])
 def test_bar_grip_points_on_real_held_parts(pid):
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     grips = P.bar_grip_points(part.min, part.max, part.cylinders, part.tris)
     got = [(tuple(round(v, 1) for v in p), tuple(round(v, 2) for v in d)) for p, d in grips]
@@ -473,9 +478,8 @@ def test_bar_grip_points_empty_on_real_non_grip_parts(pid):
     5258 (a Door, has real radius-4 hinge-pin-shaped cylinders but none pass the extremity+isolation checks),
     100942 (a Wheel, radius-4 cylinders embedded in the hub, not a free grip) -- same real ids the raw-radius
     prototype over-triggered on before the extremity/isolation filter was added, see the module docstring."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     assert P.bar_grip_points(part.min, part.max, part.cylinders, part.tris) == []
 
@@ -489,9 +493,8 @@ def test_bar_grip_points_empty_on_real_non_grip_parts(pid):
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
 @pytest.mark.parametrize("pid,expect_holes", [("11478", 6), ("33299a", 2), ("33299b", 1)])
 def test_axle_holes_populate_part_holes(pid, expect_holes):
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     assert len(part.holes) == expect_holes
 
@@ -502,9 +505,8 @@ def test_real_axle_hole_liftarms_get_accepted(pid):
     """Real 'Liftarm with Axle Hole(s)' parts, previously rejected (no round-hole-only detection reached
     them), now accepted via the existing generic_hole_channel_occupancy -- no axle-specific occupancy
     function needed, since the axle hole's outer bore is geometrically identical to a peg hole's."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, part.title or pid, part.min, part.max,
                                                             part.holes, part.studs, part.tris, part.cylinders)
@@ -517,9 +519,8 @@ def test_real_alternating_hole_beam_stays_safely_rejected():
     """2391 'Technic Beam 7 with Alternating Holes' has 14 holes in a pattern the single-shared-axis channel
     model can't safely express -- must stay needs_occupancy=True (a safe non-acceptance), not get a wrong or
     guessed box. Confirms the axle-hole change didn't loosen the channel model's own safety checks."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, "2391.dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets("2391", part.title or "2391", part.min, part.max,
                                                             part.holes, part.studs, part.tris, part.cylinders)
@@ -544,9 +545,8 @@ def test_minifig_headwear_accepted_on_real_parts(pid):
     """3896 and 3901 are the exact ids characters.py's own Wizard/Male-hair templates already use
     successfully -- cross-validating the socket convention against already-proven data, not just the
     reject-pool samples (10048, 10051)."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(pid, part.title or pid, part.min, part.max,
                                                             part.holes, part.studs, part.tris, part.cylinders)
@@ -559,9 +559,8 @@ def test_minifig_headwear_accepted_on_real_parts(pid):
 def test_minifig_headwear_does_not_shadow_bar_grip():
     """11103 (a sword, real bar-grip part) must not be affected by the headwear check -- different title,
     different family, no interference between the two."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, "11103.dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets("11103", part.title or "11103", part.min, part.max,
                                                             part.holes, part.studs, part.tris, part.cylinders)
@@ -591,9 +590,8 @@ def test_snot_stud_synthetic_sideways_box():
 def test_snot_studs_on_real_minifig_armour(pid, expect_n):
     """11097: 2 of its 3 sideways studs pass (the third is individually below STUD_CELL_MIN_SOLID) -- partial
     credit, same under-approximation principle as the boat-hull fix. 15086: all 3 pass."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets = P.generic_stud_cell_occupancy(part.min, part.max, part.studs, part.tris)
     assert occ is not None and len(occ) == expect_n
@@ -710,9 +708,8 @@ def test_generic_tile_occupancy_synthetic_exclusions():
 ])
 def test_real_tile_parts_accepted(pid, expect_n_occ, expect_n_sock):
     """Real tile parts (including printed variants and base tiles) verified via resolve_part."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -731,9 +728,8 @@ def test_real_tile_parts_accepted(pid, expect_n_occ, expect_n_sock):
 ])
 def test_real_tile_feature_exclusions_stay_rejected(pid):
     """Feature-bearing tiles that cannot be safely under-approximated as plain rectangular/round tiles."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -789,9 +785,8 @@ def test_dispatcher_resolves_panel_flat_wall_parts_without_bounds(pid, expected_
 ])
 def test_real_resolved_flat_wall_panels(pid, expected_w, expected_sockets_count):
     """All 11 flat wall panel parts verified against real resolved geometry, bounds, and ray-cast solidity."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
 
     # Real geometry facts: flat wall panels have zero studs
@@ -827,9 +822,8 @@ def test_real_resolved_flat_wall_panels(pid, expected_w, expected_sockets_count)
 @pytest.mark.parametrize("pid", ["4865ap01", "23969p01"])
 def test_panel_flat_wall_patterned_parts(pid):
     """Patterned versions of flat wall panels resolve to valid occupancy via clean_id mapping."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
 
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
@@ -855,9 +849,8 @@ def test_panel_flat_wall_patterned_parts(pid):
 def test_corner_curved_wall_panels_with_studs_stay_safely_rejected(pid, reason):
     """Sub-family 2 parts must remain needs_occupancy=True: none can be safely approximated by
     stud_cell_occupancy_and_sockets without over-reporting collisions in empty air (spec section 3)."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
 
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
@@ -1002,9 +995,8 @@ def test_dispatcher_resolves_technic_gear_parts_with_exact_values():
 ])
 def test_real_resolved_technic_gear_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
     """Representative sample of 13 real Technic gear parts verified against real resolved geometry."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
 
     # Rotational symmetry in XY: dx == dy, centered at (0, 0)
@@ -1055,9 +1047,8 @@ def test_real_resolved_technic_gear_sample_matches_geometry_and_remains_within_b
 def test_deliberately_excluded_gear_subgroups_remain_rejected(pid):
     """Deliberately excluded gear sub-groups (linear racks, asymmetric extensions, quadrants, casings)
     must remain rejected (needs_occupancy=True)."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1075,9 +1066,8 @@ def test_duplo_wheel_bore_verification():
     """Verify that 12589 safely uses the standard 8.0 LDU bore exclusion (matching its 12588 axle
     shaft radius 8.0), whereas 15315 requires an oversized 10.0 LDU bore (matching 15316 axle) and
     thus properly remains excluded from standard WHEEL_BORE_HALF occupancy."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
 
     # 12589 is accepted
     p12589 = resolve_part(lib, colours, "12589.dat")
@@ -1131,9 +1121,8 @@ def test_technic_pin_overrides_synthetics(pid, expected_boxes, expected_sockets)
 @pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_PIN_OVERRIDES)
 def test_technic_pin_overrides_real_geometry(pid, expected_boxes, expected_sockets):
     """Real geometry test: verified against resolved LDraw meshes for bounds containment and ray-parity solidity."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1159,9 +1148,8 @@ def test_technic_pin_overrides_real_geometry(pid, expected_boxes, expected_socke
 def test_technic_remainder_honestly_rejected_parts(pid):
     """Technic remainder survey controls: parts where geometry or insertion physics forbids simple box occupancy
     must strictly remain needs_occupancy=True rather than being guessed."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1238,9 +1226,8 @@ def test_generic_torso_occupancy_synthetic_exclusions():
 ])
 def test_real_torso_parts_accepted(pid):
     """Real minifig torso parts (base, sticker, and printed variants) verified via resolve_part."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1261,9 +1248,8 @@ def test_real_torso_parts_accepted(pid):
 ])
 def test_real_torso_feature_exclusions_stay_rejected(pid):
     """Feature-bearing or novelty torsos that cannot safely use standard rectangular torso occupancy."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1371,9 +1357,8 @@ def test_generic_axle_occupancy_synthetic_exclusions():
 ])
 def test_real_plain_axle_parts_accepted(pid, expected_x_span):
     """Real plain Technic Axle parts verified via resolve_part."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1393,9 +1378,8 @@ def test_real_plain_axle_parts_accepted(pid, expected_x_span):
 ])
 def test_real_threaded_axle_parts_accepted(pid, expected_z_span):
     """Real threaded Technic Axle parts spanning along Z verified via resolve_part."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1418,9 +1402,8 @@ def test_real_threaded_axle_parts_accepted(pid, expected_z_span):
 ])
 def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
     """Real Technic Axle with Stop parts decomposed into shaft and flange boxes."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1450,15 +1433,98 @@ def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
 ])
 def test_real_axle_feature_exclusions_stay_rejected(pid):
     """Axle-named components with studs, friction pins, joiner tubes, or flexible cables must remain rejected."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
     )
     assert needs is True, f"{pid} should remain needs_occupancy=True"
     assert occ is None
+
+
+# Minifig Accessory Investigation tests (2026-09-28):
+# 1. Confirms the operator hypothesis that many sword, blade, tool, instrument, and blaster shapes ALREADY
+#    resolve cleanly with needs_occupancy: false via bar_grip_points() rod connector detection (361 parts
+#    accepted catalogue-wide, 417 total).
+# 2. Confirms that heterogeneous sub-families (swords with pommels/crossguards, shields, sculpted tools,
+#    cups/trophies, sacks/satchels, instruments, food items, misfiled animals, and stud parts failing
+#    boundary containment) safely and honestly remain needs_occupancy: true per spec section 3.
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,expected_bars", [
+    ("10050", 1),       # Minifig Sword Uruk-Hai
+    ("11439", 1),       # Minifig Sword with Jagged Edges
+    ("12885", 2),       # Minifig Paint Roller Brush Handle
+    ("11640", 1),       # Minifig Electric Guitar Classic
+    ("11103", 1),       # Minifig Sword Double Blade with Bar Holder
+    ("11250", 1),       # Minifig Tool Gavel
+    ("13571", 1),       # Minifig Tomahawk with Flat-Silver Blade
+    ("15391", 1),       # Minifig Gun Shooting Blaster
+])
+def test_real_minifig_accessory_bar_grip_accepted(pid, expected_bars):
+    """Representative Minifig Accessory parts with outer bar grips resolve cleanly via bar_grip_points."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should have needs_occupancy=False"
+    bars = P.bar_grip_points(part.min, part.max, part.cylinders, part.tris)
+    assert len(bars) == expected_bars, f"{pid} expected {expected_bars} bars, got {len(bars)}"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,reason", [
+    # Sub-family A: Swords/blades with pommels or crossguards (handle ends do not meet extremity threshold)
+    ("10053", "Curved sword with pommel knob; handle ends inside bounding box"),
+    ("2530", "Classic Cutlass; handle bounded by basket hilt and pommel; 85.5% open air"),
+    ("18031", "Longsword; 16 LDU handle between crossguard and pommel; 89% open air"),
+    ("11601", "Spiked blade; handle cylinder recessed between spikes"),
+    # Sub-family B: Shields (thin curved shells; handle in concave interior; 80-90% open air)
+    ("10049", "Broad shield; handle recessed at X=[-7.5, 7.5], bounds [-20, 20]; 90% open air"),
+    ("18836", "Triangular shield; handle in concave interior; 80.5% open air"),
+    ("10520", "Round bowed shield; handle in concave interior; 85% open air"),
+    ("2586", "Ovoid shield; handle recessed at X=[-7.5, 7.5]; 85% open air"),
+    # Sub-family C: Tools and utensils with recessed handles or sculpted heads
+    ("10830", "Magnifying glass; thick frame exceeds isolation threshold"),
+    ("2542", "Oar; 80 LDU handle between grip knob and blade"),
+    ("18920", "Scissors; loop handles"),
+    ("21700", "Sonic screwdriver; tool shaft with end details"),
+    # Sub-family D: Cups, goblets, and trophies (hollow drinking vessels)
+    ("10172", "Trophy cup 2.4L; hollow central cup with loop handles; 76% open air"),
+    ("3899", "Minifig cup; hollow drinking cavity with loop handle; 79% open air"),
+    ("2343", "Minifig goblet; hollow cup bowl with stem; 76.5% open air"),
+    # Sub-family E: Sacks, bags, and body-worn accessories (wrap around minifig torso)
+    ("10169", "Minifig sack with hand grab; organic hollow bag"),
+    ("61976", "Minifig satchel; shoulder strap wrapping torso; 93% open air"),
+    # Sub-family F: Musical instruments (curved hollow tubes)
+    ("13808", "Minifig saxophone; curved non-planar hollow brass; 84% open air"),
+    # Sub-family G: Food items (organic sculpted shapes with loops and curves)
+    ("10170", "Food pretzel; open loops with concavities; 74.5% open air"),
+    ("33125", "Food croissant; curved crescent profile; 68% open air"),
+    ("33183", "Food carrot top; organic leafy geometry; 72% open air"),
+    ("33051", "Food apple; sculpted fruit silhouette; 74.5% open air"),
+    # Sub-family H: Misfiled animal figures (investigated and rejected in ANIMAL_INVESTIGATION.md)
+    ("13665", "Animal Bird Crow; misfiled into Minifig Accessory; hollow shell figure"),
+    # Sub-family I: Stud-bearing accessories failing bounds containment
+    ("30089a", "Snapshot camera; candidate 20x20 stud cell exceeds 22 LDU height bounds"),
+    ("3962a", "Minifig radio; candidate 20x20 stud cell overflows X bounds by 1 LDU"),
+    ("64567a", "Lightsaber hilt; candidate 20x20 stud cell exceeds 16 LDU hilt diameter"),
+    ("30340", "Life ring; torus with offset stud exceeding body bounds"),
+    ("102498", "Tool wand; 20x20 stud cell exceeds narrow wand tip bounds"),
+])
+def test_real_minifig_accessory_subfamilies_stay_safely_rejected(pid, reason):
+    """Representative parts from all 9 rejected sub-families must safely remain needs_occupancy=True."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib_colours()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} ({reason}) should remain needs_occupancy=True"
+    assert occ is None
+
 
 
 

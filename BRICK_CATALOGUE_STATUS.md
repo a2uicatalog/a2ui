@@ -1032,3 +1032,38 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 - **Still open**: 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved -- no equivalent
   already-cross-validated evidence was found for these in a quick check; they'd need the same real-set
   search this pair's original derivation (or tonight's 2429/2430 search) used.
+
+
+## 2026-09-28: Minifig Accessory Category Investigation (agent, `agent/dispatch-minifig-accessory-1790594248`)
+
+- **Task**: Self-selected backlog target per operator steer: `minifig-accessory` (Minifig Accessory, 820 parts in LDraw `0 !CATEGORY Minifig Accessory`).
+- **Hypothesis Tested**: Operator hypothesis that many sword, blade, tool, and instrument shapes already resolve cleanly via the existing `bar_grip_points()` rod-connector detection without new occupancy code.
+- **Operator Hypothesis CONFIRMED**:
+  - Exactly **361 Minifig Accessory parts** (44.0% of the entire 820-part category) ALREADY resolve cleanly with `needs_occupancy: false` via `bar_grip_points()` in `scripts/ldraw/parts.py`.
+  - Together with 99 parts accepted via `generic_stud_cell_occupancy()` and 9 parts via `minifig_headwear_socket()`, a total of **417 parts (50.9%)** of the category are already accepted.
+  - Operator-cited sample parts confirmed passing: `10050` (Uruk-Hai sword, 1 bar), `11439` (Jagged sword + 4 printed variants, 1 bar), `12885` (paint roller handle, 2 bars), `11640` (Electric guitar + 2 printed variants, 1 bar), `11103` (double blade, 1 bar), `11250` (gavel, 1 bar), `13571` (tomahawk, 1 bar), `15391` (blaster, 1 bar).
+- **Category-Wide Occupancy Rule Strictly REJECTED**:
+  - The remaining **403 parts** (260 in `survey_rejects.py` uncurated candidates) are strongly heterogeneous and **CANNOT be safely given an axis-aligned box occupancy family**.
+  - Under spec §3 ("miss a real collision on the dropped area, never report a false one"), forcing box occupancy on these parts would generate severe false collisions:
+    1. **Shields (55 parts, e.g. `10049`, `18836`, `10520`, `2586`)**: Thin curved shells (80–90% open air). Handles sit recessed on the concave inside ($X \in [-7.5, 7.5]$ within $[-20, 20]$ bounds). Any box occupancy would collide with the minifig hand, forearm, and torso holding it.
+    2. **Sculpted Weapons & Tools (67 parts, e.g. `2530` Cutlass, `18031` Longsword, `10053` Curved Sword, `2542` Oar, `21700` Sonic Screwdriver)**: Handheld sculpted objects (80–95% open air). Cylinder ends sit between pommel knobs and crossguards, failing `BAR_EXTREMITY_TOL = 3.0`. Box occupancy would claim phantom plastic over empty air around blades and hilts.
+    3. **Cups, Mugs, Goblets, Trophies (35 parts, e.g. `10172` Trophy, `3899` Cup, `2343` Goblet)**: Hollow drinking vessels (15–24% solid fraction) with loop handles.
+    4. **Sacks, Bags, Satchels (20 parts, e.g. `10169` Sack, `61976` Satchel)**: Body-worn accessories (satchel 7% solid) wrapping around the figure torso.
+    5. **Musical Instruments (12 parts, e.g. `13808` Saxophone)**: Curved hollow brass tubes (16% solid).
+    6. **Food Items (19 parts, e.g. `10170` Pretzel, `33125` Croissant)**: Organic shapes with loops and concavities (25–32% solid).
+    7. **Misfiled Creatures (38 parts, e.g. `13665` Bird Crow, `1613` Antlers)**: Misc/animal figures already rejected in `ANIMAL_INVESTIGATION.md`.
+    8. **Stud-Bearing Accessories Failing Containment (51 parts, e.g. `30089a` Camera, `3962a` Radio, `64567a` Lightsaber Hilt, `30340` Life Ring, `102498` Wand)**: 20x20 LDU stud cells exceed part body dimensions (e.g. lightsaber hilt 16 LDU diameter, camera 22 LDU height); correctly rejected by `_boxes_within_bounds()` to avoid protruding false collisions into open air.
+- **Catalogue Statistics (`scripts/ldraw/survey_rejects.py`)**:
+  - Total Minifig Accessory parts in LDraw library: **820**
+  - Accepted catalogue-wide: **417** (50.9%)
+  - Uncurated candidates scanned: 531 (271 accepted, 260 rejected)
+  - Remaining rejected parts: **403** catalogue-wide (safely kept as `needs_occupancy: true`)
+- **Documentation**: Detailed forensic report in `scripts/ldraw/MINIFIG_ACCESSORY_INVESTIGATION.md`.
+- **Verification**:
+  - Added 36 new unit tests to `tests/test_generic_stud_occupancy.py`:
+    - `test_real_minifig_accessory_bar_grip_accepted`: 8 real parts verifying bar grip points and acceptance.
+    - `test_real_minifig_accessory_subfamilies_stay_safely_rejected`: 28 real negative control parts spanning all 9 rejected sub-families.
+  - Refactored `Library`/`ColourTable` instantiation in `tests/test_generic_stud_occupancy.py` to use a module-level cached helper `_get_shared_lib_colours()`, reducing test-suite memory footprint from 1.7GB+ down to <50MB and execution time from 100s+ to 22s.
+  - Test suite pass count: **306 passed** in `tests/test_generic_stud_occupancy.py` (up from 270, 36 new tests added, 0 failures).
+  - Official gate test suite: **347 passed, 1 deselected** in 64.9s.
+
