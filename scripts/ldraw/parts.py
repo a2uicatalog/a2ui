@@ -35,6 +35,24 @@ def box(x0, x1, y0, y1, z0, z1):
     return (x0, x1, y0, y1, z0, z1)
 
 
+def obb(center, extents, axes):
+    """Oriented Bounding Box (OBB) representation for curved/sloped shells per OBB_DECOMPOSITION_INVESTIGATION.md.
+    center: (cx, cy, cz) local midpoint
+    extents: (ex, ey, ez) local half-dimensions
+    axes: ((u0x, u0y, u0z), (u1x, u1y, u1z), (u2x, u2y, u2z)) local orthonormal frame
+    Returns a 15-tuple for compact JSON serialization and zero-parse-overhead SAT compatibility."""
+    cx, cy, cz = center
+    ex, ey, ez = extents
+    (u0x, u0y, u0z), (u1x, u1y, u1z), (u2x, u2y, u2z) = axes
+    return (
+        round(cx, 2), round(cy, 2), round(cz, 2),
+        round(ex, 2), round(ey, 2), round(ez, 2),
+        round(u0x, 4), round(u0y, 4), round(u0z, 4),
+        round(u1x, 4), round(u1y, 4), round(u1z, 4),
+        round(u2x, 4), round(u2y, 4), round(u2z, 4),
+    )
+
+
 def generated_occupancy(title):
     dims = classify_box(title)
     if dims is None:
@@ -992,6 +1010,30 @@ HINGE_CONNECTORS = {
     # Z=0.0, axis along local X -- identical axis convention to 30083, confirmed by direct resolve_part()
     # sampling. Same not-yet-curated caveat as 30083.
     "30161": {"pos": (0.0, 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "dome_hinge"},
+    # Classic 1x4 plate hinge (2429 Base / 2430 Top) -- real barrel/cradle knuckle, pivot along local Y.
+    # Evidence found 2026-09-28 sitting unconnected in tests/test_brick_parts_validate.py's own
+    # M_HINGE_29 = (-0.868,0,0.496, 0,1,0, -0.496,0,-0.868): that matrix leaves the Y-axis unchanged (row/
+    # column 2 is exactly (0,1,0)), the algebraic signature of a pure Y-axis rotation, and the test's own
+    # comment cites a REAL official set ("In 8880-1 Super Car, hinge 2429 (Base) and 2430 (Top) are mated
+    # at (0, 0, 0)") -- both halves placed at the same world origin with 2430 rotated M_HINGE_29 around
+    # it, i.e. each part's own local origin already sits on the real physical pivot line. Real, already
+    # cross-validated against a real set by the earlier OBB/SAT task; this entry only had to be connected
+    # to the hinge registry, not re-derived. Bounds confirmed fresh via resolve_part(): 2429 spans
+    # X in [-40,8], 2430 X in [-8,40], both Y in [0,8] Z in [-8,20] -- the interlocking knuckle barrel
+    # sits centred near X=0, consistent with a Y-axis pivot line through the shared origin.
+    "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    # Brick hinge (3831 Base / 3830 Top) -- real single radius-4.0 cylinder per half, confirmed fresh via
+    # resolve_part(): 3830 at (20.0,24.0,10.0) axis (0,-20,0); 3831 at (-20.0,24.0,10.0) axis (0,-20,0) --
+    # identical Y=24/Z=10 between halves, axis along Y, differing only in X (each half's own local frame),
+    # the EXACT SAME signature as 2429/2430 above (Y=8, Z=10 there) and consistent with 3937/3938 (X-axis)
+    # and 4275b/4276b (Z-axis): in all 3 of those, independently, the single clean radius-4.0 cylinder's
+    # off-axis coordinates matched exactly between mating halves and were confirmed correct against a real
+    # official set. This entry is added by that now-3-times-confirmed pattern, NOT by its own separate
+    # real-set citation the way 2429/2430 had one already sitting in the test suite -- pos is each half's
+    # own local origin (0,0,0), matching the same "shared origin, pure rotation" placement convention.
+    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
+    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "knuckle"},
 }
 
 
@@ -1029,16 +1071,28 @@ def minifig_headwear_socket(title):
 
 
 def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
-    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes. Skipped (treated
-    as passing) when bounds aren't supplied, matching this module's existing "bounds/studs/tris are optional"
-    contract for callers that don't have real geometry (e.g. unit tests exercising one family in isolation)."""
+    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes.
+    Supports both standard 6-tuple AABBs and 15-tuple OBBs (per OBB_DECOMPOSITION_INVESTIGATION.md).
+    Skipped (treated as passing) when bounds aren't supplied, matching this module's existing
+    "bounds/studs/tris are optional" contract for callers that don't have real geometry."""
     if bounds_min is None or bounds_max is None:
         return True
     lo = [bounds_min[i] - tol for i in range(3)]
     hi = [bounds_max[i] + tol for i in range(3)]
-    for x0, x1, y0, y1, z0, z1 in occ:
-        if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
-            return False
+    for b in occ:
+        if len(b) == 6:
+            x0, x1, y0, y1, z0, z1 = b
+            if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
+                return False
+        elif len(b) == 15:
+            cx, cy, cz = b[0], b[1], b[2]
+            ex, ey, ez = b[3], b[4], b[5]
+            u0, u1, u2 = (b[6], b[7], b[8]), (b[9], b[10], b[11]), (b[12], b[13], b[14])
+            for k in range(3):
+                rk = ex * abs(u0[k]) + ey * abs(u1[k]) + ez * abs(u2[k])
+                ck = (cx, cy, cz)[k]
+                if ck - rk < lo[k] or ck + rk > hi[k]:
+                    return False
     return True
 
 

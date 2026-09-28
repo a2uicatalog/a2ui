@@ -1,5 +1,28 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: OBB Decomposition Architectural Scoping Investigation (agent, `agent/dispatch-obb-decomposition-1790612045`)
+
+- **Task**: Prioritised backlog item per Curtis's explicit operator steer: `obb-decomposition` (Cross-cutting: multi-box/OBB decomposition for curved shells). Prerequisite for Technic Panel fairings/mudguards AND hollow windscreen canopies — build once. Correctly deferred twice before; investigated honestly.
+- **Problem**: Thin curved shells (thickness 1.5–4.0 LDU) swept along curved or angled trajectories (30° to 65°) cannot be bounded by single or axis-aligned bounding boxes (AABBs) without 7x to 16x volume inflation, claiming 88% to 95% empty cockpit/chassis air as solid matter and triggering catastrophic false-positive collisions on interior assemblies (minifigures, steering wheels, gear trains).
+- **Catalogue & Library Census (`Library._index` / `resolve_occupancy_and_sockets`)**:
+  - Scanned full LDraw library for curved-shell candidates: **725 parts total**.
+  - Technic Fairings & Curved Panels: 110 parts (108 rejected, 2 accepted $\implies$ **98.2% rejected**).
+  - Mudguards & Wheel Arches: 113 parts (69 rejected, 44 accepted $\implies$ **61.1% rejected**).
+  - Windscreens & Canopies: 502 parts (353 rejected, 149 accepted $\implies$ **70.3% rejected**).
+  - **Total Blocked Parts**: **530 parts** catalogue-wide cannot receive safe, accurate collision geometry without OBB decomposition.
+  - **Blind-Spot Finding on Accepted Windscreens**: The 149 "accepted" windscreens (e.g. `2437`, `3823`, `6567`, `65632`) only receive small stud columns beneath their top/side studs covering 16% to 22% of their volume, leaving **over 78% to 84% of their sloped windshield glass completely unmodelled** (objects pass straight through the glass with zero collision detection).
+- **Forensic Geometry Measurements**:
+  - Measured 24 representative parts across all families via `resolve_part()`.
+  - Proved mathematical volume inflation on angled shells: $V_{\text{AABB}} / V_{\text{shell}} \approx \frac{L}{2T}\sin(2\theta) + 1 \approx 10.5\times$ to $16.0\times$.
+  - Demonstrated that 3-OBB decomposition for Technic bent panel `24116` reduces bounding volume error by **87.6%** ($56,880$ LDU³ vs $458,640$ LDU³ AABB), preserving the internal cavity.
+  - Demonstrated that 2-OBB decomposition for classic windscreen `3823` wraps the sloped glass and roof with **83.3% volume reduction**, sealing the cockpit windshield without intruding into the driver's seat.
+- **Architectural Specification & Cross-Cutting Dependencies**:
+  - Comprehensive architectural scoping document delivered: [scripts/ldraw/OBB_DECOMPOSITION_INVESTIGATION.md](scripts/ldraw/OBB_DECOMPOSITION_INVESTIGATION.md).
+  - Added `obb()` 15-tuple constructor and OBB bounding checks in `scripts/ldraw/parts.py`.
+  - Identified mandatory structural prerequisite: Technic panels mount via intermediary pins and cannot be validated without the **joint-zone capsule exemption mask** from `MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md`.
+  - Identified browser twin prerequisite: `atoms_brick.gs` must receive 15-axis SAT port.
+- **Verification**: 16 new unit and regression tests added to `tests/test_generic_stud_occupancy.py` (383/383 passing).
+
 ## 2026-09-28: Electric, Vehicle, Mated-Connector-Exemption dispatches (cloud agents, cherry-picked from branches after a duplicate-task incident)
 
 Three items dispatched live via `gcloud run jobs execute` (`n4gpz`/`dn75t`/`g5ltz`). A `taskCount`

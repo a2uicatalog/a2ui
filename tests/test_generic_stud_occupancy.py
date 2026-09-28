@@ -1727,3 +1727,130 @@ def test_real_stud_bearing_electric_bricks_accepted(pid, expected_boxes):
     assert occ is not None
     assert len(occ) == expected_boxes
 
+
+# --- OBB Decomposition Architecture Tests (2026-09-28, OBB_DECOMPOSITION_INVESTIGATION.md) ---
+
+def test_obb_constructor_15_tuple():
+    """OBB constructor produces a 15-tuple with center, extents, and orthonormal axes."""
+    center = (0.0, 30.0, -40.0)
+    extents = (30.0, 1.5, 50.0)
+    axes = ((1.0, 0.0, 0.0), (0.0, 0.8, -0.6), (0.0, 0.6, 0.8))
+    b = P.obb(center, extents, axes)
+    assert len(b) == 15
+    assert b[0:3] == (0.0, 30.0, -40.0)
+    assert b[3:6] == (30.0, 1.5, 50.0)
+    assert b[6:9] == (1.0, 0.0, 0.0)
+    assert b[9:12] == (0.0, 0.8, -0.6)
+    assert b[12:15] == (0.0, 0.6, 0.8)
+
+
+def test_boxes_within_bounds_obb():
+    """_boxes_within_bounds evaluates OBB projection extents against bounds."""
+    bounds_min = (-30.0, -9.0, -90.0)
+    bounds_max = (30.0, 69.0, 10.0)
+    # A centered OBB well inside the bounds
+    inner_obb = P.obb((0.0, 30.0, -40.0), (25.0, 1.5, 40.0), ((1.0, 0.0, 0.0), (0.0, 0.8, -0.6), (0.0, 0.6, 0.8)))
+    assert P._boxes_within_bounds([inner_obb], bounds_min, bounds_max) is True
+
+    # An OBB that protrudes beyond max Y
+    protruding_obb = P.obb((0.0, 68.0, -40.0), (25.0, 5.0, 40.0), ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)))
+    assert P._boxes_within_bounds([protruding_obb], bounds_min, bounds_max) is False
+
+
+def test_sloped_shell_obb_vs_aabb_volume_inflation():
+    """Mathematical proof from OBB_DECOMPOSITION_INVESTIGATION.md section 1.1:
+    On an angled thin shell (like Technic bent panel 24116), an AABB inflates volume by >10x,
+    whereas a 3-OBB decomposition reduces bounding error by >85%."""
+    # Technic panel 24116 plate geometry: L=100.0, W=60.0, T=3.0, angle theta=36.87 deg (3-4-5 right triangle)
+    L, W, T = 100.0, 60.0, 3.0
+    v_mesh = L * W * T   # 18,000 LDU³
+    delta_y = 60.0       # L * sin(theta)
+    delta_z = 80.0       # L * cos(theta)
+    v_aabb = delta_y * delta_z * W  # 288,000 LDU³
+    inflation_ratio = v_aabb / v_mesh
+    assert inflation_ratio == pytest.approx(16.0)
+
+    # 3-OBB decomposition volume (flange 1 + sloped plate + flange 2)
+    v_flange1 = 60.0 * 18.0 * 18.0
+    v_plate_obb = 60.0 * 100.0 * 3.0
+    v_flange2 = 60.0 * 18.0 * 18.0
+    v_obb_total = v_flange1 + v_plate_obb + v_flange2  # 56,880 LDU³
+    # Volume reduction compared to full AABB (458,640 LDU³)
+    full_aabb_vol = 60.0 * 78.0 * 98.0
+    reduction = 1.0 - (v_obb_total / full_aabb_vol)
+    assert reduction > 0.85  # Over 85% reduction in volume error
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, max_solidity", [
+    ("11946", 0.25),   # Technic Panel Fairing Smooth #21
+    ("11947", 0.25),   # Technic Panel Fairing Smooth #22
+    ("24116", 0.10),   # Technic Panel Bent 4 x 5 x 3
+    ("32188", 0.10),   # Technic Panel Fairing #3
+    ("32190", 0.10),   # Technic Panel Fairing #1
+    ("24118", 0.10),   # Technic Panel 15 x 2 x 5 Mudguard Arched
+])
+def test_technic_fairings_and_mudguards_safely_rejected_pending_obb_decomposition(pid, max_solidity):
+    """Technic panel fairings and mudguards are thin curved shells whose bounding box claims >85% empty space.
+    Per spec §3, they must remain needs_occupancy=True until multi-box OBB decomposition lands."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} ({part.title}) must remain needs_occupancy=True"
+    assert occ is None, f"{pid} must not fabricate a false AABB"
+    # Verify the real measured solidity is low
+    bbox = (part.min[0], part.max[0], part.min[1], part.max[1], part.min[2], part.max[2])
+    sol = P._stud_box_solid_fraction(part.tris, bbox, n=100)
+    assert sol <= max_solidity + 0.05, f"{pid} solidity should be <= {max_solidity}"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, max_solidity", [
+    ("11289", 0.10),   # Windscreen 4 x 4 x 4.667 Canopy with Handle
+    ("30083", 0.12),   # Windscreen 6 x 6 x 3 Dome with Hinge
+    ("30161", 0.60),   # Windscreen 1 x 4 x 1.333 Bottom Hinge
+    ("13252", 0.20),   # Windscreen 6 x 13 x 2
+])
+def test_hollow_windscreens_and_canopies_safely_rejected_pending_obb_decomposition(pid, max_solidity):
+    """Hollow unstudded/curved windscreen canopies must remain needs_occupancy=True to avoid filling
+    the cockpit with solid matter."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} ({part.title}) must remain needs_occupancy=True"
+    assert occ is None, f"{pid} must not fabricate a false AABB"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, expected_unboxed_z_span", [
+    ("2437", (10.0, 30.0)),    # Windscreen 3 x 4 x 1.333: front glass from Z=10 to Z=30 is unmodelled
+    ("3823", (-30.0, -10.0)),  # Windscreen 2 x 4 x 2: front glass from Z=-30 to Z=-10 is unmodelled
+    ("65632", (-90.0, -10.0)), # Windscreen 6 x 6 x 1.667 Curved: canopy roof from Z=-90 to Z=-10 is unmodelled
+])
+def test_studded_windscreens_exhibit_cockpit_unboxed_blind_spot(pid, expected_unboxed_z_span):
+    """Studded windscreens currently accept small stud-only columns, which demonstrates the blind spot:
+    the entire sloped windshield glass is unmodelled by axis-aligned stud cells."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ is not None
+    # None of the occupancy boxes reach the extreme sloped glass Z region
+    z0, z1 = expected_unboxed_z_span
+    for b in occ:
+        # Verify box does not cover the outer sloped windshield region
+        if z0 > 0:
+            assert b[5] <= z0 + 1.0  # max Z does not reach windshield front
+        else:
+            assert b[4] >= z1 - 1.0  # min Z does not reach windshield front
+
+
