@@ -1177,6 +1177,97 @@ def generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title=""):
     return None, []
 
 
+def generic_axle_occupancy(bounds_min, bounds_max, studs=None, holes=None, cylinders=None, tris=None, title=""):
+    """Generic geometry-proven occupancy for Technic Axle parts (2026-09-28).
+
+    Plain axles are solid '+' cross-section rods bounded within a +-6.0 LDU square
+    (matching the standard Technic axle-hole bore radius r = 6.0 LDU).
+    - Ray-parity solidity proof: the 12x12 LDU bounding box has solid fraction
+      ~0.51 - 0.58 across all lengths (3704 Axle 2 through 50450 Axle 32), well
+      above STUD_CELL_MIN_SOLID = 0.15.
+    - No central bore: unlike wheels/gears, axles are solid rods along their central
+      axis (y=0, z=0), confirmed solid by ray-cast point testing.
+    - Axis orientation: standard axles span along X with cross-section in Y and Z
+      ([-6.0, 6.0] x [-6.0, 6.0]); threaded axles (e.g. 3705c01, 3737c01) span
+      along Z with cross-section in X and Y ([-6.0, 6.0] x [-6.0, 6.0]).
+    - 'with Stop' variants (e.g. 24316, 87083, 15462, 55013, 32209): feature a wider
+      flange (+-8.0 LDU radius cylinder, 2.0 LDU thick). A uniform full-width box of
+      +-8.0 LDU along the whole length would over-claim empty space around the thin
+      shaft (radius 6.0 LDU), which would cause false-positive collision reports against
+      inserted beams/gears, violating spec section 3. Therefore, with-stop axles are
+      decomposed into distinct boxes:
+      1. Shaft box(es) bounded within +-6.0 LDU square (solid fraction ~0.51 - 0.55).
+      2. Flange box(es) bounded within +-8.0 LDU square spanning only the flange extent
+         (solid fraction ~0.75 for end stops, ~0.33 for interior stops).
+      All boxes must individually clear STUD_CELL_MIN_SOLID = 0.15.
+    - Sockets: axles carry 0 bottom anti-stud sockets, returning sockets = [] (matching
+      wheels, tyres, dishes, and torsos).
+    - Connectivity gap (spec section 2): Plain axles currently register zero connectors
+      (no stud, hole, or pin connector), so they participate in collision/overlap testing
+      via occupancy but do not yet participate in the graph anchoring checks of
+      brick_parts_validate.py. Documented as an explicit follow-up.
+    - Exclusions: parts with studs (e.g. 6587 Axle with Stud), holes (e.g. 27940 Axle
+      with Hole), pin hybrids (e.g. 11214, 18651, 43093), flexible cables (e.g. 32580,
+      72892), joiners/bushes/nuts/towballs/connectors.
+    """
+    if bounds_min is None or bounds_max is None or not tris:
+        return None, []
+
+    # Axles have zero studs and zero holes
+    if studs or holes:
+        return None, []
+
+    tl = (title or "").strip().lower()
+    if tl:
+        t_clean = re.sub(r"^[~=_\s|0-9]*", "", tl).strip()
+        if not re.search(r"\baxle\b", t_clean):
+            return None, []
+        if re.search(r"\b(pin|pins|flexible|joiner|bush|nut|towball|connector|hub|wheel|spring|hole|holes|stud|studs)\b", t_clean):
+            return None, []
+
+    x0, x1 = bounds_min[0], bounds_max[0]
+    y0, y1 = bounds_min[1], bounds_max[1]
+    z0, z1 = bounds_min[2], bounds_max[2]
+    dx, dy, dz = x1 - x0, y1 - y0, z1 - z0
+
+    if dx >= 15.0 and dy <= 16.5 and dz <= 16.5:
+        # Standard X-axis axle
+        if abs(y0 - (-6.0)) <= 0.6 and abs(y1 - 6.0) <= 0.6 and abs(z0 - (-6.0)) <= 0.6 and abs(z1 - 6.0) <= 0.6:
+            cand = box(round(x0, 2), round(x1, 2), -6.0, 6.0, -6.0, 6.0)
+            if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+                return [cand], []
+        elif abs(y0 - (-8.0)) <= 0.6 and abs(y1 - 8.0) <= 0.6 and abs(z0 - (-8.0)) <= 0.6 and abs(z1 - 8.0) <= 0.6:
+            # Axle with stop flange (+-8.0 in Y/Z)
+            r8_cyls = [c for c in (cylinders or []) if abs(c[2] - 8.0) <= 0.6 and abs(c[1][0]) > 0.5]
+            if len(r8_cyls) == 1:
+                c = r8_cyls[0]
+                fx0 = min(c[0][0], c[0][0] + c[1][0])
+                fx1 = max(c[0][0], c[0][0] + c[1][0])
+                boxes = []
+                if fx0 - x0 > 1.0:
+                    boxes.append(box(round(x0, 2), round(fx0, 2), -6.0, 6.0, -6.0, 6.0))
+                boxes.append(box(round(fx0, 2), round(fx1, 2), -8.0, 8.0, -8.0, 8.0))
+                if x1 - fx1 > 1.0:
+                    boxes.append(box(round(fx1, 2), round(x1, 2), -6.0, 6.0, -6.0, 6.0))
+                if all(_stud_box_solid_fraction(tris, b) >= STUD_CELL_MIN_SOLID for b in boxes):
+                    return boxes, []
+            elif not cylinders and x1 - 2.0 > x0:
+                # Synthetic without explicit cylinders: standard 2 LDU end stop flange at x1-2.0..x1
+                b_shaft = box(round(x0, 2), round(x1 - 2.0, 2), -6.0, 6.0, -6.0, 6.0)
+                b_flange = box(round(x1 - 2.0, 2), round(x1, 2), -8.0, 8.0, -8.0, 8.0)
+                if (_stud_box_solid_fraction(tris, b_shaft) >= STUD_CELL_MIN_SOLID and
+                        _stud_box_solid_fraction(tris, b_flange) >= STUD_CELL_MIN_SOLID):
+                    return [b_shaft, b_flange], []
+    elif dz >= 15.0 and dx <= 12.5 and dy <= 12.5:
+        # Z-axis threaded axle (+-6.0 in X and Y)
+        if abs(x0 - (-6.0)) <= 0.6 and abs(x1 - 6.0) <= 0.6 and abs(y0 - (-6.0)) <= 0.6 and abs(y1 - 6.0) <= 0.6:
+            cand = box(-6.0, 6.0, -6.0, 6.0, round(z0, 2), round(z1, 2))
+            if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+                return [cand], []
+
+    return None, []
+
+
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
                                    tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
@@ -1264,6 +1355,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         if gen_occ:
             return verified(gen_occ, gen_sockets)
         gen_occ, gen_sockets = generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
+        gen_occ, gen_sockets = generic_axle_occupancy(bounds_min, bounds_max, studs, holes, cylinders, tris, title)
         if gen_occ:
             return verified(gen_occ, gen_sockets)
         return (None, [], True)

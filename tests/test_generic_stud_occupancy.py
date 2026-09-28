@@ -1272,5 +1272,194 @@ def test_real_torso_feature_exclusions_stay_rejected(pid):
     assert occ is None
 
 
+# -----------------------------------------------------------------------------
+# Technic Axle generic occupancy (2026-09-28, agent/technic-axle-occupancy)
+# -----------------------------------------------------------------------------
+
+def test_generic_axle_occupancy_synthetic_plain():
+    """Synthetic plain Technic Axle: [-29.5, 29.5, -6.0, 6.0, -6.0, 6.0] with solid triangles."""
+    tris = _box_tris(-29.5, 29.5, -6.0, 6.0, -6.0, 6.0)
+    occ, sockets = P.generic_axle_occupancy((-29.5, -6.0, -6.0), (29.5, 6.0, 6.0), [], [], [], tris, "Technic Axle  3")
+    assert occ == [(-29.5, 29.5, -6.0, 6.0, -6.0, 6.0)]
+    assert sockets == []
+
+
+def test_generic_axle_occupancy_synthetic_with_stop():
+    """Synthetic Axle with Stop: shaft (-29.5..28.0 at +-6) and flange (28.0..30.0 at +-8)."""
+    tris_shaft = _box_tris(-29.5, 28.0, -6.0, 6.0, -6.0, 6.0)
+    tris_flange = _box_tris(28.0, 30.0, -8.0, 8.0, -8.0, 8.0)
+    tris = tris_shaft + tris_flange
+    cyl = [((30.0, 0.0, 0.0), (-2.0, 0.0, 0.0), 8.0)]
+    occ, sockets = P.generic_axle_occupancy(
+        (-29.5, -8.0, -8.0), (30.0, 8.0, 8.0), [], [], cyl, tris, "Technic Axle  3 with Stop"
+    )
+    assert occ == [
+        (-29.5, 28.0, -6.0, 6.0, -6.0, 6.0),
+        (28.0, 30.0, -8.0, 8.0, -8.0, 8.0),
+    ]
+    assert sockets == []
+
+
+def test_generic_axle_occupancy_synthetic_threaded():
+    """Synthetic Z-axis threaded axle: [-6.0, 6.0, -6.0, 6.0, -40.0, 40.0]."""
+    tris = _box_tris(-6.0, 6.0, -6.0, 6.0, -40.0, 40.0)
+    occ, sockets = P.generic_axle_occupancy((-6.0, -6.0, -40.0), (6.0, 6.0, 40.0), [], [], [], tris, "Technic Axle  4 Threaded")
+    assert occ == [(-6.0, 6.0, -6.0, 6.0, -40.0, 40.0)]
+    assert sockets == []
+
+
+def test_generic_axle_occupancy_synthetic_exclusions():
+    """Exclusions required by spec §3 (under-approximate, never guess)."""
+    tris = _box_tris(-29.5, 29.5, -6.0, 6.0, -6.0, 6.0)
+
+    # Top studs must not enter axle path
+    top_studs = [((0.0, 0.0, 0.0), (0.0, -1.0, 0.0))]
+    assert P.generic_axle_occupancy((-29.5, -6.0, -6.0), (29.5, 6.0, 6.0), top_studs, [], [], tris, "Technic Axle 3") == (None, [])
+
+    # Holes must not enter axle path
+    holes = [((0.0, 0.0, 0.0), (0.0, 0.0, 1.0))]
+    assert P.generic_axle_occupancy((-29.5, -6.0, -6.0), (29.5, 6.0, 6.0), [], holes, [], tris, "Technic Axle 3") == (None, [])
+
+    # Axle-pin hybrids
+    assert P.generic_axle_occupancy((-20.0, -8.0, -8.0), (19.5, 8.0, 8.0), [], [], [], tris, "Technic Axle Pin with Friction") == (None, [])
+
+    # Axle joiners
+    assert P.generic_axle_occupancy((-10.0, -10.0, -20.0), (10.0, 10.0, 20.0), [], [], [], tris, "Technic Axle Joiner") == (None, [])
+
+    # Flexible axles
+    assert P.generic_axle_occupancy((-70.0, -6.0, -6.0), (70.0, 6.0, 6.0), [], [], [], tris, "Technic Axle Flexible  7") == (None, [])
+
+    # Non-axle title
+    assert P.generic_axle_occupancy((-29.5, -6.0, -6.0), (29.5, 6.0, 6.0), [], [], [], tris, "Brick 2 x 4") == (None, [])
+
+    # Non-matching dimensions (e.g. wrong cross section)
+    assert P.generic_axle_occupancy((-29.5, -10.0, -10.0), (29.5, 10.0, 10.0), [], [], [], tris, "Technic Axle 3") == (None, [])
+
+    # Too short (< 15 LDU)
+    assert P.generic_axle_occupancy((-5.0, -6.0, -6.0), (5.0, 6.0, 6.0), [], [], [], tris, "Technic Axle") == (None, [])
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, expected_x_span", [
+    ("3704", (-19.5, 19.5)),       # Axle 2
+    ("32062", (-19.5, 19.5)),      # Axle 2 Notched
+    ("4109810", (-19.5, 19.5)),    # Axle 2 Notched Black Obsolete
+    ("4519", (-29.5, 29.5)),       # Axle 3
+    ("4211815", (-29.5, 29.5)),    # Axle 3 Obsolete
+    ("3705", (-39.5, 39.5)),       # Axle 4
+    ("370526", (-39.5, 39.5)),     # Axle 4 Black Obsolete
+    ("99008", (-39.5, 39.5)),      # Axle 4 with Middle Cylindrical Stop
+    ("32073", (-49.5, 49.5)),      # Axle 5
+    ("3706", (-59.5, 59.5)),       # Axle 6
+    ("370626", (-59.5, 59.5)),     # Axle 6 Black Obsolete
+    ("44294", (-69.5, 69.5)),      # Axle 7
+    ("3707", (-79.5, 79.5)),       # Axle 8
+    ("370726", (-79.5, 79.5)),     # Axle 8 Black Obsolete
+    ("60485", (-89.5, 89.5)),      # Axle 9
+    ("3737", (-99.5, 99.5)),       # Axle 10
+    ("23948", (-109.5, 109.5)),    # Axle 11
+    ("3708", (-119.5, 119.5)),     # Axle 12
+    ("370826", (-119.5, 119.5)),   # Axle 12 Black Obsolete
+    ("50451", (-159.5, 159.5)),    # Axle 16
+    ("69732", (-159.5, 159.5)),    # =Technic Axle 16
+    ("50450", (-319.5, 319.5)),    # Axle 32
+    ("u1208a", (-21.5, 20.0)),     # Axle Adapter Metal Short
+    ("u1208b", (-21.5, 40.0)),     # Axle Adapter Metal Long
+    ("2497", (-80.0, 80.0)),       # Car Wash Brush Axle
+    ("t1114", (0.5, 34.5)),        # Circuit Cubes Axle 1.75 Notched
+    ("t1115", (0.5, 24.5)),        # Circuit Cubes Axle 1.25 Notched
+])
+def test_real_plain_axle_parts_accepted(pid, expected_x_span):
+    """Real plain Technic Axle parts verified via resolve_part."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} ({part.title}) should be accepted"
+    x0, x1 = expected_x_span
+    assert occ == [(x0, x1, -6.0, 6.0, -6.0, 6.0)]
+    assert sockets == []
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, expected_z_span", [
+    ("3705c01", (-40.0, 40.0)),     # Technic Axle 4 Threaded
+    ("73839", (-40.0, 40.0)),       # Technic Axle 4 Threaded Black Obsolete
+    ("3737c01", (-100.0, 100.0)),   # Technic Axle 10 Threaded
+    ("73485", (-100.0, 100.0)),     # Technic Axle 10 Threaded Black Obsolete
+])
+def test_real_threaded_axle_parts_accepted(pid, expected_z_span):
+    """Real threaded Technic Axle parts spanning along Z verified via resolve_part."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} ({part.title}) should be accepted"
+    z0, z1 = expected_z_span
+    assert occ == [(-6.0, 6.0, -6.0, 6.0, z0, z1)]
+    assert sockets == []
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, expected_boxes", [
+    ("24316", [(-29.5, 28.0, -6.0, 6.0, -6.0, 6.0), (28.0, 30.0, -8.0, 8.0, -8.0, 8.0)]),
+    ("87083", [(-39.5, 38.0, -6.0, 6.0, -6.0, 6.0), (38.0, 40.0, -8.0, 8.0, -8.0, 8.0)]),
+    ("15462", [(-49.5, 48.0, -6.0, 6.0, -6.0, 6.0), (48.0, 50.0, -8.0, 8.0, -8.0, 8.0)]),
+    ("55013", [(-79.5, 78.0, -6.0, 6.0, -6.0, 6.0), (78.0, 80.0, -8.0, 8.0, -8.0, 8.0)]),
+    ("32209", [(-55.0, -37.0, -6.0, 6.0, -6.0, 6.0), (-37.0, -35.0, -8.0, 8.0, -8.0, 8.0), (-35.0, 52.5, -6.0, 6.0, -6.0, 6.0)]),
+    ("59426", [(-54.5, -37.0, -6.0, 6.0, -6.0, 6.0), (-37.0, -35.0, -8.0, 8.0, -8.0, 8.0), (-35.0, 54.5, -6.0, 6.0, -6.0, 6.0)]),
+    ("4263624", [(-55.0, -37.0, -6.0, 6.0, -6.0, 6.0), (-37.0, -35.0, -8.0, 8.0, -8.0, 8.0), (-35.0, 52.5, -6.0, 6.0, -6.0, 6.0)]),
+])
+def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
+    """Real Technic Axle with Stop parts decomposed into shaft and flange boxes."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} ({part.title}) should be accepted"
+    assert occ == expected_boxes
+    assert sockets == []
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    "6587",       # Technic Axle  3 with Stud
+    "13670",      # =Technic Axle  3 with Stud
+    "11214",      # Technic Axle Pin Long with Friction with 2L Pin
+    "18651",      # Technic Axle Pin Long with Friction with 2L Axle
+    "43093",      # Technic Axle Pin with Friction
+    "11272",      # Technic Axle Connector  2 x  3 Quadruple
+    "6538a",      # Technic Axle Joiner
+    "21755",      # Technic Axle Joiner  2L Hilt
+    "18948",      # Technic Axle Joiner  3L with Ridges for Driving Ring
+    "45590",      # Technic Axle Joiner Double Flexible
+    "53586",      # Technic Axle Joiner Perpendicular with Extension
+    "4698",       # Technic Axle Nut
+    "2736",       # Technic Axle Towball
+    "10197",      # Technic Axle and Pin Connector Hub with 2 Axles at 90 Degrees
+    "72892",      # Technic Axle Flexible 26 with Axle 4.8L and Axle 2L on Ends
+])
+def test_real_axle_feature_exclusions_stay_rejected(pid):
+    """Axle-named components with studs, friction pins, joiner tubes, or flexible cables must remain rejected."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+
 
 

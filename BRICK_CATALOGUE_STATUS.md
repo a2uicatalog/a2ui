@@ -958,3 +958,53 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
     - `test_real_torso_parts_accepted` (26 real parts: `973`, `43370`, sticker `973d*`, and printed variants `973p*` across all major LEGO themes)
     - `test_real_torso_feature_exclusions_stay_rejected` (`10677`, `11938`, `24319`, `97149`, `37777`, `003428b`)
   - Test suite pass count: **111 passed** in `tests/test_generic_stud_occupancy.py` (up from 77, 34 new tests added).
+
+## 2026-09-28: Technic Axle Occupancy Family (agent, `agent/technic-axle-occupancy`)
+
+- **Task**: Real occupancy for plain Technic Axles and with-stop variants (`scripts/ldraw/parts.py`).
+- **Priority Target & Background**:
+  - Investigated in response to priority coverage of official set LEGO Technic 42145 "Airbus H175 Rescue Helicopter" (2,001 pieces). Plain Technic axles were identified as the single largest remaining lever (over 150 instances in set 42145 alone across `4519` Axle 3, `32073` Axle 5, `3705` Axle 4, `44294` Axle 7, etc.).
+- **Core Insights & Geometric Verification**:
+  - **Cross-Section & Solidity Proof**:
+    - Plain Technic axles have a "+"-shaped cross section with 4 rounded lobes extending to radius $r = 6.0$ LDU.
+    - Inside the $12.0 \times 12.0$ LDU bounding square ($[-6.0, 6.0] \times [-6.0, 6.0]$), the cross section occupies $\sim 83$ LDU$^2$, yielding an empirical ray-parity solid fraction (`_stud_box_solid_fraction`) of **54.0% – 58.6%** (measured across all standard lengths `3704` Axle 2 through `50450` Axle 32). This clears `STUD_CELL_MIN_SOLID = 0.15` by almost 4x.
+    - Unlike wheels or gears, axles have **no central bore to exclude**: ray-casting along the central axis $(x, 0, 0)$ confirmed 100% solid material through the core.
+  - **Axle-Hole Clearance & Spec §3 Containment**:
+    - Standard Technic pegholes and axle holes (`peghole.dat`, `axl2hole.dat`) open an internal channel of $12 \times 12$ LDU ($[-6.0, 6.0] \times [-6.0, 6.0]$) in `technic_holes_occupancy` and `generic_hole_channel_occupancy`.
+    - Bounding the axle shaft at $[-6.0, 6.0] \times [-6.0, 6.0]$ matches the hole dimensions exactly; collision overlap (`ox > 0.5 and oy > 0.5 and oz > 0.5` in `brick_parts_validate.py`) is 0.0 LDU when an axle is inserted into an axle hole or gear bore (`GEAR_BORE_HALF = 6.0`).
+  - **"with Stop" Axle Flange Geometry (Complication #4 Resolution)**:
+    - Axles with stops (`24316`, `87083`, `15462`, `55013`, `32209`, `59426`) have overall bounds of $\pm 8.0$ LDU due to a cylindrical flange ($r = 8.0$ LDU, thickness $2.0$ LDU).
+    - Ray-parity solidity of a uniform full-width box ($\pm 8.0$ along the entire length) measured only $0.320 – 0.334$. While mathematically $> 0.15$, using a uniform $\pm 8.0$ box claims 2.0 LDU of open air along the entire shaft length where beams, bushes, or gears sit. An inserted beam or gear would falsely report a 2.0 LDU collision against the over-sized shaft box, violating spec section 3 ("never report a false collision").
+    - Therefore, a uniform box was strictly rejected. Instead, "with Stop" axles are decomposed into:
+      1. Shaft box(es) bounded at $[-6.0, 6.0] \times [-6.0, 6.0]$ spanning the thin shaft (solid fraction 51.0% – 54.7%).
+      2. Flange box bounded at $[-8.0, 8.0] \times [-8.0, 8.0]$ spanning strictly the 2.0 LDU extent of the flange (solid fraction 75.0% for end flanges, 33.0% for interior stops).
+    - Both boxes are individually verified to clear `STUD_CELL_MIN_SOLID = 0.15`.
+  - **Threaded Axles along Z-Axis**:
+    - Threaded axles (`3705c01` Axle 4 Threaded, `3737c01` Axle 10 Threaded, and obsolete `73839`/`73485`) are oriented along the Z axis with cross-section in X and Y ($[-6.0, 6.0] \times [-6.0, 6.0]$). They measure 36.5% – 42.0% solid and are safely supported with boxes spanning along Z.
+  - **Connectivity Gap (Spec §2 Follow-Up)**:
+    - Plain axles currently register zero connectors in LDraw (no studs, holes, or pins). While they now participate fully in collision and boundary checks via occupancy boxes, they do not form graph edges in `brick_parts_validate.py`'s anchoring checks. This is documented as a follow-up for connector recognition.
+  - **Safe Exclusions (per Spec §3)**:
+    - Axle-pin hybrids (`11214`, `18651`, `43093`): contain friction pin mechanisms; safely excluded.
+    - Flexible axles (`32580`, `72892`): dynamic bending geometry; safely excluded.
+    - Hollow joiners/bushes/sleeves (`6538a`, `21755`, `18948`, `45590`, `53586`, `4698`): central axle bore / hollow interior; safely excluded.
+    - Towballs and connector blocks (`2736`, `11272`, `10197`): mechanical joints; safely excluded.
+    - Axles with studs or pinholes (`6587`, `13670`, `27940`, `5713`): have studs/holes; safely excluded from plain axle path.
+- **Survey Findings (scripts/ldraw/survey_rejects.py)**:
+  - Baseline `Technic Axle` category unbaked candidates:
+    - Before: 10 accepted, 37 rejected.
+    - After: **34 accepted, 13 rejected** (64.9% reject reduction in `Technic Axle` category).
+    - Remaining 13 rejects are all genuine complex parts: 1 with stud (`6587`), 1 flexible cable (`72892`), 1 connector (`11272`), 5 joiners (`6538a`, `21755`, `18948`, `45590`, `53586`), 1 nut (`4698`), 2 pin hybrids (`18651`, `11214`), 1 towball (`2736`), 1 connector hub (`10197`).
+  - Catalogue-wide: **38 distinct axle parts** accepted (including plain axles 2 through 32, with-stop axles, threaded axles, metal adapter axles, and obsolete versions).
+- **Verification**:
+  - Added 57 new unit tests in `tests/test_generic_stud_occupancy.py`:
+    - `test_generic_axle_occupancy_synthetic_plain`: synthetic box mathematical proof.
+    - `test_generic_axle_occupancy_synthetic_with_stop`: synthetic two-box decomposition proof.
+    - `test_generic_axle_occupancy_synthetic_threaded`: synthetic Z-axis box proof.
+    - `test_generic_axle_occupancy_synthetic_exclusions`: 8 synthetic negative controls (top studs, holes, pins, joiners, flex, non-axle title, bad cross section, too short).
+    - `test_real_plain_axle_parts_accepted`: 27 real resolved plain axle parts (`3704`, `32062`, `4519`, `3705`, `99008`, `32073`, `3706`, `44294`, `3707`, `60485`, `3737`, `23948`, `3708`, `50451`, `69732`, `50450`, `u1208a`, `u1208b`, `2497`, `t1114`, `t1115`, and 6 obsolete equivalents).
+    - `test_real_threaded_axle_parts_accepted`: 4 real resolved threaded axles (`3705c01`, `3737c01`, `73839`, `73485`).
+    - `test_real_with_stop_axle_parts_accepted`: 7 real resolved with-stop axles (`24316`, `87083`, `15462`, `55013`, `32209`, `59426`, `4263624`).
+    - `test_real_axle_feature_exclusions_stay_rejected`: 15 real negative control parts remaining `needs_occupancy=True`.
+  - Test suite pass count: **270 passed** in `tests/test_generic_stud_occupancy.py` (up from 213, 57 new tests added, 0 failures).
+  - LDraw test suite: **10 passed, 1 skipped** in `tests/test_ldraw_parts.py`.
+
