@@ -1008,3 +1008,33 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
   - Test suite pass count: **270 passed** in `tests/test_generic_stud_occupancy.py` (up from 213, 57 new tests added, 0 failures).
   - LDraw test suite: **10 passed, 1 skipped** in `tests/test_ldraw_parts.py`.
 
+
+## 2026-09-28: H175 Secondary Connectors: Axle-Pin Hybrids, Ball Joints & Turntables (agent, `agent/dispatch-h175-secondary-connectors-1790591723`)
+
+Operator-prioritised backlog run for item **`h175-secondary-connectors`** (*H175 remaining: ball joints, axle-pin hybrids, turntables*). Comprehensive geometric investigation documented in `scripts/ldraw/H175_SECONDARY_CONNECTORS_INVESTIGATION.md`.
+
+- **Scope & Findings**:
+  - **Axle-Pin Hybrids & Pin-Bar Hybrids (ACCEPTED)**:
+    - 9 real parts resolved cleanly: 2L axle-pins (`43093`, `3749`, `6562`, `4186017`, `4206482`), 3L axle-pins (`11214`, `18651`, `65249`), and pin-bar hybrid `61184`.
+    - Both pin and axle segments share the standard 12 LDU (radius 6.0 LDU) cylindrical profile (`[-6.0, 6.0] x [-6.0, 6.0]`), fitting standard Technic holes.
+    - Central collar flange of radius 8.0 LDU is safely under-approximated as `[-6.0, 6.0] x [-6.0, 6.0]` (matching standard pins `2780`, `3673`, `4459`, `32556a`), preventing false collisions against outer beam walls.
+    - Measured ray-parity solid fractions: **54.2% to 60.4%** across all axle-pin lengths, clearing `STUD_CELL_MIN_SOLID = 0.15` by > 3.5x margin.
+    - `61184` decomposed into pin box (`box(-12, 0, -6, 6, -6, 6)`, sol = 87.5%) and bar box (`box(-60, -12, -4, 4, -4, 4)`, sol = 79.2%).
+  - **Turntables & Swashplates (REJECTED, remain `needs_occupancy=True`)**:
+    - `1936`, `1937`, `99010`, `18938`, `18939` are hollow annular rings with open central bores through which rotor masts and drive shafts pass. Measured core solid fraction is **0.0000**.
+    - Interlocking rotating shells overlap along the axis of rotation; swashplates articulate at non-orthogonal angles. Bounding boxes would cause continuous false-positive collisions with through-shafts and mating halves (violating spec §3).
+  - **Ball Joints (REJECTED, remain `needs_occupancy=True`)**:
+    - Swashplate ball joint `1938` has a hollow square bore for the rotor mast (core solid fraction **0.0833** < 0.15).
+    - Ball joint `32474` is an external spherical head (radius 12.81 LDU) that mates inside continuous-rotation socket cups. Bounding boxes cause false-positive collision with socket arms without a spherical joint exemption in `brick_parts_validate.py`.
+- **Catalogue & Set Impact**:
+  - `Technic Axle` category unbaked rejects reduced from **13 to 11** (15.4% further reject reduction; accepted parts up from 34 to 46).
+  - Unlocks 3 key missing H175 (42145) inventory components: `11214` (axle pin long w/ 2L pin), `18651` (axle pin long w/ 2L axle), and `61184` (pin 1/2 with bar).
+  - Fixes baked part `43093` (`needs_occupancy: True` -> `False` with real occupancy box).
+- **Verification**:
+  - Added 25 unit tests to `tests/test_generic_stud_occupancy.py`:
+    - `test_technic_axle_pin_overrides_synthetics`: 9 synthetic dispatch tests.
+    - `test_technic_axle_pin_overrides_real_geometry`: 9 real resolved mesh tests verifying bounds containment, socket counts, and ray-parity solidity.
+    - `test_turntables_and_ball_joints_stay_rejected`: 7 negative control tests confirming turntables and ball joints remain `needs_occupancy=True`.
+  - Refactored axle test suites to use cached shared library instance `_get_shared_lib()`, cutting test runtime and eliminating container OOM pressure.
+  - Test suite pass count: **292 passed** in `tests/test_generic_stud_occupancy.py` (up from 270). Full test suite: **330 passed, 1 deselected** across generic occupancy, brick parts validate, and ldraw parts.
+

@@ -612,6 +612,26 @@ OVERRIDES = {
     "42924": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with friction Type 2
     "77765": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with end stop
     "65304": [box(-30, 30, -6, 6, -6, 6)],    # 3L pin long with stop bush Type 2 (counterpart of 32054)
+    # Technic Axle-Pin and Pin-Bar hybrids (2026-09-28, agent/h175-secondary-connectors, cloud task):
+    # Coaxial hybrid connectors spanning along the X axis. Both the pin segment and the
+    # axle segment share the standard 12 LDU (radius 6.0) cross-section ([-6, 6] x [-6, 6]),
+    # designed to fit standard Technic holes. The 1-2 LDU thick stop collar of radius 8.0 LDU
+    # is safely under-approximated as [-6, 6] x [-6, 6] (matching 2780/3673/4459/61332/32556a),
+    # preventing false collisions against outer beam faces. Ray-parity solid fractions measure
+    # 0.542..0.604 (comfortably above STUD_CELL_MIN_SOLID = 0.15).
+    # 2L Axle-Pin variants (1L pin + 1L axle):
+    "43093": [box(-20, 20, -6, 6, -6, 6)],    # Technic Axle Pin with Friction
+    "3749": [box(-20, 20, -6, 6, -6, 6)],     # Technic Axle Pin
+    "6562": [box(-20, 20, -6, 6, -6, 6)],     # =Technic Axle Pin (shortcut/alias of 3749)
+    "4186017": [box(-20, 20, -6, 6, -6, 6)],  # ~_Technic Axle Pin Tan (Obsolete)
+    "4206482": [box(-20, 20, -6, 6, -6, 6)],  # ~_Technic Axle Pin with Friction Blue (Obsolete)
+    # 3L Axle-Pin variants:
+    "11214": [box(-30, 30, -6, 6, -6, 6)],    # Technic Axle Pin Long with Friction with 2L Pin
+    "18651": [box(-30, 30, -6, 6, -6, 6)],    # Technic Axle Pin Long with Friction with 2L Axle
+    "65249": [box(-30, 30, -6, 6, -6, 6)],    # Technic Axle Pin Long without Friction with 2L Axle
+    # Technic Pin 1/2 with Bar 2L: 2-box decomposition covering 1/2 pin (radius 6) and 2L bar (radius 4)
+    # without over-claiming empty air around the thin bar:
+    "61184": [box(-60, -12, -4, 4, -4, 4), box(-12, 0, -6, 6, -6, 6)],
     # Brick 1x2 with two studs on one side (SNOT): a normal 1x2 brick body underneath the extra side studs, which
     # come from real geometry (no override needed for them) -- x is the "2" direction, z the "1" direction, per
     # the corrected w/d convention above (confirmed against this same part's own real top-stud spread, x=+/-10).
