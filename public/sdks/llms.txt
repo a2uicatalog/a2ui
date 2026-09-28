@@ -1,0 +1,15 @@
+# A2UI Atomic Catalog — SDKs
+
+> Scoped context for SDKs, CLI tools, and client packages. For the full site overview,
+> see https://a2uicatalog.ai/llms.txt instead.
+
+## Packages
+
+- npm / CLI SDK: `@a2uicatalog/mcp` on npm (`npx -p @a2uicatalog/mcp a2ui render page.json`)
+- Agent Skills: `npx skills add a2uicatalog/a2ui` (https://a2uicatalog.ai/.well-known/agent-skills/index.json)
+- Remote MCP server: https://a2uicatalog.ai/mcp
+- OpenAPI 3.1 specification: https://a2uicatalog.ai/openapi.json
+
+## Terms
+
+Free, MIT licensed, no signup. Source: https://github.com/a2uicatalog/a2ui
