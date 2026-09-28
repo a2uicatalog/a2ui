@@ -109216,6 +109216,1446 @@
    "needs_occupancy": false,
    "bytes": 46498,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "11478": {
+   "title": "Technic Beam  5 x  0.5 Liftarm with Axle Holes at Both Ends",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -784
+    ],
+    "max": [
+     144,
+     80,
+     784
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 6,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 110221,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "18654": {
+   "title": "Technic Beam  1",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     144,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 18313,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "18946": {
+   "title": "Technic Gear 16 Tooth with Clutch on Both Sides",
+   "bounds": {
+    "min": [
+     -348,
+     -348,
+     -160
+    ],
+    "max": [
+     348,
+     348,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 95745,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "22961": {
+   "title": "Technic Axle with Perpendicular Pin Hole",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     472,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 32397,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "27940": {
+   "title": "Technic Axle  3L with Middle Perpendicular Pin Hole",
+   "bounds": {
+    "min": [
+     -472,
+     -160,
+     -144
+    ],
+    "max": [
+     472,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 47933,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2825": {
+   "title": "Technic Beam  4 x  0.5 Liftarm with Boss",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     144,
+     160,
+     1104
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 86979,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30395": {
+   "title": "Hook with Towball",
+   "bounds": {
+    "min": [
+     -192,
+     -128,
+     -128
+    ],
+    "max": [
+     181,
+     832,
+     128
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 46287,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30414": {
+   "title": "Brick  1 x  4 with Studs on Side",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 8,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 33764,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "31794": {
+   "title": "Technic Suspension Arm  1 x  5 Type 2",
+   "bounds": {
+    "min": [
+     -160,
+     -144,
+     -1440
+    ],
+    "max": [
+     160,
+     144,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 8,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 169578,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32013": {
+   "title": "Technic Angle Connector #1",
+   "bounds": {
+    "min": [
+     -160,
+     -144,
+     -480
+    ],
+    "max": [
+     160,
+     144,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 38729,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32015": {
+   "title": "Technic Angle Connector #5 (112.5 degree)",
+   "bounds": {
+    "min": [
+     -160,
+     -497,
+     -480
+    ],
+    "max": [
+     160,
+     144,
+     313
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 64657,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32016": {
+   "title": "Technic Angle Connector #3 (157.5 degree)",
+   "bounds": {
+    "min": [
+     -160,
+     -313,
+     -480
+    ],
+    "max": [
+     160,
+     144,
+     497
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 68541,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32034": {
+   "title": "Technic Angle Connector #2 (180 degree)",
+   "bounds": {
+    "min": [
+     -160,
+     -144,
+     -480
+    ],
+    "max": [
+     160,
+     144,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 62161,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32063": {
+   "title": "Technic Beam  6 x  0.5",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -944
+    ],
+    "max": [
+     144,
+     80,
+     944
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 12,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 165937,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32065": {
+   "title": "Technic Beam  7 x  0.5",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -1104
+    ],
+    "max": [
+     144,
+     80,
+     1104
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 197718,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32123b": {
+   "title": "Technic Bush 1/2 Smooth with Axle Hole Semi-Reduced",
+   "bounds": {
+    "min": [
+     -144,
+     -144,
+     -80
+    ],
+    "max": [
+     144,
+     144,
+     80
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 40287,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32184": {
+   "title": "Technic Cross Block 1 x 3 (Axle/Pin/Axle)",
+   "bounds": {
+    "min": [
+     -160,
+     -464,
+     -160
+    ],
+    "max": [
+     160,
+     464,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 98845,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32198a": {
+   "title": "Technic Gear 20 Tooth Bevel with Two Axlehole Slots",
+   "bounds": {
+    "min": [
+     -416,
+     -416,
+     -112
+    ],
+    "max": [
+     416,
+     416,
+     48
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 61418,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32198b": {
+   "title": "Technic Gear 20 Tooth Bevel with Four Axlehole Slots",
+   "bounds": {
+    "min": [
+     -416,
+     -416,
+     -112
+    ],
+    "max": [
+     416,
+     416,
+     48
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 55407,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32235": {
+   "title": "Technic Axle Flexible 19",
+   "bounds": {
+    "min": [
+     -3040,
+     -96,
+     -96
+    ],
+    "max": [
+     3040,
+     96,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 206889,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32270": {
+   "title": "Technic Gear 12 Tooth Double Bevel",
+   "bounds": {
+    "min": [
+     -272,
+     -272,
+     -160
+    ],
+    "max": [
+     272,
+     272,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 86196,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32278": {
+   "title": "Technic Beam 15",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -2384
+    ],
+    "max": [
+     144,
+     160,
+     2384
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 30,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 478277,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32316": {
+   "title": "Technic Beam  5",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -784
+    ],
+    "max": [
+     144,
+     160,
+     784
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 10,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 144789,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32449": {
+   "title": "Technic Beam  4 x  0.5 Liftarm",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -624
+    ],
+    "max": [
+     144,
+     80,
+     624
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 79453,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32523": {
+   "title": "Technic Beam  3",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -464
+    ],
+    "max": [
+     144,
+     160,
+     464
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 6,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 81797,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32524": {
+   "title": "Technic Beam  7",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -1104
+    ],
+    "max": [
+     144,
+     160,
+     1104
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 208631,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32525": {
+   "title": "Technic Beam 11",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -1744
+    ],
+    "max": [
+     144,
+     160,
+     1744
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 22,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 343239,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32803": {
+   "title": "Slope Brick Curved  2 x  2 Inverted",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     255,
+     480
+    ]
+   },
+   "studs": 4,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 59485,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32905": {
+   "title": "Technic Worm Gear 2L with Axle Hole Two-toothed Sliding",
+   "bounds": {
+    "min": [
+     -203,
+     -203,
+     -320
+    ],
+    "max": [
+     203,
+     203,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 77630,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "33299b": {
+   "title": "Technic Beam  3 x  0.5 Liftarm with Boss and Pin with Open Central Axle Hole",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     144,
+     480,
+     768
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 73851,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "40490": {
+   "title": "Technic Beam  9",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -1424
+    ],
+    "max": [
+     144,
+     160,
+     1424
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 18,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 275955,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4079": {
+   "title": "Minifig Seat  2 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     -640,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     400
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 4,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 19653,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "41239": {
+   "title": "Technic Beam 13",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -2064
+    ],
+    "max": [
+     144,
+     160,
+     2064
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 26,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 410541,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "42003": {
+   "title": "Technic Cross Block 1 x 3 (Axle/Pin/Pin)",
+   "bounds": {
+    "min": [
+     -160,
+     -464,
+     -160
+    ],
+    "max": [
+     160,
+     464,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 104440,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "42195": {
+   "title": "Technic Axle Joiner  3L with Two Flat Sides",
+   "bounds": {
+    "min": [
+     -136,
+     -140,
+     -480
+    ],
+    "max": [
+     136,
+     140,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 12,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 48118,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "43857": {
+   "title": "Technic Beam  2",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -304
+    ],
+    "max": [
+     144,
+     160,
+     304
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 49384,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "44874": {
+   "title": "Technic Pin Long with Pin Hole Type 2",
+   "bounds": {
+    "min": [
+     -480,
+     -160,
+     -144
+    ],
+    "max": [
+     480,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 2,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 88646,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "49130": {
+   "title": "Technic Pin Connector Perpendicular  3 x  3 Bent 90 with 4 Pins, Slots Across Beam",
+   "bounds": {
+    "min": [
+     -160,
+     -784,
+     -480
+    ],
+    "max": [
+     160,
+     480,
+     784
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 8,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 237485,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "50951": {
+   "title": "Tyre  6/ 30 x 11",
+   "bounds": {
+    "min": [
+     -304,
+     -304,
+     -128
+    ],
+    "max": [
+     304,
+     304,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 50544,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "51149": {
+   "title": "Technic Transmission Changeover Catch with Two-toothed Axlehole",
+   "bounds": {
+    "min": [
+     -160,
+     -144,
+     -736
+    ],
+    "max": [
+     160,
+     144,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 34267,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "58090": {
+   "title": "Tyre 14/ 50 x 17 VR",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -272
+    ],
+    "max": [
+     608,
+     608,
+     272
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 230831,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "59443": {
+   "title": "Technic Axle Joiner Inline Smooth",
+   "bounds": {
+    "min": [
+     -136,
+     -140,
+     -320
+    ],
+    "max": [
+     136,
+     140,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 25425,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60483": {
+   "title": "Technic Beam  2 Liftarm",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     144,
+     160,
+     464
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 35882,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "62462": {
+   "title": "Technic Pin Joiner Round with Slot",
+   "bounds": {
+    "min": [
+     -320,
+     -160,
+     -160
+    ],
+    "max": [
+     320,
+     160,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 29474,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64289": {
+   "title": "=Technic Beam  9",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -1424
+    ],
+    "max": [
+     144,
+     160,
+     1424
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 18,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 275956,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64871": {
+   "title": "=Technic Beam 15",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -2384
+    ],
+    "max": [
+     144,
+     160,
+     2384
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 30,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 478264,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "65249": {
+   "title": "Technic Axle Pin Long without Friction with  2L Axle",
+   "bounds": {
+    "min": [
+     -480,
+     -128,
+     -128
+    ],
+    "max": [
+     472,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 36689,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "65487": {
+   "title": "Technic Pin with Friction with Perpendicular Pin Hole Type 2",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     480,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 1,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 52205,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "65489": {
+   "title": "Technic Cross Block 1 x 3 (Pin/Pin/Pin) with 4 Pins Rectangular Centre Hole",
+   "bounds": {
+    "min": [
+     -160,
+     -464,
+     -480
+    ],
+    "max": [
+     160,
+     464,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 6,
+   "pins": 0,
+   "bars": 4,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 195711,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6632": {
+   "title": "Technic Beam  3 x  0.5 Liftarm",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -144
+    ],
+    "max": [
+     144,
+     80,
+     784
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 49252,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "69778": {
+   "title": "Technic Gear 12 Tooth",
+   "bounds": {
+    "min": [
+     -283,
+     -283,
+     -160
+    ],
+    "max": [
+     283,
+     283,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 65798,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "69779": {
+   "title": "Technic Gear 20 Tooth",
+   "bounds": {
+    "min": [
+     -442,
+     -442,
+     -160
+    ],
+    "max": [
+     442,
+     442,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 174892,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "69819": {
+   "title": "Technic Cross Block  2 x  2 Split Reinforced (Axle/Twin Pin)",
+   "bounds": {
+    "min": [
+     -320,
+     -160,
+     -464
+    ],
+    "max": [
+     320,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 82868,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "81346": {
+   "title": "Technic Gear 20 Tooth with Clutch on Both Sides",
+   "bounds": {
+    "min": [
+     -442,
+     -442,
+     -160
+    ],
+    "max": [
+     442,
+     442,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 191871,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87087": {
+   "title": "Brick  1 x  1 with Stud on 1 Side",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 7291,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87407": {
+   "title": "Technic Gear 20 Tooth Bevel with Peghole",
+   "bounds": {
+    "min": [
+     -416,
+     -416,
+     -320
+    ],
+    "max": [
+     416,
+     416,
+     0
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 65684,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87618": {
+   "title": "Bar  4.5L with Handle",
+   "bounds": {
+    "min": [
+     -88,
+     -1576,
+     -480
+    ],
+    "max": [
+     88,
+     88,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 15249,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98585": {
+   "title": "Technic Connector Circular with  2 Pin Holes and  3 Axle Holes",
+   "bounds": {
+    "min": [
+     -467,
+     -467,
+     -160
+    ],
+    "max": [
+     467,
+     467,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 128019,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "99009": {
+   "title": "Technic Turntable 28 Tooth Bottom",
+   "bounds": {
+    "min": [
+     -464,
+     -64,
+     -432
+    ],
+    "max": [
+     464,
+     464,
+     432
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 114500,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "99012": {
+   "title": "Technic Rotor  1 Blade  8L with Peghole and Axlehole",
+   "bounds": {
+    "min": [
+     -304,
+     -2058,
+     -160
+    ],
+    "max": [
+     148,
+     480,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 73442,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   }
  }
 }

@@ -117,12 +117,20 @@ def test_gzipped_total_fits_the_budget():
 
 def test_needs_occupancy_parts_have_no_fabricated_occupancy(index):
     """Parts Phase 1 could not classify must carry occupancy=None, never a guessed box (Phase 1 handoff: "don't
-    guess them")."""
+    guess them"). Exception: a genuine held/clip-mounted grip (bar_grip_points, e.g. 32235 "Technic Axle
+    Flexible 19") is a real, documented, needs_occupancy=False case with empty occupancy -- the real position/
+    axis data lives in its own `bars` connector instead (see resolve_occupancy_and_sockets's bar_grip_points
+    branch and bake_parts.py's own comment on why the two aren't merged into one return shape). This exception
+    was never exercised until 2026-09-28, when the first bar-grip part was actually curated+baked."""
     for pid, entry in index["parts"].items():
         mesh = json.loads((PARTS_DIR / (pid + ".json")).read_text())
         if entry["needs_occupancy"]:
             assert mesh["occupancy"] is None, pid
-        else:
+        elif not entry.get("bars"):
+            # bake_parts.py calls bar_grip_points unconditionally alongside resolve_occupancy_and_sockets, so
+            # a part can legitimately carry BOTH a real occupancy override AND a bars entry (e.g. 89678
+            # "Technic Pin 1/2 with Friction" -- an OVERRIDES box plus a real grip end) -- only a part with
+            # bars and NO other occupancy source is expected to have occupancy=None.
             assert mesh["occupancy"], pid
 
 
