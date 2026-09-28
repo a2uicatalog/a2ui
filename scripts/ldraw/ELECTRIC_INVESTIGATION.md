@@ -55,9 +55,9 @@ Forensic measurement of 24 representative Electric-category parts, showing Part 
 | `2847c02` | Battery Bottom| Electric 9V Battery Box Bottom w/ Buttons | 0 | 0 | `(-40.0, -54.0, -140.0)..(40.0, 48.0, 140.0)` | 2,284,800 | 156,631 | **0.0686** | 0.1800 | `needs_occupancy=True` |
 | `74650c01`| Battery Complete| Electric 9V Battery Box 4 x 14 x 4 Complete | 38 | 0 | `(-40.0, -54.0, -140.0)..(40.0, 48.0, 140.0)` | 2,284,800 | 2,328,430** | 1.0191** | 0.2850 | `needs_occupancy=True` |
 | `11145` | Cable | Electric Mindstorms EV3 Cable 25 cm | 0 | 0 | `(-78.0, -12.5, -83.5)..(78.0, 12.5, 68.0)` | 590,873 | 234,967 | 0.3977 | 0.1400 | `needs_occupancy=True` |
+| `11146` | Cable | Electric Mindstorms EV3 Cable 35 cm | 0 | 0 | `(-78.0, -12.5, -83.5)..(88.0, 12.5, 78.0)` | 670,250 | 336,737 | 0.5024 | 0.1350 | `needs_occupancy=True` |
 | `2775c03` | Cable | Electric Cable Grey w/ Plugs (Twin) | 0 | 0 | `(-28.0, -9.5, -198.0)..(28.0, 9.5, 198.0)` | 421,344 | 17,033 | **0.0404** | 0.0800 | `needs_occupancy=True` |
 | `22168` | Cable + LED | Electric Powered Up Light w/ Coiled Cable | 0 | 1 | `(-32.5, -79.4, -130.0)..(37.0, 10.0, 163.0)` | 1,820,455 | 9,146 | **0.0050** | 0.1100 | `needs_occupancy=True` |
-| `58118` | Cable | Electric PF Extension Wire 50 cm | 4 | 0 | `(-20.0, -64.8, -20.0)..(120.0, 16.0, 220.4)` | 2,718,103 | 107,399 | **0.0395** | 0.1000 | `needs_occupancy=True` |
 | `24854` | Switch | Electric Powered Up 2 Port Box Switch | 0 | 2 | `(-40.0, -10.0, -15.0)..(0.0, 8.0, 15.0)` | 21,600 | 8,073 | 0.3738 | 0.3600 | `needs_occupancy=True` |
 | `24853` | Battery Lid | Electric Control+ Hub Battery Lid | 0 | 0 | `(-68.0, -32.5, -89.0)..(68.0, 0.0, 86.0)` | 773,500 | 21,803 | **0.0282** | 0.1850 | `needs_occupancy=True` |
 | `11237` | Slider | Electric Mindstorms EV3 Selector Slider | 0 | 0 | `(-10.0, -4.0, -44.5)..(10.0, 3.0, 45.5)` | 12,600 | 5,881 | 0.4667 | 0.4200 | `needs_occupancy=True` |

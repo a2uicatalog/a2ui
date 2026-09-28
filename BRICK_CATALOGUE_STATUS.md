@@ -1032,3 +1032,33 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
 - **Still open**: 3830/3831, 44301a/44302a, 44567a/44568, 30552/30553 remain unresolved -- no equivalent
   already-cross-validated evidence was found for these in a quick check; they'd need the same real-set
   search this pair's original derivation (or tonight's 2429/2430 search) used.
+
+
+## 2026-09-28: Electric-Category Occupancy Investigation (cloud agent, `agent/dispatch-electric-1790602889`)
+
+- Completed scoping investigation for Electric-category parts: see
+  [scripts/ldraw/ELECTRIC_INVESTIGATION.md](scripts/ldraw/ELECTRIC_INVESTIGATION.md).
+- **Task**: Scope backlog item `electric` (Electric category: motors, batteries, lights, sensors, cables), carried over from the 3am overnight-watcher candidate list.
+- **Survey Findings (`scripts/ldraw/survey_rejects.py`)**:
+  - Scanned full library of 12,655 candidate parts using `survey_rejects.py` category classification.
+  - Identified **1,001 Electric candidate parts** across the library:
+    - **245 accepted**: every rigid, stud-bearing electric part (e.g. `15466c01` USB Flash Drive brick, `189c01` Train 4.5V switch, `19066c01` PF 2.0 Hub, `20841` Tilt Sensor, `2383c01` Light & Sound brick, `2500c01` 1x8 Lightbrick, `265ac01` 2x2 Lightbrick) already resolves cleanly with `needs_occupancy=False` via `generic_stud_cell_occupancy()`.
+    - **756 rejected (`needs_occupancy=True`)**:
+      - 421 internal CAD subparts (`~Electric`, e.g. `10089`, `10090`, `10130` motor casing halves; `10091`, `10132` cable clamps; `10361` EV3 sensor lenses).
+      - 74 flexible cables/wires (`11145`/`11146`/`11147` EV3 cables, `22168`/`22169c01` coiled cables, `2775c03` 9V wires). Volumetric solidity is 0.5% – 4.0% (over 96% to 99.5% open air). An AABB over a cable would claim millions of cubic LDU of phantom plastic and collide falsely across the build, directly violating spec section 3.
+      - 71 electric motors and rotating hubs (`22169` Control+ L, `22172` Control+ XL, `10089c01` PF Large, `58120` PF Medium, `10095` hub). Motors have rotating output hubs and pinholes; bounding box occupancy would block inserted drive axles and gears.
+      - 65 battery boxes, hubs, and trays (`22127` Control+ Hub, `22167` Powered Up 2-Port Box, `2847` 9V bottom, `74650c01` complete box). Hollow enclosures (5.8% – 11.6% solid) with open battery bays and plug receptacles.
+      - 32 switches, sliders, and mechanism parts (`24854`, `11237`, `2849`, `24853`).
+      - 24 plugs and terminals (`23816a`, `2775c01`).
+      - 69 third-party aftermarket lighting parts (Circuit Cubes, Brickstuff Pico LEDs).
+- **Priority Set Alignment (LEGO Technic 42145 Airbus H175 Rescue Helicopter)**:
+  - Confirms the prior finding in `H175_MECHANISM_INVESTIGATION.md`: set 42145's Powered Up components (`22167` Battery Box, `22169` L Motor) have hollow battery compartments and rotating drive hubs that cannot be boxed without causing false collisions on the helicopter's drive train and mounting pins.
+- **Key Finding & Decision**:
+  - **No safe generic occupancy family exists for the rejected Electric parts, and they honestly remain `needs_occupancy=True`** (zero forced boxes).
+- **Verification**:
+  - Added 32 unit tests in `tests/test_generic_stud_occupancy.py`:
+    - 25 parametrized exclusion tests (`test_real_electric_parts_stay_safely_rejected`) verifying representative motors, battery boxes, cables, switches, subparts, and aftermarket electronics remain `needs_occupancy=True` and `occ is None`.
+    - 7 parametrized acceptance tests (`test_real_stud_bearing_electric_bricks_accepted`) confirming that rigid stud-bearing electric bricks continue to resolve cleanly with valid occupancy and sockets without regression.
+  - Test suite pass count: **302 passed, 0 failed** in `tests/test_generic_stud_occupancy.py` (up from 270 passed).
+  - Parity and validation test suites: **41 passed, 1 skipped** in `tests/test_brick_parts_validate.py` and `tests/test_ldraw_parts.py`.
+
