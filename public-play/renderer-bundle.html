@@ -33938,6 +33938,30 @@ window._a2uiExtractPdfText = async function (file, onProgress) {
       return t === 'gdm_rocket_panel' || t === 'iso_fireworks_panel';
     });
     if (hasFixedOverlay) return;
+    // 2026-09-28: a wired surface whose CURRENT view wires a visible control
+    // to a host:message action (Article Analyser's "Draft the request",
+    // Composer's non-Workspace path) skips fullscreen entirely. Its very
+    // next step needs the host's own chat input, which fullscreen covers --
+    // on hosts where that draft isn't auto-sent (Claude, Gemini Enterprise:
+    // confirmed live, both require a manual press-enter after drafting) the
+    // reader has to close/exit fullscreen just to reach the box the button
+    // just filled. A pure-display wired surface (Wall Builder, the
+    // Workspace home tiles) has no such next step and keeps earning the
+    // viewport as before -- this is content-scoped, not host-scoped: GE
+    // declares nothing at ui/initialize that would let a host check
+    // distinguish it from any other client, so the fix has to be "does
+    // THIS view need the chat box next", not "which host is this".
+    var actionsById = {};
+    (payload && payload.actions || []).forEach(function (a) {
+      if (a && a.id) actionsById[a.id] = a;
+    });
+    var hasHostMessageAffordance = blocks.some(function (b) {
+      var onClick = b && b.wire && b.wire.onClick;
+      if (!onClick || onClick.charAt(0) !== '#') return false;
+      var action = actionsById[onClick.slice(1).split('.')[0]];
+      return !!action && action.type === 'host:message';
+    });
+    if (hasHostMessageAffordance) return;
     var mode = _hostContext.displayMode || 'inline';
     if (mode === 'fullscreen') return;                                    // already there
     var modes = _hostContext.availableDisplayModes;
