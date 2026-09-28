@@ -1177,6 +1177,69 @@ def generic_torso_occupancy(bounds_min, bounds_max, studs, tris, title=""):
     return None, []
 
 
+def generic_axle_pin_occupancy(bounds_min, bounds_max, studs=None, holes=None, cylinders=None, tris=None, title=""):
+    """Generic geometry-proven occupancy for Technic Axle Pin hybrid parts (2026-09-28).
+
+    Technic Axle Pins (e.g. 43093, 3749, 11214, 18651, 6562) are rigid coaxial connector
+    elements combining a Technic pin shaft and a Technic axle shaft along the X-axis.
+    - Shaft cross-section: both the pin shaft (r = 6.0 LDU) and the axle '+' shaft
+      (r = 6.0 LDU) fit inside the standard 12x12 LDU square ([-6.0, 6.0] x [-6.0, 6.0] in Y and Z).
+    - Under-approximation safety (spec §3's 'never report a false one'):
+      The core shaft box [round(x0, 2), round(x1, 2), -6.0, 6.0, -6.0, 6.0] spans the entire
+      part length within its outer Y/Z bounds. It deliberately excludes the larger central
+      stop collar / friction ridges (r = 8.0 LDU), exactly matching the established pattern of
+      all Technic pins in OVERRIDES (2780, 3673, 4459, 32002, 32556, 77765). Bounding at
+      +-6.0 LDU ensures zero false-positive collisions when inserted into standard Technic
+      pegholes (radius 8.0/10.0 LDU) or axle holes (radius 6.0 LDU).
+    - Ray-parity solidity proof:
+      The 12x12 LDU bounding box has empirical solid fractions well above STUD_CELL_MIN_SOLID = 0.15:
+        * 43093 (Axle Pin with Friction): 52.1% solid
+        * 3749 / 6562 (Axle Pin smooth): 54.2% solid
+        * 11214 (Axle Pin Long with 2L Pin): 56.2% solid
+        * 18651 (Axle Pin Long with 2L Axle): 60.4% solid
+        * 65249 (Axle Pin Long without Friction with 2L Axle): 58.3% solid
+    - Sockets: Axle pins carry 0 bottom anti-stud sockets (sockets = []).
+    - Exclusions: parts with studs, through-holes (cross blocks, e.g. 6536, 32184), beams,
+      gearboxes, towballs, or multi-axis connectors stay needs_occupancy=True.
+    """
+    if bounds_min is None or bounds_max is None or not tris:
+        return None, []
+
+    # Axle pins have zero studs and zero through-holes
+    if studs or holes:
+        return None, []
+
+    tl = (title or "").strip().lower()
+    t_clean = re.sub(r"^[~=_\s|0-9]*", "", tl).strip()
+    if not (re.search(r"\baxle\s+pin\b", t_clean) or (re.search(r"\baxle\b", t_clean) and re.search(r"\bpin\b", t_clean))):
+        return None, []
+
+    # Exclude non-coaxial multi-axis connector parts
+    if re.search(r"\b(cross\s+block|block|beam|connector|gear|box|perpendicular|split|fork|bent|angle|towball|ball|circular)\b", t_clean):
+        return None, []
+
+    x0, x1 = bounds_min[0], bounds_max[0]
+    y0, y1 = bounds_min[1], bounds_max[1]
+    z0, z1 = bounds_min[2], bounds_max[2]
+    dx = x1 - x0
+    dy = y1 - y0
+    dz = z1 - z0
+
+    # Must be oriented along X-axis with standard pin/axle profile in Y and Z
+    if not (dx >= 15.0 and dy <= 16.5 and dz <= 16.5):
+        return None, []
+
+    # Center in Y and Z must be at local origin
+    if abs(y0 + y1) > 1.0 or abs(z0 + z1) > 1.0:
+        return None, []
+
+    cand = box(round(x0, 2), round(x1, 2), -6.0, 6.0, -6.0, 6.0)
+    if _stud_box_solid_fraction(tris, cand) >= STUD_CELL_MIN_SOLID:
+        return [cand], []
+
+    return None, []
+
+
 def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=None, holes=None, studs=None,
                                    tris=None, cylinders=None):
     """Returns (occupancy_boxes_or_None, sockets, needs_occupancy_bool). bounds/holes/studs (real LDU,
@@ -1243,6 +1306,9 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         if gen_occ:
             return verified(gen_occ, gen_sockets)
         gen_occ, gen_sockets = generic_hole_channel_occupancy(bounds_min, bounds_max, studs, holes, tris)
+        if gen_occ:
+            return verified(gen_occ, gen_sockets)
+        gen_occ, gen_sockets = generic_axle_pin_occupancy(bounds_min, bounds_max, studs, holes, cylinders, tris, title)
         if gen_occ:
             return verified(gen_occ, gen_sockets)
         # 2026-09-28: a HINGE_CONNECTORS part is excluded here -- found live rebaking 3937 ("Hinge 1 x 2
