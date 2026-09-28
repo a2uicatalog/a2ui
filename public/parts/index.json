@@ -2137,11 +2137,13 @@
     ]
    },
    "studs": 0,
-   "sockets": 0,
+   "sockets": 2,
    "holes": 0,
    "pins": 0,
-   "needs_occupancy": true,
-   "bytes": 35350,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 35496,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "3894": {
@@ -2203,11 +2205,13 @@
     ]
    },
    "studs": 0,
-   "sockets": 0,
+   "sockets": 2,
    "holes": 0,
    "pins": 1,
-   "needs_occupancy": true,
-   "bytes": 55540,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 55647,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "6536": {
@@ -110344,13 +110348,13 @@
     ]
    },
    "studs": 0,
-   "sockets": 0,
+   "sockets": 3,
    "holes": 0,
    "pins": 0,
    "bars": 1,
    "hinges": 0,
    "needs_occupancy": false,
-   "bytes": 36689,
+   "bytes": 36805,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   },
   "65487": {
@@ -110663,6 +110667,150 @@
    "hinges": 0,
    "needs_occupancy": false,
    "bytes": 73442,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6562": {
+   "title": "=Technic Axle Pin",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     312,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 35497,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4186017": {
+   "title": "~_Technic Axle Pin Tan (Obsolete)",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     312,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 35519,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4206482": {
+   "title": "~_Technic Axle Pin with Friction Blue (Obsolete)",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -128
+    ],
+    "max": [
+     312,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 1,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 55670,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "11214": {
+   "title": "Technic Axle Pin Long with Friction with  2L Pin",
+   "bounds": {
+    "min": [
+     -480,
+     -128,
+     -128
+    ],
+    "max": [
+     472,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 1,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 64607,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "18651": {
+   "title": "Technic Axle Pin Long with Friction with  2L Axle",
+   "bounds": {
+    "min": [
+     -480,
+     -128,
+     -128
+    ],
+    "max": [
+     472,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 1,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 57185,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "61184": {
+   "title": "Technic Pin  1/2 with Bar 2L",
+   "bounds": {
+    "min": [
+     -960,
+     -128,
+     -128
+    ],
+    "max": [
+     0,
+     128,
+     128
+    ]
+   },
+   "studs": 1,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 33692,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   }
  }

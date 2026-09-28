@@ -1339,6 +1339,19 @@ def test_generic_axle_occupancy_synthetic_exclusions():
     assert P.generic_axle_occupancy((-5.0, -6.0, -6.0), (5.0, 6.0, 6.0), [], [], [], tris, "Technic Axle") == (None, [])
 
 
+_shared_lib = None
+_shared_colours = None
+
+
+def _get_shared_lib():
+    global _shared_lib, _shared_colours
+    if _shared_lib is None:
+        from resolve import Library, ColourTable
+        _shared_lib = Library(str(LDRAW_CACHE))
+        _shared_colours = ColourTable(_shared_lib)
+    return _shared_lib, _shared_colours
+
+
 @pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
 @pytest.mark.parametrize("pid, expected_x_span", [
     ("3704", (-19.5, 19.5)),       # Axle 2
@@ -1371,9 +1384,8 @@ def test_generic_axle_occupancy_synthetic_exclusions():
 ])
 def test_real_plain_axle_parts_accepted(pid, expected_x_span):
     """Real plain Technic Axle parts verified via resolve_part."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1393,9 +1405,8 @@ def test_real_plain_axle_parts_accepted(pid, expected_x_span):
 ])
 def test_real_threaded_axle_parts_accepted(pid, expected_z_span):
     """Real threaded Technic Axle parts spanning along Z verified via resolve_part."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1418,9 +1429,8 @@ def test_real_threaded_axle_parts_accepted(pid, expected_z_span):
 ])
 def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
     """Real Technic Axle with Stop parts decomposed into shaft and flange boxes."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
@@ -1434,9 +1444,6 @@ def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
 @pytest.mark.parametrize("pid", [
     "6587",       # Technic Axle  3 with Stud
     "13670",      # =Technic Axle  3 with Stud
-    "11214",      # Technic Axle Pin Long with Friction with 2L Pin
-    "18651",      # Technic Axle Pin Long with Friction with 2L Axle
-    "43093",      # Technic Axle Pin with Friction
     "11272",      # Technic Axle Connector  2 x  3 Quadruple
     "6538a",      # Technic Axle Joiner
     "21755",      # Technic Axle Joiner  2L Hilt
@@ -1449,15 +1456,90 @@ def test_real_with_stop_axle_parts_accepted(pid, expected_boxes):
     "72892",      # Technic Axle Flexible 26 with Axle 4.8L and Axle 2L on Ends
 ])
 def test_real_axle_feature_exclusions_stay_rejected(pid):
-    """Axle-named components with studs, friction pins, joiner tubes, or flexible cables must remain rejected."""
-    from resolve import Library, ColourTable, resolve_part
-    lib = Library(str(LDRAW_CACHE))
-    colours = ColourTable(lib)
+    """Axle-named components with studs, joiner tubes, towballs, or flexible cables must remain rejected."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
     part = resolve_part(lib, colours, pid + ".dat")
     occ, sockets, needs = P.resolve_occupancy_and_sockets(
         pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
     )
     assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+
+# -----------------------------------------------------------------------------
+# H175 Secondary Connectors (2026-09-28, agent/h175-secondary-connectors, cloud task)
+# -----------------------------------------------------------------------------
+
+TECHNIC_AXLE_PIN_OVERRIDES = [
+    # 2L axle-pin variants:
+    ("43093", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("3749", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("6562", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("4186017", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    ("4206482", [P.box(-20, 20, -6, 6, -6, 6)], 2),
+    # 3L axle-pin variants:
+    ("11214", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("18651", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    ("65249", [P.box(-30, 30, -6, 6, -6, 6)], 3),
+    # Pin 1/2 with Bar 2L:
+    ("61184", [P.box(-60, -12, -4, 4, -4, 4), P.box(-12, 0, -6, 6, -6, 6)], 3),
+]
+
+
+@pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_AXLE_PIN_OVERRIDES)
+def test_technic_axle_pin_overrides_synthetics(pid, expected_boxes, expected_sockets):
+    """Direct dispatcher test: each added axle-pin override returns its verified box and sockets without library."""
+    x0 = min(b[0] for b in expected_boxes)
+    x1 = max(b[1] for b in expected_boxes)
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, "Technic Axle Pin", [x0, -10, -10], [x1, 10, 10], [], [], [], []
+    )
+    assert needs is False
+    assert occ == expected_boxes
+    assert len(sockets) == expected_sockets
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,expected_boxes,expected_sockets", TECHNIC_AXLE_PIN_OVERRIDES)
+def test_technic_axle_pin_overrides_real_geometry(pid, expected_boxes, expected_sockets):
+    """Real geometry test: verified against resolved LDraw meshes for bounds containment and ray-parity solidity."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert occ == expected_boxes
+    assert len(sockets) == expected_sockets
+    assert P._boxes_within_bounds(occ, part.min, part.max)
+    for b in occ:
+        sol = P._stud_box_solid_fraction(part.tris, b)
+        assert sol >= P.STUD_CELL_MIN_SOLID, f"Part {pid} box {b} solid fraction {sol:.3f} below {P.STUD_CELL_MIN_SOLID}"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    # Ball joints:
+    "1938",       # Technic Swashplate Ball Joint with 4 Grooves and Square Hole
+    "32474",      # Technic Ball Joint with Axlehole Blind
+    # Turntables and Swashplates:
+    "1936",       # Technic Swashplate 5 x 5 Top with 5 Pin Holes
+    "1937",       # Technic Swashplate 5 x 5 Base with 4 Pin Holes
+    "99010",      # Technic Turntable 28 Tooth Top
+    "18938",      # Technic Turntable 60 Tooth Top
+    "18939",      # Technic Turntable 60 Tooth Bottom
+])
+def test_turntables_and_ball_joints_stay_rejected(pid):
+    """Turntables (hollow annular rings, core solidity 0.000) and ball joints must remain needs_occupancy=True."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} ({part.title}) must remain needs_occupancy=True"
     assert occ is None
 
 
