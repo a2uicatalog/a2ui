@@ -1727,3 +1727,80 @@ def test_real_stud_bearing_electric_bricks_accepted(pid, expected_boxes):
     assert occ is not None
     assert len(occ) == expected_boxes
 
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, desc", [
+    # Skeletal Limbs & Bones (socket cups & omnidirectional articulation)
+    ("90607", "Constraction Limb 7 Straight w/ Middle Ball Joint"),
+    ("90609", "Constraction Limb 5 Straight w/ Middle Ball Joint"),
+    ("90611", "Constraction Limb 4 Straight"),
+    ("90612", "Constraction Limb 3"),
+    ("90615", "Constraction Limb 7 Forked w/ Middle Ball Joint"),
+    ("32173", "Technic Bionicle Leg 2 x 6 w/ 2 Ball Joints"),
+    ("32476", "Constraction Limb 4 x 7 Bent 45"),
+    # Armor Shells & Fairings (concave inner cradle wrapping bone; solidity < 0.15)
+    ("90640", "Constraction Shell 2.5 x 3 x 4 Flat"),
+    ("90641", "Constraction Shell 2.5 x 3 x 3 Flat"),
+    ("90639", "Constraction Shell 2.5 x 3 x 5 Flat"),
+    ("90649", "Constraction Shell 4 x 7 x 4.5 Shoulder"),
+    ("90652", "Constraction Shell 2.5 x 5 x 8 Chest Flat"),
+    ("1686", "Constraction Shell 2 x 4 x 3.333 Shoulder Pad"),
+    # Torsos & Frames (open cage; perimeter ball joints)
+    ("90623", "Constraction Torso 9 x 11"),
+    ("90625", "Constraction Torso 9 x 9"),
+    ("24010", "Constraction Torso 5 x 7"),
+    ("44135", "Technic Bionicle Rahkshi Lower Torso"),
+    # Connectors & Blocks (open receiving socket cups)
+    ("32174", "Constraction Connector 3 x 2 w/ Ball Socket"),
+    ("90622", "Constraction Connector 2 x 5 w/ Double Sockets"),
+    # Weapons, Tools & Effect Elements (diagonal sweeps; hilt collisions)
+    ("11305", "Constraction Convex Blade 14L w/ Axle"),
+    ("15362", "Claw 6.4L w/ Axle"),
+    ("18396", "Constraction Flame 3.5 x 12 w/ Axle"),
+    # Projectile Discs (circular disc with 20.7 LDU corner protrusion)
+    ("32533", "Technic Disc 5 x 5 Projectile"),
+    # Sculpted Feet (top socket cup receiving leg bone)
+    ("32475", "Constraction Foot 3 x 6 x 2.333 w/ Ball Socket"),
+    # Masks & Helmets (concave face cavity wrapping head)
+    ("42042a", "Constraction Bionicle Mask Krana Su"),
+])
+def test_real_constraction_parts_stay_safely_rejected(pid, desc):
+    """Constraction and Bionicle parts across all 8 sub-families must safely remain
+    needs_occupancy=True per Spec §3 (under-approximation is safe: miss a real collision,
+    never report a false one)."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} ({desc}) should remain needs_occupancy=True"
+    assert occ is None
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, expected_boxes, expected_needs", [
+    # Stud-bearing parts (generic_stud_cell_occupancy)
+    ("47474", 1, False),  # Constraction Shield Holder with Angled Axle and Stud
+    ("54276", 1, False),  # Minifig Legs Bionicle
+    # Linear hole channels (generic_hole_channel_occupancy)
+    ("47296", 4, False),  # Constraction Connector 5 x 2 with Double Round Ball Sockets
+    ("42074", 4, False),  # Constraction Hook Small with Peghole and Axle
+    # Bar grips (bar_grip_points emitting bars connector, occ=None)
+    ("3171", 0, False),   # Constraction Finger Angled with Clip
+    ("28220", 0, False),  # Constraction Shell 0.6 x 2 x 3.5 Flat
+    ("32577", 0, False),  # Constraction Torso 5 x 3 with 3 Pins
+])
+def test_real_constraction_parts_with_existing_connectors_accepted(pid, expected_boxes, expected_needs):
+    """Constraction parts bearing standard studs, planar hole channels, or bar grips
+    must continue to resolve cleanly via existing mechanisms without regression."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is expected_needs, f"{pid} needs_occupancy should be {expected_needs}"
+    assert len(occ) == expected_boxes
+
+
