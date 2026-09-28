@@ -246,18 +246,23 @@ def tyre_occupancy(bounds_min, bounds_max=None, z_max=None):
 #
 # Sockets are empty ([]): wheel rims mount via axle/pin connections and carry no bottom studs/sockets.
 #
-# Hand-verified against real resolved geometry for all 74 clean, undeformed, rotationally symmetric vehicle wheel
-# rims in the library with outer diameter D >= 34.0 LDU (ensuring W >= 12.02 LDU > B = 8.0 LDU, so W - B >= 4.02 LDU).
+# Hand-verified against real resolved geometry for all 89 clean, undeformed, rotationally symmetric vehicle wheel
+# rims in the library with outer diameter D >= 36.0 LDU (ensuring W >= 12.73 LDU > B = 8.0 LDU, so W - B >= 4.73 LDU).
 #
 # Deliberately unaddressed sub-groups (remain needs_occupancy=True):
-# - Small wheel rims (D <= 28.0 LDU, W <= 8.0 LDU; e.g. 30027a-d, 34337, 42610, 50944, 6014a/b, 74967):
-#   W <= 8.0 is smaller than or equal to the standard bore exclusion width, so 4 annular boxes cannot fit.
-# - Composite shortcut assemblies (e.g. 3482c01, 30155c01, 2695c01): multi-part assemblies with tyres,
-#   not atomic parts.
+# - Small wheel rims (D <= 28.0 LDU, W <= 9.90 LDU; e.g. 30027a-d, 34337, 42610, 50944, 6014a/b, 74967, 93593-93595):
+#   W <= 9.90 is smaller than or equal to the standard bore exclusion width, so 4 annular boxes cannot fit.
+# - Composite shortcut assemblies (81 parts total, e.g. 3482c01, 30155c01, 2695c01, 12589c01-c03, 32248, 44293):
+#   CAD multi-part shortcuts combining a wheel rim and tyre; not atomic parts.
+# - Steel axles categorized under Wheel in LDraw (10 parts, e.g. 12588, 15316, 4108, 57877, 70081, 70720, 944, u9132, u9133, u9185):
+#   Steel rods, not wheels.
+# - Tyres categorized under Wheel (12590, 15317): rubber tyres, not rims.
 # - Wheels with integral/stub axles (e.g. 30190, 3464b, 50862, u9163, u9167): have protruding solid axle shafts.
 # - Decorative wheel covers (e.g. 54086, 58088, 61738, 62359, 62701): thin cosmetic face clips.
+# - Hollow gear hoops / mechanisms (44556 hailfire droid wheel gear hoop with empty interior r < 214 LDU).
+# - Duplo non-standard bore / car base subparts (15315 has oversized 10.0 LDU axle bore; 2313a/b car base internal subparts).
 # - Tracks/belts (43903-f1, 53992-f1..f3, 71965-f1, 85543-f5) and mechanisms (32060, 3465a, 4142).
-# - Obsolete or incomplete parts (22969 obsolete, 55981 marked 'Needs Work', 2496 trolley, 3739 off-center).
+# - Obsolete or incomplete / non-symmetric parts (22969 obsolete, 55981 marked 'Needs Work', 2496 trolley, 24869 roller coaster, 277 wheelbarrow, 3739 off-center).
 
 WHEEL_BORE_HALF = 8.0  # Standard Technic axle/pin bore exclusion half-width (LDU)
 
@@ -268,6 +273,7 @@ WHEEL_PARTS = {
     "110638": (125.08, -27.5, 47.5),    # Wheel 30 x 50 with Integral Smooth Racing Tyre
     "11094": (155.74, -46.0, 26.0),     # Wheel 30 x 64 with  7 Pin Holes and  6 Small Holes
     "11208": (36.4, -12.5, 12.5),       # Wheel Rim 10 x 14 with Fake Bolts and  6 Spokes
+    "12589": (42.0, -28.0, 0.0),        # ~Duplo Wheel Rim 11 x 17
     "15038": (140.0, -45.0, 39.0),      # Wheel Rim 34 x 56 with  6 Spokes and  6 Pegholes
     "1872": (37.5, -6.48, 4.0),         # Wheel Rim 11 x 18 Front with 36 Spokes and Knock-off Hub Nut
     "18978a": (37.5, -3.5, 4.0),        # Wheel Rim 11 x 18 Front with  5 Spokes
@@ -299,30 +305,40 @@ WHEEL_PARTS = {
     "32057": (148.0, -17.5, 17.5),      # Wheel Rim 14 x 60 with 3 Spokes and 3 Pegholes
     "32077": (150.0, -35.5, 35.59),     # Wheel Rim 28 x 60 with 3 Spokes and 3 Pegholes
     "32146": (76.0, -27.5, 10.0),       # Wheel 14 x 30 Smooth
+    "32193": (51.86, -16.0, 20.0),      # Wheel 14 x 21 Solid Rubber with Axlehole
     "32197": (172.0, -37.0, 37.0),      # Wheel Rim 30 x 61 with 3 Spokes Swirled
     "32219": (76.0, -18.0, 30.0),       # Wheel 14 x 30 Znap
     "32220": (172.0, -50.0, 10.0),      # Wheel 16 x 68 Znap
+    "32247": (107.61, -30.0, 30.0),     # Wheel 41mm Znap
     "33211": (108.0, -24.0, 0.0),       # Wheel  3.2 x 43 with 10 Spokes Wooden
     "33212": (140.0, -24.0, 0.0),       # Wheel  3.2 x 56 with 10 Spokes Wooden
     "3482": (44.0, -10.0, 10.0),        # Wheel Rim  8 x 17.5 with Axlehole
+    "37383": (165.9, -33.6, 78.4),      # Wheel Rim 42 x 62 with 10 Spokes and  3 Pins
     "39367": (140.0, -17.5, 17.5),      # Wheel 14 x 48 with 4 Spokes with Integral Tyre
     "41896": (108.0, -33.0, 33.0),      # Wheel Rim 26 x 43 with 6 Spokes and 3 Pegholes
     "4266": (76.0, -25.0, 25.0),        # Wheel Rim 20 x 30 Smooth with 6 Pinholes
     "42716": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 "Torq Thrust" with  5 Spokes and External Ribs
+    "4288": (49.95, -17.0, 16.25),      # Wheel 13 x 20 Solid Rubber with Axle Hole
     "44292": (76.01, -25.0, 25.0),      # Wheel Rim 20 x 30 with 3 Pegholes
     "44772": (140.0, -45.0, 39.0),      # Wheel Rim 34 x 56 with 6 Spokes and 3 Pegholes
     "4489a": (84.0, -12.0, 8.0),        # Wheel  2.8 x 34 with  8 Spokes with Round Hole for Wheel Holding Pin
     "4489b": (84.0, -12.0, 8.0),        # Wheel  2.8 x 34 with  8 Spokes with Notched Hole for Wheel Holding Pin
     "46334": (188.0, -20.0, 20.0),      # Wheel 16 x 75 Motorcycle Solid
+    "49098": (56.0, -8.0, 4.0),         # Wheel Rim 11 x 18 Side with Tyre Widener
     "49294": (140.0, -43.5, 42.0),      # Wheel Rim 34 x 56 with  6 Double Spokes and  6 Pegholes
     "49295": (219.53, -17.5, 17.5),     # Wheel 14 x 80 with  4 Spokes with Integral Tyre
+    "50254": (36.0, -4.0, 8.0),         # Train Wheel Small with Notched Hole
     "51378": (187.0, -36.0, 15.0),      # Wheel Rim 20 x 75 with 6 Double Spokes
     "54087": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 with  6 Spokes and No Pegholes
+    "5428": (188.0, -21.0, 80.0),       # Wheel Rim 41 x 75 with  10 Spokes and  3 Pins
     "55982": (42.0, -17.0, 20.0),       # Wheel Rim 14 x 18 with Axlehole
     "56145": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 with  6 Dual Spokes and External Ribs
     "56908": (108.0, -33.0, 33.0),      # Wheel Rim 26 x 43 with 6 Spokes and 6 Pegholes
+    "59521": (395.8, -36.0, 36.0),      # Wheel 28 x 158 with 3 Spokes
     "60208": (76.0, -28.0, 10.0),       # Wheel Rim 16 x 31 with 6 Pegholes
     "6118": (60.0, -50.0, 8.0),         # Wheel 23 x 24 with Tread on Sidewall
+    "64711": (153.47, -20.0, 30.0),     # Wheel 20 x 64 with Spikes and 13 Pegholes
+    "64712": (155.01, -29.0, 50.0),     # Wheel 32 x 64 Conical with Spikes and Inner 48 Tooth Gear
     "6580a": (75.8, -29.0, 29.0),       # Wheel Rim 23 x 22 Offroad with Axlehole
     "6580b": (75.8, -29.0, 29.0),       # Wheel Rim 23 x 22 Offroad with Split Axlehole
     "6582": (92.0, -25.0, 25.0),        # Wheel Rim 20 x 33 with  6 Pinholes
@@ -330,13 +346,17 @@ WHEEL_PARTS = {
     "6595": (90.0, -31.0, 31.0),        # Wheel 25 x 28 VR with 35mm Diameter Rear Rim and Partial Cross Axle Hole
     "66155": (76.0, -40.0, 40.0),       # Wheel Rim 20 x 30 with  3 Dual Angled Spokes and  4L Hub
     "68327": (100.0, -30.0, 10.0),      # Wheel 16 x 40 with  7 Pin Holes
+    "68577": (166.0, -33.6, 78.4),      # Wheel Rim 42 x 62 with 20 Spokes and  3 Pins
     "71720": (268.0, -29.0, 29.0),      # Wheel 24 x 107 Motorcycle with  7 Spokes
     "72210a": (45.0, -4.0, 4.0),        # Wheel Rim 11 x 24 Front with  5 Spokes
     "72210b": (45.0, -4.0, 4.0),        # Wheel Rim 11 x 24 Front with  9 Spokes
+    "73389": (188.0, -22.0, 80.0),      # Wheel Rim 41 x 75 with  5 Spokes and  3 Pins #2 (Right)
+    "73398": (188.0, -22.0, 80.0),      # Wheel Rim 41 x 75 with  5 Spokes and  3 Pins #1 (Left)
     "7877": (140.0, -16.25, 16.25),     # Wheel Rim 13 x 56 with 12 Spokes and Axlehole
     "84772": (156.0, -25.0, 25.0),      # Wheel 20 x 62 Motorcycle Solid
     "86652": (110.0, -32.0, 13.0),      # Wheel Rim 18 x 37 with 6 Pegholes and Short Axle Bush
     "88517": (188.0, -21.25, 21.25),    # Wheel 17 x 75 Motorcycle with Holes in Rim
+    "92851": (42.39, -6.5, 6.5),        # Wheel Minifig Bicycle with Integral Rubber Black Tyre
 }
 
 

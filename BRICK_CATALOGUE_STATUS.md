@@ -687,3 +687,44 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
     - Real resolved geometry tests for 12 representative wheel rims (`2470`, `2695`, `30155`, `32077`, `33211`, `42716`, `3482`, `4266`, `4489a`, `41896`, `7877`, `6580a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
     - Deliberate exclusion tests for 8 parts across the unaddressed sub-groups asserting `needs_occupancy=True`.
   - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **73 passed, 0 failed, 0 skipped** (up from 51 passed before this change).
+
+## 2026-09-28: WHEEL_PARTS Extension: Catalogue-Wide Wheel Rims (agent, `agent/wheel-catalogue-extension`)
+
+- **Task**: Extend `WHEEL_PARTS` to all remaining real wheel rims across the library.
+- **Survey Findings (scripts/ldraw/survey_rejects.py)**:
+  - Baseline Wheel-category survey showed 139 rejected parts (141 accepted, total 280 Wheel parts).
+  - Exhaustive inspection of all 139 rejected parts revealed:
+    - **14 valid real wheel rims** matching the annular inscribed-square model with verified axle/pin bore clearance:
+      - `12589`: Duplo Wheel Rim 11 x 17 ($D=42.0$, $z \in [-28.0, 0.0]$) — empirical check confirms its Duplo axle `12588` has shaft radius 8.0 LDU, which perfectly matches `WHEEL_BORE_HALF = 8.0` LDU.
+      - `32193`: Wheel 14 x 21 Solid Rubber with Axlehole ($D=51.86$, $z \in [-16.0, 20.0]$) — standard Technic axle hole.
+      - `32247`: Wheel 41mm Znap ($D=107.61$, $z \in [-30.0, 30.0]$) — inner pin/axle hole $r=6.0$ LDU.
+      - `37383`: Wheel Rim 42 x 62 with 10 Spokes and 3 Pins ($D=165.9$, $z \in [-33.6, 78.4]$) — Technic supercar rim; central stud `stud2.dat` for cap tile, clear center.
+      - `4288`: Wheel 13 x 20 Solid Rubber with Axle Hole ($D=49.95$, $z \in [-17.0, 16.25]$) — standard Technic axle hole.
+      - `49098`: Wheel Rim 11 x 18 Side with Tyre Widener ($D=56.0$, $z \in [-8.0, 4.0]$) — motorcycle side rim with inner pin hole $r=6.0$ LDU.
+      - `50254`: Train Wheel Small with Notched Hole ($D=36.0$, $z \in [-4.0, 8.0]$) — standard wheel pin hole (`wpinhole.dat`, $r=4.0$ LDU).
+      - `5428`: Wheel Rim 41 x 75 with 10 Spokes and 3 Pins ($D=188.0$, $z \in [-21.0, 80.0]$) — McLaren P1 supercar rim; central stud `stud2.dat` for cap tile.
+      - `64711`: Wheel 20 x 64 with Spikes and 13 Pegholes ($D=153.47$, $z \in [-20.0, 30.0]$) — standard Technic pin hole at center (`connhole.dat`).
+      - `64712`: Wheel 32 x 64 Conical with Spikes and Inner 48 Tooth Gear ($D=155.01$, $z \in [-29.0, 50.0]$) — standard Technic pin hole at center (`connhole.dat`).
+      - `68577`: Wheel Rim 42 x 62 with 20 Spokes and 3 Pins ($D=166.0$, $z \in [-33.6, 78.4]$) — Technic supercar rim; central stud `stud2.dat` for cap tile.
+      - `73389`: Wheel Rim 41 x 75 with 5 Spokes and 3 Pins #2 (Right) ($D=188.0$, $z \in [-22.0, 80.0]$) — supercar directional rim.
+      - `73398`: Wheel Rim 41 x 75 with 5 Spokes and 3 Pins #1 (Left) ($D=188.0$, $z \in [-22.0, 80.0]$) — supercar directional rim.
+      - `92851`: Wheel Minifig Bicycle with Integral Rubber Black Tyre ($D=42.39$, $z \in [-6.5, 6.5]$) — minifig bicycle axle hole ($r=2.0$ LDU).
+    - Additionally unlocked `59521` (Wheel 28 x 158 with 3 Spokes, $D=395.8$, $z \in [-36.0, 36.0]$), a massive real Technic wheel rim from set 8108 categorized under `Technic` with standard central peghole.
+  - **Account of Remaining 125 Excluded Wheel Parts**:
+    - *Composite shortcut assemblies* (81 parts, e.g. `11208c01`, `12589c01-c03`, `15038c01`, `22253c01-c02`, `22969ac01-c02`, `23800c01`, `2688`, `2695c01`, `2903c01-c02`, `2996c01`, `30027ac01/bc01`, `30155c01`, `30190c01`, `32004bc01`, `32020c01`, `32248`, `3464c01-c03`, `3482c01-c05`, `37383c01`, `3739c01`, `41896c01`, `42610c01-c03`, `4266c01-c02`, `44293`, `44772c01-c02`, `4624c03/c05`, `46334c01`, `49294c01`, `50862c01`, `50944c01-c02`, `51719c01`, `55981c01-c06`, `56908c01-c03`, `57877c01`, `6014ac01`, `6014bc01-c03`, `6580ac01/bc01`, `6582c01`, `6595c01-c02`, `68577c01`, `70720c01`, `71720c01-c02`, `74967c01`, `86652c01`, `88517c01-c03`, `93595c01`, `u9081c01`, `u9132c01`): multi-part CAD shortcuts combining a rim and tyre (and/or axle); in official inventory rims and tyres are separate parts.
+    - *Small wheel rims* ($D \le 28.0$ LDU, $W \le 9.90$ LDU, 13 parts: `30027a-d`, `34337`, `42610`, `50944`, `6014a/b`, `74967`, `93593-93595`): inscribed half-width $W \le 9.90$ LDU is too small for standard bore exclusion $B=8.0$ (for $D=20.0$, $W=7.07 < 8.0$ so 4 boxes cannot exist; for $D=28.0$, rim width is under 1.9 LDU).
+    - *Steel axles* (10 parts: `12588`, `15316`, `4108`, `57877`, `70081`, `70720`, `944`, `u9132`, `u9133`, `u9185`): steel shafts miscategorized under Wheel in LDraw.
+    - *Integral or stub axles* (5 parts: `30190`, `3464b`, `50862`, `u9163`, `u9167`): protruding solid axle shafts requiring dedicated modeling.
+    - *Decorative covers* (5 parts: `54086`, `58088`, `61738`, `62359`, `62701`): cosmetic face clips.
+    - *Non-symmetric or off-center* (4 parts: `24869` roller coaster wheels $dx \ne dy$, `2496` trolley, `277` wheelbarrow, `3739` off-center).
+    - *Duplo non-standard bore / subparts* (3 parts: `15315` requires oversized 10.0 LDU radius bore for `15316` axle; `2313a`/`2313b` car base internal subparts with 10-12.5 LDU bore).
+    - *Tyres in Wheel category* (2 parts: `12590`, `15317`): rubber tyres miscategorized under Wheel in LDraw.
+    - *Hollow gear hoops* (1 part: `44556` Hailfire droid 168-tooth gear hoop $D=530.82$ with empty center $r < 214$ LDU).
+    - *Incomplete parts* (1 part: `55981` marked 'Needs Work').
+- **Catalogue Impact**:
+  - `Wheel` category reject count dropped from **139 to 125** (accepted grew from **141 to 155**, out of 280 total).
+  - Across the whole library, `WHEEL_PARTS` now covers **89 real wheel rim parts** (up from 74).
+- **Verification**:
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **96 passed, 0 failed, 0 skipped** (up from 73 passed).
+  - All 15 added parts verified against real resolved LDraw geometry: rotational symmetry, outer cylinder containment, bounds containment, and zero collision with simulated Technic axle.
+  - Dedicated Duplo bore test (`test_duplo_wheel_bore_verification`) verifying safe 8.0 LDU bore clearance on `12589` and proper exclusion of oversized-bore `15315`.
