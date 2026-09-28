@@ -1543,5 +1543,187 @@ def test_turntables_and_ball_joints_stay_rejected(pid):
     assert occ is None
 
 
+# -----------------------------------------------------------------------------
+# H175 Mechanism & Electronics Parts (2026-09-28, agent/h175-mechanism-parts, cloud task)
+# -----------------------------------------------------------------------------
 
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    "2853a",      # Technic Engine Crankshaft with Slot
+    "61903",      # Technic Universal Joint 3L (Complete)
+    "62520",      # Technic Universal Joint 3L End
+    "18947",      # Technic Transmission Driving Ring 3L
+    "6539",       # Technic Transmission Driving Ring
+    "22169",      # Electric Control+ L Motor
+    "85825",      # Electric Powered Up 2 Port Battery Box with Screw Opening
+])
+def test_h175_mechanism_and_electronic_parts_stay_safely_rejected(pid):
+    """Real moving mechanism parts (crankshafts, universal joints, driving rings) and multi-port
+    Powered Up electronics from set 42145 Airbus H175 must remain needs_occupancy=True.
+    See scripts/ldraw/H175_MECHANISM_INVESTIGATION.md for geometric proof."""
+    lib, colours = _get_shared_lib()
+    from resolve import resolve_part
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+# -----------------------------------------------------------------------------
+# Minifig Accessory Investigation (2026-09-28, agent/dispatch-minifig-accessory, cloud task)
+# -----------------------------------------------------------------------------
+# 1. Confirms the operator hypothesis that many sword, blade, tool, instrument, and blaster shapes ALREADY
+#    resolve cleanly with needs_occupancy: false via bar_grip_points() rod connector detection (361 parts
+#    accepted catalogue-wide, 417 total).
+# 2. Confirms that heterogeneous sub-families (swords with pommels/crossguards, shields, sculpted tools,
+#    cups/trophies, sacks/satchels, instruments, food items, misfiled animals, and stud parts failing
+#    boundary containment) safely and honestly remain needs_occupancy: true per spec section 3.
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,expected_bars", [
+    ("10050", 1),       # Minifig Sword Uruk-Hai
+    ("11439", 1),       # Minifig Sword with Jagged Edges
+    ("12885", 2),       # Minifig Paint Roller Brush Handle
+    ("11640", 1),       # Minifig Electric Guitar Classic
+    ("11103", 1),       # Minifig Sword Double Blade with Bar Holder
+    ("11250", 1),       # Minifig Tool Gavel
+    ("13571", 1),       # Minifig Tomahawk with Flat-Silver Blade
+    ("15391", 1),       # Minifig Gun Shooting Blaster
+])
+def test_real_minifig_accessory_bar_grip_accepted(pid, expected_bars):
+    """Representative Minifig Accessory parts with outer bar grips resolve cleanly via bar_grip_points."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should have needs_occupancy=False"
+    bars = P.bar_grip_points(part.min, part.max, part.cylinders, part.tris)
+    assert len(bars) == expected_bars, f"{pid} expected {expected_bars} bars, got {len(bars)}"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid,reason", [
+    # Sub-family A: Swords/blades with pommels or crossguards (handle ends do not meet extremity threshold)
+    ("10053", "Curved sword with pommel knob; handle ends inside bounding box"),
+    ("2530", "Classic Cutlass; handle bounded by basket hilt and pommel; 85.5% open air"),
+    ("18031", "Longsword; 16 LDU handle between crossguard and pommel; 89% open air"),
+    ("11601", "Spiked blade; handle cylinder recessed between spikes"),
+    # Sub-family B: Shields (thin curved shells; handle in concave interior; 80-90% open air)
+    ("10049", "Broad shield; handle recessed at X=[-7.5, 7.5], bounds [-20, 20]; 90% open air"),
+    ("18836", "Triangular shield; handle in concave interior; 80.5% open air"),
+    ("10520", "Round bowed shield; handle in concave interior; 85% open air"),
+    ("2586", "Ovoid shield; handle recessed at X=[-7.5, 7.5]; 85% open air"),
+    # Sub-family C: Tools and utensils with recessed handles or sculpted heads
+    ("10830", "Magnifying glass; thick frame exceeds isolation threshold"),
+    ("2542", "Oar; 80 LDU handle between grip knob and blade"),
+    ("18920", "Scissors; loop handles"),
+    ("21700", "Sonic screwdriver; tool shaft with end details"),
+    # Sub-family D: Cups, goblets, and trophies (hollow drinking vessels)
+    ("10172", "Trophy cup 2.4L; hollow central cup with loop handles; 76% open air"),
+    ("3899", "Minifig cup; hollow drinking cavity with loop handle; 79% open air"),
+    ("2343", "Minifig goblet; hollow cup bowl with stem; 76.5% open air"),
+    # Sub-family E: Sacks, bags, and body-worn accessories (wrap around minifig torso)
+    ("10169", "Minifig sack with hand grab; organic hollow bag"),
+    ("61976", "Minifig satchel; shoulder strap wrapping torso; 93% open air"),
+    # Sub-family F: Musical instruments (curved hollow tubes)
+    ("13808", "Minifig saxophone; curved non-planar hollow brass; 84% open air"),
+    # Sub-family G: Food items (organic sculpted shapes with loops and curves)
+    ("10170", "Food pretzel; open loops with concavities; 74.5% open air"),
+    ("33125", "Food croissant; curved crescent profile; 68% open air"),
+    ("33183", "Food carrot top; organic leafy geometry; 72% open air"),
+    ("33051", "Food apple; sculpted fruit silhouette; 74.5% open air"),
+    # Sub-family H: Misfiled animal figures (investigated and rejected in ANIMAL_INVESTIGATION.md)
+    ("13665", "Animal Bird Crow; misfiled into Minifig Accessory; hollow shell figure"),
+    # Sub-family I: Stud-bearing accessories failing bounds containment
+    ("30089a", "Snapshot camera; candidate 20x20 stud cell exceeds 22 LDU height bounds"),
+    ("3962a", "Minifig radio; candidate 20x20 stud cell overflows X bounds by 1 LDU"),
+    ("64567a", "Lightsaber hilt; candidate 20x20 stud cell exceeds 16 LDU hilt diameter"),
+    ("30340", "Life ring; torus with offset stud exceeding body bounds"),
+    ("102498", "Tool wand; 20x20 stud cell exceeds narrow wand tip bounds"),
+])
+def test_real_minifig_accessory_subfamilies_stay_safely_rejected(pid, reason):
+    """Representative parts from all 9 rejected sub-families must safely remain needs_occupancy=True."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} ({reason}) should remain needs_occupancy=True"
+    assert occ is None
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid", [
+    # Motors & rotating hubs
+    "22169",      # Electric Control+ L Motor (set 42145)
+    "22169c01",   # Electric Control+ L Motor with Coiled Cable
+    "22172",      # Electric Control+ XL Motor
+    "10089c01",   # Electric Power Functions Large Motor Case
+    "10095",      # Electric Power Functions Large Motor Axle Hub
+    "58120",      # Electric Power Functions Medium Motor
+    # Battery boxes & hubs
+    "22127",      # Electric Control+ Hub
+    "22167",      # Electric Powered Up 2 Port Battery Box (set 42145)
+    "2846",       # Electric 9V Battery Box 4 x 14 x 4 Cover
+    "2847",       # Electric 9V Battery Box 4 x 14 x 4 Bottom
+    "2847c02",    # Electric 9V Battery Box Bottom with Red Buttons Complete
+    "74650c01",   # Electric 9V Battery Box 4 x 14 x 4 Complete
+    # Cables, cords & flexible wire harnesses
+    "11145",      # Electric Mindstorms EV3 Cable 25 cm
+    "11146",      # Electric Mindstorms EV3 Cable 35 cm
+    "2775c03",    # Electric Cable Grey with Plugs (Type 4) Twin Extra-Wide/Normal
+    "22168",      # Electric Powered Up Light with Black Coiled Cable
+    # Switches, sliders & kinetic components
+    "24854",      # Electric Powered Up 2 Port Battery Box Switch
+    "24853",      # Electric Control+ Hub Battery Lid
+    "11237",      # Electric Mindstorms EV3 IR-Beacon Channel Selector Slider
+    # Plugs & terminals
+    "23816a",     # Electric Power Functions 2.0 Plug
+    "2775c01",    # Electric Plug (Type 4) Twin Extra-Wide (Complete)
+    # Subparts
+    "10089",      # ~Electric Power Functions Large Motor Case Back
+    "10130",      # ~Electric Power Functions Servo Motor Case Back
+    # Aftermarket electronics
+    "t1008",      # | Brickstuff Pico LED
+    "t1046c01",   # | Circuit Cubes Battery
+])
+def test_real_electric_parts_stay_safely_rejected(pid):
+    """Electric components (motors with moving outputs, hollow battery boxes, flexible cables,
+    mechanism switches, and subparts) must remain needs_occupancy=True with zero phantom boxes."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, f"{pid} should remain needs_occupancy=True"
+    assert occ is None
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched")
+@pytest.mark.parametrize("pid, expected_boxes", [
+    ("15466c01", 8),   # Electric Brick 2 x 4 with USB Flash Drive (Retracted)
+    ("189c01", 7),     # Electric Train 4.5V On/Off Switch Brick 2 x 4
+    ("19066c01", 20),  # Electric Power Functions 2.0 Hub
+    ("20841", 8),      # Electric Power Functions 2.0 Tilt Sensor
+    ("2383c01", 2),    # Electric Light & Sound Brick 1 x 2 x 1.667
+    ("2500c01", 8),    # Electric Light & Sound Brick 1 x 8 with 3 Lights
+    ("265ac01", 4),    # Electric Lightbrick 2 x 2 Type 1 4.5V
+])
+def test_real_stud_bearing_electric_bricks_accepted(pid, expected_boxes):
+    """Rigid electric bricks bearing standard flush top studs must continue to resolve cleanly
+    via generic_stud_cell_occupancy without regression."""
+    from resolve import resolve_part
+    lib, colours = _get_shared_lib()
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should be accepted"
+    assert occ is not None
+    assert len(occ) == expected_boxes
 

@@ -1,5 +1,99 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: Electric, Vehicle, Mated-Connector-Exemption dispatches (cloud agents, cherry-picked from branches after a duplicate-task incident)
+
+Three items dispatched live via `gcloud run jobs execute` (`n4gpz`/`dn75t`/`g5ltz`). A `taskCount`
+override bug (dashboard's fix not yet live on the process that actually fired the dispatch) ran 8
+identical duplicate tasks per item instead of 1; all 3 executions were cancelled mid-flight once found.
+Each branch's pushed work is investigation-only (zero `parts.py`/occupancy code changes), so it carried
+no risk from the duplication — reviewed and cherry-picked here (`.gemini/settings.json` scaffolding
+dropped, matching prior merges' convention). `run_task.sh` hardened same day (task-index-0-only guard on
+live dispatch) so the taskCount bug can't recur regardless of dispatcher state.
+
+- **`electric`** (branch `agent/dispatch-electric-1790602889`): full survey of the Electric category
+  (1,001 candidates). 245 already resolve cleanly (standard stud-bearing electric bricks via
+  `generic_stud_cell_occupancy`). Remaining 756 honestly stay `needs_occupancy=True` — no safe generic
+  family exists: 421 are internal `~Electric` CAD subparts never placed standalone, and 335 are cables
+  (0.5–4% solid), motors with moving output hubs, hollow battery boxes, switches/plugs, and third-party
+  electronics — all would produce false collisions under Spec §3 if boxed. Directly corroborates
+  `H175_MECHANISM_INVESTIGATION.md` (42145's `22167`/`22169` Powered Up components). See
+  [scripts/ldraw/ELECTRIC_INVESTIGATION.md](scripts/ldraw/ELECTRIC_INVESTIGATION.md). 32 new tests added
+  to `tests/test_generic_stud_occupancy.py`, all passing (25 real rejection controls, 7 real acceptance
+  regression checks).
+- **`vehicle`** (branch `agent/dispatch-vehicle-1790602890`): the overnight-watcher premise (car bases
+  missing occupancy) was stale — all 57 standard System car bases/chassis already resolve cleanly. Of the
+  166 LDraw `Vehicle`-category parts, 80 accepted / 86 rejected, and all 86 are accounted for: Duplo (29,
+  wrong stud pitch), motorcycle/scooter frames (18, 1.5–2.4% solid), motor/gearbox housings (16, hollow),
+  forklift masts (13), caterpillar tracks (10, hollow loops), excavator buckets (9, deliberately hollow),
+  vintage steering linkages (7), monorail subparts (4), windscreens (3, see `WINDSCREEN_INVESTIGATION.md`),
+  springs (3), miscategorized steel axles (2), one stepped-stud base. See
+  [scripts/ldraw/VEHICLE_INVESTIGATION.md](scripts/ldraw/VEHICLE_INVESTIGATION.md).
+- **`mated-connector-exemption-generalisation`** (branch
+  `agent/dispatch-mated-connector-exemption-generalisation-1790602891`): architectural scoping doc (no
+  implementation — a complete outcome per the task's own framing) for generalising
+  `brick_parts_validate.py`'s pin/hole + hinge mated-pair collision exemption. Identifies 3 structural
+  deficiencies in the current mechanism: whole-pair exemption blind spot on large parts, indirect-joint
+  blindness (blocks Technic panels mounted via an intermediary pin — the exact `TECHNIC_PANEL_INVESTIGATION.md`
+  blocker), and missing connector families (axles, clips, towballs). Census: 979+ parts catalogue-wide
+  depend on this, including 150+ axles / 35 panels / 80 bushes in H175 (42145) alone. See
+  [scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md](scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md)
+  for the full proposed architecture — real implementation is a separate, not-yet-scheduled backlog item.
+
+## 2026-09-28: Minifig Accessory Category Investigation (agent, `agent/dispatch-minifig-accessory-1790594248`)
+
+- **Task**: Self-selected backlog target per operator steer: `minifig-accessory` (Minifig Accessory, 820 parts in LDraw `0 !CATEGORY Minifig Accessory`).
+- **Hypothesis tested**: operator hypothesis that many sword, blade, tool, and instrument shapes already resolve cleanly via the existing `bar_grip_points()` rod-connector detection without new occupancy code.
+- **Hypothesis CONFIRMED, no new code needed**:
+  - Exactly **361 Minifig Accessory parts** (44.0% of the entire 820-part category) already resolve cleanly with `needs_occupancy: false` via `bar_grip_points()`.
+  - Together with 99 parts via `generic_stud_cell_occupancy()` and 9 via `minifig_headwear_socket()`, a total of **417 parts (50.9%)** of the category are already accepted, catalogue-wide, with zero changes to `parts.py`.
+- **Remaining 403 parts correctly stay rejected** — strongly heterogeneous (shields, sculpted weapons with pommels/crossguards, cups/goblets/trophies, sacks/satchels, instruments, food items, misfiled animal figures already covered by `ANIMAL_INVESTIGATION.md`, and stud-bearing accessories failing bounds containment). Forcing a category-wide box would generate severe false collisions on every sub-family; see [scripts/ldraw/MINIFIG_ACCESSORY_INVESTIGATION.md](scripts/ldraw/MINIFIG_ACCESSORY_INVESTIGATION.md) for the full forensic breakdown.
+- **Verification**: 36 new tests added to `tests/test_generic_stud_occupancy.py` (8 real bar-grip-accepted parts, 28 real negative-control parts across all 9 rejected sub-families). Agent's own reported pass count: 306/306 in that file, 347/348 (1 deselected) full gate suite.
+
+## 2026-09-28: H175 Mechanism & Electronics Parts Investigation (cloud agent, `agent/dispatch-h175-mechanism-parts-1790593245`)
+
+- **Task**: Self-selected backlog item prioritized by Curtis's operator steer: `h175-mechanism-parts`
+  (remaining mechanical and electronic parts from LEGO Technic 42145 Airbus H175 Rescue Helicopter:
+  universal joints, crankshafts, driving rings, and Powered Up motors/hubs).
+- Completed forensic scoping investigation: see [scripts/ldraw/H175_MECHANISM_INVESTIGATION.md](scripts/ldraw/H175_MECHANISM_INVESTIGATION.md).
+- **Key finding**: NO safe occupancy family or axis-aligned bounding box override exists across these 4 families.
+  Every candidate box violates Spec Section 3 ("under-approximation is always safe: miss a real collision on the dropped area, never report a false one"):
+  1. *Engine Crankshafts* (`2853`, `2853a`–`c`, `2854`): Asymmetric offset throw ($x = -10.0$ LDU). A full bounding
+     box encases the crank pin where the connecting rod big end (`2852`) mounts, guaranteeing a 100% false
+     collision on any installed rod. An inscribed central shaft box has solidity only 0.1150 (< 0.15 threshold).
+     Dynamic rotation sweeps a cylindrical envelope rather than a static box.
+  2. *Universal Joints* (`61903`, `62520`, `62519`, `9244`, `3712`, `575`): Axles insert 20 LDU into both ends; any
+     solid box on either end collides with inserted axles. The center is an open cross gimbal. Operating angles up to
+     45° in real sets render an axis-aligned box physically invalid during articulation.
+  3. *Driving Rings & Transmission Joiners* (`18947`, `18948`, `6539`, `32187`): `18948` is an internal joiner sleeve
+     with an open through-axle bore ($[-6, 6] \times [-6, 6]$). `18947` is an outer sliding collar ($r \approx 10..12$)
+     with a deep outer selector fork groove. Concentric co-location means any solid box on either part falsely
+     collides with the mating part, the through-axle, and the selector fork (`18946`).
+  4. *Powered Up Electronics* (`22169c01`, `22169`, `85825`, `22127`): Motor `22169c01` includes a coiled cable
+     spanning a 3,612,711 LDU³ box with ray-parity solidity of only 7.5% (92.5% empty air). Hub `85825` has 24
+     mounting pin holes penetrating across orthogonal planes ($X$ and $Y$). Single-axis channels cannot accommodate
+     perpendicular mounting pins without multi-axis carving and mated-connector collision exemptions.
+- **Set Impact (LEGO Technic 42145)**:
+  - Confirmed 1x `85825` Hub, 1x `22169c01` Motor, 1x `61903` Universal Joint, 2x `18947` Driving Ring,
+    2x `18948` Axle Joiner, 1x `2853a` Crankshaft honestly stay `needs_occupancy=True`.
+  - Zero false collisions produced in 42145's high-density motorized gearbox and rotor mast.
+- **Catalogue Reject Survey (`scripts/ldraw/survey_rejects.py`)**:
+  - Survey across mechanism/electronic categories confirms:
+    - Technic Engine crankshafts (`2853`, `2853a`, `2853b`, `2853c`, `2854`) stay rejected: 5 parts.
+    - Technic Universal Joints (`61903`, `62520`, `62519`, `9244`, `3712`, `575`) stay rejected: 6 parts.
+    - Technic Transmission driving rings (`18947`, `18948`, `6539`, `32187`, `2473a`) stay rejected: 5 parts.
+    - Powered Up / Control+ motors & battery boxes (`22169c01`, `22169`, `85825`, `22127`, `22172`, `22172c01`) stay rejected: 6 parts.
+    - Total: 22 real mechanism/electronic parts verified correctly and safely rejected.
+- **Verification**:
+  - Added regression test `test_h175_mechanism_and_electronic_parts_stay_safely_rejected` to `tests/test_generic_stud_occupancy.py`.
+  - Unit test suite: **278 passed** in `tests/test_generic_stud_occupancy.py` (up from 270, 8 representative parts verified, 0 failures).
+  - Fast test suite: **319 passed, 1 deselected** across generic stud occupancy, brick parts validate, and ldraw parts.
+- **Follow-on (interactive session, same day)**: although occupancy remains unresolved for these families, 7 of the
+  8 investigated ids (`2853a`, `61903`, `62520`, `18947`, `6539`, `22169`, `85825` — excluding `2853`, a
+  `~Moved to 2853a` alias stub) had never been baked at all, so they were invisible in the renderer regardless of
+  occupancy. Curated and baked (`--ids=` targeted mode) for visual completeness: they now render correctly with
+  real geometry, honestly flagged `needs_occupancy: true`, zero `part_checks.py` errors. Moved real H175 coverage
+  (Rebrickable BOM diff, `external_ids.LDraw` exact match against `public/parts/index.json`) **70.8% → 74.8%**.
+
 ## 2026-09-28: Priority target set — LEGO Technic 42145 Airbus H175 Rescue Helicopter
 
 Curtis asked to track this as a priority real-set reference for the occupancy-family backlog. Real,
