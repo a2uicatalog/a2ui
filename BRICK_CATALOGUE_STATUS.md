@@ -958,3 +958,55 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
     - `test_real_torso_parts_accepted` (26 real parts: `973`, `43370`, sticker `973d*`, and printed variants `973p*` across all major LEGO themes)
     - `test_real_torso_feature_exclusions_stay_rejected` (`10677`, `11938`, `24319`, `97149`, `37777`, `003428b`)
   - Test suite pass count: **111 passed** in `tests/test_generic_stud_occupancy.py` (up from 77, 34 new tests added).
+
+## 2026-09-28: Technic Axle Pin Occupancy Family (`agent/backlog-planner-1`)
+
+- **Task**: Self-selected from declared backlog (`agents/gcp-catalogue-agents/backlog.json`) using official set priority rules: real occupancy for coaxial Technic Axle Pin hybrid elements (`43093`, `3749`, `11214`, `18651`, `6562`, `65249`) in `scripts/ldraw/parts.py`.
+- **Target Selection & Motivation**:
+  - Selected `technic-axle-pins` as the highest priority pending item in the project backlog:
+    1. **Real Set Impact**: Moves coverage on the named priority official set LEGO Technic 42145 (Airbus H175 Rescue Helicopter) by **163 piece instances** (43093: 87 pcs, 11214: 48 pcs, 18651: 19 pcs, 3749: 9 pcs) -- representing 8.1% of the entire 2,001-piece set, the single largest remaining piece count lever across any named model.
+    2. **Catalogue-Wide Ubiquity**: Coaxial axle-pins are standard connector components present across hundreds of official Technic models.
+    3. **High Confidence & Safety**: Unlike moving mechanisms (`h175-mechanism-parts`), multi-axis cross blocks, or thin curved shells, axle-pins are rigid, single-axis coaxial elements with standard shaft dimensions ($r = 6.0$ LDU in Y and Z) permitting safe, collision-free under-approximation.
+- **Core Insights & Geometric Verification**:
+  - **Coaxial Shaft Geometry**:
+    - Technic Axle Pins combine a standard Technic pin shaft and a standard '+' cross-section axle shaft along the X-axis.
+    - Shaft cross-section: both the pin shaft ($r = 6.0$ LDU) and the axle shaft ($r = 6.0$ LDU) fit inside the standard $12 \times 12$ LDU square ([-6.0, 6.0] $\times$ [-6.0, 6.0] in Y and Z).
+    - Overall length: 2L (40 LDU: $x \in [-20.0, 19.5]$ for `43093`, `3749`, `6562`) or 3L (60 LDU: $x \in [-30.0, 29.5]$ for `11214`, `18651`, `65249`).
+  - **Under-Approximation Safety (Spec §3 'Never Report a False One')**:
+    - The core shaft box `box(round(x0, 2), round(x1, 2), -6.0, 6.0, -6.0, 6.0)` spans the full length along X.
+    - The larger central retaining collar / friction ribs ($r = 8.0$ LDU in Y and Z, spanning $\pm 1$ LDU in X) are intentionally excluded from the occupancy box. This directly mirrors the established pattern of every Technic pin in `OVERRIDES` (`2780`, `3673`, `4459`, `32002`, `32556`, `77765`), all of which bound the pin at $[-6, 6] \times [-6, 6]$ in Y and Z.
+    - Bounding strictly at $\pm 6.0$ LDU guarantees zero false collisions when inserted into standard Technic pegholes (bore radius 8.0/10.0 LDU) or axle holes (radius 6.0 LDU).
+  - **Ray-Parity Solidity Proof**:
+    - Evaluated via `_stud_box_solid_fraction` against real resolved triangle meshes:
+      - `43093` (Axle Pin with Friction): **52.1%** solid
+      - `3749` / `6562` (Axle Pin smooth): **54.2%** solid
+      - `11214` (Axle Pin Long with 2L Pin): **56.2%** solid
+      - `18651` (Axle Pin Long with 2L Axle): **60.4%** solid
+      - `65249` (Axle Pin Long without Friction with 2L Axle): **58.3%** solid
+      - `4206482` (Obsolete with Friction): **52.1%** solid
+      - `4186017` (Obsolete Tan): **54.2%** solid
+    - All variants exceed `STUD_CELL_MIN_SOLID = 0.15` by a factor of $3.5\times$ to $4\times$.
+  - **Sockets**:
+    - Axle pins carry 0 bottom anti-stud sockets (`sockets = []`), matching wheels, tyres, dishes, torsos, and axles.
+  - **Dispatch Precedence**:
+    - Placed before `bar_grip_points` in `resolve_occupancy_and_sockets`: prevents smooth axle pins (`3749`, `6562`, `65249`) from being misclassified as empty-occupancy bar grips due to radius-4.0 pin slot tabs.
+- **Safe Exclusions**:
+  - Complex multi-axis connector parts containing both "axle" and "pin" in their titles (`6536`, `32184`, `42003`, `10197`, `32167`, `64311`) are strictly excluded via keyword filtering (`cross block`, `beam`, `connector`, `gear`, `box`, `perpendicular`, `split`, `fork`, `bent`, `angle`, `towball`, `ball`, `circular`).
+  - Parts with studs or through-holes are rejected.
+  - Off-center meshes or non-X-axis orientations are rejected.
+- **Impact & Survey Delta**:
+  - **Named Priority Official Set (LEGO Technic 42145 Airbus H175 Rescue Helicopter)**:
+    - **+163 piece instances** newly resolved with real solid collision geometry (`43093`: 87, `11214`: 48, `18651`: 19, `3749`: 9).
+    - Renderable pieces in 42145 with verified occupancy moved from 1,176 (58.4%) to **1,339 (66.5%)**.
+  - **Catalogue Reject Survey (`scripts/ldraw/survey_rejects.py`)**:
+    - `Technic Axle` category: official production axle pins (`43093`, `11214`, `18651`) accepted.
+    - `Obsolete` category: obsolete alias `4206482` accepted.
+    - 4 parts previously carrying empty occupancy (`[]`) now possess real solid collision bounds (`3749`, `6562`, `4186017`, `65249`).
+- **Verification**:
+  - Added 14 new unit tests in `tests/test_generic_stud_occupancy.py`:
+    - `test_generic_axle_pin_occupancy_synthetic` (2L and 3L synthetic meshes)
+    - `test_generic_axle_pin_occupancy_synthetic_exclusions` (bad bounds, off-center, studs, holes, excluded titles)
+    - `test_real_axle_pin_parts_accepted` (real resolved geometry for `43093`, `3749`, `11214`, `18651`, `6562`, `65249`)
+    - `test_real_axle_pin_negative_controls_stay_rejected` (`6536`, `32184`, `42003`, `10197`, `32167`, `64311`)
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py tests/test_ldraw_parts.py`): **237 passed, 1 skipped, 0 failed**.
+
