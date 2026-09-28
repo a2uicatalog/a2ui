@@ -5,8 +5,8 @@ OMR files carry every part's position, rotation matrix and colour in build steps
 lists a set's part inventory) they are enough to reproduce a real LEGO set. This module:
   * splits the MPD into its FILE sections and flattens nested sub-models into one list of leaf parts,
   * resolves colour 16 (inherit) through the sub-model chain,
-  * maps each 3x3 matrix onto the renderer's 24 axis-aligned rotations (PART_ROT) -- tilted/mirrored parts are
-    counted, never guessed,
+  * maps each 3x3 matrix onto either the renderer's 24 axis-aligned rotations (PART_ROT) or preserves continuous 3x3
+    rotation matrices for arbitrary orientations; unrenderable (e.g. mirrored/sheared) parts are counted, never guessed,
   * reports coverage against the baked parts in public/parts/ (a part with no baked mesh cannot be drawn),
   * normalises the model so its lowest part sits on the baseplate (y=0) and its footprint is stud-aligned.
 Source models are CC BY (LDraw OMR, CCAL 2.0): callers must keep the attribution.
@@ -92,15 +92,46 @@ def flatten(text):
     return leaves
 
 
-def rot_index(m, tol=0.02):
-    """Index into PART_ROT for an axis-aligned proper rotation, else None."""
+def _det3(m):
+    return (m[0] * (m[4] * m[8] - m[5] * m[7])
+          - m[1] * (m[3] * m[8] - m[5] * m[6])
+          + m[2] * (m[3] * m[7] - m[4] * m[6]))
+
+
+def rot_index(m, tol=0.02, det_tol=0.1):
+    """Index into PART_ROT (0..23) for an axis-aligned proper rotation, or a 9-tuple of rounded floats
+    for an arbitrary proper rotation (det ≈ +1.0), else None (e.g. reflections or invalid matrices)."""
     for i, r in enumerate(PART_ROT):
         if all(abs(a - b) <= tol for a, b in zip(m, r)):
             return i
+    det = _det3(m)
+    if abs(det - 1.0) <= det_tol:
+        return tuple(round(v, 4) for v in m)
     return None
 
 
+def bottom_y(pid, l, r, mesh=None):
+    """Lowest world-Y point (largest Y, LDraw Y down) for part pid at translation l['t'] and rotation r."""
+    if mesh is None:
+        mesh = json.loads((PARTS_DIR / (pid + ".json")).read_text())
+    b = mesh["bounds"]
+    q = float(mesh.get("quant", 16))
+    m = PART_ROT[r] if isinstance(r, int) else r
+    ys = []
+    for x in (b["min"][0], b["max"][0]):
+        for y in (b["min"][1], b["max"][1]):
+            for z in (b["min"][2], b["max"][2]):
+                ys.append(m[3] * x / q + m[4] * y / q + m[5] * z / q)
+    return l["t"][1] + max(ys)
+
+
 def coverage(leaves, baked=None):
+    """Reports coverage against baked parts in public/parts/ and renderability.
+
+    Parts whose part id is baked and whose rotation is either an axis-aligned index (PART_ROT)
+    or a valid continuous proper rotation matrix are counted as renderable. Tilted parts with
+    unrenderable transforms (e.g. reflections) remain in the tilted count.
+    """
     baked = baked if baked is not None else baked_ids()
     n = len(leaves)
     have = [l for l in leaves if PART_ID_ALIAS.get(l["part"], l["part"]) in baked]
@@ -114,7 +145,10 @@ def coverage(leaves, baked=None):
 
 
 def to_parts_model(leaves, baked=None):
-    """partsModel entries [id, x, y, z, r, colour, step] for the renderable leaves, lowest part on y=0, stud-aligned."""
+    """partsModel entries [id, x, y, z, r, colour, step] for the renderable leaves, lowest part on y=0, stud-aligned.
+
+    Rotation `r` is an int (0..23) for axis-aligned parts, or a 9-tuple of rounded floats for arbitrary rotations.
+    """
     baked = baked if baked is not None else baked_ids()
     rows = []
     for l in leaves:
@@ -125,18 +159,7 @@ def to_parts_model(leaves, baked=None):
     if not rows:
         return []
     meshes = {pid: json.loads((PARTS_DIR / (pid + ".json")).read_text()) for pid in {p for p, _, _ in rows}}
-    q = 16.0
-
-    def bottom_y(pid, l, r):
-        b = meshes[pid]["bounds"]
-        m = PART_ROT[r]
-        ys = []
-        for x in (b["min"][0], b["max"][0]):
-            for y in (b["min"][1], b["max"][1]):
-                for z in (b["min"][2], b["max"][2]):
-                    ys.append(m[3] * x / q + m[4] * y / q + m[5] * z / q)
-        return l["t"][1] + max(ys)
-    floor = max(bottom_y(p, l, r) for p, l, r in rows)          # LDraw y is down: the largest y is the lowest point
+    floor = max(bottom_y(p, l, r, mesh=meshes[p]) for p, l, r in rows)          # LDraw y is down: the largest y is the lowest point
     xs = [l["t"][0] for _, l, _ in rows]
     zs = [l["t"][2] for _, l, _ in rows]
     cx = round((min(xs) + max(xs)) / 2 / 20) * 20
