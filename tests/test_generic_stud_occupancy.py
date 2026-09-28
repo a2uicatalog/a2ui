@@ -1272,5 +1272,127 @@ def test_real_torso_feature_exclusions_stay_rejected(pid):
     assert occ is None
 
 
+def test_generic_axle_pin_occupancy_synthetic():
+    """Synthetic closed-box meshes along X-axis testing generic_axle_pin_occupancy."""
+    # Standard 2L axle pin (-20 to 20, 12x12 shaft)
+    tris = _box_tris(-20.0, 20.0, -6.0, 6.0, -6.0, 6.0)
+    occ, sock = P.generic_axle_pin_occupancy(
+        (-20.0, -8.0, -8.0), (20.0, 8.0, 8.0),
+        studs=None, holes=None, cylinders=None, tris=tris,
+        title="Technic Axle Pin with Friction"
+    )
+    assert occ == [(-20.0, 20.0, -6.0, 6.0, -6.0, 6.0)]
+    assert sock == []
+
+    # Standard 3L axle pin (-30 to 30, 12x12 shaft)
+    tris3 = _box_tris(-30.0, 30.0, -6.0, 6.0, -6.0, 6.0)
+    occ3, sock3 = P.generic_axle_pin_occupancy(
+        (-30.0, -8.0, -8.0), (30.0, 8.0, 8.0),
+        studs=None, holes=None, cylinders=None, tris=tris3,
+        title="Technic Axle Pin Long with Friction with 2L Pin"
+    )
+    assert occ3 == [(-30.0, 30.0, -6.0, 6.0, -6.0, 6.0)]
+    assert sock3 == []
+
+
+def test_generic_axle_pin_occupancy_synthetic_exclusions():
+    """Synthetic tests verifying rejection of invalid titles, studs, holes, or geometry."""
+    tris = _box_tris(-20.0, 20.0, -6.0, 6.0, -6.0, 6.0)
+
+    # Missing title or unrelated title
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, -8.0, -8.0), (20.0, 8.0, 8.0), tris=tris, title="Brick 2 x 4"
+    )
+    assert occ is None
+
+    # Excluded keywords (cross block, beam, connector)
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, -8.0, -8.0), (20.0, 8.0, 8.0), tris=tris,
+        title="Technic Cross Block 1 x 2 (Axle/Pin)"
+    )
+    assert occ is None
+
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, -8.0, -8.0), (20.0, 8.0, 8.0), tris=tris,
+        title="Technic Beam 1 with Axle Hole and Pin"
+    )
+    assert occ is None
+
+    # Has studs or through-holes
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, -8.0, -8.0), (20.0, 8.0, 8.0), studs=[((0, 0, 0), (0, -1, 0))],
+        tris=tris, title="Technic Axle Pin"
+    )
+    assert occ is None
+
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, -8.0, -8.0), (20.0, 8.0, 8.0), holes=[((0, 0, 0), (0, 1, 0))],
+        tris=tris, title="Technic Axle Pin"
+    )
+    assert occ is None
+
+    # Bad bounds (too short along X, or too wide in Y/Z)
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-5.0, -8.0, -8.0), (5.0, 8.0, 8.0), tris=tris, title="Technic Axle Pin"
+    )
+    assert occ is None
+
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, -20.0, -8.0), (20.0, 20.0, 8.0), tris=tris, title="Technic Axle Pin"
+    )
+    assert occ is None
+
+    # Off-center in Y/Z
+    occ, _ = P.generic_axle_pin_occupancy(
+        (-20.0, 0.0, -8.0), (20.0, 16.0, 8.0), tris=tris, title="Technic Axle Pin"
+    )
+    assert occ is None
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_x0,expected_x1", [
+    ("43093", -20.0, 19.5),   # Technic Axle Pin with Friction (1L pin + 1L axle)
+    ("3749", -20.0, 19.5),    # Technic Axle Pin (smooth)
+    ("11214", -30.0, 29.5),   # Technic Axle Pin Long with Friction with 2L Pin
+    ("18651", -30.0, 29.5),   # Technic Axle Pin Long with Friction with 2L Axle
+    ("6562", -20.0, 19.5),    # =Technic Axle Pin (alias of 3749)
+    ("65249", -30.0, 29.5),   # Technic Axle Pin Long without Friction with 2L Axle
+])
+def test_real_axle_pin_parts_accepted(pid, expected_x0, expected_x1):
+    """Real resolved Technic Axle Pin elements accepted with exact shaft boxes and zero sockets."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title or pid, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False, f"{pid} should be accepted"
+    assert occ == [(expected_x0, expected_x1, -6.0, 6.0, -6.0, 6.0)], f"{pid} occupancy box mismatch"
+    assert sockets == [], f"{pid} should have empty sockets"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "6536",      # Technic Cross Block 1 x 2 (Axle/Pin)
+    "32184",     # Technic Cross Block 1 x 3 (Axle/Pin/Axle)
+    "42003",     # Technic Cross Block 1 x 3 (Axle/Pin/Pin)
+    "10197",     # Technic Axle and Pin Connector Hub with 2 Axles at 90 Degrees
+    "32167",     # Technic Gear Box Half with 4 Axle Stubs and 6 Pin Sockets
+    "64311",     # Constraction Connector 7 x 2 with Double Angled Ball Sockets and Perpendicular Axle/Pin Holes
+])
+def test_real_axle_pin_negative_controls_stay_rejected(pid):
+    """Complex multi-axis connector parts containing both axle and pin words stay rejected by generic_axle_pin_occupancy."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sock = P.generic_axle_pin_occupancy(
+        part.min, part.max, part.studs, part.holes, part.cylinders, part.tris, part.title or pid
+    )
+    assert occ is None, f"{pid} should be rejected by generic_axle_pin_occupancy"
+    assert sock == []
+
+
 
 
