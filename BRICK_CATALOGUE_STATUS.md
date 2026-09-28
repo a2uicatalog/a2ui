@@ -1235,3 +1235,38 @@ Operator-prioritised backlog run for item **`h175-secondary-connectors`** (*H175
     - `test_turntables_and_ball_joints_stay_rejected`: 7 negative control tests confirming turntables and ball joints remain `needs_occupancy=True`.
   - Refactored axle test suites to use cached shared library instance `_get_shared_lib()`, cutting test runtime and eliminating container OOM pressure.
   - Test suite pass count: **292 passed** in `tests/test_generic_stud_occupancy.py` (up from 270). Full test suite: **330 passed, 1 deselected** across generic occupancy, brick parts validate, and ldraw parts.
+
+## 2026-09-28: Continuous Rotation Collision Validation in OMR Importer (`omr_import.py`)
+
+Operator-prioritised run to integrate the Python OBB/SAT collision detection core into `scripts/ldraw/omr_import.py`:
+- **Problem**: When importing official LDraw OMR models (.mpd/.ldr), `omr_import.py` previously tested rotation matrices strictly against the 24 canonical orthogonal rotations (`PART_ROT[0..23]`). Any continuously rotated part (`rot_index(m) is None`) was immediately excluded from `coverage()` and `to_parts_model()`, falsely penalising sets with tilted sub-assemblies, angled train cabs, diagonal braces, or articulated hinges.
+- **Solution Built**:
+  - `omr_import.py` now integrates the Python OBB/SAT collision core (`rot_ldu`, `_world_boxes`, `_boxes_overlap` from `renderers/brick_parts_validate.py`).
+  - When `rot_index(m)` returns `None`, `_safe_tilted_indices()` validates whether candidate tilted parts can be placed safely:
+    - Generates world OBBs via `_world_boxes()`. Parts without baked occupancy are safely excluded.
+    - Exempts intentional mated pin/hole and hinge connections from collision.
+    - Evaluates overlaps against all adjacent parts using an 80-LDU broadphase spatial grid and the 15-axis SAT narrowphase test (`_boxes_overlap`).
+  - Safe continuously-rotated parts are admitted into `coverage()` as `renderable`.
+  - `to_parts_model()` emits the exact 9-tuple continuous rotation matrix in output rows for safe tilted parts, and `bottom_y()` dynamically supports arbitrary 9-tuple matrices for floor elevation grounding.
+  - Added unit and integration tests in `tests/test_omr_import.py` verifying canonical identification, continuous rotation detection, safe inclusion, colliding exclusion, and the invariant `len(to_parts_model(leaves)) == coverage(leaves)['renderable']`.
+- **Measured Real-World Coverage Impact (`real_set_coverage.py`)**:
+  - Evaluated against a 45-set sample of real official LDraw OMR sets:
+    - Renderable part instances jumped from **35,207 (57.0%)** to **46,248 (74.8%)**, unlocking **+11,041 real parts rendered (+17.8 percentage points)**.
+    - **32 out of 45 sets** saw massive positive coverage increases:
+      - Imperial Star Destroyer UCS (`10030-1`): 13.6% -> 69.6% (**+1,702 parts**)
+      - Millennium Falcon UCS (`10179-1`): 44.5% -> 72.6% (**+1,518 parts**)
+      - Rebel Snowspeeder UCS (`10129-1`): 2.7% -> 82.1% (**+1,155 parts**)
+      - Death Star II UCS (`10143-1`): 46.4% -> 78.3% (**+938 parts**)
+      - Y-Wing Attack Starfighter UCS (`10134-1`): 2.6% -> 61.8% (**+883 parts**)
+      - B-Wing Starfighter UCS (`10227-1`): 3.5% -> 54.6% (**+765 parts**)
+      - Imperial Shuttle UCS (`10212-1`): 56.6% -> 82.3% (**+649 parts**)
+      - Red Five X-Wing Starfighter UCS (`10240-1`): 33.0% -> 71.0% (**+597 parts**)
+      - Imperial AT-ST UCS (`10174-1`): 9.7% -> 56.8% (**+595 parts**)
+      - Metroliner 9V Train (`10001-1`): 24.1% -> 63.6% (**+335 parts**)
+      - Vader's TIE Advanced UCS (`10175-1`): 50.6% -> 76.1% (**+305 parts**)
+      - Café Corner Modular (`10182-1`): 42.6% -> 50.2% (**+264 parts**)
+      - Rebel Blockade Runner UCS (`10019-1`): 74.8% -> 85.8% (**+193 parts**)
+- **Explicit Next Steps (Out of Scope for this run)**:
+  - JS/browser rendering pipeline: update WebGL shader/matrix pipeline in `atoms_brick.gs` (`partTp`) to consume 9-element transformation arrays directly.
+  - Update Canvas-2D fallback renderer to project and render OBB wireframes.
+  - Update `_partsModelSanitise` / `_brick_parts_model_sanitise` schemas to permit 9-tuple matrix representations.

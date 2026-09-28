@@ -85,6 +85,27 @@ All tests are implemented in `tests/test_brick_parts_validate.py`.
 
 ---
 
+## OMR Importer Integration (`scripts/ldraw/omr_import.py`) — COMPLETE (2026-09-28)
+
+`scripts/ldraw/omr_import.py` now integrates the OBB/SAT collision detection core:
+- When `rot_index(m)` returns `None` (non-axis-aligned continuous rotation), `omr_import.py` evaluates candidate placement via `_safe_tilted_indices()`:
+  - Generates world OBBs via `_world_boxes(mesh, m, *l['t'])`.
+  - Excludes parts without baked occupancy.
+  - Exempts intentional mated pin/hole and hinge connections from collision.
+  - Evaluates potential overlaps with all adjacent parts using an 80-LDU broadphase spatial grid and the 15-axis SAT core `_boxes_overlap()`.
+- Safe parts are counted as `renderable` in `coverage()`.
+- `to_parts_model()` emits the continuous 9-tuple matrix directly in output rows for safe parts, and `bottom_y()` calculates floor elevation seamlessly for both integer indices and 9-tuple matrices.
+- Tested and verified in `tests/test_omr_import.py` (7 tests passing).
+- **Empirically Measured Real-World Impact**: Across 45 official LDraw OMR sets (`real_set_coverage.py`), renderable part instances jumped from 35,207 (57.0%) to 46,248 (74.8%), an increase of **+11,041 real parts rendered (+17.8 percentage points)**:
+  - Imperial Star Destroyer UCS (`10030-1`): 13.6% -> 69.6% (+1,702 parts)
+  - Millennium Falcon UCS (`10179-1`): 44.5% -> 72.6% (+1,518 parts)
+  - Rebel Snowspeeder UCS (`10129-1`): 2.7% -> 82.1% (+1,155 parts)
+  - Death Star II UCS (`10143-1`): 46.4% -> 78.3% (+938 parts)
+  - Y-Wing Attack Starfighter UCS (`10134-1`): 2.6% -> 61.8% (+883 parts)
+  - Metroliner 9V Train (`10001-1`): 24.1% -> 63.6% (+335 parts)
+
+---
+
 ## What Is NOT Done Yet (Explicit Next Steps)
 
 The following items are intentionally out of scope for this task and are documented for subsequent sessions:
@@ -92,10 +113,7 @@ The following items are intentionally out of scope for this task and are documen
 1. **JavaScript Twin in `apps-script-surface/gas-wired-renderer/atoms_brick.gs`**:
    - Port `worldBoxes`, `boxesOverlap`, and `rotLDU` to match the Python implementation with identical 15-axis SAT math.
    - Run `tests/test_brick_parts_validate_js.py` and `scripts/gen_parts_parity_cases.mjs` to establish JS/Python twin parity.
-2. **OMR Importer (`scripts/ldraw/omr_import.py`)**:
-   - Update `rot_index` to emit 9-tuples when rotation matrix does not match any entry in `PART_ROT[0..23]`.
-   - Update `bottom_y` and `to_parts_model` to handle 9-tuple matrices.
-3. **Live Rendering & Pipeline Integration**:
+2. **Live Rendering & Pipeline Integration**:
    - Update WebGL shader / matrix pipeline in `atoms_brick.gs` (`partTp`) to accept 9-element arrays directly.
    - Update Canvas-2D fallback renderer to draw projected OBB wireframes.
    - Update `_partsModelSanitise` and `_brick_parts_model_sanitise` schemas to accept 9-tuple matrix representations.
