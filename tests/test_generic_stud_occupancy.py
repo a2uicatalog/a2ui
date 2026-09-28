@@ -284,6 +284,165 @@ def test_excluded_deformed_tyres_remain_rejected(pid):
     assert occ is None
 
 
+# ── Wheel Rims Family (WHEEL_PARTS) ──────────────────────────────────────────
+
+def test_wheel_occupancy_pure_math():
+    """Wheel occupancy is an annular 4-box inscribed square in the circular cross-section (XY plane),
+    spanning Z width, with the central axle/pin bore (B=8.0) strictly excluded."""
+    # Symmetric 68 LDU diameter, z in [-12, 8], default bore_half=8.0
+    half68 = 68.0 / (2 * math.sqrt(2))  # ~24.0416
+    occ = P.wheel_occupancy(68.0, -12.0, 8.0)
+    assert len(occ) == 4
+    # Top, Bottom, Left, Right
+    b_top, b_bot, b_left, b_right = occ
+    assert b_top == (-half68, half68, 8.0, half68, -12.0, 8.0)
+    assert b_bot == (-half68, half68, -half68, -8.0, -12.0, 8.0)
+    assert b_left == (-half68, -8.0, -8.0, 8.0, -12.0, 8.0)
+    assert b_right == (8.0, half68, -8.0, 8.0, -12.0, 8.0)
+
+    # Prove bore exclusion: no box covers any point in (-8, 8) x (-8, 8)
+    for b in occ:
+        # A box overlaps the bore square if:
+        # b[0] < 8 and b[1] > -8 and b[2] < 8 and b[3] > -8
+        overlap_bore = (b[0] < 8.0 and b[1] > -8.0 and b[2] < 8.0 and b[3] > -8.0)
+        assert not overlap_bore, f"Box {b} overlaps central bore!"
+
+    # Prove outer cylinder containment: all corners have r <= diameter / 2
+    r_out = 68.0 / 2.0
+    for b in occ:
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-6
+
+    # From bounds: diameter = 76, z_min = -24, z_max = 8
+    half76 = 76.0 / (2 * math.sqrt(2))
+    occ_bounds = P.wheel_occupancy((-38.0, -38.0, -24.0), (38.0, 38.0, 8.0))
+    assert len(occ_bounds) == 4
+    assert occ_bounds[0] == (-half76, half76, 8.0, half76, -24.0, 8.0)
+
+    # Small wheel edge case where half_inscribed <= bore_half returns empty list []
+    assert P.wheel_occupancy(20.0, -10.0, 10.0, bore_half=8.0) == []
+
+
+def test_dispatcher_resolves_wheel_parts_with_exact_values():
+    """WHEEL_PARTS resolves to 4 annular boxes in XY, spanning Z, with empty sockets and needs_occupancy=False."""
+    # Sample from prompt:
+    # 2470: "Wheel  2.8 x 27 with  8 Spokes" -- diameter 68.0 LDU, z: [-12.0, 8.0]
+    half_2470 = 68.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("2470", "Wheel  2.8 x 27 with  8 Spokes")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_2470, half_2470, 8.0, half_2470, -12.0, 8.0)
+
+    # 2695: "Wheel Rim 12.7 x 30 Stepped" -- diameter 76.0 LDU, z: [-24.0, 8.0]
+    half_2695 = 76.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("2695", "Wheel Rim 12.7 x 30 Stepped")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_2695, half_2695, 8.0, half_2695, -24.0, 8.0)
+
+    # 30155: "Wheel Rim  8 x 18 with 12 Spokes and Peghole" -- diameter 44.0 LDU, z: [-8.0, 8.0]
+    half_30155 = 44.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("30155", "Wheel Rim  8 x 18 with 12 Spokes and Peghole")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_30155, half_30155, 8.0, half_30155, -8.0, 8.0)
+
+    # 3482: "Wheel Rim  8 x 17.5 with Axlehole" -- diameter 44.0 LDU, z: [-10.0, 10.0]
+    half_3482 = 44.0 / (2 * math.sqrt(2))
+    occ, sockets, needs = P.resolve_occupancy_and_sockets("3482", "Wheel Rim  8 x 17.5 with Axlehole")
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+    assert occ[0] == (-half_3482, half_3482, 8.0, half_3482, -10.0, 10.0)
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid,expected_d,expected_z0,expected_z1", [
+    ("2470", 68.0, -12.0, 8.0),
+    ("2695", 76.0, -24.0, 8.0),
+    ("30155", 44.0, -8.0, 8.0),
+    ("32077", 150.0, -35.5, 35.59),
+    ("33211", 108.0, -24.0, 0.0),
+    ("42716", 76.0, -25.0, 25.0),
+    ("3482", 44.0, -10.0, 10.0),
+    ("4266", 76.0, -25.0, 25.0),
+    ("4489a", 84.0, -12.0, 8.0),
+    ("41896", 108.0, -33.0, 33.0),
+    ("7877", 140.0, -16.25, 16.25),
+    ("6580a", 75.8, -29.0, 29.0),
+])
+def test_real_resolved_wheel_sample_matches_geometry_and_remains_within_bounds(pid, expected_d, expected_z0, expected_z1):
+    """Representative sample of 12 real wheel rim parts verified against real resolved geometry."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+
+    # Rotational symmetry in XY: dx == dy, centered at (0, 0)
+    dx = part.max[0] - part.min[0]
+    dy = part.max[1] - part.min[1]
+    assert abs(dx - dy) < 0.25, "%s should be rotationally symmetric in XY (dx=%f, dy=%f)" % (pid, dx, dy)
+    assert abs((part.min[0] + part.max[0]) / 2.0) < 0.5, "%s should be centered at X=0" % pid
+    assert abs((part.min[1] + part.max[1]) / 2.0) < 0.5, "%s should be centered at Y=0" % pid
+
+    # Resolved diameter and Z bounds match expected constants
+    assert round((dx + dy) / 2.0, 2) == expected_d
+    assert round(part.min[2], 2) == expected_z0
+    assert round(part.max[2], 2) == expected_z1
+
+    # Dispatcher resolves with real bounds
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is False
+    assert sockets == []
+    assert len(occ) == 4
+
+    r_out = expected_d / 2.0
+    for b in occ:
+        # Bounds containment
+        assert b[0] >= part.min[0] - 0.5 and b[1] <= part.max[0] + 0.5
+        assert b[2] >= part.min[1] - 0.5 and b[3] <= part.max[1] + 0.5
+        assert b[4] >= part.min[2] - 0.5 and b[5] <= part.max[2] + 0.5
+
+        # Outer cylinder containment: every corner has r <= r_out
+        for x in (b[0], b[1]):
+            for y in (b[2], b[3]):
+                assert math.sqrt(x**2 + y**2) <= r_out + 1e-5, f"{pid}: corner ({x},{y}) exceeds r_out={r_out}"
+
+        # Axle bore clearance: simulated Technic axle ([-6, 6] x [-6, 6]) along Z has zero overlap
+        overlap_axle = (b[0] < 6.0 and b[1] > -6.0 and b[2] < 6.0 and b[3] > -6.0)
+        assert not overlap_axle, f"{pid}: box {b} overlaps inserted axle!"
+
+
+@pytest.mark.skipif(not LDRAW_CACHE.exists(), reason="LDraw library not fetched (scripts/ldraw/fetch_library.py)")
+@pytest.mark.parametrize("pid", [
+    "30027a",  # Small wheel rim (D=20.0, W=7.07 <= 8.0)
+    "34337",   # Small wheel rim (D=20.0, W=7.07 <= 8.0)
+    "6014a",   # Small wheel rim (D=26.0, W=9.19)
+    "54086",   # Decorative wheel cover (5 Spoke for Wheel 20 x 30)
+    "62359",   # Decorative wheel cover (7 Spoke for Wheel 14 x 18)
+    "30190",   # Wheel Rim with Stub Axles (integral axle)
+    "3464b",   # Wheel Centre with Stub Axles (integral axle)
+    "55981",   # Wheel Rim 14 x 18 marked 'Needs Work'
+])
+def test_deliberately_excluded_wheel_subgroups_remain_rejected(pid):
+    """Deliberately excluded wheel sub-groups must remain rejected (needs_occupancy=True)."""
+    from resolve import Library, ColourTable, resolve_part
+    lib = Library(str(LDRAW_CACHE))
+    colours = ColourTable(lib)
+    part = resolve_part(lib, colours, pid + ".dat")
+    occ, sockets, needs = P.resolve_occupancy_and_sockets(
+        pid, part.title, part.min, part.max, part.holes, part.studs, part.tris, part.cylinders
+    )
+    assert needs is True, "%s should remain rejected (needs_occupancy=True)" % pid
+    assert occ is None
+
+
 
 # bar_grip_points (2026-09-27): real grip position/axis for held/clip-mounted parts, refactored from the
 # earlier has_bar_grip boolean so the real data (not just a yes/no) reaches the baked mesh's `bars` connector

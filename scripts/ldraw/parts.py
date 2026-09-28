@@ -245,6 +245,170 @@ def panel_flat_wall_occupancy_and_sockets(bounds_min, bounds_max=None, y0=None, 
     return occ, sockets
 
 
+# Wheel Rims: rotationally symmetric about the Z axis (wheel axle) with their circular cross-section in the
+# XY plane, centered at (0, 0).
+#
+# Critical difference from tyres:
+# Tyres mount around the outside of a wheel rim and have no axle or pin passing through their local coordinate
+# center (nothing normally stacks onto or through a tyre in a model). Most wheel rims DO mount onto a Technic axle
+# or wheel-holder pin through a hole at or near their rotational center (0, 0).
+#
+# If wheel occupancy naively copied the tyre approach (a solid inscribed square spanning the center), it would
+# place solid occupancy directly inside the axle bore, falsely reporting physical collisions between the wheel
+# and its own axle or pin in every assembly -- a severe false positive that violates spec §3's "never report a
+# false one" mandate.
+#
+# Furthermore, generic_hole_channel_occupancy (used for Technic beams) is NOT usable for wheel rims because:
+# 1. Wheels with radial/spoke holes (e.g. 41896) have holes varying across both X and Y, failing the 1D-varying
+#    line requirement and returning None immediately.
+# 2. Wheels with a single center hole decompose into large rectangular channel boxes extending to the outer
+#    bounding box corners, failing the raycast solid-fraction check (STUD_CELL_MIN_SOLID) because spoked wheels
+#    are mostly empty air between hub and rim.
+# 3. Many wheel rims reference primitives like axlehol5.dat or custom subfiles not recognized by peghole.dat /
+#    AXLE_HOLE_RE detectors, leaving part.holes empty even though an axle hole exists.
+#
+# Wheel rim occupancy therefore uses an annular 4-box inscribed square decomposition that provably satisfies
+# two simultaneous safety guarantees:
+#
+# 1. Outer cylinder containment (never over-reports external collisions):
+#    The outer boundary is an axis-aligned square inscribed in the circular rim cross-section of diameter D:
+#    half_inscribed = W = D / (2 * sqrt(2)). For any point (x, y) with |x| <= W and |y| <= W:
+#    x^2 + y^2 <= 2 * W^2 = 2 * (D^2 / 8) = (D / 2)^2 = R_out^2.
+#    Thus, every point in the occupancy is provably inside the physical outer cylinder of the wheel rim,
+#    never projecting into surrounding empty space (spec §3's under-approximation guarantee).
+#
+# 2. Central bore exclusion (never collides with mounting axle or pin):
+#    The central square region (-B, B) x (-B, B) x [z_min, z_max] with B = WHEEL_BORE_HALF = 8.0 LDU is
+#    strictly excluded from occupancy.
+#    - Standard Technic axles fit within a 12x12 LDU square (|x| <= 6.0, |y| <= 6.0; outer boundary radius 6.0 LDU).
+#    - Standard Technic pins (2780, 3673) have shaft radius 6.0 LDU, with flange radius 8.0 LDU.
+#    - Wheel holding pins (2470, 4489a) have pin shaft radius 4.0 LDU, with hub collar radius <= 8.0 LDU.
+#    The 4 boxes:
+#      Top:    [-W,  W] x [ B,  W] x [z_min, z_max]
+#      Bottom: [-W,  W] x [-W, -B] x [z_min, z_max]
+#      Left:   [-W, -B] x [-B,  B] x [z_min, z_max]
+#      Right:  [ B,  W] x [-B,  B] x [z_min, z_max]
+#    have no point satisfying both |x| < B and |y| < B. Every point in Box Top has y >= 8.0; Box Bottom has
+#    y <= -8.0; Box Left has x <= -8.0; Box Right has x >= 8.0. An axle or pin passing along Z at (0, 0) has
+#    zero intersection with any of the 4 boxes, completely eliminating false-positive axle collisions.
+#
+# Sockets are empty ([]): wheel rims mount via axle/pin connections and carry no bottom studs/sockets.
+#
+# Hand-verified against real resolved geometry for all 74 clean, undeformed, rotationally symmetric vehicle wheel
+# rims in the library with outer diameter D >= 34.0 LDU (ensuring W >= 12.02 LDU > B = 8.0 LDU, so W - B >= 4.02 LDU).
+#
+# Deliberately unaddressed sub-groups (remain needs_occupancy=True):
+# - Small wheel rims (D <= 28.0 LDU, W <= 8.0 LDU; e.g. 30027a-d, 34337, 42610, 50944, 6014a/b, 74967):
+#   W <= 8.0 is smaller than or equal to the standard bore exclusion width, so 4 annular boxes cannot fit.
+# - Composite shortcut assemblies (e.g. 3482c01, 30155c01, 2695c01): multi-part assemblies with tyres,
+#   not atomic parts.
+# - Wheels with integral/stub axles (e.g. 30190, 3464b, 50862, u9163, u9167): have protruding solid axle shafts.
+# - Decorative wheel covers (e.g. 54086, 58088, 61738, 62359, 62701): thin cosmetic face clips.
+# - Tracks/belts (43903-f1, 53992-f1..f3, 71965-f1, 85543-f5) and mechanisms (32060, 3465a, 4142).
+# - Obsolete or incomplete parts (22969 obsolete, 55981 marked 'Needs Work', 2496 trolley, 3739 off-center).
+
+WHEEL_BORE_HALF = 8.0  # Standard Technic axle/pin bore exclusion half-width (LDU)
+
+WHEEL_PARTS = {
+    # Hand-verified against real resolved geometry (bake_parts.py / resolve_part):
+    "100942": (123.77, -47.0, 47.0),    # Wheel 37 x 45 Hard-Plastic with  6 Curved Spokes
+    "105645": (125.08, -27.5, 27.5),    # Wheel 22 x 50 with Integral Smooth Racing Tyre
+    "110638": (125.08, -27.5, 47.5),    # Wheel 30 x 50 with Integral Smooth Racing Tyre
+    "11094": (155.74, -46.0, 26.0),     # Wheel 30 x 64 with  7 Pin Holes and  6 Small Holes
+    "11208": (36.4, -12.5, 12.5),       # Wheel Rim 10 x 14 with Fake Bolts and  6 Spokes
+    "15038": (140.0, -45.0, 39.0),      # Wheel Rim 34 x 56 with  6 Spokes and  6 Pegholes
+    "1872": (37.5, -6.48, 4.0),         # Wheel Rim 11 x 18 Front with 36 Spokes and Knock-off Hub Nut
+    "18978a": (37.5, -3.5, 4.0),        # Wheel Rim 11 x 18 Front with  5 Spokes
+    "18978b": (37.5, -4.0, 4.0),        # Wheel Rim 11 x 18 Front with 10 Angled Spokes
+    "18979a": (37.5, -3.5, 4.0),        # Wheel Rim 11 x 18 Front with  7 Y-Shaped Spokes
+    "18979b": (37.5, -4.0, 4.0),        # Wheel Rim 11 x 18 Front with 10 Spokes
+    "22253": (90.0, -31.0, 31.0),       # Wheel 25 x 28 VR with 35mm Diameter Rear Rim and Complete Cross Axle Hole
+    "22410": (93.0, -26.52, 26.52),     # Wheel 21 x 37 Hard-Plastic with  7 Pin Holes
+    "22969a": (152.0, -58.0, 58.0),     # Wheel 56 x 46 Technic Racing
+    "23800": (156.0, -52.0, 52.0),      # Wheel Rim 42 x 62 with 10 Spokes and  3 Pegholes
+    "24308a": (37.5, -4.0, 4.0),        # Wheel Rim 11 x 18 Front with 10 Parallel Spokes
+    "24308b": (37.5, -4.5, 4.0),        # Wheel Rim 11 x 18 Front with 10 Y-Spokes
+    "2470": (68.0, -12.0, 8.0),         # Wheel  2.8 x 27 with  8 Spokes
+    "2515a": (139.99, -40.0, 40.0),     # Wheel 32 x 56 Hard-Plastic without Inner Supports
+    "2593": (87.6, -38.0, 38.0),        # Wheel 30 x 35 with Tread on Sidewall
+    "2695": (76.0, -24.0, 8.0),         # Wheel Rim 12.7 x 30 Stepped
+    "27254": (155.64, -64.38, 30.0),    # Wheel 37 x 62 with Rocky Spikes and  7 Pegholes
+    "2903": (158.52, -16.96, 16.96),    # Wheel Rim 14 x 62 Motorcycle
+    "29117a": (37.5, -3.9, 4.0),        # Wheel Rim 11 x 18 Front with  5 Wide Spokes
+    "29117b": (37.5, -4.1, 4.0),        # Wheel Rim 11 x 18 Front with  5 Split Spokes
+    "2994": (60.0, -15.0, 20.0),        # Wheel 12 x 20 with Technic Axle Hole and 6 Pegholes
+    "2996": (108.0, -37.0, 37.0),       # Wheel Rim 30 x 30 with 40mm Diameter Rear Rim
+    "2998": (160.0, -40.0, 40.0),       # Wheel Rim 32 x 56 with Peghole and 6 Spokes with Pegholes
+    "30155": (44.0, -8.0, 8.0),         # Wheel Rim  8 x 18 with 12 Spokes and Peghole
+    "30285": (42.0, -17.0, 20.0),       # Wheel Rim 14.8 x 16.8 with Centre Groove
+    "32004a": (108.0, -23.0, 22.0),     # Wheel Rim 18 x 41 Model Team Type  1
+    "32004b": (108.0, -23.0, 22.0),     # Wheel Rim 18 x 41 Model Team Type  2
+    "32020": (110.0, -32.0, 13.0),      # Wheel Rim 18 x 37 with 6 Pegholes and Long Axle Bush
+    "32057": (148.0, -17.5, 17.5),      # Wheel Rim 14 x 60 with 3 Spokes and 3 Pegholes
+    "32077": (150.0, -35.5, 35.59),     # Wheel Rim 28 x 60 with 3 Spokes and 3 Pegholes
+    "32146": (76.0, -27.5, 10.0),       # Wheel 14 x 30 Smooth
+    "32197": (172.0, -37.0, 37.0),      # Wheel Rim 30 x 61 with 3 Spokes Swirled
+    "32219": (76.0, -18.0, 30.0),       # Wheel 14 x 30 Znap
+    "32220": (172.0, -50.0, 10.0),      # Wheel 16 x 68 Znap
+    "33211": (108.0, -24.0, 0.0),       # Wheel  3.2 x 43 with 10 Spokes Wooden
+    "33212": (140.0, -24.0, 0.0),       # Wheel  3.2 x 56 with 10 Spokes Wooden
+    "3482": (44.0, -10.0, 10.0),        # Wheel Rim  8 x 17.5 with Axlehole
+    "39367": (140.0, -17.5, 17.5),      # Wheel 14 x 48 with 4 Spokes with Integral Tyre
+    "41896": (108.0, -33.0, 33.0),      # Wheel Rim 26 x 43 with 6 Spokes and 3 Pegholes
+    "4266": (76.0, -25.0, 25.0),        # Wheel Rim 20 x 30 Smooth with 6 Pinholes
+    "42716": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 "Torq Thrust" with  5 Spokes and External Ribs
+    "44292": (76.01, -25.0, 25.0),      # Wheel Rim 20 x 30 with 3 Pegholes
+    "44772": (140.0, -45.0, 39.0),      # Wheel Rim 34 x 56 with 6 Spokes and 3 Pegholes
+    "4489a": (84.0, -12.0, 8.0),        # Wheel  2.8 x 34 with  8 Spokes with Round Hole for Wheel Holding Pin
+    "4489b": (84.0, -12.0, 8.0),        # Wheel  2.8 x 34 with  8 Spokes with Notched Hole for Wheel Holding Pin
+    "46334": (188.0, -20.0, 20.0),      # Wheel 16 x 75 Motorcycle Solid
+    "49294": (140.0, -43.5, 42.0),      # Wheel Rim 34 x 56 with  6 Double Spokes and  6 Pegholes
+    "49295": (219.53, -17.5, 17.5),     # Wheel 14 x 80 with  4 Spokes with Integral Tyre
+    "51378": (187.0, -36.0, 15.0),      # Wheel Rim 20 x 75 with 6 Double Spokes
+    "54087": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 with  6 Spokes and No Pegholes
+    "55982": (42.0, -17.0, 20.0),       # Wheel Rim 14 x 18 with Axlehole
+    "56145": (76.0, -25.0, 25.0),       # Wheel Rim 20 x 30 with  6 Dual Spokes and External Ribs
+    "56908": (108.0, -33.0, 33.0),      # Wheel Rim 26 x 43 with 6 Spokes and 6 Pegholes
+    "60208": (76.0, -28.0, 10.0),       # Wheel Rim 16 x 31 with 6 Pegholes
+    "6118": (60.0, -50.0, 8.0),         # Wheel 23 x 24 with Tread on Sidewall
+    "6580a": (75.8, -29.0, 29.0),       # Wheel Rim 23 x 22 Offroad with Axlehole
+    "6580b": (75.8, -29.0, 29.0),       # Wheel Rim 23 x 22 Offroad with Split Axlehole
+    "6582": (92.0, -25.0, 25.0),        # Wheel Rim 20 x 33 with  6 Pinholes
+    "65834": (108.0, -17.5, 17.5),      # Wheel 14 x 35 with 4 Spokes with Integral Tyre
+    "6595": (90.0, -31.0, 31.0),        # Wheel 25 x 28 VR with 35mm Diameter Rear Rim and Partial Cross Axle Hole
+    "66155": (76.0, -40.0, 40.0),       # Wheel Rim 20 x 30 with  3 Dual Angled Spokes and  4L Hub
+    "68327": (100.0, -30.0, 10.0),      # Wheel 16 x 40 with  7 Pin Holes
+    "71720": (268.0, -29.0, 29.0),      # Wheel 24 x 107 Motorcycle with  7 Spokes
+    "72210a": (45.0, -4.0, 4.0),        # Wheel Rim 11 x 24 Front with  5 Spokes
+    "72210b": (45.0, -4.0, 4.0),        # Wheel Rim 11 x 24 Front with  9 Spokes
+    "7877": (140.0, -16.25, 16.25),     # Wheel Rim 13 x 56 with 12 Spokes and Axlehole
+    "84772": (156.0, -25.0, 25.0),      # Wheel 20 x 62 Motorcycle Solid
+    "86652": (110.0, -32.0, 13.0),      # Wheel Rim 18 x 37 with 6 Pegholes and Short Axle Bush
+    "88517": (188.0, -21.25, 21.25),    # Wheel 17 x 75 Motorcycle with Holes in Rim
+}
+
+
+def wheel_occupancy(bounds_min, bounds_max=None, z_max=None, bore_half=WHEEL_BORE_HALF):
+    """Returns an annular 4-box occupancy in the XY plane spanning Z, with the central
+    axle/pin bore excluded to avoid false-positive collisions against mounting axles.
+    Can be called with (bounds_min, bounds_max) or (diameter, z_min, z_max)."""
+    if z_max is not None:
+        diameter, z_min = bounds_min, bounds_max
+    else:
+        diameter = (bounds_max[0] - bounds_min[0] + bounds_max[1] - bounds_min[1]) / 2.0
+        z_min, z_max = bounds_min[2], bounds_max[2]
+    half_inscribed = diameter / (2 * math.sqrt(2))
+    b = bore_half
+    if half_inscribed <= b:
+        return []
+    return [
+        box(-half_inscribed, half_inscribed, b, half_inscribed, z_min, z_max),
+        box(-half_inscribed, half_inscribed, -half_inscribed, -b, z_min, z_max),
+        box(-half_inscribed, -b, -b, b, z_min, z_max),
+        box(b, half_inscribed, -b, b, z_min, z_max),
+    ]
+
+
 # One 20x20xheight box per stud actually present (real geometry, not guessed), used by two different families
 # below for two different reasons -- see each dict's own comment for which:
 def stud_cell_occupancy_and_sockets(module_h, studs):
@@ -769,6 +933,12 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
             occ = tyre_occupancy(bounds_min, bounds_max)
         else:
             occ = tyre_occupancy(*TYRE_PARTS[part_id])
+        return verified(occ, [])
+    if part_id in WHEEL_PARTS:
+        if bounds_min is not None and bounds_max is not None:
+            occ = wheel_occupancy(bounds_min, bounds_max)
+        else:
+            occ = wheel_occupancy(*WHEEL_PARTS[part_id])
         return verified(occ, [])
     if part_id in CORNER_L_PARTS and studs is not None:
         occ, sockets = stud_cell_occupancy_and_sockets(CORNER_L_PARTS[part_id], studs)

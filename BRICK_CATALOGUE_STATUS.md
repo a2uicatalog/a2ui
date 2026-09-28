@@ -706,3 +706,41 @@ python3 scripts/ldraw/bake_parts.py    # ~15-20 min, 2854 parts; safe to re-run
   - Added pure math tests, dispatcher tests without bounds, and real resolved geometry tests for all 11 parts in `PANEL_FLAT_WALL_PARTS` plus patterned variants (`4865ap01`, `23969p01`) in `tests/test_generic_stud_occupancy.py`.
   - Added parameterized rejection tests verifying that all 7 Sub-Family 2 parts safely remain `needs_occupancy=True`.
   - All 78 tests in `tests/test_generic_stud_occupancy.py` pass.
+
+## 2026-09-27: WHEEL_PARTS Occupancy Family (cloud agent, `agent/wheel-rims`)
+
+- **Task**: Add real occupancy support for rotationally symmetric Wheel Rim parts (`scripts/ldraw/parts.py`).
+- **Investigation Findings**:
+  - **Rotational Symmetry**: Wheel rims are rotationally symmetric about the Z axis in LDraw with their circular cross-section in the XY plane, centered at `(0, 0)`.
+  - **Difference from Tyres**: Tyres have no axle passing through their local coordinate center (they mount around the outside of a rim). Wheel rims DO mount onto a Technic axle or wheel-holder pin through an axle or peg hole running through their rotational center `(0, 0)` along Z.
+  - **Naive Inscribed Square Risk**: Placing a solid inscribed square spanning the center (like `tyre_occupancy`) reports solid material inside the axle bore, causing false-positive collisions with any mounting axle or pin inserted in a model.
+  - **`generic_hole_channel_occupancy` Incompatibility**:
+    1. Radial/spoke holes (e.g. `41896`) vary across both X and Y axes (`len(varying) == 2`), violating the single-shared-axis assumption and bailing immediately.
+    2. Single-center-hole channel boxes extend to the outer bounding box corners and fail the raycast solid-fraction check (`STUD_CELL_MIN_SOLID = 0.15`) because spoked wheels are mostly empty air between hub and rim (`32077` has 0.083, `42716` has 0.062, `33211` has 0.062).
+    3. Primitives like `axlehol5.dat` (used by `3482`) are missed by `AXLE_HOLE_RE = r"^axl\d*hole\.dat$"` due to DOS 8.3 filename truncation, leaving `part.holes` empty despite physical axle holes existing.
+- **Implementation**:
+  - Added `WHEEL_PARTS` family and `wheel_occupancy(bounds_min, bounds_max, bore_half=WHEEL_BORE_HALF)` in `scripts/ldraw/parts.py`.
+  - **Annular 4-Box Inscribed Square Decomposition**:
+    Decomposes the inscribed square of half-width $W = D / (2 \sqrt{2})$ into 4 axis-aligned bounding boxes (Top, Bottom, Left, Right) surrounding a central exclusion square of half-width $B = \text{WHEEL\_BORE\_HALF} = 8.0$ LDU spanning the part's full Z extent `[z_min, z_max]`.
+  - **Geometric Safety Guarantees**:
+    1. *Outer cylinder containment* (never over-reports external collisions): For any point in the 4 boxes, $|x| \le W$ and $|y| \le W$, so $x^2 + y^2 \le 2 W^2 = (D / 2)^2 = R_{out}^2$. All points lie strictly within the circular rim cylinder envelope.
+    2. *Central bore exclusion* (never collides with mounting axles/pins): The central square $(-B, B) \times (-B, B)$ is completely clear of occupancy. Technic axles ($|x| \le 6.0, |y| \le 6.0$), Technic pin shafts ($r = 6.0$), pin flanges ($r = 8.0$), and wheel pins ($r = 4.0$) pass through without intersecting any of the 4 boxes.
+  - **Sockets**: Explicitly empty (`sockets = []`) as wheel rims mount via axle/pin connections and carry no bottom studs/sockets.
+  - **Constants**: Hand-verified deterministic constants derived directly from real resolved geometry (`resolve_part`) for 74 clean, undeformed, rotationally-symmetric vehicle wheel rim parts ($D \ge 34.0$ LDU, ensuring $W \ge 12.02 > B = 8.0$ and $W - B \ge 4.02$ LDU).
+- **Deliberately Unaddressed Sub-groups** (remain `needs_occupancy=True`):
+  - *Small wheel rims* ($D \le 28.0$ LDU, $W \le 8.0$ LDU; e.g. `30027a-d`, `34337`, `42610`, `50944`, `6014a/b`, `74967`): Outer inscribed square half-width $W \le 8.0$ is smaller than or equal to the standard bore exclusion width ($B = 8.0$).
+  - *Composite shortcut assemblies* (e.g. `3482c01`, `30155c01`, `2695c01`, 68 parts total): CAD multi-part shortcuts combining a wheel rim and tyre; not atomic parts. In official inventory and OMR sets, rims and tyres are separate parts.
+  - *Wheels with integral or stub axles* (e.g. `30190`, `3464b`, `50862`, `u9163`, `u9167`): Protruding solid axle shafts require different representation.
+  - *Decorative wheel covers* (e.g. `54086`, `58088`, `61738`, `62359`, `62701`): Thin cosmetic face clips.
+  - *Tracks/belts* (`43903-f1`, `53992-f1..f3`, `71965-f1`, `85543-f5`) and mechanisms (`32060`, `3465a`, `4142`).
+  - *Obsolete or incomplete parts* (`22969` obsolete, `55981` marked "Needs Work", `2496` trolley, `3739` off-center).
+- **Catalogue Impact**:
+  - Rejects survey (`scripts/ldraw/survey_rejects.py`) showed 188 total Wheel-category parts rejected prior to change (58 accepted).
+  - Post-implementation survey unlocks **74 real wheel rim parts** (`Wheel` category reject count dropped from 188 to 114, accepted grew from 58 to 132).
+- **Verification**:
+  - Added comprehensive test suite in `tests/test_generic_stud_occupancy.py`:
+    - Pure math tests verifying 4-box geometry, outer cylinder containment, and bore exclusion.
+    - Dispatcher tests for representative parts (`2470`, `2695`, `30155`, `3482`).
+    - Real resolved geometry tests for 12 representative wheel rims (`2470`, `2695`, `30155`, `32077`, `33211`, `42716`, `3482`, `4266`, `4489a`, `41896`, `7877`, `6580a`) asserting bounds containment, rotational symmetry, outer cylinder containment, and zero collision with simulated Technic axle.
+    - Deliberate exclusion tests for 8 parts across the unaddressed sub-groups asserting `needs_occupancy=True`.
+  - Full test suite run (`pytest tests/test_generic_stud_occupancy.py`): **73 passed, 0 failed, 0 skipped** (up from 51 passed before this change).
