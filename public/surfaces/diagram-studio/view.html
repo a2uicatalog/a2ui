@@ -2795,10 +2795,12 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   }
 
   // Display mode. Same negotiation the main renderer bundle uses (a2ui-catalogue gen_mcp_apps_bundle.py): declare that we can go
-  // fullscreen in ui/initialize, learn the host's context from the reply, and ask for fullscreen with ui/request-display-mode.
-  // Asked ONCE, proactively, on the first diagram: a diagram is something you look at rather than read past, and an inline card
-  // clips anything tall. Never asked again, so a person who closes fullscreen is not fought. The button asks on demand.
-  var host = {}, hostCaps = null, hostInfo = null, fsAsked = false, fsSeq = 0;
+  // fullscreen in ui/initialize and learn the host's context from the reply. NOT requested automatically (2026-09-29, removed
+  // the same day it was added to the Generate box): this view always carries chat-dependent affordances now (Send my edits,
+  // Generate from a description) that need the host's own chat input visible, same reasoning as the main renderer bundle's
+  // per-content fullscreen-skip fix -- except here EVERY diagram has one, so the right default is inline, not fullscreen-once.
+  // The button still asks on demand.
+  var host = {}, hostCaps = null, hostInfo = null, fsSeq = 0;
   function syncMode() {
     var full = host.displayMode === "fullscreen";
     document.documentElement.classList.toggle("fs", full);
@@ -2809,11 +2811,6 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     if (host.availableDisplayModes && host.availableDisplayModes.indexOf(mode) === -1) return false;   // the host does not offer it
     post({ jsonrpc: "2.0", id: "fsreq-" + (++fsSeq), method: "ui/request-display-mode", params: { mode: mode } });
     return true;
-  }
-  function maybeGoFullscreen() {
-    if (fsAsked) return;
-    fsAsked = true;
-    if ((host.displayMode || "inline") !== "fullscreen") requestMode("fullscreen");
   }
 
   /* ------------------------------------------------------------------------------------------------------------------------
@@ -3593,7 +3590,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     // acceptable because the only thing a message can do here is draw a sanitised diagram.
     if (m.method === "ui/notifications/tool-result") {
       var sc = (m.params || {}).structuredContent;
-      if (sc && ingest(sc)) maybeGoFullscreen();
+      if (sc) ingest(sc);
     }
   });
 
@@ -3652,7 +3649,11 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
   $("reset").addEventListener("click", function () { state.graph = clone(state.original); renderEditor(); touched(true); $("sendstatus").textContent = ""; });
   $("send").addEventListener("click", function () {
     $("sendstatus").textContent = "Sending…";
-    request("ui/message", { role: "user", content: { type: "text", text: graphMessage() + "\nPlease carry on from this version." } }, function (m) {
+    // content is an ARRAY of content blocks, not a single block: the spec prose (apps.mdx:1005) shows a bare object, but real
+    // hosts validate MCP's standard array shape and reject the documented one outright (found live against claude.ai building
+    // the main renderer bundle's own sendMessage -- gen_mcp_apps_bundle.py; this view had copied the bare-object shape from the
+    // spec prose directly and never got the fix, so it silently never reached any host at all).
+    request("ui/message", { role: "user", content: [{ type: "text", text: graphMessage() + "\nPlease carry on from this version." }] }, function (m) {
       $("sendstatus").textContent = m.error ? "The host did not accept the message (" + (m.error.message || "declined") + ")." : "Sent to the chat.";
     }, 6000);
   });
@@ -3673,7 +3674,7 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     var desc = $("nl_desc").value.trim();
     if (!desc) return;
     $("genstatus").textContent = "Sending…";
-    request("ui/message", { role: "user", content: { type: "text", text: nlMessage(desc) } }, function (m) {
+    request("ui/message", { role: "user", content: [{ type: "text", text: nlMessage(desc) }] }, function (m) {
       $("genstatus").textContent = m.error ? "The host did not accept the message (" + (m.error.message || "declined") + ")." : "Sent to the chat.";
     }, 6000);
   });
