@@ -793,11 +793,22 @@ var TJS=(function(){
   }
   return {render:render};
 })();
+// The main WebGL view's own render loop already skips its expensive draw work when the canvas isn't
+// intersecting the viewport (an IntersectionObserver-driven `visible` flag, see atoms_brick.gs's loop()) --
+// but requestAnimationFrame itself keeps getting rescheduled every frame regardless (`if(!visible)return`
+// is the SECOND line, not a guard around the reschedule), a real if small residual cost while the Three.js
+// view is open. Clearing the iframe's srcdoc navigates it to an empty document, tearing down that JS
+// context entirely (zero cost, not just skipped draws) -- rebuilt via the same show() used everywhere else
+// when switching back, not a special-cased reconstruction.
 $('tjsgo').onclick=function(){
   var showing=$('tjsgo').getAttribute('aria-pressed')==='true';
   if(showing){
     $('tjsgo').setAttribute('aria-pressed','false');
     $('tjswrap').hidden=true;$('view').hidden=false;
+    // last.partsModel (not last.j.partsModel) -- last.j's own shape differs across the three places that
+    // set `last` (design/template carries the full API response, but the "add real part" and "import set"
+    // paths only carry {name,prompt} on .j); last.partsModel is the one field all three set consistently.
+    if(last)show({partsModel:last.partsModel});
     return;
   }
   if(!last||!last.partsModel||!last.partsModel.length){
@@ -808,6 +819,7 @@ $('tjsgo').onclick=function(){
   }
   $('tjsgo').setAttribute('aria-pressed','true');
   $('view').hidden=true;$('tjswrap').hidden=false;
+  $('view').srcdoc='';
   TJS.render(last.partsModel);
 };
 setMode('gemini');upd();
