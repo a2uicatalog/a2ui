@@ -171,6 +171,7 @@ a{color:inherit}
 </section>
 <footer>
 <p>Cost is computed from the token counts the model returns and the published per-million-token price (Gemini 3.7 Flash is an introductory rate). The template picker makes no model call, so it generates no text and costs nothing. Renders use real LDraw parts (CC BY 4.0). Set names and images in the coverage gallery and search are from Rebrickable. Fan-made, not affiliated with or endorsed by the LEGO Group. LEGO&reg; is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this content.</p>
+<p>The 3D view above is rendered with this catalogue's own WebGL renderer, not three.js. A separate <a href="/bricksdemo/threejs-demo/">three.js rendering proof-of-concept</a> (MIT License, <a href="https://threejs.org/">threejs.org</a>) exists to demonstrate material appearance (trans-clear vs. matte finishes) that renderer can't yet show; it is not wired into this page. This credit is here in advance of that integration so the attribution is already correct once it lands.</p>
 </footer>
 </main>
 <script>

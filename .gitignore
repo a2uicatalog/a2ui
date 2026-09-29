@@ -106,3 +106,8 @@ scripts/ldraw/_ldraw_cache/
 
 # Gemini QA working files: Rebrickable reference photos, our renders, per-model verdicts (review artefacts, not published)
 scripts/ldraw/qa/
+
+# Three.js npm tarball cache (scripts/fetch_threejs.py): the pinned download itself isn't carried in git, same
+# reasoning as the LDraw cache above -- only the small set of extracted, committed files under
+# public/vendors/threejs/ are tracked.
+scripts/_threejs_cache/

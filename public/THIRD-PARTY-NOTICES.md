@@ -6,10 +6,12 @@ documented in `vendors/<vendor>/MANIFEST.md` and the rendering logic is
 recompiled from scratch into `renderers/web_article.py`. Each atom carries a
 `source` field in `atoms/schema.yaml` identifying its origin.
 
-**Six declared exceptions: PDF.js, QR-Code-generator, and the four self-hosted
-type families (IBM Plex, Noto Sans, Arimo, Lato)** (below) are vendored WHOLESALE, unmodified, not recompiled — a real
+**Seven declared exceptions: PDF.js, QR-Code-generator, Three.js, and the four
+self-hosted type families (IBM Plex, Noto Sans, Arimo, Lato)** (below) are
+vendored WHOLESALE, unmodified, not recompiled — a real
 binary-format parser, a Reed-Solomon-error-correction-coded matrix encoder,
-and a font's actual glyph outlines are all out of scope to reimplement (a
+a WebGL rendering engine, and a font's actual glyph outlines are all out of
+scope to reimplement (a
 subtly-wrong hand-rolled QR encoder would produce codes that *look* right but
 don't scan — not a visually-catchable bug, unlike this policy's other
 adaptations, which are simple CSS/HTML patterns). PDF.js ships only inside
@@ -18,7 +20,12 @@ runtime, so the CSP-clean/self-contained invariant (`mcpUiCsp()`,
 `resourceDomains: []`) holds even though this policy's general rule does not.
 QR-Code-generator ships inline with every atom render (Python for static
 surfaces, the same vendored algorithm ported to JS for GAS/MCP Apps) with no
-network calls either. **The four type families are the exceptions that DO
+network calls either. Three.js is vendored the same way for the same reason —
+a static same-origin asset, never a CDN — but it ships only inside the
+standalone render-appearance proof-of-concept demo
+(`public/bricksdemo/threejs-demo/`); it is not part of, and does not touch,
+the live production renderer (`atoms_brick.gs`'s existing WebGL/Canvas-2D
+path). **The four type families are the exceptions that DO
 introduce a runtime network fetch** (a `@font-face src: url(...)` against
 `a2uicatalog.ai`'s own `/fonts/` path, same-origin, opt-in per atom via
 `use_plex_fonts`/`use_noto_fonts`) — on any surface whose CSP blocks that
@@ -57,6 +64,33 @@ just looks plainer.
 - **Used by:** the `schema_qr` atom (all surfaces for the static render;
   `web`/`google-apps-script-web`/`mcp-apps` additionally for
   `is_interactive: true`)
+
+---
+
+## Three.js (three.js authors)
+
+- **Project:** Three.js — WebGL 3D rendering engine
+- **Website:** https://threejs.org/
+- **Repository:** https://github.com/mrdoob/three.js
+- **License:** MIT License
+- **Copyright:** Copyright © 2010-2026 three.js authors
+- **Version:** 0.186.1 (npm `latest` dist-tag as pinned 2026-09-29; published 2026-09-24)
+- **Vendored as:** `public/vendors/threejs/three.module.js` + `public/vendors/threejs/three.core.js` (the core
+  WebGL build, unmodified — this release splits the build across two files, both required),
+  `public/vendors/threejs/addons/controls/OrbitControls.js` (official orbit-camera add-on, unmodified), and
+  `public/vendors/threejs/LICENSE` (verbatim, alongside the source) — fetched, sha256/sha1/sha512-verified and
+  extracted by `scripts/fetch_threejs.py` from the pinned npm tarball
+  (`https://registry.npmjs.org/three/-/three-0.186.1.tgz`,
+  sha256 `8cd068708ea44f2c73c944b1cead2ba2f0d5c15c8fc194e5700f4e4f4a033fe7`), same fetch/verify/vendor discipline
+  as `scripts/ldraw/fetch_library.py`.
+- **Used by:** the render-appearance proof-of-concept demo at `public/bricksdemo/threejs-demo/` only — a
+  standalone, additive page demonstrating a material-appearance axis (trans-clear vs. opaque matte finish on the
+  same real LDraw part geometry) that the live production renderer's hand-rolled WebGL shader doesn't model.
+  **Not used by, and does not replace, any part of the existing `atoms_brick.gs` renderer** (`rotLDU`/
+  `worldBoxes`/`boxesOverlap`/`_brickKit`/`genBrick`, etc. are untouched). The Brick Design Lab
+  (`public/bricksdemo/design/`, `scripts/brick_models/build_design_page.py`) carries a visible attribution credit
+  for this dependency in its footer in anticipation of a future Three.js integration, even though that page does
+  not yet render through Three.js itself — see that page's own footer text for the current (inactive) status.
 
 ---
 
@@ -274,7 +308,9 @@ See `vendors/extendlabs-ui/MANIFEST.md` for the full component review and
 
 ## MIT License
 
-The MIT License applies to all five vendor projects listed above. The full
+The MIT License applies to seven vendor projects listed above (QR-Code-
+generator, Three.js, UIverse.io community, Flowbite, shadcn/ui, OpenUI /
+Thesys and ExtendLabs UI). The full
 text is reproduced once here as it is identical across all of them (with
 copyright holders as noted per vendor above):
 
