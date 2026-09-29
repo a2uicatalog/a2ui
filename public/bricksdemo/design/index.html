@@ -133,9 +133,12 @@ a{color:inherit}
 <div id="tjswrap" hidden>
 <canvas id="tjscanvas" role="img" aria-label="Three.js 3D build view"></canvas>
 <div class="row" id="tjscontrols" hidden style="gap:10px">
+<button class="go alt" id="tjsplay" type="button" aria-pressed="false">Animate</button>
+<span id="tjsstepwrap" style="display:flex;gap:10px;align-items:center;flex:1">
 <label for="tjsstep" style="font-size:12px;color:var(--mute)">Build step</label>
 <input type="range" id="tjsstep" min="1" max="1" value="1" style="flex:1">
 <span class="note" id="tjsstepnote"></span>
+</span>
 </div>
 <p class="note" id="tjsstatus"></p>
 </div>
@@ -649,17 +652,79 @@ var TJS=(function(){
     camera.near=fit.near;camera.far=fit.far;camera.updateProjectionMatrix();
     controls.target.set(fit.target[0],fit.target[1],fit.target[2]);controls.update();
   }
-  // Build-step scrubber (Phase 1 of the "View in Three.js" motion work -- a static cumulative reveal via
-  // partsModel's own real `step` field, row[6], already present in every real build; NOT the live canvas
-  // renderer's continuous drop/bounce/settle "Animate" loop, which needs real per-frame physics timing and
-  // is scoped as a separate follow-up). All meshes are built and added to `group` once (so fitCamera sees
-  // the FULL final build and the camera never jumps as you scrub); the scrubber only ever toggles
-  // `mesh.visible`, never rebuilds geometry.
+  // partEntries: one entry per partsModel ROW (not per mesh -- a decorated part's multiple colour-group
+  // meshes must move together), {meshes:[...], step}. Shared by both the Phase 1 scrubber and Phase 2
+  // animate loop below.
+  var partEntries=[];
+  // Build-step scrubber (Phase 1 of the "View in Three.js" motion work) -- a static cumulative reveal via
+  // partsModel's own real `step` field (row[6], already present in every real build). All meshes are built
+  // and added to `group` once (so fitCamera sees the FULL final build and the camera never jumps as you
+  // scrub); the scrubber only ever toggles mesh.visible, never rebuilds geometry.
   function applyStep(step){
-    group.children.forEach(function(m){m.visible=(m.userData.step||1)<=step;});
+    partEntries.forEach(function(e){e.meshes.forEach(function(m){m.visible=e.step<=step;});});
+  }
+  // Phase 2: the live canvas renderer's continuous drop/bounce/settle/hold/lift-out "Animate" loop, ported
+  // from atoms_brick.gs's status(t) (constants FALL/SETTLE/HOLD/LIFT/DROP and the stagger/dst timing are
+  // copied from there verbatim -- this is the same real motion, not a reinvented one). Runs per-frame on
+  // partEntries (not partsModel directly), reusing the exact meshes the scrubber already built.
+  //
+  // Materials are cached/shared by colour (materialForCode/materialForFixedHex) so many parts of the same
+  // colour reuse ONE material object -- mutating .opacity per frame would then wrongly fade every part of
+  // that colour together, not just the one currently animating. Each mesh gets its OWN cloned material for
+  // the duration of animate mode (restored to the shared cache instance on stop, so scrubbing/static view
+  // stay cheap and unaffected).
+  var animRAF=null,animLastT=0,animT=0,animPlaying=false;
+  function stopAnimate(){
+    animPlaying=false;
+    if(animRAF)cancelAnimationFrame(animRAF);
+    animRAF=null;
+    partEntries.forEach(function(e){e.meshes.forEach(function(m){
+      m.position.set(0,0,0);
+      if(m.userData.sharedMaterial){m.material=m.userData.sharedMaterial;delete m.userData.sharedMaterial;}
+    });});
+  }
+  function startAnimate(){
+    var N=partEntries.length;
+    if(!N)return;
+    var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
+    var stagger=Math.min(0.12,5/N),dst=1.4/N;
+    var tBuild=N*stagger+FALL+SETTLE;
+    var tCycle=tBuild+HOLD+N*dst+LIFT+0.5;
+    partEntries.forEach(function(e,i){
+      e.t0=i*stagger;e.td=tBuild+HOLD+(N-1-i)*dst;
+      e.jx=(Math.random()-0.5)*7;e.jz=(Math.random()-0.5)*7;
+      e.meshes.forEach(function(m){
+        m.userData.sharedMaterial=m.material;
+        m.material=m.material.clone();
+        m.material.transparent=true;   // opacity now animates every frame regardless of the base material's own mode
+      });
+    });
+    var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    animT=reduced?tBuild+1:tBuild*0.7;
+    animLastT=performance.now();
+    animPlaying=true;
+    (function frame(now){
+      if(!animPlaying)return;
+      var dt=Math.min(0.05,(now-animLastT)/1000);animLastT=now;
+      if(!reduced){animT+=dt;if(animT>=tCycle)animT-=tCycle;}
+      partEntries.forEach(function(e){
+        var tf=animT-e.t0,td=animT-e.td,s,ox=0,oy=0,oz=0,a=1;
+        if(td>=0){var q=td/LIFT;if(q>=1){s=-1;}else{s=1;oy=DROP*q*q;a=1-q;}}
+        else if(tf<0)s=-1;
+        else if(tf<FALL){var p=tf/FALL,ee=1-p;s=1;oy=DROP*(1-p*p);ox=e.jx*ee*ee;oz=e.jz*ee*ee;a=Math.min(1,p*5);}
+        else{var tb=tf-FALL;if(tb<SETTLE){s=1;oy=0.22*Math.exp(-9*tb)*Math.abs(Math.sin(15*tb));}else s=0;}
+        e.meshes.forEach(function(m){
+          m.visible=(s!==-1);
+          m.position.set(ox,oy,oz);
+          m.material.opacity=a;
+        });
+      });
+      animRAF=requestAnimationFrame(frame);
+    })(animLastT);
   }
   function render(partsModel){
     var status=$('tjsstatus');
+    stopAnimate();
     status.textContent='Loading three.js…';
     loadThree().then(function(mm){
       status.textContent='Loading real colour data…';
@@ -668,6 +733,7 @@ var TJS=(function(){
       var THREE=x.mm.THREE,ct=x.ct;
       ensureScene(THREE,x.mm.OrbitControls);
       clearGroup(THREE);
+      partEntries=[];
       status.textContent='Loading '+partsModel.length+' real part'+(partsModel.length===1?'':'s')+'…';
       var ids=Array.from(new Set(partsModel.map(function(row){return row[0]})));
       return Promise.all(ids.map(function(id){return fetchMesh(id).catch(function(){return null})})).then(function(meshes){
@@ -678,29 +744,47 @@ var TJS=(function(){
           if(!mesh){skipped++;return}
           var instPos=[row[1],row[2],row[3]],r=row[4]|0,code=row[5]|0,step=row[6]|0||1;
           maxStep=Math.max(maxStep,step);
+          var entryMeshes=[];
           geometriesFor(THREE,mesh,r,instPos).forEach(function(g){
             var mat=g.colourKey?materialForFixedHex(THREE,g.colourKey):materialForCode(THREE,code,ct);
             var m=new THREE.Mesh(g.geo,mat);
-            m.userData.step=step;
             group.add(m);
+            entryMeshes.push(m);
           });
+          if(entryMeshes.length)partEntries.push({meshes:entryMeshes,step:step});
           ok++;
         });
         fitCamera(THREE);
-        var slider=$('tjsstep');
+        var slider=$('tjsstep'),playBtn=$('tjsplay');
+        $('tjscontrols').hidden=false;
         if(maxStep>1){
-          $('tjscontrols').hidden=false;
+          $('tjsstepwrap').style.display='flex';
           slider.min=1;slider.max=maxStep;slider.value=maxStep;
           $('tjsstepnote').textContent='step '+maxStep+' of '+maxStep;
           slider.oninput=function(){
+            if(animPlaying)return;
             var v=parseInt(slider.value,10)||1;
             applyStep(v);
             $('tjsstepnote').textContent='step '+v+' of '+maxStep;
           };
         }else{
-          $('tjscontrols').hidden=true;
+          $('tjsstepwrap').style.display='none';
           applyStep(1);
         }
+        playBtn.setAttribute('aria-pressed','false');
+        playBtn.textContent='Animate';
+        playBtn.onclick=function(){
+          if(animPlaying){
+            stopAnimate();
+            playBtn.setAttribute('aria-pressed','false');playBtn.textContent='Animate';
+            slider.disabled=false;
+            applyStep(parseInt(slider.value,10)||maxStep);
+          }else{
+            startAnimate();
+            playBtn.setAttribute('aria-pressed','true');playBtn.textContent='Stop';
+            slider.disabled=true;
+          }
+        };
         status.textContent=ok+' of '+partsModel.length+' real parts rendered'+(skipped?' ('+skipped+' not yet in the baked catalogue)':'')+
           ' — drag to orbit, scroll to zoom.';
       });
