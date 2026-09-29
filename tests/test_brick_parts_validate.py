@@ -625,6 +625,72 @@ def test_clip_collinear_separated_does_not_falsely_mate():
     assert report['clipConnections'] == 0
 
 
+def test_towball_mates_with_socket_and_exempts_collision():
+    """A real towball (3184, Plate 1x4 with Towball) mated into a real ball-socket (3730, Plate 2x2 with
+    Towball Socket): the ball's world position lands within BALL_SOCKET_MATCH_TOL of the socket's, so the
+    pair registers a towball connection and is exempted from collision even though the plate bodies overlap."""
+    mesh_3184, mesh_3730 = _load_mesh('3184'), _load_mesh('3730')
+    parts = [
+        {'p': '3184', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3730', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3184': mesh_3184, '3730': mesh_3730})
+    assert report['towballConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_towball_far_from_socket_does_not_falsely_mate():
+    """A towball placed far from any socket must not register a connection."""
+    mesh_3184, mesh_3730 = _load_mesh('3184'), _load_mesh('3730')
+    parts = [
+        {'p': '3184', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3730', 'x': 200.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3184': mesh_3184, '3730': mesh_3730})
+    assert report['towballConnections'] == 0
+
+
+def test_towball_3491_mates_at_its_own_authoritative_position():
+    """3491's socket position (-52.0, 13.0, 0.0) was verified to within 0.033 LDU of its own source-file
+    '!HELP centre of towball at y=13' comment (see MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md section 6) --
+    place a ball exactly there and confirm it mates."""
+    mesh_3184, mesh_3491 = _load_mesh('3184'), _load_mesh('3491')
+    # 3184's ball is at local (0, 4, -28). Offset 3491 so its socket (-52.0, 13.0, 0.0) lands on the ball.
+    parts = [
+        {'p': '3184', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': '3491', 'x': 52.0, 'y': -9.0, 'z': -28.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3184': mesh_3184, '3491': mesh_3491})
+    assert report['towballConnections'] == 1
+
+
+def test_explicit_connectors_towballs_and_ball_sockets_mesh_supported():
+    """Meshes explicitly declaring connectors.towballs and connectors.ball_sockets (quantized LDU) mate cleanly."""
+    custom_ball = {
+        'id': 'custom_ball', 'title': 'Custom Ball Part', 'quant': 16,
+        'connectors': {
+            'towballs': [{'pos': [0, 64, 0], 'r': 8.0}],
+            'studs': [], 'sockets': [], 'holes': [], 'pins': [], 'bars': [], 'clips': [], 'hinges': [], 'axles': [], 'ball_sockets': [],
+        },
+        'occupancy': [[-10.0, 10.0, 0.0, 8.0, -10.0, 10.0]],
+    }
+    custom_socket = {
+        'id': 'custom_socket', 'title': 'Custom Socket Part', 'quant': 16,
+        'connectors': {
+            'ball_sockets': [{'pos': [0, 64, 0], 'r': 8.0}],
+            'studs': [], 'sockets': [], 'holes': [], 'pins': [], 'bars': [], 'clips': [], 'hinges': [], 'axles': [], 'towballs': [],
+        },
+        'occupancy': [[-10.0, 10.0, 0.0, 8.0, -10.0, 10.0]],
+    }
+    parts = [
+        {'p': 'custom_ball', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': 'custom_socket', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'custom_ball': custom_ball, 'custom_socket': custom_socket})
+    assert report['towballConnections'] == 1
+
+
 def test_explicit_connectors_clips_and_bars_mesh_supported():
     """Meshes explicitly declaring connectors.clips and connectors.bars (in quantized LDU format) mate cleanly."""
     custom_clip = {

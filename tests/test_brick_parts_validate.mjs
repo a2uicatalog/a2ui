@@ -141,3 +141,31 @@ for (const [name, m] of [['metro_30', M_METRO_30], ['metro_60', M_METRO_60], ['m
   console.log("  ✓ continuous_rotation_" + name + "_no_false_collision");
 }
 
+// Towball<->ball-socket mated pair exemption test (2026-09-29) -- real baked parts, same positions/tolerance
+// as tests/test_brick_parts_validate.py's Python-side towball tests.
+loadMesh('3184');
+loadMesh('3730');
+const rTowball = kit.validateParts([
+  {p: '3184', x: 0, y: 0, z: 0, r: 0},
+  {p: '3730', x: 0, y: 0, z: 0, r: 0}
+]);
+// overlaps is the real part-vs-part collision count; collisions may legitimately also carry floor-
+// penetration entries ([-1, i]) unrelated to the mated-pair exemption being tested here (twin of the
+// Python test's `assert report['overlaps'] == 0; assert [0, 1] not in report['collisions']` pattern).
+if (rTowball.towballConnections !== 1 || rTowball.overlaps !== 0 ||
+    rTowball.collisions.some(c => (c[0] === 0 && c[1] === 1) || (c[0] === 1 && c[1] === 0))) {
+  console.error("Towball mating test failed:", rTowball);
+  process.exit(1);
+}
+console.log("  ✓ towball_mating_and_exemption");
+
+const rTowballFar = kit.validateParts([
+  {p: '3184', x: 0, y: 0, z: 0, r: 0},
+  {p: '3730', x: 200, y: 0, z: 0, r: 0}
+]);
+if (rTowballFar.towballConnections !== 0) {
+  console.error("Towball far-apart false-mate test failed:", rTowballFar);
+  process.exit(1);
+}
+console.log("  ✓ towball_far_apart_no_false_mate");
+

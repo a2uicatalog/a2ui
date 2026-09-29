@@ -335,6 +335,72 @@ CURATED_BARS = {
     '25893a': [{'a': (-10.0, 8.0, 0.0), 'b': (10.0, 8.0, 0.0)}],
 }
 
+# Curated towball/ball-socket positions (pos in local LDU, r = matching radius). See
+# scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md section 6 for how these were measured (ball side:
+# exact, from each part's own sphere-primitive transform; socket side: least-squares sphere/circle fit
+# against the real resolved mesh, real but disclosed ~2 LDU uncertainty for all but 3491 which fit to within
+# 0.033 LDU of its own source-file HELP comment). BALL_SOCKET_MATCH_TOL below is wider than the 0.5 LDU used
+# for pin/hole and hinge for exactly that reason -- these positions carry real fit uncertainty, not none.
+CURATED_TOWBALLS = {
+    '15456': [{'pos': (0.0, 4.0, -40.0), 'r': 8.0}],
+    '2508':  [{'pos': (0.0, 4.0, -90.0), 'r': 8.0}],
+    '3184':  [{'pos': (0.0, 4.0, -28.0), 'r': 8.0}],
+    '3614a': [{'pos': (0.0, 4.0, -19.0), 'r': 8.0}],
+    '3731':  [{'pos': (0.0, 4.0, -40.0), 'r': 8.0}],
+    '3729':  [{'pos': (0.0, 4.0, -40.0), 'r': 8.0}],
+    '4089':  [{'pos': (0.0, 12.0, 20.0), 'r': 8.0}],
+}
+CURATED_BALL_SOCKETS = {
+    '3491':  [{'pos': (-52.0, 13.0, 0.0), 'r': 8.0}],
+    '3730':  [{'pos': (0.0, 3.8, -28.9), 'r': 8.0}],
+    '3183a': [{'pos': (0.0, 4.0, -19.6), 'r': 8.0}],
+    '3183b': [{'pos': (0.0, 4.0, -19.6), 'r': 8.0}],
+    '3183c': [{'pos': (0.0, 4.0, -17.5), 'r': 8.0}],
+}
+BALL_SOCKET_MATCH_TOL = 3.0
+
+
+def _towballs_world(mesh, r, ex, ey, ez):
+    """World-space position for part's towballs. Returns [{'pos': (x, y, z), 'r': float}] in world space."""
+    if not mesh:
+        return []
+    pid = mesh.get('id')
+    q = mesh.get('quant', 16)
+    out = []
+    raw = (mesh.get('connectors') or {}).get('towballs') or []
+    if raw:
+        for t in raw:
+            lp = (t['pos'][0] / q, t['pos'][1] / q, t['pos'][2] / q)
+            wp = _add3(rot_ldu(r, lp), (ex, ey, ez))
+            out.append({'pos': wp, 'r': t['r']})
+        return out
+    if pid in CURATED_TOWBALLS:
+        for t in CURATED_TOWBALLS[pid]:
+            wp = _add3(rot_ldu(r, t['pos']), (ex, ey, ez))
+            out.append({'pos': wp, 'r': t['r']})
+    return out
+
+
+def _ball_sockets_world(mesh, r, ex, ey, ez):
+    """World-space position for part's ball-sockets. Returns [{'pos': (x, y, z), 'r': float}] in world space."""
+    if not mesh:
+        return []
+    pid = mesh.get('id')
+    q = mesh.get('quant', 16)
+    out = []
+    raw = (mesh.get('connectors') or {}).get('ball_sockets') or []
+    if raw:
+        for s in raw:
+            lp = (s['pos'][0] / q, s['pos'][1] / q, s['pos'][2] / q)
+            wp = _add3(rot_ldu(r, lp), (ex, ey, ez))
+            out.append({'pos': wp, 'r': s['r']})
+        return out
+    if pid in CURATED_BALL_SOCKETS:
+        for s in CURATED_BALL_SOCKETS[pid]:
+            wp = _add3(rot_ldu(r, s['pos']), (ex, ey, ez))
+            out.append({'pos': wp, 'r': s['r']})
+    return out
+
 
 def _clips_world(mesh, r, ex, ey, ez):
     """World-space position and axis direction for part's clips.
@@ -483,13 +549,14 @@ def validate_parts(parts, meshes):
     """
     n = len(parts)
     mesh_list = [meshes.get(e['p']) for e in parts]
-    studs, sockets, pins, boxes, hole_segs_world, hinges, axles_world, clips_world, bars_world = (
-        [], [], [], [], [], [], [], [], [])
+    studs, sockets, pins, boxes, hole_segs_world, hinges, axles_world, clips_world, bars_world, towballs_world, ball_sockets_world = (
+        [], [], [], [], [], [], [], [], [], [], [])
     not_checked = 0
     for e, m in zip(parts, mesh_list):
         if not m or m in ('loading', 'error'):
             studs.append([]); sockets.append([]); pins.append([]); boxes.append(None); hole_segs_world.append([])
             hinges.append([]); axles_world.append([]); clips_world.append([]); bars_world.append([])
+            towballs_world.append([]); ball_sockets_world.append([])
             not_checked += 1
             continue
         studs.append(_conn_world(m, 'studs', e['r'], e['x'], e['y'], e['z']))
@@ -508,6 +575,8 @@ def validate_parts(parts, meshes):
         axles_world.append(_axles_world(m, e['r'], e['x'], e['y'], e['z']))
         clips_world.append(_clips_world(m, e['r'], e['x'], e['y'], e['z']))
         bars_world.append(_bars_world(m, e['r'], e['x'], e['y'], e['z']))
+        towballs_world.append(_towballs_world(m, e['r'], e['x'], e['y'], e['z']))
+        ball_sockets_world.append(_ball_sockets_world(m, e['r'], e['x'], e['y'], e['z']))
 
     stud_conn = pin_conn = 0
     adj = [set() for _ in range(n)]
@@ -642,6 +711,23 @@ def validate_parts(parts, meshes):
                         adj[j].add(i)
                         mated_pairs.add((min(i, j), max(i, j)))
 
+    # Towball<->ball-socket mating: simplest remaining connector kind, point-vs-point distance only (no
+    # directional/angular math needed, unlike hinges/axles/clips) -- but BALL_SOCKET_MATCH_TOL is wider than
+    # the 0.5 LDU used elsewhere since these positions carry real, disclosed fit uncertainty (see
+    # CURATED_BALL_SOCKETS's own comment / MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md section 6).
+    towball_conn = 0
+    for i in range(n):
+        for t in towballs_world[i]:
+            for j in range(n):
+                if i == j:
+                    continue
+                for s in ball_sockets_world[j]:
+                    if _dist3(t['pos'], s['pos']) < BALL_SOCKET_MATCH_TOL:
+                        towball_conn += 1
+                        adj[i].add(j)
+                        adj[j].add(i)
+                        mated_pairs.add((min(i, j), max(i, j)))
+
     seen = set(base_adj)
     queue = list(base_adj)
     while queue:
@@ -729,10 +815,11 @@ def validate_parts(parts, meshes):
          'detail': ('%d part%s not connected to the baseplate' % (len(floating), 's' if len(floating) > 1 else ''))
          if floating else 'all %d parts reach the baseplate' % n},
         {'id': 'connections', 'label': 'Stud + pin + hinge connections',
-         'status': 'pass' if (stud_conn + pin_conn + hinge_conn + axle_conn + clip_conn) else 'fail',
+         'status': 'pass' if (stud_conn + pin_conn + hinge_conn + axle_conn + clip_conn + towball_conn) else 'fail',
          'detail': ('%d stud + %d pin + %d hinge' % (stud_conn, pin_conn, hinge_conn))
          + ((' + %d axle' % axle_conn) if axle_conn else '')
-         + ((' + %d clip' % clip_conn) if clip_conn else '')},
+         + ((' + %d clip' % clip_conn) if clip_conn else '')
+         + ((' + %d towball' % towball_conn) if towball_conn else '')},
         {'id': 'balance', 'label': 'Centre of mass over footprint',
          'status': 'fail' if balance == 'none' else balance,
          'detail': 'no part rests on the baseplate to measure' if balance == 'none'
@@ -740,10 +827,10 @@ def validate_parts(parts, meshes):
     ]
     return {
         'ok': all(c['status'] != 'fail' for c in checks), 'checks': checks,
-        'connections': stud_conn + pin_conn + hinge_conn + axle_conn + clip_conn,
+        'connections': stud_conn + pin_conn + hinge_conn + axle_conn + clip_conn + towball_conn,
         'studConnections': stud_conn, 'pinConnections': pin_conn,
         'hingeConnections': hinge_conn, 'axleConnections': axle_conn,
-        'clipConnections': clip_conn,
+        'clipConnections': clip_conn, 'towballConnections': towball_conn,
         'collisions': collisions, 'overlaps': overlaps, 'floating': floating, 'balance': balance,
         'com': {'margin': margin}, 'parts': [], 'cost': 0,
     }

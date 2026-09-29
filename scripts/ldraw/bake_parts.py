@@ -26,7 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from resolve import Library, ColourTable, resolve_part  # noqa: E402
-from parts import resolve_occupancy_and_sockets, bar_grip_points, hinge_connectors, HINGE_CONNECTORS, axle_connectors, clip_connectors  # noqa: E402
+from parts import resolve_occupancy_and_sockets, bar_grip_points, hinge_connectors, HINGE_CONNECTORS, axle_connectors, clip_connectors, towball_connectors, ball_socket_connectors  # noqa: E402
 import characters  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
@@ -118,6 +118,11 @@ def bake_one(lib, colours, entry):
             # Real clip jaw(s) for clip parts (Plate with Clip, Brick with Clip, Tile with Clip)
             "clips": [{"pos": qpt(c["pos"]), "dir": [round(d, 3) for d in c["dir"]]}
                       for c in clip_connectors(pid, title, part.min, part.max, part.cylinders)],
+            # Real towball(s)/ball-socket(s), curated in parts.py's TOWBALL_CONNECTORS/BALL_SOCKET_CONNECTORS
+            # -- [] for every part not in those registries (not a per-part geometry computation, cheap to
+            # call unconditionally here, same pattern as hinge_connectors).
+            "towballs": [{"pos": qpt(t["pos"]), "r": t["r"]} for t in towball_connectors(pid)],
+            "ball_sockets": [{"pos": qpt(s["pos"]), "r": s["r"]} for s in ball_socket_connectors(pid)],
         },
         "occupancy": [list(b) for b in occ] if occ else None,
         "needs_occupancy": needs_occ,

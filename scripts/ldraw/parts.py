@@ -1136,6 +1136,57 @@ def clip_connectors(part_id, title="", bounds_min=None, bounds_max=None, cylinde
     return out
 
 
+# Towball / ball-socket connectors (2026-09-29, mated-connector-exemption-towballs).
+# Curated only -- no generic geometric fallback, unlike clip_connectors. MATED_CONNECTOR_EXEMPTION_
+# INVESTIGATION.md section 6 has the full investigation; summary: there is no dedicated "towball.dat"/
+# "towballsocket.dat" primitive (a prior doc assumption, corrected there) -- real ball geometry uses the
+# generic 8-8sphe.dat sphere primitive (radius 8, not the 5.1 previously assumed), and the socket/clip jaw
+# is hand-authored raw triangle geometry with no reusable primitive name to detect at all. Positions below
+# were measured two ways: (a) the ball side directly from each part's own unambiguous sphere-primitive
+# transform line (exact); (b) the socket side via a least-squares sphere/circle fit against the real
+# resolved triangle mesh (scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md section 6 has the fit
+# residuals) -- 3491 fits to within 0.033 LDU of its own source-file "!HELP centre of towball at y=13"
+# comment (essentially exact); the other four sockets converged within ~2 LDU across two independent
+# fitting methods (a real, disclosed uncertainty, not a guess -- see BALL_SOCKET_MATCH_TOL below).
+TOWBALL_CONNECTORS = {
+    "15456": [{"pos": (0.0, 4.0, -40.0), "r": 8.0}],
+    "2508":  [{"pos": (0.0, 4.0, -90.0), "r": 8.0}],
+    "3184":  [{"pos": (0.0, 4.0, -28.0), "r": 8.0}],
+    "3614a": [{"pos": (0.0, 4.0, -19.0), "r": 8.0}],
+    "3731":  [{"pos": (0.0, 4.0, -40.0), "r": 8.0}],
+    "3729":  [{"pos": (0.0, 4.0, -40.0), "r": 8.0}],  # alias of 3731 (references 3731.dat at identity transform)
+    "4089":  [{"pos": (0.0, 12.0, 20.0), "r": 8.0}],
+    # 47978 ("Two Towballs") and 30395 ("Hook with Towball") use different, unresolved geometry
+    # (no plain 8-8sphe.dat reference) -- deliberately NOT guessed, see investigation doc section 6.3.
+}
+
+# Match tolerance for towball<->ball_socket point-distance mating, wider than the 0.5 LDU used for pin/hole
+# and hinge (those come from exact connector positions; these come from a real but disclosed-uncertainty fit).
+BALL_SOCKET_MATCH_TOL = 3.0
+
+BALL_SOCKET_CONNECTORS = {
+    "3491":  [{"pos": (-52.0, 13.0, 0.0), "r": 8.0}],
+    "3730":  [{"pos": (0.0, 3.8, -28.9), "r": 8.0}],
+    "3183a": [{"pos": (0.0, 4.0, -19.6), "r": 8.0}],
+    "3183b": [{"pos": (0.0, 4.0, -19.6), "r": 8.0}],
+    "3183c": [{"pos": (0.0, 4.0, -17.5), "r": 8.0}],
+}
+
+
+def towball_connectors(part_id):
+    """Returns [{'pos': (x,y,z), 'r': float}] for part_id's real towball(s), or [] if none. Curated only --
+    called directly by bake_parts.py (same pattern as hinge_connectors)."""
+    e = TOWBALL_CONNECTORS.get(part_id)
+    return [dict(x) for x in e] if e else []
+
+
+def ball_socket_connectors(part_id):
+    """Returns [{'pos': (x,y,z), 'r': float}] for part_id's real ball-socket(s), or [] if none. Curated only --
+    called directly by bake_parts.py (same pattern as hinge_connectors)."""
+    e = BALL_SOCKET_CONNECTORS.get(part_id)
+    return [dict(x) for x in e] if e else []
+
+
 # Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
 # head's own real top stud (confirmed live: the curated head part 3626bp01's own title literally says
 # "Blocked Hollow Stud") -- so it needs a socket, not occupancy (nothing is ever stacked on top of a hat in
