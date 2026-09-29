@@ -322,8 +322,13 @@ function importSet(id,note){
     .forEach(function(s){var d=document.createElement('div');d.className='stat';
       var b=document.createElement('b');b.textContent=s[1];var sp=document.createElement('span');sp.textContent=s[0];d.appendChild(b);d.appendChild(sp);$('stats').appendChild(d)});
     var pct=c.parts?Math.round(100*c.renderable/c.parts):0;
-    $('how').textContent='Imported from the LDraw Official Model Repository: '+n(c.renderable)+' of '+n(c.parts)+' parts ('+pct+'%) could be rendered -- '
-      +'the rest are either not yet in this catalogue or sit at an angle this importer does not yet place. '+j.attribution;
+    $('how').textContent=(j.layout==='tray'
+      ?('This set has no model in the LDraw Official Model Repository, so this is its real Rebrickable parts list laid out as a browsable tray, NOT an assembled recreation: '
+        +n(c.renderable)+' of '+n(c.parts)+' real parts ('+pct+'%) are in this catalogue and shown. ')
+      :('Imported from the LDraw Official Model Repository: '+n(c.renderable)+' of '+n(c.parts)+' parts ('+pct+'%) could be rendered -- '
+        +'the rest are either not yet in this catalogue or sit at an angle this importer does not yet place. '))
+      +(j.truncated?('Showing '+n(j.shown)+' of '+n(j.total)+' real instances (capped for a readable tray). '):'')
+      +j.attribution;
     last={j:{name:j.name,prompt:''},partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
     show({partsModel:j.partsModel});
     note.textContent='Imported '+j.name+'.'})
