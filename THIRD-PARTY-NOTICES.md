@@ -77,20 +77,24 @@ just looks plainer.
 - **Version:** 0.186.1 (npm `latest` dist-tag as pinned 2026-09-29; published 2026-09-24)
 - **Vendored as:** `public/vendors/threejs/three.module.js` + `public/vendors/threejs/three.core.js` (the core
   WebGL build, unmodified — this release splits the build across two files, both required),
-  `public/vendors/threejs/addons/controls/OrbitControls.js` (official orbit-camera add-on, unmodified), and
-  `public/vendors/threejs/LICENSE` (verbatim, alongside the source) — fetched, sha256/sha1/sha512-verified and
-  extracted by `scripts/fetch_threejs.py` from the pinned npm tarball
-  (`https://registry.npmjs.org/three/-/three-0.186.1.tgz`,
+  `public/vendors/threejs/addons/controls/OrbitControls.js` (official orbit-camera add-on, unmodified),
+  `public/vendors/threejs/addons/environments/RoomEnvironment.js` (official procedural studio-lighting
+  environment, unmodified — used as `PMREMGenerator` input for real reflections/refraction; builds its scene
+  from primitives only, no external HDRI asset), and `public/vendors/threejs/LICENSE` (verbatim, alongside the
+  source) — fetched, sha256/sha1/sha512-verified and extracted by `scripts/fetch_threejs.py` from the pinned
+  npm tarball (`https://registry.npmjs.org/three/-/three-0.186.1.tgz`,
   sha256 `8cd068708ea44f2c73c944b1cead2ba2f0d5c15c8fc194e5700f4e4f4a033fe7`), same fetch/verify/vendor discipline
   as `scripts/ldraw/fetch_library.py`.
-- **Used by:** the render-appearance proof-of-concept demo at `public/bricksdemo/threejs-demo/` only — a
+- **Used by:** (1) the render-appearance proof-of-concept demo at `public/bricksdemo/threejs-demo/` — a
   standalone, additive page demonstrating a material-appearance axis (trans-clear vs. opaque matte finish on the
-  same real LDraw part geometry) that the live production renderer's hand-rolled WebGL shader doesn't model.
-  **Not used by, and does not replace, any part of the existing `atoms_brick.gs` renderer** (`rotLDU`/
-  `worldBoxes`/`boxesOverlap`/`_brickKit`/`genBrick`, etc. are untouched). The Brick Design Lab
-  (`public/bricksdemo/design/`, `scripts/brick_models/build_design_page.py`) carries a visible attribution credit
-  for this dependency in its footer in anticipation of a future Three.js integration, even though that page does
-  not yet render through Three.js itself — see that page's own footer text for the current (inactive) status.
+  same real LDraw part geometry) that the live production renderer's hand-rolled WebGL shader doesn't model; and
+  (2) the Brick Design Lab's "View in Three.js" toggle (`public/bricksdemo/design/`,
+  `scripts/brick_models/build_design_page.py` + `scripts/brick_models/threejs_view_math.js`), which renders the
+  user's actual current build with real per-part material appearance (trans-clear/chrome/metal/pearlescent/
+  rubber, from `public/bricksdemo/ldraw_colours_full.json`'s real LDConfig.ldr parse) and a build-step/continuous
+  animate view, added 2026-09-29. **Neither use replaces or is used by the existing `atoms_brick.gs` renderer**
+  (`rotLDU`/`worldBoxes`/`boxesOverlap`/`_brickKit`/`genBrick`, etc. are untouched) — Three.js is an additional,
+  optional view of the same real declarative `partsModel` data, not a replacement renderer.
 
 ---
 

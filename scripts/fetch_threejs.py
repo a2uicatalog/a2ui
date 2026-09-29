@@ -60,6 +60,10 @@ FILES = {
     "package/build/three.module.js": "three.module.js",
     "package/build/three.core.js": "three.core.js",
     "package/examples/jsm/controls/OrbitControls.js": "addons/controls/OrbitControls.js",
+    # Procedural studio-lighting environment (PMREMGenerator input) for the design page's Three.js
+    # environment-map work (2026-09-29) -- real reflections on chrome/metal, real refraction on trans-clear
+    # parts. No external HDRI asset/licensing needed: RoomEnvironment builds its scene from primitives only.
+    "package/examples/jsm/environments/RoomEnvironment.js": "addons/environments/RoomEnvironment.js",
 }
 
 

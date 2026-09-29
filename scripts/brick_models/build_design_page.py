@@ -107,7 +107,8 @@ a{color:inherit}
 {
   "imports": {
     "three": "/vendors/threejs/three.module.js",
-    "three/addons/controls/OrbitControls.js": "/vendors/threejs/addons/controls/OrbitControls.js"
+    "three/addons/controls/OrbitControls.js": "/vendors/threejs/addons/controls/OrbitControls.js",
+    "three/addons/environments/RoomEnvironment.js": "/vendors/threejs/addons/environments/RoomEnvironment.js"
   }
 }
 </script>
@@ -532,8 +533,11 @@ var TJS=(function(){
   }
   function loadThree(){
     if(mod)return Promise.resolve(mod);
-    if(!modFetch)modFetch=Promise.all([import('three'), import('three/addons/controls/OrbitControls.js')])
-      .then(function(r){mod={THREE:r[0],OrbitControls:r[1].OrbitControls};return mod});
+    if(!modFetch)modFetch=Promise.all([
+      import('three'),
+      import('three/addons/controls/OrbitControls.js'),
+      import('three/addons/environments/RoomEnvironment.js'),
+    ]).then(function(r){mod={THREE:r[0],OrbitControls:r[1].OrbitControls,RoomEnvironment:r[2].RoomEnvironment};return mod});
     return modFetch;
   }
   // Builds one {geo, colourKey} pair PER triangle group, not one merged geometry for the whole part -- a
@@ -569,7 +573,15 @@ var TJS=(function(){
     else if(info.finish==='chrome')m=new THREE.MeshPhysicalMaterial({color:hex,metalness:1,roughness:0.08,clearcoat:1,clearcoatRoughness:0.05});
     else if(info.finish==='metal')m=new THREE.MeshStandardMaterial({color:hex,metalness:0.9,roughness:0.25});
     else if(info.finish==='pearlescent')m=new THREE.MeshPhysicalMaterial({color:hex,metalness:0.35,roughness:0.22,clearcoat:0.6,clearcoatRoughness:0.2});
-    else if(info.alpha<255)m=new THREE.MeshPhysicalMaterial({color:hex,transparent:true,opacity:info.alpha/255,roughness:0.05,metalness:0,clearcoat:1,clearcoatRoughness:0.05});
+    // Real transmission (refraction), not flat opacity blending: a genuinely colourless material (Trans_
+    // Clear, hex #fcfcfc) at ~50% flat alpha nearly vanishes against a light background -- physically
+    // accurate (real clear glass does the same against a white backdrop) but not a useful "this is glass"
+    // cue on its own. Transmission gives it visible depth/distortion that reads as transparent regardless
+    // of background colour, since the viewer's cue is refraction, not contrast against whatever's behind
+    // it. ior=1.5 matches typical clear plastic/glass; thickness is in world (stud) units, matching a real
+    // part's own real scale, not an arbitrary constant.
+    else if(info.alpha<255)m=new THREE.MeshPhysicalMaterial({color:hex,transmission:1,opacity:1,roughness:0.04,
+      metalness:0,ior:1.5,thickness:0.6,clearcoat:1,clearcoatRoughness:0.05});
     else m=new THREE.MeshStandardMaterial({color:hex,roughness:0.85,metalness:0.05});
     matCache[code]=m;
     return m;
@@ -585,7 +597,7 @@ var TJS=(function(){
     matCache[key]=m;
     return m;
   }
-  function ensureScene(THREE,OrbitControls){
+  function ensureScene(THREE,OrbitControls,RoomEnvironment){
     if(scene)return;
     var canvas=$('tjscanvas');
     // No scene.background / opaque clear: the canvas's own CSS background (the same light radial gradient
@@ -598,11 +610,19 @@ var TJS=(function(){
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
     renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
     renderer.outputColorSpace=THREE.SRGBColorSpace;
+    // scene.environment (distinct from scene.background above): a real, procedural studio-lighting map
+    // (RoomEnvironment -> PMREMGenerator, no external HDRI asset) so chrome/metal/pearlescent materials get
+    // REAL reflections and trans-clear parts get real refraction, instead of flat colour with no surroundings
+    // to reflect. Every MeshStandardMaterial/MeshPhysicalMaterial in the scene picks this up automatically
+    // (three.js's own default behaviour) -- materialForCode/materialForFixedHex don't need to reference it.
+    var pmrem=new THREE.PMREMGenerator(renderer);
+    scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+    pmrem.dispose();
     controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
-    scene.add(new THREE.AmbientLight(0xffffff,0.75));
-    var key=new THREE.DirectionalLight(0xffffff,1.8);key.position.set(25,40,20);scene.add(key);
-    var fill=new THREE.DirectionalLight(0xbcd2ff,0.5);fill.position.set(-20,10,-15);scene.add(fill);
+    scene.add(new THREE.AmbientLight(0xffffff,0.55));
+    var key=new THREE.DirectionalLight(0xffffff,1.4);key.position.set(25,40,20);scene.add(key);
+    var fill=new THREE.DirectionalLight(0xbcd2ff,0.4);fill.position.set(-20,10,-15);scene.add(fill);
     var floor=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0xd8dee4,roughness:1,metalness:0}));
     floor.rotation.x=-Math.PI/2;scene.add(floor);
     group=new THREE.Group();scene.add(group);
@@ -710,7 +730,7 @@ var TJS=(function(){
       return fetchColours().then(function(ct){return {mm:mm,ct:ct}});
     }).then(function(x){
       var THREE=x.mm.THREE,ct=x.ct;
-      ensureScene(THREE,x.mm.OrbitControls);
+      ensureScene(THREE,x.mm.OrbitControls,x.mm.RoomEnvironment);
       clearGroup(THREE);
       partEntries=[];
       status.textContent='Loading '+partsModel.length+' real part'+(partsModel.length===1?'':'s')+'…';
