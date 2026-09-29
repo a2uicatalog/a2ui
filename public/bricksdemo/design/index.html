@@ -132,6 +132,11 @@ a{color:inherit}
 <iframe id="view" title="3D build" sandbox="allow-scripts allow-same-origin"></iframe>
 <div id="tjswrap" hidden>
 <canvas id="tjscanvas" role="img" aria-label="Three.js 3D build view"></canvas>
+<div class="row" id="tjscontrols" hidden style="gap:10px">
+<label for="tjsstep" style="font-size:12px;color:var(--mute)">Build step</label>
+<input type="range" id="tjsstep" min="1" max="1" value="1" style="flex:1">
+<span class="note" id="tjsstepnote"></span>
+</div>
 <p class="note" id="tjsstatus"></p>
 </div>
 </section>
@@ -644,6 +649,15 @@ var TJS=(function(){
     camera.near=fit.near;camera.far=fit.far;camera.updateProjectionMatrix();
     controls.target.set(fit.target[0],fit.target[1],fit.target[2]);controls.update();
   }
+  // Build-step scrubber (Phase 1 of the "View in Three.js" motion work -- a static cumulative reveal via
+  // partsModel's own real `step` field, row[6], already present in every real build; NOT the live canvas
+  // renderer's continuous drop/bounce/settle "Animate" loop, which needs real per-frame physics timing and
+  // is scoped as a separate follow-up). All meshes are built and added to `group` once (so fitCamera sees
+  // the FULL final build and the camera never jumps as you scrub); the scrubber only ever toggles
+  // `mesh.visible`, never rebuilds geometry.
+  function applyStep(step){
+    group.children.forEach(function(m){m.visible=(m.userData.step||1)<=step;});
+  }
   function render(partsModel){
     var status=$('tjsstatus');
     status.textContent='Loading three.js…';
@@ -658,18 +672,35 @@ var TJS=(function(){
       var ids=Array.from(new Set(partsModel.map(function(row){return row[0]})));
       return Promise.all(ids.map(function(id){return fetchMesh(id).catch(function(){return null})})).then(function(meshes){
         var byId={};ids.forEach(function(id,i){byId[id]=meshes[i]});
-        var ok=0,skipped=0;
+        var ok=0,skipped=0,maxStep=1;
         partsModel.forEach(function(row){
           var mesh=byId[row[0]];
           if(!mesh){skipped++;return}
-          var instPos=[row[1],row[2],row[3]],r=row[4]|0,code=row[5]|0;
+          var instPos=[row[1],row[2],row[3]],r=row[4]|0,code=row[5]|0,step=row[6]|0||1;
+          maxStep=Math.max(maxStep,step);
           geometriesFor(THREE,mesh,r,instPos).forEach(function(g){
             var mat=g.colourKey?materialForFixedHex(THREE,g.colourKey):materialForCode(THREE,code,ct);
-            group.add(new THREE.Mesh(g.geo,mat));
+            var m=new THREE.Mesh(g.geo,mat);
+            m.userData.step=step;
+            group.add(m);
           });
           ok++;
         });
         fitCamera(THREE);
+        var slider=$('tjsstep');
+        if(maxStep>1){
+          $('tjscontrols').hidden=false;
+          slider.min=1;slider.max=maxStep;slider.value=maxStep;
+          $('tjsstepnote').textContent='step '+maxStep+' of '+maxStep;
+          slider.oninput=function(){
+            var v=parseInt(slider.value,10)||1;
+            applyStep(v);
+            $('tjsstepnote').textContent='step '+v+' of '+maxStep;
+          };
+        }else{
+          $('tjscontrols').hidden=true;
+          applyStep(1);
+        }
         status.textContent=ok+' of '+partsModel.length+' real parts rendered'+(skipped?' ('+skipped+' not yet in the baked catalogue)':'')+
           ' — drag to orbit, scroll to zoom.';
       });
