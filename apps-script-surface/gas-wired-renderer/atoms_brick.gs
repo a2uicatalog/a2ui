@@ -2090,5 +2090,11 @@ _RENDERERS['brick_build_3d'] = function(b) {
     '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>' +
     '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>' +
     '</div>' +
-    '<script>(function(){(' + _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");})();</script>';
+    // LEGO_MATERIAL_PROFILE must be re-declared here (not just .toString()'d in with _brickMount/_brickKit):
+    // this HTML string is executed in a SEPARATE script context (an iframe srcdoc) where only the two
+    // functions' own text exists -- _brickKit's `materialProfile||LEGO_MATERIAL_PROFILE` default otherwise
+    // throws ReferenceError there, even though it resolves fine in atoms_brick.gs's own top-level scope
+    // (found live 2026-09-29: broke every render on the public design page).
+    '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + JSON.stringify(LEGO_MATERIAL_PROFILE) + ';(' +
+      _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");})();</script>';
 };
