@@ -606,13 +606,39 @@ var TJS=(function(){
   // Frames the camera on whatever was actually loaded -- a fixed camera position (fine for the standalone
   // demo's known single part) would leave most or all of an arbitrary real build out of frame, since builds
   // vary from one brick to a full imported set spanning hundreds of studs.
+  // Fits the camera to the REAL box, from the REAL fixed viewing direction below -- not a single-scalar
+  // heuristic (a bounding-sphere radius, or a "maxSize x maxSize" square) applied uniformly to both screen
+  // axes. Those both fail the same way: a build's real footprint is rarely square (e.g. a wide, short wall
+  // vs. a narrow, tall tower), so a formula that doesn't know the box's actual width/depth/height ends up
+  // either far too conservative (found live: a sphere-of-the-diagonal fit left a 3-part test build tiny in
+  // frame) or still wrong for a differently-shaped build even after tuning the constant. This projects all
+  // 8 box corners onto the camera's OWN right/up axes for the direction it will actually look from, so the
+  // true required half-width and half-height (in that specific view) drive the distance -- correct for any
+  // box shape from this fixed diagonal angle, not just the one test case it was tuned against.
   function fitCamera(THREE){
     var box=new THREE.Box3().setFromObject(group);
     if(box.isEmpty())return;
-    var size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
-    var radius=Math.max(size.length()/2,0.5);
-    var dist=radius/Math.sin((camera.fov*Math.PI/180)/2)*1.3;
-    camera.position.set(center.x+dist*0.6,center.y+dist*0.5,center.z+dist*0.6);
+    var center=box.getCenter(new THREE.Vector3());
+    var dirVec=new THREE.Vector3(0.6,0.5,0.6).normalize();   // unit vector from center TOWARD the camera
+    var forward=dirVec.clone().negate();                     // camera looks this way, back toward center
+    var worldUp=new THREE.Vector3(0,1,0);
+    var right=new THREE.Vector3().crossVectors(forward,worldUp);
+    if(right.lengthSq()<1e-8)right.set(1,0,0); else right.normalize();
+    var up=new THREE.Vector3().crossVectors(right,forward).normalize();
+    var corners=[[box.min.x,box.min.y,box.min.z],[box.max.x,box.min.y,box.min.z],
+                 [box.min.x,box.max.y,box.min.z],[box.max.x,box.max.y,box.min.z],
+                 [box.min.x,box.min.y,box.max.z],[box.max.x,box.min.y,box.max.z],
+                 [box.min.x,box.max.y,box.max.z],[box.max.x,box.max.y,box.max.z]];
+    var halfW=0,halfH=0,v=new THREE.Vector3();
+    corners.forEach(function(c){
+      v.set(c[0]-center.x,c[1]-center.y,c[2]-center.z);
+      halfW=Math.max(halfW,Math.abs(v.dot(right)));
+      halfH=Math.max(halfH,Math.abs(v.dot(up)));
+    });
+    var halfFovY=(camera.fov*Math.PI/180)/2;
+    var halfFovX=Math.atan(Math.tan(halfFovY)*camera.aspect);
+    var dist=1.15*Math.max(halfH/Math.tan(halfFovY),halfW/Math.tan(halfFovX),0.5);
+    camera.position.copy(center).addScaledVector(dirVec,dist);
     camera.near=Math.max(dist/100,0.1);camera.far=dist*10;camera.updateProjectionMatrix();
     controls.target.copy(center);controls.update();
   }
