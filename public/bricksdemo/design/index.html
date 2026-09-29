@@ -182,6 +182,17 @@ function show(model){
   var parts=(model.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){
     var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}});
   $('view').srcdoc='<!doctype html><meta charset="utf-8"><body style="margin:0;font:14px system-ui">'+PRE+JSON.stringify(parts)+POST+'</body>';
+  refreshTJSIfActive();
+}
+// Real bug found live: loading a new build (design/template/import/add-part) while the Three.js view was
+// the ACTIVE one only ever updated the hidden main-view iframe (via show(), or the tray's own direct
+// srcdoc write) -- the Three.js canvas just kept showing whatever it had before, with no indication
+// anything was stale. Switching to the main view and back "fixed" it only because that toggle always
+// calls TJS.render() fresh. Every real "new build" mutation point calls this now, not just show().
+function refreshTJSIfActive(){
+  if($('tjsgo').getAttribute('aria-pressed')==='true'&&last&&last.partsModel&&last.partsModel.length){
+    TJS.render(last.partsModel);
+  }
 }
 
 var PIDX=null,QUANT=1,last=null;
@@ -315,6 +326,7 @@ function addPart(id){
   last.staged++;last.trayX=x+half+20;
   $('result').hidden=false;$('cclear').hidden=false;
   $('view').srcdoc=frameDoc(last.parts,true);
+  refreshTJSIfActive();
   $('cnote').textContent='Added '+pname(id)+(isChar(id)?'. Minifigures appear in the build manual; the Rebrickable CSV lists bricks only.':'.')}
 $('csearch').addEventListener('input',csearch);
 $('cclear').onclick=function(){if(!last||!last.staged)return;
@@ -322,7 +334,8 @@ $('cclear').onclick=function(){if(!last||!last.staged)return;
   last.partsModel=last.partsModel.slice(0,-n);last.parts=last.parts.slice(0,-n);
   last.staged=0;last.trayX=undefined;
   $('cclear').hidden=true;$('cnote').textContent='';
-  if(last.parts.length)$('view').srcdoc=frameDoc(last.parts,true);else $('result').hidden=true};
+  if(last.parts.length)$('view').srcdoc=frameDoc(last.parts,true);else $('result').hidden=true;
+  refreshTJSIfActive();};
 // ---- Real set import: GET /api/brick-omr?set=<id> parses the actual LDraw OMR model file for that set (real
 // parts, positions, rotations, colours and build steps) and normalises it -- see mcp-worker/src/omr-import.js.
 // Coverage is never hidden: a set with parts this catalogue can't yet render or that sit at a tilted (non-axis-
