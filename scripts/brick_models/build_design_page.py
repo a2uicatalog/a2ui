@@ -25,6 +25,11 @@ sys.path.insert(0, str(ROOT))
 from renderers import web_article as w  # noqa: E402
 
 OUT = ROOT / "public" / "bricksdemo" / "design" / "index.html"
+# Real source of truth for the "View in Three.js" viewer's rotation/placement/camera-fit math -- read and
+# embedded verbatim below (same "read the real file, embed it" pattern web_article.py uses for atoms_brick.gs's
+# _brickMount/_brickKit), so tests/... scripts/test_threejs_view_math.mjs tests the SAME text this page ships,
+# not a hand-copied twin.
+THREEJS_VIEW_MATH = (HERE / "threejs_view_math.js").read_text(encoding="utf-8")
 SENTINEL = [["3005", 10, -24, 10, 0, 4]]
 CODES = [0, 1, 2, 4, 14, 15, 19, 25, 27, 28, 70, 71, 72, 272, 288, 320, 484]
 
@@ -96,7 +101,17 @@ th{color:var(--mute);font-weight:500}
 footer{border-top:1px solid var(--rule);padding-top:12px}
 footer p{font-size:12px}
 a{color:inherit}
+#tjscanvas{width:100%;height:480px;border:1px solid var(--rule);border-radius:8px;display:block;background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0)}
 </style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendors/threejs/three.module.js",
+    "three/addons/controls/OrbitControls.js": "/vendors/threejs/addons/controls/OrbitControls.js",
+    "three/addons/environments/RoomEnvironment.js": "/vendors/threejs/addons/environments/RoomEnvironment.js"
+  }
+}
+</script>
 </head>
 <body>
 <main>
@@ -163,14 +178,28 @@ a{color:inherit}
 <div class="stats" id="stats"></div>
 <p class="note" id="how"></p>
 <div class="row"><button class="go" id="manual" type="button">Build manual</button>
-<button class="go alt" id="csv" type="button">Rebrickable list (CSV)</button><span class="note" id="mstat"></span></div>
+<button class="go alt" id="csv" type="button">Rebrickable list (CSV)</button>
+<button class="go alt" id="tjsgo" type="button" aria-pressed="false">View in Three.js</button><span class="note" id="mstat"></span></div>
 <iframe id="view" title="3D build" sandbox="allow-scripts allow-same-origin"></iframe>
+<div id="tjswrap" hidden>
+<canvas id="tjscanvas" role="img" aria-label="Three.js 3D build view"></canvas>
+<div class="row" id="tjscontrols" hidden style="gap:10px">
+<button class="go alt" id="tjsplay" type="button" aria-pressed="false">Animate</button>
+<span id="tjsstepwrap" style="display:flex;gap:10px;align-items:center;flex:1">
+<label for="tjsstep" style="font-size:12px;color:var(--mute)">Build step</label>
+<input type="range" id="tjsstep" min="1" max="1" value="1" style="flex:1">
+<span class="note" id="tjsstepnote"></span>
+</span>
+</div>
+<p class="note" id="tjsstatus"></p>
+</div>
 </section>
 <section class="panel tbl" id="histp" hidden>
 <table id="hist"><thead><tr><th>#</th><th>Engine / model</th><th>Prompt / picks</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th><th>Bricks</th><th>Time</th></tr></thead><tbody></tbody></table>
 </section>
 <footer>
 <p>Cost is computed from the token counts the model returns and the published per-million-token price (Gemini 3.7 Flash is an introductory rate). The template picker makes no model call, so it generates no text and costs nothing. Renders use real LDraw parts (CC BY 4.0). Set names and images in the coverage gallery and search are from Rebrickable. Fan-made, not affiliated with or endorsed by the LEGO Group. LEGO&reg; is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this content.</p>
+<p>The main 3D view is rendered with this catalogue's own WebGL renderer. The "View in Three.js" button renders the SAME real build with <a href="https://threejs.org/">three.js</a> (MIT License, &copy; 2010-2026 three.js authors, vendored at <code>/vendors/threejs/</code>, never loaded from a CDN -- see <a href="/THIRD-PARTY-NOTICES.md">THIRD-PARTY-NOTICES.md</a>) instead, with real per-part material appearance (trans-clear, chrome, metal, pearlescent, rubber) from each part's real LDraw colour -- an appearance axis the live renderer's hand-rolled shader has no concept of at all.</p>
 </footer>
 </main>
 <script>
@@ -366,8 +395,13 @@ function importSet(id,note){
     .forEach(function(s){var d=document.createElement('div');d.className='stat';
       var b=document.createElement('b');b.textContent=s[1];var sp=document.createElement('span');sp.textContent=s[0];d.appendChild(b);d.appendChild(sp);$('stats').appendChild(d)});
     var pct=c.parts?Math.round(100*c.renderable/c.parts):0;
-    $('how').textContent='Imported from the LDraw Official Model Repository: '+n(c.renderable)+' of '+n(c.parts)+' parts ('+pct+'%) could be rendered -- '
-      +'the rest are either not yet in this catalogue or sit at an angle this importer does not yet place. '+j.attribution;
+    $('how').textContent=(j.layout==='tray'
+      ?('This set has no model in the LDraw Official Model Repository, so this is its real Rebrickable parts list laid out as a browsable tray, NOT an assembled recreation: '
+        +n(c.renderable)+' of '+n(c.parts)+' real parts ('+pct+'%) are in this catalogue and shown. ')
+      :('Imported from the LDraw Official Model Repository: '+n(c.renderable)+' of '+n(c.parts)+' parts ('+pct+'%) could be rendered -- '
+        +'the rest are either not yet in this catalogue or sit at an angle this importer does not yet place. '))
+      +(j.truncated?('Showing '+n(j.shown)+' of '+n(j.total)+' real instances (capped for a readable tray). '):'')
+      +j.attribution;
     last={j:{name:j.name,prompt:''},partsModel:j.partsModel,parts:(function(){return (j.partsModel||[]).filter(function(p){return Array.isArray(p)&&/^[0-9a-z-]{1,24}$/.test(p[0])}).map(function(p){var c=p[5]|0;return {p:p[0],x:+p[1]||0,y:+p[2]||0,z:+p[3]||0,r:p[4]|0,c:HEX[c]||'#c91a09',edge:EDGE[c]||'#333333'}})})()};
     show({partsModel:j.partsModel});
     note.textContent='Imported '+j.name+'.'})
@@ -477,6 +511,305 @@ $('go').onclick=function(){
   .catch(function(){$('err').textContent='Could not reach the design service.'})
   .then(function(){$('go').disabled=false;$('go').textContent='Design it'});
 };
+// ---- View in Three.js: renders the SAME real build (last.partsModel) through three.js instead of the live
+// WebGL renderer, with real per-part material appearance (trans-clear/chrome/metal/pearlescent/rubber) from
+// each part's real LDraw colour -- see /bricksdemo/ldraw_colours_full.json (the full ~322-colour table,
+// generated by scripts/ldraw/gen_ldraw_colours_full.py from the real LDConfig.ldr; NOT the small HEX/EDGE
+// picker palette above, which has no transparency/finish concept at all).
+__THREEJS_VIEW_MATH__
+var TJS=(function(){
+  var colours=null, colourFetch=null, meshCache={}, mod=null, modFetch=null;
+  var scene=null, camera=null, renderer=null, controls=null, group=null, loopStarted=false;
+
+  function fetchColours(){
+    if(colours)return Promise.resolve(colours);
+    if(!colourFetch)colourFetch=fetch('/bricksdemo/ldraw_colours_full.json').then(function(r){return r.json()}).then(function(j){colours=j;return j});
+    return colourFetch;
+  }
+  function fetchMesh(id){
+    if(meshCache[id])return meshCache[id];
+    meshCache[id]=fetch('/parts/'+id+'.json').then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()});
+    return meshCache[id];
+  }
+  function loadThree(){
+    if(mod)return Promise.resolve(mod);
+    if(!modFetch)modFetch=Promise.all([
+      import('three'),
+      import('three/addons/controls/OrbitControls.js'),
+      import('three/addons/environments/RoomEnvironment.js'),
+    ]).then(function(r){mod={THREE:r[0],OrbitControls:r[1].OrbitControls,RoomEnvironment:r[2].RoomEnvironment};return mod});
+    return modFetch;
+  }
+  // Builds one {geo, colourKey} pair PER triangle group, not one merged geometry for the whole part -- a
+  // part's own mesh JSON can carry multiple groups with different colours (printed faces, stickers: a fixed
+  // '#rrggbb' already resolved by resolve.py's ColourTable, not the LDraw code 'main' every plain group
+  // uses), and merging them into one geometry would force the WHOLE part to the instance's colour, painting
+  // over any printed detail. colourKey is null for a 'main' group (tint to the instance's real colour) or
+  // the group's own fixed hex string (print colour, independent of the instance).
+  function geometriesFor(THREE,part,r,instPos){
+    var q=part.quant||1,out=[];
+    part.triangles.forEach(function(g){
+      if(g.colour==='edge')return;   // edge-line colour groups carry no fill triangles worth rendering here
+      var positions=[],verts=g.pos;
+      for(var i=0;i+2<verts.length;i+=3){
+        // handedness flips under tjsToWorld's Y-negate, same fix as the standalone demo: swap the last two
+        // vertices per triangle to keep outward-facing winding (confirmed visually, see threejs-demo).
+        var a=tjsToWorld(verts[i],q,r,instPos),b=tjsToWorld(verts[i+1],q,r,instPos),c=tjsToWorld(verts[i+2],q,r,instPos);
+        positions.push(a[0],a[1],a[2],c[0],c[1],c[2],b[0],b[1],b[2]);
+      }
+      if(!positions.length)return;
+      var geo=new THREE.BufferGeometry();
+      geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+      geo.computeVertexNormals();
+      out.push({geo:geo,colourKey:g.colour==='main'?null:g.colour});
+    });
+    return out;
+  }
+  var matCache={};
+  function materialForCode(THREE,code,colourTable){
+    if(matCache[code])return matCache[code];
+    var info=colourTable[code],hex=parseInt(((info&&info.hex)||'#c91a09').slice(1),16),m;
+    if(!info){m=new THREE.MeshStandardMaterial({color:hex,roughness:0.85,metalness:0.05})}
+    else if(info.finish==='chrome')m=new THREE.MeshPhysicalMaterial({color:hex,metalness:1,roughness:0.08,clearcoat:1,clearcoatRoughness:0.05});
+    else if(info.finish==='metal')m=new THREE.MeshStandardMaterial({color:hex,metalness:0.9,roughness:0.25});
+    else if(info.finish==='pearlescent')m=new THREE.MeshPhysicalMaterial({color:hex,metalness:0.35,roughness:0.22,clearcoat:0.6,clearcoatRoughness:0.2});
+    // Real transmission (refraction), not flat opacity blending: a genuinely colourless material (Trans_
+    // Clear, hex #fcfcfc) at ~50% flat alpha nearly vanishes against a light background -- physically
+    // accurate (real clear glass does the same against a white backdrop) but not a useful "this is glass"
+    // cue on its own. Transmission gives it visible depth/distortion that reads as transparent regardless
+    // of background colour, since the viewer's cue is refraction, not contrast against whatever's behind
+    // it. ior=1.5 matches typical clear plastic/glass; thickness is in world (stud) units, matching a real
+    // part's own real scale, not an arbitrary constant.
+    else if(info.alpha<255)m=new THREE.MeshPhysicalMaterial({color:hex,transmission:1,opacity:1,roughness:0.04,
+      metalness:0,ior:1.5,thickness:0.6,clearcoat:1,clearcoatRoughness:0.05});
+    else m=new THREE.MeshStandardMaterial({color:hex,roughness:0.85,metalness:0.05});
+    matCache[code]=m;
+    return m;
+  }
+  // Fixed print/sticker colours (an already-resolved '#rrggbb' from the part's own mesh JSON, independent
+  // of the instance colour) get a simple opaque matte finish -- LDraw doesn't carry finish/alpha metadata
+  // for these baked-in colours the way it does for real numbered colour codes, so matte is the honest
+  // default rather than guessing a finish for them.
+  function materialForFixedHex(THREE,hexStr){
+    var key='#'+hexStr;
+    if(matCache[key])return matCache[key];
+    var m=new THREE.MeshStandardMaterial({color:parseInt(hexStr.replace('#',''),16),roughness:0.85,metalness:0.05});
+    matCache[key]=m;
+    return m;
+  }
+  function ensureScene(THREE,OrbitControls,RoomEnvironment){
+    if(scene)return;
+    var canvas=$('tjscanvas');
+    // No scene.background / opaque clear: the canvas's own CSS background (the same light radial gradient
+    // the main WebGL view already uses, #fafbfd -> #cdd6e0) shows through a transparent WebGL clear instead
+    // -- keeps the two views visually consistent rather than a jarring dark-vs-light switch on toggle.
+    scene=new THREE.Scene();
+    camera=new THREE.PerspectiveCamera(45,1,0.1,800);
+    renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+    renderer.setClearAlpha(0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    // scene.environment (distinct from scene.background above): a real, procedural studio-lighting map
+    // (RoomEnvironment -> PMREMGenerator, no external HDRI asset) so chrome/metal/pearlescent materials get
+    // REAL reflections and trans-clear parts get real refraction, instead of flat colour with no surroundings
+    // to reflect. Every MeshStandardMaterial/MeshPhysicalMaterial in the scene picks this up automatically
+    // (three.js's own default behaviour) -- materialForCode/materialForFixedHex don't need to reference it.
+    var pmrem=new THREE.PMREMGenerator(renderer);
+    scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+    pmrem.dispose();
+    controls=new OrbitControls(camera,renderer.domElement);
+    controls.enableDamping=true;
+    scene.add(new THREE.AmbientLight(0xffffff,0.55));
+    var key=new THREE.DirectionalLight(0xffffff,1.4);key.position.set(25,40,20);scene.add(key);
+    var fill=new THREE.DirectionalLight(0xbcd2ff,0.4);fill.position.set(-20,10,-15);scene.add(fill);
+    var floor=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0xd8dee4,roughness:1,metalness:0}));
+    floor.rotation.x=-Math.PI/2;scene.add(floor);
+    group=new THREE.Group();scene.add(group);
+    function resize(){
+      var w=canvas.clientWidth||canvas.parentElement.clientWidth,h=canvas.clientHeight||480;
+      renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize',resize);resize();
+    if(!loopStarted){loopStarted=true;(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})()}
+  }
+  function clearGroup(THREE){
+    while(group.children.length){
+      var m=group.children.pop();
+      if(m.geometry)m.geometry.dispose();
+      group.remove(m);
+    }
+  }
+  // Frames the camera on whatever was actually loaded, via the shared tjsFitCamera() (see
+  // threejs_view_math.js -- the pure corner-projection math is tested directly there, not re-derived here).
+  function fitCamera(THREE){
+    var box=new THREE.Box3().setFromObject(group);
+    if(box.isEmpty())return;
+    var fit=tjsFitCamera([box.min.x,box.min.y,box.min.z],[box.max.x,box.max.y,box.max.z],
+                          [0.6,0.5,0.6],camera.fov,camera.aspect,1.15);
+    camera.position.set(fit.position[0],fit.position[1],fit.position[2]);
+    camera.near=fit.near;camera.far=fit.far;camera.updateProjectionMatrix();
+    controls.target.set(fit.target[0],fit.target[1],fit.target[2]);controls.update();
+  }
+  // partEntries: one entry per partsModel ROW (not per mesh -- a decorated part's multiple colour-group
+  // meshes must move together), {meshes:[...], step}. Shared by both the Phase 1 scrubber and Phase 2
+  // animate loop below.
+  var partEntries=[];
+  // Build-step scrubber (Phase 1 of the "View in Three.js" motion work) -- a static cumulative reveal via
+  // partsModel's own real `step` field (row[6], already present in every real build). All meshes are built
+  // and added to `group` once (so fitCamera sees the FULL final build and the camera never jumps as you
+  // scrub); the scrubber only ever toggles mesh.visible, never rebuilds geometry.
+  function applyStep(step){
+    partEntries.forEach(function(e){e.meshes.forEach(function(m){m.visible=e.step<=step;});});
+  }
+  // Phase 2: the live canvas renderer's continuous drop/bounce/settle/hold/lift-out "Animate" loop, ported
+  // from atoms_brick.gs's status(t) (constants FALL/SETTLE/HOLD/LIFT/DROP and the stagger/dst timing are
+  // copied from there verbatim -- this is the same real motion, not a reinvented one). Runs per-frame on
+  // partEntries (not partsModel directly), reusing the exact meshes the scrubber already built.
+  //
+  // Materials are cached/shared by colour (materialForCode/materialForFixedHex) so many parts of the same
+  // colour reuse ONE material object -- mutating .opacity per frame would then wrongly fade every part of
+  // that colour together, not just the one currently animating. Each mesh gets its OWN cloned material for
+  // the duration of animate mode (restored to the shared cache instance on stop, so scrubbing/static view
+  // stay cheap and unaffected).
+  var animRAF=null,animLastT=0,animT=0,animPlaying=false;
+  function stopAnimate(){
+    animPlaying=false;
+    if(animRAF)cancelAnimationFrame(animRAF);
+    animRAF=null;
+    partEntries.forEach(function(e){e.meshes.forEach(function(m){
+      m.position.set(0,0,0);
+      if(m.userData.sharedMaterial){m.material=m.userData.sharedMaterial;delete m.userData.sharedMaterial;}
+    });});
+  }
+  function startAnimate(){
+    var N=partEntries.length;
+    if(!N)return;
+    var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
+    var stagger=Math.min(0.12,5/N),dst=1.4/N;
+    var tBuild=N*stagger+FALL+SETTLE;
+    var tCycle=tBuild+HOLD+N*dst+LIFT+0.5;
+    partEntries.forEach(function(e,i){
+      e.t0=i*stagger;e.td=tBuild+HOLD+(N-1-i)*dst;
+      e.jx=(Math.random()-0.5)*7;e.jz=(Math.random()-0.5)*7;
+      e.meshes.forEach(function(m){
+        m.userData.sharedMaterial=m.material;
+        m.material=m.material.clone();
+        m.material.transparent=true;   // opacity now animates every frame regardless of the base material's own mode
+      });
+    });
+    var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    animT=reduced?tBuild+1:tBuild*0.7;
+    animLastT=performance.now();
+    animPlaying=true;
+    (function frame(now){
+      if(!animPlaying)return;
+      var dt=Math.min(0.05,(now-animLastT)/1000);animLastT=now;
+      if(!reduced){animT+=dt;if(animT>=tCycle)animT-=tCycle;}
+      partEntries.forEach(function(e){
+        var tf=animT-e.t0,td=animT-e.td,s,ox=0,oy=0,oz=0,a=1;
+        if(td>=0){var q=td/LIFT;if(q>=1){s=-1;}else{s=1;oy=DROP*q*q;a=1-q;}}
+        else if(tf<0)s=-1;
+        else if(tf<FALL){var p=tf/FALL,ee=1-p;s=1;oy=DROP*(1-p*p);ox=e.jx*ee*ee;oz=e.jz*ee*ee;a=Math.min(1,p*5);}
+        else{var tb=tf-FALL;if(tb<SETTLE){s=1;oy=0.22*Math.exp(-9*tb)*Math.abs(Math.sin(15*tb));}else s=0;}
+        e.meshes.forEach(function(m){
+          m.visible=(s!==-1);
+          m.position.set(ox,oy,oz);
+          m.material.opacity=a;
+        });
+      });
+      animRAF=requestAnimationFrame(frame);
+    })(animLastT);
+  }
+  function render(partsModel){
+    var status=$('tjsstatus');
+    stopAnimate();
+    status.textContent='Loading three.js…';
+    loadThree().then(function(mm){
+      status.textContent='Loading real colour data…';
+      return fetchColours().then(function(ct){return {mm:mm,ct:ct}});
+    }).then(function(x){
+      var THREE=x.mm.THREE,ct=x.ct;
+      ensureScene(THREE,x.mm.OrbitControls,x.mm.RoomEnvironment);
+      clearGroup(THREE);
+      partEntries=[];
+      status.textContent='Loading '+partsModel.length+' real part'+(partsModel.length===1?'':'s')+'…';
+      var ids=Array.from(new Set(partsModel.map(function(row){return row[0]})));
+      return Promise.all(ids.map(function(id){return fetchMesh(id).catch(function(){return null})})).then(function(meshes){
+        var byId={};ids.forEach(function(id,i){byId[id]=meshes[i]});
+        var ok=0,skipped=0,maxStep=1;
+        partsModel.forEach(function(row){
+          var mesh=byId[row[0]];
+          if(!mesh){skipped++;return}
+          var instPos=[row[1],row[2],row[3]],r=row[4]|0,code=row[5]|0,step=row[6]|0||1;
+          maxStep=Math.max(maxStep,step);
+          var entryMeshes=[];
+          geometriesFor(THREE,mesh,r,instPos).forEach(function(g){
+            var mat=g.colourKey?materialForFixedHex(THREE,g.colourKey):materialForCode(THREE,code,ct);
+            var m=new THREE.Mesh(g.geo,mat);
+            group.add(m);
+            entryMeshes.push(m);
+          });
+          if(entryMeshes.length)partEntries.push({meshes:entryMeshes,step:step});
+          ok++;
+        });
+        fitCamera(THREE);
+        var slider=$('tjsstep'),playBtn=$('tjsplay');
+        $('tjscontrols').hidden=false;
+        if(maxStep>1){
+          $('tjsstepwrap').style.display='flex';
+          slider.min=1;slider.max=maxStep;slider.value=maxStep;
+          $('tjsstepnote').textContent='step '+maxStep+' of '+maxStep;
+          slider.oninput=function(){
+            if(animPlaying)return;
+            var v=parseInt(slider.value,10)||1;
+            applyStep(v);
+            $('tjsstepnote').textContent='step '+v+' of '+maxStep;
+          };
+        }else{
+          $('tjsstepwrap').style.display='none';
+          applyStep(1);
+        }
+        playBtn.setAttribute('aria-pressed','false');
+        playBtn.textContent='Animate';
+        playBtn.onclick=function(){
+          if(animPlaying){
+            stopAnimate();
+            playBtn.setAttribute('aria-pressed','false');playBtn.textContent='Animate';
+            slider.disabled=false;
+            applyStep(parseInt(slider.value,10)||maxStep);
+          }else{
+            startAnimate();
+            playBtn.setAttribute('aria-pressed','true');playBtn.textContent='Stop';
+            slider.disabled=true;
+          }
+        };
+        status.textContent=ok+' of '+partsModel.length+' real parts rendered'+(skipped?' ('+skipped+' not yet in the baked catalogue)':'')+
+          ' — drag to orbit, scroll to zoom.';
+      });
+    }).catch(function(err){
+      status.textContent='Could not load the three.js view ('+err.message+').';
+    });
+  }
+  return {render:render};
+})();
+$('tjsgo').onclick=function(){
+  var showing=$('tjsgo').getAttribute('aria-pressed')==='true';
+  if(showing){
+    $('tjsgo').setAttribute('aria-pressed','false');
+    $('tjswrap').hidden=true;$('view').hidden=false;
+    return;
+  }
+  if(!last||!last.partsModel||!last.partsModel.length){
+    $('tjsstatus').textContent='No real parts model for this build yet -- design or import one first.';
+    $('tjswrap').hidden=false;$('view').hidden=true;
+    $('tjsgo').setAttribute('aria-pressed','true');
+    return;
+  }
+  $('tjsgo').setAttribute('aria-pressed','true');
+  $('view').hidden=true;$('tjswrap').hidden=false;
+  TJS.render(last.partsModel);
+};
 setMode('gemini');upd();
 })();
 </script>
@@ -500,7 +833,8 @@ def build():
     size_opts = "".join(f'<option value="{k}"{" selected" if k == "medium" else ""}>{label}</option>' for k, label in TSIZES)
     return (PAGE.replace("__PRE__", esc(pre)).replace("__POST__", esc(post))
             .replace("__CNAME__", json.dumps(names)).replace("__HEX__", json.dumps(hexes)).replace("__EDGE__", json.dumps(edges))
-            .replace("__ARCH_OPTS__", arch_opts).replace("__COLOUR_OPTS__", colour_opts).replace("__SIZE_OPTS__", size_opts))
+            .replace("__ARCH_OPTS__", arch_opts).replace("__COLOUR_OPTS__", colour_opts).replace("__SIZE_OPTS__", size_opts)
+            .replace("__THREEJS_VIEW_MATH__", THREEJS_VIEW_MATH))
 
 
 def main(out=OUT):

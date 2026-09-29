@@ -18503,6 +18503,20 @@ def _brick_fn_src(name: str) -> str:
     return _brick_src_cache[name]
 
 
+# Twin of atoms_brick.gs's `var LEGO_MATERIAL_PROFILE = {...}` (~L41) -- edit BOTH. _brickKit's text is
+# extracted via _brick_fn_src (what Function.prototype.toString returns), which does NOT carry along a
+# module-level constant it closes over, so the real .gs shell re-declares it via JSON.stringify(the live
+# value) at the embed site rather than re-deriving it here; this dict + json.dumps(..., separators) must
+# byte-for-byte match that JSON.stringify output (key order and all) for tests/test_brick_web_twin.py to
+# pass. Found live 2026-09-29: without this, every brick_build_3d render (e.g. the public design page)
+# threw "LEGO_MATERIAL_PROFILE is not defined" inside the iframe it's mounted into, and rendered nothing.
+_LEGO_MATERIAL_PROFILE = {"BH": 1.2, "PL": 0.4, "SR": 0.3, "SH": 0.18, "SN": 10, "studs": True}
+
+
+def _brick_material_profile_src() -> str:
+    return "var LEGO_MATERIAL_PROFILE = " + _json.dumps(_LEGO_MATERIAL_PROFILE, separators=(",", ":")) + ";"
+
+
 def _js_number(v):
     """JavaScript Number(v) for JSON scalars; nan when it would be NaN."""
     if v is None:
@@ -18688,7 +18702,8 @@ def _render_brick_build_3d(b: dict) -> str:
         '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>'
         '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>'
         '</div>'
-        '<script>(function(){(' + _brick_fn_src("_brickMount") + ')((' + _brick_fn_src("_brickKit") + ')(),'
+        '<script>(function(){' + _brick_material_profile_src() + '('
+        + _brick_fn_src("_brickMount") + ')((' + _brick_fn_src("_brickKit") + ')(),'
         + payload + ',"' + uid + '");})();</script>'
     )
 _RENDERERS["brick_build_3d"] = _render_brick_build_3d

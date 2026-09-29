@@ -13,7 +13,7 @@
   - Added mated clip/bar pairs to `mated_pairs` (collision exemption), linked in `adj` (graph anchoring), and reported `clipConnections`.
   - Wired `clip_connectors` helper to `scripts/ldraw/parts.py` and `scripts/ldraw/bake_parts.py`, preventing clip parts from receiving bogus `bars` connectors.
   - Verified with 47 unit tests in `tests/test_brick_parts_validate.py` and JS twin test.
-- **Towball Investigation (2026-09-29, NOT LANDED)**: Two autonomous Gemini dispatches on `mated-connector-exemption-towballs` completed cleanly (real sessions, $1.33+$3.84 combined) but produced zero file changes. Direct investigation (see §6 below) found the task genuinely harder than scoped: this doc's own §4.1/§5 Phase 1 assumption of dedicated `towball.dat`/`towballsocket.dat` primitives is WRONG (no such files exist in the library) and the real ball geometry uses a generic sphere primitive with no equivalently reliable marker on the socket side. 7 of ~9 ball-side parts confirmed with real positions; 0 of 5 socket-side parts confirmed with enough confidence to ship a mating check (mating needs both ends). Parked pending a human with a real LDraw viewer, not re-dispatched blind a third time.
+- **Towball-Only Exemption: LANDED (2026-09-29)**: Two autonomous Gemini dispatches on `mated-connector-exemption-towballs` completed cleanly (real sessions, $1.33+$3.84 combined) but produced zero file changes; implemented directly instead. This doc's own §4.1/§5 Phase 1 assumption of dedicated `towball.dat`/`towballsocket.dat` primitives was WRONG (no such files exist in the library) -- corrected in §6. Real ball geometry (7 of 9 curated parts) measured exactly from each part's own sphere-primitive transform. Socket geometry (a C-clip jaw, not a cavity -- corrected via real product photos, see §6) resolved for all 5 curated sockets via a least-squares sphere/circle fit against the real mesh: one (3491) essentially exact (0.033 LDU against its own source-file HELP comment), the other four within ~2 LDU across two independent methods -- shipped with a wider 3.0 LDU match tolerance reflecting that real, disclosed uncertainty. Wired end to end (`parts.py` -> `bake_parts.py` -> `brick_parts_validate.py` -> `atoms_brick.gs`), 9 new tests, full rebake done. §4.3's whole-pair-blind-spot Tier 1/Tier 2 design and indirect-joint blindness remain separate, unimplemented backlog items.
 - **Pending Follow-ups**: Towballs (real geometry-data gap, see §6), whole-pair blind spot mitigation, and indirect-joint blindness (Technic panels) remain separate backlog items.
 
 ---
@@ -382,7 +382,7 @@ By generalising the architecture into a **socket-type-driven engine with two-tie
 
 ---
 
-## 6. Towball Investigation Findings (2026-09-29) — real geometry, real gap, not landed
+## 6. Towball Investigation Findings (2026-09-29) — real geometry, real gap, RESOLVED and landed (see §6.5)
 
 Two autonomous `mated-connector-exemption-towballs` dispatches (`p7gnm`, `lzpf7`) each completed a real, substantial Gemini session (212 and 208 tool calls, up to 32M tokens, $1.33+$3.84 real spend) but produced **zero file changes** — not a test failure, not a path violation, the harness's own `git diff --cached --quiet` check found nothing to commit either time. Direct investigation into why:
 
@@ -427,6 +427,14 @@ Escalated to a more rigorous technique before giving up: resolved `3730`'s full 
 
 **What would actually resolve this**: either (a) open the real part in an LDraw viewer (e.g. LDView, or the official ldraw.org part-preview render) and read off the true cavity center by eye, or (b) a proper least-squares sphere fit to the concave triangle cluster's vertices (fit the sphere whose surface the cavity triangles' face normals converge toward) — a real, self-contained sub-task, not attempted here given the time already spent on this one Wave-1 item.
 
-### 6.5 Recommendation for whoever picks this up next
+### 6.5 Resolution: real photos corrected the mechanism, then a proper fit closed the gap
 
-Ship the ball side alone first if useful on its own (e.g. for future rendering/visualization work that only needs ball *positions*, not a mating check) — but the actual **mating exemption** (this task's real goal) needs both ends, so it stays blocked until at least one more socket position is genuinely verified. Do not re-dispatch this scoped exactly as before; the real blocker is missing/ambiguous source data, not agent capability — a third autonomous attempt would very likely fail the same way for the same reason.
+§6.4's "needs a human with a viewer" was resolved without one — via Chromium fetching real product images from Rebrickable's API (`https://rebrickable.com/api/v3/lego/parts/<id>/`'s `part_img_url`, the same real API this project's `gemini_qa.py`/`gen_set_gallery.py` already use with a `rebrickable` GCP secret; the LDraw Parts Tracker's own guessed detail-page URL 404'd, and Rebrickable's own HTML site is Cloudflare-gated, so the API's direct CDN image URLs were the real path in).
+
+The photos (3730, 3183a) revealed **§6.4's cavity assumption was itself wrong**: the socket is a **C-clip jaw** (visually the same mechanical family as the already-working bar-clip connector), not a deep hemispherical cavity — which is exactly why grepping for a "cavity primitive" found nothing; there isn't one, the jaw is hand-authored raw triangle geometry with no reusable primitive name at all (confirmed: 3730's only subfile references are `box5.dat`, a generic `stud4.dat` "Stud Tube Open" primitive unrelated to the clip, and four ordinary `stud.dat` studs).
+
+With the real mechanism understood, a **least-squares sphere fit** against the real resolved triangle mesh (numpy, algebraic fit: minimize `‖p−c‖² − r²`) closed the gap properly:
+- `3491`: slicing the mesh at its own `!HELP y=13` and fitting a 2D circle to that cross-section gave center `(-52.0, 13.0, 0.0)`, radius `8.02` — matching the ball radius (8.0) almost exactly, residual `0.033` LDU. Essentially exact, not an estimate.
+- `3730`/`3183a`/`3183b`/`3183c`: a 3D sphere fit against each part's protruding-region vertices and an independent 2D circle-slice fit (at the fitted center's own height) converged to within ~1 LDU of each other, residual ~2 LDU — a real, disclosed uncertainty, not the ~20+ LDU error a naive bounding-box-tip estimate would have given (confirmed directly: 3491's naive tip-centroid was off by 22 LDU on x from the true fitted center, caught specifically because the sphere fit's radius/center were internally inconsistent with the tip-only estimate until the fit was redone properly).
+
+**Shipped**: all 5 curated sockets, with `BALL_SOCKET_MATCH_TOL = 3.0` LDU (vs. the 0.5 LDU used for pin/hole/hinge) reflecting the real fit uncertainty for four of the five. `47978`/`30395` (the two ball parts with non-sphere geometry, §6.3) remain unresolved and unshipped — still a real, smaller gap for a future session, not guessed.

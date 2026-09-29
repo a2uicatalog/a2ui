@@ -33,8 +33,30 @@ from renderers.brick_parts_validate import (  # noqa: E402
     _world_boxes,
     rot_ldu,
 )
+sys.path.insert(0, os.path.dirname(__file__))
+from resolve import LD  # noqa: E402
 
 PARTS_DIR = ROOT / "public" / "parts"
+_PRIMITIVE_BASENAMES = None
+
+
+def _primitive_basenames():
+    """Real LDraw geometry primitive filenames (e.g. '4-4cyli.dat', 'rect.dat') -- internal sub-geometry
+    referenced from real parts, never a catalogue part in their own right. Scans the same three directories
+    resolve.py's Library indexes for primitives (p/, p/48/, p/8/), lazily and cached, so flatten() can tell
+    a real missing catalogue part apart from a primitive reference that should never have been counted as a
+    part at all (found 2026-09-29: flatten()'s old path-prefix heuristic only excluded primitives referenced
+    via an s//48//8/ prefix, missing every primitive at p/'s own root -- ~47% of coverage()'s "missing"
+    instance count was actually this, not real curation debt)."""
+    global _PRIMITIVE_BASENAMES
+    if _PRIMITIVE_BASENAMES is None:
+        names = set()
+        for sub in ("p", "p/48", "p/8"):
+            d = os.path.join(LD, sub)
+            if os.path.isdir(d):
+                names.update(f.lower() for f in os.listdir(d) if f.lower().endswith(".dat"))
+        _PRIMITIVE_BASENAMES = names
+    return _PRIMITIVE_BASENAMES
 PART_ID_ALIAS = {"3023": "3023b", "3665": "3665a", "3660": "3660a", "60481": "60481a", "4032": "4032a",
                  "2654": "2654a", "4073": "6141"}   # twin of PART_ID_ALIAS in atoms_brick.gs
 _MESH_CACHE = {}
@@ -114,6 +136,13 @@ def flatten(text):
             if ref in files:
                 walk(ref, wm, wt, wcol, st, depth + 1)
             elif ref.endswith(".dat") and not ref.startswith(("s/", "48/", "8/")):
+                # Path-prefix check above catches primitives referenced via a subdirectory prefix (48/, 8/)
+                # or the subpart dir (s/); it does NOT catch a primitive living at p/'s own root (e.g.
+                # "4-4cyli.dat", "rect.dat") -- the real LDraw library's own actual primitive filenames are
+                # the only reliable check (see _primitive_basenames's own comment for the real impact found).
+                base = ref.rsplit("/", 1)[-1]
+                if base in _primitive_basenames():
+                    continue
                 leaves.append({"part": ref[:-4], "colour": 16 if wcol in (16, 24) else wcol, "m": wm, "t": wt, "step": st})
     walk(main, ident, (0.0, 0.0, 0.0), None, None)
     return leaves

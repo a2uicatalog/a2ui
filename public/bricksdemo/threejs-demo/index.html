@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Three.js render-appearance proof-of-concept</title>
+<meta name="description" content="A standalone Three.js demo rendering a real LDraw brick mesh with two different material finishes on the same geometry -- proving a render-appearance axis this catalogue's live renderer doesn't model yet.">
+<meta name="robots" content="noindex, nofollow">
+<script>
+(function(){var t='light';try{var s=localStorage.getItem('a2ui-theme');if(s==='dark'||s==='light')t=s}catch(e){}
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
+<style>/*brand-tokens:8925e7c1*/
+:root{
+  color-scheme:light;
+  --bg:oklch(98% 0.006 255);--surface:oklch(100% 0 0);--surface-2:oklch(96.5% 0.008 255);--border:oklch(90% 0.01 255);
+  --border-strong:oklch(82% 0.02 255);--text:oklch(22% 0.02 255);--text-muted:oklch(46% 0.02 255);--accent:oklch(58% 0.19 277);
+  --accent-contrast:oklch(100% 0 0);--accent-soft-bg:oklch(94% 0.03 277);--accent-2:oklch(62% 0.13 202);--positive:oklch(58% 0.15 146);
+  --negative:oklch(55% 0.18 25);--warn:oklch(70% 0.15 87);--code-bg:oklch(96% 0.01 255);--radius:12px;
+  --shadow:0 1px 2px oklch(0% 0 0 / .05),0 8px 24px oklch(0% 0 0 / .05);--glow:0 4px 24px oklch(58% 0.19 277 / .14);--header-glass:oklch(100% 0 0 / .72);--grad:linear-gradient(120deg,oklch(58% 0.19 277),oklch(70% 0.14 202));
+  --card:var(--surface);--muted:var(--text-muted);--cyan:var(--accent-2);--green:var(--positive);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:oklch(27% 0.025 255);--surface:oklch(33% 0.025 255);--surface-2:oklch(30% 0.02 255);--border:oklch(42% 0.02 255);
+  --border-strong:oklch(50% 0.02 255);--text:oklch(95% 0.01 255);--text-muted:oklch(72% 0.02 255);--accent:oklch(72% 0.16 277);
+  --accent-contrast:oklch(15% 0.02 255);--accent-soft-bg:oklch(38% 0.06 277);--accent-2:oklch(75% 0.12 202);--positive:oklch(72% 0.15 146);
+  --negative:oklch(68% 0.17 25);--warn:oklch(85% 0.17 87);--code-bg:oklch(23% 0.02 255);--shadow:0 1px 2px oklch(0% 0 0 / .3),0 8px 24px oklch(0% 0 0 / .28);
+  --glow:0 4px 28px oklch(72% 0.16 277 / .22);--header-glass:oklch(33% 0.025 255 / .72);--grad:linear-gradient(120deg,oklch(72% 0.16 277),oklch(80% 0.13 202));
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:100;background:var(--header-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.hdr-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 24px}
+.wordmark{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text);text-decoration:none;white-space:nowrap}
+.logo-atom{width:22px;height:22px;flex-shrink:0}
+.logo-atom .nuc{fill:var(--accent)}
+.logo-atom .o1{stroke:var(--accent);fill:none;stroke-width:1.5}
+.logo-atom .o2{stroke:oklch(70% 0.14 202);fill:none;stroke-width:1.5}
+.logo-atom .o3{stroke:var(--accent);fill:none;stroke-width:1.1;opacity:.35}
+.logo-atom .el{fill:oklch(70% 0.14 202)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.site-nav{display:flex;gap:4px;margin-right:auto;margin-left:12px}
+.site-nav a{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);padding:5px 11px;border-radius:7px;transition:color .15s,background .15s}
+.site-nav a:hover{color:var(--text);background:var(--surface-2)}
+.site-nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft-bg)}
+.theme-btn{font:inherit;font-size:14px;line-height:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 9px;cursor:pointer;color:var(--text)}
+.theme-btn:hover{border-color:var(--border-strong)}
+.gh-pill{font-size:12px;font-weight:650;color:var(--text);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;background:var(--surface);white-space:nowrap}
+.gh-pill:hover{border-color:var(--border-strong)}
+.wrap{max-width:1100px;margin:0 auto;padding:36px 24px 96px}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent-2);text-decoration:none}
+/* Announcement pill above the hero headline. Sits in normal flow (not fixed or
+   sticky) so it never covers content, and wraps rather than truncating on
+   narrow screens — the arrow is the only thing dropped on mobile. */
+.announce{display:inline-flex;align-items:center;gap:10px;max-width:100%;
+ margin:0 auto 22px;padding:7px 8px 7px 8px;border:1px solid var(--border);
+ border-radius:999px;background:var(--surface);text-decoration:none;
+ font-size:13px;line-height:1.35;color:var(--text);
+ transition:border-color .15s,background .15s}
+.announce:hover{border-color:var(--accent);background:var(--accent-soft-bg)}
+.announce-tag{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+ text-transform:uppercase;color:#fff;background:var(--accent);
+ border-radius:999px;padding:4px 9px}
+.announce-text{text-align:left}
+.announce-text code{font-size:12px;background:var(--surface-2);
+ padding:1px 5px;border-radius:5px}
+.announce-go{flex:none;color:var(--accent);font-weight:700;padding-right:8px}
+@media(max-width:560px){.announce{font-size:12.5px;align-items:flex-start;
+ border-radius:14px;padding:9px 12px}.announce-go{display:none}}
+
+/* Mobile nav: this used to be `.site-nav{display:none}`, which left phone
+   visitors with only the wordmark, theme toggle and GitHub pill — every
+   destination unreachable, with no hamburger substituting for it (confirmed
+   live: 0/4 links visible at 390px). The nav now drops to its own full-width
+   row under the wordmark and scrolls horizontally if the labels overflow,
+   so nothing is lost and no JS menu is needed. */
+@media(max-width:700px){
+ .hdr-in{flex-wrap:wrap;padding:9px 16px;row-gap:0}
+ .site-nav{order:3;width:100%;margin:7px 0 1px;gap:2px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .site-nav::-webkit-scrollbar{display:none}
+ .site-nav a{white-space:nowrap;font-size:12.5px;padding:5px 9px}
+ .wordmark{margin-right:auto}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* cursor_glow ships dark-tuned (screen blend ≈ invisible over a white ground);
+   in the light default, re-blend the orb — it is the only direct body child
+   carrying the atom's z-index:9000. */
+:root:not([data-theme="dark"]) body>div[style*="z-index:9000"]{mix-blend-mode:multiply!important;opacity:.22!important}
+
+
+.wrap{max-width:900px}
+#stage{width:100%;height:480px;border:1px solid var(--border);border-radius:var(--radius);display:block;background:#1a1f26}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.note{font-size:12px;color:var(--muted)}
+#status{font-size:12px;color:var(--muted)}
+.wrap footer{border-top:1px solid var(--border);padding-top:12px;margin-top:0;display:block}
+.wrap footer p{font-size:12px;color:var(--muted)}
+.wrap code{background:var(--surface-2);border-radius:3px;padding:1px 5px;font-size:12px}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="hdr-in">
+    <a class="wordmark" href="/"><svg class="logo-atom" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="o1" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(-32 12 12)"/><ellipse class="o2" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(32 12 12)"/><ellipse class="o3" cx="12" cy="12" rx="10" ry="4.4" transform="rotate(90 12 12)"/><circle class="nuc" cx="12" cy="12" r="2.7"/><circle class="el" cx="3.21" cy="15.98" r="1.25"/></svg><span><span class="grad">A2UI</span> Catalog</span></a>
+    <nav class="site-nav">
+      <a href="/">Atoms</a>
+      
+      <a href="/surfaces/mcp-apps">MCP Playground</a>
+      <a href="/docs">Docs</a>
+      <a href="/renderer">Apps Script Renderer</a>
+      <a href="/blog">Blog</a>
+      
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Toggle light/dark theme">◐</button>
+    <a class="gh-pill" href="https://github.com/a2uicatalog/a2ui">GitHub ↗</a>
+  </div></header>
+<div class="wrap">
+
+  <div>
+    <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:8px;">Three.js render-appearance proof-of-concept</h1>
+    <p style="color:var(--muted);font-size:13px;max-width:70ch;margin-bottom:20px;">This is a standalone demo, additive to the catalogue -- it does not touch, replace, or get loaded by the live Brick Design Lab or its production WebGL renderer. It exists to prove one thing: the same real LDraw brick geometry, rendered with two genuinely different material finishes side by side. The live renderer's hand-rolled shader has no material-appearance concept at all today (flat hex colour, simple Lambert shading) -- it cannot do this.</p>
+  </div>
+  <section class="panel">
+    <canvas id="stage"></canvas>
+    <p id="status" role="status">Loading real part geometry (public/parts/3005.json)&hellip;</p>
+    <p class="note">Left: <b>opaque matte ABS</b> (<code>MeshStandardMaterial</code>, high roughness, near-zero metalness) -- how every brick renders in the live catalogue today. Right: <b>trans-clear plastic</b> (<code>MeshPhysicalMaterial</code>, low opacity, clearcoat) -- like a real LEGO windscreen or trans-clear part, a finish that exists in the real LEGO catalogue but has no representation in the current shader. Both instances share the exact same baked mesh (LDraw part 3005, a real 1&times;1 brick, from <code>public/parts/3005.json</code>) -- drag to orbit, scroll to zoom.</p>
+  </section>
+  <footer>
+    <p>Rendered with <a href="https://threejs.org/">three.js</a> (MIT License, &copy; 2010-2026 three.js authors), vendored at <code>/vendors/threejs/</code> (see <a href="/THIRD-PARTY-NOTICES.md">THIRD-PARTY-NOTICES.md</a> for full provenance, version pin and license text) -- fetched and verified by <code>scripts/fetch_threejs.py</code>, never loaded from a CDN. Part geometry from the LDraw parts library (CC BY 4.0). Fan-made, not affiliated with or endorsed by the LEGO Group. LEGO&reg; is a trademark of the LEGO Group, which does not sponsor, authorize or endorse this content.</p>
+  </footer>
+
+</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendors/threejs/three.module.js",
+    "three/addons/controls/OrbitControls.js": "/vendors/threejs/addons/controls/OrbitControls.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const statusEl = document.getElementById('status');
+const canvas = document.getElementById('stage');
+window.addEventListener('error', (e) => {
+  statusEl.textContent = 'Script error: ' + (e.message || e.error);
+});
+
+// Build a THREE.BufferGeometry from this catalogue's own baked-mesh JSON shape (public/parts/<id>.json --
+// see renderers/brick_parts_validate.py's module docstring for the full field reference). `triangles` is a
+// list of {colour, pos} groups; `pos` is a flat list of [x,y,z] LDU-times-`quant` vertex triples, three per
+// triangle, no index buffer -- the same shape the live atoms_brick.gs renderer consumes directly, just
+// re-expressed here as a THREE.BufferGeometry instead of raw WebGL calls. LDraw's Y axis points DOWN with 0
+// at the part's TOP (confirmed by this part's own connectors: the stud sits at y=0, the socket -- i.e. the
+// flat underside that rests on the thing below it -- at y=bounds.max[1]). three.js is Y-up, and a part should
+// sit with its underside (LDraw max Y) on the floor at world Y=0 and its top (LDraw y=0) up at world
+// Y=(max-min)/quant -- so this flips AND re-origins on bounds.max[1], not just negates.
+function geometryFromBakedPart(part) {
+  const quant = part.quant || 1;
+  const floorY = part.bounds.max[1];
+  const toWorld = ([x, y, z]) => [x / quant, (floorY - y) / quant, z / quant];
+  const positions = [];
+  for (const group of part.triangles) {
+    const verts = group.pos;
+    for (let i = 0; i + 2 < verts.length; i += 3) {
+      // Mirroring only the Y axis above (LDraw is Y-down, three.js is Y-up) flips the coordinate system's
+      // handedness, which reverses every triangle's winding order -- swap the last two vertices per
+      // triangle to restore correct outward-facing winding. Confirmed visually: without this swap,
+      // backface culling hid the true outer faces and rendered the hollow interior instead.
+      const a = toWorld(verts[i]), b = toWorld(verts[i + 1]), c = toWorld(verts[i + 2]);
+      positions.push(...a, ...c, ...b);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1f26);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 500);
+camera.position.set(38, 30, 46);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 8, 0);
+controls.enableDamping = true;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.4;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 2.2);
+key.position.set(25, 40, 20);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x8fb8ff, 0.6);
+fill.position.set(-20, 10, -15);
+scene.add(fill);
+
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 200),
+  new THREE.MeshStandardMaterial({ color: 0x24303b, roughness: 1, metalness: 0 })
+);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = 0;
+scene.add(floor);
+
+function resize() {
+  const w = canvas.clientWidth || canvas.parentElement.clientWidth;
+  const h = canvas.clientHeight || 480;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+fetch('/parts/3005.json')
+  .then((r) => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then((part) => {
+    const geo = geometryFromBakedPart(part);
+
+    // Opaque matte ABS -- the finish every part in the live catalogue renders as today.
+    const matteMat = new THREE.MeshStandardMaterial({
+      color: 0xc91a09, roughness: 0.85, metalness: 0.05,
+    });
+    // Trans-clear plastic -- a real LEGO finish (windscreens, some 1x1 round plates) the current shader
+    // cannot represent at all. Opacity + clearcoat, not `transmission`, so it renders correctly with no
+    // extra render-target passes or environment map required.
+    const transMat = new THREE.MeshPhysicalMaterial({
+      color: 0x6fc7ff, transparent: true, opacity: 0.35,
+      roughness: 0.05, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05,
+    });
+
+    const left = new THREE.Mesh(geo, matteMat);
+    left.position.set(-14, 0, 0);
+    scene.add(left);
+
+    const right = new THREE.Mesh(geo, transMat);
+    right.position.set(14, 0, 0);
+    scene.add(right);
+
+    statusEl.textContent = 'Rendering "' + part.title.trim() + '" (LDraw part ' + part.id +
+      ') -- same mesh, two material finishes.';
+  })
+  .catch((err) => {
+    statusEl.textContent = 'Could not load /parts/3005.json (' + err.message +
+      ') -- serve this page from the public/ directory root, e.g. `cd public && python3 -m http.server`.';
+  });
+
+resize();
+(function loop() {
+  requestAnimationFrame(loop);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+<script>
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('.theme-btn');if(!b)return;
+  var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',t);
+  try{localStorage.setItem('a2ui-theme',t)}catch(err){}
+});
+// WebMCP (W3C draft, Chrome 157+): register any [toolname]-tagged form on
+// this page as an in-page tool. Feature-guarded (navigator.modelContext is
+// the deprecated pre-Chrome-150 alias, checked as a fallback) so this is
+// fully inert on every browser that doesn't implement the API yet -- no
+// behaviour change, no error, just an early no-op. execute() triggers the
+// SAME submit path a real click already uses (dispatches a real submit
+// event) rather than re-implementing each form's handler a second time --
+// this can only ever do what the visible form already does.
+(function(){
+  var mc = (typeof document!=='undefined' && document.modelContext) ||
+           (typeof navigator!=='undefined' && navigator.modelContext);
+  if(!mc || typeof mc.registerTool!=='function') return;
+  document.querySelectorAll('form[toolname]').forEach(function(form){
+    try{
+      mc.registerTool({
+        name: form.getAttribute('toolname'),
+        description: form.getAttribute('tooldescription') || '',
+        execute: function(){
+          form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+          return {status:'submitted'};
+        }
+      });
+    }catch(err){/* draft API shape may still be moving -- never break the page over it */}
+  });
+})();
+
+</script>
+</body>
+</html>

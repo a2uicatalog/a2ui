@@ -458,6 +458,64 @@ function _brickKit(materialProfile) {
     '2714a':  [{a:[0,-137.5,0],b:[0,18,0]}],
     '25893a': [{a:[-10,8,0],b:[10,8,0]}]
   };
+  // Towball/ball-socket connectors (2026-09-29, mated-connector-exemption-towballs). Curated only, same
+  // basis as the Python twin -- see scripts/ldraw/MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md section 6 for
+  // how these were measured (ball side exact, socket side a real but disclosed-uncertainty mesh fit).
+  var CURATED_TOWBALLS={
+    '15456':[{pos:[0,4,-40],r:8.0}],
+    '2508': [{pos:[0,4,-90],r:8.0}],
+    '3184': [{pos:[0,4,-28],r:8.0}],
+    '3614a':[{pos:[0,4,-19],r:8.0}],
+    '3731': [{pos:[0,4,-40],r:8.0}],
+    '3729': [{pos:[0,4,-40],r:8.0}],
+    '4089': [{pos:[0,12,20],r:8.0}]
+  };
+  var CURATED_BALL_SOCKETS={
+    '3491': [{pos:[-52.0,13.0,0],r:8.0}],
+    '3730': [{pos:[0,3.8,-28.9],r:8.0}],
+    '3183a':[{pos:[0,4.0,-19.6],r:8.0}],
+    '3183b':[{pos:[0,4.0,-19.6],r:8.0}],
+    '3183c':[{pos:[0,4.0,-17.5],r:8.0}]
+  };
+  var BALL_SOCKET_MATCH_TOL=3.0;
+  function towballsWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var pid=mesh.id,q=mesh.quant||16,out=[];
+    var list=(mesh.connectors&&mesh.connectors.towballs)||[];
+    if(list.length){
+      list.forEach(function(t){
+        var lp=[t.pos[0]/q,t.pos[1]/q,t.pos[2]/q],wp=rotLDU(r,lp);
+        out.push({pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],r:t.r});
+      });
+      return out;
+    }
+    if(CURATED_TOWBALLS[pid]){
+      CURATED_TOWBALLS[pid].forEach(function(t){
+        var wp=rotLDU(r,t.pos);
+        out.push({pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],r:t.r});
+      });
+    }
+    return out;
+  }
+  function ballSocketsWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var pid=mesh.id,q=mesh.quant||16,out=[];
+    var list=(mesh.connectors&&mesh.connectors.ball_sockets)||[];
+    if(list.length){
+      list.forEach(function(s){
+        var lp=[s.pos[0]/q,s.pos[1]/q,s.pos[2]/q],wp=rotLDU(r,lp);
+        out.push({pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],r:s.r});
+      });
+      return out;
+    }
+    if(CURATED_BALL_SOCKETS[pid]){
+      CURATED_BALL_SOCKETS[pid].forEach(function(s){
+        var wp=rotLDU(r,s.pos);
+        out.push({pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],r:s.r});
+      });
+    }
+    return out;
+  }
   function clipsWorld(mesh,r,ex,ey,ez){
     if(!mesh)return [];
     var pid=mesh.id,q=mesh.quant||16,out=[];
@@ -564,10 +622,10 @@ function _brickKit(materialProfile) {
   function validateParts(list){
     var n=list.length,i,j;
     var meshes=list.map(function(e){return partMeshCache[e.p];});
-    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],axles=[],clips=[],bars=[],notChecked=0;
+    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],axles=[],clips=[],bars=[],towballs=[],ballSockets=[],notChecked=0;
     for(i=0;i<n;i++){
       var e=list[i],m=meshes[i];
-      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);axles.push([]);clips.push([]);bars.push([]);notChecked++;continue;}
+      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);axles.push([]);clips.push([]);bars.push([]);towballs.push([]);ballSockets.push([]);notChecked++;continue;}
       studs.push(connWorld(m,'studs',e.r,e.x,e.y,e.z));
       sockets.push(connWorld(m,'sockets',e.r,e.x,e.y,e.z));
       pins.push(connWorld(m,'pins',e.r,e.x,e.y,e.z));
@@ -575,6 +633,8 @@ function _brickKit(materialProfile) {
       axles.push(axlesWorld(m,e.r,e.x,e.y,e.z));
       clips.push(clipsWorld(m,e.r,e.x,e.y,e.z));
       bars.push(barsWorld(m,e.r,e.x,e.y,e.z));
+      towballs.push(towballsWorld(m,e.r,e.x,e.y,e.z));
+      ballSockets.push(ballSocketsWorld(m,e.r,e.x,e.y,e.z));
       boxes.push(worldBoxes(m,e.r,e.x,e.y,e.z));
       if(!m.occupancy)notChecked++;
       var localSegs=pairHoles(m);
@@ -695,6 +755,24 @@ function _brickKit(materialProfile) {
         }
       });
     }
+    // Towball<->ball-socket mating: point-vs-point distance only, wider tolerance than pin/hole/hinge
+    // since these positions carry real, disclosed fit uncertainty -- see CURATED_BALL_SOCKETS's own comment.
+    var towballConn=0;
+    for(i=0;i<n;i++){
+      towballs[i].forEach(function(t){
+        for(j=0;j<n;j++){
+          if(i===j)continue;
+          ballSockets[j].forEach(function(s){
+            if(dist3(t.pos,s.pos)<BALL_SOCKET_MATCH_TOL){
+              towballConn++;
+              adj[i][j]=1;
+              adj[j][i]=1;
+              matedPairs[Math.min(i,j)+','+Math.max(i,j)]=1;
+            }
+          });
+        }
+      });
+    }
     var seen={},queue=Object.keys(baseAdj).map(Number);
     queue.forEach(function(k){seen[k]=1;});
     while(queue.length){var c=queue.pop();for(var nb in adj[c])if(!seen[nb]){seen[nb]=1;queue.push(+nb);}}
@@ -761,14 +839,14 @@ function _brickKit(materialProfile) {
         detail:(np?np+' part pair'+(np>1?'s':'')+' overlap':'0 overlaps')+(notChecked?' ('+notChecked+' part'+(notChecked>1?'s':'')+' not checked, no occupancy data yet)':'')},
       {id:'anchored',label:'Every part anchored',status:floating.length?'fail':'pass',
         detail:floating.length?floating.length+' part'+(floating.length>1?'s':'')+' not connected to the baseplate':'all '+n+' parts reach the baseplate'},
-      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn+axleConn+clipConn)?'pass':'fail',
-        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'+(axleConn?' + '+axleConn+' axle':'')+(clipConn?' + '+clipConn+' clip':'')},
+      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn+axleConn+clipConn+towballConn)?'pass':'fail',
+        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'+(axleConn?' + '+axleConn+' axle':'')+(clipConn?' + '+clipConn+' clip':'')+(towballConn?' + '+towballConn+' towball':'')},
       {id:'balance',label:'Centre of mass over footprint',status:balance==='none'?'fail':balance,
         detail:balance==='none'?'no part rests on the baseplate to measure':
           '('+ (margin!==null?'margin '+Math.abs(margin).toFixed(2):'')+' studs'+(balance==='fail'?', outside footprint':'')+')'}
     ];
-    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn+axleConn+clipConn,
-      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,axleConnections:axleConn,clipConnections:clipConn,collisions:collisions,
+    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn+axleConn+clipConn+towballConn,
+      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,axleConnections:axleConn,clipConnections:clipConn,towballConnections:towballConn,collisions:collisions,
       overlaps:np,floating:floating,balance:balance,com:{margin:margin},parts:[],cost:0};
   }
   var SHAPES={
@@ -2012,5 +2090,11 @@ _RENDERERS['brick_build_3d'] = function(b) {
     '<ul id="' + uid + 'k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul>' +
     '<div id="' + uid + 'p" style="overflow-x:auto;padding:0 14px 12px;"></div>' +
     '</div>' +
-    '<script>(function(){(' + _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");})();</script>';
+    // LEGO_MATERIAL_PROFILE must be re-declared here (not just .toString()'d in with _brickMount/_brickKit):
+    // this HTML string is executed in a SEPARATE script context (an iframe srcdoc) where only the two
+    // functions' own text exists -- _brickKit's `materialProfile||LEGO_MATERIAL_PROFILE` default otherwise
+    // throws ReferenceError there, even though it resolves fine in atoms_brick.gs's own top-level scope
+    // (found live 2026-09-29: broke every render on the public design page).
+    '<script>(function(){var LEGO_MATERIAL_PROFILE = ' + JSON.stringify(LEGO_MATERIAL_PROFILE) + ';(' +
+      _brickMount.toString() + ')((' + _brickKit.toString() + ')(),' + json + ',"' + uid + '");})();</script>';
 };

@@ -118,7 +118,21 @@ def _first_fill(el: ET.Element) -> Optional[str]:
     return None
 
 
-def nearest_colour_code(fill: Optional[str]) -> int:
+# Material-context-aware architecture seam (2026-09-29, cozy-forging-newt.md Track B item 3): LEGO's own
+# unit vocabulary ("studs"/"plates", 3-plates-per-course) and its 17-entry curated real-LDraw colour
+# palette are the CURRENT profile, not the only possible shape of this tool -- the footprint/support-check
+# logic beneath both (already generic) doesn't care what the units are called or what colours are legal.
+# LEGO stays the only populated profile; this is the seam, not a second material's rollout.
+LEGO_SKETCH_PROFILE = {
+    "height_unit": "plates",
+    "footprint_unit": "studs",
+    "course_ratio": "3 plates = 1 standard brick course",
+    "palette_codes": CODES,
+}
+
+
+def nearest_colour_code(fill: Optional[str], material_profile: Optional[Dict] = None) -> int:
+    mp = material_profile or LEGO_SKETCH_PROFILE
     if not fill:
         return 4  # red, this project's own SENTINEL/default fill
     h = _NAMED.get(fill.strip().lower(), fill.strip())
@@ -126,7 +140,7 @@ def nearest_colour_code(fill: Optional[str]) -> int:
         return 4
     target = _hex_to_rgb(h)
     best, best_d = 4, float("inf")
-    for code in CODES:
+    for code in mp["palette_codes"]:
         rgb = _hex_to_rgb(_LDRAW_COLOURS[code])
         d = sum((a - b) ** 2 for a, b in zip(target, rgb))
         if d < best_d:
@@ -255,12 +269,14 @@ FINISH_TOOL = {
 }
 
 
-def _system_prompt(topic: str, plate_w: int, plate_d: int) -> str:
+def _system_prompt(topic: str, plate_w: int, plate_d: int, material_profile: Optional[Dict] = None) -> str:
+    mp = material_profile or LEGO_SKETCH_PROFILE
+    hu, fu = mp["height_unit"], mp["footprint_unit"]
     return (
         "You are a minimalist LEGO model designer working in real physical units, not free-form art. "
-        f"The build plate is {plate_w} x {plate_d} studs, (0,0) at one corner, X and Z are the two "
-        "horizontal axes. Y (height) is separate, in PLATES -- 3 plates = 1 standard brick course, so a "
-        "typical wall is a multiple of 3 plates tall.\n\n"
+        f"The build plate is {plate_w} x {plate_d} {fu}, (0,0) at one corner, X and Z are the two "
+        f"horizontal axes. Y (height) is separate, in {hu.upper()} -- {mp['course_ratio']}, so a "
+        f"typical wall is a multiple of 3 {hu} tall.\n\n"
         f"Topic: {topic}\n\n"
         "Plan a simple, recognisable, BLOCKY form -- this becomes real tiled LEGO bricks, not a smooth "
         "render, so think in terms of stacked rectangular/cylindrical volumes rather than fine detail. "
@@ -292,16 +308,16 @@ def _system_prompt(topic: str, plate_w: int, plate_d: int) -> str:
         "window/door holes into a solid block, those holes open onto more solid material behind them, not "
         "into a real room. For any building, after placing the solid exterior walls, ALSO call "
         "carve_opening with a LARGE footprint inset from the outer walls by the wall thickness (e.g. walls "
-        "2 studs thick on a 16x16 footprint -> carve the interior at x=2,y=2,width=12,height=12), spanning "
+        f"2 {fu} thick on a 16x16 footprint -> carve the interior at x=2,y=2,width=12,height=12), spanning "
         "most of the interior height, to hollow the whole inside out into one open room BEFORE (or after -- "
         "order doesn't matter) carving the smaller window/door holes that connect that hollow room to the "
         "outside. Do this for every floor. Skipping this step is the single most common mistake -- a "
         "building that is not hollowed out this way looks wrong no matter how good its window cutouts are.\n\n"
         f"PROPORTIONS -- HARD LIMIT: the TOTAL height of the model, ground to its single highest point "
         f"(roof ridge, chimney, antenna, anything), must not exceed {max(18, min(plate_w, plate_d))} "
-        "plates, UNLESS the topic is explicitly a tower/spire/skyscraper/rocket. This is a hard budget, "
-        "not a suggestion -- plan it before you start placing: e.g. one storey of wall = 8 plates, a roof "
-        "= 3 tapering steps of 2 plates each (6 plates) is already a complete, good-looking roof. Do NOT "
+        f"{hu}, UNLESS the topic is explicitly a tower/spire/skyscraper/rocket. This is a hard budget, "
+        f"not a suggestion -- plan it before you start placing: e.g. one storey of wall = 8 {hu}, a roof "
+        f"= 3 tapering steps of 2 {hu} each (6 {hu}) is already a complete, good-looking roof. Do NOT "
         "add a 5th or 6th roof tier just because tapering is good -- 3 steps (occasionally 4 for a large "
         "building) is enough; more steps must come out of the SAME total height budget, not add to it. If "
         "you are about to exceed the limit, make existing volumes shorter, not add more of them.\n\n"
@@ -341,11 +357,12 @@ def _call_gemini(key: str, contents: List[Dict], system_prompt: str) -> Dict:
 
 
 def run_sketch_to_bricks(topic: str, name: str, out_dir: str = ".", plate_w: int = 32, plate_d: int = 32,
-                          max_turns: int = 15) -> Tuple[List[Dict], Dict, List[str]]:
+                          max_turns: int = 15, material_profile: Optional[Dict] = None) -> Tuple[List[Dict], Dict, List[str]]:
     """Returns (bricks, validation_report, log_lines) -- log_lines records every shape placed/rejected and
     the model's own labels, so a caller can show real provenance, not just the final geometry."""
+    mp = material_profile or LEGO_SKETCH_PROFILE
     key = get_key()
-    system_prompt = _system_prompt(topic, plate_w, plate_d)
+    system_prompt = _system_prompt(topic, plate_w, plate_d, mp)
     # The API requires >=1 contents entry even though the real instructions live in systemInstruction --
     # an empty list 400s with "at least one contents field is required" (found live, first real run).
     contents: List[Dict] = [{"role": "user", "parts": [{"text": "Begin."}]}]
@@ -416,7 +433,7 @@ def run_sketch_to_bricks(topic: str, name: str, out_dir: str = ".", plate_w: int
                     "ok": True, "cells_removed": removed}}})
                 continue
 
-            code = nearest_colour_code(_first_fill(root))
+            code = nearest_colour_code(_first_fill(root), mp)
             # brickgen.tile() does `if not c: continue` -- LDraw colour code 0 (Black) is falsy in Python,
             # so every Black-coded cell was silently dropped from the tiled output (found live: an
             # all-black-heavy model collapsed to zero surviving bricks). Store the hex string instead of
