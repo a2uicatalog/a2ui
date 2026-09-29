@@ -1560,7 +1560,19 @@ def resolve_occupancy_and_sockets(part_id, title, bounds_min=None, bounds_max=No
         # even worse state (looks resolved, isn't). A knuckle is not a hand grip: once a part has a REAL
         # verified hinge pivot (ground truth, not a heuristic), that explains its cylinders and bar_grip_points
         # must not also claim them.
-        if part_id not in HINGE_CONNECTORS and bar_grip_points(bounds_min, bounds_max, cylinders, tris):
+        #
+        # 2026-09-29: the same class of bug for clip-mounted bars (e.g. 11090 "Bar Tube with Clip"). bake_parts.
+        # py's own `bars` computation already exempts clip_connectors() parts (a clipped bar isn't a free hand
+        # grip -- it mounts INTO another part's clip, same reasoning as HINGE_CONNECTORS's knuckle-vs-grip
+        # distinction above), but this function didn't mirror that exemption: bar_grip_points() still matched
+        # on the bar's own geometry, so these parts got needs_occupancy=False here (believing bar_grip's `bars`
+        # field would cover them) while bake_parts.py independently zeroed that same `bars` field for them --
+        # neither ever got populated. Found live curating the catalogue (30377, 11090, 4735, 48729a/b, 93061),
+        # confirmed via bar_grip_points()/clip_connectors() both truthy for 11090 while occupancy still came
+        # back empty.
+        if (part_id not in HINGE_CONNECTORS
+                and not clip_connectors(part_id, title, bounds_min, bounds_max, cylinders)
+                and bar_grip_points(bounds_min, bounds_max, cylinders, tris)):
             # occupancy/sockets stay empty here (unchanged contract) -- the real grip position/axis data is
             # exposed separately via bar_grip_points() itself, called directly by bake_parts.py, so it can go
             # into its own `bars` connector field rather than being force-fit into this function's plain
