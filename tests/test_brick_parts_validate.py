@@ -383,3 +383,277 @@ def test_hinge_3830_3831_mates_flat():
     report = validate_parts(parts, {'3830': mesh_3830, '3831': mesh_3831})
     assert report['hingeConnections'] == 1
     assert report['overlaps'] == 0
+
+
+# --- axle-through-hole mated-pair collision exemption (2026-09-28) -------------------------------
+
+def test_axle_through_hole_mates_and_exempts_collision():
+    """A real Technic Axle 2 (3704) passing through a real Technic Brick 1x2 with Hole (3700):
+    the axle is collinear with the hole axis, longitudinal overlap spans the full hole depth (20 LDU),
+    registering an axle connection, anchoring the axle, and exempting the pair from collisions."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    # 3700 at (0, -24, 0), hole at local (0, 10, 0) -> world (0, -14, 0)
+    # 3704 rotated with r=1 (local X -> world -Z) placed at world (0, -14, 0)
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_axle_through_hole_grounded_anchors_axle():
+    """When a Technic brick is grounded on a baseplate brick, an inserted axle reaches the baseplate
+    through the axle-hole connection graph edge (adj[i].add(j)), clearing the floating check."""
+    mesh_3001 = _load_mesh('3001')
+    mesh_3700 = _load_mesh('3700')
+    mesh_3704 = _load_mesh('3704')
+    # 3001 at y=-24 has studs at z=+10 and z=-10. Placing 3700 at z=10 aligns with stud row.
+    parts = [
+        {'p': '3001', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3700', 'x': 0.0, 'y': -48.0, 'z': 10.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -38.0, 'z': 10.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'3001': mesh_3001, '3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 1
+    assert report['studConnections'] >= 2
+    assert report['floating'] == []
+    assert report['overlaps'] == 0
+    assert report['ok'] is True
+
+
+def test_axle_parallel_offset_does_not_falsely_mate():
+    """An axle parallel to the hole axis but offset by 20 LDU (not collinear) must NOT register
+    an axle connection."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 20.0, 'y': -14.0, 'z': 0.0, 'r': 1},  # Offset by 20 in X
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 0
+
+
+def test_axle_perpendicular_crossing_does_not_falsely_mate_and_collides():
+    """An axle placed perpendicular to the hole (e.g. crossing along X instead of Z) through the
+    solid body of 3700 must NOT register an axle connection and MUST report a collision."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    # r=0: 3704 spans along world X, perpendicular to the hole axis along Z
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 0
+    assert report['overlaps'] > 0
+    assert [0, 1] in report['collisions']
+
+
+def test_axle_collinear_separated_does_not_falsely_mate():
+    """An axle sharing the hole axis line but shifted far along Z (separated longitudinally)
+    does not penetrate the hole and must not register a connection."""
+    mesh_3700, mesh_3704 = _load_mesh('3700'), _load_mesh('3704')
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '3704', 'x': 0.0, 'y': -14.0, 'z': 100.0, 'r': 1},  # Far away along Z
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, '3704': mesh_3704})
+    assert report['axleConnections'] == 0
+
+
+def test_axle_pin_hybrid_mates_axle_side():
+    """A real Technic Axle Pin with Friction (43093) has an axle portion on one side:
+    mating the axle side into Technic Beam 1x4 (3701) registers an axle connection without collision."""
+    mesh_3701, mesh_43093 = _load_mesh('3701'), _load_mesh('43093')
+    # 3701 has holes along Z at local y=10, x in {-20, 0, 20}.
+    # Placed at world x=0, y=-24, z=0: central hole is at (0, -14, 0).
+    # 43093 at world x=0, y=-14, z=0 with r=1 mates its axle into this central hole.
+    parts = [
+        {'p': '3701', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '43093', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'3701': mesh_3701, '43093': mesh_43093})
+    assert report['axleConnections'] >= 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_explicit_connectors_axles_mesh_supported():
+    """A mesh explicitly declaring connectors.axles (in quantized LDU format) mates cleanly."""
+    mesh_3700 = _load_mesh('3700')
+    # Custom part with explicit axles dictionary (pos/dir/len)
+    custom_axle = {
+        'id': 'custom_axle',
+        'title': 'Custom Axle Rod',
+        'quant': 16,
+        'connectors': {
+            'axles': [{'pos': [0, 0, -320], 'dir': [0.0, 0.0, 1.0], 'len': 40.0}],
+            'studs': [], 'sockets': [], 'holes': [], 'pins': [], 'hinges': [],
+        },
+        'occupancy': [[-6.0, 6.0, -6.0, 6.0, -20.0, 20.0]],
+    }
+    parts = [
+        {'p': '3700', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': 'custom_axle', 'x': 0.0, 'y': -14.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3700': mesh_3700, 'custom_axle': custom_axle})
+    assert report['axleConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+# --- clip-around-bar mated-pair collision exemption (2026-09-28) -------------------------------
+
+def test_clip_around_bar_mates_and_exempts_collision():
+    """A real Plate 1x1 with Clip Vertical (4085c) gripping a real Brick 1x1 with Handle (2921):
+    the clip jaws are collinear with the vertical handle bar, within the bar span,
+    registering a clip connection and exempting the overlapping plate bodies from collision."""
+    mesh_2921, mesh_4085c = _load_mesh('2921'), _load_mesh('4085c')
+    parts = [
+        {'p': '2921', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '4085c', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'2921': mesh_2921, '4085c': mesh_4085c})
+    assert report['clipConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_clip_around_bar_grounded_anchors_clip_part():
+    """When a handle brick is grounded via studs on a baseplate brick, an attached clip part
+    reaches the baseplate through the clip-bar connection graph edge (adj[i].add(j)),
+    clearing the floating check."""
+    mesh_3001 = _load_mesh('3001')
+    mesh_2921 = _load_mesh('2921')
+    mesh_4085c = _load_mesh('4085c')
+    # 3001 at y=-24 has top studs at (10, 0, 10). 2921 placed at (10, -48, 10) mates its bottom socket with 3001.
+    # 4085c at (10, -48, 10) clips onto 2921's handle.
+    parts = [
+        {'p': '3001', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '2921', 'x': 10.0, 'y': -48.0, 'z': 10.0, 'r': 0},
+        {'p': '4085c', 'x': 10.0, 'y': -48.0, 'z': 10.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'3001': mesh_3001, '2921': mesh_2921, '4085c': mesh_4085c})
+    assert report['clipConnections'] == 1
+    assert report['studConnections'] >= 1
+    assert report['floating'] == []
+    assert report['overlaps'] == 0
+    assert report['ok'] is True
+
+
+def test_clip_around_bar_mates_at_rotated_angle():
+    """A clip part rotated around the bar axis (e.g. facing 180 deg or 90 deg) maintains collinearity
+    with the bar axis and mates without false collision."""
+    mesh_2921, mesh_4085c = _load_mesh('2921'), _load_mesh('4085c')
+    # r=2: 180 degree rotation around Y. Handle axis is along Y, so axis direction is preserved.
+    # Clip position at local (0, 4, -20) rotates to (0, 4, 20).
+    # Placing 4085c at z=-40 moves the clip to world z=-20, exactly on the handle!
+    parts = [
+        {'p': '2921', 'x': 0.0, 'y': -24.0, 'z': 0.0, 'r': 0},
+        {'p': '4085c', 'x': 0.0, 'y': -24.0, 'z': -40.0, 'r': 2},
+    ]
+    report = validate_parts(parts, {'2921': mesh_2921, '4085c': mesh_4085c})
+    assert report['clipConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_clip_horizontal_mates_with_handle_plate():
+    """A real Plate 1x1 with Clip Horizontal (61252) gripping a real Plate 1x2 with Handle (2540):
+    both share axis along world X, registering a clip connection and exempting the overlapping plate bodies."""
+    mesh_2540, mesh_61252 = _load_mesh('2540'), _load_mesh('61252')
+    parts = [
+        {'p': '2540', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+        {'p': '61252', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'2540': mesh_2540, '61252': mesh_61252})
+    assert report['clipConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_dual_clips_mate_with_handle():
+    """A Plate 1x2 with 2 Clips Horizontal (60470a) gripping a Plate 1x2 with Handle Type 2 (48336):
+    both clips at x=-10 and x=+10 grip the 28 LDU bar span [-14, 14], registering 2 clip connections."""
+    mesh_48336, mesh_60470a = _load_mesh('48336'), _load_mesh('60470a')
+    parts = [
+        {'p': '48336', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+        {'p': '60470a', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'48336': mesh_48336, '60470a': mesh_60470a})
+    assert report['clipConnections'] == 2
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+
+def test_clip_parallel_offset_does_not_falsely_mate():
+    """A clip offset perpendicularly from the bar axis by 20 LDU must NOT register a connection."""
+    mesh_2540, mesh_61252 = _load_mesh('2540'), _load_mesh('61252')
+    parts = [
+        {'p': '2540', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+        {'p': '61252', 'x': 0.0, 'y': -8.0, 'z': 20.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'2540': mesh_2540, '61252': mesh_61252})
+    assert report['clipConnections'] == 0
+
+
+def test_clip_perpendicular_does_not_falsely_mate_and_collides():
+    """A clip oriented perpendicular to the bar axis crossing the part body must NOT mate
+    and MUST report a collision."""
+    mesh_2540, mesh_61252 = _load_mesh('2540'), _load_mesh('61252')
+    # r=1: 61252 clip axis rotates to world Z, perpendicular to handle along world X
+    parts = [
+        {'p': '2540', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+        {'p': '61252', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 1},
+    ]
+    report = validate_parts(parts, {'2540': mesh_2540, '61252': mesh_61252})
+    assert report['clipConnections'] == 0
+    assert report['overlaps'] > 0
+    assert [0, 1] in report['collisions']
+
+
+def test_clip_collinear_separated_does_not_falsely_mate():
+    """A clip along the bar axis line but positioned far beyond the bar ends does not mate."""
+    mesh_2540, mesh_61252 = _load_mesh('2540'), _load_mesh('61252')
+    parts = [
+        {'p': '2540', 'x': 0.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+        {'p': '61252', 'x': 100.0, 'y': -8.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'2540': mesh_2540, '61252': mesh_61252})
+    assert report['clipConnections'] == 0
+
+
+def test_explicit_connectors_clips_and_bars_mesh_supported():
+    """Meshes explicitly declaring connectors.clips and connectors.bars (in quantized LDU format) mate cleanly."""
+    custom_clip = {
+        'id': 'custom_clip',
+        'title': 'Custom Clip Part',
+        'quant': 16,
+        'connectors': {
+            'clips': [{'pos': [0, 64, -320], 'dir': [1.0, 0.0, 0.0]}],
+            'studs': [], 'sockets': [], 'holes': [], 'pins': [], 'bars': [], 'hinges': [],
+        },
+        'occupancy': [[-10.0, 10.0, 0.0, 8.0, -20.0, 0.0]],
+    }
+    custom_bar = {
+        'id': 'custom_bar',
+        'title': 'Custom Bar Part',
+        'quant': 16,
+        'connectors': {
+            'bars': [{'a': [-320, 64, -320], 'b': [320, 64, -320]}],
+            'studs': [], 'sockets': [], 'holes': [], 'pins': [], 'clips': [], 'hinges': [],
+        },
+        'occupancy': [[-20.0, 20.0, 0.0, 8.0, -20.0, 0.0]],
+    }
+    parts = [
+        {'p': 'custom_clip', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+        {'p': 'custom_bar', 'x': 0.0, 'y': 0.0, 'z': 0.0, 'r': 0},
+    ]
+    report = validate_parts(parts, {'custom_clip': custom_clip, 'custom_bar': custom_bar})
+    assert report['clipConnections'] == 1
+    assert report['overlaps'] == 0
+    assert [0, 1] not in report['collisions']
+
+

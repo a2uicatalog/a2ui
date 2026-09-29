@@ -1,5 +1,85 @@
 # brick_build_3d / Brick Design Lab — status snapshot
 
+## 2026-09-28: Mated-Connector Exemption — Clips Only (agent, `agent/dispatch-mated-connector-exemption-clips-only-1790626653`)
+
+- **Task**: Focused implementation of backlog item `mated-connector-exemption-clips-only` per Curtis's operator steer.
+- **Scope**: Recognise when a clip part grips a real bar and add that pair to the SAME `mated_pairs` exemption mechanism `renderers/brick_parts_validate.py` already has for pin/hole, hinge, and axle pairs. Explicitly leaves towballs, whole-pair blind-spot, and indirect-joint blindness to their separate backlog items.
+- **Implementation**:
+  - Added `_clips_world(mesh, r, ex, ey, ez)` and `_bars_world(mesh, r, ex, ey, ez)` in `renderers/brick_parts_validate.py` (and JavaScript twins `clipsWorld` and `barsWorld` in `apps-script-surface/gas-wired-renderer/atoms_brick.gs`).
+  - Added `CURATED_CLIPS` covering 19 canonical clip parts (`4085a-c`, `60897`, `6019`, `61252`, `60476`, `60470a-b`, `11476`, `44861`, `92280`, `78256`, `15712`, `2555`, `30237`, `60475a-b`, `95820`) and `CURATED_BARS` covering 10 canonical bar/handle parts (`2540`, `2921`, `292126`, `30236`, `48336`, `30374`, `4095`, `63965`, `2714a`, `25893a`).
+  - Supports explicit `connectors.clips` and `connectors.bars` (both segment `a`/`b`, length `pos`/`dir`/`len`, and two-endpoint grip formats), with dynamic fallback for unbaked/curated meshes.
+  - Excludes clip parts from receiving false `bars` connectors, ensuring clip parts do not falsely act as bars.
+  - Evaluates geometric mating between clip jaw cylinder and bar segment in world space:
+    - Collinearity: jaw cylinder axis parallel to bar axis ($|\hat{\mathbf{u}}_c \cdot \hat{\mathbf{u}}_b| > 0.99$) and clip position within 0.5 LDU distance of the bar line.
+    - Longitudinal projection: clip position projects onto the bar segment within $[-2.0, L + 2.0]$ LDU of the bar span.
+  - On match: increments `clip_conn`, connects parts in graph adjacency `adj[i].add(j)` (anchoring clip parts to grounded assemblies via the bar), and adds `(min(i, j), max(i, j))` to `mated_pairs` to exempt the pair from false-positive collisions.
+  - Added `clipConnections` to the return envelope and formatted connections detail string in both Python and JS.
+  - Added `clip_connectors` helper to `scripts/ldraw/parts.py` and wired into `scripts/ldraw/bake_parts.py`.
+  - Rebuilt `public/bricksdemo/design/index.html` via `build_design_page.py`.
+- **Verification**:
+  - Added 9 new tests in `tests/test_brick_parts_validate.py` (real `4085c` on `2921`, grounded clip anchoring with `3001`+`2921`+`4085c`, rotated clip angles, horizontal clip `61252` on handle plate `2540`, dual clips `60470a` on `48336`, perpendicular collision detection, non-collinear offset rejection, longitudinal separation rejection, and explicit `connectors.clips`/`bars` format support).
+  - Added JS validator test in `tests/test_brick_parts_validate.mjs`.
+  - Pass counts:
+    - `tests/test_brick_parts_validate.py`: **47/47 passed** (0 failures).
+    - `tests/test_brick_parts_validate_js.py` / `test_brick_parts_validate.mjs`: **15/15 fixtures + axle test + clip test passed** (0 failures).
+    - `tests/test_brick_*.py`: **90/90 passed** (0 failures).
+    - `tests/test_generic_stud_occupancy.py`: **367/367 passed** (0 failures).
+    - `tests/test_ldraw_parts.py`: **9/9 passed, 2 skipped** (0 failures).
+    - Fast test suite total: **424 passed in 100s**.
+
+## 2026-09-28: Mated-Connector Exemption — Axles Only (agent, `agent/dispatch-mated-connector-exemption-axles-only-1790621653`)
+
+- **Task**: Focused implementation of backlog item `mated-connector-exemption-axles-only` per Curtis's operator steer -- deliberately scoped down after the broader `mated-connector-exemption-implementation` task's first attempt (Claude engine) produced no changes after a real ~50min session.
+- **Scope**: Recognise when an axle passes through a real hole/peghole and add that pair to the SAME `mated_pairs` exemption mechanism `renderers/brick_parts_validate.py` already has for pin/hole and hinge pairs. Explicitly leaves clips, towballs, whole-pair blind-spot, and indirect-joint blindness to their separate backlog items.
+- **Implementation**:
+  - Added `_axles_world(mesh, r, ex, ey, ez)` in `renderers/brick_parts_validate.py` (and JavaScript twin `axlesWorld` in `apps-script-surface/gas-wired-renderer/atoms_brick.gs` -- real JS-twin parity, not left as a follow-up gap).
+  - Supports explicit `connectors.axles` (both `pos`/`dir`/`len` and `a`/`b` formats) and dynamic fallback recognition from unbaked/curated axle parts (titles containing `\baxle\b` with occupancy boxes having $\pm 6.0$ LDU cross section and length $\ge 15.0$ LDU).
+  - Evaluates geometric mating between axle segment and hole segment in world space: collinearity (axes parallel, $|\hat{\mathbf{u}}_s \cdot \hat{\mathbf{u}}_h| > 0.99$, hole endpoints within 0.5 LDU of the axle axis line) and longitudinal overlap ($\ge 1.0$ LDU).
+  - On match: increments `axle_conn`, connects parts in graph adjacency (anchoring axles to grounded assemblies, solving the connectivity gap noted in `generic_axle_occupancy`), and exempts the pair from false-positive collisions via `mated_pairs`.
+  - Added `axle_connectors` helper to `scripts/ldraw/parts.py` and wired into `scripts/ldraw/bake_parts.py`.
+- **Verification**: 7 new tests in `tests/test_brick_parts_validate.py` (real mating + exemption with `3700`/`3704`, grounded axle anchoring, non-collinear/perpendicular/longitudinal-separation rejection controls, axle-pin hybrid `43093`, explicit `connectors.axles` format) + a JS validator test in `tests/test_brick_parts_validate.mjs` (15/15 pre-existing fixtures + the new axle test, all passing). Its own independent-verification gate initially failed for a reason unrelated to this work (inherited the a0d315ff hinge regression from its fork point) -- verified clean in an isolated worktree against the fixed baseline.
+
+## 2026-09-28: OBB Decomposition Architectural Scoping Investigation (agent, `agent/dispatch-obb-decomposition-1790612045`)
+
+- **Task**: Prioritised backlog item per Curtis's explicit operator steer: `obb-decomposition` (Cross-cutting: multi-box/OBB decomposition for curved shells). Prerequisite for Technic Panel fairings/mudguards AND hollow windscreen canopies — build once. Correctly deferred twice before; investigated honestly.
+- **Problem**: Thin curved shells (thickness 1.5–4.0 LDU) swept along curved or angled trajectories (30° to 65°) cannot be bounded by single or axis-aligned bounding boxes (AABBs) without 7x to 16x volume inflation, claiming 88% to 95% empty cockpit/chassis air as solid matter and triggering catastrophic false-positive collisions on interior assemblies (minifigures, steering wheels, gear trains).
+- **Catalogue & Library Census (`Library._index` / `resolve_occupancy_and_sockets`)**:
+  - Scanned full LDraw library for curved-shell candidates: **725 parts total**.
+  - Technic Fairings & Curved Panels: 110 parts (108 rejected, 2 accepted $\implies$ **98.2% rejected**).
+  - Mudguards & Wheel Arches: 113 parts (69 rejected, 44 accepted $\implies$ **61.1% rejected**).
+  - Windscreens & Canopies: 502 parts (353 rejected, 149 accepted $\implies$ **70.3% rejected**).
+  - **Total Blocked Parts**: **530 parts** catalogue-wide cannot receive safe, accurate collision geometry without OBB decomposition.
+  - **Blind-Spot Finding on Accepted Windscreens**: The 149 "accepted" windscreens (e.g. `2437`, `3823`, `6567`, `65632`) only receive small stud columns beneath their top/side studs covering 16% to 22% of their volume, leaving **over 78% to 84% of their sloped windshield glass completely unmodelled** (objects pass straight through the glass with zero collision detection).
+- **Forensic Geometry Measurements**:
+  - Measured 24 representative parts across all families via `resolve_part()`.
+  - Proved mathematical volume inflation on angled shells: $V_{\text{AABB}} / V_{\text{shell}} \approx \frac{L}{2T}\sin(2\theta) + 1 \approx 10.5\times$ to $16.0\times$.
+  - Demonstrated that 3-OBB decomposition for Technic bent panel `24116` reduces bounding volume error by **87.6%** ($56,880$ LDU³ vs $458,640$ LDU³ AABB), preserving the internal cavity.
+  - Demonstrated that 2-OBB decomposition for classic windscreen `3823` wraps the sloped glass and roof with **83.3% volume reduction**, sealing the cockpit windshield without intruding into the driver's seat.
+- **Architectural Specification & Cross-Cutting Dependencies**:
+  - Comprehensive architectural scoping document delivered: [scripts/ldraw/OBB_DECOMPOSITION_INVESTIGATION.md](scripts/ldraw/OBB_DECOMPOSITION_INVESTIGATION.md).
+  - Added `obb()` 15-tuple constructor and OBB bounding checks in `scripts/ldraw/parts.py`.
+  - Identified mandatory structural prerequisite: Technic panels mount via intermediary pins and cannot be validated without the **joint-zone capsule exemption mask** from `MATED_CONNECTOR_EXEMPTION_INVESTIGATION.md`.
+  - Identified browser twin prerequisite: `atoms_brick.gs` must receive 15-axis SAT port.
+- **Verification**: 16 new unit and regression tests added to `tests/test_generic_stud_occupancy.py`. Cherry-picked 2026-09-28 after independent-test-verification initially failed on this branch for a reason unrelated to this work (the a0d315ff hinge regression, see below); re-verified clean against the fixed baseline (96/96 real assertions passing, only the pre-existing, separate 39262 fabricated-occupancy bug remains).
+
+## 2026-09-28: Constraction / Bionicle Category Investigation (cloud agent, `agent/dispatch-constraction-1790612045`)
+
+- **Task**: Self-selected backlog target prioritised by Curtis's operator steer: `constraction` (Constraction / Bionicle, 151 base parts in LDraw library, 197 total including 24 Throwbot printed disc variants and 22 subparts).
+- Completed forensic scoping investigation: see [scripts/ldraw/CONSTRACTION_INVESTIGATION.md](scripts/ldraw/CONSTRACTION_INVESTIGATION.md).
+- **Key finding**: exactly **29 base parts (+ 6 subparts)** already resolve cleanly with `needs_occupancy: false` via existing mechanisms (16 via `bar_grip_points()`, 11 via `generic_hole_channel_occupancy()`, 2 via `generic_stud_cell_occupancy()`).
+- **Remaining 122 base parts correctly stay rejected (`needs_occupancy: true`)**:
+  - NO safe shared occupancy family exists across the 8 sub-families under Spec Section 3 safety (*"under-approximation is safe: miss a real collision, never report a false one"*):
+    1. *CCBS Skeletal Limbs/Bones* (22 parts): Universal 10.2mm (25.5 LDU) ball-and-socket joints lack mated-pair validator exemptions in `brick_parts_validate.py`. Bounding boxes encase the hollow socket cups, guaranteeing 100% false collisions on mated balls, while dynamic 3D articulation invalidates static axis-aligned boxes.
+    2. *CCBS Armor Shells & Fairings* (16 parts): Thin curved shells (1.0–2.0 LDU wall thickness) with solid fractions well below the 0.15 floor (`90640`: 14.5%, `90641`: 13.5%, `1686`: 8.5%). Bounding boxes fill their concave inner cradles, falsely colliding with the limb bones nestled directly inside them.
+    3. *Skeletal Torsos & Open Frames* (9 parts): Sprawling lattice cages with 82%–90% empty space (`90623`: 10.5% solid). Perimeter shoulder/hip ball mounts lie inside the box, falsely encasing all 4 attached limbs.
+    4. *Ball Socket Connectors & Blocks* (12 parts): Open receiving socket cups encapsulate mating ball joints.
+    5. *Weapons, Tools & Effect Elements* (40 parts): Long sweeping organic blades and claws with hand-grip axle mounts colliding with holding hands.
+    6. *Discs & Projectiles* (6 base parts + 24 printed variants): `32533` (Throwbot disc) is a 100 LDU circular projectile whose 100x100 box corners protrude 20.71 LDU into open air; loose ammo spheres collide with launcher chambers.
+    7. *Sculpted Feet with Ball Sockets* (5 parts): Top dorsal socket cups encase lower leg bones; 13.5% solidity.
+    8. *Heads, Helmets & Masks* (3 parts): Concave face cavities wrap around head/brain stalks.
+- **Verification**: 32 new tests added to `tests/test_generic_stud_occupancy.py` (25 real rejection controls, 7 real acceptance regression checks). Cherry-picked 2026-09-28 after independent-test-verification initially failed on this branch for a reason unrelated to this work (the a0d315ff hinge regression, see below); re-verified clean against the fixed baseline (93/93 real assertions passing, only the pre-existing, separate 39262 fabricated-occupancy bug remains).
+- **Set Impact (Airbus H175 42145)**: 0 parts (Constraction is strictly an action figure theme; H175 contains 0 Constraction parts).
+
 ## 2026-09-28: Electric, Vehicle, Mated-Connector-Exemption dispatches (cloud agents, cherry-picked from branches after a duplicate-task incident)
 
 Three items dispatched live via `gcloud run jobs execute` (`n4gpz`/`dn75t`/`g5ltz`). A `taskCount`
@@ -1155,3 +1235,38 @@ Operator-prioritised backlog run for item **`h175-secondary-connectors`** (*H175
     - `test_turntables_and_ball_joints_stay_rejected`: 7 negative control tests confirming turntables and ball joints remain `needs_occupancy=True`.
   - Refactored axle test suites to use cached shared library instance `_get_shared_lib()`, cutting test runtime and eliminating container OOM pressure.
   - Test suite pass count: **292 passed** in `tests/test_generic_stud_occupancy.py` (up from 270). Full test suite: **330 passed, 1 deselected** across generic occupancy, brick parts validate, and ldraw parts.
+
+## 2026-09-28: Continuous Rotation Collision Validation in OMR Importer (`omr_import.py`)
+
+Operator-prioritised run to integrate the Python OBB/SAT collision detection core into `scripts/ldraw/omr_import.py`:
+- **Problem**: When importing official LDraw OMR models (.mpd/.ldr), `omr_import.py` previously tested rotation matrices strictly against the 24 canonical orthogonal rotations (`PART_ROT[0..23]`). Any continuously rotated part (`rot_index(m) is None`) was immediately excluded from `coverage()` and `to_parts_model()`, falsely penalising sets with tilted sub-assemblies, angled train cabs, diagonal braces, or articulated hinges.
+- **Solution Built**:
+  - `omr_import.py` now integrates the Python OBB/SAT collision core (`rot_ldu`, `_world_boxes`, `_boxes_overlap` from `renderers/brick_parts_validate.py`).
+  - When `rot_index(m)` returns `None`, `_safe_tilted_indices()` validates whether candidate tilted parts can be placed safely:
+    - Generates world OBBs via `_world_boxes()`. Parts without baked occupancy are safely excluded.
+    - Exempts intentional mated pin/hole and hinge connections from collision.
+    - Evaluates overlaps against all adjacent parts using an 80-LDU broadphase spatial grid and the 15-axis SAT narrowphase test (`_boxes_overlap`).
+  - Safe continuously-rotated parts are admitted into `coverage()` as `renderable`.
+  - `to_parts_model()` emits the exact 9-tuple continuous rotation matrix in output rows for safe tilted parts, and `bottom_y()` dynamically supports arbitrary 9-tuple matrices for floor elevation grounding.
+  - Added unit and integration tests in `tests/test_omr_import.py` verifying canonical identification, continuous rotation detection, safe inclusion, colliding exclusion, and the invariant `len(to_parts_model(leaves)) == coverage(leaves)['renderable']`.
+- **Measured Real-World Coverage Impact (`real_set_coverage.py`)**:
+  - Evaluated against a 45-set sample of real official LDraw OMR sets:
+    - Renderable part instances jumped from **35,207 (57.0%)** to **46,248 (74.8%)**, unlocking **+11,041 real parts rendered (+17.8 percentage points)**.
+    - **32 out of 45 sets** saw massive positive coverage increases:
+      - Imperial Star Destroyer UCS (`10030-1`): 13.6% -> 69.6% (**+1,702 parts**)
+      - Millennium Falcon UCS (`10179-1`): 44.5% -> 72.6% (**+1,518 parts**)
+      - Rebel Snowspeeder UCS (`10129-1`): 2.7% -> 82.1% (**+1,155 parts**)
+      - Death Star II UCS (`10143-1`): 46.4% -> 78.3% (**+938 parts**)
+      - Y-Wing Attack Starfighter UCS (`10134-1`): 2.6% -> 61.8% (**+883 parts**)
+      - B-Wing Starfighter UCS (`10227-1`): 3.5% -> 54.6% (**+765 parts**)
+      - Imperial Shuttle UCS (`10212-1`): 56.6% -> 82.3% (**+649 parts**)
+      - Red Five X-Wing Starfighter UCS (`10240-1`): 33.0% -> 71.0% (**+597 parts**)
+      - Imperial AT-ST UCS (`10174-1`): 9.7% -> 56.8% (**+595 parts**)
+      - Metroliner 9V Train (`10001-1`): 24.1% -> 63.6% (**+335 parts**)
+      - Vader's TIE Advanced UCS (`10175-1`): 50.6% -> 76.1% (**+305 parts**)
+      - Café Corner Modular (`10182-1`): 42.6% -> 50.2% (**+264 parts**)
+      - Rebel Blockade Runner UCS (`10019-1`): 74.8% -> 85.8% (**+193 parts**)
+- **Explicit Next Steps (Out of Scope for this run)**:
+  - JS/browser rendering pipeline: update WebGL shader/matrix pipeline in `atoms_brick.gs` (`partTp`) to consume 9-element transformation arrays directly.
+  - Update Canvas-2D fallback renderer to project and render OBB wireframes.
+  - Update `_partsModelSanitise` / `_brick_parts_model_sanitise` schemas to permit 9-tuple matrix representations.

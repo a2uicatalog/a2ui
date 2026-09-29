@@ -35,6 +35,24 @@ def box(x0, x1, y0, y1, z0, z1):
     return (x0, x1, y0, y1, z0, z1)
 
 
+def obb(center, extents, axes):
+    """Oriented Bounding Box (OBB) representation for curved/sloped shells per OBB_DECOMPOSITION_INVESTIGATION.md.
+    center: (cx, cy, cz) local midpoint
+    extents: (ex, ey, ez) local half-dimensions
+    axes: ((u0x, u0y, u0z), (u1x, u1y, u1z), (u2x, u2y, u2z)) local orthonormal frame
+    Returns a 15-tuple for compact JSON serialization and zero-parse-overhead SAT compatibility."""
+    cx, cy, cz = center
+    ex, ey, ez = extents
+    (u0x, u0y, u0z), (u1x, u1y, u1z), (u2x, u2y, u2z) = axes
+    return (
+        round(cx, 2), round(cy, 2), round(cz, 2),
+        round(ex, 2), round(ey, 2), round(ez, 2),
+        round(u0x, 4), round(u0y, 4), round(u0z, 4),
+        round(u1x, 4), round(u1y, 4), round(u1z, 4),
+        round(u2x, 4), round(u2y, 4), round(u2z, 4),
+    )
+
+
 def generated_occupancy(title):
     dims = classify_box(title)
     if dims is None:
@@ -992,6 +1010,35 @@ HINGE_CONNECTORS = {
     # Z=0.0, axis along local X -- identical axis convention to 30083, confirmed by direct resolve_part()
     # sampling. Same not-yet-curated caveat as 30083.
     "30161": {"pos": (0.0, 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "kind": "dome_hinge"},
+    # Classic 1x4 plate hinge (2429 Base / 2430 Top) -- real barrel/cradle knuckle, pivot along local Y.
+    # Evidence found 2026-09-28 sitting unconnected in tests/test_brick_parts_validate.py's own
+    # M_HINGE_29 = (-0.868,0,0.496, 0,1,0, -0.496,0,-0.868): that matrix leaves the Y-axis unchanged (row/
+    # column 2 is exactly (0,1,0)), the algebraic signature of a pure Y-axis rotation, and the test's own
+    # comment cites a REAL official set ("In 8880-1 Super Car, hinge 2429 (Base) and 2430 (Top) are mated
+    # at (0, 0, 0)") -- both halves placed at the same world origin with 2430 rotated M_HINGE_29 around
+    # it, i.e. each part's own local origin already sits on the real physical pivot line. Real, already
+    # cross-validated against a real set by the earlier OBB/SAT task; this entry only had to be connected
+    # to the hinge registry, not re-derived. Bounds confirmed fresh via resolve_part(): 2429 spans
+    # X in [-40,8], 2430 X in [-8,40], both Y in [0,8] Z in [-8,20] -- the interlocking knuckle barrel
+    # sits centred near X=0, consistent with a Y-axis pivot line through the shared origin.
+    # RESTORED 2026-09-28: found deleted -- commit a0d315ff (a selective merge made before this session)
+    # dropped this and the 3830/3831 entry below, silently breaking 4 real tests (2 hinge-mating tests
+    # plus a fabricated-occupancy check) that nothing caught until three independent cloud-dispatch agents'
+    # own verification gates all failed on it, working on completely unrelated topics -- the shared
+    # baseline, not any agent's real work, was the actual cause. kind labels (plate_hinge_base/top,
+    # swivel_base/top below) match renderers/brick_parts_validate.py's own hardcoded hinge-compatibility
+    # fallback for these 4 ids (added by the mated-connector-exemption-axles-only task) -- kept consistent
+    # with that file rather than this module's own earlier "knuckle" label, so the baked hinges connector
+    # data and the runtime validator agree on vocabulary.
+    "2429": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "plate_hinge_base"},
+    "2430": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "plate_hinge_top"},
+    # Brick hinge (3831 Base / 3830 Top) -- real single radius-4.0 cylinder per half, confirmed fresh via
+    # resolve_part(): 3830 at (20.0,24.0,10.0) axis (0,-20,0); 3831 at (-20.0,24.0,10.0) axis (0,-20,0) --
+    # identical Y=24/Z=10 between halves, axis along Y, differing only in X (each half's own local frame),
+    # the EXACT SAME signature as 2429/2430 above (Y=8, Z=10 there) and consistent with 3937/3938 (X-axis)
+    # and 4275b/4276b (Z-axis). RESTORED 2026-09-28 -- see the 2429/2430 restoration note above.
+    "3830": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "swivel_base"},
+    "3831": {"pos": (0.0, 0.0, 0.0), "dir": (0.0, 1.0, 0.0), "kind": "swivel_top"},
 }
 
 
@@ -1002,6 +1049,91 @@ def hinge_connectors(part_id):
     resolve_occupancy_and_sockets's return shape)."""
     e = HINGE_CONNECTORS.get(part_id)
     return [dict(e)] if e else []
+
+
+def axle_connectors(part_id, title="", bounds_min=None, bounds_max=None, occupancy=None, cylinders=None):
+    """Returns [{'pos': (x,y,z), 'dir': (dx,dy,dz), 'len': float}] for part_id's real axle rod(s), or [] if
+    none. Called directly by bake_parts.py (same pattern as hinge_connectors and bar_grip_points)."""
+    tl = (title or "").strip().lower()
+    t_clean = re.sub(r"^[~=_\s|0-9]*", "", tl).strip()
+    if not re.search(r"\baxle\b", t_clean) or re.search(r"\b(with.*hole|with.*holes|axlehole|axle hole)\b", t_clean):
+        return []
+    if occupancy:
+        for b in occupancy:
+            dx, dy, dz = b[1] - b[0], b[3] - b[2], b[5] - b[4]
+            if dx >= 15.0 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6 and abs(b[4] - (-6.0)) <= 0.6 and abs(b[5] - 6.0) <= 0.6:
+                return [{"pos": (round(b[0], 2), 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "len": round(dx, 2)}]
+            elif dz >= 15.0 and abs(b[0] - (-6.0)) <= 0.6 and abs(b[1] - 6.0) <= 0.6 and abs(b[2] - (-6.0)) <= 0.6 and abs(b[3] - 6.0) <= 0.6:
+                return [{"pos": (0.0, 0.0, round(b[4], 2)), "dir": (0.0, 0.0, 1.0), "len": round(dz, 2)}]
+    if bounds_min is not None and bounds_max is not None:
+        dx, dy, dz = bounds_max[0] - bounds_min[0], bounds_max[1] - bounds_min[1], bounds_max[2] - bounds_min[2]
+        if dx >= 15.0 and dy <= 16.5 and dz <= 16.5:
+            return [{"pos": (round(bounds_min[0], 2), 0.0, 0.0), "dir": (1.0, 0.0, 0.0), "len": round(dx, 2)}]
+        elif dz >= 15.0 and dx <= 12.5 and dy <= 12.5:
+            return [{"pos": (0.0, 0.0, round(bounds_min[2], 2)), "dir": (0.0, 0.0, 1.0), "len": round(dz, 2)}]
+    return []
+
+
+# Clip connectors (2026-09-28, mated-connector-exemption-clips-only):
+# Real measured positions and axis directions of bar-receiving clip jaws on standard LEGO clip parts.
+# The cylindrical inner jaws have radius 4.0 LDU (matching standard bar radius 4.0 LDU), confirmed by
+# direct resolve_part() sampling across official LDraw geometry.
+CLIP_CONNECTORS = {
+    # Plate 1 x 1 with Clip Vertical (4085a Thin C-Clip, 4085b Thin U-Clip, 4085c Thick U-Clip, 60897 Thick C-Clip)
+    "4085a": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "4085b": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "4085c": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "60897": [{"pos": (0.0, 4.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    # Plate 1 x 1 with Clip Horizontal (6019 Thick U-Clip, 61252 Thick C-Clip)
+    "6019":  [{"pos": (0.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    "61252": [{"pos": (0.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Brick 1 x 1 with Clip Horizontal (60476)
+    "60476": [{"pos": (0.0, 10.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Plate 1 x 2 with 2 Clips Horizontal (60470a Thick U-Clips, 60470b Thick C-Clips)
+    "60470a": [{"pos": (-10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)},
+               {"pos": (10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    "60470b": [{"pos": (-10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)},
+               {"pos": (10.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Plate 1 x 2 with Clip Horizontal on Side (11476)
+    "11476": [{"pos": (0.0, 2.0, -20.0), "dir": (1.0, 0.0, 0.0)}],
+    # Plate 1 x 2 with Single Clip on Top (44861, 92280)
+    "44861": [{"pos": (10.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    "92280": [{"pos": (10.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    # Plate 1 x 2 with Clip Vertical on End (78256)
+    "78256": [{"pos": (30.0, 4.0, 0.0), "dir": (0.0, 1.0, 0.0)}],
+    # Tile 1 x 1 with Clip (15712 Thick C-Clip, 2555)
+    "15712": [{"pos": (0.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    "2555":  [{"pos": (0.0, -6.0, 0.0), "dir": (0.0, 0.0, 1.0)}],
+    # Brick 1 x 2 with Clip Vertical (30237, 95820)
+    "30237": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "95820": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    # Brick 1 x 1 with Clip Vertical (60475a, 60475b)
+    "60475a": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+    "60475b": [{"pos": (0.0, 12.0, -20.0), "dir": (0.0, 1.0, 0.0)}],
+}
+
+
+def clip_connectors(part_id, title="", bounds_min=None, bounds_max=None, cylinders=None):
+    """Returns [{'pos': (x,y,z), 'dir': (dx,dy,dz)}] for part_id's real clip jaws, or [] if none.
+    Called directly by bake_parts.py (same pattern as hinge_connectors and axle_connectors)."""
+    e = CLIP_CONNECTORS.get(part_id)
+    if e:
+        return [dict(x) for x in e]
+    tl = (title or "").strip().lower()
+    if "clip" not in tl or "clipboard" in tl or not cylinders:
+        return []
+    r4 = [c for c in cylinders if abs(c[2] - BAR_RADIUS) <= BAR_RADIUS_TOL]
+    out = []
+    for c in r4:
+        length = (c[1][0] ** 2 + c[1][1] ** 2 + c[1][2] ** 2) ** 0.5
+        if length < 4.0:
+            continue
+        center = (c[0][0] + c[1][0] * 0.5, c[0][1] + c[1][1] * 0.5, c[0][2] + c[1][2] * 0.5)
+        cdir = (c[1][0] / length, c[1][1] / length, c[1][2] / length)
+        if not any(math.dist(x['pos'], center) < 2.0 for x in out):
+            out.append({'pos': (round(center[0], 2), round(center[1], 2), round(center[2], 2)),
+                        'dir': (round(cdir[0], 3), round(cdir[1], 3), round(cdir[2], 3))})
+    return out
 
 
 # Minifig headwear (2026-09-27): a hair/helmet/hat/headdress/cap/mask/crown part mounts by RECEIVING the
@@ -1029,16 +1161,28 @@ def minifig_headwear_socket(title):
 
 
 def _boxes_within_bounds(occ, bounds_min, bounds_max, tol=0.5):
-    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes. Skipped (treated
-    as passing) when bounds aren't supplied, matching this module's existing "bounds/studs/tris are optional"
-    contract for callers that don't have real geometry (e.g. unit tests exercising one family in isolation)."""
+    """True if every box in `occ` fits inside [bounds_min-tol, bounds_max+tol] on all three axes.
+    Supports both standard 6-tuple AABBs and 15-tuple OBBs (per OBB_DECOMPOSITION_INVESTIGATION.md).
+    Skipped (treated as passing) when bounds aren't supplied, matching this module's existing
+    "bounds/studs/tris are optional" contract for callers that don't have real geometry."""
     if bounds_min is None or bounds_max is None:
         return True
     lo = [bounds_min[i] - tol for i in range(3)]
     hi = [bounds_max[i] + tol for i in range(3)]
-    for x0, x1, y0, y1, z0, z1 in occ:
-        if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
-            return False
+    for b in occ:
+        if len(b) == 6:
+            x0, x1, y0, y1, z0, z1 = b
+            if x0 < lo[0] or x1 > hi[0] or y0 < lo[1] or y1 > hi[1] or z0 < lo[2] or z1 > hi[2]:
+                return False
+        elif len(b) == 15:
+            cx, cy, cz = b[0], b[1], b[2]
+            ex, ey, ez = b[3], b[4], b[5]
+            u0, u1, u2 = (b[6], b[7], b[8]), (b[9], b[10], b[11]), (b[12], b[13], b[14])
+            for k in range(3):
+                rk = ex * abs(u0[k]) + ey * abs(u1[k]) + ez * abs(u2[k])
+                ck = (cx, cy, cz)[k]
+                if ck - rk < lo[k] or ck + rk > hi[k]:
+                    return False
     return True
 
 

@@ -15,18 +15,30 @@ def hollow(S, spine=None, thick=2):
     return {k: c for k, c in S.items() if keep(*k) or (spine and spine(*k))}
 
 
-def tile(cells, box):
+# Material-context-aware architecture seam (2026-09-29, cozy-forging-newt.md Track B item 1): max_run/
+# bond_period are LEGO's CURRENT coursing rule (a run of up to 4 studs, joints staggered every 4), not the
+# only possible shape of this engine -- tile()'s own algorithm is otherwise fully unit-agnostic (an abstract
+# integer grid, no LDU/mm anywhere). LEGO stays the only populated profile; this is the seam, not a second
+# material's rollout.
+LEGO_MATERIAL_PROFILE = {"max_run": 4, "bond_period": 4}
+
+
+def tile(cells, box, material_profile=None):
+    mp = material_profile or LEGO_MATERIAL_PROFILE
+    max_run, bond_period = mp["max_run"], mp["bond_period"]
     X0, X1, Y0, Y1, Z0, Z1 = box
     out = []
     for y in range(Y0, Y1 + 1):
-        taken, par, zp = set(), (y & 1) * 2, y & 1
+        # par offsets alternate layers by half a bond period (LEGO: 4/2=2 studs) so each layer's joints
+        # fall mid-run of the layer below -- tied to bond_period, not an independent constant.
+        taken, par, zp = set(), (y & 1) * (bond_period // 2), y & 1
         for z in range(Z0, Z1 + 1):
             for x in range(X0, X1 + 1):
                 if (x, z) in taken: continue
                 c = cells.get((x, y, z))
                 if not c: continue
                 e = x + 1
-                while e <= X1 and e - x < 4 and (e + par) % 4 != 0 and cells.get((e, y, z)) == c and (e, z) not in taken: e += 1
+                while e <= X1 and e - x < max_run and (e + par) % bond_period != 0 and cells.get((e, y, z)) == c and (e, z) not in taken: e += 1
                 d = 1
                 if ((z + zp) % 2 + 2) % 2 == 0 and z + 1 <= Z1:
                     e2 = x
@@ -57,7 +69,7 @@ def unanchored(bricks, y0):
     return [i for i in range(len(bricks)) if i not in seen]
 
 
-def build(S, name, do_hollow=True, spine=None, out_dir=".", post=None):
+def build(S, name, do_hollow=True, spine=None, out_dir=".", post=None, material_profile=None):
     V = hollow(S, spine) if do_hollow else dict(S)
     if post: post(V)
     xs = [k[0] for k in V]; ys = [k[1] for k in V]; zs = [k[2] for k in V]
@@ -65,7 +77,7 @@ def build(S, name, do_hollow=True, spine=None, out_dir=".", post=None):
     cut = set(); trimmed = 0
     for _ in range(10):
         cells = {k: c for k, c in V.items() if k not in cut}
-        bricks = tile(cells, box)
+        bricks = tile(cells, box, material_profile)
         fl = unanchored(bricks, box[2])
         if not fl: break
         for i in fl:

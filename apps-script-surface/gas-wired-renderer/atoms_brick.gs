@@ -32,9 +32,18 @@
 //   checks     — show the build-check verdicts (default true)
 //   parts      — show the parts list with an indicative cost (default false)
 
-function _brickKit() {
-  /* ---------- constants: real LEGO proportions, in stud-pitch units (1 = 8 mm) ---------- */
-  var BH=1.2, PL=0.4, SR=0.3, SH=0.18, SN=10;         // brick 9.6mm, plate 3.2mm, stud r 2.4mm, stud h 1.4mm
+// Material-context-aware architecture seam (2026-09-29, cozy-forging-newt.md Track B item 2): the render
+// proportions and connector-visual style are LEGO's CURRENT profile, not the only possible shape of this
+// engine. Every other consumer of BH/PL/SR/SH/SN below (WebGL shader source, canvas-2D fallback, camera
+// framing, instruction-step math -- ~30 call sites) is a closure over these SAME `var` bindings declared once
+// at the top of _brickKit(), so parameterizing this one declaration is sufficient: no other call site needs
+// to change. LEGO stays the only populated profile -- this is the seam, not a second material's rollout.
+var LEGO_MATERIAL_PROFILE = {BH:1.2, PL:0.4, SR:0.3, SH:0.18, SN:10, studs:true};
+function _brickKit(materialProfile) {
+  /* ---------- constants: proportions, in stud-pitch units (1 = 8 mm for LEGO's own default profile) ---------- */
+  var MP=materialProfile||LEGO_MATERIAL_PROFILE;
+  var BH=MP.BH, PL=MP.PL, SR=MP.SR, SH=MP.SH, SN=MP.SN;   // LEGO default: brick 9.6mm, plate 3.2mm, stud r 2.4mm, stud h 1.4mm
+  var SHOW_STUDS=MP.studs!==false;                        // connector-visual flag -- false draws no stud cylinder
   var RB=['#c91a09','#fe8a18','#f2cd37','#a5ca18','#237841','#36aebf','#0055bf','#6a3a9c'];
 
   /* ---------- real-parts model (spec/brick-parts-v0.1.md): 24 fixed orientations, LDraw units ---------- */
@@ -103,7 +112,9 @@ function _brickKit() {
   // in real LDU world coordinates (the payload's own x,y,z units, spec/brick-parts-v0.1.md §1), unlike partTp's
   // render-space transform. PART_ROT's 24 matrices are signed permutations, so this exactly preserves axis
   // alignment (spec §3's "collision is an exact box-overlap test" depends on that).
-  function rotLDU(r,p){var Rm=PART_ROT[r];return [Rm[0]*p[0]+Rm[1]*p[1]+Rm[2]*p[2],Rm[3]*p[0]+Rm[4]*p[1]+Rm[5]*p[2],Rm[6]*p[0]+Rm[7]*p[1]+Rm[8]*p[2]];}
+  // Twin of Python's rot_ldu: r is either a 0-23 PART_ROT index (int) or a general 9-entry row-major 3x3 matrix
+  // (Array) -- continuous/non-preset rotations, e.g. from the OBB/SAT-validated OMR import path.
+  function rotLDU(r,p){var Rm=Array.isArray(r)?r:PART_ROT[r];return [Rm[0]*p[0]+Rm[1]*p[1]+Rm[2]*p[2],Rm[3]*p[0]+Rm[4]*p[1]+Rm[5]*p[2],Rm[6]*p[0]+Rm[7]*p[1]+Rm[8]*p[2]];}
 
   var shadeCache={};
   function shade(hex,q){
@@ -263,19 +274,76 @@ function _brickKit() {
       return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd};
     });
   }
+  // Twin of Python's _world_boxes: plain 6-tuple AABBs (Array) for the legacy int-index rotation path, OBB
+  // objects ({center,extents,axes,aabb}) for a general matrix rotation -- see boxesOverlap for the SAT this
+  // enables. axes are world-space unit vectors of the box's local x/y/z, derived from the rotation matrix's rows.
   function worldBoxes(mesh,r,ex,ey,ez){
     if(!mesh.occupancy)return null;
+    if(!Array.isArray(r)){
+      return mesh.occupancy.map(function(b){
+        var c0=rotLDU(r,[b[0],b[2],b[4]]),c1=rotLDU(r,[b[1],b[3],b[5]]);
+        return [Math.min(c0[0],c1[0])+ex,Math.max(c0[0],c1[0])+ex,
+                Math.min(c0[1],c1[1])+ey,Math.max(c0[1],c1[1])+ey,
+                Math.min(c0[2],c1[2])+ez,Math.max(c0[2],c1[2])+ez];
+      });
+    }
+    var u0=[r[0],r[3],r[6]],u1=[r[1],r[4],r[7]],u2=[r[2],r[5],r[8]];
     return mesh.occupancy.map(function(b){
-      var c0=rotLDU(r,[b[0],b[2],b[4]]),c1=rotLDU(r,[b[1],b[3],b[5]]);
-      return [Math.min(c0[0],c1[0])+ex,Math.max(c0[0],c1[0])+ex,
-              Math.min(c0[1],c1[1])+ey,Math.max(c0[1],c1[1])+ey,
-              Math.min(c0[2],c1[2])+ez,Math.max(c0[2],c1[2])+ez];
+      var cloc=[(b[0]+b[1])*0.5,(b[2]+b[3])*0.5,(b[4]+b[5])*0.5];
+      var e=[Math.abs(b[1]-b[0])*0.5,Math.abs(b[3]-b[2])*0.5,Math.abs(b[5]-b[4])*0.5];
+      var crot=rotLDU(r,cloc),cw=[crot[0]+ex,crot[1]+ey,crot[2]+ez];
+      var rx=e[0]*Math.abs(u0[0])+e[1]*Math.abs(u1[0])+e[2]*Math.abs(u2[0]);
+      var ry=e[0]*Math.abs(u0[1])+e[1]*Math.abs(u1[1])+e[2]*Math.abs(u2[1]);
+      var rz=e[0]*Math.abs(u0[2])+e[1]*Math.abs(u1[2])+e[2]*Math.abs(u2[2]);
+      return {center:cw,extents:e,axes:[u0,u1,u2],
+              aabb:[cw[0]-rx,cw[0]+rx,cw[1]-ry,cw[1]+ry,cw[2]-rz,cw[2]+rz]};
     });
   }
+  // Twin of Python's _boxes_overlap: fast 6-tuple interval check when both boxes are plain AABBs (Array), full
+  // 15-axis SAT (3+3 face normals + 9 edge cross-products) when either is an OBB object -- a plain AABB is
+  // synthesised into an axis-aligned OBB wrapper so the same SAT loop handles OBB-vs-AABB and OBB-vs-OBB alike.
   function boxesOverlap(a,b){
-    var ox=Math.min(a[1],b[1])-Math.max(a[0],b[0]),oy=Math.min(a[3],b[3])-Math.max(a[2],b[2]),
-        oz=Math.min(a[5],b[5])-Math.max(a[4],b[4]);
-    return ox>0.5&&oy>0.5&&oz>0.5;
+    if(Array.isArray(a)&&Array.isArray(b)){
+      var ox=Math.min(a[1],b[1])-Math.max(a[0],b[0]),oy=Math.min(a[3],b[3])-Math.max(a[2],b[2]),
+          oz=Math.min(a[5],b[5])-Math.max(a[4],b[4]);
+      return ox>0.5&&oy>0.5&&oz>0.5;
+    }
+    var oa=Array.isArray(a)?{center:[(a[0]+a[1])*0.5,(a[2]+a[3])*0.5,(a[4]+a[5])*0.5],
+        extents:[Math.abs(a[1]-a[0])*0.5,Math.abs(a[3]-a[2])*0.5,Math.abs(a[5]-a[4])*0.5],
+        axes:[[1,0,0],[0,1,0],[0,0,1]]}:a;
+    var ob=Array.isArray(b)?{center:[(b[0]+b[1])*0.5,(b[2]+b[3])*0.5,(b[4]+b[5])*0.5],
+        extents:[Math.abs(b[1]-b[0])*0.5,Math.abs(b[3]-b[2])*0.5,Math.abs(b[5]-b[4])*0.5],
+        axes:[[1,0,0],[0,1,0],[0,0,1]]}:b;
+    var ca=oa.center,ea=oa.extents,ua=oa.axes,cb=ob.center,eb=ob.extents,ub=ob.axes;
+    var dx=cb[0]-ca[0],dy=cb[1]-ca[1],dz=cb[2]-ca[2];
+    var axes=[
+      ua[0],ua[1],ua[2],
+      ub[0],ub[1],ub[2],
+      [ua[0][1]*ub[0][2]-ua[0][2]*ub[0][1],ua[0][2]*ub[0][0]-ua[0][0]*ub[0][2],ua[0][0]*ub[0][1]-ua[0][1]*ub[0][0]],
+      [ua[0][1]*ub[1][2]-ua[0][2]*ub[1][1],ua[0][2]*ub[1][0]-ua[0][0]*ub[1][2],ua[0][0]*ub[1][1]-ua[0][1]*ub[1][0]],
+      [ua[0][1]*ub[2][2]-ua[0][2]*ub[2][1],ua[0][2]*ub[2][0]-ua[0][0]*ub[2][2],ua[0][0]*ub[2][1]-ua[0][1]*ub[2][0]],
+      [ua[1][1]*ub[0][2]-ua[1][2]*ub[0][1],ua[1][2]*ub[0][0]-ua[1][0]*ub[0][2],ua[1][0]*ub[0][1]-ua[1][1]*ub[0][0]],
+      [ua[1][1]*ub[1][2]-ua[1][2]*ub[1][1],ua[1][2]*ub[1][0]-ua[1][0]*ub[1][2],ua[1][0]*ub[1][1]-ua[1][1]*ub[1][0]],
+      [ua[1][1]*ub[2][2]-ua[1][2]*ub[2][1],ua[1][2]*ub[2][0]-ua[1][0]*ub[2][2],ua[1][0]*ub[2][1]-ua[1][1]*ub[2][0]],
+      [ua[2][1]*ub[0][2]-ua[2][2]*ub[0][1],ua[2][2]*ub[0][0]-ua[2][0]*ub[0][2],ua[2][0]*ub[0][1]-ua[2][1]*ub[0][0]],
+      [ua[2][1]*ub[1][2]-ua[2][2]*ub[1][1],ua[2][2]*ub[1][0]-ua[2][0]*ub[1][2],ua[2][0]*ub[1][1]-ua[2][1]*ub[1][0]],
+      [ua[2][1]*ub[2][2]-ua[2][2]*ub[2][1],ua[2][2]*ub[2][0]-ua[2][0]*ub[2][2],ua[2][0]*ub[2][1]-ua[2][1]*ub[2][0]]
+    ];
+    for(var ai=0;ai<axes.length;ai++){
+      var lx=axes[ai][0],ly=axes[ai][1],lz=axes[ai][2];
+      var l2=lx*lx+ly*ly+lz*lz;
+      if(l2<1e-9)continue;
+      var normL=Math.sqrt(l2);
+      var dist=Math.abs(dx*lx+dy*ly+dz*lz);
+      var ra=ea[0]*Math.abs(ua[0][0]*lx+ua[0][1]*ly+ua[0][2]*lz)+
+              ea[1]*Math.abs(ua[1][0]*lx+ua[1][1]*ly+ua[1][2]*lz)+
+              ea[2]*Math.abs(ua[2][0]*lx+ua[2][1]*ly+ua[2][2]*lz);
+      var rb=eb[0]*Math.abs(ub[0][0]*lx+ub[0][1]*ly+ub[0][2]*lz)+
+              eb[1]*Math.abs(ub[1][0]*lx+ub[1][1]*ly+ub[1][2]*lz)+
+              eb[2]*Math.abs(ub[2][0]*lx+ub[2][1]*ly+ub[2][2]*lz);
+      if((ra+rb)-dist<=0.5*normL)return false;
+    }
+    return true;
   }
   function onGrid(v){var m=((v-10)%20+20)%20;return m<0.5||m>19.5;}
   function dot3(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
@@ -286,10 +354,23 @@ function _brickKit() {
     var proj=[a[0]+ab[0]*t,a[1]+ab[1]*t,a[2]+ab[2]*t];
     return {dist:dist3(p,proj),t:t};
   }
+  var CURATED_HINGES={
+    '2429':[{pos:[0,0,0],dir:[0,1,0],kind:'plate_hinge_base'}],
+    '2430':[{pos:[0,0,0],dir:[0,1,0],kind:'plate_hinge_top'}],
+    '3830':[{pos:[0,0,0],dir:[0,1,0],kind:'swivel_base'}],
+    '3831':[{pos:[0,0,0],dir:[0,1,0],kind:'swivel_top'}]
+  };
   // Twin of _hinges_world (brick_parts_validate.py) -- pos/dir rotate+translate like connWorld, but each
   // entry also carries a `kind` (not a rotatable quantity) that connWorld's generic pos/dir extraction drops.
   function hingesWorld(mesh,r,ex,ey,ez){
-    var list=(mesh.connectors&&mesh.connectors.hinges)||[],q=mesh.quant;
+    var list=(mesh.connectors&&mesh.connectors.hinges)||[];
+    if(!list.length&&CURATED_HINGES[mesh.id]){
+      return CURATED_HINGES[mesh.id].map(function(h){
+        var wp=rotLDU(r,h.pos),wd=rotLDU(r,h.dir);
+        return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd,kind:h.kind};
+      });
+    }
+    var q=mesh.quant||16;
     return list.map(function(h){
       var lp=[h.pos[0]/q,h.pos[1]/q,h.pos[2]/q],wp=rotLDU(r,lp),wd=rotLDU(r,h.dir);
       return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd,kind:h.kind};
@@ -297,9 +378,167 @@ function _brickKit() {
   }
   // Twin of _hinge_kinds_mate -- see its Python comment for the real physical mating rule.
   function hingeKindsMate(ka,kb){
-    var complements={finger2:'finger3',finger3:'finger2'};
+    var complements={
+      finger2:'finger3',finger3:'finger2',
+      plate_hinge_base:'plate_hinge_top',plate_hinge_top:'plate_hinge_base',
+      swivel_base:'swivel_top',swivel_top:'swivel_base'
+    };
     if(complements[ka]||complements[kb])return complements[ka]===kb;
     return ka===kb&&ka==='knuckle';
+  }
+  // Twin of _axles_world (brick_parts_validate.py)
+  function axlesWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var q=mesh.quant||16,out=[];
+    var list=(mesh.connectors&&mesh.connectors.axles)||[];
+    if(list.length){
+      list.forEach(function(ax){
+        var la,lb;
+        if(ax.a&&ax.b){
+          la=[ax.a[0]/q,ax.a[1]/q,ax.a[2]/q];
+          lb=[ax.b[0]/q,ax.b[1]/q,ax.b[2]/q];
+        }else if(ax.pos&&ax.dir){
+          la=[ax.pos[0]/q,ax.pos[1]/q,ax.pos[2]/q];
+          var len=ax.len||0;
+          lb=[la[0]+ax.dir[0]*len,la[1]+ax.dir[1]*len,la[2]+ax.dir[2]*len];
+        }else{return;}
+        var wa=add3(rotLDU(r,la),[ex,ey,ez]),wb=add3(rotLDU(r,lb),[ex,ey,ez]);
+        out.push({a:wa,b:wb});
+      });
+      return out;
+    }
+    var tl=(mesh.title||'').toLowerCase();
+    var tClean=tl.replace(/^[~=_\s|0-9]*/,'').trim();
+    var isAxle=/\baxle\b/.test(tClean)&&!/\b(with.*hole|with.*holes|axlehole|axle hole)\b/.test(tClean);
+    if(!isAxle)return [];
+    if(mesh.occupancy){
+      mesh.occupancy.forEach(function(b){
+        var dx=b[1]-b[0],dy=b[3]-b[2],dz=b[5]-b[4];
+        if(dx>=15&&Math.abs(b[2]+6)<=0.6&&Math.abs(b[3]-6)<=0.6&&Math.abs(b[4]+6)<=0.6&&Math.abs(b[5]-6)<=0.6){
+          var la=[b[0],0,0],lb=[b[1],0,0];
+          out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+        }else if(dz>=15&&Math.abs(b[0]+6)<=0.6&&Math.abs(b[1]-6)<=0.6&&Math.abs(b[2]+6)<=0.6&&Math.abs(b[3]-6)<=0.6){
+          var la=[0,0,b[4]],lb=[0,0,b[5]];
+          out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+        }
+      });
+    }
+    return out;
+  }
+  var CURATED_CLIPS={
+    '4085a':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '4085b':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '4085c':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '60897':[{pos:[0,4,-20],dir:[0,1,0]}],
+    '6019': [{pos:[0,2,-20],dir:[1,0,0]}],
+    '61252':[{pos:[0,2,-20],dir:[1,0,0]}],
+    '60476':[{pos:[0,10,-20],dir:[1,0,0]}],
+    '60470a':[{pos:[-10,2,-20],dir:[1,0,0]},{pos:[10,2,-20],dir:[1,0,0]}],
+    '60470b':[{pos:[-10,2,-20],dir:[1,0,0]},{pos:[10,2,-20],dir:[1,0,0]}],
+    '11476':[{pos:[0,2,-20],dir:[1,0,0]}],
+    '44861':[{pos:[10,-6,0],dir:[0,0,1]}],
+    '92280':[{pos:[10,-6,0],dir:[0,0,1]}],
+    '78256':[{pos:[30,4,0],dir:[0,1,0]}],
+    '15712':[{pos:[0,-6,0],dir:[0,0,1]}],
+    '2555': [{pos:[0,-6,0],dir:[0,0,1]}],
+    '30237':[{pos:[0,12,-20],dir:[0,1,0]}],
+    '60475a':[{pos:[0,12,-20],dir:[0,1,0]}],
+    '60475b':[{pos:[0,12,-20],dir:[0,1,0]}],
+    '95820':[{pos:[0,12,-20],dir:[0,1,0]}]
+  };
+  var CURATED_BARS={
+    '2540':   [{a:[-20,2,-20],b:[20,2,-20]}],
+    '2921':   [{a:[0,0,-20],b:[0,24,-20]}],
+    '292126': [{a:[0,0,-20],b:[0,24,-20]}],
+    '30236':  [{a:[-20,10,-20],b:[20,10,-20]}],
+    '48336':  [{a:[-14,2,-20],b:[14,2,-20]}],
+    '30374':  [{a:[0,0,0],b:[0,80,0]}],
+    '4095':   [{a:[0,-120,0],b:[0,12,0]}],
+    '63965':  [{a:[0,-102.5,0],b:[0,18,0]}],
+    '2714a':  [{a:[0,-137.5,0],b:[0,18,0]}],
+    '25893a': [{a:[-10,8,0],b:[10,8,0]}]
+  };
+  function clipsWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var pid=mesh.id,q=mesh.quant||16,out=[];
+    var list=(mesh.connectors&&mesh.connectors.clips)||[];
+    if(list.length){
+      list.forEach(function(c){
+        var lp=[c.pos[0]/q,c.pos[1]/q,c.pos[2]/q];
+        var wp=add3(rotLDU(r,lp),[ex,ey,ez]);
+        var wd=rotLDU(r,c.dir);
+        out.push({pos:wp,dir:wd});
+      });
+      return out;
+    }
+    if(CURATED_CLIPS[pid]){
+      CURATED_CLIPS[pid].forEach(function(c){
+        var wp=add3(rotLDU(r,c.pos),[ex,ey,ez]);
+        var wd=rotLDU(r,c.dir);
+        out.push({pos:wp,dir:wd});
+      });
+      return out;
+    }
+    var tl=(mesh.title||'').toLowerCase();
+    if(tl.indexOf('clip')!==-1&&tl.indexOf('clipboard')===-1){
+      var rawBars=(mesh.connectors&&mesh.connectors.bars)||[];
+      rawBars.forEach(function(b){
+        var lp=[b.pos[0]/q,b.pos[1]/q,b.pos[2]/q];
+        var wp=add3(rotLDU(r,lp),[ex,ey,ez]);
+        var wd=rotLDU(r,b.dir);
+        out.push({pos:wp,dir:wd});
+      });
+    }
+    return out;
+  }
+  function barsWorld(mesh,r,ex,ey,ez){
+    if(!mesh)return [];
+    var pid=mesh.id,q=mesh.quant||16,out=[];
+    var tl=(mesh.title||'').toLowerCase();
+    if((tl.indexOf('clip')!==-1&&tl.indexOf('clipboard')===-1)||CURATED_CLIPS[pid])return [];
+    if(CURATED_BARS[pid]){
+      CURATED_BARS[pid].forEach(function(b){
+        out.push({a:add3(rotLDU(r,b.a),[ex,ey,ez]),b:add3(rotLDU(r,b.b),[ex,ey,ez])});
+      });
+      return out;
+    }
+    var rawBars=(mesh.connectors&&mesh.connectors.bars)||[];
+    if(!rawBars.length)return [];
+    if(rawBars.some(function(b){return b.a&&b.b;})){
+      rawBars.forEach(function(b){
+        if(b.a&&b.b){
+          var la=[b.a[0]/q,b.a[1]/q,b.a[2]/q],lb=[b.b[0]/q,b.b[1]/q,b.b[2]/q];
+          out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+        }
+      });
+      return out;
+    }
+    if(rawBars.some(function(b){return b.len;})){
+      rawBars.forEach(function(b){
+        var la=[b.pos[0]/q,b.pos[1]/q,b.pos[2]/q],blen=b.len||0,d=b.dir||[1,0,0];
+        var lb=[la[0]+d[0]*blen,la[1]+d[1]*blen,la[2]+d[2]*blen];
+        out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+      });
+      return out;
+    }
+    if(rawBars.length>=2){
+      var p0=[rawBars[0].pos[0]/q,rawBars[0].pos[1]/q,rawBars[0].pos[2]/q];
+      var p1=[rawBars[1].pos[0]/q,rawBars[1].pos[1]/q,rawBars[1].pos[2]/q];
+      out.push({a:add3(rotLDU(r,p0),[ex,ey,ez]),b:add3(rotLDU(r,p1),[ex,ey,ez])});
+      return out;
+    }
+    if(rawBars.length===1&&mesh.bounds){
+      var p0=[rawBars[0].pos[0]/q,rawBars[0].pos[1]/q,rawBars[0].pos[2]/q];
+      var d=rawBars[0].dir||[1,0,0];
+      var bmin=[mesh.bounds.min[0]/q,mesh.bounds.min[1]/q,mesh.bounds.min[2]/q];
+      var bmax=[mesh.bounds.max[0]/q,mesh.bounds.max[1]/q,mesh.bounds.max[2]/q];
+      var axis=Math.abs(d[0])>0.5?0:Math.abs(d[1])>0.5?1:2;
+      var la=p0.slice(),lb=p0.slice();
+      la[axis]=bmin[axis];lb[axis]=bmax[axis];
+      out.push({a:add3(rotLDU(r,la),[ex,ey,ez]),b:add3(rotLDU(r,lb),[ex,ey,ez])});
+      return out;
+    }
+    return out;
   }
   // Pair a mesh's local hole entries (one {pos,dir} per face) into {a,b} segments: greedy nearest
   // opposite-direction match, in LOCAL (unquantised LDU) space -- spec §2's "the segment between the pair is
@@ -325,14 +564,17 @@ function _brickKit() {
   function validateParts(list){
     var n=list.length,i,j;
     var meshes=list.map(function(e){return partMeshCache[e.p];});
-    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],notChecked=0;
+    var studs=[],sockets=[],pins=[],boxes=[],holeSegsWorld=[],hinges=[],axles=[],clips=[],bars=[],notChecked=0;
     for(i=0;i<n;i++){
       var e=list[i],m=meshes[i];
-      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);notChecked++;continue;}
+      if(!m||m==='loading'||m==='error'){studs.push([]);sockets.push([]);pins.push([]);boxes.push(null);holeSegsWorld.push([]);hinges.push([]);axles.push([]);clips.push([]);bars.push([]);notChecked++;continue;}
       studs.push(connWorld(m,'studs',e.r,e.x,e.y,e.z));
       sockets.push(connWorld(m,'sockets',e.r,e.x,e.y,e.z));
       pins.push(connWorld(m,'pins',e.r,e.x,e.y,e.z));
       hinges.push(hingesWorld(m,e.r,e.x,e.y,e.z));
+      axles.push(axlesWorld(m,e.r,e.x,e.y,e.z));
+      clips.push(clipsWorld(m,e.r,e.x,e.y,e.z));
+      bars.push(barsWorld(m,e.r,e.x,e.y,e.z));
       boxes.push(worldBoxes(m,e.r,e.x,e.y,e.z));
       if(!m.occupancy)notChecked++;
       var localSegs=pairHoles(m);
@@ -366,9 +608,9 @@ function _brickKit() {
       });
     }
     // Parts whose connectors are known to physically interpenetrate on purpose (a pin genuinely passing
-    // through a hole, or two hinge halves genuinely sharing a pivot axis) -- exempted from the collision check
-    // below. Twin of Python's `mated_pairs` -- see its comment for why a coarse whole-pair exemption is the
-    // spec-safe direction to err in.
+    // through a hole, an axle genuinely passing through a hole, or two hinge halves genuinely sharing a pivot axis) --
+    // exempted from the collision check below. Twin of Python's `mated_pairs` -- see its comment for why a coarse
+    // whole-pair exemption is the spec-safe direction to err in.
     var matedPairs={};
     for(i=0;i<n;i++){
       pins[i].forEach(function(p){
@@ -395,6 +637,64 @@ function _brickKit() {
         }
       });
     }
+    var axleConn=0;
+    for(i=0;i<n;i++){
+      axles[i].forEach(function(ax){
+        var vs=[ax.b[0]-ax.a[0],ax.b[1]-ax.a[1],ax.b[2]-ax.a[2]];
+        var ls=Math.hypot(vs[0],vs[1],vs[2]);
+        if(ls<1e-6)return;
+        var us=[vs[0]/ls,vs[1]/ls,vs[2]/ls];
+        for(j=0;j<n;j++){
+          if(i===j)continue;
+          holeSegsWorld[j].forEach(function(seg){
+            var vh=[seg.b[0]-seg.a[0],seg.b[1]-seg.a[1],seg.b[2]-seg.a[2]];
+            var lh=Math.hypot(vh[0],vh[1],vh[2]);
+            if(lh<1e-6)return;
+            var uh=[vh[0]/lh,vh[1]/lh,vh[2]/lh];
+            if(Math.abs(dot3(us,uh))<=0.99)return;
+            var d1=pointLineDist(seg.a,ax.a,ax.b),d2=pointLineDist(seg.b,ax.a,ax.b);
+            if(d1.dist>=0.5||d2.dist>=0.5)return;
+            var ta=(seg.a[0]-ax.a[0])*us[0]+(seg.a[1]-ax.a[1])*us[1]+(seg.a[2]-ax.a[2])*us[2];
+            var tb=(seg.b[0]-ax.a[0])*us[0]+(seg.b[1]-ax.a[1])*us[1]+(seg.b[2]-ax.a[2])*us[2];
+            var tmin=Math.min(ta,tb),tmax=Math.max(ta,tb);
+            var oStart=Math.max(tmin,0),oEnd=Math.min(tmax,ls);
+            if(oEnd-oStart>=1.0){
+              axleConn++;
+              adj[i][j]=1;
+              adj[j][i]=1;
+              matedPairs[Math.min(i,j)+','+Math.max(i,j)]=1;
+            }
+          });
+        }
+      });
+    }
+    var clipConn=0;
+    for(i=0;i<n;i++){
+      clips[i].forEach(function(c){
+        var lc=Math.hypot(c.dir[0],c.dir[1],c.dir[2]);
+        if(lc<1e-6)return;
+        var uc=[c.dir[0]/lc,c.dir[1]/lc,c.dir[2]/lc];
+        for(j=0;j<n;j++){
+          if(i===j)continue;
+          bars[j].forEach(function(bar){
+            var vb=[bar.b[0]-bar.a[0],bar.b[1]-bar.a[1],bar.b[2]-bar.a[2]];
+            var lb=Math.hypot(vb[0],vb[1],vb[2]);
+            if(lb<1e-6)return;
+            var ub=[vb[0]/lb,vb[1]/lb,vb[2]/lb];
+            if(Math.abs(dot3(uc,ub))<=0.99)return;
+            var pld=pointLineDist(c.pos,bar.a,bar.b);
+            if(pld.dist>=0.5)return;
+            var tDist=pld.t*lb;
+            if(tDist>=-2.0&&tDist<=lb+2.0){
+              clipConn++;
+              adj[i][j]=1;
+              adj[j][i]=1;
+              matedPairs[Math.min(i,j)+','+Math.max(i,j)]=1;
+            }
+          });
+        }
+      });
+    }
     var seen={},queue=Object.keys(baseAdj).map(Number);
     queue.forEach(function(k){seen[k]=1;});
     while(queue.length){var c=queue.pop();for(var nb in adj[c])if(!seen[nb]){seen[nb]=1;queue.push(+nb);}}
@@ -403,15 +703,20 @@ function _brickKit() {
     var collisions=[];
     for(i=0;i<n;i++){
       if(!boxes[i])continue;
-      for(var bi=0;bi<boxes[i].length;bi++)if(boxes[i][bi][3]>0.5){collisions.push([-1,i]);break;}
+      for(var bi=0;bi<boxes[i].length;bi++){
+        var bx=boxes[i][bi],yMax=Array.isArray(bx)?bx[3]:bx.aabb[3];
+        if(yMax>0.5){collisions.push([-1,i]);break;}
+      }
     }
     // Part-vs-part boxes: coarse 80-LDU grid over each part's overall AABB, test only parts sharing a cell (all-pairs
     // was O(n^2) box-list scans); pairs are deduped and emitted in the same (i asc, j asc) order as before.
+    // Grid bucketing always uses each box's aabb (an OBB object's world-aligned bounding aabb, same shape as a
+    // plain AABB) -- the broadphase only needs to be conservative, the SAT in boxesOverlap does the real test.
     var grid={},pairSeen={},pairs=[];
     for(i=0;i<n;i++){
       if(!boxes[i])continue;
       var lo=[1e9,1e9,1e9],hi=[-1e9,-1e9,-1e9];
-      boxes[i].forEach(function(b){for(var ax=0;ax<3;ax++){lo[ax]=Math.min(lo[ax],b[ax*2]);hi[ax]=Math.max(hi[ax],b[ax*2+1]);}});
+      boxes[i].forEach(function(b){var ab=Array.isArray(b)?b:b.aabb;for(var ax=0;ax<3;ax++){lo[ax]=Math.min(lo[ax],ab[ax*2]);hi[ax]=Math.max(hi[ax],ab[ax*2+1]);}});
       for(var gx=Math.floor(lo[0]/80);gx<=Math.floor(hi[0]/80);gx++)for(var gy=Math.floor(lo[1]/80);gy<=Math.floor(hi[1]/80);gy++)
         for(var gz=Math.floor(lo[2]/80);gz<=Math.floor(hi[2]/80);gz++){
           var gk=gx+','+gy+','+gz,cellp=grid[gk]=grid[gk]||[];
@@ -430,11 +735,19 @@ function _brickKit() {
     if(restIdx.length){
       var m2=0,cx=0,cz=0,foot=[];
       for(i=0;i<n;i++)if(boxes[i])boxes[i].forEach(function(b){
-        var vol=(b[1]-b[0])*(b[3]-b[2])*(b[5]-b[4]),cxb=(b[0]+b[1])/2,czb=(b[4]+b[5])/2;
-        m2+=vol;cx+=cxb*vol;cz+=czb*vol;
+        if(Array.isArray(b)){
+          var vol=(b[1]-b[0])*(b[3]-b[2])*(b[5]-b[4]),cxb=(b[0]+b[1])/2,czb=(b[4]+b[5])/2;
+          m2+=vol;cx+=cxb*vol;cz+=czb*vol;
+        }else{
+          var e=b.extents,vol2=8.0*e[0]*e[1]*e[2];
+          m2+=vol2;cx+=b.center[0]*vol2;cz+=b.center[2]*vol2;
+        }
       });
       cx/=m2;cz/=m2;
-      restIdx.forEach(function(k){if(boxes[k])boxes[k].forEach(function(b){foot.push([b[0],b[4]],[b[1],b[4]],[b[1],b[5]],[b[0],b[5]]);});});
+      restIdx.forEach(function(k){if(boxes[k])boxes[k].forEach(function(b){
+        var ab=Array.isArray(b)?b:b.aabb;
+        foot.push([ab[0],ab[4]],[ab[1],ab[4]],[ab[1],ab[5]],[ab[0],ab[5]]);
+      });});
       var hp=hull2(foot);
       margin=1e9;
       for(i=0;i<hp.length;i++){var pa=hp[i],pb=hp[(i+1)%hp.length];
@@ -448,14 +761,14 @@ function _brickKit() {
         detail:(np?np+' part pair'+(np>1?'s':'')+' overlap':'0 overlaps')+(notChecked?' ('+notChecked+' part'+(notChecked>1?'s':'')+' not checked, no occupancy data yet)':'')},
       {id:'anchored',label:'Every part anchored',status:floating.length?'fail':'pass',
         detail:floating.length?floating.length+' part'+(floating.length>1?'s':'')+' not connected to the baseplate':'all '+n+' parts reach the baseplate'},
-      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn)?'pass':'fail',
-        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'},
+      {id:'connections',label:'Stud + pin + hinge connections',status:(studConn+pinConn+hingeConn+axleConn+clipConn)?'pass':'fail',
+        detail:studConn+' stud + '+pinConn+' pin + '+hingeConn+' hinge'+(axleConn?' + '+axleConn+' axle':'')+(clipConn?' + '+clipConn+' clip':'')},
       {id:'balance',label:'Centre of mass over footprint',status:balance==='none'?'fail':balance,
         detail:balance==='none'?'no part rests on the baseplate to measure':
           '('+ (margin!==null?'margin '+Math.abs(margin).toFixed(2):'')+' studs'+(balance==='fail'?', outside footprint':'')+')'}
     ];
-    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn,
-      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,collisions:collisions,
+    return {ok:checks.every(function(c){return c.status!=='fail';}),checks:checks,connections:studConn+pinConn+hingeConn+axleConn+clipConn,
+      studConnections:studConn,pinConnections:pinConn,hingeConnections:hingeConn,axleConnections:axleConn,clipConnections:clipConn,collisions:collisions,
       overlaps:np,floating:floating,balance:balance,com:{margin:margin},parts:[],cost:0};
   }
   var SHAPES={
@@ -524,7 +837,7 @@ function _brickKit() {
       var xa=i+ox,za=k+oz;
       pushF(out,[xa,T,za,xa+1,T,za,xa+1,T,za+1,xa,T,za+1],[0,1,0],c,
         (k===z?1:0)|(i===x+w-1?2:0)|(k===z+d-1?4:0)|(i===x?8:0),a);
-      stud(out,xa+0.5,T,za+0.5,c,a);
+      if(SHOW_STUDS)stud(out,xa+0.5,T,za+0.5,c,a);
     }
   }
   var BASE='#3f9a55',MARGIN=2;
@@ -534,7 +847,7 @@ function _brickKit() {
       if(occ(x,0,z))continue;
       pushF(out,[x,PL,z,x+1,PL,z,x+1,PL,z+1,x,PL,z+1],[0,1,0],BASE,
         (z===z0?1:0)|(x===x1-1?2:0)|(z===z1-1?4:0)|(x===x0?8:0),1);
-      stud(out,x+0.5,PL,z+0.5,BASE,1);
+      if(SHOW_STUDS)stud(out,x+0.5,PL,z+0.5,BASE,1);
     }
     for(x=x0;x<x1;x++){
       pushF(out,[x,0,z1,x+1,0,z1,x+1,PL,z1,x,PL,z1],[0,0,1],BASE,4,1);
@@ -757,10 +1070,12 @@ function _brickKit() {
       function cov(x,y,z){return x>=0&&z>=0&&x<M.W&&z<M.D&&y<=M.L&&occ[(y*M.D+z)*M.W+x]===1;}
       var open=[],hidden=[];
       function add(bi,x,y,z,col,covered){(covered?hidden:open).push([bi,x+0.5,y,z+0.5,col]);}
-      for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);var ty=b.y+b.h;
-        for(z=b.z;z<b.z+b.d;z++)for(x=b.x;x<b.x+b.w;x++)add(i,x,PL+ty*BH,z,c,cov(x,ty,z));}
-      c=linRGB(BASE);
-      for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
+      if(SHOW_STUDS){
+        for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);var ty=b.y+b.h;
+          for(z=b.z;z<b.z+b.d;z++)for(x=b.x;x<b.x+b.w;x++)add(i,x,PL+ty*BH,z,c,cov(x,ty,z));}
+        c=linRGB(BASE);
+        for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
+      }
       var all=open.slice(0,STUD_CAP).concat(hidden.slice(0,Math.max(0,STUD_CAP-open.length)));
       nStud=all.length;var ss=new Float32Array(nStud*9);studOf=new Int32Array(nStud);
       all.forEach(function(s,j){studOf[j]=s[0];ss.set([s[1],s[2],s[3],0,0,0,s[4][0],s[4][1],s[4][2]],j*9);});
