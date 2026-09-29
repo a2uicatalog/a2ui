@@ -120616,6 +120616,246 @@
      "smiley"
     ]
    }
+  },
+  "77": {
+   "title": "~Technic Flex-System Hose Segment",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     16,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 3996,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "4070": {
+   "title": "Brick  1 x  1 with Headlight",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -160
+    ],
+    "max": [
+     160,
+     384,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 8759,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2555": {
+   "title": "Tile  1 x  1 with Clip",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -160
+    ],
+    "max": [
+     160,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 6681,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6091": {
+   "title": "Brick  2 x  1 x  1.333 with Curved Top",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     512,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 7076,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3820": {
+   "title": "Minifig Hand",
+   "bounds": {
+    "min": [
+     -96,
+     -122,
+     -248
+    ],
+    "max": [
+     96,
+     74,
+     208
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 18938,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "50746": {
+   "title": "=Slope Brick 31  1 x  1 x  0.667",
+   "bounds": {
+    "min": [
+     -160,
+     -250,
+     -160
+    ],
+    "max": [
+     160,
+     0,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 5895,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "99207": {
+   "title": "Bracket  1 x  2 -  2 x  2 Up",
+   "bounds": {
+    "min": [
+     -320,
+     -512,
+     -224
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 11847,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30374": {
+   "title": "Bar  4L Lightsaber Blade",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     1280,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 4260,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "756": {
+   "title": "~Hose Flexible Segment Center Section",
+   "bounds": {
+    "min": [
+     -64,
+     -80,
+     -64
+    ],
+    "max": [
+     64,
+     48,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 42156,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "4081b": {
+   "title": "Plate  1 x  1 with Clip Light Type 2",
+   "bounds": {
+    "min": [
+     -160,
+     -96,
+     -448
+    ],
+    "max": [
+     160,
+     160,
+     160
+    ]
+   },
+   "studs": 3,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 13639,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   }
  }
 }
