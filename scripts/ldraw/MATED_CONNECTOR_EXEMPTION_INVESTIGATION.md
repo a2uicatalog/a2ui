@@ -13,7 +13,8 @@
   - Added mated clip/bar pairs to `mated_pairs` (collision exemption), linked in `adj` (graph anchoring), and reported `clipConnections`.
   - Wired `clip_connectors` helper to `scripts/ldraw/parts.py` and `scripts/ldraw/bake_parts.py`, preventing clip parts from receiving bogus `bars` connectors.
   - Verified with 47 unit tests in `tests/test_brick_parts_validate.py` and JS twin test.
-- **Pending Follow-ups**: Towballs, whole-pair blind spot mitigation, and indirect-joint blindness (Technic panels) remain separate backlog items.
+- **Towball Investigation (2026-09-29, NOT LANDED)**: Two autonomous Gemini dispatches on `mated-connector-exemption-towballs` completed cleanly (real sessions, $1.33+$3.84 combined) but produced zero file changes. Direct investigation (see §6 below) found the task genuinely harder than scoped: this doc's own §4.1/§5 Phase 1 assumption of dedicated `towball.dat`/`towballsocket.dat` primitives is WRONG (no such files exist in the library) and the real ball geometry uses a generic sphere primitive with no equivalently reliable marker on the socket side. 7 of ~9 ball-side parts confirmed with real positions; 0 of 5 socket-side parts confirmed with enough confidence to ship a mating check (mating needs both ends). Parked pending a human with a real LDraw viewer, not re-dispatched blind a third time.
+- **Pending Follow-ups**: Towballs (real geometry-data gap, see §6), whole-pair blind spot mitigation, and indirect-joint blindness (Technic panels) remain separate backlog items.
 
 ---
 
@@ -378,3 +379,54 @@ In sets with $N = 2,001$ parts (such as 42145), an $N^2$ loop executes $\sim 4 \
 The 2026-09-28 pin/hole and hinge exemption was a vital first step, but its coarse whole-pair scope and two-connector limitation inherently block Technic panels, bushes, cross-blocks, and large mechanical sets.
 
 By generalising the architecture into a **socket-type-driven engine with two-tier exemption (coarse for small connectors, localized joint-zone masks for structural parts)**, over **770+ currently blocked LDraw parts** can be safely unlocked across the catalogue, enabling official sets like LEGO 42145 to achieve full physical validation without compromising spec §3 safety.
+
+---
+
+## 6. Towball Investigation Findings (2026-09-29) — real geometry, real gap, not landed
+
+Two autonomous `mated-connector-exemption-towballs` dispatches (`p7gnm`, `lzpf7`) each completed a real, substantial Gemini session (212 and 208 tool calls, up to 32M tokens, $1.33+$3.84 real spend) but produced **zero file changes** — not a test failure, not a path violation, the harness's own `git diff --cached --quiet` check found nothing to commit either time. Direct investigation into why:
+
+### 6.1 Correction to §4.1/§5 Phase 1: no dedicated towball primitives exist
+
+This doc's own earlier assumption — "Detect `towball.dat` ($r=5.1$) and `towballsocket.dat`" (§5 Phase 1, item 4) — is **wrong**. Checked directly against the real LDraw library (`scripts/ldraw/_ldraw_cache/ldraw/`): no file named `towball.dat` or `towballsocket.dat` exists anywhere in `parts/` or `p/`. Real towball geometry is authored using the **generic sphere primitive** (`8-8sphe.dat`, a full sphere; `p/` also holds fractional variants `1-8sphe.dat`/`2-8sphe.dat`/`4-8sphe.dat` used for unrelated rounded shapes like dome/corner geometry, NOT towballs specifically), referenced inline from each part's own `.dat` file with its own transform — there is no dedicated, uniquely-named marker to search for. This is a real reason the task is harder than scoped, not agent failure.
+
+### 6.2 Real curated towball parts (this project's actual catalogue, not the full 24,735-file library)
+
+Cross-referenced against `a2ui-private/spec/brick-parts/curated-parts-v1.json` (the 5,003 parts this project actually bakes) — 15 real towball-titled parts, a different and smaller list than §3.1's full-library census (`2736`, `3730`, `3613`, `14704`, `90612`, none of which are curated):
+
+| id | title | side |
+|---|---|---|
+| 15456, 2508, 3184, 3614a, 3731, 3729 (alias of 3731), 4089 | various | ball (male) |
+| 47978 | Hinge Brick w/ Two Towballs | ball (male), different geometry |
+| 30395 | Hook with Towball | ball (male), different geometry |
+| 3183a, 3183b, 3183c, 3491, 3730 | various sockets | socket (female) |
+
+### 6.3 Confirmed real ball positions (7 of 9 — safe to implement, radius 8 LDU not the assumed 5.1)
+
+Directly read from each part's own `.dat` file — each has exactly one unambiguous `8-8sphe.dat` reference; position = the primitive's translation, radius = the primitive's uniform scale factor (same formula `resolve.py`'s existing cylinder extraction already uses):
+
+```
+CURATED_TOWBALLS = {
+    "15456": [{"pos": (0.0, 4.0, -40.0), "r": 8.0}],
+    "2508":  [{"pos": (0.0, 4.0, -90.0), "r": 8.0}],
+    "3184":  [{"pos": (0.0, 4.0, -28.0), "r": 8.0}],
+    "3614a": [{"pos": (0.0, 4.0, -19.0), "r": 8.0}],
+    "3731":  [{"pos": (0.0, 4.0, -40.0), "r": 8.0}],
+    "3729":  [{"pos": (0.0, 4.0, -40.0), "r": 8.0}],  # alias of 3731 (references 3731.dat at identity transform)
+    "4089":  [{"pos": (0.0, 12.0, 20.0), "r": 8.0}],
+}
+```
+
+**Not resolved** (do not guess): `47978` ("Two Towballs") has no `8-8sphe.dat` reference in its file at all — its towball geometry must be constructed from other primitives not yet identified. `30395` ("Hook with Towball") uses `4-4cyl1sph2.dat` (a cylinder-with-hemispherical-cap combo primitive) at a different position/scale convention — a genuinely different shape from the plain-sphere ball parts above, needs its own analysis.
+
+### 6.4 Socket side — real gap, needs a human with a viewer, not more computation
+
+Only `3491` carries an explicit authoritative marker at all: `0 !HELP centre of towball at y=13` — but this gives Y only, no X/Z. Searched the rest of its geometry for a distinguishing cavity primitive (checked all `sphe`/`cyl`/`ndis`/`rn` primitive references) and found none that isolates the socket cavity from the plate's other ordinary features (studs, anti-stud holes). The other four sockets (`3183a`/`3183b`/`3183c`/`3730`) have no `!HELP` comment and no isolable cavity marker at all in their raw primitive references.
+
+Escalated to a more rigorous technique before giving up: resolved `3730`'s full triangle mesh via `resolve_part()` (not just grepping primitive lines) and looked for the protruding socket-housing region (`z < -20`, beyond the part's normal 2×2 footprint) — bounds `x:[-13,13] y:[-7.8,14.8] z:[-37.5,-21]`, bounding-box centroid `(0, 3.5, -29.25)`. This is a **plausible estimate, not a verified position** — a bounding-box centroid of an asymmetric concave housing is not reliably the actual cavity center a ball seats into. Did not ship this as curated data.
+
+**What would actually resolve this**: either (a) open the real part in an LDraw viewer (e.g. LDView, or the official ldraw.org part-preview render) and read off the true cavity center by eye, or (b) a proper least-squares sphere fit to the concave triangle cluster's vertices (fit the sphere whose surface the cavity triangles' face normals converge toward) — a real, self-contained sub-task, not attempted here given the time already spent on this one Wave-1 item.
+
+### 6.5 Recommendation for whoever picks this up next
+
+Ship the ball side alone first if useful on its own (e.g. for future rendering/visualization work that only needs ball *positions*, not a mating check) — but the actual **mating exemption** (this task's real goal) needs both ends, so it stays blocked until at least one more socket position is genuinely verified. Do not re-dispatch this scoped exactly as before; the real blocker is missing/ambiguous source data, not agent capability — a third autonomous attempt would very likely fail the same way for the same reason.
