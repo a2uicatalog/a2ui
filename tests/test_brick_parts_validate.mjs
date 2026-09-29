@@ -87,3 +87,57 @@ if (rClip.clipConnections !== 1 || rClip.overlaps !== 0 || rClip.collisions.leng
 }
 console.log("  ✓ clip_around_bar_mating_and_exemption");
 
+// Continuous (non-preset) rotation OBB/SAT cross-check (2026-09-29) -- the JS twin of the Python OBB/SAT core
+// (rot_ldu/_world_boxes/_boxes_overlap in renderers/brick_parts_validate.py). Same real matrices and same
+// expected outcomes as tests/test_brick_parts_validate.py's test_real_cited_matrix_hinge_no_false_collision /
+// test_rotated_boxes_deliberate_collision_detected, replayed here through the ACTUAL JS validateParts() so a
+// translation bug in rotLDU/worldBoxes/boxesOverlap's matrix branch would be caught on this side too, not just
+// trusted because the Python side passes.
+const M_HINGE_29 = [-0.868, 0.0, 0.496, 0.0, 1.0, 0.0, -0.496, 0.0, -0.868];
+const M_METRO_30 = [0.866, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866];
+const M_METRO_60 = [0.5, 0.0, 0.866, 0.0, 1.0, 0.0, -0.866, 0.0, 0.5];
+const M_METRO_150 = [-0.866, 0.0, 0.5, 0.0, 1.0, 0.0, -0.5, 0.0, -0.866];
+const M_PANTOGRAPH_16_5 = [1.0, 0.284, 0.0, -0.284, 1.0, 0.0, 0.0, 0.0, 1.0];
+const M_TECHNIC_33_9 = [0.0, 0.0, -1.0, -0.558, 0.83, 0.0, 0.83, 0.558, 0.0];
+
+// Real 2429/2430 mated hinge at ~29.7 degrees (8880-1 Super Car) -- must NOT false-collide under OBB/SAT.
+loadMesh('2429');
+loadMesh('2430');
+const rHinge = kit.validateParts([
+  {p: '2429', x: 0, y: 0, z: 0, r: 0},
+  {p: '2430', x: 0, y: 0, z: 0, r: M_HINGE_29}
+]);
+if (rHinge.overlaps !== 0 || rHinge.collisions.some(c => c[0] === 0 && c[1] === 1)) {
+  console.error("Real hinge matrix (M_HINGE_29) false-collision test failed:", rHinge);
+  process.exit(1);
+}
+console.log("  ✓ continuous_rotation_real_hinge_no_false_collision");
+
+// Deliberate overlap under the SAME M_HINGE_29 matrix (offset into collision range) -- must BE detected, not
+// silently missed by the matrix branch.
+const rHingeColl = kit.validateParts([
+  {p: '2429', x: 0, y: 0, z: 0, r: 0},
+  {p: '2430', x: -6.28, y: 0, z: 23.64, r: M_HINGE_29}
+]);
+if (rHingeColl.overlaps < 1 || !rHingeColl.collisions.some(c => c[0] === 0 && c[1] === 1)) {
+  console.error("Deliberate rotated-box collision test failed:", rHingeColl);
+  process.exit(1);
+}
+console.log("  ✓ continuous_rotation_deliberate_collision_detected");
+
+// Metroliner (10001-1) cab matrices + Technic 33.9deg diagonal brace (8880-1) -- a second instance of the
+// same part, offset and rotated by each matrix, must not false-collide with the un-rotated instance.
+loadMesh('3023');
+for (const [name, m] of [['metro_30', M_METRO_30], ['metro_60', M_METRO_60], ['metro_150', M_METRO_150],
+                          ['pantograph_16_5', M_PANTOGRAPH_16_5], ['technic_33_9', M_TECHNIC_33_9]]) {
+  const r = kit.validateParts([
+    {p: '3023', x: 0, y: 0, z: 0, r: 0},
+    {p: '3023', x: 50, y: 0, z: 50, r: m}
+  ]);
+  if (r.overlaps !== 0 || r.collisions.some(c => c[0] === 0 && c[1] === 1)) {
+    console.error("Real matrix (" + name + ") false-collision test failed:", r);
+    process.exit(1);
+  }
+  console.log("  ✓ continuous_rotation_" + name + "_no_false_collision");
+}
+

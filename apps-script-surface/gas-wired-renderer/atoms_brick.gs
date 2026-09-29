@@ -103,7 +103,9 @@ function _brickKit() {
   // in real LDU world coordinates (the payload's own x,y,z units, spec/brick-parts-v0.1.md §1), unlike partTp's
   // render-space transform. PART_ROT's 24 matrices are signed permutations, so this exactly preserves axis
   // alignment (spec §3's "collision is an exact box-overlap test" depends on that).
-  function rotLDU(r,p){var Rm=PART_ROT[r];return [Rm[0]*p[0]+Rm[1]*p[1]+Rm[2]*p[2],Rm[3]*p[0]+Rm[4]*p[1]+Rm[5]*p[2],Rm[6]*p[0]+Rm[7]*p[1]+Rm[8]*p[2]];}
+  // Twin of Python's rot_ldu: r is either a 0-23 PART_ROT index (int) or a general 9-entry row-major 3x3 matrix
+  // (Array) -- continuous/non-preset rotations, e.g. from the OBB/SAT-validated OMR import path.
+  function rotLDU(r,p){var Rm=Array.isArray(r)?r:PART_ROT[r];return [Rm[0]*p[0]+Rm[1]*p[1]+Rm[2]*p[2],Rm[3]*p[0]+Rm[4]*p[1]+Rm[5]*p[2],Rm[6]*p[0]+Rm[7]*p[1]+Rm[8]*p[2]];}
 
   var shadeCache={};
   function shade(hex,q){
@@ -263,19 +265,76 @@ function _brickKit() {
       return {pos:[wp[0]+ex,wp[1]+ey,wp[2]+ez],dir:wd};
     });
   }
+  // Twin of Python's _world_boxes: plain 6-tuple AABBs (Array) for the legacy int-index rotation path, OBB
+  // objects ({center,extents,axes,aabb}) for a general matrix rotation -- see boxesOverlap for the SAT this
+  // enables. axes are world-space unit vectors of the box's local x/y/z, derived from the rotation matrix's rows.
   function worldBoxes(mesh,r,ex,ey,ez){
     if(!mesh.occupancy)return null;
+    if(!Array.isArray(r)){
+      return mesh.occupancy.map(function(b){
+        var c0=rotLDU(r,[b[0],b[2],b[4]]),c1=rotLDU(r,[b[1],b[3],b[5]]);
+        return [Math.min(c0[0],c1[0])+ex,Math.max(c0[0],c1[0])+ex,
+                Math.min(c0[1],c1[1])+ey,Math.max(c0[1],c1[1])+ey,
+                Math.min(c0[2],c1[2])+ez,Math.max(c0[2],c1[2])+ez];
+      });
+    }
+    var u0=[r[0],r[3],r[6]],u1=[r[1],r[4],r[7]],u2=[r[2],r[5],r[8]];
     return mesh.occupancy.map(function(b){
-      var c0=rotLDU(r,[b[0],b[2],b[4]]),c1=rotLDU(r,[b[1],b[3],b[5]]);
-      return [Math.min(c0[0],c1[0])+ex,Math.max(c0[0],c1[0])+ex,
-              Math.min(c0[1],c1[1])+ey,Math.max(c0[1],c1[1])+ey,
-              Math.min(c0[2],c1[2])+ez,Math.max(c0[2],c1[2])+ez];
+      var cloc=[(b[0]+b[1])*0.5,(b[2]+b[3])*0.5,(b[4]+b[5])*0.5];
+      var e=[Math.abs(b[1]-b[0])*0.5,Math.abs(b[3]-b[2])*0.5,Math.abs(b[5]-b[4])*0.5];
+      var crot=rotLDU(r,cloc),cw=[crot[0]+ex,crot[1]+ey,crot[2]+ez];
+      var rx=e[0]*Math.abs(u0[0])+e[1]*Math.abs(u1[0])+e[2]*Math.abs(u2[0]);
+      var ry=e[0]*Math.abs(u0[1])+e[1]*Math.abs(u1[1])+e[2]*Math.abs(u2[1]);
+      var rz=e[0]*Math.abs(u0[2])+e[1]*Math.abs(u1[2])+e[2]*Math.abs(u2[2]);
+      return {center:cw,extents:e,axes:[u0,u1,u2],
+              aabb:[cw[0]-rx,cw[0]+rx,cw[1]-ry,cw[1]+ry,cw[2]-rz,cw[2]+rz]};
     });
   }
+  // Twin of Python's _boxes_overlap: fast 6-tuple interval check when both boxes are plain AABBs (Array), full
+  // 15-axis SAT (3+3 face normals + 9 edge cross-products) when either is an OBB object -- a plain AABB is
+  // synthesised into an axis-aligned OBB wrapper so the same SAT loop handles OBB-vs-AABB and OBB-vs-OBB alike.
   function boxesOverlap(a,b){
-    var ox=Math.min(a[1],b[1])-Math.max(a[0],b[0]),oy=Math.min(a[3],b[3])-Math.max(a[2],b[2]),
-        oz=Math.min(a[5],b[5])-Math.max(a[4],b[4]);
-    return ox>0.5&&oy>0.5&&oz>0.5;
+    if(Array.isArray(a)&&Array.isArray(b)){
+      var ox=Math.min(a[1],b[1])-Math.max(a[0],b[0]),oy=Math.min(a[3],b[3])-Math.max(a[2],b[2]),
+          oz=Math.min(a[5],b[5])-Math.max(a[4],b[4]);
+      return ox>0.5&&oy>0.5&&oz>0.5;
+    }
+    var oa=Array.isArray(a)?{center:[(a[0]+a[1])*0.5,(a[2]+a[3])*0.5,(a[4]+a[5])*0.5],
+        extents:[Math.abs(a[1]-a[0])*0.5,Math.abs(a[3]-a[2])*0.5,Math.abs(a[5]-a[4])*0.5],
+        axes:[[1,0,0],[0,1,0],[0,0,1]]}:a;
+    var ob=Array.isArray(b)?{center:[(b[0]+b[1])*0.5,(b[2]+b[3])*0.5,(b[4]+b[5])*0.5],
+        extents:[Math.abs(b[1]-b[0])*0.5,Math.abs(b[3]-b[2])*0.5,Math.abs(b[5]-b[4])*0.5],
+        axes:[[1,0,0],[0,1,0],[0,0,1]]}:b;
+    var ca=oa.center,ea=oa.extents,ua=oa.axes,cb=ob.center,eb=ob.extents,ub=ob.axes;
+    var dx=cb[0]-ca[0],dy=cb[1]-ca[1],dz=cb[2]-ca[2];
+    var axes=[
+      ua[0],ua[1],ua[2],
+      ub[0],ub[1],ub[2],
+      [ua[0][1]*ub[0][2]-ua[0][2]*ub[0][1],ua[0][2]*ub[0][0]-ua[0][0]*ub[0][2],ua[0][0]*ub[0][1]-ua[0][1]*ub[0][0]],
+      [ua[0][1]*ub[1][2]-ua[0][2]*ub[1][1],ua[0][2]*ub[1][0]-ua[0][0]*ub[1][2],ua[0][0]*ub[1][1]-ua[0][1]*ub[1][0]],
+      [ua[0][1]*ub[2][2]-ua[0][2]*ub[2][1],ua[0][2]*ub[2][0]-ua[0][0]*ub[2][2],ua[0][0]*ub[2][1]-ua[0][1]*ub[2][0]],
+      [ua[1][1]*ub[0][2]-ua[1][2]*ub[0][1],ua[1][2]*ub[0][0]-ua[1][0]*ub[0][2],ua[1][0]*ub[0][1]-ua[1][1]*ub[0][0]],
+      [ua[1][1]*ub[1][2]-ua[1][2]*ub[1][1],ua[1][2]*ub[1][0]-ua[1][0]*ub[1][2],ua[1][0]*ub[1][1]-ua[1][1]*ub[1][0]],
+      [ua[1][1]*ub[2][2]-ua[1][2]*ub[2][1],ua[1][2]*ub[2][0]-ua[1][0]*ub[2][2],ua[1][0]*ub[2][1]-ua[1][1]*ub[2][0]],
+      [ua[2][1]*ub[0][2]-ua[2][2]*ub[0][1],ua[2][2]*ub[0][0]-ua[2][0]*ub[0][2],ua[2][0]*ub[0][1]-ua[2][1]*ub[0][0]],
+      [ua[2][1]*ub[1][2]-ua[2][2]*ub[1][1],ua[2][2]*ub[1][0]-ua[2][0]*ub[1][2],ua[2][0]*ub[1][1]-ua[2][1]*ub[1][0]],
+      [ua[2][1]*ub[2][2]-ua[2][2]*ub[2][1],ua[2][2]*ub[2][0]-ua[2][0]*ub[2][2],ua[2][0]*ub[2][1]-ua[2][1]*ub[2][0]]
+    ];
+    for(var ai=0;ai<axes.length;ai++){
+      var lx=axes[ai][0],ly=axes[ai][1],lz=axes[ai][2];
+      var l2=lx*lx+ly*ly+lz*lz;
+      if(l2<1e-9)continue;
+      var normL=Math.sqrt(l2);
+      var dist=Math.abs(dx*lx+dy*ly+dz*lz);
+      var ra=ea[0]*Math.abs(ua[0][0]*lx+ua[0][1]*ly+ua[0][2]*lz)+
+              ea[1]*Math.abs(ua[1][0]*lx+ua[1][1]*ly+ua[1][2]*lz)+
+              ea[2]*Math.abs(ua[2][0]*lx+ua[2][1]*ly+ua[2][2]*lz);
+      var rb=eb[0]*Math.abs(ub[0][0]*lx+ub[0][1]*ly+ub[0][2]*lz)+
+              eb[1]*Math.abs(ub[1][0]*lx+ub[1][1]*ly+ub[1][2]*lz)+
+              eb[2]*Math.abs(ub[2][0]*lx+ub[2][1]*ly+ub[2][2]*lz);
+      if((ra+rb)-dist<=0.5*normL)return false;
+    }
+    return true;
   }
   function onGrid(v){var m=((v-10)%20+20)%20;return m<0.5||m>19.5;}
   function dot3(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
@@ -635,15 +694,20 @@ function _brickKit() {
     var collisions=[];
     for(i=0;i<n;i++){
       if(!boxes[i])continue;
-      for(var bi=0;bi<boxes[i].length;bi++)if(boxes[i][bi][3]>0.5){collisions.push([-1,i]);break;}
+      for(var bi=0;bi<boxes[i].length;bi++){
+        var bx=boxes[i][bi],yMax=Array.isArray(bx)?bx[3]:bx.aabb[3];
+        if(yMax>0.5){collisions.push([-1,i]);break;}
+      }
     }
     // Part-vs-part boxes: coarse 80-LDU grid over each part's overall AABB, test only parts sharing a cell (all-pairs
     // was O(n^2) box-list scans); pairs are deduped and emitted in the same (i asc, j asc) order as before.
+    // Grid bucketing always uses each box's aabb (an OBB object's world-aligned bounding aabb, same shape as a
+    // plain AABB) -- the broadphase only needs to be conservative, the SAT in boxesOverlap does the real test.
     var grid={},pairSeen={},pairs=[];
     for(i=0;i<n;i++){
       if(!boxes[i])continue;
       var lo=[1e9,1e9,1e9],hi=[-1e9,-1e9,-1e9];
-      boxes[i].forEach(function(b){for(var ax=0;ax<3;ax++){lo[ax]=Math.min(lo[ax],b[ax*2]);hi[ax]=Math.max(hi[ax],b[ax*2+1]);}});
+      boxes[i].forEach(function(b){var ab=Array.isArray(b)?b:b.aabb;for(var ax=0;ax<3;ax++){lo[ax]=Math.min(lo[ax],ab[ax*2]);hi[ax]=Math.max(hi[ax],ab[ax*2+1]);}});
       for(var gx=Math.floor(lo[0]/80);gx<=Math.floor(hi[0]/80);gx++)for(var gy=Math.floor(lo[1]/80);gy<=Math.floor(hi[1]/80);gy++)
         for(var gz=Math.floor(lo[2]/80);gz<=Math.floor(hi[2]/80);gz++){
           var gk=gx+','+gy+','+gz,cellp=grid[gk]=grid[gk]||[];
@@ -662,11 +726,19 @@ function _brickKit() {
     if(restIdx.length){
       var m2=0,cx=0,cz=0,foot=[];
       for(i=0;i<n;i++)if(boxes[i])boxes[i].forEach(function(b){
-        var vol=(b[1]-b[0])*(b[3]-b[2])*(b[5]-b[4]),cxb=(b[0]+b[1])/2,czb=(b[4]+b[5])/2;
-        m2+=vol;cx+=cxb*vol;cz+=czb*vol;
+        if(Array.isArray(b)){
+          var vol=(b[1]-b[0])*(b[3]-b[2])*(b[5]-b[4]),cxb=(b[0]+b[1])/2,czb=(b[4]+b[5])/2;
+          m2+=vol;cx+=cxb*vol;cz+=czb*vol;
+        }else{
+          var e=b.extents,vol2=8.0*e[0]*e[1]*e[2];
+          m2+=vol2;cx+=b.center[0]*vol2;cz+=b.center[2]*vol2;
+        }
       });
       cx/=m2;cz/=m2;
-      restIdx.forEach(function(k){if(boxes[k])boxes[k].forEach(function(b){foot.push([b[0],b[4]],[b[1],b[4]],[b[1],b[5]],[b[0],b[5]]);});});
+      restIdx.forEach(function(k){if(boxes[k])boxes[k].forEach(function(b){
+        var ab=Array.isArray(b)?b:b.aabb;
+        foot.push([ab[0],ab[4]],[ab[1],ab[4]],[ab[1],ab[5]],[ab[0],ab[5]]);
+      });});
       var hp=hull2(foot);
       margin=1e9;
       for(i=0;i<hp.length;i++){var pa=hp[i],pb=hp[(i+1)%hp.length];
