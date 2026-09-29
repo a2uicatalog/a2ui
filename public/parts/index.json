@@ -127864,6 +127864,4806 @@
    "needs_occupancy": false,
    "bytes": 80094,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2518": {
+   "title": "Plant Tree Palm Leaf Large",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -720
+    ],
+    "max": [
+     2816,
+     693,
+     720
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 98538,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2441": {
+   "title": "Car Base  7 x  4 x  0.667",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -1120
+    ],
+    "max": [
+     640,
+     256,
+     1120
+    ]
+   },
+   "studs": 20,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 137238,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6093a": {
+   "title": "Minifig Hair Ponytail",
+   "bounds": {
+    "min": [
+     -253,
+     -218,
+     -236
+    ],
+    "max": [
+     251,
+     421,
+     408
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 167449,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4006": {
+   "title": "Minifig Tool Spanner/Screwdriver",
+   "bounds": {
+    "min": [
+     -64,
+     -478,
+     -145
+    ],
+    "max": [
+     64,
+     680,
+     141
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 24253,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30258": {
+   "title": "Roadsign Clip-on  2 x  2 Square",
+   "bounds": {
+    "min": [
+     -320,
+     -320,
+     -144
+    ],
+    "max": [
+     320,
+     320,
+     63
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 8055,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30256": {
+   "title": "Tile  2 x  2 Roadsign Base",
+   "bounds": {
+    "min": [
+     -320,
+     -1800,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16153,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6140": {
+   "title": "Bar  1 x  6 with Studs Closed",
+   "bounds": {
+    "min": [
+     -928,
+     0,
+     -128
+    ],
+    "max": [
+     928,
+     384,
+     128
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 108449,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6538b": {
+   "title": "Technic Axle Joiner Offset",
+   "bounds": {
+    "min": [
+     -148,
+     -148,
+     -320
+    ],
+    "max": [
+     148,
+     148,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 44833,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6087": {
+   "title": "Bracket  5 x  2 x  2.333 with Inside Rib",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -800
+    ],
+    "max": [
+     320,
+     896,
+     800
+    ]
+   },
+   "studs": 10,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 39605,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4857": {
+   "title": "Slope Brick 45  4 x  4 Double with Hinge",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     384,
+     640
+    ]
+   },
+   "studs": 8,
+   "sockets": 5,
+   "holes": 0,
+   "pins": 0,
+   "bars": 5,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 77389,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "76260": {
+   "title": "Technic Flex-System Hose  8L (160LDU)",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     2560,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16269,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2587": {
+   "title": "Minifig Armour Plate",
+   "bounds": {
+    "min": [
+     -340,
+     -64,
+     -360
+    ],
+    "max": [
+     340,
+     534,
+     224
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 66638,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3835": {
+   "title": "Minifig Tool Handaxe",
+   "bounds": {
+    "min": [
+     -64,
+     -448,
+     -272
+    ],
+    "max": [
+     64,
+     544,
+     112
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 15576,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "41854": {
+   "title": "Car Mudguard  2 x  4 Swept Back",
+   "bounds": {
+    "min": [
+     -640,
+     -256,
+     -320
+    ],
+    "max": [
+     640,
+     128,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 19587,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32056": {
+   "title": "Technic Beam  3 x  3 x  0.5 Liftarm Bent 90",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -144
+    ],
+    "max": [
+     784,
+     80,
+     784
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 92576,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30292a": {
+   "title": "Flag  8 x  3 with Rod with Reinforced Base",
+   "bounds": {
+    "min": [
+     -96,
+     -480,
+     -96
+    ],
+    "max": [
+     96,
+     480,
+     2400
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 121463,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "60598": {
+   "title": "Window  2 x  4 x  3 with Square Holes",
+   "bounds": {
+    "min": [
+     -640,
+     -64,
+     -320
+    ],
+    "max": [
+     640,
+     1152,
+     320
+    ]
+   },
+   "studs": 6,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 47575,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3815c01": {
+   "title": "~Minifig Hips and Legs (Obsolete)",
+   "bounds": {
+    "min": [
+     -312,
+     -176,
+     -176
+    ],
+    "max": [
+     312,
+     640,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 72538,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60614": {
+   "title": "Door  1 x  2 x  3 with Holes in Handle",
+   "bounds": {
+    "min": [
+     -64,
+     -16,
+     -112
+    ],
+    "max": [
+     512,
+     976,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 53609,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "44309": {
+   "title": "Tyre 22/ 30 x 30 ZR",
+   "bounds": {
+    "min": [
+     -864,
+     -864,
+     -432
+    ],
+    "max": [
+     864,
+     864,
+     432
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 354361,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30132": {
+   "title": "Minifig Gun Revolver",
+   "bounds": {
+    "min": [
+     -96,
+     -441,
+     -410
+    ],
+    "max": [
+     96,
+     96,
+     87
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 38657,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15413": {
+   "title": "Tyre 20/ 48 x 30",
+   "bounds": {
+    "min": [
+     -989,
+     -984,
+     -404
+    ],
+    "max": [
+     989,
+     991,
+     404
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 538398,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "19119": {
+   "title": "Plant Flower Stem with Bar and  6 Stems",
+   "bounds": {
+    "min": [
+     -328,
+     -525,
+     -435
+    ],
+    "max": [
+     498,
+     160,
+     435
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 130118,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "752": {
+   "title": "Hose Flexible End  1 x  1 x  0.667 without Tabs",
+   "bounds": {
+    "min": [
+     -128,
+     0,
+     -128
+    ],
+    "max": [
+     128,
+     288,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 21255,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "57585": {
+   "title": "Technic Bush with Three Axles",
+   "bounds": {
+    "min": [
+     -443,
+     -160,
+     -304
+    ],
+    "max": [
+     443,
+     160,
+     472
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 58922,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3228c": {
+   "title": "Train Track Rail Straight",
+   "bounds": {
+    "min": [
+     -2560,
+     0,
+     -160
+    ],
+    "max": [
+     2560,
+     256,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 114096,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4211": {
+   "title": "Car Base  4 x  5",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     256,
+     960
+    ]
+   },
+   "studs": 16,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 60257,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30027a": {
+   "title": "Wheel Rim  8 x  8 Round Hole, for Wheel Holding Pin",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -160
+    ],
+    "max": [
+     160,
+     160,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 48085,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30028": {
+   "title": "~Moved to 30028b",
+   "bounds": {
+    "min": [
+     -80,
+     -288,
+     -288
+    ],
+    "max": [
+     240,
+     288,
+     288
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 46736,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2346": {
+   "title": "Tyre 12/ 50 x 16 Offset Tread",
+   "bounds": {
+    "min": [
+     -560,
+     -560,
+     -320
+    ],
+    "max": [
+     560,
+     560,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 47045,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "8": {
+   "title": "Plate  2 x  2 with 2 Wheel Clips Perpendicular",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     416,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 20401,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3651": {
+   "title": "Technic Connector (Pin/Bush) with 2 Studs",
+   "bounds": {
+    "min": [
+     -160,
+     -224,
+     -464
+    ],
+    "max": [
+     160,
+     224,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 67138,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6218": {
+   "title": "=Cylinder  2 x  4 x  4",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     1536,
+     0
+    ]
+   },
+   "studs": 6,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 53241,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3300": {
+   "title": "Slope Brick 33  2 x  2 Double",
+   "bounds": {
+    "min": [
+     -320,
+     160,
+     -320
+    ],
+    "max": [
+     320,
+     384,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 15890,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6020": {
+   "title": "Bar  7 x  3 with Double Clips",
+   "bounds": {
+    "min": [
+     -480,
+     -128,
+     -64
+    ],
+    "max": [
+     480,
+     128,
+     2304
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 58429,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3853": {
+   "title": "Window  1 x  4 x  3",
+   "bounds": {
+    "min": [
+     -704,
+     -64,
+     -256
+    ],
+    "max": [
+     704,
+     1152,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 132979,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2348b": {
+   "title": "Glass for Hinge Car Roof  4 x  4 Sunroof with Ridges",
+   "bounds": {
+    "min": [
+     -480,
+     -64,
+     -64
+    ],
+    "max": [
+     480,
+     64,
+     592
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 40048,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3962b": {
+   "title": "Minifig Radio with Long Handle",
+   "bounds": {
+    "min": [
+     -384,
+     -880,
+     -64
+    ],
+    "max": [
+     64,
+     288,
+     64
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 149540,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4174735a": {
+   "title": "Sticker  2.8 x  2.8 Round Train Fan",
+   "bounds": {
+    "min": [
+     -436,
+     -4,
+     -436
+    ],
+    "max": [
+     436,
+     0,
+     436
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 36077,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2865": {
+   "title": "~Moved to 74746",
+   "bounds": {
+    "min": [
+     -2704,
+     -256,
+     -1280
+    ],
+    "max": [
+     2704,
+     128,
+     1280
+    ]
+   },
+   "studs": 48,
+   "sockets": 21,
+   "holes": 0,
+   "pins": 0,
+   "bars": 4,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 397847,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30552": {
+   "title": "Hinge Arm Locking with Single Finger and Axlehole",
+   "bounds": {
+    "min": [
+     -144,
+     -144,
+     -246
+    ],
+    "max": [
+     144,
+     144,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 87643,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2466": {
+   "title": "Panel  3 x  2 x  6",
+   "bounds": {
+    "min": [
+     -320,
+     -128,
+     -800
+    ],
+    "max": [
+     320,
+     2176,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 25101,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "76279": {
+   "title": "Technic Flex-System Hose  6L (120LDU)",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     1920,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16283,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "41765": {
+   "title": "Wedge  2 x  6 Double Inverted Left",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -960
+    ],
+    "max": [
+     320,
+     384,
+     960
+    ]
+   },
+   "studs": 8,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41914,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "41764": {
+   "title": "Wedge  2 x  6 Double Inverted Right",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -960
+    ],
+    "max": [
+     320,
+     384,
+     960
+    ]
+   },
+   "studs": 8,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41427,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32198": {
+   "title": "~Moved to 32198a",
+   "bounds": {
+    "min": [
+     -416,
+     -416,
+     -112
+    ],
+    "max": [
+     416,
+     416,
+     48
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 61202,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3846": {
+   "title": "Minifig Shield Triangular",
+   "bounds": {
+    "min": [
+     -320,
+     -224,
+     -160
+    ],
+    "max": [
+     320,
+     518,
+     224
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 10288,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30153": {
+   "title": "Rock  1 x  1 Gem Facetted",
+   "bounds": {
+    "min": [
+     -160,
+     -256,
+     -160
+    ],
+    "max": [
+     160,
+     96,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 7938,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "50745": {
+   "title": "Car Mudguard  4 x  2.5 x  2",
+   "bounds": {
+    "min": [
+     -640,
+     -128,
+     -448
+    ],
+    "max": [
+     640,
+     640,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 45970,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "33183": {
+   "title": "Minifig Food Carrot Top",
+   "bounds": {
+    "min": [
+     -213,
+     -669,
+     -75
+    ],
+    "max": [
+     197,
+     0,
+     72
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 41129,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3834": {
+   "title": "Minifig Fire Helmet",
+   "bounds": {
+    "min": [
+     -256,
+     -224,
+     -320
+    ],
+    "max": [
+     256,
+     192,
+     451
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 51527,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "59426": {
+   "title": "Technic Axle  5.5 with Stop Type 2",
+   "bounds": {
+    "min": [
+     -872,
+     -128,
+     -128
+    ],
+    "max": [
+     872,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 27421,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "39739": {
+   "title": "Tile  1 x  1 Heart Shape",
+   "bounds": {
+    "min": [
+     -208,
+     0,
+     -162
+    ],
+    "max": [
+     162,
+     128,
+     208
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 11821,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "86208": {
+   "title": "Minifig Torch without Grooves",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -320
+    ],
+    "max": [
+     160,
+     320,
+     416
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 33312,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "18853": {
+   "title": "Plant Flower with  5 Pointed Petals with Pin",
+   "bounds": {
+    "min": [
+     -194,
+     -109,
+     -165
+    ],
+    "max": [
+     194,
+     80,
+     204
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 45053,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "68211": {
+   "title": "Bar  1 L with Three Prongs",
+   "bounds": {
+    "min": [
+     -168,
+     -425,
+     -161
+    ],
+    "max": [
+     107,
+     64,
+     158
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 87733,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "47753": {
+   "title": "Wedge  4 x  4 Triple Curved without Studs",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     384,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 73452,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2341": {
+   "title": "Slope Brick 45  3 x  1 Inverted Double without Inner Stopper Rings",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     384,
+     480
+    ]
+   },
+   "studs": 3,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 18692,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2493b": {
+   "title": "Window  1 x  4 x  5 with Hollow Studs",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     1920,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 30588,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2494": {
+   "title": "Glass for Window  1 x  4 x  5",
+   "bounds": {
+    "min": [
+     -576,
+     48,
+     -96
+    ],
+    "max": [
+     576,
+     1808,
+     -32
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 38821,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4447": {
+   "title": "Window  4 x  4 x  3 Roof",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -1120
+    ],
+    "max": [
+     640,
+     1152,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 28930,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4448": {
+   "title": "Glass for Window  4 x  4 x  3 Roof",
+   "bounds": {
+    "min": [
+     -592,
+     64,
+     -960
+    ],
+    "max": [
+     592,
+     1024,
+     -120
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 25662,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4715": {
+   "title": "Stretcher Wheels",
+   "bounds": {
+    "min": [
+     -320,
+     -64,
+     -96
+    ],
+    "max": [
+     320,
+     320,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 47045,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3787": {
+   "title": "Car Mudguard  2 x  4 without Studs",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     256,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 13302,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2340": {
+   "title": "Tail  4 x  1 x  3",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -1280
+    ],
+    "max": [
+     160,
+     1152,
+     320
+    ]
+   },
+   "studs": 2,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16537,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p64": {
+   "title": "Minifig Torso with Unitron Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41965,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15571": {
+   "title": "Slope Brick 45  1 x  2 Triple with Bottom Stud Holder",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 6762,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4529": {
+   "title": "Minifig Saucepan",
+   "bounds": {
+    "min": [
+     -208,
+     0,
+     -208
+    ],
+    "max": [
+     208,
+     384,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 22112,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p71": {
+   "title": "Minifig Torso with Red Necklace and Blue Undershirt Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 83451,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2571": {
+   "title": "Panel  3 x  4 x  6 with Curved Top",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -800
+    ],
+    "max": [
+     640,
+     2304,
+     160
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 44333,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2439": {
+   "title": "Container  2 x  2 Rubbish Bin",
+   "bounds": {
+    "min": [
+     -512,
+     -32,
+     -312
+    ],
+    "max": [
+     512,
+     768,
+     312
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 63290,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "44822": {
+   "title": "Hinge Tile  1 x  4 Locking with 2 Single Fingers on Top",
+   "bounds": {
+    "min": [
+     -640,
+     -182,
+     -160
+    ],
+    "max": [
+     640,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 99583,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "3855b": {
+   "title": "Glass for Window  1 x  4 x  3 without Handle",
+   "bounds": {
+    "min": [
+     -600,
+     -480,
+     -32
+    ],
+    "max": [
+     600,
+     480,
+     32
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 19353,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4746": {
+   "title": "Tail  4 x  2 x  2 with Rocket",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -960
+    ],
+    "max": [
+     320,
+     768,
+     640
+    ]
+   },
+   "studs": 7,
+   "sockets": 7,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 110574,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4856": {
+   "title": "Wedge  6 x  4 Inverted",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -800
+    ],
+    "max": [
+     640,
+     384,
+     1120
+    ]
+   },
+   "studs": 18,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 144665,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4868a": {
+   "title": "Plane Jet Engine with Plate  1 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     -416,
+     -960
+    ],
+    "max": [
+     320,
+     320,
+     640
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 33661,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4869": {
+   "title": "Plane Jet Engine Centre",
+   "bounds": {
+    "min": [
+     -245,
+     -245,
+     -896
+    ],
+    "max": [
+     245,
+     245,
+     248
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 30311,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3849": {
+   "title": "Minifig Lance",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -2400
+    ],
+    "max": [
+     160,
+     256,
+     416
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 25438,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3844": {
+   "title": "Minifig Helmet Castle with Neck Protector",
+   "bounds": {
+    "min": [
+     -336,
+     -272,
+     -256
+    ],
+    "max": [
+     336,
+     368,
+     336
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 55053,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2570": {
+   "title": "Minifig Crossbow",
+   "bounds": {
+    "min": [
+     -482,
+     -272,
+     -688
+    ],
+    "max": [
+     482,
+     128,
+     384
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 235340,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30274": {
+   "title": "Brick  2 x  3 x  3 with Lion's Head Carving and Cutout",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -480
+    ],
+    "max": [
+     320,
+     1152,
+     480
+    ]
+   },
+   "studs": 6,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 130831,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2546": {
+   "title": "Animal Bird Parrot",
+   "bounds": {
+    "min": [
+     -188,
+     -796,
+     -219
+    ],
+    "max": [
+     188,
+     384,
+     234
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 51738,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "33051": {
+   "title": "Minifig Food Apple",
+   "bounds": {
+    "min": [
+     -388,
+     -685,
+     -206
+    ],
+    "max": [
+     206,
+     -2,
+     206
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 92529,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "33125": {
+   "title": "Minifig Food Croissant with Rounded Ends",
+   "bounds": {
+    "min": [
+     -313,
+     -287,
+     -396
+    ],
+    "max": [
+     155,
+     0,
+     396
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 119876,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30126": {
+   "title": "Minifig Feathers with Pin",
+   "bounds": {
+    "min": [
+     -241,
+     -577,
+     -64
+    ],
+    "max": [
+     241,
+     96,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 39450,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4159998c": {
+   "title": "Sticker  2.2 x  1.8 with Silver Frame and Rivets on Black Background",
+   "bounds": {
+    "min": [
+     -288,
+     -4,
+     -352
+    ],
+    "max": [
+     288,
+     0,
+     352
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 38942,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6590": {
+   "title": "=Technic Bush with Two Flanges",
+   "bounds": {
+    "min": [
+     -144,
+     -144,
+     -160
+    ],
+    "max": [
+     144,
+     144,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 34370,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32017": {
+   "title": "Technic Beam  5 x  0.5",
+   "bounds": {
+    "min": [
+     -144,
+     -80,
+     -784
+    ],
+    "max": [
+     144,
+     80,
+     784
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 10,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 137016,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "85489b": {
+   "title": "Train Wheel Large with Axlehole and Pinhole without Flange",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -160
+    ],
+    "max": [
+     608,
+     608,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 112926,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64647": {
+   "title": "Minifig Plume/Flame Triple",
+   "bounds": {
+    "min": [
+     -64,
+     -470,
+     -101
+    ],
+    "max": [
+     64,
+     96,
+     456
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 56675,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32271": {
+   "title": "Technic Beam  3 x  7 Liftarm Bent 53.13",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     655,
+     160,
+     2447
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 14,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 245554,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "62810": {
+   "title": "Minifig Hair Short, Tousled with Side Parting",
+   "bounds": {
+    "min": [
+     -236,
+     -140,
+     -273
+    ],
+    "max": [
+     234,
+     276,
+     260
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 95751,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4254": {
+   "title": "~Technic Shock Absorber  6.5L Piston Rod",
+   "bounds": {
+    "min": [
+     -160,
+     -1280,
+     -160
+    ],
+    "max": [
+     160,
+     160,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 41045,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "4255": {
+   "title": "~Technic Shock Absorber  6.5L Cylinder",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -160
+    ],
+    "max": [
+     160,
+     928,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41729,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "60603": {
+   "title": "=Glass for Window  1 x  4 x  3 Opening",
+   "bounds": {
+    "min": [
+     -592,
+     -64,
+     -64
+    ],
+    "max": [
+     592,
+     896,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 30944,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "99021": {
+   "title": "Technic Pneumatic Hose Connector with Bush",
+   "bounds": {
+    "min": [
+     -320,
+     -416,
+     -160
+    ],
+    "max": [
+     320,
+     144,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 55266,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "16577": {
+   "title": "Arch  1 x  8 x  2 Raised",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -160
+    ],
+    "max": [
+     1280,
+     768,
+     160
+    ]
+   },
+   "studs": 8,
+   "sockets": 5,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 14709,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "15462": {
+   "title": "Technic Axle  5 with Stop",
+   "bounds": {
+    "min": [
+     -792,
+     -128,
+     -128
+    ],
+    "max": [
+     800,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 13648,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "44661": {
+   "title": "Tail  2 x  3 x  2 Fin",
+   "bounds": {
+    "min": [
+     -320,
+     -640,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     768
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 7186,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "87082": {
+   "title": "Technic Pin Long with Pin Hole Type 1",
+   "bounds": {
+    "min": [
+     -480,
+     -160,
+     -144
+    ],
+    "max": [
+     480,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 2,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 93015,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "11272": {
+   "title": "Technic Axle Connector  2 x  3 Quadruple",
+   "bounds": {
+    "min": [
+     -464,
+     -144,
+     -320
+    ],
+    "max": [
+     464,
+     144,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 150957,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "4716": {
+   "title": "Technic Worm Gear 2L",
+   "bounds": {
+    "min": [
+     -203,
+     -203,
+     -320
+    ],
+    "max": [
+     203,
+     203,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 76563,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "24316": {
+   "title": "Technic Axle  3 with Stop",
+   "bounds": {
+    "min": [
+     -472,
+     -128,
+     -128
+    ],
+    "max": [
+     480,
+     128,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 13656,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "90370": {
+   "title": "Minifig Microphone",
+   "bounds": {
+    "min": [
+     -112,
+     -205,
+     -112
+    ],
+    "max": [
+     112,
+     288,
+     112
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 32791,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "90202": {
+   "title": "Technic Pin Connector Round with 4 Clips",
+   "bounds": {
+    "min": [
+     -384,
+     -160,
+     -384
+    ],
+    "max": [
+     384,
+     160,
+     384
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 49573,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64570": {
+   "title": "Bracket  2 x  6 -  1 x  6 Up with Rounded Corners",
+   "bounds": {
+    "min": [
+     -960,
+     -192,
+     -384
+    ],
+    "max": [
+     960,
+     128,
+     320
+    ]
+   },
+   "studs": 18,
+   "sockets": 14,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 67565,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p26": {
+   "title": "Minifig Torso with Patch Pocket Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41230,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98313": {
+   "title": "Minifig Mechanical Arm with Clip and Rod Hole with Thick Forearm",
+   "bounds": {
+    "min": [
+     -128,
+     -64,
+     -112
+    ],
+    "max": [
+     608,
+     416,
+     112
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 48813,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3579": {
+   "title": "Door  1 x  3 x  4 Frame",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -160
+    ],
+    "max": [
+     480,
+     1536,
+     160
+    ]
+   },
+   "studs": 3,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 13982,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "7930c01": {
+   "title": "Door  1 x  3 x  4 with Glass (Complete)",
+   "bounds": {
+    "min": [
+     -32,
+     0,
+     -96
+    ],
+    "max": [
+     800,
+     1344,
+     32
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 17785,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2397": {
+   "title": "Plate  2 x  2 with Angled Bars and Attached  1 x  2 Plate",
+   "bounds": {
+    "min": [
+     -480,
+     0,
+     -1280
+    ],
+    "max": [
+     480,
+     384,
+     1280
+    ]
+   },
+   "studs": 6,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 43222,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p1e": {
+   "title": "Minifig Torso with Red Horizontal Stripes Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 23646,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2572": {
+   "title": "Panel  6 x  6 x  9 with Curved Top",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -1600
+    ],
+    "max": [
+     960,
+     3456,
+     320
+    ]
+   },
+   "studs": 12,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 82170,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3833": {
+   "title": "Minifig Construction Helmet",
+   "bounds": {
+    "min": [
+     -272,
+     -176,
+     -352
+    ],
+    "max": [
+     272,
+     96,
+     272
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 40608,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2585": {
+   "title": "Hose Reel  2 x  2",
+   "bounds": {
+    "min": [
+     -272,
+     -223,
+     -223
+    ],
+    "max": [
+     272,
+     223,
+     223
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 96627,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "4474": {
+   "title": "Windscreen  6 x  4 x  2 Canopy",
+   "bounds": {
+    "min": [
+     -640,
+     -64,
+     -1856
+    ],
+    "max": [
+     640,
+     704,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 39062,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4719c01": {
+   "title": "Minifig Bicycle (Complete)",
+   "bounds": {
+    "min": [
+     -533,
+     -410,
+     -1716
+    ],
+    "max": [
+     533,
+     832,
+     340
+    ]
+   },
+   "studs": 2,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 425711,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4870": {
+   "title": "Plate  2 x  2 with 2 Wheel Pins",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     560,
+     352
+    ]
+   },
+   "studs": 4,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 31811,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30602": {
+   "title": "Slope Brick Curved Top  2 x  2 x  1",
+   "bounds": {
+    "min": [
+     -320,
+     -384,
+     -447
+    ],
+    "max": [
+     320,
+     0,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 30643,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6066": {
+   "title": "Brick  4 x  8 x  2.333 Turret Top",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -640
+    ],
+    "max": [
+     1280,
+     896,
+     640
+    ]
+   },
+   "studs": 18,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 68386,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6123": {
+   "title": "Minifig Polearm Halberd",
+   "bounds": {
+    "min": [
+     -80,
+     -1824,
+     -522
+    ],
+    "max": [
+     80,
+     1120,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 23617,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4497": {
+   "title": "Minifig Spear with Round End",
+   "bounds": {
+    "min": [
+     -112,
+     -768,
+     -64
+    ],
+    "max": [
+     112,
+     1568,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 20222,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "41879a": {
+   "title": "Minifig Hips and Legs Short without Hole",
+   "bounds": {
+    "min": [
+     -304,
+     -176,
+     -160
+    ],
+    "max": [
+     304,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 22457,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "76348": {
+   "title": "Technic Flex-System Hose 10L (200LDU)",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     3200,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16269,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4132": {
+   "title": "Window  2 x  4 x  3",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     1152,
+     320
+    ]
+   },
+   "studs": 8,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 77689,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4133": {
+   "title": "Window  2 x  4 x  3 Pane",
+   "bounds": {
+    "min": [
+     -40,
+     -49,
+     -977
+    ],
+    "max": [
+     40,
+     913,
+     41
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 32214,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30150": {
+   "title": "Container Adventurers Chest",
+   "bounds": {
+    "min": [
+     -480,
+     -576,
+     -640
+    ],
+    "max": [
+     480,
+     128,
+     640
+    ]
+   },
+   "studs": 6,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 71821,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "40379": {
+   "title": "Animal Tail Section End",
+   "bounds": {
+    "min": [
+     -128,
+     -1055,
+     -120
+    ],
+    "max": [
+     128,
+     128,
+     1183
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 93536,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "41678": {
+   "title": "Technic Cross Block 2 x 2 Split (Axle/Twin Pin)",
+   "bounds": {
+    "min": [
+     -320,
+     -160,
+     -480
+    ],
+    "max": [
+     320,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 70201,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30361d": {
+   "title": "Cylinder  2 x  2 x  2 Robot Body with Bottom Axle Holder",
+   "bounds": {
+    "min": [
+     -320,
+     -224,
+     -320
+    ],
+    "max": [
+     320,
+     608,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 90070,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "64417c01": {
+   "title": "Train Buffer Sealed Magnet",
+   "bounds": {
+    "min": [
+     -320,
+     -16,
+     -640
+    ],
+    "max": [
+     320,
+     528,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 64263,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30350b": {
+   "title": "Tile  2 x  3 with Clips Horizontal (Thick C-Clips)",
+   "bounds": {
+    "min": [
+     -320,
+     -87,
+     -480
+    ],
+    "max": [
+     320,
+     151,
+     704
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 32193,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "52501": {
+   "title": "Slope Brick 45  6 x  1 Double Inverted with Open Centre",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -960
+    ],
+    "max": [
+     160,
+     384,
+     960
+    ]
+   },
+   "studs": 6,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 34611,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "87615": {
+   "title": "Plane Top  6 x 10 x  1",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -2560
+    ],
+    "max": [
+     960,
+     384,
+     640
+    ]
+   },
+   "studs": 24,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 105922,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "54196": {
+   "title": "=Dish  2 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     -64,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 72889,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3044b": {
+   "title": "Slope Brick 45  2 x  1 Double",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -320
+    ],
+    "max": [
+     160,
+     384,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 9551,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "74695": {
+   "title": "=Technic Beam  2 Liftarm",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -144
+    ],
+    "max": [
+     144,
+     160,
+     464
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 35937,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32239": {
+   "title": "=Technic Gearbox  2 x  4 x  3.333",
+   "bounds": {
+    "min": [
+     -640,
+     -640,
+     -320
+    ],
+    "max": [
+     640,
+     640,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 10,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 242409,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "22484": {
+   "title": "Bar  2L with Ball Joint-8",
+   "bounds": {
+    "min": [
+     -128,
+     -128,
+     -288
+    ],
+    "max": [
+     128,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 26094,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32606": {
+   "title": "Plant Flower with  7 Alternate Petals with Bar and Pin Hole",
+   "bounds": {
+    "min": [
+     -213,
+     -259,
+     -202
+    ],
+    "max": [
+     213,
+     0,
+     216
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 133132,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32138": {
+   "title": "Technic Pin  3L Double with Axlehole",
+   "bounds": {
+    "min": [
+     -480,
+     -304,
+     -144
+    ],
+    "max": [
+     480,
+     304,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 4,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 237419,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "28802": {
+   "title": "Bracket  1 x  2 -  1 x  4 with Rounded Bottom Corners",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -224
+    ],
+    "max": [
+     640,
+     320,
+     160
+    ]
+   },
+   "studs": 6,
+   "sockets": 4,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 11064,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3962a": {
+   "title": "Minifig Radio with Short Handle",
+   "bounds": {
+    "min": [
+     -336,
+     -880,
+     -64
+    ],
+    "max": [
+     64,
+     288,
+     64
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 132655,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4229": {
+   "title": "Plate  2 x  2 with Jet Engine with 12 Fins",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -640
+    ],
+    "max": [
+     320,
+     638,
+     640
+    ]
+   },
+   "studs": 5,
+   "sockets": 5,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 42040,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3228ac01": {
+   "title": "Train Track  4.5V Tapered Straight (Complete)",
+   "bounds": {
+    "min": [
+     -2880,
+     0,
+     -1280
+    ],
+    "max": [
+     2560,
+     384,
+     1280
+    ]
+   },
+   "studs": 16,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 318894,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3842a": {
+   "title": "Minifig Helmet Classic with Thin Chin Guard and Visor Dimples",
+   "bounds": {
+    "min": [
+     -232,
+     -123,
+     -232
+    ],
+    "max": [
+     232,
+     384,
+     232
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 71222,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "313": {
+   "title": "~Hinge Plate  2 x  5 Pivot",
+   "bounds": {
+    "min": [
+     -256,
+     -96,
+     -96
+    ],
+    "max": [
+     256,
+     96,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 8949,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "821420c": {
+   "title": "Sticker  1.1 x  2.9 with Blue Sitting Person Icon",
+   "bounds": {
+    "min": [
+     -464,
+     -4,
+     -176
+    ],
+    "max": [
+     464,
+     0,
+     176
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 8560,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "112": {
+   "title": "Car Air Horn",
+   "bounds": {
+    "min": [
+     -168,
+     -168,
+     -720
+    ],
+    "max": [
+     168,
+     352,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 33677,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "22463": {
+   "title": "Technic Flex-System Hose 19L (380LDU)",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     6080,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16269,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2927": {
+   "title": "Train Wheel Tiny",
+   "bounds": {
+    "min": [
+     -288,
+     -288,
+     -64
+    ],
+    "max": [
+     288,
+     288,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 28147,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "41532": {
+   "title": "Hinge Arm Locking with Single Finger and Friction Pin",
+   "bounds": {
+    "min": [
+     -144,
+     -144,
+     -406
+    ],
+    "max": [
+     144,
+     144,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 1,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 118974,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2959": {
+   "title": "~Magnet Cylindrical Casing (Obsolete)",
+   "bounds": {
+    "min": [
+     -288,
+     -240,
+     -128
+    ],
+    "max": [
+     288,
+     240,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 26641,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "70023": {
+   "title": "~Magnet Cylindrical (Obsolete)",
+   "bounds": {
+    "min": [
+     -192,
+     -192,
+     -128
+    ],
+    "max": [
+     192,
+     192,
+     128
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 4979,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "973p1d": {
+   "title": "Minifig Torso with Blue Horizontal Stripes Pattern",
+   "bounds": {
+    "min": [
+     -304,
+     -192,
+     -160
+    ],
+    "max": [
+     304,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 23647,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3582": {
+   "title": "Window  1 x  2 x  2 Shutter",
+   "bounds": {
+    "min": [
+     -32,
+     0,
+     -480
+    ],
+    "max": [
+     32,
+     768,
+     32
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 13225,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3829a": {
+   "title": "~Car Steering Wheel Stand",
+   "bounds": {
+    "min": [
+     -320,
+     -472,
+     -160
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 15150,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3828": {
+   "title": "~Car Steering Wheel",
+   "bounds": {
+    "min": [
+     -224,
+     -32,
+     -224
+    ],
+    "max": [
+     224,
+     96,
+     224
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 49734,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30647": {
+   "title": "Technic Side Flaring Intake  1 x  4 with Two Pins",
+   "bounds": {
+    "min": [
+     -288,
+     -496,
+     -640
+    ],
+    "max": [
+     288,
+     320,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 78299,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "71177": {
+   "title": "Technic Flex-System Hose 14L (280LDU)",
+   "bounds": {
+    "min": [
+     -64,
+     0,
+     -64
+    ],
+    "max": [
+     64,
+     4480,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 16269,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30303": {
+   "title": "Plate  6 x  6 x  0.667 Cross with Dome",
+   "bounds": {
+    "min": [
+     -960,
+     -128,
+     -960
+    ],
+    "max": [
+     960,
+     128,
+     960
+    ]
+   },
+   "studs": 16,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 108339,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4742": {
+   "title": "Cone 4 x  4 x  2 Hollow Without Studs",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     768,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 101234,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6239": {
+   "title": "Tail Shuttle  2 x  6 x  4",
+   "bounds": {
+    "min": [
+     -320,
+     -1280,
+     -480
+    ],
+    "max": [
+     320,
+     128,
+     1440
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 17860,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2418b": {
+   "title": "Windscreen  6 x  6 Octagonal Canopy with Axlehole",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -960
+    ],
+    "max": [
+     960,
+     768,
+     960
+    ]
+   },
+   "studs": 4,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 38172,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6135": {
+   "title": "~Plant Tree Palm Trunk with Technic Axlehole (Obsolete)",
+   "bounds": {
+    "min": [
+     -224,
+     -512,
+     -224
+    ],
+    "max": [
+     224,
+     128,
+     224
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 50584,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "48495": {
+   "title": "Minifig Sword with Angular Hilt",
+   "bounds": {
+    "min": [
+     -64,
+     -1340,
+     -260
+    ],
+    "max": [
+     64,
+     452,
+     260
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 107207,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30246": {
+   "title": "Panel Wall  3 x  4 x  6",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -480
+    ],
+    "max": [
+     640,
+     2304,
+     480
+    ]
+   },
+   "studs": 10,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 70436,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "42448": {
+   "title": "Gate  1 x  4 x  9 Arched with Bars",
+   "bounds": {
+    "min": [
+     -64,
+     -1648,
+     -64
+    ],
+    "max": [
+     64,
+     1232,
+     1120
+    ]
+   },
+   "studs": 6,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 354943,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6083": {
+   "title": "Panel  3 x  8 x  7 Rock Triangular",
+   "bounds": {
+    "min": [
+     -1280,
+     0,
+     -480
+    ],
+    "max": [
+     1280,
+     2688,
+     480
+    ]
+   },
+   "studs": 24,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 80822,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "33085": {
+   "title": "Minifig Food Banana",
+   "bounds": {
+    "min": [
+     -604,
+     -107,
+     -648
+    ],
+    "max": [
+     0,
+     107,
+     104
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 31655,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4219b": {
+   "title": "Roller Door with Handle",
+   "bounds": {
+    "min": [
+     -1360,
+     -64,
+     -100
+    ],
+    "max": [
+     1360,
+     384,
+     100
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 4,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 66940,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4159998b": {
+   "title": "Sticker  2.6 x  3.8 with Silver \"317\" and Rivets and Frame on Black Background",
+   "bounds": {
+    "min": [
+     -608,
+     -4,
+     -416
+    ],
+    "max": [
+     608,
+     0,
+     416
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 67847,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30042": {
+   "title": "Plate  4 x  5 Trap Door",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -640
+    ],
+    "max": [
+     1744,
+     96,
+     640
+    ]
+   },
+   "studs": 20,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 102859,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30350": {
+   "title": "~Moved to 30350a",
+   "bounds": {
+    "min": [
+     -320,
+     -96,
+     -480
+    ],
+    "max": [
+     320,
+     160,
+     736
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 30896,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64422": {
+   "title": "Train Buffer Beam with Sealed Magnet (Complete)",
+   "bounds": {
+    "min": [
+     -1040,
+     -16,
+     -1120
+    ],
+    "max": [
+     1040,
+     832,
+     320
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 170437,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "64417": {
+   "title": "~Train Buffer Sealed Magnet Casing",
+   "bounds": {
+    "min": [
+     -272,
+     -272,
+     -640
+    ],
+    "max": [
+     320,
+     128,
+     160
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 32451,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "44224": {
+   "title": "Technic Beam  3 with Rotation Joint 3 Socket",
+   "bounds": {
+    "min": [
+     -480,
+     -160,
+     -480
+    ],
+    "max": [
+     480,
+     160,
+     1424
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 6,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 235244,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "44225": {
+   "title": "Technic Beam  3 with Rotation Joint 3 Pin",
+   "bounds": {
+    "min": [
+     -480,
+     -160,
+     -480
+    ],
+    "max": [
+     480,
+     160,
+     1424
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 7,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 208239,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "79": {
+   "title": "~Moved to 71944k01",
+   "bounds": {
+    "min": [
+     -144,
+     -53,
+     -144
+    ],
+    "max": [
+     144,
+     40,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 97150,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "47720": {
+   "title": "Plate  2 x  2 with Wishbone Suspension Arms and Pins",
+   "bounds": {
+    "min": [
+     -960,
+     -320,
+     -320
+    ],
+    "max": [
+     960,
+     128,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 91272,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "48723": {
+   "title": "Bar  1L Quadruple with Axlehole Hub",
+   "bounds": {
+    "min": [
+     -480,
+     -160,
+     -480
+    ],
+    "max": [
+     480,
+     224,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 62886,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "88286": {
+   "title": "Minifig Hair Female Ponytail with Long French Braid",
+   "bounds": {
+    "min": [
+     -302,
+     -170,
+     -242
+    ],
+    "max": [
+     301,
+     848,
+     408
+    ]
+   },
+   "studs": 0,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 155557,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "62701": {
+   "title": "Wheel Cover  9 Spoke for Wheel 14 x 17",
+   "bounds": {
+    "min": [
+     -480,
+     -479,
+     -352
+    ],
+    "max": [
+     477,
+     479,
+     0
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 71140,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "76766": {
+   "title": "Bracket  5 x  2 x  2.333 with Inside Fillets",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -800
+    ],
+    "max": [
+     320,
+     896,
+     800
+    ]
+   },
+   "studs": 10,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 37375,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "62360": {
+   "title": "Windscreen  3 x  6 x  1 Curved",
+   "bounds": {
+    "min": [
+     -960,
+     0,
+     -797
+    ],
+    "max": [
+     960,
+     384,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 61314,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "91884": {
+   "title": "Minifig Shield Round Type 2",
+   "bounds": {
+    "min": [
+     -400,
+     -400,
+     -160
+    ],
+    "max": [
+     400,
+     400,
+     128
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 290214,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "52038": {
+   "title": "Bracket  2 x  4 x  0.667 with Front Studs and Shallow Arches",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     640,
+     160
+    ]
+   },
+   "studs": 8,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 14970,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "32192": {
+   "title": "Technic Angle Connector #4 (135 degree)",
+   "bounds": {
+    "min": [
+     -160,
+     -438,
+     -480
+    ],
+    "max": [
+     160,
+     144,
+     438
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 62498,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "15429": {
+   "title": "Animal Cat Tail",
+   "bounds": {
+    "min": [
+     -160,
+     -216,
+     -160
+    ],
+    "max": [
+     160,
+     511,
+     457
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 23251,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "18920": {
+   "title": "Minifig Tool Scissors",
+   "bounds": {
+    "min": [
+     -209,
+     -577,
+     -80
+    ],
+    "max": [
+     209,
+     174,
+     80
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 42682,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "12885": {
+   "title": "Minifig Paint Roller Brush Handle",
+   "bounds": {
+    "min": [
+     -248,
+     -832,
+     -112
+    ],
+    "max": [
+     379,
+     0,
+     112
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 62952,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "19215": {
+   "title": "Wheel Cover  5 Spoke Thick with Edge Bolts",
+   "bounds": {
+    "min": [
+     -480,
+     -480,
+     0
+    ],
+    "max": [
+     480,
+     480,
+     256
+    ]
+   },
+   "studs": 1,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 115491,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32009": {
+   "title": "Technic Beam  3 x  3.8 x  7 Liftarm Bent 45 Double",
+   "bounds": {
+    "min": [
+     -144,
+     -160,
+     -2704
+    ],
+    "max": [
+     1424,
+     160,
+     144
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 16,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 328424,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "14682": {
+   "title": "Exhaust Pipe with Pin and Flat Tip",
+   "bounds": {
+    "min": [
+     -144,
+     -2064,
+     -160
+    ],
+    "max": [
+     144,
+     120,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 216583,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6575": {
+   "title": "~Moved to 6575a",
+   "bounds": {
+    "min": [
+     -304,
+     -464,
+     -80
+    ],
+    "max": [
+     304,
+     464,
+     80
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 65671,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "63278": {
+   "title": "=Slope Brick Curved  3 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -480
+    ],
+    "max": [
+     160,
+     384,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 12263,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "45590": {
+   "title": "Technic Axle Joiner Double Flexible",
+   "bounds": {
+    "min": [
+     -144,
+     -144,
+     -160
+    ],
+    "max": [
+     464,
+     144,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 25700,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "604615": {
+   "title": "Minifig Tool Socket Wrench with Ratchet and 3-Rib Handle",
+   "bounds": {
+    "min": [
+     -112,
+     -749,
+     -168
+    ],
+    "max": [
+     112,
+     160,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 47042,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "604552": {
+   "title": "Minifig Tool Box Wrench with 3-Rib Handle",
+   "bounds": {
+    "min": [
+     -160,
+     -635,
+     -64
+    ],
+    "max": [
+     160,
+     160,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 45529,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "41531": {
+   "title": "Technic Cylinder  4 x  4 x  2 with 3 Pin Holes and Center Bar",
+   "bounds": {
+    "min": [
+     -640,
+     -640,
+     -320
+    ],
+    "max": [
+     640,
+     640,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 96927,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
   }
  }
 }
