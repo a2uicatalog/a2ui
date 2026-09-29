@@ -2913,8 +2913,15 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
 
   function inlineModule(text) {
     return new Promise(function (resolve) {
-      var m = /export\s*\{([^}]*)\}\s*;?\s*$/.exec(text), local = null;
-      if (!m) { diag("module via inline script: no trailing export list"); return resolve(null); }
+      // NOT anchored to the literal end of the string: d2.bundle.mjs (and bundler output generally) carries a trailing
+      // `//# sourceMappingURL=...` comment AFTER the export statement, which a `$`-anchored match never sees (found live,
+      // 2026-09-29, on Gemini Enterprise -- the blob-URL import path is blocked there, so this fallback is the only path
+      // forward and a bug here means the diagram genuinely never loads, not just a slower path). Take the LAST export
+      // statement in the file instead, wherever it sits.
+      var re = /export\s*\{([^}]*)\}\s*;?/g, m = null, last = null, local = null;
+      while ((m = re.exec(text))) last = m;
+      m = last;
+      if (!m) { diag("module via inline script: no export list found"); return resolve(null); }
       m[1].split(",").forEach(function (p) { var q = p.trim().split(/\s+as\s+/); if ((q[1] || q[0]) === "D2") local = q[0]; });
       if (!local) { diag("module via inline script: D2 export not found"); return resolve(null); }
       var s = document.createElement("script"); s.type = "module";
