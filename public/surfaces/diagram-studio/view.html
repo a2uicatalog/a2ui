@@ -2913,8 +2913,15 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
 
   function inlineModule(text) {
     return new Promise(function (resolve) {
-      var m = /export\s*\{([^}]*)\}\s*;?\s*$/.exec(text), local = null;
-      if (!m) { diag("module via inline script: no trailing export list"); return resolve(null); }
+      // NOT anchored to the literal end of the string: d2.bundle.mjs (and bundler output generally) carries a trailing
+      // `//# sourceMappingURL=...` comment AFTER the export statement, which a `$`-anchored match never sees (found live,
+      // 2026-09-29, on Gemini Enterprise -- the blob-URL import path is blocked there, so this fallback is the only path
+      // forward and a bug here means the diagram genuinely never loads, not just a slower path). Take the LAST export
+      // statement in the file instead, wherever it sits.
+      var re = /export\s*\{([^}]*)\}\s*;?/g, m = null, last = null, local = null;
+      while ((m = re.exec(text))) last = m;
+      m = last;
+      if (!m) { diag("module via inline script: no export list found"); return resolve(null); }
       m[1].split(",").forEach(function (p) { var q = p.trim().split(/\s+as\s+/); if ((q[1] || q[0]) === "D2") local = q[0]; });
       if (!local) { diag("module via inline script: D2 export not found"); return resolve(null); }
       var s = document.createElement("script"); s.type = "module";
@@ -2934,6 +2941,17 @@ return { PALETTES: PALETTES, GraphSynthesizer: GraphSynthesizer, SugiyamaLayoutE
     if (d2p) return d2p;
     d2p = (async function () {
       var t0 = performance.now(), ms = function () { return Math.round(performance.now() - t0) + " ms"; };
+      // Cheap up-front check: D2 needs real WebAssembly execution (the compiled engine's whole point), so a host whose CSP
+      // has no unsafe-eval/wasm-unsafe-eval refuses it no matter how the ~11 MB module gets loaded -- found live on Gemini
+      // Enterprise, 2026-09-29 (script-src 'self' 'unsafe-inline' https://a2uicatalog.ai: no blob:, no *-unsafe-eval, so
+      // BOTH load paths -- the blob-URL import AND D2's own blob-Worker WASM spawn -- were always going to fail there).
+      // Checking first turns an ~10s guaranteed dead-end (fetch + gunzip an 11 MB file, then fail) into an immediate,
+      // actionable message instead.
+      try { await WebAssembly.compile(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0])); }
+      catch (e) {
+        throw new Error("this host's security policy blocks WebAssembly (" + ((e && e.message) || e) +
+          ") -- D2 can't run here; try Mermaid or draw.io instead");
+      }
       if (typeof DecompressionStream === "undefined") throw new Error("this browser has no DecompressionStream");
       var res = await fetch(D2_URL);
       if (!res.ok) throw new Error("engine fetch failed: HTTP " + res.status);
