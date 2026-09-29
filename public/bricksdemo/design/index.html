@@ -51,7 +51,7 @@ th{color:var(--mute);font-weight:500}
 footer{border-top:1px solid var(--rule);padding-top:12px}
 footer p{font-size:12px}
 a{color:inherit}
-#tjscanvas{width:100%;height:480px;border:1px solid var(--rule);border-radius:8px;display:block;background:#1a1f26}
+#tjscanvas{width:100%;height:480px;border:1px solid var(--rule);border-radius:8px;display:block;background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0)}
 </style>
 <script type="importmap">
 {
@@ -613,18 +613,22 @@ var TJS=(function(){
   function ensureScene(THREE,OrbitControls){
     if(scene)return;
     var canvas=$('tjscanvas');
-    scene=new THREE.Scene();scene.background=new THREE.Color(0x1a1f26);
+    // No scene.background / opaque clear: the canvas's own CSS background (the same light radial gradient
+    // the main WebGL view already uses, #fafbfd -> #cdd6e0) shows through a transparent WebGL clear instead
+    // -- keeps the two views visually consistent rather than a jarring dark-vs-light switch on toggle.
+    scene=new THREE.Scene();
     camera=new THREE.PerspectiveCamera(45,1,0.1,800);
-    renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true});
+    renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+    renderer.setClearAlpha(0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
     renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
     renderer.outputColorSpace=THREE.SRGBColorSpace;
     controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
-    scene.add(new THREE.AmbientLight(0xffffff,0.55));
-    var key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(25,40,20);scene.add(key);
-    var fill=new THREE.DirectionalLight(0x8fb8ff,0.6);fill.position.set(-20,10,-15);scene.add(fill);
-    var floor=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0x24303b,roughness:1,metalness:0}));
+    scene.add(new THREE.AmbientLight(0xffffff,0.75));
+    var key=new THREE.DirectionalLight(0xffffff,1.8);key.position.set(25,40,20);scene.add(key);
+    var fill=new THREE.DirectionalLight(0xbcd2ff,0.5);fill.position.set(-20,10,-15);scene.add(fill);
+    var floor=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0xd8dee4,roughness:1,metalness:0}));
     floor.rotation.x=-Math.PI/2;scene.add(floor);
     group=new THREE.Group();scene.add(group);
     function resize(){
