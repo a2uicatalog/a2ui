@@ -126664,6 +126664,1206 @@
    "needs_occupancy": false,
    "bytes": 57038,
    "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98282": {
+   "title": "Car Mudguard  4 x  2.5 x  1",
+   "bounds": {
+    "min": [
+     -636,
+     -127,
+     -462
+    ],
+    "max": [
+     636,
+     384,
+     320
+    ]
+   },
+   "studs": 4,
+   "sockets": 3,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 28293,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4595": {
+   "title": "Brick  1 x  2 x  0.667 with Studs on Sides",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -576
+    ],
+    "max": [
+     160,
+     288,
+     320
+    ]
+   },
+   "studs": 7,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 61431,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "11153": {
+   "title": "=Slope Brick Curved  4 x  1",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -640
+    ],
+    "max": [
+     160,
+     384,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 11562,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "98835": {
+   "title": "Car Mudguard  3 x  4 x  1.667 with Curved Front",
+   "bounds": {
+    "min": [
+     -640,
+     -128,
+     -800
+    ],
+    "max": [
+     640,
+     512,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 68476,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "35442": {
+   "title": "Plate Gear  6 Tooth  2 x  2",
+   "bounds": {
+    "min": [
+     -535,
+     -64,
+     -600
+    ],
+    "max": [
+     535,
+     128,
+     600
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 225010,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3836": {
+   "title": "Minifig Pushbroom",
+   "bounds": {
+    "min": [
+     -278,
+     0,
+     -105
+    ],
+    "max": [
+     278,
+     1357,
+     168
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 59686,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "2536": {
+   "title": "~Plant Tree Palm Trunk (Obsolete)",
+   "bounds": {
+    "min": [
+     -224,
+     -512,
+     -224
+    ],
+    "max": [
+     224,
+     128,
+     224
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 48062,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4083": {
+   "title": "Bar  1 x  4 x  2 with Studs",
+   "bounds": {
+    "min": [
+     -608,
+     0,
+     -128
+    ],
+    "max": [
+     608,
+     768,
+     128
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 85445,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6070": {
+   "title": "Windscreen  5 x  2 x  1.667",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -1440
+    ],
+    "max": [
+     320,
+     640,
+     160
+    ]
+   },
+   "studs": 2,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 9012,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "61780": {
+   "title": "Container  2 x  2 x  2 Crate",
+   "bounds": {
+    "min": [
+     -320,
+     -704,
+     -320
+    ],
+    "max": [
+     320,
+     128,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 29397,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "56904": {
+   "title": "Wheel Rim 14 x 30 with 6 Spokes and No Pegholes",
+   "bounds": {
+    "min": [
+     -608,
+     -608,
+     -320
+    ],
+    "max": [
+     608,
+     608,
+     288
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 1,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 391654,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "30031": {
+   "title": "Minifig Handlebars",
+   "bounds": {
+    "min": [
+     -480,
+     -288,
+     -96
+    ],
+    "max": [
+     480,
+     96,
+     192
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 48272,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4081a": {
+   "title": "Plate  1 x  1 with Clip Light Type 1",
+   "bounds": {
+    "min": [
+     -160,
+     -96,
+     -448
+    ],
+    "max": [
+     160,
+     160,
+     160
+    ]
+   },
+   "studs": 3,
+   "sockets": 1,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 12267,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3959": {
+   "title": "Minifig Torch",
+   "bounds": {
+    "min": [
+     -160,
+     -160,
+     -384
+    ],
+    "max": [
+     160,
+     256,
+     448
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 260643,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3049c": {
+   "title": "Slope Brick 45  1 x  2 Double / Inverted without Centre Stud",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -160
+    ],
+    "max": [
+     320,
+     384,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 3144,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3837": {
+   "title": "Minifig Shovel",
+   "bounds": {
+    "min": [
+     -192,
+     -768,
+     -172
+    ],
+    "max": [
+     192,
+     704,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 41000,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6187": {
+   "title": "Bar  1 x  4 x  2",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     768,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 67673,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3741a": {
+   "title": "Plant Flower Stem",
+   "bounds": {
+    "min": [
+     -271,
+     -530,
+     -180
+    ],
+    "max": [
+     289,
+     192,
+     288
+    ]
+   },
+   "studs": 1,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 84960,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32294": {
+   "title": "Technic Suspension Arm  1 x  9 x  2.5",
+   "bounds": {
+    "min": [
+     -144,
+     -480,
+     -1424
+    ],
+    "max": [
+     144,
+     320,
+     1424
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 6,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 84405,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4092b": {
+   "title": "Train Bogie Plate with Short Pin",
+   "bounds": {
+    "min": [
+     -960,
+     -224,
+     -640
+    ],
+    "max": [
+     960,
+     128,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 144227,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "70720c01": {
+   "title": "~Axle Steel  5 x 112 LDU with Conical Ends with Two Train Wheels with Open Centres",
+   "bounds": {
+    "min": [
+     -896,
+     -464,
+     -464
+    ],
+    "max": [
+     896,
+     464,
+     464
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 120115,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4218a": {
+   "title": "~Roller Door Normal (Obsolete)",
+   "bounds": {
+    "min": [
+     -1360,
+     -64,
+     -64
+    ],
+    "max": [
+     1360,
+     381,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 58905,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "32291": {
+   "title": "Technic Cross Block 2 x 2 (Axle/Twin Pin)",
+   "bounds": {
+    "min": [
+     -304,
+     -144,
+     -160
+    ],
+    "max": [
+     304,
+     464,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 4,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 77587,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "6191p01": {
+   "title": "Brick  1 x  4 x  1.333 with Curved Top with White Stripes Pattern",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 28728,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "62361": {
+   "title": "Car Mudguard  6 x  1.5 x  1 with Arch",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -960
+    ],
+    "max": [
+     317,
+     384,
+     960
+    ]
+   },
+   "studs": 6,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 23640,
+   "license": "!LICENSE Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt"
+  },
+  "17485": {
+   "title": "Brick  2 x  2 Round with Pin Holes",
+   "bounds": {
+    "min": [
+     -320,
+     -64,
+     -320
+    ],
+    "max": [
+     320,
+     384,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 3,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 88590,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "42918": {
+   "title": "Slope Brick Curved  8 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -1920
+    ],
+    "max": [
+     320,
+     384,
+     640
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 108609,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "37695": {
+   "title": "Plant Stem with  3 Leaves with Bar and Pin Holes",
+   "bounds": {
+    "min": [
+     -280,
+     -506,
+     -318
+    ],
+    "max": [
+     280,
+     0,
+     198
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 110022,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "78258": {
+   "title": "Bar  2L with Thick Stop and Pin Holes",
+   "bounds": {
+    "min": [
+     -96,
+     -320,
+     -96
+    ],
+    "max": [
+     96,
+     320,
+     96
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 19574,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4598": {
+   "title": "Bracket  2 x  3 -  2 x  2",
+   "bounds": {
+    "min": [
+     -320,
+     -640,
+     -480
+    ],
+    "max": [
+     320,
+     128,
+     608
+    ]
+   },
+   "studs": 5,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 43957,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3041": {
+   "title": "Slope Brick 45  2 x  4 Double",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -320
+    ],
+    "max": [
+     640,
+     384,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 43658,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2580": {
+   "title": "Support  2 x  2 x  5 Lattice Pillar",
+   "bounds": {
+    "min": [
+     -320,
+     0,
+     -320
+    ],
+    "max": [
+     320,
+     1920,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 44293,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "55981": {
+   "title": "Wheel Rim 14 x 18 with Holes on Both Sides (Needs Work)",
+   "bounds": {
+    "min": [
+     -336,
+     -336,
+     -320
+    ],
+    "max": [
+     336,
+     336,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 115843,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4528": {
+   "title": "Minifig Frypan",
+   "bounds": {
+    "min": [
+     -240,
+     0,
+     -240
+    ],
+    "max": [
+     240,
+     192,
+     480
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 21844,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "6060": {
+   "title": "Arch  1 x  6 x  3.333 with Curved Top and Two Studs",
+   "bounds": {
+    "min": [
+     -160,
+     0,
+     -1600
+    ],
+    "max": [
+     160,
+     1280,
+     320
+    ]
+   },
+   "studs": 2,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 24394,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2923": {
+   "title": "Hinge Bar  2.5 with  2 and  3 Fingers on Ends",
+   "bounds": {
+    "min": [
+     -160,
+     -192,
+     -544
+    ],
+    "max": [
+     160,
+     64,
+     544
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 62799,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4855": {
+   "title": "Wedge  4 x  4 Triple Inverted without Ribs between Studs",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -1120
+    ],
+    "max": [
+     640,
+     384,
+     160
+    ]
+   },
+   "studs": 10,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 115105,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "2498": {
+   "title": "Car Wash Brush",
+   "bounds": {
+    "min": [
+     -479,
+     0,
+     -479
+    ],
+    "max": [
+     479,
+     736,
+     479
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 1061707,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "60616a": {
+   "title": "Door  1 x  4 x  6 Smooth with Square Handle Plinth",
+   "bounds": {
+    "min": [
+     -60,
+     52,
+     -60
+    ],
+    "max": [
+     1072,
+     2188,
+     60
+    ]
+   },
+   "studs": 2,
+   "sockets": 2,
+   "holes": 0,
+   "pins": 0,
+   "bars": 2,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 31258,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "56902": {
+   "title": "Wheel Rim  8 x 18 with Deep Centre Groove and Peghole",
+   "bounds": {
+    "min": [
+     -336,
+     -336,
+     -160
+    ],
+    "max": [
+     336,
+     336,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 2,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 103220,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "92690": {
+   "title": "Bar  1L with Top Stud and Two Side Studs",
+   "bounds": {
+    "min": [
+     -120,
+     0,
+     -120
+    ],
+    "max": [
+     120,
+     536,
+     120
+    ]
+   },
+   "studs": 3,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 28162,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "72454": {
+   "title": "Slope Brick 45  4 x  4 Double Inverted with Open Centre and 2 Holes",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -640
+    ],
+    "max": [
+     640,
+     384,
+     640
+    ]
+   },
+   "studs": 16,
+   "sockets": 8,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 157676,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "30699": {
+   "title": "Tyre 14/ 43 x 30 with Grooved Tread",
+   "bounds": {
+    "min": [
+     -872,
+     -872,
+     -288
+    ],
+    "max": [
+     872,
+     872,
+     288
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 477521,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "10314": {
+   "title": "Brick  1 x  4 x  1.333 with Curved Top without Understuds",
+   "bounds": {
+    "min": [
+     -640,
+     0,
+     -160
+    ],
+    "max": [
+     640,
+     512,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 10095,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "48729": {
+   "title": "~Moved to 48729a",
+   "bounds": {
+    "min": [
+     -176,
+     -117,
+     -64
+    ],
+    "max": [
+     176,
+     496,
+     64
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 23894,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4214": {
+   "title": "Hinge Car Roof Holder  1 x  4 x  2",
+   "bounds": {
+    "min": [
+     -640,
+     -128,
+     -160
+    ],
+    "max": [
+     640,
+     768,
+     160
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 1,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 39931,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "122c01": {
+   "title": "Plate  2 x  2 with Red Wheels (Complete)",
+   "bounds": {
+    "min": [
+     -576,
+     -64,
+     -320
+    ],
+    "max": [
+     576,
+     256,
+     320
+    ]
+   },
+   "studs": 6,
+   "sockets": 6,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 105063,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "4265a": {
+   "title": "Technic Bush  1/2 Type 1",
+   "bounds": {
+    "min": [
+     -144,
+     -144,
+     -80
+    ],
+    "max": [
+     144,
+     144,
+     80
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 50851,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "821420b": {
+   "title": "Sticker  1.4 x  2.6 with Light Grey Stripes",
+   "bounds": {
+    "min": [
+     -416,
+     -4,
+     -221
+    ],
+    "max": [
+     416,
+     0,
+     221
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 0,
+   "hinges": 0,
+   "needs_occupancy": true,
+   "bytes": 1927,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
+  },
+  "3940": {
+   "title": "~Moved to 3940b",
+   "bounds": {
+    "min": [
+     -320,
+     -64,
+     -320
+    ],
+    "max": [
+     320,
+     768,
+     320
+    ]
+   },
+   "studs": 0,
+   "sockets": 0,
+   "holes": 0,
+   "pins": 0,
+   "bars": 4,
+   "hinges": 0,
+   "needs_occupancy": false,
+   "bytes": 80094,
+   "license": "!LICENSE Licensed under CC BY 4.0 : see CAreadme.txt"
   }
  }
 }
