@@ -32,9 +32,18 @@
 //   checks     — show the build-check verdicts (default true)
 //   parts      — show the parts list with an indicative cost (default false)
 
-function _brickKit() {
-  /* ---------- constants: real LEGO proportions, in stud-pitch units (1 = 8 mm) ---------- */
-  var BH=1.2, PL=0.4, SR=0.3, SH=0.18, SN=10;         // brick 9.6mm, plate 3.2mm, stud r 2.4mm, stud h 1.4mm
+// Material-context-aware architecture seam (2026-09-29, cozy-forging-newt.md Track B item 2): the render
+// proportions and connector-visual style are LEGO's CURRENT profile, not the only possible shape of this
+// engine. Every other consumer of BH/PL/SR/SH/SN below (WebGL shader source, canvas-2D fallback, camera
+// framing, instruction-step math -- ~30 call sites) is a closure over these SAME `var` bindings declared once
+// at the top of _brickKit(), so parameterizing this one declaration is sufficient: no other call site needs
+// to change. LEGO stays the only populated profile -- this is the seam, not a second material's rollout.
+var LEGO_MATERIAL_PROFILE = {BH:1.2, PL:0.4, SR:0.3, SH:0.18, SN:10, studs:true};
+function _brickKit(materialProfile) {
+  /* ---------- constants: proportions, in stud-pitch units (1 = 8 mm for LEGO's own default profile) ---------- */
+  var MP=materialProfile||LEGO_MATERIAL_PROFILE;
+  var BH=MP.BH, PL=MP.PL, SR=MP.SR, SH=MP.SH, SN=MP.SN;   // LEGO default: brick 9.6mm, plate 3.2mm, stud r 2.4mm, stud h 1.4mm
+  var SHOW_STUDS=MP.studs!==false;                        // connector-visual flag -- false draws no stud cylinder
   var RB=['#c91a09','#fe8a18','#f2cd37','#a5ca18','#237841','#36aebf','#0055bf','#6a3a9c'];
 
   /* ---------- real-parts model (spec/brick-parts-v0.1.md): 24 fixed orientations, LDraw units ---------- */
@@ -828,7 +837,7 @@ function _brickKit() {
       var xa=i+ox,za=k+oz;
       pushF(out,[xa,T,za,xa+1,T,za,xa+1,T,za+1,xa,T,za+1],[0,1,0],c,
         (k===z?1:0)|(i===x+w-1?2:0)|(k===z+d-1?4:0)|(i===x?8:0),a);
-      stud(out,xa+0.5,T,za+0.5,c,a);
+      if(SHOW_STUDS)stud(out,xa+0.5,T,za+0.5,c,a);
     }
   }
   var BASE='#3f9a55',MARGIN=2;
@@ -838,7 +847,7 @@ function _brickKit() {
       if(occ(x,0,z))continue;
       pushF(out,[x,PL,z,x+1,PL,z,x+1,PL,z+1,x,PL,z+1],[0,1,0],BASE,
         (z===z0?1:0)|(x===x1-1?2:0)|(z===z1-1?4:0)|(x===x0?8:0),1);
-      stud(out,x+0.5,PL,z+0.5,BASE,1);
+      if(SHOW_STUDS)stud(out,x+0.5,PL,z+0.5,BASE,1);
     }
     for(x=x0;x<x1;x++){
       pushF(out,[x,0,z1,x+1,0,z1,x+1,PL,z1,x,PL,z1],[0,0,1],BASE,4,1);
@@ -1061,10 +1070,12 @@ function _brickKit() {
       function cov(x,y,z){return x>=0&&z>=0&&x<M.W&&z<M.D&&y<=M.L&&occ[(y*M.D+z)*M.W+x]===1;}
       var open=[],hidden=[];
       function add(bi,x,y,z,col,covered){(covered?hidden:open).push([bi,x+0.5,y,z+0.5,col]);}
-      for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);var ty=b.y+b.h;
-        for(z=b.z;z<b.z+b.d;z++)for(x=b.x;x<b.x+b.w;x++)add(i,x,PL+ty*BH,z,c,cov(x,ty,z));}
-      c=linRGB(BASE);
-      for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
+      if(SHOW_STUDS){
+        for(i=0;i<n;i++){b=B[i];c=linRGB(b.c);var ty=b.y+b.h;
+          for(z=b.z;z<b.z+b.d;z++)for(x=b.x;x<b.x+b.w;x++)add(i,x,PL+ty*BH,z,c,cov(x,ty,z));}
+        c=linRGB(BASE);
+        for(z=-MARGIN;z<M.D+MARGIN;z++)for(x=-MARGIN;x<M.W+MARGIN;x++)add(n,x,PL,z,c,cov(x,0,z));
+      }
       var all=open.slice(0,STUD_CAP).concat(hidden.slice(0,Math.max(0,STUD_CAP-open.length)));
       nStud=all.length;var ss=new Float32Array(nStud*9);studOf=new Int32Array(nStud);
       all.forEach(function(s,j){studOf[j]=s[0];ss.set([s[1],s[2],s[3],0,0,0,s[4][0],s[4][1],s[4][2]],j*9);});
