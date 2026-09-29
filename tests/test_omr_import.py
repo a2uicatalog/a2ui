@@ -18,6 +18,7 @@ from renderers.brick_parts_validate import PART_ROT
 from scripts.ldraw.omr_import import (
     baked_ids,
     coverage,
+    flatten,
     rot_index,
     to_parts_model,
 )
@@ -26,6 +27,27 @@ from scripts.ldraw.omr_import import (
 M_ROT_Y_30 = (0.866025, 0.0, -0.5, 0.0, 1.0, 0.0, 0.5, 0.0, 0.866025)
 M_ROT_Y_60 = (0.5, 0.0, 0.866025, 0.0, 1.0, 0.0, -0.866025, 0.0, 0.5)
 M_HINGE_29 = (-0.868, 0.0, 0.496, 0.0, 1.0, 0.0, -0.496, 0.0, -0.868)
+
+
+def test_flatten_excludes_root_level_primitives_not_just_prefixed_ones():
+    """Real bug found 2026-09-29 investigating the coverage stat's 'missing' report: flatten()'s old filter
+    (`not ref.startswith(('s/', '48/', '8/'))`) only excluded primitives referenced via a subdirectory
+    prefix -- primitives living at p/'s own root (e.g. 4-4cyli.dat, rect.dat) sailed through and were
+    miscounted as real missing catalogue parts (~47% of the reported total across 183 real sets measured).
+    A real .mpd-shaped fragment referencing both a genuine primitive at p/'s root and one via a prefixed
+    subdirectory must exclude both; a real (fictional but .dat-shaped) missing PART reference must still
+    be reported, so the fix doesn't just suppress everything."""
+    text = (
+        "0 FILE main.ldr\n"
+        "1 16 0 0 0 1 0 0 0 1 0 0 0 1 4-4cyli.dat\n"     # real primitive at p/'s own root -- must be excluded
+        "1 16 0 0 0 1 0 0 0 1 0 0 0 1 48/1-8chrd.dat\n"  # real primitive via a prefixed subdirectory
+        "1 16 0 0 0 1 0 0 0 1 0 0 0 1 9999999.dat\n"     # not a real part or primitive -- must still be counted missing
+    )
+    leaves = flatten(text)
+    parts = {l["part"] for l in leaves}
+    assert "4-4cyli" not in parts
+    assert "48/1-8chrd" not in parts and "1-8chrd" not in parts
+    assert "9999999" in parts
 
 
 def test_rot_index_identifies_all_24_canonical_rotations():
