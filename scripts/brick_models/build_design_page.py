@@ -193,6 +193,7 @@ a{color:inherit}
 <span class="note" id="tjsstepnote"></span>
 </span>
 </div>
+<div id="tjsstepchips" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px"></div>
 <p class="note" id="tjsstatus"></p>
 <p class="note" id="tjsinspect" hidden></p>
 </div>
@@ -782,6 +783,7 @@ var TJS=(function(){
   function clearGroup(THREE){
     highlighted=null;   // the highlighted InstancedMesh is about to be disposed below -- drop the stale reference, not restore a colour on a mesh that won't exist
     var inspectEl=$('tjsinspect');if(inspectEl)inspectEl.hidden=true;
+    var chipsEl=$('tjsstepchips');if(chipsEl)chipsEl.textContent='';
     while(group.children.length){
       var m=group.children.pop();
       if(m.geometry)m.geometry.dispose();
@@ -830,6 +832,36 @@ var TJS=(function(){
   var HIDDEN_ROW_MAJOR=[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
   function markGroupDirty(){
     group.children.forEach(function(c){if(c.isInstancedMesh)c.instanceMatrix.needsUpdate=true;});
+  }
+  // Step-parts chip list -- parity with the main WebGL view's own drawStepParts() (atoms_brick.gs): for the
+  // CURRENT scrubbed step, group the real parts newly placed at that step by (part id, colour), with a count
+  // and a colour swatch, under the same "New this step:" label. Pure data grouping over partsModel/the
+  // colour table the viewer already has -- no validation engine involved (see drawChecks()'s own comment for
+  // why THAT one is not a same-effort port).
+  function drawStepChips(partsModel,ct,step){
+    var box=$('tjsstepchips');
+    box.textContent='';
+    var groups={},order=[];
+    partsModel.forEach(function(row){
+      if((row[6]|0||1)!==step)return;
+      var code=row[5]|0,key=row[0]+'|'+code;
+      if(!groups[key]){groups[key]={partId:row[0],code:code,count:0};order.push(key);}
+      groups[key].count++;
+    });
+    if(!order.length)return;
+    var label=document.createElement('span');
+    label.style.cssText='font-weight:600;color:var(--mute)';label.textContent='New this step:';
+    box.appendChild(label);
+    order.forEach(function(key){
+      var g=groups[key],hex=(ct[g.code]&&ct[g.code].hex)||'#c91a09';
+      var chip=document.createElement('span');
+      chip.style.cssText='display:inline-flex;align-items:center;gap:5px;border:1px solid #b8c2cc;border-radius:6px;padding:2px 8px;background:#f7f9fb';
+      var swatch=document.createElement('span');
+      swatch.style.cssText='display:inline-block;width:10px;height:10px;border-radius:2px;border:1px solid rgba(0,0,0,.25);background:'+hex;
+      chip.appendChild(swatch);
+      chip.appendChild(document.createTextNode('×'+g.count+' '+g.partId));
+      box.appendChild(chip);
+    });
   }
   // Build-step scrubber (Phase 1 of the "View in Three.js" motion work) -- a static cumulative reveal via
   // partsModel's own real `step` field (row[6], already present in every real build). Every instance is
@@ -996,15 +1028,18 @@ var TJS=(function(){
           $('tjsstepwrap').style.display='flex';
           slider.min=1;slider.max=maxStep;slider.value=maxStep;
           $('tjsstepnote').textContent='step '+maxStep+' of '+maxStep;
+          drawStepChips(partsModel,ct,maxStep);
           slider.oninput=function(){
             if(animPlaying)return;
             var v=parseInt(slider.value,10)||1;
             applyStep(v);
             $('tjsstepnote').textContent='step '+v+' of '+maxStep;
+            drawStepChips(partsModel,ct,v);
           };
         }else{
           $('tjsstepwrap').style.display='none';
           applyStep(1);
+          drawStepChips(partsModel,ct,1);
         }
         playBtn.setAttribute('aria-pressed','false');
         playBtn.textContent='Animate';
@@ -1013,11 +1048,14 @@ var TJS=(function(){
             stopAnimate();
             playBtn.setAttribute('aria-pressed','false');playBtn.textContent='Animate';
             slider.disabled=false;
-            applyStep(parseInt(slider.value,10)||maxStep);
+            var v=parseInt(slider.value,10)||maxStep;
+            applyStep(v);
+            drawStepChips(partsModel,ct,v);
           }else{
             startAnimate();
             playBtn.setAttribute('aria-pressed','true');playBtn.textContent='Stop';
             slider.disabled=true;
+            $('tjsstepchips').textContent='';   // matches atoms_brick.gs's own drawStepParts(), which only shows in step-scrub mode, not during continuous animate
           }
         };
         status.textContent=ok+' of '+partsModel.length+' real parts rendered'+(skipped?' ('+skipped+' not yet in the baked catalogue)':'')+
