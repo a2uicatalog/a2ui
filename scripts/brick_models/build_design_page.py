@@ -185,6 +185,8 @@ a{color:inherit}
 <canvas id="tjscanvas" role="img" aria-label="Three.js 3D build view"></canvas>
 <div class="row" id="tjscontrols" hidden style="gap:10px">
 <button class="go alt" id="tjsplay" type="button" aria-pressed="false">Animate</button>
+<label for="tjsmaterial" style="font-size:12px;color:var(--mute)">Material</label>
+<select id="tjsmaterial"><option value="lego">LEGO plastic</option><option value="concrete">Concrete block</option></select>
 <span id="tjsstepwrap" style="display:flex;gap:10px;align-items:center;flex:1">
 <label for="tjsstep" style="font-size:12px;color:var(--mute)">Build step</label>
 <input type="range" id="tjsstep" min="1" max="1" value="1" style="flex:1">
@@ -532,7 +534,13 @@ $('go').onclick=function(){
 __THREEJS_VIEW_MATH__
 var TJS=(function(){
   var colours=null, colourFetch=null, meshCache={}, mod=null, modFetch=null;
-  var scene=null, camera=null, renderer=null, controls=null, group=null, loopStarted=false;
+  var scene=null, camera=null, renderer=null, controls=null, group=null, loopStarted=false, keyLight=null;
+  // Fixed UNIT direction for the shadow-casting key light, from the build's centre TOWARD the light (not an
+  // absolute position -- fitCamera() re-derives the light's real position/shadow-camera frustum from this
+  // direction plus whatever box the CURRENT build actually occupies, same reasoning as tjsFitCamera's own
+  // camera-direction parameter: a fixed absolute light position looked fine for the one build size it was
+  // tuned against and wrong for any other).
+  var KEY_LIGHT_DIR=null;
 
   function fetchColours(){
     if(colours)return Promise.resolve(colours);
@@ -624,6 +632,55 @@ var TJS=(function(){
     matCache[key]=m;
     return m;
   }
+  // "Render as: Concrete block" -- a genuine second render-appearance material (not a LEGO colour), swapped
+  // in over the SAME brick geometry to demonstrate the render-appearance axis independently of geometry/
+  // connector semantics (see cozy-forging-newt.md's material-context-aware architecture plan: appearance is
+  // its own axis, already varying WITHIN the LEGO catalogue -- trans-clear vs. chrome vs. matte ABS -- and
+  // not modelled as a swappable profile anywhere before this). One shared, cached material (matching the
+  // instancing win: swapping it onto an InstancedMesh keeps the whole bucket in ONE draw call, no per-
+  // instance material clone) -- #a3a099, roughness 0.92, matte, no clearcoat: a real, neutral concrete grey,
+  // not LEGO's glossy ABS finish.
+  var concreteMat=null;
+  function materialForConcrete(THREE){
+    if(!concreteMat)concreteMat=new THREE.MeshStandardMaterial({color:0xa3a099,roughness:0.92,metalness:0});
+    return concreteMat;
+  }
+  // Real poured concrete varies batch to batch (aggregate mix, cure conditions, cement ratio) -- a single
+  // flat grey across an entire build reads as a uniform plastic slab, not concrete. InstancedMesh's own
+  // instanceColor (a per-instance RGB multiplier three.js's shader applies automatically once set via
+  // setColorAt, no custom shader needed) gives each instance its own slight lightness jitter around the same
+  // base hue, WITHOUT giving up the one-draw-call-per-bucket instancing win a separate material per instance
+  // would cost. Seeded off the instance index (a cheap deterministic hash, not Math.random()) so the same
+  // build shows the SAME per-brick variation every time it's toggled back to concrete, rather than
+  // re-randomizing on every toggle.
+  function applyConcreteColourVariation(THREE,instMesh){
+    if(instMesh.userData.concreteColoured)return;
+    var hsl={};(new THREE.Color(0xa3a099)).getHSL(hsl);
+    var c=new THREE.Color();
+    for(var i=0;i<instMesh.count;i++){
+      var jitter=((i*2654435761)>>>0)%1000/1000-0.5;
+      c.setHSL(hsl.h,hsl.s,Math.min(0.95,Math.max(0.05,hsl.l+jitter*0.12)));
+      instMesh.setColorAt(i,c);
+    }
+    instMesh.instanceColor.needsUpdate=true;
+    instMesh.userData.concreteColoured=true;
+  }
+  // currentMaterialMode persists across renders/set-imports (not reset to 'lego' each time) -- picking
+  // "Concrete block" and then importing a different set should keep showing concrete, the same way scrubber/
+  // animate state isn't expected to silently reset either.
+  var currentMaterialMode='lego';
+  function applyMaterialMode(THREE){
+    group.children.forEach(function(m){
+      if(!m.isInstancedMesh)return;
+      if(currentMaterialMode==='concrete'){
+        if(!m.userData.legoMaterial)m.userData.legoMaterial=m.material;
+        applyConcreteColourVariation(THREE,m);
+        m.material=materialForConcrete(THREE);
+      }else if(m.userData.legoMaterial){
+        m.material=m.userData.legoMaterial;
+      }
+    });
+  }
   function ensureScene(THREE,OrbitControls,RoomEnvironment){
     if(scene)return;
     var canvas=$('tjscanvas');
@@ -637,6 +694,7 @@ var TJS=(function(){
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
     renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
     renderer.outputColorSpace=THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
     // scene.environment (distinct from scene.background above): a real, procedural studio-lighting map
     // (RoomEnvironment -> PMREMGenerator, no external HDRI asset) so chrome/metal/pearlescent materials get
     // REAL reflections and trans-clear parts get real refraction, instead of flat colour with no surroundings
@@ -648,10 +706,19 @@ var TJS=(function(){
     controls=new OrbitControls(camera,renderer.domElement);
     controls.enableDamping=true;
     scene.add(new THREE.AmbientLight(0xffffff,0.55));
-    var key=new THREE.DirectionalLight(0xffffff,1.4);key.position.set(25,40,20);scene.add(key);
+    KEY_LIGHT_DIR=new THREE.Vector3(25,40,20).normalize();
+    keyLight=new THREE.DirectionalLight(0xffffff,1.4);keyLight.position.set(25,40,20);scene.add(keyLight);
+    // Real shadow casting, not just lighting: the shadow camera's own frustum is a fixed guess here (resized
+    // per real build in fitCamera(), the same way the main camera's distance is -- a fixed frustum tuned for
+    // one build size would either clip a big kit's shadow or waste resolution on a tiny one). castShadow is
+    // set here once; the frustum itself only makes sense once a real build's bounding box exists.
+    keyLight.castShadow=true;
+    keyLight.shadow.mapSize.set(2048,2048);
+    keyLight.shadow.bias=-0.0015;keyLight.shadow.normalBias=0.02;
+    scene.add(keyLight.target);   // DirectionalLight aims at .target's world position, not a direction vector -- .target must be in the scene graph for its matrixWorld (and therefore the light's real aim) to update at all.
     var fill=new THREE.DirectionalLight(0xbcd2ff,0.4);fill.position.set(-20,10,-15);scene.add(fill);
     var floor=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0xd8dee4,roughness:1,metalness:0}));
-    floor.rotation.x=-Math.PI/2;scene.add(floor);
+    floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
     group=new THREE.Group();scene.add(group);
     function resize(){
       var w=canvas.clientWidth||canvas.parentElement.clientWidth,h=canvas.clientHeight||480;
@@ -682,6 +749,19 @@ var TJS=(function(){
     camera.position.set(fit.position[0],fit.position[1],fit.position[2]);
     camera.near=fit.near;camera.far=fit.far;camera.updateProjectionMatrix();
     controls.target.set(fit.target[0],fit.target[1],fit.target[2]);controls.update();
+    // Shadow camera: sized off this SAME real box, not a fixed guess -- a frustum tuned for one build size
+    // would clip a big kit's shadow or waste resolution (shadow acne) on a tiny one. radius covers the box's
+    // own diagonal-ish extent regardless of which way the key light leans, with a margin for the light's own
+    // angle (a light arriving at ~50 degrees from vertical casts a shadow longer than the object's own size).
+    var center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
+    var radius=Math.max(size.x,size.y,size.z)*1.2+0.5;
+    var lightDist=radius*3+5;
+    keyLight.position.copy(center).addScaledVector(KEY_LIGHT_DIR,lightDist);
+    keyLight.target.position.copy(center);keyLight.target.updateMatrixWorld();
+    var sc=keyLight.shadow.camera;
+    sc.left=-radius;sc.right=radius;sc.top=radius;sc.bottom=-radius;
+    sc.near=Math.max(lightDist-radius*2,0.1);sc.far=lightDist+radius*2;
+    sc.updateProjectionMatrix();
   }
   // partEntries: one entry per partsModel ROW (not per instance slot -- a decorated part's multiple
   // colour-group instances must move together), {refs:[...], step}. Each ref is {instMesh, index, matrix}:
@@ -837,6 +917,7 @@ var TJS=(function(){
           var mat=b.colourKey?materialForFixedHex(THREE,b.colourKey):materialForCode(THREE,b.code,ct);
           var instMesh=new THREE.InstancedMesh(b.geo,mat,b.refs.length);
           instMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);   // scrubber/animate rewrite this every step/frame
+          instMesh.castShadow=true;instMesh.receiveShadow=true;   // bricks both cast onto the floor/each other and catch shadows from taller neighbours
           // The LDraw-Y-down -> three.js-Y-up mirror + /20 LDU-to-world scale (tjsToWorld's own D, see
           // tjsInstanceMatrixRowMajor's comment) lives HERE, once per bucket, not inside any instance matrix.
           instMesh.scale.set(1/20,-1/20,1/20);
@@ -848,9 +929,12 @@ var TJS=(function(){
           instMesh.instanceMatrix.needsUpdate=true;
           group.add(instMesh);
         });
+        applyMaterialMode(THREE);
         fitCamera(THREE);
-        var slider=$('tjsstep'),playBtn=$('tjsplay');
+        var slider=$('tjsstep'),playBtn=$('tjsplay'),materialSel=$('tjsmaterial');
         $('tjscontrols').hidden=false;
+        materialSel.value=currentMaterialMode;
+        materialSel.onchange=function(){currentMaterialMode=materialSel.value;applyMaterialMode(THREE);};
         if(maxStep>1){
           $('tjsstepwrap').style.display='flex';
           slider.min=1;slider.max=maxStep;slider.value=maxStep;
