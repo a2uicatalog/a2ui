@@ -800,11 +800,23 @@ var TJS=(function(){
   }
   // Click-to-inspect: real instanced raycasting (THREE.Raycaster natively resolves which INSTANCE of an
   // InstancedMesh a ray hits, not just which mesh -- intersection.instanceId), resolved back to that
-  // instance's source partsModel row via the rowInfo array render() attaches to each InstancedMesh. The
-  // clicked instance is highlighted via the SAME instanceColor mechanism the concrete material's per-brick
-  // variation uses (setColorAt), not a separate outline mesh or per-instance material clone -- one real
-  // colour multiply, reverted to whatever the instance's own real colour was (its LEGO white-multiplier
-  // default, or its concrete jittered grey) when a different instance is clicked or the selection is cleared.
+  // instance's source partsModel row via the rowInfo array render() attaches to each InstancedMesh.
+  //
+  // The clicked instance is highlighted via the SAME instanceColor mechanism the concrete material's
+  // per-brick variation uses (setColorAt) -- one real colour multiply, reverted to whatever the instance's
+  // own real colour was when a different instance is clicked or the selection is cleared. A real "inflated
+  // backface shell" outline (backlog's own literal suggestion) was built and tried instead (2026-09-30):
+  // OutlinePass itself was rejected first (see fetch_threejs.py's comment -- it masks whole scene OBJECTS,
+  // can't isolate one instance inside an InstancedMesh), so a hand-built shell mesh (parented under the
+  // clicked InstancedMesh, vertices pushed out along their own normals, BackSide-culled) was tried as the
+  // alternative. It hit a real rendering-correctness problem that didn't resolve across three different
+  // inflate techniques (a uniform object-space scale, a wide per-vertex normal push, a narrow one): one
+  // particular face of the test brick rendered as a large solid fill instead of a thin rim, with IDENTICAL
+  // coverage regardless of inflate magnitude -- inconsistent with a tunable width/foreshortening issue,
+  // more consistent with a transform or winding interaction specific to this shell-as-InstancedMesh-child
+  // setup that wasn't fully root-caused in the time available. Reverted to this instanceColor approach
+  // (already correct, already shipped, and a legitimate "brighten, don't recolour" idiom many real 3D
+  // editors use for selection) rather than ship a highlight with a known, unexplained rendering defect.
   var raycaster=null,mouseNDC=null,highlighted=null,lastColourTable=null;
   // instanceColor is a MULTIPLICATIVE tint on the material's own base colour (three.js's shader does
   // diffuseColor *= vColor, not a replace) -- confirmed empirically, not assumed: an early version tried
@@ -822,12 +834,11 @@ var TJS=(function(){
     highlighted=null;
   }
   function highlightInstance(THREE,instMesh,index){
-    // Same GTAOPass incompatibility as the material toggle and Animate (see materialSel.onchange's comment
-    // above) -- setColorAt + instanceColor.needsUpdate below is a live per-instance GPU buffer mutation on
-    // an InstancedMesh GTAO's override pass has already rendered, which crashed the whole renderer process
-    // the same way a live material swap did. Confirmed live (2026-09-30): click-to-inspect's highlight
-    // crashed headless Chromium identically. Disable GTAO permanently the first time anything actually
-    // clicks a brick, rather than risk it.
+    // GTAOPass renders the whole scene every frame through its own shared override material (see
+    // materialSel.onchange's comment) -- setColorAt + instanceColor.needsUpdate below is a live per-instance
+    // GPU buffer mutation on an InstancedMesh GTAO's override pass has already rendered, which crashes the
+    // whole renderer process the same way a live material swap does. Disable GTAO permanently the first
+    // time anything actually clicks a brick, rather than risk it.
     if(gtaoPass)gtaoPass.enabled=false;
     clearHighlight();
     var saved=new THREE.Color(1,1,1);   // matches an instance's implicit un-set instanceColor default (three.js's own lazy-buffer fill value) if this mesh has never had setColorAt called on it before
