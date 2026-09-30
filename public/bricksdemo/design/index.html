@@ -1627,6 +1627,73 @@ var TJS=(function(){
     sc.near=Math.max(lightDist-radius*2,0.1);sc.far=lightDist+radius*2;
     sc.updateProjectionMatrix();
   }
+  // Level of detail (threejs-viewer-feature-survey-and-priority item 5): the largest real kits (Death Star,
+  // 7,757 real parts) are still capped to 3,000 by _BRICK_MAX (renderers/web_article.py, a twin of the
+  // LIVE atoms_brick.gs's own _partsModelSanitise) -- a DATA-level cap, not a rendering one, and raising it
+  // for real needs a deploy-and-verify cycle on the live renderer this session deliberately didn't take on
+  // (see this commit's own message). What IS in scope here: making the viewer itself cheaper per part, so
+  // whatever count DOES arrive costs less GPU work, and so there's real headroom already built in whenever
+  // that data-side cap is eventually revisited. For a kit this size, a large fraction of parts are small
+  // interior/background detail that resolves to only a handful of SCREEN pixels at the initial fitted
+  // camera distance -- rendering their full, often-hundreds-of-triangles mesh there is paying real GPU cost
+  // for visual detail nobody can actually see. Swaps those buckets' geometry for a simple 12-triangle box
+  // matching the part's own bounding box (applyBoxProxy below) instead.
+  //
+  // Deliberately a ONE-TIME, load-time decision (using the fitCamera distance just computed above), not a
+  // live per-frame/per-instance system: three.js's own THREE.LOD class swaps whole Object3D children by
+  // distance, which doesn't map onto ONE InstancedMesh representing many different instances at once (the
+  // same "can't isolate one instance" problem OutlinePass hit, see fetch_threejs.py's comment) -- true
+  // dynamic LOD would mean re-bucketing individual INSTANCES between a detailed and a proxy InstancedMesh
+  // as the camera moves, real added complexity for a viewer whose camera is fit once and then user-orbited,
+  // not a flythrough. A load-time, per-bucket static decision is the honest scope for what this session can
+  // verify, and (see GTAOPass's own history tonight) every attempt at LIVE scene-graph mutation under this
+  // renderer has cost real debugging time to get right -- not repeating that pattern without a concrete need.
+  var LOD_PROXY_PIXEL_THRESHOLD=4;
+  function applyBoxProxy(THREE,instMesh){
+    instMesh.geometry.computeBoundingBox();
+    var bb=instMesh.geometry.boundingBox,size=new THREE.Vector3(),center=new THREE.Vector3();
+    bb.getSize(size);bb.getCenter(center);
+    // A degenerate (near-zero) dimension -- a flat printed-decal triangle group, say -- would make
+    // BoxGeometry's constructor choke on a 0-size axis; floor every axis to a small real thickness instead.
+    var box=new THREE.BoxGeometry(Math.max(size.x,0.5),Math.max(size.y,0.5),Math.max(size.z,0.5));
+    box.translate(center.x,center.y,center.z);   // the part's own local geometry isn't necessarily centred on its origin -- keep the proxy where the real mesh actually was, not recentred on (0,0,0)
+    instMesh.geometry.setAttribute('position',box.attributes.position);
+    instMesh.geometry.setAttribute('normal',box.attributes.normal);
+    instMesh.geometry.setIndex(box.index);
+    instMesh.geometry.computeBoundingSphere();
+    instMesh.userData.lodProxy=true;
+  }
+  function applyLOD(THREE){
+    // Screen pixels per world-unit-of-size at distance=1 from a perspective camera with this vertical FOV;
+    // dividing by a bucket's own real distance below gives its actual projected size in pixels. Using
+    // perspCamera's own fov/position specifically (not whichever camera is currently active) since this is
+    // a one-time, load-time heuristic, not a per-frame thing tied to the live view -- see fitCamera's own
+    // comment on why both cameras always share one fitted position regardless of which is on screen.
+    var canvasH=renderer.domElement.clientHeight||480;
+    var pixelsPerUnitAtUnitDistance=canvasH/(2*Math.tan(perspCamera.fov*Math.PI/180/2));
+    var swapped=0,total=0;
+    group.children.forEach(function(instMesh){
+      if(!instMesh.isInstancedMesh||!instMesh.userData.centroidLDU)return;
+      total++;
+      var c=instMesh.userData.centroidLDU;
+      // D=diag(1/20,-1/20,1/20), the SAME LDraw-Y-down-to-three.js-Y-up mirror + LDU-to-world scale every
+      // instance matrix gets via instMesh.scale (see tjsInstanceMatrixRowMajor's own comment) -- applied by
+      // hand here since this reads the bucket's OWN stored centroid directly, not through setMatrixAt.
+      var worldCentroid=new THREE.Vector3(c[0]/20,-c[1]/20,c[2]/20);
+      var dist=Math.max(worldCentroid.distanceTo(perspCamera.position),0.01);
+      instMesh.geometry.computeBoundingBox();
+      var size=new THREE.Vector3();instMesh.geometry.boundingBox.getSize(size);
+      // Raw vertex positions are quant-scaled (see tjsToWorld's own p[0]/q), not already LDU -- divide by
+      // the part's own quant FIRST, matching the SAME two-stage scale every instance matrix gets (1/q baked
+      // into the matrix, 1/20 baked into instMesh.scale), or this overstates real part size by a factor of
+      // q (confirmed live 2026-09-30: without the /quant step, a 2x2x2 brick measured as ~96 world units --
+      // roughly the size of the WHOLE Death Star kit -- because its raw geometry is quant=20-scaled).
+      var worldSize=Math.max(size.x,size.y,size.z)/(instMesh.userData.quant||1)/20;
+      var projectedPx=worldSize*pixelsPerUnitAtUnitDistance/dist;
+      if(projectedPx<LOD_PROXY_PIXEL_THRESHOLD){applyBoxProxy(THREE,instMesh);swapped++;}
+    });
+    return {swapped:swapped,total:total};
+  }
   // partEntries: one entry per partsModel ROW (not per instance slot -- a decorated part's multiple
   // colour-group instances must move together), {refs:[...], step}. Each ref is {instMesh, index, matrix}:
   // matrix is that row's own real placement (row-major, see tjsInstanceMatrixRowMajor), instMesh/index say
@@ -1846,7 +1913,7 @@ var TJS=(function(){
           groups.forEach(function(g,gi){
             var matKey=g.colourKey?('h'+g.colourKey):('c'+code);
             var key=row[0]+'|'+gi+'|'+matKey;
-            if(!buckets[key])buckets[key]={rawGeo:g.geo,colourKey:g.colourKey,code:code,refs:[]};
+            if(!buckets[key])buckets[key]={rawGeo:g.geo,colourKey:g.colourKey,code:code,quant:mesh.quant||1,refs:[]};
             var ref={matrix:mrow,instMesh:null,index:-1,partId:row[0],code:code};
             buckets[key].refs.push(ref);
             refs.push(ref);
@@ -1902,13 +1969,26 @@ var TJS=(function(){
           // presence -- exists from the very first frame, before GTAOPass ever compiles anything, so no
           // mid-session recompile under the override pass ever happens again.
           instMesh.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(b.refs.length*3).fill(1),3);
+          // Centroid of this bucket's own instance positions (LDU, pre-D -- same space ref.matrix's own
+          // translation columns [3],[7],[11] are already in, see tjsInstanceMatrixRowMajor), accumulated
+          // for free in the SAME loop that's already touching every ref. Used by applyLOD below (after
+          // fitCamera has a real camera position to measure against) as a cheap per-bucket distance
+          // estimate -- not exact for a bucket whose instances are spread across a huge kit, but a coarse,
+          // honest one: the goal is catching bricks that are SMALL ON SCREEN (background/interior detail
+          // too tiny to resolve, not literally the single occasional outlier instance), and centroid
+          // distance is the right cost/precision trade-off for a decision made once at load time, not
+          // something recomputed every frame per instance.
+          var cx=0,cy=0,cz=0;
           b.refs.forEach(function(ref,idx){
             m4.set.apply(m4,ref.matrix);
             instMesh.setMatrixAt(idx,m4);
             ref.instMesh=instMesh;ref.index=idx;
             instMesh.userData.rowInfo[idx]={partId:ref.partId,code:ref.code};
+            cx+=ref.matrix[3];cy+=ref.matrix[7];cz+=ref.matrix[11];
           });
           instMesh.instanceMatrix.needsUpdate=true;
+          instMesh.userData.centroidLDU=[cx/b.refs.length,cy/b.refs.length,cz/b.refs.length];
+          instMesh.userData.quant=b.quant;   // raw vertex positions are quant-scaled, not already LDU -- see tjsToWorld's own p[0]/q; applyLOD's worldSize needs the SAME /q before the /20 D-scale, or it overstates a part's real size by a factor of q
           group.add(instMesh);
         });
         // Force-compile BOTH the LEGO and Concrete material program variants for every bucket now, up
@@ -1929,6 +2009,7 @@ var TJS=(function(){
           currentMaterialMode=prevMode;applyMaterialMode(THREE);
         })();
         fitCamera(THREE);
+        var lodResult=applyLOD(THREE);
         drawValidationChecks(partsModel,byId);
         var slider=$('tjsstep'),playBtn=$('tjsplay'),materialSel=$('tjsmaterial');
         $('tjscontrols').hidden=false;
@@ -2025,6 +2106,7 @@ var TJS=(function(){
           }
         };
         status.textContent=ok+' of '+partsModel.length+' real parts rendered'+(skipped?' ('+skipped+' not yet in the baked catalogue)':'')+
+          (lodResult.swapped?' ('+lodResult.swapped+' of '+lodResult.total+' part groups simplified for distance/size)':'')+
           ' — drag to orbit, scroll to zoom.';
       });
     }).catch(function(err){
