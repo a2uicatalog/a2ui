@@ -50,6 +50,20 @@ const squareFit = ctx.tjsFitCamera([-1, -1, -1], [1, 1, 1], [0, 0, 1], 90, 1, 1.
 check("tjsFitCamera: a wide box needs more distance than a square box of the same height",
   wideFit.distance > squareFit.distance, `wide=${wideFit.distance} square=${squareFit.distance}`);
 
+// tjsFitCamera: ortho.halfW/halfH (item 4, OrthographicCamera framing) -- FOV/aspect-independent, so the
+// SAME 2x2x2 cube (half-extent 1 on every axis) viewed along Z must report margin*1 on both axes exactly,
+// regardless of the 90-degree FOV those perspective checks above used (a real bug an ortho fit would need
+// to NOT reproduce: baking any FOV dependency into halfW/halfH would defeat the point of parallel projection).
+check("tjsFitCamera: ortho.halfW is margin * half-extent along the view's right axis (cube: 1.15 * 1)",
+  close(fit.ortho.halfW, 1.15, 1e-9), String(fit.ortho.halfW));
+check("tjsFitCamera: ortho.halfH is margin * half-extent along the view's up axis (cube: 1.15 * 1)",
+  close(fit.ortho.halfH, 1.15, 1e-9), String(fit.ortho.halfH));
+// The wide box (half-extent 5 on X, 1 on Y, viewed along Z so right=X/up=Y) must report an asymmetric
+// ortho frustum matching that shape exactly -- not a single scalar collapsing both axes together.
+check("tjsFitCamera: ortho.halfW/halfH track a non-square box's real X/Y half-extents independently",
+  close(wideFit.ortho.halfW, 5.75, 1e-9) && close(wideFit.ortho.halfH, 1.15, 1e-9),
+  JSON.stringify(wideFit.ortho));
+
 // TJS_PART_ROT: exactly 24 real, proper (determinant +1) rotation matrices -- twinned by hand across four
 // files (atoms_brick.gs, brick_parts_validate.py, omr-import.js, here); a wrong or missing entry would
 // silently mis-rotate any part using that index.

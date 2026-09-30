@@ -196,6 +196,8 @@ a{color:inherit}
 <button class="go alt" id="tjsplay" type="button" aria-pressed="false">Animate</button>
 <label for="tjsmaterial" style="font-size:12px;color:var(--mute)">Material</label>
 <select id="tjsmaterial"><option value="lego">LEGO plastic</option><option value="concrete">Concrete block</option></select>
+<label for="tjscameramode" style="font-size:12px;color:var(--mute)">Camera</label>
+<select id="tjscameramode"><option value="persp">Perspective</option><option value="ortho">Parallel (instructions)</option></select>
 <span id="tjsstepwrap" style="display:flex;gap:10px;align-items:center;flex:1">
 <label for="tjsstep" style="font-size:12px;color:var(--mute)">Build step</label>
 <input type="range" id="tjsstep" min="1" max="1" value="1" style="flex:1">
@@ -548,6 +550,23 @@ __BRICK_VALIDATE_SHARED__
 var TJS=(function(){
   var colours=null, colourFetch=null, meshCache={}, mod=null, modFetch=null;
   var scene=null, camera=null, renderer=null, controls=null, group=null, loopStarted=false, keyLight=null;
+  // camera is always the ACTIVE camera (initially perspCamera); orthoCamera is built alongside it in
+  // ensureScene, both real objects from the start, never lazily constructed on first toggle -- switching
+  // between them is then just reassigning which object `camera`/controls.object/the RenderPass's own
+  // .camera point at (all plain mutable references, see cameraMode's own comment below), not a rebuild.
+  var perspCamera=null, orthoCamera=null, cameraMode='persp', renderPass=null;
+  // Raw (aspect-independent) margined half-extents from the last real fitCamera call -- orthoCamera's own
+  // FOV-equivalent, the thing that stays fixed across a plain window resize while only aspect changes (see
+  // applyOrthoFrustum below, and resize()'s perspCamera.aspect reassignment for the exact same pattern).
+  var orthoFitHalfW=1, orthoFitHalfH=1;
+  // Shared by both fitCamera (a real new build) and resize (the same build, new aspect) -- keeps the
+  // aspect-correct letterboxing logic (match whichever of width/height is the binding constraint, exactly
+  // the same "max()" idea tjsFitCamera's own perspective distance calc uses) in ONE place.
+  function applyOrthoFrustum(aspect){
+    var oh=Math.max(orthoFitHalfH,orthoFitHalfW/aspect),ow=oh*aspect;
+    orthoCamera.left=-ow;orthoCamera.right=ow;orthoCamera.top=oh;orthoCamera.bottom=-oh;
+    orthoCamera.updateProjectionMatrix();
+  }
   var composer=null, gtaoPass=null;
   // Fixed UNIT direction for the shadow-casting key light, from the build's centre TOWARD the light (not an
   // absolute position -- fitCamera() re-derives the light's real position/shadow-camera frustum from this
@@ -740,7 +759,11 @@ var TJS=(function(){
     // the main WebGL view already uses, #fafbfd -> #cdd6e0) shows through a transparent WebGL clear instead
     // -- keeps the two views visually consistent rather than a jarring dark-vs-light switch on toggle.
     scene=new THREE.Scene();
-    camera=new THREE.PerspectiveCamera(45,1,0.1,800);
+    perspCamera=new THREE.PerspectiveCamera(45,1,0.1,800);
+    // Real left/right/top/bottom placeholders (not 0s -- an all-zero ortho frustum is degenerate and some
+    // three.js internals assume a non-empty one even before the first real fitCamera call sizes it for real).
+    orthoCamera=new THREE.OrthographicCamera(-1,1,1,-1,0.1,800);
+    camera=perspCamera;
     renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
     renderer.setClearAlpha(0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
@@ -784,14 +807,17 @@ var TJS=(function(){
     // discarding a throwaway 1x1 set on every single load.
     var initW=canvas.clientWidth||canvas.parentElement.clientWidth||300,initH=canvas.clientHeight||480;
     composer=new mod.EffectComposer(renderer);
-    composer.addPass(new mod.RenderPass(scene,camera));
+    renderPass=new mod.RenderPass(scene,camera);
+    composer.addPass(renderPass);
     gtaoPass=new mod.GTAOPass(scene,camera,initW,initH);
     gtaoPass.blendIntensity=0.55;   // subtle -- grounds contact without darkening the whole scene
     composer.addPass(gtaoPass);
     composer.addPass(new mod.OutputPass());
     function resize(){
       var w=canvas.clientWidth||canvas.parentElement.clientWidth,h=canvas.clientHeight||480;
-      renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+      renderer.setSize(w,h,false);
+      perspCamera.aspect=w/h;perspCamera.updateProjectionMatrix();
+      applyOrthoFrustum(w/h);
       composer.setSize(w,h);gtaoPass.setSize(w,h);
     }
     window.addEventListener('resize',resize);resize();
@@ -887,10 +913,21 @@ var TJS=(function(){
   function fitCamera(THREE){
     var box=new THREE.Box3().setFromObject(group);
     if(box.isEmpty())return;
+    // Real canvas aspect, not camera.aspect -- camera may currently BE orthoCamera (no .aspect property),
+    // and either way both cameras below need fitting together regardless of which one is on screen right
+    // now, so switching modes later shows the correct framing immediately with no re-fit needed.
+    var w=renderer.domElement.clientWidth||300,h=renderer.domElement.clientHeight||480,aspect=w/h;
     var fit=tjsFitCamera([box.min.x,box.min.y,box.min.z],[box.max.x,box.max.y,box.max.z],
-                          [0.6,0.5,0.6],camera.fov,camera.aspect,1.15);
-    camera.position.set(fit.position[0],fit.position[1],fit.position[2]);
-    camera.near=fit.near;camera.far=fit.far;camera.updateProjectionMatrix();
+                          [0.6,0.5,0.6],perspCamera.fov,aspect,1.15);
+    perspCamera.position.set(fit.position[0],fit.position[1],fit.position[2]);
+    perspCamera.near=fit.near;perspCamera.far=fit.far;perspCamera.updateProjectionMatrix();
+    // Same position/target/near/far as perspCamera -- an orthographic camera's on-screen SIZE never depends
+    // on its distance (parallel projection), only its left/right/top/bottom frustum does, so there's no
+    // reason for the two cameras to sit anywhere different; toggling between them needs no repositioning.
+    orthoCamera.position.set(fit.position[0],fit.position[1],fit.position[2]);
+    orthoCamera.near=fit.near;orthoCamera.far=fit.far;
+    orthoFitHalfW=fit.ortho.halfW;orthoFitHalfH=fit.ortho.halfH;
+    applyOrthoFrustum(aspect);
     controls.target.set(fit.target[0],fit.target[1],fit.target[2]);controls.update();
     // Shadow camera: sized off this SAME real box, not a fixed guess -- a frustum tuned for one build size
     // would clip a big kit's shadow or waste resolution (shadow acne) on a tiny one. radius covers the box's
@@ -1235,6 +1272,40 @@ var TJS=(function(){
           applyMaterialMode(THREE);
           if(gtaoPass)gtaoPass.enabled=false;
         };
+        // Parallel-projection ("Camera: Parallel (instructions)") view, matching real LEGO instruction-
+        // booklet framing -- OrthographicCamera instead of PerspectiveCamera. OrbitControls natively
+        // supports either camera type (checks object.isOrthographicCamera itself in several places, e.g.
+        // its own dolly/zoom handling), but it recomputes its internal spherical angle/distance state FROM
+        // controls.object.position on the very next update() -- so the two cameras must actually SHARE a
+        // position at the moment of the switch, not just have started from the same fitCamera position
+        // once at load. Confirmed live (2026-09-30) they drift apart the instant the user orbits in EITHER
+        // mode before switching: each camera object only moves when it's the one actively being dragged,
+        // so toggling modes after orbiting jumped the view back to its original load-time angle instead of
+        // preserving whatever angle the user had actually reached. Copying position across explicitly, every
+        // switch, fixes it -- a real position copy IS needed, every time, not just once at setup.
+        var cameraModeSel=$('tjscameramode');
+        if(cameraModeSel){
+          cameraModeSel.value=cameraMode;
+          cameraModeSel.onchange=function(){
+            var newCamera=(cameraModeSel.value==='ortho')?orthoCamera:perspCamera;
+            newCamera.position.copy(camera.position);
+            cameraMode=cameraModeSel.value;
+            camera=newCamera;
+            controls.object=camera;
+            if(renderPass)renderPass.camera=camera;
+            if(gtaoPass){
+              gtaoPass.camera=camera;
+              // Same GTAOPass fragility as the material/Animate/click-to-inspect sites above: its own
+              // render-time code reads this.camera.isPerspectiveCamera to set a shader DEFINE every frame
+              // (see the vendored GTAOPass.js), so flipping camera TYPE here would force the exact same
+              // class of live shader recompile mid-session that crashed the renderer under SwiftShader for
+              // those three. Not independently re-tested here (once was already three times) -- disabled
+              // permanently the first time this toggle is used, same as the others, on the same reasoning.
+              gtaoPass.enabled=false;
+            }
+            controls.update();
+          };
+        }
         if(maxStep>1){
           $('tjsstepwrap').style.display='flex';
           slider.min=1;slider.max=maxStep;slider.value=maxStep;

@@ -68,7 +68,14 @@ function tjsNorm(a){var l=tjsLen(a)||1;return [a[0]/l,a[1]/l,a[2]/l];}
 // box shape, not a single-scalar heuristic (a bounding-sphere radius, or a "maxSize x maxSize" square)
 // applied uniformly to both screen axes, which both fail for non-square builds (found live 2026-09-29: a
 // diagonal-based sphere fit left a real 3-part test build tiny and off-centre in frame).
-// Returns {position:[x,y,z], target:[x,y,z], distance, near, far}.
+// Also returns ortho:{halfW,halfH} -- the SAME margined half-width/half-height the perspective distance
+// calc below derives, but before FOV enters the picture at all. A perspective camera needs a DISTANCE (the
+// box's angular size shrinks with FOV+distance); an orthographic camera needs a FRUSTUM WIDTH instead (no
+// distance dependency at all -- parallel projection). Since this function already computes the exact
+// half-extents needed to frame the box along the camera's own right/up axes for viewDir, in one place,
+// returning them directly here keeps ortho framing (threejs-viewer-feature-survey-and-priority item 4) a
+// same-source derivation instead of a second, independently-hand-derived box-fit.
+// Returns {position:[x,y,z], target:[x,y,z], distance, near, far, ortho:{halfW,halfH}}.
 function tjsFitCamera(boxMin,boxMax,dir,fovYDeg,aspect,margin){
   margin=margin||1.15;
   var center=[(boxMin[0]+boxMax[0])/2,(boxMin[1]+boxMax[1])/2,(boxMin[2]+boxMax[2])/2];
@@ -97,5 +104,6 @@ function tjsFitCamera(boxMin,boxMax,dir,fovYDeg,aspect,margin){
     position:[center[0]+unitDir[0]*dist,center[1]+unitDir[1]*dist,center[2]+unitDir[2]*dist],
     target:center, distance:dist,
     near:Math.max(dist/100,0.1), far:dist*10,
+    ortho:{halfW:halfW*margin,halfH:halfH*margin},
   };
 }
