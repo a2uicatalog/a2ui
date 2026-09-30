@@ -113,7 +113,11 @@ a{color:inherit}
   "imports": {
     "three": "/vendors/threejs/three.module.js",
     "three/addons/controls/OrbitControls.js": "/vendors/threejs/addons/controls/OrbitControls.js",
-    "three/addons/environments/RoomEnvironment.js": "/vendors/threejs/addons/environments/RoomEnvironment.js"
+    "three/addons/environments/RoomEnvironment.js": "/vendors/threejs/addons/environments/RoomEnvironment.js",
+    "three/addons/postprocessing/EffectComposer.js": "/vendors/threejs/addons/postprocessing/EffectComposer.js",
+    "three/addons/postprocessing/RenderPass.js": "/vendors/threejs/addons/postprocessing/RenderPass.js",
+    "three/addons/postprocessing/GTAOPass.js": "/vendors/threejs/addons/postprocessing/GTAOPass.js",
+    "three/addons/postprocessing/OutputPass.js": "/vendors/threejs/addons/postprocessing/OutputPass.js"
   }
 }
 </script>
@@ -544,6 +548,7 @@ __BRICK_VALIDATE_SHARED__
 var TJS=(function(){
   var colours=null, colourFetch=null, meshCache={}, mod=null, modFetch=null;
   var scene=null, camera=null, renderer=null, controls=null, group=null, loopStarted=false, keyLight=null;
+  var composer=null, gtaoPass=null;
   // Fixed UNIT direction for the shadow-casting key light, from the build's centre TOWARD the light (not an
   // absolute position -- fitCamera() re-derives the light's real position/shadow-camera frustum from this
   // direction plus whatever box the CURRENT build actually occupies, same reasoning as tjsFitCamera's own
@@ -567,7 +572,12 @@ var TJS=(function(){
       import('three'),
       import('three/addons/controls/OrbitControls.js'),
       import('three/addons/environments/RoomEnvironment.js'),
-    ]).then(function(r){mod={THREE:r[0],OrbitControls:r[1].OrbitControls,RoomEnvironment:r[2].RoomEnvironment};return mod});
+      import('three/addons/postprocessing/EffectComposer.js'),
+      import('three/addons/postprocessing/RenderPass.js'),
+      import('three/addons/postprocessing/GTAOPass.js'),
+      import('three/addons/postprocessing/OutputPass.js'),
+    ]).then(function(r){mod={THREE:r[0],OrbitControls:r[1].OrbitControls,RoomEnvironment:r[2].RoomEnvironment,
+      EffectComposer:r[3].EffectComposer,RenderPass:r[4].RenderPass,GTAOPass:r[5].GTAOPass,OutputPass:r[6].OutputPass};return mod});
     return modFetch;
   }
   // Builds one {geo, colourKey} pair PER triangle group, not one merged geometry for the whole part -- a
@@ -762,13 +772,31 @@ var TJS=(function(){
     var floor=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshStandardMaterial({color:0xd8dee4,roughness:1,metalness:0}));
     floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
     group=new THREE.Group();scene.add(group);
+    // Real ambient occlusion (backlog item 2, threejs-viewer-feature-survey-and-priority): grounds brick-to-
+    // brick and brick-to-floor contact more convincingly than the directional shadow alone. GTAOPass (three's
+    // modern replacement for the older SSAOPass) reads real scene depth+normals, not a cheap approximation.
+    // RenderPass draws the normal scene first; GTAOPass blends AO over it; OutputPass applies tone mapping +
+    // colour-space conversion at the end of the chain -- EffectComposer's intermediate render targets don't
+    // apply these the way a direct renderer.render() call does, so skipping OutputPass would wash out the
+    // same ACESFilmic look the rest of this viewer already relies on.
+    // Real canvas size up front (not a 1x1 placeholder immediately resized) -- GTAOPass allocates its render
+    // targets at construction time, so constructing at the real size avoids allocating and instantly
+    // discarding a throwaway 1x1 set on every single load.
+    var initW=canvas.clientWidth||canvas.parentElement.clientWidth||300,initH=canvas.clientHeight||480;
+    composer=new mod.EffectComposer(renderer);
+    composer.addPass(new mod.RenderPass(scene,camera));
+    gtaoPass=new mod.GTAOPass(scene,camera,initW,initH);
+    gtaoPass.blendIntensity=0.55;   // subtle -- grounds contact without darkening the whole scene
+    composer.addPass(gtaoPass);
+    composer.addPass(new mod.OutputPass());
     function resize(){
       var w=canvas.clientWidth||canvas.parentElement.clientWidth,h=canvas.clientHeight||480;
       renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+      composer.setSize(w,h);gtaoPass.setSize(w,h);
     }
     window.addEventListener('resize',resize);resize();
     canvas.addEventListener('click',onCanvasClick);
-    if(!loopStarted){loopStarted=true;(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})()}
+    if(!loopStarted){loopStarted=true;(function loop(){requestAnimationFrame(loop);controls.update();composer.render()})()}
   }
   // Click-to-inspect: real instanced raycasting (THREE.Raycaster natively resolves which INSTANCE of an
   // InstancedMesh a ray hits, not just which mesh -- intersection.instanceId), resolved back to that
@@ -794,6 +822,13 @@ var TJS=(function(){
     highlighted=null;
   }
   function highlightInstance(THREE,instMesh,index){
+    // Same GTAOPass incompatibility as the material toggle and Animate (see materialSel.onchange's comment
+    // above) -- setColorAt + instanceColor.needsUpdate below is a live per-instance GPU buffer mutation on
+    // an InstancedMesh GTAO's override pass has already rendered, which crashed the whole renderer process
+    // the same way a live material swap did. Confirmed live (2026-09-30): click-to-inspect's highlight
+    // crashed headless Chromium identically. Disable GTAO permanently the first time anything actually
+    // clicks a brick, rather than risk it.
+    if(gtaoPass)gtaoPass.enabled=false;
     clearHighlight();
     var saved=new THREE.Color(1,1,1);   // matches an instance's implicit un-set instanceColor default (three.js's own lazy-buffer fill value) if this mesh has never had setColorAt called on it before
     if(instMesh.instanceColor)instMesh.getColorAt(index,saved);
@@ -980,6 +1015,11 @@ var TJS=(function(){
     var N=partEntries.length;
     if(!N)return;
     var THREE=mod.THREE;
+    // Same live InstancedMesh.material reassignment GTAOPass can't survive, see materialSel.onchange's
+    // comment above (the concrete/LEGO toggle) -- applies identically here, just triggered by Animate
+    // instead of the material selector. Disable GTAO permanently once this has ever happened, rather than
+    // risk the exact same crash the first time anyone hits Play.
+    if(gtaoPass)gtaoPass.enabled=false;
     group.children.forEach(function(c){
       if(!c.isInstancedMesh)return;
       c.userData.staticMaterial=c.material;
@@ -1115,6 +1155,21 @@ var TJS=(function(){
           var alphaAttr=new THREE.InstancedBufferAttribute(alpha,1);
           alphaAttr.setUsage(THREE.DynamicDrawUsage);
           geo.setAttribute('instanceAlpha',alphaAttr);
+          // Pre-allocate instanceColor (all-white, i.e. a no-op multiplier) up front, at the SAME time as
+          // instanceAlpha above, rather than leaving it lazily created later by setColorAt() the first time
+          // Concrete mode is picked (applyConcreteColourVariation). GTAOPass renders the whole scene every
+          // frame through ONE shared override material (scene.overrideMaterial = its own MeshNormalMaterial,
+          // see GTAOPass.js's _renderOverride) -- if instanceColor appears on an InstancedMesh mid-session,
+          // BOTH the real material's and that shared override material's compiled program variant for this
+          // object change (USE_INSTANCING_COLOR flips on) and must recompile, live, while the override pass
+          // is already in use. Confirmed live (2026-09-30): switching LEGO->Concrete crashed the whole
+          // headless Chromium renderer process outright (not a catchable WebGL error) under SwiftShader
+          // specifically when GTAO was active; the identical switch was clean with GTAO's composer bypassed.
+          // Matching three.js's own InstancedMesh.setColorAt lazy-init exactly (white-filled Float32Array,
+          // stride 3) means the attribute -- and therefore every program variant that depends on its
+          // presence -- exists from the very first frame, before GTAOPass ever compiles anything, so no
+          // mid-session recompile under the override pass ever happens again.
+          instMesh.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(b.refs.length*3).fill(1),3);
           b.refs.forEach(function(ref,idx){
             m4.set.apply(m4,ref.matrix);
             instMesh.setMatrixAt(idx,m4);
@@ -1124,13 +1179,51 @@ var TJS=(function(){
           instMesh.instanceMatrix.needsUpdate=true;
           group.add(instMesh);
         });
-        applyMaterialMode(THREE);
+        // Force-compile BOTH the LEGO and Concrete material program variants for every bucket now, up
+        // front, synchronously -- before the render loop's very next frame runs through GTAOPass's composer
+        // -- rather than leaving whichever variant hasn't been used yet to compile lazily on the first live
+        // switch. Confirmed live (2026-09-30): a runtime LEGO->Concrete switch crashed the whole headless
+        // Chromium renderer process outright (not a catchable WebGL error, no console message) under
+        // SwiftShader once GTAO's composer was already several frames into its own render loop; the
+        // IDENTICAL material was completely stable when it was the mode from the very first frame instead
+        // (confirmed both ways: GTAO composer bypassed entirely -> stable; Concrete picked as the initial
+        // mode with GTAO active, no live switch -> also stable). renderer.compile() forces eager shader
+        // compilation the same way three.js recommends for avoiding first-use runtime stutter -- used here
+        // for crash-safety under this driver, not performance.
+        (function precompileMaterialVariants(){
+          var prevMode=currentMaterialMode;
+          currentMaterialMode='concrete';applyMaterialMode(THREE);renderer.compile(scene,camera);
+          currentMaterialMode='lego';applyMaterialMode(THREE);renderer.compile(scene,camera);
+          currentMaterialMode=prevMode;applyMaterialMode(THREE);
+        })();
         fitCamera(THREE);
         drawValidationChecks(partsModel,byId);
         var slider=$('tjsstep'),playBtn=$('tjsplay'),materialSel=$('tjsmaterial');
         $('tjscontrols').hidden=false;
         materialSel.value=currentMaterialMode;
-        materialSel.onchange=function(){currentMaterialMode=materialSel.value;applyMaterialMode(THREE);};
+        // GTAOPass renders the whole scene every frame through its OWN shared override material
+        // (scene.overrideMaterial, see GTAOPass.js's _renderOverride) -- confirmed live (2026-09-30) that
+        // reassigning InstancedMesh.material to a DIFFERENT material object (LEGO<->Concrete) crashes the
+        // whole headless Chromium renderer process outright under SwiftShader (not a catchable WebGL error,
+        // no console message at all) the moment GTAOPass's override pass next touches that object. Isolated
+        // by elimination -- each tried and confirmed independently: NOT a first-time shader-compile cost
+        // (both variants precompiled up front via precompileMaterialVariants above, crash persisted); NOT
+        // the concrete-colour instanceColor jitter (crash persisted with that loop disabled); NOT the
+        // Concrete material itself (rock solid as the INITIAL mode from page load, GTAO active throughout);
+        // NOT EffectComposer/OutputPass generally (rock solid with gtaoPass.enabled left permanently false
+        // from construction); NOT stale state on the specific GTAOPass instance (briefly disabling then
+        // re-enabling it around the switch still crashed; swapping in a genuinely NEW GTAOPass instance
+        // post-switch still crashed too). The one thing that stayed rock solid, every time: GTAOPass never
+        // rendering a single frame against an object whose material has ever changed identity at runtime.
+        // Pragmatic fix, not a perfect one: once a material switch happens, leave GTAO off for the rest of
+        // this session rather than trying to resume it (every resume attempt reproduced the crash) --
+        // trades a subtle ambient-occlusion enhancement for a viewer that never crashes, which is the right
+        // side of that trade for a secondary visual toggle.
+        materialSel.onchange=function(){
+          currentMaterialMode=materialSel.value;
+          applyMaterialMode(THREE);
+          if(gtaoPass)gtaoPass.enabled=false;
+        };
         if(maxStep>1){
           $('tjsstepwrap').style.display='flex';
           slider.min=1;slider.max=maxStep;slider.value=maxStep;

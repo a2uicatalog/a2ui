@@ -80,8 +80,13 @@ just looks plainer.
   `public/vendors/threejs/addons/controls/OrbitControls.js` (official orbit-camera add-on, unmodified),
   `public/vendors/threejs/addons/environments/RoomEnvironment.js` (official procedural studio-lighting
   environment, unmodified — used as `PMREMGenerator` input for real reflections/refraction; builds its scene
-  from primitives only, no external HDRI asset), and `public/vendors/threejs/LICENSE` (verbatim, alongside the
-  source) — fetched, sha256/sha1/sha512-verified and extracted by `scripts/fetch_threejs.py` from the pinned
+  from primitives only, no external HDRI asset), `public/vendors/threejs/addons/postprocessing/` (official
+  `EffectComposer`/`RenderPass`/`Pass`/`ShaderPass`/`MaskPass`/`OutputPass`/`GTAOPass`, unmodified — real-time
+  ambient occlusion for the Brick Design Lab's Three.js viewer) with their own shader/math dependencies
+  under `public/vendors/threejs/addons/shaders/` (`CopyShader`/`OutputShader`/`GTAOShader`/
+  `PoissonDenoiseShader`) and `public/vendors/threejs/addons/math/SimplexNoise.js`, and
+  `public/vendors/threejs/LICENSE` (verbatim, alongside the source) — fetched, sha256/sha1/sha512-verified and
+  extracted by `scripts/fetch_threejs.py` from the pinned
   npm tarball (`https://registry.npmjs.org/three/-/three-0.186.1.tgz`,
   sha256 `8cd068708ea44f2c73c944b1cead2ba2f0d5c15c8fc194e5700f4e4f4a033fe7`), same fetch/verify/vendor discipline
   as `scripts/ldraw/fetch_library.py`.

@@ -64,6 +64,27 @@ FILES = {
     # environment-map work (2026-09-29) -- real reflections on chrome/metal, real refraction on trans-clear
     # parts. No external HDRI asset/licensing needed: RoomEnvironment builds its scene from primitives only.
     "package/examples/jsm/environments/RoomEnvironment.js": "addons/environments/RoomEnvironment.js",
+    # Postprocessing (2026-09-30, threejs-viewer-feature-survey-and-priority item 2): GTAO (ambient
+    # occlusion). Full real dependency closure (traced by reading every file's own import list, not guessed)
+    # -- EffectComposer/RenderPass/OutputPass/ShaderPass/MaskPass/Pass are the composer scaffolding every pass
+    # needs; GTAOPass is the actual effect; CopyShader/OutputShader/GTAOShader/PoissonDenoiseShader/
+    # SimplexNoise are its own shader-level dependencies. NOT OutlinePass (item 3, click-to-inspect's
+    # highlight): OutlinePass masks whole scene OBJECTS, which doesn't map onto ONE instance inside an
+    # InstancedMesh without fragile camera-layer-toggling workarounds (it would outline every instance in
+    # that bucket, not just the clicked one) -- used a simpler, well-established inflated-backface-shell
+    # technique instead, which needs no extra vendoring at all.
+    "package/examples/jsm/postprocessing/EffectComposer.js": "addons/postprocessing/EffectComposer.js",
+    "package/examples/jsm/postprocessing/RenderPass.js": "addons/postprocessing/RenderPass.js",
+    "package/examples/jsm/postprocessing/Pass.js": "addons/postprocessing/Pass.js",
+    "package/examples/jsm/postprocessing/ShaderPass.js": "addons/postprocessing/ShaderPass.js",
+    "package/examples/jsm/postprocessing/MaskPass.js": "addons/postprocessing/MaskPass.js",
+    "package/examples/jsm/postprocessing/OutputPass.js": "addons/postprocessing/OutputPass.js",
+    "package/examples/jsm/postprocessing/GTAOPass.js": "addons/postprocessing/GTAOPass.js",
+    "package/examples/jsm/shaders/CopyShader.js": "addons/shaders/CopyShader.js",
+    "package/examples/jsm/shaders/OutputShader.js": "addons/shaders/OutputShader.js",
+    "package/examples/jsm/shaders/GTAOShader.js": "addons/shaders/GTAOShader.js",
+    "package/examples/jsm/shaders/PoissonDenoiseShader.js": "addons/shaders/PoissonDenoiseShader.js",
+    "package/examples/jsm/math/SimplexNoise.js": "addons/math/SimplexNoise.js",
 }
 
 
