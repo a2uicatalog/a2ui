@@ -510,6 +510,32 @@ function tjsToWorld(p,q,r,instPos){
   return [(rp[0]+instPos[0])/20,-(rp[1]+instPos[1])/20,(rp[2]+instPos[2])/20];
 }
 
+// Row-major 16-value flat matrix, consumable directly via THREE.Matrix4.prototype.set(...values) (three.js's
+// own .set() takes its 16 arguments in natural row-major reading order, though .elements is stored
+// column-major internally -- that's three's own API, not a convention invented here). Deliberately does NOT
+// include tjsToWorld's D=diag(1/20,-1/20,1/20) scale/flip -- only the part's own rotation R(r), its quant
+// scale, and the instance's LDU translation, i.e. worldPreD = R(r)*(p/q) + instPos. D belongs on the
+// InstancedMesh's own object-level .scale instead (set once per bucket, not per instance) -- found live
+// 2026-09-30: baking D (a mirror, determinant -1) into every INSTANCE's matrix broke rendering, because
+// three.js decides front-face winding and the FLIP_SIDED normal correction from object.matrixWorld's
+// determinant alone (a CPU-side, per-OBJECT check -- see WebGLRenderer's frontFaceCW and the
+// defaultnormal_vertex chunk), with no visibility into what an instanced vertex shader's own instanceMatrix
+// does per-instance. Every instance shared the SAME mirror, so hoisting it onto the object (where that check
+// actually looks) is the correct fix, not a workaround -- it also makes the instancing-only normal transform
+// (mat3(instanceMatrix) applied directly, a shortcut that is only exact for pure rotation+uniform-scale)
+// correct again, since a bare R(r)/q per instance is exactly that. Tested by composing this function's output
+// with D exactly the way render() does (object scale applied after the instance matrix) and comparing the
+// result to tjsToWorld's own point-by-point output in test_threejs_view_math.mjs, not just re-derived by eye.
+function tjsInstanceMatrixRowMajor(r,instPos,q){
+  var m=TJS_PART_ROT[r],s=1/q;
+  return [
+    m[0]*s, m[1]*s, m[2]*s, instPos[0],
+    m[3]*s, m[4]*s, m[5]*s, instPos[1],
+    m[6]*s, m[7]*s, m[8]*s, instPos[2],
+    0,      0,      0,      1
+  ];
+}
+
 function tjsSub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
 function tjsCross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
 function tjsDot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
@@ -584,15 +610,29 @@ var TJS=(function(){
   // uses), and merging them into one geometry would force the WHOLE part to the instance's colour, painting
   // over any printed detail. colourKey is null for a 'main' group (tint to the instance's real colour) or
   // the group's own fixed hex string (print colour, independent of the instance).
-  function geometriesFor(THREE,part,r,instPos){
-    var q=part.quant||1,out=[];
+  //
+  // Unlike the old per-instance geometriesFor (kept in git history), this builds RAW, untransformed local
+  // geometry -- no tjsToWorld call, no instPos, no rotation baked in -- so it can be built ONCE per part id
+  // and shared by every instance of that part via InstancedMesh.setMatrixAt(index, ...) instead of one real
+  // Mesh (and one real draw call) per placed brick. That per-instance-mesh approach is what capped how large
+  // a build could actually render (real kits like the Death Star hit thousands of draw calls and the design
+  // page had to artificially truncate at TRAY_MAX).
+  //
+  // The (a,c,b) swap below is UNCONDITIONAL, independent of the Y-flip/mirror question entirely: it corrects
+  // the real LDraw part JSON's own raw vertex order to three.js's CCW-front convention, which was already
+  // needed before any instancing/mirror math enters the picture. Confirmed empirically 2026-09-30 (not just
+  // reasoned about) by trying all three real combinations on a single real part: object-level mirror + no
+  // swap -> wrong (culling flips, so we see the part's own hollow underside/tube geometry instead of its
+  // outer shell); object-level mirror + swap -> correct; per-instance-baked mirror (object-level identity) +
+  // swap -> ALSO wrong, for a different reason -- see tjsInstanceMatrixRowMajor's comment on why the mirror
+  // belongs on the InstancedMesh's own .scale, not folded into the per-instance matrix.
+  function localGeometryGroups(THREE,part){
+    var out=[];
     part.triangles.forEach(function(g){
       if(g.colour==='edge')return;   // edge-line colour groups carry no fill triangles worth rendering here
       var positions=[],verts=g.pos;
       for(var i=0;i+2<verts.length;i+=3){
-        // handedness flips under tjsToWorld's Y-negate, same fix as the standalone demo: swap the last two
-        // vertices per triangle to keep outward-facing winding (confirmed visually, see threejs-demo).
-        var a=tjsToWorld(verts[i],q,r,instPos),b=tjsToWorld(verts[i+1],q,r,instPos),c=tjsToWorld(verts[i+2],q,r,instPos);
+        var a=verts[i],b=verts[i+1],c=verts[i+2];
         positions.push(a[0],a[1],a[2],c[0],c[1],c[2],b[0],b[1],b[2]);
       }
       if(!positions.length)return;
@@ -675,6 +715,11 @@ var TJS=(function(){
     while(group.children.length){
       var m=group.children.pop();
       if(m.geometry)m.geometry.dispose();
+      // InstancedMesh owns a second GPU resource beyond its geometry -- the per-instance matrix buffer --
+      // freed via its own dispose() (fires the 'dispose' event the renderer listens for). Materials are
+      // deliberately NOT disposed here: materialForCode/materialForFixedHex cache and reuse them across
+      // renders (switching sets shouldn't pay to rebuild the same colour's material every time).
+      if(m.isInstancedMesh)m.dispose();
       group.remove(m);
     }
   }
@@ -689,36 +734,59 @@ var TJS=(function(){
     camera.near=fit.near;camera.far=fit.far;camera.updateProjectionMatrix();
     controls.target.set(fit.target[0],fit.target[1],fit.target[2]);controls.update();
   }
-  // partEntries: one entry per partsModel ROW (not per mesh -- a decorated part's multiple colour-group
-  // meshes must move together), {meshes:[...], step}. Shared by both the Phase 1 scrubber and Phase 2
-  // animate loop below.
+  // partEntries: one entry per partsModel ROW (not per instance slot -- a decorated part's multiple
+  // colour-group instances must move together), {refs:[...], step}. Each ref is {instMesh, index, matrix}:
+  // matrix is that row's own real placement (row-major, see tjsInstanceMatrixRowMajor), instMesh/index say
+  // WHERE inside a shared InstancedMesh this row's geometry lives. Shared by both the Phase 1 scrubber and
+  // Phase 2 animate loop below.
   var partEntries=[];
+  // A pure zero-scale transform: every vertex collapses to the origin, zero screen area, effectively
+  // invisible -- the InstancedMesh equivalent of the old per-Mesh `.visible=false` (InstancedMesh has no
+  // native per-instance visibility flag; this is the standard, version-agnostic way to hide one instance
+  // without touching the shared geometry or material, or reshuffling other instances' indices).
+  var HIDDEN_ROW_MAJOR=[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
+  function markGroupDirty(){
+    group.children.forEach(function(c){if(c.isInstancedMesh)c.instanceMatrix.needsUpdate=true;});
+  }
   // Build-step scrubber (Phase 1 of the "View in Three.js" motion work) -- a static cumulative reveal via
-  // partsModel's own real `step` field (row[6], already present in every real build). All meshes are built
-  // and added to `group` once (so fitCamera sees the FULL final build and the camera never jumps as you
-  // scrub); the scrubber only ever toggles mesh.visible, never rebuilds geometry.
+  // partsModel's own real `step` field (row[6], already present in every real build). Every instance is
+  // placed once at render() time (so fitCamera sees the FULL final build and the camera never jumps as you
+  // scrub); the scrubber only ever swaps an instance's matrix between its real placement and the hidden
+  // (zero-scale) one, never rebuilds geometry.
   function applyStep(step){
-    partEntries.forEach(function(e){e.meshes.forEach(function(m){m.visible=e.step<=step;});});
+    var THREE=mod.THREE,m4=new THREE.Matrix4();
+    partEntries.forEach(function(e){
+      var els=e.step<=step?null:HIDDEN_ROW_MAJOR;
+      e.refs.forEach(function(ref){
+        m4.set.apply(m4,els||ref.matrix);
+        ref.instMesh.setMatrixAt(ref.index,m4);
+      });
+    });
+    markGroupDirty();
   }
   // Phase 2: the live canvas renderer's continuous drop/bounce/settle/hold/lift-out "Animate" loop, ported
   // from atoms_brick.gs's status(t) (constants FALL/SETTLE/HOLD/LIFT/DROP and the stagger/dst timing are
   // copied from there verbatim -- this is the same real motion, not a reinvented one). Runs per-frame on
-  // partEntries (not partsModel directly), reusing the exact meshes the scrubber already built.
+  // partEntries (not partsModel directly), reusing the same instance slots the scrubber already placed.
   //
-  // Materials are cached/shared by colour (materialForCode/materialForFixedHex) so many parts of the same
-  // colour reuse ONE material object -- mutating .opacity per frame would then wrongly fade every part of
-  // that colour together, not just the one currently animating. Each mesh gets its OWN cloned material for
-  // the duration of animate mode (restored to the shared cache instance on stop, so scrubbing/static view
-  // stay cheap and unaffected).
+  // One real behaviour change from the old per-Mesh version: InstancedMesh shares ONE material across
+  // potentially thousands of instances (that sharing IS the performance win), so there is no per-instance
+  // .opacity to fade the way a real, separate Mesh had -- true per-instance alpha would need a custom
+  // instanced vertex attribute wired into the material's shader (onBeforeCompile), which is real, well-known
+  // three.js territory but its own scoped piece of work, not bundled into this pass. Standing in for the
+  // fade here: the same 0..1 progress value now scales the instance's own placement matrix (the part visibly
+  // grows in as it lands, shrinks out as it lifts away) instead of fading its opacity -- a different-looking
+  // but equally legible "this part is arriving/leaving" cue, applied via a single Matrix4 reused across the
+  // whole frame (no per-frame allocation, no per-instance material clone needed any more).
   var animRAF=null,animLastT=0,animT=0,animPlaying=false;
   function stopAnimate(){
     animPlaying=false;
     if(animRAF)cancelAnimationFrame(animRAF);
     animRAF=null;
-    partEntries.forEach(function(e){e.meshes.forEach(function(m){
-      m.position.set(0,0,0);
-      if(m.userData.sharedMaterial){m.material=m.userData.sharedMaterial;delete m.userData.sharedMaterial;}
-    });});
+    // No per-instance matrix to restore here: every stop site (the Animate button, and render() itself at
+    // the top of a fresh load) immediately calls applyStep() right after, which sets every instance back to
+    // a consistent state -- restoring twice would be redundant, not restoring at all would leave the last
+    // animated frame's matrices on screen.
   }
   function startAnimate(){
     var N=partEntries.length;
@@ -730,16 +798,12 @@ var TJS=(function(){
     partEntries.forEach(function(e,i){
       e.t0=i*stagger;e.td=tBuild+HOLD+(N-1-i)*dst;
       e.jx=(Math.random()-0.5)*7;e.jz=(Math.random()-0.5)*7;
-      e.meshes.forEach(function(m){
-        m.userData.sharedMaterial=m.material;
-        m.material=m.material.clone();
-        m.material.transparent=true;   // opacity now animates every frame regardless of the base material's own mode
-      });
     });
     var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     animT=reduced?tBuild+1:tBuild*0.7;
     animLastT=performance.now();
     animPlaying=true;
+    var THREE=mod.THREE,m4=new THREE.Matrix4();
     (function frame(now){
       if(!animPlaying)return;
       var dt=Math.min(0.05,(now-animLastT)/1000);animLastT=now;
@@ -750,12 +814,25 @@ var TJS=(function(){
         else if(tf<0)s=-1;
         else if(tf<FALL){var p=tf/FALL,ee=1-p;s=1;oy=DROP*(1-p*p);ox=e.jx*ee*ee;oz=e.jz*ee*ee;a=Math.min(1,p*5);}
         else{var tb=tf-FALL;if(tb<SETTLE){s=1;oy=0.22*Math.exp(-9*tb)*Math.abs(Math.sin(15*tb));}else s=0;}
-        e.meshes.forEach(function(m){
-          m.visible=(s!==-1);
-          m.position.set(ox,oy,oz);
-          m.material.opacity=a;
+        e.refs.forEach(function(ref){
+          if(s===-1){m4.set.apply(m4,HIDDEN_ROW_MAJOR);}
+          else{
+            // ox/oy/oz are real world-unit offsets (DROP etc. are tuned in world units, matching the live
+            // canvas renderer's own physics constants). ref.matrix is the PRE-D matrix now (see
+            // tjsInstanceMatrixRowMajor's comment) -- its translation is in raw LDU units, D-scaled down by
+            // the InstancedMesh's own object-level .scale AFTER this. So the offset needs D's inverse
+            // (diag(20,-20,20)) applied here first, or it would land 20x too small and Y unflipped once D
+            // is applied on top.
+            var els=ref.matrix;
+            m4.set(els[0]*a,els[1]*a,els[2]*a,els[3]+ox*20,
+                   els[4]*a,els[5]*a,els[6]*a,els[7]-oy*20,
+                   els[8]*a,els[9]*a,els[10]*a,els[11]+oz*20,
+                   0,0,0,1);
+          }
+          ref.instMesh.setMatrixAt(ref.index,m4);
         });
       });
+      markGroupDirty();
       animRAF=requestAnimationFrame(frame);
     })(animLastT);
   }
@@ -775,21 +852,52 @@ var TJS=(function(){
       var ids=Array.from(new Set(partsModel.map(function(row){return row[0]})));
       return Promise.all(ids.map(function(id){return fetchMesh(id).catch(function(){return null})})).then(function(meshes){
         var byId={};ids.forEach(function(id,i){byId[id]=meshes[i]});
-        var ok=0,skipped=0,maxStep=1;
+        // localGeoCache: one shared, untransformed geometry set per part id, built once and reused by every
+        // instance of that part below (fresh per render() call -- clearGroup() disposed the previous
+        // render's geometries, so this must not persist across calls). buckets: one entry per (part id,
+        // triangle-group index, resolved material) combination -- every instance sharing a bucket becomes
+        // ONE InstancedMesh, which is the actual performance win over one real Mesh (and draw call) per
+        // placed brick. ref objects are pushed into BOTH a bucket's own list and that row's partEntries
+        // entry, then filled in-place with {instMesh,index} once each bucket's InstancedMesh exists below --
+        // so partEntries end up fully resolved with no separate key-matching pass needed.
+        var localGeoCache={},buckets={},ok=0,skipped=0,maxStep=1;
         partsModel.forEach(function(row){
           var mesh=byId[row[0]];
           if(!mesh){skipped++;return}
           var instPos=[row[1],row[2],row[3]],r=row[4]|0,code=row[5]|0,step=row[6]|0||1;
           maxStep=Math.max(maxStep,step);
-          var entryMeshes=[];
-          geometriesFor(THREE,mesh,r,instPos).forEach(function(g){
-            var mat=g.colourKey?materialForFixedHex(THREE,g.colourKey):materialForCode(THREE,code,ct);
-            var m=new THREE.Mesh(g.geo,mat);
-            group.add(m);
-            entryMeshes.push(m);
+          if(!localGeoCache[row[0]])localGeoCache[row[0]]=localGeometryGroups(THREE,mesh);
+          var groups=localGeoCache[row[0]];
+          if(!groups.length){skipped++;return}
+          var mrow=tjsInstanceMatrixRowMajor(r,instPos,mesh.quant||1);
+          var refs=[];
+          groups.forEach(function(g,gi){
+            var matKey=g.colourKey?('h'+g.colourKey):('c'+code);
+            var key=row[0]+'|'+gi+'|'+matKey;
+            if(!buckets[key])buckets[key]={geo:g.geo,colourKey:g.colourKey,code:code,refs:[]};
+            var ref={matrix:mrow,instMesh:null,index:-1};
+            buckets[key].refs.push(ref);
+            refs.push(ref);
           });
-          if(entryMeshes.length)partEntries.push({meshes:entryMeshes,step:step});
+          partEntries.push({refs:refs,step:step});
           ok++;
+        });
+        var m4=new THREE.Matrix4();
+        Object.keys(buckets).forEach(function(key){
+          var b=buckets[key];
+          var mat=b.colourKey?materialForFixedHex(THREE,b.colourKey):materialForCode(THREE,b.code,ct);
+          var instMesh=new THREE.InstancedMesh(b.geo,mat,b.refs.length);
+          instMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);   // scrubber/animate rewrite this every step/frame
+          // The LDraw-Y-down -> three.js-Y-up mirror + /20 LDU-to-world scale (tjsToWorld's own D, see
+          // tjsInstanceMatrixRowMajor's comment) lives HERE, once per bucket, not inside any instance matrix.
+          instMesh.scale.set(1/20,-1/20,1/20);
+          b.refs.forEach(function(ref,idx){
+            m4.set.apply(m4,ref.matrix);
+            instMesh.setMatrixAt(idx,m4);
+            ref.instMesh=instMesh;ref.index=idx;
+          });
+          instMesh.instanceMatrix.needsUpdate=true;
+          group.add(instMesh);
         });
         fitCamera(THREE);
         var slider=$('tjsstep'),playBtn=$('tjsplay');
