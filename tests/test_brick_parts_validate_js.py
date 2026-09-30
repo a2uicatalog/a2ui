@@ -12,3 +12,7 @@ def test_brick_parts_validator_matches_all_fixtures():
                            capture_output=True, text=True, timeout=60)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "15/15 fixtures pass" in proc.stdout, proc.stdout
+    # scripts/brick_models/brick_validate_shared.js -- the Three.js viewer's copy of this same validator,
+    # extracted verbatim from atoms_brick.gs -- must keep agreeing with the spec of record on every fixture
+    # and special test case, not just on its own count.
+    assert "26/26 shared-file parity checks pass" in proc.stdout, proc.stdout
