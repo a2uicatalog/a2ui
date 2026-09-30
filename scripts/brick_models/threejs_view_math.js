@@ -29,6 +29,32 @@ function tjsToWorld(p,q,r,instPos){
   return [(rp[0]+instPos[0])/20,-(rp[1]+instPos[1])/20,(rp[2]+instPos[2])/20];
 }
 
+// Row-major 16-value flat matrix, consumable directly via THREE.Matrix4.prototype.set(...values) (three.js's
+// own .set() takes its 16 arguments in natural row-major reading order, though .elements is stored
+// column-major internally -- that's three's own API, not a convention invented here). Deliberately does NOT
+// include tjsToWorld's D=diag(1/20,-1/20,1/20) scale/flip -- only the part's own rotation R(r), its quant
+// scale, and the instance's LDU translation, i.e. worldPreD = R(r)*(p/q) + instPos. D belongs on the
+// InstancedMesh's own object-level .scale instead (set once per bucket, not per instance) -- found live
+// 2026-09-30: baking D (a mirror, determinant -1) into every INSTANCE's matrix broke rendering, because
+// three.js decides front-face winding and the FLIP_SIDED normal correction from object.matrixWorld's
+// determinant alone (a CPU-side, per-OBJECT check -- see WebGLRenderer's frontFaceCW and the
+// defaultnormal_vertex chunk), with no visibility into what an instanced vertex shader's own instanceMatrix
+// does per-instance. Every instance shared the SAME mirror, so hoisting it onto the object (where that check
+// actually looks) is the correct fix, not a workaround -- it also makes the instancing-only normal transform
+// (mat3(instanceMatrix) applied directly, a shortcut that is only exact for pure rotation+uniform-scale)
+// correct again, since a bare R(r)/q per instance is exactly that. Tested by composing this function's output
+// with D exactly the way render() does (object scale applied after the instance matrix) and comparing the
+// result to tjsToWorld's own point-by-point output in test_threejs_view_math.mjs, not just re-derived by eye.
+function tjsInstanceMatrixRowMajor(r,instPos,q){
+  var m=TJS_PART_ROT[r],s=1/q;
+  return [
+    m[0]*s, m[1]*s, m[2]*s, instPos[0],
+    m[3]*s, m[4]*s, m[5]*s, instPos[1],
+    m[6]*s, m[7]*s, m[8]*s, instPos[2],
+    0,      0,      0,      1
+  ];
+}
+
 function tjsSub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
 function tjsCross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
 function tjsDot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}

@@ -24,6 +24,19 @@ vm.createContext(ctx);
 vm.runInContext(gs, ctx);
 const kit = vm.runInContext("_brickKit()", ctx);
 
+// scripts/brick_models/brick_validate_shared.js -- a second copy of validateParts() and its pure helpers,
+// extracted verbatim so scripts/brick_models/build_design_page.py's Three.js viewer can show the same real
+// validation checklist atoms_brick.gs's drawChecks() does, without a THIRD hand-written copy of this logic.
+// Loaded here (threejs_view_math.js first, for TJS_PART_ROT -- confirmed byte-identical to atoms_brick.gs's
+// own PART_ROT) so this same fixture-based parity gate proves the extraction hasn't drifted, exactly the
+// role it already plays for the Python twin (renderers/brick_parts_validate.py).
+const sharedCtx = { console };
+vm.createContext(sharedCtx);
+vm.runInContext(readFileSync(new URL("scripts/brick_models/threejs_view_math.js", root), "utf8"), sharedCtx);
+vm.runInContext(readFileSync(new URL("scripts/brick_models/brick_validate_shared.js", root), "utf8"), sharedCtx);
+const validatePartsPure = (list, meshesById) =>
+  vm.runInContext("validatePartsPure", sharedCtx)(list, list.map(e => meshesById[e.p]));
+
 const PART_ID_ALIAS = {"3023": "3023b", "3665": "3665a", "3660": "3660a", "60481": "60481a", "4032": "4032a",
                         "2654": "2654a", "4073": "6141"};
 const meshCache = {};
@@ -39,10 +52,33 @@ for (const f of F.fixtures) for (const p of f.parts) loadMesh(p[0]);
 
 const normPairs = c => JSON.stringify(c.map(pr => [...pr].sort((a, b) => a - b)).sort());
 
+// Cross-checks brick_validate_shared.js's validatePartsPure against the SAME call's real atoms_brick.gs
+// result, on every field either side of this test suite actually asserts on -- the extraction is only
+// proven if it agrees with the spec of record on the exact same input, not just on its own fixture pass/fail.
+let sharedPass = 0, sharedFail = 0;
+function crossCheckShared(list, label) {
+  const kitR = kit.validateParts(list);
+  const sharedR = validatePartsPure(list, meshCache);
+  const fields = ["studConnections", "pinConnections", "hingeConnections", "axleConnections", "clipConnections",
+                  "towballConnections", "connections", "overlaps", "balance"];
+  const mismatches = fields.filter(k => kitR[k] !== sharedR[k]);
+  if (JSON.stringify(kitR.floating) !== JSON.stringify(sharedR.floating)) mismatches.push("floating");
+  if (normPairs(kitR.collisions) !== normPairs(sharedR.collisions)) mismatches.push("collisions");
+  if (mismatches.length) {
+    console.error(`  ✗ shared-parity: ${label} disagrees on [${mismatches.join(", ")}]`);
+    console.error("      atoms_brick.gs:", JSON.stringify(fields.reduce((o, k) => (o[k] = kitR[k], o), {floating: kitR.floating, collisions: kitR.collisions})));
+    console.error("      shared        :", JSON.stringify(fields.reduce((o, k) => (o[k] = sharedR[k], o), {floating: sharedR.floating, collisions: sharedR.collisions})));
+    sharedFail++;
+  } else {
+    sharedPass++;
+  }
+  return kitR;
+}
+
 let pass = 0, fail = 0;
 for (const f of F.fixtures) {
   const list = f.parts.map(p => ({p: PART_ID_ALIAS[p[0]] || p[0], x: p[1], y: p[2], z: p[3], r: p[4]}));
-  const r = kit.validateParts(list);
+  const r = crossCheckShared(list, f.name);
   const exp = f.expect;
   const expBalance = exp.balance === "none" ? "fail" : exp.balance;
   const ok = r.studConnections === exp.stud_connections &&
@@ -64,10 +100,10 @@ if (fail) process.exit(1);
 // Axle-through-hole mated pair exemption test (2026-09-28)
 loadMesh('3700');
 loadMesh('3704');
-const rAxle = kit.validateParts([
+const rAxle = crossCheckShared([
   {p: '3700', x: 0, y: -24, z: 0, r: 0},
   {p: '3704', x: 0, y: -14, z: 0, r: 1}
-]);
+], 'axle_through_hole');
 if (rAxle.axleConnections !== 1 || rAxle.overlaps !== 0 || rAxle.collisions.length !== 0) {
   console.error("Axle-through-hole test failed:", rAxle);
   process.exit(1);
@@ -77,10 +113,10 @@ console.log("  ✓ axle_through_hole_mating_and_exemption");
 // Clip-around-bar mated pair exemption test (2026-09-28)
 loadMesh('2921');
 loadMesh('4085c');
-const rClip = kit.validateParts([
+const rClip = crossCheckShared([
   {p: '2921', x: 0, y: -24, z: 0, r: 0},
   {p: '4085c', x: 0, y: -24, z: 0, r: 0}
-]);
+], 'clip_around_bar');
 if (rClip.clipConnections !== 1 || rClip.overlaps !== 0 || rClip.collisions.length !== 0) {
   console.error("Clip-around-bar test failed:", rClip);
   process.exit(1);
@@ -103,10 +139,10 @@ const M_TECHNIC_33_9 = [0.0, 0.0, -1.0, -0.558, 0.83, 0.0, 0.83, 0.558, 0.0];
 // Real 2429/2430 mated hinge at ~29.7 degrees (8880-1 Super Car) -- must NOT false-collide under OBB/SAT.
 loadMesh('2429');
 loadMesh('2430');
-const rHinge = kit.validateParts([
+const rHinge = crossCheckShared([
   {p: '2429', x: 0, y: 0, z: 0, r: 0},
   {p: '2430', x: 0, y: 0, z: 0, r: M_HINGE_29}
-]);
+], 'continuous_rotation_real_hinge');
 if (rHinge.overlaps !== 0 || rHinge.collisions.some(c => c[0] === 0 && c[1] === 1)) {
   console.error("Real hinge matrix (M_HINGE_29) false-collision test failed:", rHinge);
   process.exit(1);
@@ -115,10 +151,10 @@ console.log("  ✓ continuous_rotation_real_hinge_no_false_collision");
 
 // Deliberate overlap under the SAME M_HINGE_29 matrix (offset into collision range) -- must BE detected, not
 // silently missed by the matrix branch.
-const rHingeColl = kit.validateParts([
+const rHingeColl = crossCheckShared([
   {p: '2429', x: 0, y: 0, z: 0, r: 0},
   {p: '2430', x: -6.28, y: 0, z: 23.64, r: M_HINGE_29}
-]);
+], 'continuous_rotation_deliberate_collision');
 if (rHingeColl.overlaps < 1 || !rHingeColl.collisions.some(c => c[0] === 0 && c[1] === 1)) {
   console.error("Deliberate rotated-box collision test failed:", rHingeColl);
   process.exit(1);
@@ -130,10 +166,10 @@ console.log("  ✓ continuous_rotation_deliberate_collision_detected");
 loadMesh('3023');
 for (const [name, m] of [['metro_30', M_METRO_30], ['metro_60', M_METRO_60], ['metro_150', M_METRO_150],
                           ['pantograph_16_5', M_PANTOGRAPH_16_5], ['technic_33_9', M_TECHNIC_33_9]]) {
-  const r = kit.validateParts([
+  const r = crossCheckShared([
     {p: '3023', x: 0, y: 0, z: 0, r: 0},
     {p: '3023', x: 50, y: 0, z: 50, r: m}
-  ]);
+  ], 'continuous_rotation_' + name);
   if (r.overlaps !== 0 || r.collisions.some(c => c[0] === 0 && c[1] === 1)) {
     console.error("Real matrix (" + name + ") false-collision test failed:", r);
     process.exit(1);
@@ -145,10 +181,10 @@ for (const [name, m] of [['metro_30', M_METRO_30], ['metro_60', M_METRO_60], ['m
 // as tests/test_brick_parts_validate.py's Python-side towball tests.
 loadMesh('3184');
 loadMesh('3730');
-const rTowball = kit.validateParts([
+const rTowball = crossCheckShared([
   {p: '3184', x: 0, y: 0, z: 0, r: 0},
   {p: '3730', x: 0, y: 0, z: 0, r: 0}
-]);
+], 'towball_mating');
 // overlaps is the real part-vs-part collision count; collisions may legitimately also carry floor-
 // penetration entries ([-1, i]) unrelated to the mated-pair exemption being tested here (twin of the
 // Python test's `assert report['overlaps'] == 0; assert [0, 1] not in report['collisions']` pattern).
@@ -159,13 +195,15 @@ if (rTowball.towballConnections !== 1 || rTowball.overlaps !== 0 ||
 }
 console.log("  ✓ towball_mating_and_exemption");
 
-const rTowballFar = kit.validateParts([
+const rTowballFar = crossCheckShared([
   {p: '3184', x: 0, y: 0, z: 0, r: 0},
   {p: '3730', x: 200, y: 0, z: 0, r: 0}
-]);
+], 'towball_far_apart');
 if (rTowballFar.towballConnections !== 0) {
   console.error("Towball far-apart false-mate test failed:", rTowballFar);
   process.exit(1);
 }
 console.log("  ✓ towball_far_apart_no_false_mate");
 
+console.log(`${sharedPass}/${sharedPass + sharedFail} shared-file parity checks pass`);
+if (sharedFail) process.exit(1);

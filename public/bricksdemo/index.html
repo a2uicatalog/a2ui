@@ -27,7 +27,7 @@ a{color:inherit}
 <h1>Brick Build 3D</h1>
 <p>Pick a model from the dropdown, drag to orbit, or switch to Instructions and use the slider to step through the build. Each model is checked live: no collisions, every brick reaches the baseplate, and the balance point sits inside the footprint. The models are generated from equations and layered voxel rules, then tiled into bricks with a running bond so the layers lock together.</p>
 </div>
-<div style="border-radius:14px;overflow:hidden;color:#0f1c28;font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0);"><div style="position:relative;height:560px;"><canvas id="brk339d90c" role="img" aria-label="Animated 3D brick model" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas></div><div id="brk339d90s" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div><div id="brk339d90n" style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 14px 0;font-size:12px;"></div><ul id="brk339d90k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul><div id="brk339d90p" style="overflow-x:auto;padding:0 14px 12px;"></div></div><script>(function(){var LEGO_MATERIAL_PROFILE = {"BH":1.2,"PL":0.4,"SR":0.3,"SH":0.18,"SN":10,"studs":true};(function _brickMount(K, cfg, U) {
+<div style="border-radius:14px;overflow:hidden;color:#0f1c28;font:13px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(120% 90% at 50% 30%,#fafbfd,#cdd6e0);"><div style="position:relative;height:560px;"><canvas id="brk339d90c" role="img" aria-label="Animated 3D brick model" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;"></canvas></div><div id="brk339d90s" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:8px 14px 0;"></div><div id="brk339d90n" style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 14px 0;font-size:12px;"></div><p id="brk339d90i" style="margin:0;padding:6px 14px 0;font-size:12px;color:#55636f;" hidden></p><ul id="brk339d90k" style="list-style:none;margin:0;padding:8px 14px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;"></ul><div id="brk339d90p" style="overflow-x:auto;padding:0 14px 12px;"></div></div><script>(function(){var LEGO_MATERIAL_PROFILE = {"BH":1.2,"PL":0.4,"SR":0.3,"SH":0.18,"SN":10,"studs":true};(function _brickMount(K, cfg, U) {
   var $ = function(s) { return document.getElementById(U + s); };
   var cv = $('c');
   if (!cv) return;
@@ -168,8 +168,19 @@ a{color:inherit}
     box.appendChild(E('div', 'color:#55636f;font-size:11px;padding-top:4px;',
                       'indicative pricing formula, not BrickLink data · total €' + report.cost.toFixed(2)));
   }
+  // Click-to-inspect readout (2026-09-30, data-driven parity with the Three.js viewer's own click-to-inspect):
+  // part id + real colour name, same PALNAME fallback-to-hex convention drawParts()'s cost table already
+  // uses for an unlisted colour. part is null when the click hit empty space (clears the readout).
+  function drawInspect(part) {
+    var box = $('i');
+    if (!box) return;
+    if (!part) { box.hidden = true; box.textContent = ''; return; }
+    box.hidden = false;
+    box.textContent = 'Selected: ' + part.p + ' (' + (K.PALNAME[part.c] || part.c) + ')';
+  }
 
   buildScrubber();
+  atom.onInspect(drawInspect);
   atom.onStats(function() {
     var M = atom.model();
     // K.validate() is grid/box-specific (b.x/y/z/w/d/h on an integer stud grid) and can't read real parts data
@@ -1614,7 +1625,7 @@ a{color:inherit}
     var PM;   // parts-mode stats, parallels M for the bricks path: {W,D,L,steps}, in engine units
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
     var tBuild,tCycle,T0,tNow=0,az=0.7,el=0.52,userAz=0,userEl=0,dragging=false,lastX=0,lastY=0;
-    var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,raf=0;
+    var W=0,H=0,dpr=1,visible=true,dirtyView=true,fps=0,frames=0,lastStat=0,onStats=null,onInspect=null,raf=0;
 
     function occ(x,y,z){
       if(x<0||z<0||y<0||x>=M.W||z>=M.D||y>=M.L)return 0;
@@ -1648,6 +1659,35 @@ a{color:inherit}
         if(nx*(fx-ctr[0])+ny*(fy-ctr[1])+nz*(fz-ctr[2])<0){nx=-nx;ny=-ny;nz=-nz;}
         pushF(out,[v0[0],v0[1],v0[2],v1[0],v1[1],v1[2],v2[0],v2[1],v2[2],v3[0],v3[1],v3[2]],[nx,ny,nz],e.c,15,a);
       });
+    }
+    // Click-to-inspect (2026-09-30, data-driven parity with the Three.js viewer's own click-to-inspect):
+    // the SAME 8-corner bounding-box computation genPartBox already does above, factored out as its own
+    // function rather than refactoring genPartBox to call it -- this file is the live, deployed renderer,
+    // and a pure addition (zero lines of already-shipped code touched) is strictly lower-risk than even a
+    // correct-looking refactor of the existing canvas-2D fallback path. Deliberately NOT worldBoxes()
+    // (validateParts's own box helper): that operates in real LDU/mm validator-space, a different coordinate
+    // system entirely from this engine's own stud-pitch render space (partTp/partEngineOf) -- confirmed by
+    // reading both before writing this, not assumed from the names alone.
+    function partCorners(e,ox,oy,oz){
+      var pmesh=partMeshCache[e.p];
+      if(!pmesh||pmesh==='loading'||pmesh==='error'||!pmesh.bounds)return null;
+      var tp=partTp(pmesh,e.r),b=pmesh.bounds,mn=b.min,mx=b.max,base=partEngineOf(e);
+      var cx=base[0]+ox,cy=base[1]+oy,cz=base[2]+oz,corners=[];
+      for(var xi=0;xi<2;xi++)for(var yi=0;yi<2;yi++)for(var zi=0;zi<2;zi++){
+        var p=tp([xi?mx[0]:mn[0],yi?mx[1]:mn[1],zi?mx[2]:mn[2]]);
+        corners.push([p[0]+cx,p[1]+cy,p[2]+cz]);
+      }
+      return corners;
+    }
+    // Standard even-odd ray-casting point-in-polygon test (no existing JS copy in this file to reuse; Python
+    // has one at scripts/brick_models/sketch_to_bricks.py:193 for reference, same algorithm).
+    function pointInPolygon(px,py,poly){
+      var inside=false;
+      for(var i=0,j=poly.length-1;i<poly.length;j=i++){
+        var xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];
+        if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi))inside=!inside;
+      }
+      return inside;
     }
     function paintFaces(lists){
       vis.length=0;
@@ -1894,14 +1934,44 @@ a{color:inherit}
       if(now-lastStat>600){fps=Math.round(frames*1000/(now-lastStat));frames=0;lastStat=now;if(onStats)onStats(info());}
     }
 
-    canvas.addEventListener('pointerdown',function(e){dragging=true;lastX=e.clientX;lastY=e.clientY;try{canvas.setPointerCapture(e.pointerId);}catch(_){}});
+    // Click-to-inspect hit test: given a real client-space point (already the SAME CSS-pixel space proj()'s
+    // own P[0]/P[1] use -- scx/scy/W/H are all set from canvas.getBoundingClientRect() in resize(), never
+    // scaled by dpr -- confirmed by reading setCamera()/resize() before relying on it, not assumed), find the
+    // nearest visible part whose projected bounding-box hull contains it. usingParts-only: the grid/box shape
+    // builder has no per-part mesh to hit-test against.
+    function inspectAt(clientX,clientY){
+      if(!usingParts||!st)return;
+      setCamera();
+      var rect=canvas.getBoundingClientRect();
+      var px=clientX-rect.left,py=clientY-rect.top;
+      var best=-1,bestDepth=Infinity;
+      for(var i=0;i<N;i++){
+        if(st[i]<0)continue;
+        var corners=partCorners(o.partsModel[i],OX[i],OY[i],OZ[i]);
+        if(!corners)continue;
+        var pts=[],depth=0;
+        for(var k=0;k<8;k++){proj(corners[k][0],corners[k][1],corners[k][2]);pts.push([P[0],P[1]]);depth+=P[2];}
+        depth/=8;
+        if(pointInPolygon(px,py,hull(pts))&&depth<bestDepth){bestDepth=depth;best=i;}
+      }
+      if(onInspect)onInspect(best>=0?o.partsModel[best]:null);
+    }
+    // Tap/click vs. drag: a real click event isn't relied on (canvas.setPointerCapture is already in play for
+    // the drag-orbit below, and its interaction with native click semantics isn't guaranteed consistent) --
+    // instead, total movement between pointerdown and pointerup is measured directly.
+    var downX=0,downY=0,downMoved=false;
+    canvas.addEventListener('pointerdown',function(e){
+      dragging=true;lastX=e.clientX;lastY=e.clientY;downX=e.clientX;downY=e.clientY;downMoved=false;
+      try{canvas.setPointerCapture(e.pointerId);}catch(_){}
+    });
     canvas.addEventListener('pointermove',function(e){
       if(!dragging)return;
+      if(!downMoved&&(Math.abs(e.clientX-downX)>4||Math.abs(e.clientY-downY)>4))downMoved=true;
       userAz-=(e.clientX-lastX)*0.008;userEl+=(e.clientY-lastY)*0.006;
       lastX=e.clientX;lastY=e.clientY;dirtyView=true;
     });
-    function up(){dragging=false;}
-    canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+    canvas.addEventListener('pointerup',function(e){dragging=false;if(!downMoved)inspectAt(e.clientX,e.clientY);});
+    canvas.addEventListener('pointercancel',function(){dragging=false;});
     if('ResizeObserver' in window)new ResizeObserver(resize).observe(canvas);else window.addEventListener('resize',resize);
     if('IntersectionObserver' in window)new IntersectionObserver(function(e){visible=e[0].isIntersecting;}).observe(canvas);
 
@@ -1916,6 +1986,7 @@ a{color:inherit}
       replay:function(){tNow=0;dirtyView=true;},
       set:function(k,v){o[k]=v;},
       onStats:function(fn){onStats=fn;fn(info());},
+      onInspect:function(fn){onInspect=fn;},
       renderer:function(){return gr?'webgl':'canvas';},
       destroy:function(){cancelAnimationFrame(raf);if(gr)gr.destroy();}
     };

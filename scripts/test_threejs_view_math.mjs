@@ -59,5 +59,35 @@ check("every TJS_PART_ROT matrix is a proper rotation (determinant +1)",
   ctx.TJS_PART_ROT.every((m) => close(det3(m), 1, 1e-9)),
   JSON.stringify(ctx.TJS_PART_ROT.map(det3).filter((d) => !close(d, 1, 1e-9))));
 
+// tjsInstanceMatrixRowMajor: deliberately does NOT include tjsToWorld's D=diag(1/20,-1/20,1/20) scale/flip --
+// that belongs on the InstancedMesh's own object-level .scale in render() instead (see the function's own
+// comment for why: three.js decides front-face winding/normal-flip from object.matrixWorld's determinant
+// alone, with no visibility into a per-instance instanceMatrix, so baking a mirror into every instance broke
+// real rendering live 2026-09-30). Composing this function's output with D EXACTLY the way render() does
+// (object scale applied after the instance matrix) must still reproduce tjsToWorld's own point-by-point
+// result exactly -- checked across several rotation indices, instance positions and quant values, not just
+// re-derived by eye a second time.
+function applyMatrixRowMajor(els, p) {
+  return [
+    els[0] * p[0] + els[1] * p[1] + els[2] * p[2] + els[3],
+    els[4] * p[0] + els[5] * p[1] + els[6] * p[2] + els[7],
+    els[8] * p[0] + els[9] * p[1] + els[10] * p[2] + els[11],
+  ];
+}
+const applyD = (p) => [p[0] / 20, -p[1] / 20, p[2] / 20];
+const instanceCases = [
+  { r: 0, instPos: [0, -24, 0], q: 16, p: [16, 0, 0] },
+  { r: 1, instPos: [40, -24, -40], q: 16, p: [8, -12, 4] },
+  { r: 5, instPos: [-80, 0, 120], q: 20, p: [-3, 7, 11] },
+  { r: 13, instPos: [0, 0, 0], q: 1, p: [1, 2, 3] },
+  { r: 23, instPos: [200, -48, -200], q: 8, p: [-5, 0, 17] },
+];
+for (const { r, instPos, q, p } of instanceCases) {
+  const viaMatrix = applyD(applyMatrixRowMajor(ctx.tjsInstanceMatrixRowMajor(r, instPos, q), p));
+  const viaToWorld = ctx.tjsToWorld(p, q, r, instPos);
+  check(`tjsInstanceMatrixRowMajor (composed with D) matches tjsToWorld for r=${r} instPos=${JSON.stringify(instPos)} q=${q}`,
+    closeVec(viaMatrix, viaToWorld, 1e-9), `matrix=${JSON.stringify(viaMatrix)} toWorld=${JSON.stringify(viaToWorld)}`);
+}
+
 console.log(fail ? `${fail} failure(s)` : `all ok (${pass} checks)`);
 process.exit(fail ? 1 : 0);
