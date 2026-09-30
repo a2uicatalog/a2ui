@@ -1366,6 +1366,39 @@ var TJS=(function(){
       }
     });
   }
+  // Real per-instance alpha for the Animate loop's fall-in/lift-out fade (closes the gap
+  // threejs-viewer-instancing-for-large-kits's own note left open: InstancedMesh sharing one material per
+  // bucket means there's no per-instance .opacity the way a real, separate Mesh had, so the first version of
+  // this loop faked the reveal via matrix scale instead). A genuinely CACHED, per-base-material clone (a
+  // WeakMap keyed by the base material object -- never re-patched, never re-compiled per frame or per
+  // render), not a permanent mutation of the shared static material: patching material.transparent=true
+  // + onBeforeCompile PERMANENTLY on the same material instances every other (non-animating) part also uses
+  // would push every static part in the scene through three.js's slower, depth-sorted transparent render
+  // pass all the time, not just during the few seconds Animate is actually playing. Swapped onto each
+  // InstancedMesh only for the duration of Animate (startAnimate/stopAnimate below), so normal viewing keeps
+  // the fast opaque path.
+  var animateMatCache=new WeakMap();
+  function getAnimateVariant(THREE,baseMat){
+    var v=animateMatCache.get(baseMat);
+    if(v)return v;
+    v=baseMat.clone();
+    v.transparent=true;
+    // depthWrite stays true deliberately: these instances are opaque (alpha=1) almost all the time (only
+    // briefly <1 mid fall-in/lift-out), so keeping normal opaque-style depth writes avoids the sorting/
+    // popping artefacts a "real" always-transparent object would need to worry about, while still letting
+    // the one genuinely fading instance blend correctly against whatever's already been drawn behind it.
+    v.onBeforeCompile=function(shader){
+      shader.vertexShader=shader.vertexShader
+        .replace('#include <common>','attribute float instanceAlpha;\nvarying float vInstanceAlpha;\n#include <common>')
+        .replace('#include <begin_vertex>','#include <begin_vertex>\nvInstanceAlpha = instanceAlpha;');
+      shader.fragmentShader=shader.fragmentShader
+        .replace('#include <common>','varying float vInstanceAlpha;\n#include <common>')
+        .replace('#include <dithering_fragment>','gl_FragColor.a *= vInstanceAlpha;\n#include <dithering_fragment>');
+    };
+    v.needsUpdate=true;
+    animateMatCache.set(baseMat,v);
+    return v;
+  }
   function ensureScene(THREE,OrbitControls,RoomEnvironment){
     if(scene)return;
     var canvas=$('tjscanvas');
@@ -1515,7 +1548,11 @@ var TJS=(function(){
   // without touching the shared geometry or material, or reshuffling other instances' indices).
   var HIDDEN_ROW_MAJOR=[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
   function markGroupDirty(){
-    group.children.forEach(function(c){if(c.isInstancedMesh)c.instanceMatrix.needsUpdate=true;});
+    group.children.forEach(function(c){
+      if(!c.isInstancedMesh)return;
+      c.instanceMatrix.needsUpdate=true;
+      var ia=c.geometry.attributes.instanceAlpha;if(ia)ia.needsUpdate=true;
+    });
   }
   // Step-parts chip list -- parity with the main WebGL view's own drawStepParts() (atoms_brick.gs): for the
   // CURRENT scrubbed step, group the real parts newly placed at that step by (part id, colour), with a count
@@ -1597,28 +1634,33 @@ var TJS=(function(){
   // copied from there verbatim -- this is the same real motion, not a reinvented one). Runs per-frame on
   // partEntries (not partsModel directly), reusing the same instance slots the scrubber already placed.
   //
-  // One real behaviour change from the old per-Mesh version: InstancedMesh shares ONE material across
-  // potentially thousands of instances (that sharing IS the performance win), so there is no per-instance
-  // .opacity to fade the way a real, separate Mesh had -- true per-instance alpha would need a custom
-  // instanced vertex attribute wired into the material's shader (onBeforeCompile), which is real, well-known
-  // three.js territory but its own scoped piece of work, not bundled into this pass. Standing in for the
-  // fade here: the same 0..1 progress value now scales the instance's own placement matrix (the part visibly
-  // grows in as it lands, shrinks out as it lifts away) instead of fading its opacity -- a different-looking
-  // but equally legible "this part is arriving/leaving" cue, applied via a single Matrix4 reused across the
-  // whole frame (no per-frame allocation, no per-instance material clone needed any more).
+  // Real per-instance alpha (getAnimateVariant, defined above ensureScene): the fall-in/lift-out fade is
+  // genuine alpha blending now, not the scale-based grow/shrink stand-in the first version of this loop
+  // used while InstancedMesh's one-material-per-bucket sharing had no per-instance opacity to drive.
   var animRAF=null,animLastT=0,animT=0,animPlaying=false;
   function stopAnimate(){
     animPlaying=false;
     if(animRAF)cancelAnimationFrame(animRAF);
     animRAF=null;
-    // No per-instance matrix to restore here: every stop site (the Animate button, and render() itself at
-    // the top of a fresh load) immediately calls applyStep() right after, which sets every instance back to
-    // a consistent state -- restoring twice would be redundant, not restoring at all would leave the last
-    // animated frame's matrices on screen.
+    // Restore each bucket's real (opaque, fast) material -- swapped to the Animate-variant clone in
+    // startAnimate below. No per-instance matrix/alpha to restore here: every stop site (the Animate button,
+    // and render() itself at the top of a fresh load) immediately calls applyStep() right after, which sets
+    // every instance's matrix back to a consistent state; instanceAlpha simply stops being read once the
+    // material is back to its non-patched, static form. group is null on the very first call: render()
+    // calls stopAnimate() as its own first line, before ensureScene() has ever created it.
+    if(group)group.children.forEach(function(c){
+      if(c.isInstancedMesh&&c.userData.staticMaterial){c.material=c.userData.staticMaterial;delete c.userData.staticMaterial;}
+    });
   }
   function startAnimate(){
     var N=partEntries.length;
     if(!N)return;
+    var THREE=mod.THREE;
+    group.children.forEach(function(c){
+      if(!c.isInstancedMesh)return;
+      c.userData.staticMaterial=c.material;
+      c.material=getAnimateVariant(THREE,c.material);
+    });
     var FALL=0.55,SETTLE=0.45,HOLD=3,LIFT=0.7,DROP=7;
     var stagger=Math.min(0.12,5/N),dst=1.4/N;
     var tBuild=N*stagger+FALL+SETTLE;
@@ -1631,7 +1673,7 @@ var TJS=(function(){
     animT=reduced?tBuild+1:tBuild*0.7;
     animLastT=performance.now();
     animPlaying=true;
-    var THREE=mod.THREE,m4=new THREE.Matrix4();
+    var m4=new THREE.Matrix4();
     (function frame(now){
       if(!animPlaying)return;
       var dt=Math.min(0.05,(now-animLastT)/1000);animLastT=now;
@@ -1643,19 +1685,24 @@ var TJS=(function(){
         else if(tf<FALL){var p=tf/FALL,ee=1-p;s=1;oy=DROP*(1-p*p);ox=e.jx*ee*ee;oz=e.jz*ee*ee;a=Math.min(1,p*5);}
         else{var tb=tf-FALL;if(tb<SETTLE){s=1;oy=0.22*Math.exp(-9*tb)*Math.abs(Math.sin(15*tb));}else s=0;}
         e.refs.forEach(function(ref){
-          if(s===-1){m4.set.apply(m4,HIDDEN_ROW_MAJOR);}
-          else{
+          var alphaAttr=ref.instMesh.geometry.attributes.instanceAlpha;
+          if(s===-1){
+            m4.set.apply(m4,HIDDEN_ROW_MAJOR);
+            alphaAttr.array[ref.index]=0;
+          }else{
             // ox/oy/oz are real world-unit offsets (DROP etc. are tuned in world units, matching the live
             // canvas renderer's own physics constants). ref.matrix is the PRE-D matrix now (see
             // tjsInstanceMatrixRowMajor's comment) -- its translation is in raw LDU units, D-scaled down by
             // the InstancedMesh's own object-level .scale AFTER this. So the offset needs D's inverse
             // (diag(20,-20,20)) applied here first, or it would land 20x too small and Y unflipped once D
-            // is applied on top.
+            // is applied on top. Scale is no longer touched here (always full size, matching atoms_brick.gs's
+            // own real behaviour) -- `a` now drives instanceAlpha instead.
             var els=ref.matrix;
-            m4.set(els[0]*a,els[1]*a,els[2]*a,els[3]+ox*20,
-                   els[4]*a,els[5]*a,els[6]*a,els[7]-oy*20,
-                   els[8]*a,els[9]*a,els[10]*a,els[11]+oz*20,
+            m4.set(els[0],els[1],els[2],els[3]+ox*20,
+                   els[4],els[5],els[6],els[7]-oy*20,
+                   els[8],els[9],els[10],els[11]+oz*20,
                    0,0,0,1);
+            alphaAttr.array[ref.index]=a;
           }
           ref.instMesh.setMatrixAt(ref.index,m4);
         });
@@ -1703,7 +1750,7 @@ var TJS=(function(){
           groups.forEach(function(g,gi){
             var matKey=g.colourKey?('h'+g.colourKey):('c'+code);
             var key=row[0]+'|'+gi+'|'+matKey;
-            if(!buckets[key])buckets[key]={geo:g.geo,colourKey:g.colourKey,code:code,refs:[]};
+            if(!buckets[key])buckets[key]={rawGeo:g.geo,colourKey:g.colourKey,code:code,refs:[]};
             var ref={matrix:mrow,instMesh:null,index:-1,partId:row[0],code:code};
             buckets[key].refs.push(ref);
             refs.push(ref);
@@ -1715,13 +1762,35 @@ var TJS=(function(){
         Object.keys(buckets).forEach(function(key){
           var b=buckets[key];
           var mat=b.colourKey?materialForFixedHex(THREE,b.colourKey):materialForCode(THREE,b.code,ct);
-          var instMesh=new THREE.InstancedMesh(b.geo,mat,b.refs.length);
+          // Per-bucket geometry WRAPPER, not the shared localGeoCache geometry directly: position/normal
+          // attribute OBJECTS are reused by reference (three.js caches the GPU buffer by attribute identity,
+          // so this costs nothing extra on the GPU -- no vertex data is duplicated), but each bucket needs
+          // its OWN instanceAlpha buffer below, and that's a per-InstancedMesh-sized array -- two DIFFERENT
+          // buckets of the SAME part (e.g. a red 3005 and a blue 3005) share the SAME raw geometry from
+          // localGeoCache but have DIFFERENT instance counts, so they cannot share one instanceAlpha array.
+          // (instanceMatrix/instanceColor don't have this problem -- three.js keeps those on the InstancedMesh
+          // object itself, not the geometry; instanceAlpha is a custom attribute with no such special slot.)
+          var geo=new THREE.BufferGeometry();
+          geo.setAttribute('position',b.rawGeo.attributes.position);
+          geo.setAttribute('normal',b.rawGeo.attributes.normal);
+          var instMesh=new THREE.InstancedMesh(geo,mat,b.refs.length);
           instMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);   // scrubber/animate rewrite this every step/frame
           instMesh.castShadow=true;instMesh.receiveShadow=true;   // bricks both cast onto the floor/each other and catch shadows from taller neighbours
           // The LDraw-Y-down -> three.js-Y-up mirror + /20 LDU-to-world scale (tjsToWorld's own D, see
           // tjsInstanceMatrixRowMajor's comment) lives HERE, once per bucket, not inside any instance matrix.
           instMesh.scale.set(1/20,-1/20,1/20);
           instMesh.userData.rowInfo=[];   // index -> {partId,code}, for click-to-inspect resolving a raycast hit back to its source part
+          // Real per-instance alpha (Animate's fall-in/lift-out fade): a custom instanced attribute, not a
+          // three.js built-in the way instanceColor is -- declared here at 1.0 (fully opaque) for every
+          // instance; the animate loop below writes real 0..1 values into it while the Animate-variant
+          // material (see getAnimateVariant) is active, via a fragment-shader multiply injected through
+          // onBeforeCompile. Kept on EVERY bucket unconditionally (not lazily added only when Animate starts)
+          // so the wiring is uniform and simple -- the cost is one small Float32Array per bucket, not a
+          // per-frame or per-render cost.
+          var alpha=new Float32Array(b.refs.length).fill(1);
+          var alphaAttr=new THREE.InstancedBufferAttribute(alpha,1);
+          alphaAttr.setUsage(THREE.DynamicDrawUsage);
+          geo.setAttribute('instanceAlpha',alphaAttr);
           b.refs.forEach(function(ref,idx){
             m4.set.apply(m4,ref.matrix);
             instMesh.setMatrixAt(idx,m4);
