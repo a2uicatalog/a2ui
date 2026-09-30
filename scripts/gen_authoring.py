@@ -652,6 +652,13 @@ WORKSPACE_HOST_JS = """
     text.textContent = msg;
   }
 
+  // The two freeze-frame confirmations (see the CSS comment above) — deliberately
+  // separate elements, not a second use of setStatus, so both can be visible
+  // together: "received" doesn't need to disappear for "lens applied" to show up.
+  var bannerTop = document.getElementById('ws-banner-top');
+  var bannerBottom = document.getElementById('ws-banner-bottom');
+  function showBanner(el, msg) { el.textContent = msg; el.classList.add('show'); }
+
   // Same list mcp-worker/src/workspace-verbs.json declares — substituted in
   // at generation time (see build_workspace_page()), not hand-typed here.
   // See a2uithoughts.md's "workspace verb parity" entry (2026-08-04): this
@@ -724,7 +731,13 @@ WORKSPACE_HOST_JS = """
   // Shared by the chat-style ui/message path (a human typing/pasting) and the
   // Share Sheet boot path above — same request, same response handling,
   // wanted this to stop being two copies the moment there were two callers.
-  function runWorkspaceRead(instructionText) {
+  // doneBanner is optional: only the share-to boot path below knows in advance
+  // which lens it asked for (article_playbook is always called with
+  // lens=challenge for a share), so only that caller gets a bottom banner.
+  // The generic ui/message caller further down can carry any instruction at
+  // all, so it keeps the existing status-line-only behaviour rather than
+  // showing a banner that might name the wrong lens.
+  function runWorkspaceRead(instructionText, doneBanner) {
     setStatus('', 'Reading via Gemini — this can take a while for a real article…');
     fetch('/authoring/api/workspace-read', {
       method: 'POST', credentials: 'same-origin',
@@ -737,6 +750,7 @@ WORKSPACE_HOST_JS = """
         setStatus('live', resp.save_reading_error
           ? 'Reading complete (NOT saved to history: ' + resp.save_reading_error + ')'
           : 'Reading complete — analysed by ' + resp.analysed_by);
+        if (doneBanner && !resp.save_reading_error) showBanner(bannerBottom, doneBanner);
         send(resp.payload);
       })
       .catch(function (e) { setStatus('err', String(e && e.message || e)); });
@@ -798,13 +812,18 @@ WORKSPACE_HOST_JS = """
       viewReady = true;
       setStatus('', 'View ready…');
       if (initialShareUrl) {
+        // Fires the instant the share lands, before either fetch below even
+        // starts — the point is showing SOMETHING happened right away, not
+        // waiting on Gemini to confirm it. See the CSS/JS comments above.
+        showBanner(bannerTop, '📥 Article received — asking Gemini to read it now');
         // Land on the tool-selector's OWN home first (send()), THEN start the
         // read on top of it — otherwise a slow/failed Gemini call leaves the
         // iframe on the SDK's blank pre-init screen with no way back, since
         // the #ws-home-btn breadcrumb re-running loadWorkspace() would be the
         // only recovery and a reader mid-share doesn't know that trick.
         loadWorkspace();
-        runWorkspaceRead(composeShareInstruction(initialShareUrl, initialShareTitle));
+        runWorkspaceRead(composeShareInstruction(initialShareUrl, initialShareTitle),
+          '🔎 Challenge lens applied');
       } else if (initialReadingId) {
         openReading(initialReadingId);
       } else {
@@ -946,10 +965,24 @@ button.ws-chip{{font:inherit;letter-spacing:inherit;cursor:pointer}}
 .mcp-status-dot{{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .2s}}
 .mcp-status-dot.live{{background:var(--green);box-shadow:0 0 8px rgba(63,185,80,.6)}}
 .mcp-status-dot.err{{background:var(--red)}}
+/* Share-to-workflow confirmations (Curtis, 2026-09-30): a screen recording of the share flow
+   needs a clear, legible "yes, this landed" / "yes, this finished" pair — the small status-dot
+   chip above is too subtle to read on video. These are separate from it on purpose: the dot/text
+   keeps showing detailed in-progress state, these two are just the two moments worth freezing on. */
+.ws-banner{{position:fixed;left:12px;right:12px;z-index:11;display:flex;align-items:center;gap:10px;
+  background:var(--indigo);color:#0a0e17;font-weight:700;font-size:14px;border-radius:10px;
+  padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,.35);opacity:0;transform:translateY(-8px);
+  transition:opacity .25s ease,transform .25s ease;pointer-events:none}}
+.ws-banner.show{{opacity:1;transform:translateY(0)}}
+#ws-banner-top{{top:56px}}
+#ws-banner-bottom{{bottom:12px;background:var(--green);transform:translateY(8px)}}
+#ws-banner-bottom.show{{transform:translateY(0)}}
 </style>
 </head>
 <body>
   <iframe id="mcp-view" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" src="{bundle_src}" title="A2UI Workspace"></iframe>
+  <div class="ws-banner" id="ws-banner-top"></div>
+  <div class="ws-banner" id="ws-banner-bottom"></div>
   <div class="ws-bar">
     <a class="ws-chip" href="/">← A2UI Catalog</a>
     <!-- Lives OUTSIDE the iframe, so it survives no matter what's painted
