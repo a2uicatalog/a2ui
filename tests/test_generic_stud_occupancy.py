@@ -1890,6 +1890,14 @@ def test_studded_windscreens_exhibit_cockpit_unboxed_blind_spot(pid, expected_un
     ("32475", "Constraction Foot 3 x 6 x 2.333 w/ Ball Socket"),
     # Masks & Helmets (concave face cavity wrapping head)
     ("42042a", "Constraction Bionicle Mask Krana Su"),
+    # Clip-associated bar grips (2026-09-29, resolve_occupancy_and_sockets's clip_connectors exemption):
+    # a bar-grip-shaped cylinder that's also on a part whose title contains "clip" no longer auto-resolves
+    # via bar_grip_points alone -- clip_connectors()'s own generic fallback draws from the SAME radius-4
+    # cylinder pool bar_grip_points does, so a part like this one (whose "finger" bar-grip point and whose
+    # clip jaw are geometrically the same feature, not two unrelated parts of the mesh -- confirmed directly:
+    # both sit ~4 LDU apart on the same anti-parallel axis, exactly like 11090/30377/93061's already-curated
+    # clip-mounted bars) needs real curation like those, not a silent auto-resolved empty occupancy.
+    ("3171", "Constraction Finger Angled with Clip"),
 ])
 def test_real_constraction_parts_stay_safely_rejected(pid, desc):
     """Constraction and Bionicle parts across all 8 sub-families must safely remain
@@ -1913,8 +1921,8 @@ def test_real_constraction_parts_stay_safely_rejected(pid, desc):
     # Linear hole channels (generic_hole_channel_occupancy)
     ("47296", 4, False),  # Constraction Connector 5 x 2 with Double Round Ball Sockets
     ("42074", 4, False),  # Constraction Hook Small with Peghole and Axle
-    # Bar grips (bar_grip_points emitting bars connector, occ=None)
-    ("3171", 0, False),   # Constraction Finger Angled with Clip
+    # Bar grips (bar_grip_points emitting bars connector, occ=None) -- NOT 3171: its title contains "clip",
+    # so it's exempted from this path now (see test_real_constraction_parts_stay_safely_rejected).
     ("28220", 0, False),  # Constraction Shell 0.6 x 2 x 3.5 Flat
     ("32577", 0, False),  # Constraction Torso 5 x 3 with 3 Pins
 ])
