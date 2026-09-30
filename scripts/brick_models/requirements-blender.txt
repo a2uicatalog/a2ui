@@ -1,0 +1,20 @@
+# Optional, heavy dependency for scripts/brick_models/render_blender.py ONLY -- deliberately NOT merged into
+# the repo's shared requirements.txt (that file's own header explains why one shared list matters: CI installs
+# it wholesale on every push via `pip install -r requirements.txt`, both here and in a2ui-private's
+# deploy-full-catalog.yml). bpy is a 401MB wheel nothing else in this repo depends on; adding it there would
+# bloat and slow every unrelated CI run for a feature only this one offline script uses. Install explicitly:
+#   .venv/bin/pip install -r scripts/brick_models/requirements-blender.txt
+#
+# bpy (Blender Foundation's official headless-importable Python module) is GPL-licensed -- a different posture
+# from this repo's other pip dependencies and from the MIT-licensed three.js vendored elsewhere. Confirmed
+# working 2026-09-30: installs and imports cleanly under this repo's own .venv (Python 3.13.5, matching bpy's
+# published cp313 wheel exactly), and a real Cycles still-image render (write_still) succeeds end to end.
+bpy==5.2.2
+
+# Confirmed 2026-09-30, NOT assumed: this bpy wheel's render.image_settings.file_format enum does NOT include
+# 'FFMPEG' (only still-image formats -- PNG/JPEG/OPEN_EXR/TIFF/etc.). Blender's built-in video muxer isn't
+# available in this headless PyPI build, so the turntable video is rendered as a PNG sequence (the SAME,
+# already-confirmed-working still-render path, called once per frame) and encoded separately with this
+# package's own bundled static ffmpeg binary (no system ffmpeg install needed -- confirmed working:
+# imageio_ffmpeg.get_ffmpeg_exe() returns a real ffmpeg 7.0.2 binary for manylinux2014_x86_64).
+imageio-ffmpeg==0.6.0
