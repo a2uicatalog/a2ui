@@ -37,7 +37,8 @@ DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_ch
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
 REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch", "motion_leader", "motion_path", "motion_mask"]  # from the studied reference film, 2026-10-01
-MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + DEMO_ATOMS
+REEL3 = ["motion_device", "motion_strike", "motion_rays", "motion_hud", "motion_cells", "motion_stack3d", "motion_shake", "motion_flash"]  # third reference, 2026-10-01
+MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + REEL3 + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
 
@@ -170,6 +171,20 @@ PAYLOADS = {
                       {"from": [1e12, "x"], "to": [-5e9, 7], "label": "x" * 80, "color": "red", "label_color": "url(javascript:alert(1))"}],
     "motion_path": [{}, {"d": "M 20 300 C 100 100 300 100 380 300", "nodes": [{"x": 20, "y": 300, "at": 0, "label": "Start"}, {"x": 200, "y": 150, "at": 0.5, "label": "Mid <i>"}, {"x": 380, "y": 300, "at": 1}], "color": "#0a66c2", "label_color": "#ffffff", "width": 9, "size": 26, "label": "Line A", "w": 400, "h": 400},
                      {"d": "M 0 0\" onload=\"alert(1)", "nodes": ["junk", None, [], {}, {"x": "9", "y": "x", "at": 7, "label": "<script>"}], "marker": False}, {"d": 5, "nodes": [{"x": 1, "y": 1}] * 12, "w": 9999}],
+    "motion_device": [{}, {"kind": "laptop", "width": 640, "scroll": 400, "label": "Site <b>", "fill": "#101820", "accent": "#ff6a2b", "blocks": [{"type": "motion_pill", "text": "Hello"}, {"type": "motion_counter", "to": 5}]},
+                      {"kind": "tablet", "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"kind": "toString", "width": 99999, "scroll": "x", "fill": "url(x)", "blocks": "no"}],
+    "motion_strike": [{}, {"text": "The old way <b>", "mode": "highlight", "size": 90, "align": "middle", "accent": "#ff6a2b", "color": "#fff6e8", "weight": "bold"}, {"text": "Cut", "mode": "underline"},
+                      {"text": "x" * 200, "mode": "constructor", "weight": "hasOwnProperty", "color": "red", "size": 99999}, {"text": 5}],
+    "motion_rays": [{}, {"kind": "speed", "count": 12, "thickness": 0.3, "strength": 0.6, "accent": "#ff6a2b"}, {"kind": "burst", "count": 7, "thickness": 0.77, "spin": -90, "strength": 1},
+                    {"kind": "__proto__", "count": 9999, "thickness": "x", "spin": "9;}", "strength": 99, "accent": "url(javascript:alert(1))"}, {"count": 3, "thickness": 0}],
+    "motion_hud": [{}, {"seconds": 36, "label": "REC <b>", "size": 18, "corners": False, "accent": "#ff3d3d", "color": "#ffffff"}, {"bar": False, "seconds": 99999, "size": 1}, {"seconds": "x", "label": "x" * 80, "corners": "no"}],
+    "motion_cells": [{}, {"columns": 8, "rows": 8, "mode": "flip", "numbers": True, "gap": 2, "radius": 0, "size": 12, "accent": "#222222", "accent2": "#eeeeee"}, {"mode": "fill", "chess": False, "columns": 3, "rows": 2},
+                     {"mode": "toString", "columns": 999, "rows": "x", "gap": "9;}", "radius": 9999, "numbers": "yes", "accent2": "url(x)"}],
+    "motion_stack3d": [{}, {"mode": "stack", "items": ["Idea", {"title": "Build <b>", "text": "ship it & go", "icon": "\u2713"}, {"title": ""}, "x" * 50, 5, None, "f", "g"], "w": 260, "h": 160, "size": 20, "fill": "#101820", "accent": "#ff6a2b"},
+                        {"mode": "ring", "items": ["A", "B"]}, {"mode": "ring", "items": ["A", "B", "C", "D", "E", "F"], "w": 80}, {"mode": "constructor", "items": "no", "w": 99999, "h": "x", "fill": "url(x)"}],
+    "motion_shake": [{}, {"amount": 30, "frequency": 14, "tilt": 3.5, "blocks": [{"type": "motion_text", "id": "t", "text": "Hit", "place": {"x": 1, "y": 1}}, {"type": "motion_pill", "text": "x"}]},
+                     {"amount": 9999, "frequency": "x", "tilt": 99, "blocks": ["junk", {"type": "no_such_atom"}] + [{"type": "motion_pill", "text": "x"}] * 9}, {"blocks": "no"}],
+    "motion_flash": [{}, {"color": "#ffeecc", "strength": 0.5}, {"color": "red;x", "strength": 99}, {"strength": "x"}],
     "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
                     {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
                     {"shape": "toString", "blocks": "no"}],
@@ -429,7 +444,7 @@ def test_every_documented_field_is_actually_read_by_the_renderer():
     import yaml
     src = (ROOT / "apps-script-surface" / "gas-wired-renderer" / "atoms_motion.gs").read_text()
     atoms = {a["type"]: a for a in yaml.safe_load((ROOT / "atoms" / "schema.yaml").read_text())["blocks"]}
-    starts = {m.group(1): m.start() for m in re.finditer(r"_RENDERERS\['([a-z_]+)'\] = function", src)}
+    starts = {m.group(1): m.start() for m in re.finditer(r"_RENDERERS\['([a-z0-9_]+)'\] = function", src)}
     order = sorted(starts.values()) + [len(src)]
     # motion_group builds its entrance through _moEnterSpec (reads effect/ease/duration/delay/on from its own block);
     # the timeline reads per-child fields (id/place/layer) and track/camera keys in its helpers.

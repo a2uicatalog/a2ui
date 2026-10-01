@@ -1068,3 +1068,120 @@ function _moStitch(b, ids, bpm, dur, st) {
   }
   return out;
 }
+
+// ─── third reference (2026-10-01, a motion-design screencast): device frames, strike sweeps, rays, HUD, cell grids, 3D stacks, shake, flash ───
+// Same contract as the rest: plain HTML+CSS driven by --p (build) and --s (second dial), no per-atom script, standalone it renders finished.
+function _moOwn(t, v, d) { return (typeof v === 'string' && Object.prototype.hasOwnProperty.call(t, v)) ? v : d; }
+var _MO_DEVICE = {phone: 1, laptop: 1, tablet: 1};
+var _MO_STRIKE = {strike: 1, highlight: 1, underline: 1};
+var _MO_RAYS = {burst: 1, speed: 1};
+var _MO_CELLS = {pop: 1, flip: 1, fill: 1};
+var _MO_STACK = {ring: 1, stack: 1};
+
+// A phone, tablet or laptop bezel with children inside its screen; --s scrolls the content up by `scroll` px.
+_RENDERERS['motion_device'] = function(b) {
+  var kind = _moOwn(_MO_DEVICE, b.kind, 'phone'), w = _ffInt(b.width, kind === 'laptop' ? 520 : (kind === 'tablet' ? 380 : 240), 120, 900);
+  var scroll = _ffInt(b.scroll, 0, 0, 2000), fill = _moInk(b, 'fill', '#0b0f19'), acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), label = _moStr(b.label, 40) || 'Device screen';
+  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i;
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  var bz = Math.max(4, Math.floor(w * (kind === 'laptop' ? 0.022 : 0.032))), rad = Math.floor(w * (kind === 'phone' ? 0.13 : (kind === 'tablet' ? 0.06 : 0.03)));
+  var asp = kind === 'phone' ? '9/19' : (kind === 'tablet' ? '3/4' : '16/10');
+  var notch = kind === 'phone' ? '<div aria-hidden="true" style="position:absolute;top:' + Math.floor(bz * 0.6) + 'px;left:50%;width:28%;height:' + (bz * 2) + 'px;border-radius:999px;background:' + fill + ';transform:translateX(-50%);z-index:2;"></div>' : '';
+  var base = kind === 'laptop' ? '<div aria-hidden="true" style="height:' + Math.max(6, Math.floor(w * 0.03)) + 'px;margin:0 -4%;border-radius:0 0 ' + Math.floor(w * 0.03) + 'px ' + Math.floor(w * 0.03) + 'px;background:linear-gradient(#cfd5de,#9aa3b2);"></div>' : '';
+  return '<div role="group" aria-label="' + _esc(label) + '" style="width:' + w + 'px;max-width:100%;opacity:clamp(0,calc(var(--p,1)*4),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*8%)) scale(calc(0.94 + 0.06*clamp(0,var(--p,1),1)));">'
+    + '<div style="position:relative;box-sizing:border-box;width:100%;aspect-ratio:' + asp + ';border:' + bz + 'px solid ' + fill + ';border-radius:' + rad + 'px;background:' + fill + ';outline:1px solid color-mix(in srgb,' + acc + ' 45%,transparent);box-shadow:0 24px 60px rgba(0,0,0,0.35);">'
+    + notch + '<div style="position:relative;width:100%;height:100%;overflow:hidden;border-radius:' + Math.max(2, rad - bz) + 'px;background:var(--mt-bg,#0f1420);color:var(--mt-ink,#f1f5f9);">'
+    + '<div style="transform:translateY(calc(var(--s,0)*-' + scroll + 'px));">' + inner + '</div></div></div>' + base + '</div>';
+};
+
+// Text with a line that sweeps across it: a strike-through, a marker highlight or an underline, in the accent colour.
+_RENDERERS['motion_strike'] = function(b) {
+  var text = _moStr(b.text, 80) || 'Text', mode = _moOwn(_MO_STRIKE, b.mode, 'strike'), size = _ffInt(b.size, 64, 10, 400);
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start');
+  var weight = _ffPick(b.weight, _FF_WEIGHTS, 'black'), pc = 'clamp(0,var(--p,1),1)', bar, dim = '';
+  if (mode === 'strike') { bar = 'left:-2%;top:54%;height:0.09em;width:calc(104%*' + pc + ');background:' + acc + ';'; dim = 'opacity:calc(1 - 0.45*' + pc + ');'; }
+  else if (mode === 'underline') bar = 'left:0;bottom:-0.08em;height:0.1em;width:calc(100%*' + pc + ');background:' + acc + ';';
+  else bar = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + pc + ');background:color-mix(in srgb,' + acc + ' 38%,transparent);z-index:-1;';
+  return '<div style="width:100%;text-align:' + align + ';">' + _moSr(text)
+    + '<span aria-hidden="true" style="position:relative;display:inline-block;isolation:isolate;font-family:' + _MO_SANS + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:1.1;color:' + color + ';' + dim + '">' + _esc(text)
+    + '<span style="position:absolute;' + bar + '"></span></span></div>';
+};
+
+// A sunburst that fans out behind a hero (burst), or streaks that sweep across the frame (speed). --s turns or slides it.
+_RENDERERS['motion_rays'] = function(b) {
+  var kind = _moOwn(_MO_RAYS, b.kind, 'burst'), n = _ffInt(b.count, 24, 4, 64), th = parseFloat(_ffNum(b.thickness, 0.5, 0.1, 0.9, 2)), spin = _ffInt(b.spin, 45, -360, 360);
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), st = _ffNum(b.strength, 0.35, 0.05, 1, 2), seg = _ffNum(360 / n, 15, 0.1, 90, 3), ray = _ffNum(360 / n * th, 7, 0.05, 90, 3);
+  var fade = 'clamp(0,calc(var(--p,1)*3),1)';
+  if (kind === 'speed') {
+    var lines = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + _ffNum(100 / n * th, 1, 0.05, 50, 3) + '%,transparent ' + _ffNum(100 / n * th, 1, 0.05, 50, 3) + '%,transparent ' + _ffNum(100 / n, 4, 0.1, 50, 3) + '%)';
+    var mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)';
+    return '<div aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:' + lines + ';-webkit-mask-image:' + mk + ';mask-image:' + mk + ';-webkit-mask-size:50% 100%;mask-size:50% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-50%) 0;mask-position:calc(var(--s,0)*-50%) 0;opacity:calc(' + fade + '*' + st + ');"></div>';
+  }
+  var mr = 'radial-gradient(circle,#000 0%,transparent 70%)';
+  return '<div aria-hidden="true" style="width:100%;aspect-ratio:1/1;background:repeating-conic-gradient(from calc(var(--s,0)*' + spin + 'deg),' + acc + ' 0deg,' + acc + ' ' + ray + 'deg,transparent ' + ray + 'deg,transparent ' + seg + 'deg);-webkit-mask-image:' + mr + ';mask-image:' + mr
+    + ';opacity:calc(' + fade + '*' + st + ');transform:scale(calc(0.6 + 0.4*clamp(0,var(--p,1),1)));"></div>';
+};
+
+// A heads-up display: corner brackets, a timecode that counts up, a label and a progress bar. Fills its placed box.
+_RENDERERS['motion_hud'] = function(b) {
+  var secs = _ffInt(b.seconds, 10, 1, 3600), size = _ffInt(b.size, 14, 8, 60), label = _moStr(b.label, 30), corners = b.corners !== false, bar = b.bar !== false;
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), mono = _ffPick('mono', _FF_FONTS, 'mono'), html = '', i;
+  var cs = [['top:0.6em;left:0.6em;', 'border-top:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'], ['top:0.6em;right:0.6em;', 'border-top:2px solid ' + acc + ';border-right:2px solid ' + acc + ';'],
+            ['bottom:0.6em;left:0.6em;', 'border-bottom:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'], ['bottom:0.6em;right:0.6em;', 'border-bottom:2px solid ' + acc + ';border-right:2px solid ' + acc + ';']];
+  if (corners) for (i = 0; i < 4; i++) html += '<span aria-hidden="true" style="position:absolute;' + cs[i][0] + 'width:1.6em;height:1.6em;' + cs[i][1] + '"></span>';
+  html += '<span aria-hidden="true" style="position:absolute;top:1.1em;left:2.6em;">' + _moCount(secs, 2, '', 's', '', 0) + '</span>'
+    + (label ? '<span style="position:absolute;top:1.1em;right:2.6em;letter-spacing:0.14em;text-transform:uppercase;color:' + acc + ';">' + _esc(label) + '</span>' : '');
+  if (bar) html += '<span aria-hidden="true" style="position:absolute;left:2.6em;right:2.6em;bottom:1.1em;height:0.2em;background:' + _MO_MIX_LINE + ';"><span style="display:block;height:100%;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></span></span>';
+  return '<div style="position:relative;width:100%;height:100%;min-height:5em;box-sizing:border-box;font-family:' + mono + ';font-size:' + size + 'px;font-variant-numeric:tabular-nums;color:' + color + ';opacity:clamp(0,calc(var(--p,1)*6),1);">' + html + '</div>';
+};
+
+// A grid of cells that pop, flip or fill in a diagonal wave, optionally a chessboard, optionally numbered 1, 2, 4, 8...
+_RENDERERS['motion_cells'] = function(b) {
+  var cols = _ffInt(b.columns, 6, 2, 12), rows = _ffInt(b.rows, 4, 1, 8), mode = _moOwn(_MO_CELLS, b.mode, 'pop'), gap = _ffInt(b.gap, 4, 0, 24), rad = _ffInt(b.radius, 6, 0, 40), size = _ffInt(b.size, 18, 8, 80);
+  var a1 = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), a2 = _moInk(b, 'accent2', _MO_MIX_FILL), chess = b.chess !== false, nums = b.numbers === true, T = cols + rows + 1, r, c, out = '';
+  for (r = 0; r < rows; r++) for (c = 0; c < cols; c++) {
+    var idx = r * cols + c, col = (chess && (r + c) % 2) ? a2 : a1, tf = mode === 'flip' ? 'perspective(400px) rotateY(calc((1 - var(--u))*90deg))' : 'scale(var(--u))';
+    var bg = mode === 'fill' ? 'color-mix(in srgb,' + col + ' calc(var(--u)*100%),transparent)' : col;
+    out += '<div style="--u:clamp(0,calc(var(--p,1)*' + T + ' - ' + (r + c) + '),1);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:' + rad + 'px;background:' + bg + ';' + (mode === 'fill' ? '' : 'transform:' + tf + ';opacity:var(--u);')
+      + 'color:var(--mt-ink,#f1f5f9);font-weight:700;">' + (nums && idx < 13 ? _esc('' + Math.pow(2, idx)) : '') + '</div>';
+  }
+  return '<div aria-hidden="true" style="display:grid;grid-template-columns:repeat(' + cols + ',minmax(0,1fr));gap:' + gap + 'px;width:100%;font-family:' + _MO_SANS + ';font-size:' + size + 'px;">' + out + '</div>';
+};
+
+// Cards in 3D: a ring that turns (--s is the turn) or an isometric stack that fans apart (--s is the spread).
+_RENDERERS['motion_stack3d'] = function(b) {
+  var mode = _moOwn(_MO_STACK, b.mode, 'ring'), w = _ffInt(b.w, 220, 80, 600), h = _ffInt(b.h, 140, 60, 500), size = _ffInt(b.size, 18, 8, 60);
+  var acc = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)'), fill = _moInk(b, 'fill', 'color-mix(in srgb,var(--mt-bg,#0f1420) 90%,var(--mt-ink,#f1f5f9))');
+  var src = Array.isArray(b.items) ? b.items : [], items = [], i;
+  for (i = 0; i < src.length && items.length < 6; i++) {
+    var it = src[i], obj = it && typeof it === 'object', t = _moStr(typeof it === 'string' ? it : (obj ? it.title : ''), 30);
+    if (t) items.push({t: t, x: obj ? _moStr(it.text, 60) : '', i: obj ? _moStr(it.icon, 2) : ''});
+  }
+  if (!items.length) items = [{t: 'Card', x: '', i: ''}];
+  var n = items.length, nn = Math.max(n, 3), rr = Math.max(Math.floor(w * 0.5 / Math.tan(Math.PI / nn) + 0.5), Math.floor(w * 0.6 + 0.5)), cards = '', names = [];
+  for (i = 0; i < n; i++) {
+    var tf = mode === 'ring' ? 'rotateY(' + Math.floor(360 * i / n + 0.5) + 'deg) translateZ(' + rr + 'px) scale(calc(0.6 + 0.4*var(--u)))' : 'translateZ(calc(' + i + '*(16px + var(--s,0)*60px)))';
+    cards += '<div style="--u:clamp(0,calc(var(--p,1)*' + (n + 1) + ' - ' + i + '),1);position:absolute;left:0;top:0;width:' + w + 'px;height:' + h + 'px;box-sizing:border-box;padding:0.8em;border-radius:0.8em;background:' + fill + ';border:1px solid ' + _MO_MIX_LINE + ';box-shadow:inset 0 3px 0 ' + acc + ';opacity:var(--u);'
+      + (mode === 'ring' ? 'backface-visibility:hidden;-webkit-backface-visibility:hidden;' : '') + 'transform:' + tf + ';color:var(--mt-ink,#f1f5f9);font-family:' + _MO_SANS + ';font-size:' + size + 'px;">'
+      + (items[i].i ? '<div aria-hidden="true" style="font-size:1.4em;">' + _esc(items[i].i) + '</div>' : '') + '<div style="font-weight:700;">' + _esc(items[i].t) + '</div>'
+      + (items[i].x ? '<div style="font-size:0.8em;color:var(--mt-mute,#94a3b8);margin-top:0.3em;">' + _esc(items[i].x) + '</div>' : '') + '</div>';
+    names.push(items[i].t);
+  }
+  var stage = mode === 'ring' ? 'transform:translateZ(-' + rr + 'px) rotateY(calc(var(--s,0)*-360deg));' : 'transform:rotateX(55deg) rotateZ(-30deg);margin-top:' + Math.floor(h * 0.5) + 'px;';
+  return '<div role="group" aria-label="' + _esc(names.join(', ')) + '" style="width:100%;height:' + Math.floor(h * (mode === 'stack' ? 2 : 1.15)) + 'px;perspective:1400px;">'
+    + '<div style="position:relative;width:' + w + 'px;height:' + h + 'px;margin-left:auto;margin-right:auto;transform-style:preserve-3d;' + stage + '">' + cards + '</div></div>';
+};
+
+// Camera shake: its children jolt and settle as p goes 0 to 1 (set p to 0 at the impact), at rest by p = 1.
+_RENDERERS['motion_shake'] = function(b) {
+  var amp = _ffInt(b.amount, 12, 1, 80), freq = _ffInt(b.frequency, 9, 1, 40), tilt = _ffNum(b.tilt, 1.5, 0, 10, 1), blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i;
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  var tf = 'translate(calc(var(--k)*' + amp + 'px*sin(calc(var(--p,1)*' + freq + '*6.2832))),calc(var(--k)*' + Math.floor(amp * 0.6 + 0.5) + 'px*cos(calc(var(--p,1)*' + freq + '*8.1 + 1)))) rotate(calc(var(--k)*' + tilt + 'deg*sin(calc(var(--p,1)*' + freq + '*5.3))))';
+  return '<div style="--k:clamp(0,calc(1 - var(--p,1)),1);position:relative;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>';
+};
+
+// A full-frame flash: a hard white (or tinted) pop that fades out, the hit on a beat. Invisible at p = 1.
+_RENDERERS['motion_flash'] = function(b) {
+  var col = _moInk(b, 'color', '#ffffff'), st = _ffNum(b.strength, 0.8, 0.1, 1, 2);
+  return '<div aria-hidden="true" style="width:100%;height:100%;pointer-events:none;background:' + col + ';opacity:calc(clamp(0,calc(var(--p,1)*10),1)*(1 - clamp(0,var(--p,1),1))*' + st + ');"></div>';
+};

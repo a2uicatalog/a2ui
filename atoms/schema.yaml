@@ -10367,6 +10367,240 @@ blocks:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
     license: MIT
+- type: motion_device
+  stage: preview
+  description: 'A phone, tablet or laptop frame with children inside its screen. Children are ordinary atoms; the second dial (--s) scrolls their content up by `scroll` px, so a page can be shown scrolling inside a device. The frame rises in with p. Plain HTML and CSS, no script; standalone it renders the finished frame.'
+  compact_description: device frame (phone, tablet, laptop) holding atoms, with scrolling content
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    kind: '"phone" | "tablet" | "laptop" (optional, default "phone")'
+    width: 'integer (optional). Frame width px, 120-900. Default 240 phone, 380 tablet, 520 laptop.'
+    scroll: 'integer (optional). Content travel px at --s = 1, 0-2000. Default 0.'
+    blocks: 'array (max 6) of atom blocks shown on the screen.'
+    label: 'string (optional, max 40). Accessible name. Default "Device screen".'
+    fill: '"#rrggbb" (optional). Bezel colour. Default near-black.'
+    accent: '"#rrggbb" (optional). Bezel outline. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_strike
+  stage: preview
+  description: 'Text with a line that sweeps across it as p goes 0 to 1: a strike-through (the text dims), a marker highlight behind it, or an underline, in the accent colour. The edit that crosses out the old way. Plain HTML and CSS; standalone it renders finished.'
+  compact_description: text with a sweeping strike-through, highlight or underline
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    text: 'string (max 80). The words.'
+    mode: '"strike" | "highlight" | "underline" (optional, default "strike")'
+    size: 'integer (optional). px, 10-400. Default 64.'
+    weight: '"regular" | "bold" | "black" (optional, default "black")'
+    align: '"start" | "middle" | "end" (optional)'
+    color: '"#rrggbb" (optional). Text. Default the stage ink.'
+    accent: '"#rrggbb" (optional). The sweep. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_rays
+  stage: preview
+  description: 'A sunburst that fans out behind a hero as p goes 0 to 1 (kind burst, --s turns it), or horizontal speed streaks that sweep across the frame (kind speed, --s slides them). Plain CSS gradients, no script; standalone it renders finished.'
+  compact_description: sunburst or speed-line background that fans in and turns
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    kind: '"burst" | "speed" (optional, default "burst")'
+    count: 'integer (optional). Rays or lines, 4-64. Default 24.'
+    thickness: 'number (optional). Share of each step that is ray, 0.1-0.9. Default 0.5.'
+    spin: 'integer (optional). Degrees turned at --s = 1 (burst), -360 to 360. Default 45.'
+    strength: 'number (optional). Peak opacity, 0.05-1. Default 0.35.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_hud
+  stage: preview
+  description: 'A heads-up display that fills its placed box: corner brackets, a timecode that counts up from 0 to `seconds` as p goes 0 to 1, a label top right and a progress bar along the bottom. The recording-viewfinder look. Plain HTML and CSS; the timecode is rewritten by the timeline clock like motion_counter.'
+  compact_description: viewfinder HUD with corner brackets, counting timecode and progress bar
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    seconds: 'integer (optional). Where the timecode ends, 1-3600. Default 10.'
+    label: 'string (optional, max 30). Top right, e.g. REC.'
+    corners: 'bool (optional). Corner brackets. Default true.'
+    bar: 'bool (optional). Progress bar. Default true.'
+    size: 'integer (optional). px, 8-60. Default 14.'
+    color: '"#rrggbb" (optional). Default the stage ink.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_cells
+  stage: preview
+  description: 'A grid of cells that pop, flip or fill in a diagonal wave as p goes 0 to 1, optionally as a chessboard, optionally numbered 1, 2, 4, 8... (the first 13 cells). Plain HTML and CSS; standalone it renders the finished grid.'
+  compact_description: grid of cells that pop, flip or fill in a wave, chessboard and doubling numbers
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    columns: 'integer (optional). 2-12. Default 6.'
+    rows: 'integer (optional). 1-8. Default 4.'
+    mode: '"pop" | "flip" | "fill" (optional, default "pop")'
+    chess: 'bool (optional). Alternate two colours. Default true.'
+    numbers: 'bool (optional). Doubling numbers in the first 13 cells. Default false.'
+    gap: 'integer (optional). px, 0-24. Default 4.'
+    radius: 'integer (optional). px, 0-40. Default 6.'
+    size: 'integer (optional). Number px, 8-80. Default 18.'
+    accent: '"#rrggbb" (optional). Default the stage accent.'
+    accent2: '"#rrggbb" (optional). Second chess colour. Default a faint tint.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_stack3d
+  stage: preview
+  description: 'Cards in 3D. Mode ring arranges up to 6 cards around a ring that turns with the second dial (--s = 1 is one full turn); mode stack lays them as an isometric pile that fans apart as --s goes 0 to 1. Cards rise in with p. Plain CSS 3D transforms, no script; standalone it renders the finished arrangement.'
+  compact_description: cards in a turning 3D ring or an isometric stack that fans apart
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    mode: '"ring" | "stack" (optional, default "ring")'
+    items: 'array (max 6) of strings or {title, text?, icon?}. title max 30, text max 60, icon max 2 characters.'
+    w: 'integer (optional). Card width px, 80-600. Default 220.'
+    h: 'integer (optional). Card height px, 60-500. Default 140.'
+    size: 'integer (optional). Text px, 8-60. Default 18.'
+    fill: '"#rrggbb" (optional). Card colour. Default a tint of the stage.'
+    accent: '"#rrggbb" (optional). Card top edge. Default the stage accent.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_shake
+  stage: preview
+  description: 'Camera shake. Its children (up to 6 atoms) jolt and settle as p goes 0 to 1: the shake is strongest at p = 0 and gone by p = 1, so key p to 0 on the beat and back to 1 over the decay. Plain CSS sin() and cos(), deterministic; standalone it renders at rest.'
+  compact_description: wrapper that jolts its children on a beat and settles
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    blocks: 'array (max 6) of atom blocks.'
+    amount: 'integer (optional). Peak travel px, 1-80. Default 12.'
+    frequency: 'integer (optional). Oscillations over p, 1-40. Default 9.'
+    tilt: 'number (optional). Peak rotation degrees, 0-10. Default 1.5.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_flash
+  stage: preview
+  description: 'A full-frame flash: a hard pop of white (or a tint) that fades out as p goes 0 to 1, the hit on a beat. Key p to 0 at the impact and up to 1 over the fade. Invisible at p = 1, so standalone it renders nothing. Plain CSS, no script.'
+  compact_description: full-frame flash pop on a beat, fading out
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    color: '"#rrggbb" (optional). Default white.'
+    strength: 'number (optional). Peak opacity, 0.1-1. Default 0.8.'
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
 - type: dot_grid_background
   description: Panel with a CSS repeating dot, grid, or cross background pattern using
     background-image with radial-gradient or linear-gradient. No SVG, no JavaScript.

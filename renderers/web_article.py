@@ -27672,9 +27672,148 @@ def _mo_stitch(b, ids, bpm, dur, st):
     return out
 
 
+# ─── third reference (2026-10-01): see the matching block in atoms_motion.gs ───────────────────────────────────────────────
+def _mo_own(t, v, d):
+    return v if isinstance(v, str) and v in t else d
+
+
+_MO_DEVICE = {'phone': 1, 'laptop': 1, 'tablet': 1}
+_MO_STRIKE = {'strike': 1, 'highlight': 1, 'underline': 1}
+_MO_RAYS = {'burst': 1, 'speed': 1}
+_MO_CELLS = {'pop': 1, 'flip': 1, 'fill': 1}
+_MO_STACK = {'ring': 1, 'stack': 1}
+
+
+def _mo_round(x):
+    return int(math.floor(x + 0.5))
+
+
+def _render_motion_device(b: dict) -> str:
+    kind = _mo_own(_MO_DEVICE, b.get('kind'), 'phone')
+    w = _ff_int(b.get('width'), 520 if kind == 'laptop' else (380 if kind == 'tablet' else 240), 120, 900)
+    scroll, fill, acc, label = _ff_int(b.get('scroll'), 0, 0, 2000), _mo_ink(b, 'fill', '#0b0f19'), _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _cv_str(b.get('label'), 40) or 'Device screen'
+    inner = ''.join(_mo_child(blk) for blk in (b['blocks'][:6] if isinstance(b.get('blocks'), list) else []))
+    bz = max(4, int(math.floor(w * (0.022 if kind == 'laptop' else 0.032))))
+    rad = int(math.floor(w * (0.13 if kind == 'phone' else (0.06 if kind == 'tablet' else 0.03))))
+    asp = '9/19' if kind == 'phone' else ('3/4' if kind == 'tablet' else '16/10')
+    notch = ('<div aria-hidden="true" style="position:absolute;top:' + str(int(math.floor(bz * 0.6))) + 'px;left:50%;width:28%;height:' + str(bz * 2) + 'px;border-radius:999px;background:' + fill + ';transform:translateX(-50%);z-index:2;"></div>') if kind == 'phone' else ''
+    base = ('<div aria-hidden="true" style="height:' + str(max(6, int(math.floor(w * 0.03)))) + 'px;margin:0 -4%;border-radius:0 0 ' + str(int(math.floor(w * 0.03))) + 'px ' + str(int(math.floor(w * 0.03))) + 'px;background:linear-gradient(#cfd5de,#9aa3b2);"></div>') if kind == 'laptop' else ''
+    return ('<div role="group" aria-label="' + _cv_esc(label) + '" style="width:' + str(w) + 'px;max-width:100%;opacity:clamp(0,calc(var(--p,1)*4),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*8%)) scale(calc(0.94 + 0.06*clamp(0,var(--p,1),1)));">'
+            + '<div style="position:relative;box-sizing:border-box;width:100%;aspect-ratio:' + asp + ';border:' + str(bz) + 'px solid ' + fill + ';border-radius:' + str(rad) + 'px;background:' + fill + ';outline:1px solid color-mix(in srgb,' + acc + ' 45%,transparent);box-shadow:0 24px 60px rgba(0,0,0,0.35);">'
+            + notch + '<div style="position:relative;width:100%;height:100%;overflow:hidden;border-radius:' + str(max(2, rad - bz)) + 'px;background:var(--mt-bg,#0f1420);color:var(--mt-ink,#f1f5f9);">'
+            + '<div style="transform:translateY(calc(var(--s,0)*-' + str(scroll) + 'px));">' + inner + '</div></div></div>' + base + '</div>')
+
+
+def _render_motion_strike(b: dict) -> str:
+    text, mode, size = _cv_str(b.get('text'), 80) or 'Text', _mo_own(_MO_STRIKE, b.get('mode'), 'strike'), _ff_int(b.get('size'), 64, 10, 400)
+    acc, color, align = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start')
+    weight, pc, dim = _ff_pick(b.get('weight'), _FF_WEIGHTS, 'black'), 'clamp(0,var(--p,1),1)', ''
+    if mode == 'strike':
+        bar = 'left:-2%;top:54%;height:0.09em;width:calc(104%*' + pc + ');background:' + acc + ';'
+        dim = 'opacity:calc(1 - 0.45*' + pc + ');'
+    elif mode == 'underline':
+        bar = 'left:0;bottom:-0.08em;height:0.1em;width:calc(100%*' + pc + ');background:' + acc + ';'
+    else:
+        bar = 'left:-0.15em;top:12%;height:78%;width:calc((100% + 0.3em)*' + pc + ');background:color-mix(in srgb,' + acc + ' 38%,transparent);z-index:-1;'
+    return ('<div style="width:100%;text-align:' + align + ';">' + _mo_sr(text)
+            + '<span aria-hidden="true" style="position:relative;display:inline-block;isolation:isolate;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:1.1;color:' + color + ';' + dim + '">' + _cv_esc(text)
+            + '<span style="position:absolute;' + bar + '"></span></span></div>')
+
+
+def _render_motion_rays(b: dict) -> str:
+    kind, n, th, spin = _mo_own(_MO_RAYS, b.get('kind'), 'burst'), _ff_int(b.get('count'), 24, 4, 64), float(_ff_num(b.get('thickness'), 0.5, 0.1, 0.9, 2)), _ff_int(b.get('spin'), 45, -360, 360)
+    acc, st = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _ff_num(b.get('strength'), 0.35, 0.05, 1, 2)
+    seg, ray = _ff_num(360 / n, 15, 0.1, 90, 3), _ff_num(360 / n * th, 7, 0.05, 90, 3)
+    fade = 'clamp(0,calc(var(--p,1)*3),1)'
+    if kind == 'speed':
+        lt, ls = _ff_num(100 / n * th, 1, 0.05, 50, 3), _ff_num(100 / n, 4, 0.1, 50, 3)
+        lines = 'repeating-linear-gradient(0deg,' + acc + ' 0,' + acc + ' ' + lt + '%,transparent ' + lt + '%,transparent ' + ls + '%)'
+        mk = 'linear-gradient(90deg,transparent 0,#000 30%,#000 60%,transparent 100%)'
+        return ('<div aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:' + lines + ';-webkit-mask-image:' + mk + ';mask-image:' + mk + ';-webkit-mask-size:50% 100%;mask-size:50% 100%;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;-webkit-mask-position:calc(var(--s,0)*-50%) 0;mask-position:calc(var(--s,0)*-50%) 0;opacity:calc(' + fade + '*' + st + ');"></div>')
+    mr = 'radial-gradient(circle,#000 0%,transparent 70%)'
+    return ('<div aria-hidden="true" style="width:100%;aspect-ratio:1/1;background:repeating-conic-gradient(from calc(var(--s,0)*' + str(spin) + 'deg),' + acc + ' 0deg,' + acc + ' ' + ray + 'deg,transparent ' + ray + 'deg,transparent ' + seg + 'deg);-webkit-mask-image:' + mr + ';mask-image:' + mr
+            + ';opacity:calc(' + fade + '*' + st + ');transform:scale(calc(0.6 + 0.4*clamp(0,var(--p,1),1)));"></div>')
+
+
+def _render_motion_hud(b: dict) -> str:
+    secs, size, label = _ff_int(b.get('seconds'), 10, 1, 3600), _ff_int(b.get('size'), 14, 8, 60), _cv_str(b.get('label'), 30)
+    corners, bar = b.get('corners') is not False, b.get('bar') is not False
+    acc, color, mono = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick('mono', _FF_FONTS, 'mono')
+    cs = [('top:0.6em;left:0.6em;', 'border-top:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'), ('top:0.6em;right:0.6em;', 'border-top:2px solid ' + acc + ';border-right:2px solid ' + acc + ';'),
+          ('bottom:0.6em;left:0.6em;', 'border-bottom:2px solid ' + acc + ';border-left:2px solid ' + acc + ';'), ('bottom:0.6em;right:0.6em;', 'border-bottom:2px solid ' + acc + ';border-right:2px solid ' + acc + ';')]
+    html = ''
+    if corners:
+        for pos, bd in cs:
+            html += '<span aria-hidden="true" style="position:absolute;' + pos + 'width:1.6em;height:1.6em;' + bd + '"></span>'
+    html += ('<span aria-hidden="true" style="position:absolute;top:1.1em;left:2.6em;">' + _mo_count(secs, 2, '', 's', '', 0) + '</span>'
+             + ('<span style="position:absolute;top:1.1em;right:2.6em;letter-spacing:0.14em;text-transform:uppercase;color:' + acc + ';">' + _cv_esc(label) + '</span>' if label else ''))
+    if bar:
+        html += '<span aria-hidden="true" style="position:absolute;left:2.6em;right:2.6em;bottom:1.1em;height:0.2em;background:' + _MO_MIX_LINE + ';"><span style="display:block;height:100%;width:calc(100%*clamp(0,var(--p,1),1));background:' + acc + ';"></span></span>'
+    return ('<div style="position:relative;width:100%;height:100%;min-height:5em;box-sizing:border-box;font-family:' + mono + ';font-size:' + str(size) + 'px;font-variant-numeric:tabular-nums;color:' + color + ';opacity:clamp(0,calc(var(--p,1)*6),1);">' + html + '</div>')
+
+
+def _render_motion_cells(b: dict) -> str:
+    cols, rows, mode = _ff_int(b.get('columns'), 6, 2, 12), _ff_int(b.get('rows'), 4, 1, 8), _mo_own(_MO_CELLS, b.get('mode'), 'pop')
+    gap, rad, size = _ff_int(b.get('gap'), 4, 0, 24), _ff_int(b.get('radius'), 6, 0, 40), _ff_int(b.get('size'), 18, 8, 80)
+    a1, a2, chess, nums = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'accent2', _MO_MIX_FILL), b.get('chess') is not False, b.get('numbers') is True
+    T, out = cols + rows + 1, ''
+    for r in range(rows):
+        for c in range(cols):
+            idx = r * cols + c
+            col = a2 if (chess and (r + c) % 2) else a1
+            tf = 'perspective(400px) rotateY(calc((1 - var(--u))*90deg))' if mode == 'flip' else 'scale(var(--u))'
+            bg = ('color-mix(in srgb,' + col + ' calc(var(--u)*100%),transparent)') if mode == 'fill' else col
+            out += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(T) + ' - ' + str(r + c) + '),1);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:' + str(rad) + 'px;background:' + bg + ';'
+                    + ('' if mode == 'fill' else 'transform:' + tf + ';opacity:var(--u);') + 'color:var(--mt-ink,#f1f5f9);font-weight:700;">' + (_cv_esc(str(2 ** idx)) if (nums and idx < 13) else '') + '</div>')
+    return ('<div aria-hidden="true" style="display:grid;grid-template-columns:repeat(' + str(cols) + ',minmax(0,1fr));gap:' + str(gap) + 'px;width:100%;font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">' + out + '</div>')
+
+
+def _render_motion_stack3d(b: dict) -> str:
+    mode, w, h, size = _mo_own(_MO_STACK, b.get('mode'), 'ring'), _ff_int(b.get('w'), 220, 80, 600), _ff_int(b.get('h'), 140, 60, 500), _ff_int(b.get('size'), 18, 8, 60)
+    acc, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'fill', 'color-mix(in srgb,var(--mt-bg,#0f1420) 90%,var(--mt-ink,#f1f5f9))')
+    items = []
+    for it in (b.get('items') if isinstance(b.get('items'), list) else []):
+        if len(items) >= 6:
+            break
+        obj = isinstance(it, dict)
+        t = _cv_str(it if isinstance(it, str) else (it.get('title') if obj else ''), 30)
+        if t:
+            items.append((t, _cv_str(it.get('text'), 60) if obj else '', _cv_str(it.get('icon'), 2) if obj else ''))
+    if not items:
+        items = [('Card', '', '')]
+    n = len(items)
+    nn = max(n, 3)
+    rr = max(_mo_round(w * 0.5 / math.tan(math.pi / nn)), _mo_round(w * 0.6))
+    cards, names = '', []
+    for i, (t, x, ic) in enumerate(items):
+        tf = ('rotateY(' + str(_mo_round(360 * i / n)) + 'deg) translateZ(' + str(rr) + 'px) scale(calc(0.6 + 0.4*var(--u)))') if mode == 'ring' else ('translateZ(calc(' + str(i) + '*(16px + var(--s,0)*60px)))')
+        cards += ('<div style="--u:clamp(0,calc(var(--p,1)*' + str(n + 1) + ' - ' + str(i) + '),1);position:absolute;left:0;top:0;width:' + str(w) + 'px;height:' + str(h) + 'px;box-sizing:border-box;padding:0.8em;border-radius:0.8em;background:' + fill + ';border:1px solid ' + _MO_MIX_LINE + ';box-shadow:inset 0 3px 0 ' + acc + ';opacity:var(--u);'
+                  + ('backface-visibility:hidden;-webkit-backface-visibility:hidden;' if mode == 'ring' else '') + 'transform:' + tf + ';color:var(--mt-ink,#f1f5f9);font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;">'
+                  + ('<div aria-hidden="true" style="font-size:1.4em;">' + _cv_esc(ic) + '</div>' if ic else '') + '<div style="font-weight:700;">' + _cv_esc(t) + '</div>'
+                  + ('<div style="font-size:0.8em;color:var(--mt-mute,#94a3b8);margin-top:0.3em;">' + _cv_esc(x) + '</div>' if x else '') + '</div>')
+        names.append(t)
+    stage = ('transform:translateZ(-' + str(rr) + 'px) rotateY(calc(var(--s,0)*-360deg));') if mode == 'ring' else ('transform:rotateX(55deg) rotateZ(-30deg);margin-top:' + str(int(math.floor(h * 0.5))) + 'px;')
+    return ('<div role="group" aria-label="' + _cv_esc(', '.join(names)) + '" style="width:100%;height:' + str(int(math.floor(h * (2 if mode == 'stack' else 1.15)))) + 'px;perspective:1400px;">'
+            + '<div style="position:relative;width:' + str(w) + 'px;height:' + str(h) + 'px;margin-left:auto;margin-right:auto;transform-style:preserve-3d;' + stage + '">' + cards + '</div></div>')
+
+
+def _render_motion_shake(b: dict) -> str:
+    amp, freq, tilt = _ff_int(b.get('amount'), 12, 1, 80), _ff_int(b.get('frequency'), 9, 1, 40), _ff_num(b.get('tilt'), 1.5, 0, 10, 1)
+    inner = ''.join(_mo_child(blk) for blk in (b['blocks'][:6] if isinstance(b.get('blocks'), list) else []))
+    tf = ('translate(calc(var(--k)*' + str(amp) + 'px*sin(calc(var(--p,1)*' + str(freq) + '*6.2832))),calc(var(--k)*' + str(int(math.floor(amp * 0.6 + 0.5))) + 'px*cos(calc(var(--p,1)*' + str(freq) + '*8.1 + 1)))) rotate(calc(var(--k)*' + tilt + 'deg*sin(calc(var(--p,1)*' + str(freq) + '*5.3))))')
+    return '<div style="--k:clamp(0,calc(1 - var(--p,1)),1);position:relative;width:100%;height:100%;transform:' + tf + ';">' + inner + '</div>'
+
+
+def _render_motion_flash(b: dict) -> str:
+    col, st = _mo_ink(b, 'color', '#ffffff'), _ff_num(b.get('strength'), 0.8, 0.1, 1, 2)
+    return '<div aria-hidden="true" style="width:100%;height:100%;pointer-events:none;background:' + col + ';opacity:calc(clamp(0,calc(var(--p,1)*10),1)*(1 - clamp(0,var(--p,1),1))*' + st + ');"></div>'
+
+
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
                          ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
-                         ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask)):
+                         ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask),
+                         ('motion_device', _render_motion_device), ('motion_strike', _render_motion_strike), ('motion_rays', _render_motion_rays), ('motion_hud', _render_motion_hud),
+                         ('motion_cells', _render_motion_cells), ('motion_stack3d', _render_motion_stack3d), ('motion_shake', _render_motion_shake), ('motion_flash', _render_motion_flash)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

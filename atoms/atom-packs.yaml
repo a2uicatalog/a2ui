@@ -332,6 +332,14 @@ a2ui-effects-v1:
 - motion_leader
 - motion_path
 - motion_mask
+- motion_device
+- motion_strike
+- motion_rays
+- motion_hud
+- motion_cells
+- motion_stack3d
+- motion_shake
+- motion_flash
 - motion_timeline
 - motion_group
 - motion_tokens
