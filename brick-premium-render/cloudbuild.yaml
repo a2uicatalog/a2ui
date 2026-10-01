@@ -1,0 +1,8 @@
+# Explicit --file build, repo root as context — same pattern as a2a_counterpart/cloudbuild.yaml (see that
+# file's own comment for why gcloud's auto-detected single root Dockerfile can't serve a second/third
+# containerized service too).
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'brick-premium-render/Dockerfile', '-t', '${_IMAGE}', '.']
+images:
+  - '${_IMAGE}'

@@ -198,6 +198,7 @@ a{color:inherit}
 <select id="tjsmaterial"><option value="lego">LEGO plastic</option><option value="concrete">Concrete block</option></select>
 <label for="tjscameramode" style="font-size:12px;color:var(--mute)">Camera</label>
 <select id="tjscameramode"><option value="persp">Perspective</option><option value="ortho">Parallel (instructions)</option></select>
+<button class="go alt" id="premium" type="button">Premium render (Blender)</button>
 <span id="tjsstepwrap" style="display:flex;gap:10px;align-items:center;flex:1">
 <label for="tjsstep" style="font-size:12px;color:var(--mute)">Build step</label>
 <input type="range" id="tjsstep" min="1" max="1" value="1" style="flex:1">
@@ -206,6 +207,7 @@ a{color:inherit}
 </div>
 <div id="tjsstepchips" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px"></div>
 <p class="note" id="tjsstatus"></p>
+<p class="note" id="premiumNote"></p>
 <p class="note" id="tjsinspect" hidden></p>
 <ul id="tjschecks" style="list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:4px;font-size:12px" hidden></ul>
 </div>
@@ -547,6 +549,9 @@ $('go').onclick=function(){
 // picker palette above, which has no transparency/finish concept at all).
 __THREEJS_VIEW_MATH__
 __BRICK_VALIDATE_SHARED__
+// premium-render-api's live Cloud Run Service URL (artful-patrol-502116-b7/europe-west1, see the
+// premium-export plan -- a genuinely separate, lightweight trigger+status service, not cloud-run-renderer).
+var PREMIUM_RENDER_BASE_URL='https://premium-render-api-1093160097419.europe-west1.run.app';
 var TJS=(function(){
   var colours=null, colourFetch=null, meshCache={}, mod=null, modFetch=null;
   var scene=null, camera=null, renderer=null, controls=null, group=null, loopStarted=false, keyLight=null;
@@ -1385,6 +1390,58 @@ var TJS=(function(){
               gtaoPass.enabled=false;
             }
             controls.update();
+          };
+        }
+        // Premium render (Blender/Cycles, offline): triggers a real async Cloud Run Job execution via
+        // premium-render-api (see the premium-export plan -- a genuinely separate service from this static
+        // page's own origin, NOT cloud-run-renderer, which is IAM-gated and has a 60s synchronous-request
+        // timeout far too short for a multi-minute Cycles render). This is this page's FIRST cross-origin
+        // fetch (confirmed before this change: nothing else here calls off-origin) -- premium-render-api
+        // responds with Access-Control-Allow-Origin:* for exactly this reason. Wiring matches #go's own
+        // established convention (disable+relabel before the call, reset in every terminal branch, write
+        // failures to a .note element) -- no progress bar, this codebase's convention throughout.
+        var premiumBtn=$('premium'),premiumNote=$('premiumNote');
+        if(premiumBtn){
+          premiumBtn.onclick=function(){
+            if(!last||!last.partsModel||!last.partsModel.length){premiumNote.textContent='Design something first.';return}
+            premiumNote.textContent='';premiumBtn.disabled=true;premiumBtn.textContent='Rendering…';
+            fetch(PREMIUM_RENDER_BASE_URL+'/trigger',{method:'POST',headers:{'Content-Type':'application/json'},
+                  body:JSON.stringify({partsModel:last.partsModel})})
+            .then(function(r){return r.json().catch(function(){return {ok:false,error:'unexpected response'}})})
+            .then(function(j){
+              if(!j.ok){
+                premiumNote.textContent=j.error||'Could not start the render.';
+                premiumBtn.disabled=false;premiumBtn.textContent='Premium render (Blender)';
+                return;
+              }
+              premiumNote.textContent='Rendering your premium view — this can take several minutes…';
+              var started=Date.now(),maxWaitMs=20*60*1000;
+              var iv=setInterval(function(){
+                if(Date.now()-started>maxWaitMs){
+                  clearInterval(iv);
+                  premiumNote.textContent='Still not done after a while — try again later.';
+                  premiumBtn.disabled=false;premiumBtn.textContent='Premium render (Blender)';
+                  return;
+                }
+                fetch(PREMIUM_RENDER_BASE_URL+'/status?jobId='+encodeURIComponent(j.jobId)+'&renderId='+encodeURIComponent(j.renderId))
+                .then(function(r){return r.json()})
+                .then(function(s){
+                  if(s.state==='running')return;
+                  clearInterval(iv);
+                  if(!s.ok){
+                    premiumNote.textContent=s.error||'Render failed.';
+                  }else{
+                    premiumNote.innerHTML='Ready: <a href="'+s.heroUrl+'" target="_blank" rel="noopener">still</a>'+
+                      (s.turntableUrl?' &middot; <a href="'+s.turntableUrl+'" target="_blank" rel="noopener">turntable</a>':'');
+                  }
+                  premiumBtn.disabled=false;premiumBtn.textContent='Premium render (Blender)';
+                }).catch(function(){});   // silent-fail per retry -- same style public/surfaces/mcp-apps/renderer-bundle.html's own poll loop uses
+              },8000);
+            })
+            .catch(function(){
+              premiumNote.textContent='Could not reach the render service.';
+              premiumBtn.disabled=false;premiumBtn.textContent='Premium render (Blender)';
+            });
           };
         }
         if(maxStep>1){

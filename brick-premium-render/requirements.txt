@@ -1,0 +1,6 @@
+# This Job's own requirements -- scripts/brick_models/requirements-blender.txt's two pins, verbatim (that
+# file's own header explains why bpy/imageio-ffmpeg are kept out of the repo's shared requirements.txt), plus
+# the GCS client this entrypoint needs to upload its own output (not part of render_blender.py's own concern).
+bpy==5.2.2
+imageio-ffmpeg==0.6.0
+google-cloud-storage
