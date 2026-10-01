@@ -27255,10 +27255,12 @@ def _render_motion_pill(b: dict) -> str:
     acc, color, fill = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _mo_ink(b, 'fill', '')
     align = _ff_pick(b.get('align'), _MO_ALIGN, 'start')
     jc = 'flex-end' if align == 'right' else ('center' if align == 'center' else 'flex-start')
+    href = b.get('href').strip() if isinstance(b.get('href'), str) else ''
+    tag = 'a' if href else 'div'
     return ('<div style="display:flex;justify-content:' + jc + ';width:100%;">'
-            + '<div style="display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
+            + '<' + tag + (' href="' + _cv_esc(href) + '"' if href else '') + ' style="' + ('text-decoration:none;cursor:pointer;pointer-events:auto;' if href else '') + 'display:inline-flex;align-items:center;gap:0.55em;box-sizing:border-box;padding:0.55em 1.3em;border-radius:999px;border:1px solid ' + _MO_MIX_LINE + ';background:' + (fill or _MO_MIX_FILL) + ';color:' + color + ';font-family:' + _MO_SANS + ';font-size:' + str(size) + 'px;font-weight:600;line-height:1.1;white-space:nowrap;opacity:clamp(0,var(--p,1),1);transform:translateY(calc((1 - clamp(0,var(--p,1),1))*0.5em));">'
             + _mo_sr(_mo_plain(text))
-            + '<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:0.55em;">' + ('<span style="color:' + acc + ';">' + _cv_esc(icon) + '</span>' if icon else '') + '<span>' + _mo_runs(_mo_chars(text), acc) + '</span></span></div></div>')
+            + '<span aria-hidden="true" style="display:inline-flex;align-items:center;gap:0.55em;">' + ('<span style="color:' + acc + ';">' + _cv_esc(icon) + '</span>' if icon else '') + '<span>' + _mo_runs(_mo_chars(text), acc) + '</span></span></' + tag + '></div>')
 
 
 def _render_motion_checklist(b: dict) -> str:

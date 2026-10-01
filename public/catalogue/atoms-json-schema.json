@@ -40850,6 +40850,9 @@
           "fill": {
             "type": "integer"
           },
+          "href": {
+            "type": "string"
+          },
           "align": {
             "type": "string",
             "enum": [

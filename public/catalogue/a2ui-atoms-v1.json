@@ -14207,6 +14207,10 @@
       "fill": {
        "description": "\"#rrggbb\" (optional). Chip fill. Default a faint tint of the stage ink."
       },
+      "href": {
+       "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString",
+       "description": "string (optional). Makes the pill a real link: https, mailto or a relative path; anything else is dropped. Default none."
+      },
       "align": {
        "description": "\"start\" | \"middle\" | \"end\" (optional, default \"start\")"
       }
