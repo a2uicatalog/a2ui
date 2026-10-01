@@ -36,7 +36,7 @@ from renderers import web_article as wa  # noqa: E402
 DEMO_ATOMS = ["demo_window", "demo_page", "demo_wordmark", "demo_kpis", "demo_chart", "demo_toggle_grid", "demo_progress",
               "demo_cursor", "demo_caption", "demo_orb", "demo_panel"]
 PRIMITIVES = ["motion_layer", "motion_text", "motion_shape", "motion_counter"]
-REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch"]  # from the studied reference film, 2026-10-01
+REEL = ["motion_pill", "motion_checklist", "motion_stepper", "motion_orbit", "motion_code", "motion_mark", "motion_browser", "motion_sketch", "motion_leader", "motion_path", "motion_mask"]  # from the studied reference film, 2026-10-01
 MOTION_ATOMS = ["motion_group", "motion_tokens", "motion_timeline"] + PRIMITIVES + REEL + DEMO_ATOMS
 
 UID_RE = re.compile(r'id="(?:mt|mo)-([a-z0-9]{6})"')
@@ -106,6 +106,7 @@ PAYLOADS = {
     "motion_timeline": [{}, TIMELINE,
                         dict(TIMELINE, aspect="9:16", loop=False, autoplay=False, controls=False, backdrop="grid", theme="light", poster=3, accent="#F97316", background="#101820"),
                         STITCHED, dict(STITCHED, stitch="zoom-through", overlap=1.2), dict(STITCHED, stitch="cut"), dict(STITCHED, stitch="<x>", overlap="no"),
+                        dict(STITCHED, stitch="whip"), dict(STITCHED, stitch="wipe", overlap=1.0), dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3, "transition": "wipe"}, {"layer": "s3", "t": 6, "transition": "whip"}]),
                         dict(STITCHED, scenes=[{"layer": "s1", "t": 0}, {"layer": "nope", "t": 2}, {"layer": "s2", "beat": 2, "transition": "blur"}, {"layer": "s3", "t": "x"}, "junk", {"layer": "s3", "t": 5, "transition": "<b>"}]),
                         dict(TIMELINE, blocks=TIMELINE["blocks"] + [{"type": "motion_timeline"}, {"type": "no_such_atom"}, "junk"],
                              tracks=TIMELINE["tracks"] + [{"target": "nope", "keys": []}, {"target": "cur", "keys": [{"t": "x"}, None, {"beat": 1, "x": 5}]}])],
@@ -133,7 +134,9 @@ PAYLOADS = {
                     {"text": "x", "color": "red", "reveal": "toString", "mode": "constructor", "font": "__proto__", "weight": "hasOwnProperty", "size": 99999},
                     {"text": "il te faut un *plan*.\nand *a b* c", "mode": "words", "reveal": "fade", "accent": "#ff6a2b"},
                     {"text": "co*mm*ent *on fait ?*", "mode": "chars", "reveal": "mask"}, {"text": "*all* ** star <b>*", "mode": "lines"},
-                    {"text": "*x\ny* z", "mode": "block"}, {"text": "*" * 150, "mode": "chars"}],
+                    {"text": "*x\ny* z", "mode": "block"}, {"text": "*" * 150, "mode": "chars"},
+                    {"text": "Vos meubles sont\nidentifi\u00e9s", "reveal": "bar", "bar": "#12467a", "color": "#ffffff", "size": 40, "mode": "lines"}, {"text": "a b *c*", "reveal": "bar", "mode": "words", "bar": "red"},
+                    {"text": "M\u00c9TRIE", "extrude": 18, "extrude_color": "#7a1d6b", "font": "display", "weight": "black"}, {"text": "UP", "extrude": 99, "extrude_dir": "down", "extrude_color": "url(x)"}],
     "motion_shape": [{}, {"shape": "circle", "fill": "#FF0000", "fill2": "#0000ff", "angle": 135, "blur": 150, "draw": "fade", "w": 400, "h": 300},
                      {"shape": "ring", "thickness": 10, "fill": "#ffb347", "fill2": "#ff3d81"}, {"shape": "ring", "draw": "scale"}, {"shape": "line", "thickness": 4, "draw": "grow-y"},
                      {"shape": "rect", "radius": 80, "draw": "sweep", "fill": "url(javascript:alert(1))"}, {"shape": "<x>", "draw": "none", "w": "9", "h": True}],
@@ -162,6 +165,14 @@ PAYLOADS = {
                                                                  {"d": "M10 10 a 10 10 0 1 0 20 0 a 10 10 0 1 0 -20 0"}, {"d": "M 0 0 L 1e2 -5.5"}]},
                        {"strokes": [{"d": "M 0 0\" onload=\"alert(1)"}, {"d": "<script>alert(1)</script>"}, {"d": "url(javascript:alert(1))"}, {"d": "M 0 0 L 10 10 \n L 5 5"}, {"d": "x" * 800}, {"d": 5}, "junk", {"d": "M 1 1 Z", "color": "red", "fill": "url(x)", "width": 999}]},
                        {"strokes": "no", "w": "x", "h": 9999}],
+    "motion_leader": [{}, {"from": [20, 250], "to": [350, 40], "curve": 35, "label": "Entr\u00e9e H2O <b>", "label_at": "start", "color": "#ff6a2b", "label_color": "#fff6e8", "width": 7, "size": 30, "w": 500, "h": 320},
+                      {"from": [0, 0], "to": [0, 0], "arrow": False, "dot": False, "label": "same point"}, {"from": "no", "to": [1], "curve": 999, "width": 999, "size": 1, "w": "x"},
+                      {"from": [1e12, "x"], "to": [-5e9, 7], "label": "x" * 80, "color": "red", "label_color": "url(javascript:alert(1))"}],
+    "motion_path": [{}, {"d": "M 20 300 C 100 100 300 100 380 300", "nodes": [{"x": 20, "y": 300, "at": 0, "label": "Start"}, {"x": 200, "y": 150, "at": 0.5, "label": "Mid <i>"}, {"x": 380, "y": 300, "at": 1}], "color": "#0a66c2", "label_color": "#ffffff", "width": 9, "size": 26, "label": "Line A", "w": 400, "h": 400},
+                     {"d": "M 0 0\" onload=\"alert(1)", "nodes": ["junk", None, [], {}, {"x": "9", "y": "x", "at": 7, "label": "<script>"}], "marker": False}, {"d": 5, "nodes": [{"x": 1, "y": 1}] * 12, "w": 9999}],
+    "motion_mask": [{}, {"shape": "circle", "blocks": [{"type": "motion_text", "id": "t", "text": "Hi", "place": {"x": 1, "y": 1}}, {"type": "motion_shape", "shape": "rect"}]},
+                    {"shape": "diagonal", "blocks": [{"type": "motion_counter", "to": 5}]}, {"shape": "rounded", "blocks": ["junk", {"type": "no_such_atom"}]}, {"shape": "bars", "blocks": [{"type": "motion_pill", "text": "x"}] * 9},
+                    {"shape": "toString", "blocks": "no"}],
     "demo_panel": [{}, {"tone": "dark", "accent": "#38bdf8", "avatar": "SKX", "title": "Sam", "sub": "Head of Sales", "badge": "Prospect", "rows": [{"label": "Team", "value": "40"}, "x"]}],
 }
 CASES = [(a, b) for a, bs in PAYLOADS.items() for b in bs]
@@ -538,3 +549,74 @@ def test_motion_sketch_only_ever_emits_paths_from_a_strict_grammar():
     assert "stroke:var(--mt-ink,#f1f5f9)" in html and "stroke-width:24" in html and "url(x)" not in html
     # the drawing is a pure function of p: stroke 0 of 1 is complete at p = 1 and undrawn at p = 0
     assert "stroke-dashoffset:calc(1 - var(--u))" in html and "clamp(0,calc(var(--p,1)*1 - 0),1)" in html
+
+
+# ─── the second reel's atoms (leader lines, route paths, masks, wipes, text bars) ───────────────────────────────────────
+def test_leader_and_path_only_emit_numbers_and_validated_paths():
+    hostile = _py({"type": "motion_leader", "from": ["<x>", 1e300], "to": [None, "\" onload=\"alert(1)"], "label": "<img src=x onerror=alert(1)>", "color": "red;x", "label_color": "url(javascript:alert(1))", "curve": "9;}", "w": "\"><b>"})
+    assert "<img" not in hostile and "onload" not in hostile and "javascript" not in hostile and "red;x" not in hostile
+    assert "&lt;img" in hostile, "the label is escaped text"
+    assert re.findall(r' d="([^"]*)"', hostile) and all(re.fullmatch(r"[MLQZ0-9 .\-]+", d) for d in re.findall(r' d="([^"]*)"', hostile))
+    path = _py({"type": "motion_path", "d": "M 0 0\" onload=\"alert(1)", "nodes": [{"x": "<b>", "y": "\"", "label": "<script>alert(1)</script>"}]})
+    assert "onload" not in path and "<script" not in path and "M 20 200 C 120 40 280 360 380 200" in path, "a bad path falls back to the default"
+    assert "&lt;script&gt;" in path
+
+
+def test_mask_children_stay_ids_and_the_shape_never_comes_from_the_payload():
+    html = _py({"type": "motion_mask", "shape": "x;}</style><script>alert(1)</script>", "blocks": [{"type": "motion_pill", "text": "x", "id": "kid"}]})
+    assert "<script" not in html and html.count("clip-path:polygon(") == 2, "an unknown shape falls back to the blob (clip-path and its -webkit- twin)"
+    assert 'data-mt-id="kid"' in html
+    assert html.count("calc(50% + ") == 80, "20 vertices, x and y each, written for clip-path and its -webkit- twin"
+
+
+def test_text_bar_and_extrude_take_only_validated_colours_and_depth():
+    html = _py({"type": "motion_text", "text": "HI", "reveal": "bar", "bar": "red;}</style>", "extrude": 9999, "extrude_color": "url(javascript:alert(1))"})
+    assert "red;}" not in html and "javascript" not in html and "<style" not in html
+    assert html.count("px 0 #0b0b14") == 30, "depth clamps to 30 and the colour falls back"
+
+
+@browser
+def test_wipe_reveals_the_new_scene_left_to_right_and_keeps_the_old_one_until_covered():
+    blk = dict(STITCHED, stitch="wipe", overlap=2.0, bpm=0, duration=9,
+               scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3}], controls=False, autoplay=False)
+    clip = "return getComputedStyle(document.querySelector('[data-mt-id=%s]')).clipPath;"
+    opac = "return +document.querySelector('[data-mt-id=%s]').style.opacity;"
+    assert _probe(blk, 3, clip % "s2") != "none", "at the start of the wipe the new scene is still clipped"
+    mid = _probe(blk, 4, clip % "s2")
+    assert mid.startswith("inset(") and mid != "inset(0px)", mid
+    assert _probe(blk, 6, clip % "s2") in ("none", "inset(0px)"), "fully revealed"
+    assert _probe(blk, 4, opac % "s1") == 1, "the old scene is still fully visible mid-wipe"
+    assert _probe(blk, 5.5, opac % "s1") == 0, "and gone once the new one has covered it"
+
+
+@browser
+def test_whip_blurs_and_slides_both_scenes():
+    blk = dict(STITCHED, stitch="whip", overlap=2.0, bpm=0, duration=9, scenes=[{"layer": "s1", "t": 0}, {"layer": "s2", "t": 3}], controls=False, autoplay=False)
+    f = "var e=document.querySelector('[data-mt-id=%s]');return [e.style.filter, e.style.transform];"
+    out_f, out_t = _probe(blk, 4, f % "s1")
+    in_f, in_t = _probe(blk, 4, f % "s2")
+    assert out_f.startswith("blur(") and in_f.startswith("blur(") and "translate(" in out_t and "translate(" in in_t
+
+
+@browser
+def test_mask_grows_with_p_and_is_gone_at_zero():
+    kid = {"type": "motion_pill", "text": "Hello", "id": "kid"}
+    blk = _scene([{"type": "motion_mask", "id": "m", "shape": "circle", "blocks": [kid], "place": {"x": 10, "y": 10, "w": 60, "h": 60}}],
+                 [{"target": "m", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "var e=document.querySelector('[data-mt-id=m] > div');var r=e.getBoundingClientRect();return [getComputedStyle(e).clipPath.slice(0,8), e.style.getPropertyValue('--m')];"
+    assert _probe(blk, 0, js) == ["polygon(", "clamp(0,var(--p,1),1)"]
+    # the polygon's vertices scale with --m: at p = 0.5 the first vertex sits half way out from the centre
+    first = "var e=document.querySelector('[data-mt-id=m] > div');return getComputedStyle(e).clipPath.split(',')[0];"
+    zero, half, full = (_probe(blk, t, first) for t in (0, 2, 4))
+    assert zero != half != full and zero != full
+
+
+@browser
+def test_path_marker_rides_the_path_with_p():
+    blk = _scene([{"type": "motion_path", "id": "r", "d": "M 0 0 L 400 0", "w": 400, "h": 100, "nodes": [{"x": 200, "y": 0, "at": 0.5, "label": "Mid"}], "place": {"x": 0, "y": 0, "w": 100}}],
+                 [{"target": "r", "keys": [{"t": 0, "p": 0}, {"t": 4, "p": 1}]}])
+    js = "var s=document.querySelectorAll('[data-mt-id=r] svg path');var m=s[2];var g=document.querySelector('[data-mt-id=r] svg g');return [getComputedStyle(m).strokeDashoffset, getComputedStyle(s[1]).strokeDashoffset, +getComputedStyle(g).getPropertyValue('--k')||g.style.getPropertyValue('--k')];"
+    a, b_, c = _probe(blk, 2, js)
+    num = lambda v: float(re.search(r"-?[0-9.]+", str(v)).group(0))
+    assert num(b_) == pytest.approx(0.5, abs=0.02), "the drawn line is half drawn at p = 0.5"
+    assert abs(num(a)) == pytest.approx(0.5, abs=0.02), "and the marker sits at the same place"

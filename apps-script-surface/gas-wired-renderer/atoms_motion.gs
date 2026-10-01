@@ -576,7 +576,7 @@ _RENDERERS['motion_timeline'] = function(b) {
 // motion_layer groups children into a scene; motion_text, motion_shape and motion_counter draw type, forms and numbers
 // from the stage theme (--mt-ink / --mt-acc / --mt-mute, set by motion_timeline) and move with --p like the demo kit.
 // Standalone they render their FINAL state.
-var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1};
+var _MO_REVEAL = {rise: 1, drop: 1, fade: 1, blur: 1, mask: 1, bar: 1};
 var _MO_ALIGN = {start: 'left', middle: 'center', end: 'right'};
 function _moInk(b, key, dflt) { var h = _ffHex(b[key], ''); return h || dflt; }
 
@@ -634,6 +634,8 @@ _RENDERERS['motion_text'] = function(b) {
   var S = _ffInt(b.overlap, 3, 1, 8), track = _ffNum(b.tracking, -0.02, -0.1, 0.5, 3), lh = _ffNum(b.line_height, 1.05, 0.8, 2, 2);
   var color = _moInk(b, 'color', 'var(--mt-ink,#f1f5f9)'), align = _ffPick(b.align, _MO_ALIGN, 'start'), upper = b.uppercase === true;
   var accent = _moInk(b, 'accent', 'var(--mt-acc,#38bdf8)');
+  var bar = _moInk(b, 'bar', 'var(--mt-acc,#38bdf8)'), ext = _ffInt(b.extrude, 0, 0, 30), extc = _moInk(b, 'extrude_color', '#0b0b14'), shadow = '', si;
+  for (si = 1; si <= ext; si++) shadow += (si > 1 ? ',' : '') + (b.extrude_dir === 'down' ? '0' : si + 'px') + ' ' + si + 'px 0 ' + extc;
   // units: [{c: chars, brk}] ; brk marks a line break BEFORE the unit
   var units = [];
   for (i = 0; i < lines.length; i++) {
@@ -658,6 +660,7 @@ _RENDERERS['motion_text'] = function(b) {
   function uvar(n) { return '--u:clamp(0,calc((var(--p,1)*' + (N + S) + ' - ' + n + ')/' + S + '),1);'; }
   function wrapUnit(inner, n, blockish) {
     var inl = blockish ? 'display:block;' : 'display:inline-block;';
+    if (reveal === 'bar') return '<span style="' + uvar(n) + (blockish ? 'display:block;width:fit-content;' : 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>';
     if (reveal === 'mask') return '<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>';
     var fx = reveal === 'fade' ? '' : reveal === 'drop' ? 'transform:translateY(calc((1 - var(--u))*-0.6em));' : reveal === 'blur' ? 'filter:blur(calc((1 - var(--u))*0.25em));transform:translateY(calc((1 - var(--u))*0.15em));' : 'transform:translateY(calc((1 - var(--u))*0.6em));';
     return '<span style="' + uvar(n) + inl + 'opacity:var(--u);' + fx + '">' + inner + '</span>';
@@ -675,7 +678,7 @@ _RENDERERS['motion_text'] = function(b) {
       out += '<span style="display:inline-block;white-space:nowrap;">' + ch + '</span>';
     } else out += wrapUnit(_moRuns(u.c, accent), idx++, false);
   }
-  return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
+  return '<div style="font-family:' + font + ';font-size:' + size + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';' + (upper ? 'text-transform:uppercase;' : '') + (shadow ? 'text-shadow:' + shadow + ';' : '') + (mode === 'lines' ? 'white-space:nowrap;' : '') + 'width:100%;">'
     + _moSr(_moPlain(lines.join(' ')))
     + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>';
 };
@@ -927,21 +930,98 @@ _RENDERERS['motion_sketch'] = function(b) {
   return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label) + '">' + body + '</svg>';
 };
 
+// ─── second reference reel (2026-10-01): callout leader lines, route paths, shape-masked reveals ──────────────────────────────
+function _moPt(v, vw, vh, dx, dy) {
+  var x = dx * vw, y = dy * vh;
+  if (Array.isArray(v) && v.length >= 2) { x = _moNum(v[0], x); y = _moNum(v[1], y); }
+  return [Math.max(-4000, Math.min(6000, x)), Math.max(-4000, Math.min(6000, y))];
+}
+function _moF(x) { return _ffNum(x, 0, -100000, 100000, 1); }
+
+// A line (straight or curved) that draws itself from one point to another, with an arrowhead, a start dot and a label: the
+// callout that points at a thing in a diagram. Points are in viewBox units (w by h, default 400 by 300).
+_RENDERERS['motion_leader'] = function(b) {
+  var vw = _ffInt(b.w, 400, 50, 2000), vh = _ffInt(b.h, 300, 50, 2000), a = _moPt(b.from, vw, vh, 0.12, 0.7), z = _moPt(b.to, vw, vh, 0.88, 0.3);
+  var wd = _ffInt(b.width, 4, 1, 24), col = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)'), lc = _moInk(b, 'label_color', 'var(--mt-ink,#f1f5f9)'), fs = _ffInt(b.size, 22, 8, 80);
+  var label = _moStr(b.label, 40), at = b.label_at === 'start' ? 'start' : 'end', curve = _ffInt(b.curve, 0, -100, 100), arrow = b.arrow !== false, dot = b.dot !== false;
+  var dx = z[0] - a[0], dy = z[1] - a[1], len = Math.sqrt(dx * dx + dy * dy) || 1;
+  var cx = (a[0] + z[0]) / 2 - dy * curve / 100, cy = (a[1] + z[1]) / 2 + dx * curve / 100;
+  var d = 'M' + _moF(a[0]) + ' ' + _moF(a[1]) + ' Q' + _moF(cx) + ' ' + _moF(cy) + ' ' + _moF(z[0]) + ' ' + _moF(z[1]);
+  var tx = z[0] - cx, ty = z[1] - cy, tl = Math.sqrt(tx * tx + ty * ty), sx = cx - a[0], sy = cy - a[1], sl = Math.sqrt(sx * sx + sy * sy);
+  if (tl < 0.001) { tx = dx; ty = dy; tl = len; }
+  if (sl < 0.001) { sx = dx; sy = dy; sl = len; }
+  tx /= tl; ty /= tl; sx /= sl; sy /= sl;
+  var hl = wd * 3 + 6, hw = wd * 1.6 + 3, bx = z[0] - tx * hl, by = z[1] - ty * hl, nx = -ty, ny = tx, r0 = wd * 1.5 + 2;
+  var head = 'M' + _moF(z[0]) + ' ' + _moF(z[1]) + ' L' + _moF(bx + nx * hw) + ' ' + _moF(by + ny * hw) + ' L' + _moF(bx - nx * hw) + ' ' + _moF(by - ny * hw) + ' Z';
+  var lx = at === 'end' ? z[0] + tx * (hl + 10) : a[0] - sx * (r0 + 10), ly = at === 'end' ? z[1] + ty * (hl + 10) : a[1] - sy * (r0 + 10);
+  var anchor = at === 'end' ? (tx >= 0 ? 'start' : 'end') : (sx > 0 ? 'end' : 'start');
+  return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label || 'Leader line') + '">'
+    + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,calc(var(--p,1)/0.7),1));"/>'
+    + (dot ? '<circle cx="' + _moF(a[0]) + '" cy="' + _moF(a[1]) + '" r="' + _moF(r0) + '" style="fill:' + col + ';transform-box:fill-box;transform-origin:center;transform:scale(clamp(0,calc(var(--p,1)*14),1));"/>' : '')
+    + (arrow ? '<path d="' + head + '" style="fill:' + col + ';opacity:clamp(0,calc((var(--p,1) - 0.66)*12),1);"/>' : '')
+    + (label ? '<text x="' + _moF(lx) + '" y="' + _moF(ly) + '" text-anchor="' + anchor + '" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:' + fs + 'px;font-weight:700;fill:' + lc + ';opacity:clamp(0,calc((var(--p,1) - 0.55)*5),1);">' + _esc(label) + '</text>' : '')
+    + '</svg>';
+};
+
+// A route that draws itself, with a marker travelling along it and stops that pop as it passes: the metro line, the flight path.
+// The marker is a zero-length round dash riding the path, so it needs no script and follows the film clock exactly.
+_RENDERERS['motion_path'] = function(b) {
+  var d = typeof b.d === 'string' ? b.d.trim() : '';
+  if (!_MO_PATH_OK.test(d)) d = 'M 20 200 C 120 40 280 360 380 200';
+  var vw = _ffInt(b.w, 400, 50, 2000), vh = _ffInt(b.h, 400, 50, 2000), wd = _ffInt(b.width, 6, 1, 24), col = _moInk(b, 'color', 'var(--mt-acc,#38bdf8)'), lc = _moInk(b, 'label_color', 'var(--mt-ink,#f1f5f9)'), fs = _ffInt(b.size, 20, 8, 80);
+  var src = Array.isArray(b.nodes) ? b.nodes : [], nodes = '', i, n = 0, r = wd * 1.7 + 3, label = _moStr(b.label, 60) || 'Route';
+  for (i = 0; i < src.length && n < 8; i++) {
+    var s = src[i];
+    if (!s || typeof s !== 'object') continue;
+    var x = Math.max(-4000, Math.min(6000, _moNum(s.x, 0))), y = Math.max(-4000, Math.min(6000, _moNum(s.y, 0))), at = _ffNum(s.at, 0.5, 0, 1, 2), t = _moStr(s.label, 30);
+    nodes += '<g style="--k:clamp(0,calc((var(--p,1) - ' + at + ')*14),1);"><circle cx="' + _moF(x) + '" cy="' + _moF(y) + '" r="' + _moF(r) + '" style="fill:' + col + ';transform-box:fill-box;transform-origin:center;transform:scale(var(--k));"/>'
+      + '<circle cx="' + _moF(x) + '" cy="' + _moF(y) + '" r="' + _moF(r * 0.42) + '" style="fill:' + lc + ';transform-box:fill-box;transform-origin:center;transform:scale(var(--k));"/>'
+      + (t ? '<text x="' + _moF(x + r + 10) + '" y="' + _moF(y) + '" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:' + fs + 'px;font-weight:700;fill:' + lc + ';opacity:var(--k);">' + _esc(t) + '</text>' : '') + '</g>';
+    n++;
+  }
+  return '<svg viewBox="0 0 ' + vw + ' ' + vh + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _esc(label) + '">'
+    + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;opacity:0.16;"/>'
+    + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + wd + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>'
+    + (b.marker !== false ? '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ffNum(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*clamp(0,var(--p,1),1)*0.9999);"/>' : '')
+    + nodes + '</svg>';
+};
+
+// Reveals its children through a shape that grows with p: a wobbly blob, a circle, a diagonal wipe, a rounded rectangle, or
+// venetian bars. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script.
+var _MO_MASK_SHAPES = {blob: 1, circle: 1, diagonal: 1, rounded: 1, bars: 1};
+var _MO_MASK_R = [84, 91, 82, 92, 85, 90, 81, 89, 86, 91, 83, 92, 80, 88, 84, 91, 82, 90, 86, 92];
+_RENDERERS['motion_mask'] = function(b) {
+  var shape = (typeof b.shape === 'string' && Object.prototype.hasOwnProperty.call(_MO_MASK_SHAPES, b.shape)) ? b.shape : 'blob';
+  var blocks = Array.isArray(b.blocks) ? b.blocks.slice(0, 6) : [], inner = '', i, clip = '', mask = '';
+  for (i = 0; i < blocks.length; i++) inner += _moChild(blocks[i]);
+  if (shape === 'blob' || shape === 'circle') {
+    var pts = [];
+    for (i = 0; i < 20; i++) {
+      var rr = shape === 'circle' ? 90 : _MO_MASK_R[i], ang = i * 18;
+      pts.push('calc(50% + ' + rr + '% * var(--m) * cos(' + ang + 'deg)) calc(50% + ' + rr + '% * var(--m) * sin(' + ang + 'deg))');
+    }
+    clip = 'polygon(' + pts.join(',') + ')';
+  } else if (shape === 'diagonal') clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)';
+  else if (shape === 'rounded') clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))';
+  else mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)';
+  return '<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + (clip ? 'clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' : '') + (mask ? '-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' : '') + '">' + inner + '</div>';
+};
+
 // ─── stitching: scenes that hand over to each other ─────────────────────────────────────────────────────────────────
 // motion_timeline `scenes: [{layer, t|beat, transition?}]` turns a list of scene layers into the tracks that cross them, so a
 // film is stitched by declaring where each scene starts instead of hand-writing four tracks per cut. The window between one
 // scene's start and `overlap` seconds later is the hand-over: the old scene leaves while the new one arrives. Your own tracks
 // on the same layer are applied after, and win.
 var _MO_STITCH = {
-  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1
+  'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1
 };
 var _MO_STITCH_IN = {
-  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}
+  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: 8}, 'zoom-through': {opacity: 0, scale: 0.9, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: 6}, 'whip': {opacity: 0, x: 18, blur: 22}, 'wipe': {clip: 0}
 };
 var _MO_STITCH_OUT = {
-  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: -8}, 'zoom-through': {opacity: 0, scale: 1.12, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: -6}
+  'dissolve': {opacity: 0}, 'push': {opacity: 0, x: -8}, 'zoom-through': {opacity: 0, scale: 1.12, blur: 10}, 'blur': {opacity: 0, blur: 16}, 'rise': {opacity: 0, y: -6}, 'whip': {opacity: 0, x: -18, blur: 22}, 'wipe': {opacity: 0}
 };
-var _MO_REST = {opacity: 1, x: 0, y: 0, scale: 1, blur: 0};
+var _MO_REST = {opacity: 1, x: 0, y: 0, scale: 1, blur: 0, clip: 1};
 function _moAt(k, bpm, dur) {
   var t = null;
   if (typeof k.t === 'number' && isFinite(k.t)) t = k.t;
@@ -972,6 +1052,7 @@ function _moStitch(b, ids, bpm, dur, st) {
     }
     if (nxt) {
       if (fout === 'cut') _moStitchKey(keys, nxt.t, {opacity: 0}, 'hold');
+      else if (fout === 'wipe') { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, {opacity: 0}, 'hold'); } // the old scene stays until the new one has covered it
       else { _moStitchKey(keys, nxt.t, _MO_REST); _moStitchKey(keys, nxt.t + ov, _MO_STITCH_OUT[fout], 'accelerate'); }
     }
     if (!keys.length) continue;

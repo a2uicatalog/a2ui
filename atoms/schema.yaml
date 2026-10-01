@@ -9442,9 +9442,9 @@ blocks:
     scenes: 'array (max 12) of {layer: id, t | beat, transition?}, optional. STITCHES scenes together: each layer (usually a
       motion_layer) is hidden until its start and hands over to the next scene instead of cutting. Within `overlap` seconds of the
       next scene''s start the old one leaves while the new one arrives. transition is one of cut, dissolve, push, zoom-through,
-      blur, rise and applies to the scene it names (the hand-over INTO it); without one the timeline''s `stitch` is used. Your own
+      blur, rise, whip, wipe and applies to the scene it names (the hand-over INTO it); without one the timeline''s `stitch` is used. Your own
       tracks on the same layer are applied after these and win, so a scene can still do its own entrance.'
-    stitch: '"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" (optional, default "dissolve"). The hand-over used by
+    stitch: '"cut" | "dissolve" | "push" | "zoom-through" | "blur" | "rise" | "whip" | "wipe" (optional, default "dissolve"). whip is a fast push with heavy motion blur; wipe reveals the new scene left to right over the old one. The hand-over used by
       scenes that do not name one. Pick one per film: a shared motion vector between scenes is what reads as designed.'
     overlap: number (optional). Seconds a hand-over takes, 0-3. Default 0.6. Ignored by cut.
     camera: '{keys: [{t | beat, ease?, x?, y?, zoom?, rx?, ry?, rz?}]} (max 48 keys), optional. x,y are the focus point in
@@ -9922,7 +9922,7 @@ blocks:
     weight: '"regular" | "bold" | "black" (optional, default "bold")'
     mode: '"lines" | "words" | "chars" | "block" (optional, default "lines"). What reveals in turn. lines never wraps; more
       than 120 units falls back to block.'
-    reveal: '"mask" | "rise" | "drop" | "fade" | "blur" (optional, default "rise")'
+    reveal: '"mask" | "rise" | "drop" | "fade" | "blur" | "bar" (optional, default "rise"). bar wipes a coloured highlight bar in behind each unit, then the text appears on it.'
     overlap: integer (optional). How many units are mid-reveal at once, 1-8. Higher is softer. Default 3.
     tracking: number (optional). Letter spacing in em, -0.1 to 0.5. Default -0.02.
     line_height: number (optional). 0.8-2. Default 1.05.
@@ -9930,6 +9930,10 @@ blocks:
     align: '"start" | "middle" | "end" (optional, default "start")'
     uppercase: bool (optional). Default false.
     accent: '"#rrggbb" (optional). Colour of words wrapped in asterisks. Default the stage accent.'
+    bar: '"#rrggbb" (optional). Colour of the highlight bar for reveal "bar". Default the stage accent.'
+    extrude: integer (optional). Depth in px of a solid 3D extrusion behind the type, 0-30. Default 0.
+    extrude_color: '"#rrggbb" (optional). Extrusion colour. Default "#0b0b14".'
+    extrude_dir: '"diagonal" | "down" (optional, default "diagonal"). Which way the extrusion falls.'
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui
@@ -10270,6 +10274,111 @@ blocks:
     w: integer (optional). ViewBox width, 50-2000. Default 400.
     h: integer (optional). ViewBox height, 50-2000. Default 400.
     label: string (optional, max 60). Accessible name of the drawing. Default "Sketch".
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_leader
+  stage: preview
+  description: 'A callout line that draws itself from one point to another as p goes 0 to 1: straight or bent, with a start dot, an
+    arrowhead that lands at the end, and a label that fades in beside the tip. The annotation that points at a part of a diagram,
+    a map or a product shot. Points are in viewBox units (w by h, default 400 by 300) and the whole thing scales to its placed box.
+    Plain SVG and CSS, no script: it moves with the --p custom property a motion_timeline p track sets, and standalone it renders
+    finished.'
+  compact_description: callout line with a start dot, arrowhead and label that draws itself
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    from: '[x, y] (optional). Start point in viewBox units. Default [48, 210] on the default 400 by 300 box.'
+    to: '[x, y] (optional). End point, where the arrowhead lands. Default [352, 90].'
+    curve: integer (optional). Bend, -100 to 100, as a percentage of the line length at its middle. 0 is straight. Default 0.
+    label: string (optional, max 40). Text beside the tip.
+    label_at: '"end" | "start" (optional, default "end")'
+    arrow: bool (optional). Arrowhead. Default true.
+    dot: bool (optional). Dot at the start. Default true.
+    color: '"#rrggbb" (optional). Line, dot and arrowhead. Default the stage accent.'
+    label_color: '"#rrggbb" (optional). Default the stage ink.'
+    width: integer (optional). Line px, 1-24. Default 4.
+    size: integer (optional). Label px, 8-80. Default 22.
+    w: integer (optional). ViewBox width, 50-2000. Default 400.
+    h: integer (optional). ViewBox height, 50-2000. Default 300.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_path
+  stage: preview
+  description: 'A route that draws itself as p goes 0 to 1, with a marker riding along it and stops that pop as the marker passes:
+    the metro line, the flight path, the journey. d is path data from a strict grammar (commands and numbers only; anything else
+    falls back to a gentle default curve), faint underneath and bold as it is drawn. The marker is a zero-length round dash on the
+    path, so it follows the film clock exactly with no script. Stops are placed by coordinates and pop at a chosen point of p.
+    Plain SVG and CSS; standalone it renders the finished route.'
+  compact_description: route that draws itself with a travelling marker and stops that pop as it passes
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    d: string (optional, max 700 characters of path commands, numbers and separators). Default a gentle S curve.
+    nodes: 'array (max 8) of {x, y, at?, label?}. x, y in viewBox units; at 0-1 is the p at which the stop pops (default 0.5); label max 30.'
+    marker: bool (optional). The travelling dot. Default true.
+    label: string (optional, max 60). Accessible name. Default "Route".
+    color: '"#rrggbb" (optional). Default the stage accent.'
+    label_color: '"#rrggbb" (optional). Stop centres, labels and the marker. Default the stage ink.'
+    width: integer (optional). Line px, 1-24. Default 6.
+    size: integer (optional). Label px, 8-80. Default 20.
+    w: integer (optional). ViewBox width, 50-2000. Default 400.
+    h: integer (optional). ViewBox height, 50-2000. Default 400.
+  source:
+    name: a2uicatalog
+    url: https://github.com/a2uicatalog/a2ui
+    license: MIT
+- type: motion_mask
+  stage: preview
+  description: 'Reveals its child blocks through a shape that grows as p goes 0 to 1: a wobbly blob, a circle, a diagonal wipe, a
+    rounded rectangle that opens, or venetian bars. The scene that opens out of a cloud-shaped hole, or the screenshot that wipes
+    in. The blob and circle are 20-vertex polygons whose coordinates use CSS cos() and sin(), so they need no script and a current
+    browser. At p = 1 the child is fully visible; standalone it renders fully revealed.'
+  compact_description: reveals child atoms through a growing blob, circle, diagonal wipe, rounded rectangle or bars
+  surfaces:
+    works_on:
+    - web
+    - google-meet-stage
+    - google-apps-script-web
+    - mcp-apps
+    degraded_on:
+    - surface: pdf
+      note: Prints the final state (type fully revealed, numbers at their values, shapes drawn); no motion
+    - surface: google-chat
+      note: Inline CSS functions and custom properties are not supported
+    incompatible_on:
+    - surface: email
+      reason: CSS custom properties, clamp(), calc() and color-mix() are not supported in email clients
+  fields:
+    shape: '"blob" | "circle" | "diagonal" | "rounded" | "bars" (optional, default "blob")'
+    blocks: array (max 6) of any atom blocks, revealed together. Each may carry an id a timeline track can address.
   source:
     name: a2uicatalog
     url: https://github.com/a2uicatalog/a2ui

@@ -27033,7 +27033,7 @@ for _mo_name, _mo_fn in (('motion_group', _render_motion_group), ('motion_tokens
     _RENDERERS[_mo_name] = _mo_fn
 
 
-_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1}
+_MO_REVEAL = {'rise': 1, 'drop': 1, 'fade': 1, 'blur': 1, 'mask': 1, 'bar': 1}
 _MO_ALIGN = {'start': 'left', 'middle': 'center', 'end': 'right'}
 
 
@@ -27129,6 +27129,8 @@ def _render_motion_text(b: dict) -> str:
     track, lh = _ff_num(b.get('tracking'), -0.02, -0.1, 0.5, 3), _ff_num(b.get('line_height'), 1.05, 0.8, 2, 2)
     color, align, upper = _mo_ink(b, 'color', 'var(--mt-ink,#f1f5f9)'), _ff_pick(b.get('align'), _MO_ALIGN, 'start'), b.get('uppercase') is True
     accent = _mo_ink(b, 'accent', 'var(--mt-acc,#38bdf8)')
+    bar, ext, extc = _mo_ink(b, 'bar', 'var(--mt-acc,#38bdf8)'), _ff_int(b.get('extrude'), 0, 0, 30), _mo_ink(b, 'extrude_color', '#0b0b14')
+    shadow = ','.join(('0' if b.get('extrude_dir') == 'down' else str(si) + 'px') + ' ' + str(si) + 'px 0 ' + extc for si in range(1, ext + 1))
     units = []
     for i, ln in enumerate(lines):
         chs = _mo_chars(ln)
@@ -27160,6 +27162,8 @@ def _render_motion_text(b: dict) -> str:
 
     def wrap_unit(inner, n, blockish):
         inl = 'display:block;' if blockish else 'display:inline-block;'
+        if reveal == 'bar':
+            return ('<span style="' + uvar(n) + ('display:block;width:fit-content;' if blockish else 'display:inline-block;') + 'padding:0.04em 0.3em;margin-bottom:0.08em;background:linear-gradient(' + bar + ',' + bar + ') no-repeat 0 0 / calc(var(--u)*100%) 100%;"><span style="display:inherit;opacity:clamp(0,calc((var(--u) - 0.4)*2),1);">' + inner + '</span></span>')
         if reveal == 'mask':
             return ('<span style="' + inl + 'overflow:hidden;padding-bottom:0.12em;margin-bottom:-0.12em;vertical-align:bottom;"><span style="' + uvar(n) + 'display:inherit;transform:translateY(calc((1 - var(--u))*108%));">' + inner + '</span></span>')
         fx = ('' if reveal == 'fade' else 'transform:translateY(calc((1 - var(--u))*-0.6em));' if reveal == 'drop'
@@ -27188,7 +27192,7 @@ def _render_motion_text(b: dict) -> str:
         else:
             out += wrap_unit(_mo_runs(u['c'], accent), nxt(), False)
     return ('<div style="font-family:' + font + ';font-size:' + str(size) + 'px;font-weight:' + weight + ';line-height:' + lh + ';letter-spacing:' + track + 'em;color:' + color + ';text-align:' + align + ';'
-            + ('text-transform:uppercase;' if upper else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
+            + ('text-transform:uppercase;' if upper else '') + ('text-shadow:' + shadow + ';' if shadow else '') + ('white-space:nowrap;' if mode == 'lines' else '') + 'width:100%;">'
             + _mo_sr(_mo_plain(' '.join(lines)))
             + '<span aria-hidden="true" style="display:block;">' + out + '</span></div>')
 
@@ -27491,10 +27495,107 @@ def _render_motion_sketch(b: dict) -> str:
     return '<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label) + '">' + body + '</svg>'
 
 
-_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1}
-_MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}}
-_MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}}
-_MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0}
+def _mo_pt(v, vw, vh, dx, dy):
+    x, y = dx * vw, dy * vh
+    if isinstance(v, list) and len(v) >= 2:
+        x, y = _mo_num(v[0], x), _mo_num(v[1], y)
+    return [max(-4000, min(6000, x)), max(-4000, min(6000, y))]
+
+
+def _mo_f(x):
+    return _ff_num(x, 0, -100000, 100000, 1)
+
+
+def _render_motion_leader(b: dict) -> str:
+    vw, vh = _ff_int(b.get('w'), 400, 50, 2000), _ff_int(b.get('h'), 300, 50, 2000)
+    a, z = _mo_pt(b.get('from'), vw, vh, 0.12, 0.7), _mo_pt(b.get('to'), vw, vh, 0.88, 0.3)
+    wd, col, lc, fs = _ff_int(b.get('width'), 4, 1, 24), _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'label_color', 'var(--mt-ink,#f1f5f9)'), _ff_int(b.get('size'), 22, 8, 80)
+    label, at, curve = _cv_str(b.get('label'), 40), ('start' if b.get('label_at') == 'start' else 'end'), _ff_int(b.get('curve'), 0, -100, 100)
+    arrow, dot = b.get('arrow') is not False, b.get('dot') is not False
+    dx, dy = z[0] - a[0], z[1] - a[1]
+    ln = math.sqrt(dx * dx + dy * dy) or 1
+    cx, cy = (a[0] + z[0]) / 2 - dy * curve / 100, (a[1] + z[1]) / 2 + dx * curve / 100
+    d = 'M' + _mo_f(a[0]) + ' ' + _mo_f(a[1]) + ' Q' + _mo_f(cx) + ' ' + _mo_f(cy) + ' ' + _mo_f(z[0]) + ' ' + _mo_f(z[1])
+    tx, ty = z[0] - cx, z[1] - cy
+    tl = math.sqrt(tx * tx + ty * ty)
+    sx, sy = cx - a[0], cy - a[1]
+    sl = math.sqrt(sx * sx + sy * sy)
+    if tl < 0.001:
+        tx, ty, tl = dx, dy, ln
+    if sl < 0.001:
+        sx, sy, sl = dx, dy, ln
+    tx /= tl
+    ty /= tl
+    sx /= sl
+    sy /= sl
+    hl, hw = wd * 3 + 6, wd * 1.6 + 3
+    bx, by, nx, ny, r0 = z[0] - tx * hl, z[1] - ty * hl, -ty, tx, wd * 1.5 + 2
+    head = 'M' + _mo_f(z[0]) + ' ' + _mo_f(z[1]) + ' L' + _mo_f(bx + nx * hw) + ' ' + _mo_f(by + ny * hw) + ' L' + _mo_f(bx - nx * hw) + ' ' + _mo_f(by - ny * hw) + ' Z'
+    lx = z[0] + tx * (hl + 10) if at == 'end' else a[0] - sx * (r0 + 10)
+    ly = z[1] + ty * (hl + 10) if at == 'end' else a[1] - sy * (r0 + 10)
+    anchor = ('start' if tx >= 0 else 'end') if at == 'end' else ('end' if sx > 0 else 'start')
+    return ('<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label or 'Leader line') + '">'
+            + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,calc(var(--p,1)/0.7),1));"/>'
+            + ('<circle cx="' + _mo_f(a[0]) + '" cy="' + _mo_f(a[1]) + '" r="' + _mo_f(r0) + '" style="fill:' + col + ';transform-box:fill-box;transform-origin:center;transform:scale(clamp(0,calc(var(--p,1)*14),1));"/>' if dot else '')
+            + ('<path d="' + head + '" style="fill:' + col + ';opacity:clamp(0,calc((var(--p,1) - 0.66)*12),1);"/>' if arrow else '')
+            + ('<text x="' + _mo_f(lx) + '" y="' + _mo_f(ly) + '" text-anchor="' + anchor + '" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;font-weight:700;fill:' + lc + ';opacity:clamp(0,calc((var(--p,1) - 0.55)*5),1);">' + _cv_esc(label) + '</text>' if label else '')
+            + '</svg>')
+
+
+def _render_motion_path(b: dict) -> str:
+    d = b['d'].strip() if isinstance(b.get('d'), str) else ''
+    if not _MO_PATH_OK.match(d):
+        d = 'M 20 200 C 120 40 280 360 380 200'
+    vw, vh, wd = _ff_int(b.get('w'), 400, 50, 2000), _ff_int(b.get('h'), 400, 50, 2000), _ff_int(b.get('width'), 6, 1, 24)
+    col, lc, fs = _mo_ink(b, 'color', 'var(--mt-acc,#38bdf8)'), _mo_ink(b, 'label_color', 'var(--mt-ink,#f1f5f9)'), _ff_int(b.get('size'), 20, 8, 80)
+    nodes, n, r, label = '', 0, wd * 1.7 + 3, _cv_str(b.get('label'), 60) or 'Route'
+    for s in (b.get('nodes') if isinstance(b.get('nodes'), list) else []):
+        if n >= 8:
+            break
+        if not isinstance(s, (dict, list)):
+            continue
+        sd = s if isinstance(s, dict) else {}
+        x, y = max(-4000, min(6000, _mo_num(sd.get('x'), 0))), max(-4000, min(6000, _mo_num(sd.get('y'), 0)))
+        at, t = _ff_num(sd.get('at'), 0.5, 0, 1, 2), _cv_str(sd.get('label'), 30)
+        nodes += ('<g style="--k:clamp(0,calc((var(--p,1) - ' + at + ')*14),1);"><circle cx="' + _mo_f(x) + '" cy="' + _mo_f(y) + '" r="' + _mo_f(r) + '" style="fill:' + col + ';transform-box:fill-box;transform-origin:center;transform:scale(var(--k));"/>'
+                  + '<circle cx="' + _mo_f(x) + '" cy="' + _mo_f(y) + '" r="' + _mo_f(r * 0.42) + '" style="fill:' + lc + ';transform-box:fill-box;transform-origin:center;transform:scale(var(--k));"/>'
+                  + ('<text x="' + _mo_f(x + r + 10) + '" y="' + _mo_f(y) + '" dominant-baseline="central" style="font-family:' + _MO_SANS + ';font-size:' + str(fs) + 'px;font-weight:700;fill:' + lc + ';opacity:var(--k);">' + _cv_esc(t) + '</text>' if t else '') + '</g>')
+        n += 1
+    return ('<svg viewBox="0 0 ' + str(vw) + ' ' + str(vh) + '" width="100%" style="display:block;overflow:visible;" role="img" aria-label="' + _cv_esc(label) + '">'
+            + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;opacity:0.16;"/>'
+            + '<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + col + ';stroke-width:' + str(wd) + ';stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - clamp(0,var(--p,1),1));"/>'
+            + ('<path d="' + d + '" pathLength="1" style="fill:none;stroke:' + lc + ';stroke-width:' + _ff_num(wd * 2.6, 1, 0, 100, 1) + ';stroke-linecap:round;stroke-dasharray:0.0001 1;stroke-dashoffset:calc(-1*clamp(0,var(--p,1),1)*0.9999);"/>' if b.get('marker') is not False else '')
+            + nodes + '</svg>')
+
+
+_MO_MASK_SHAPES = {'blob': 1, 'circle': 1, 'diagonal': 1, 'rounded': 1, 'bars': 1}
+_MO_MASK_R = [84, 91, 82, 92, 85, 90, 81, 89, 86, 91, 83, 92, 80, 88, 84, 91, 82, 90, 86, 92]
+
+
+def _render_motion_mask(b: dict) -> str:
+    shape = b['shape'] if isinstance(b.get('shape'), str) and b['shape'] in _MO_MASK_SHAPES else 'blob'
+    blocks = b['blocks'][:6] if isinstance(b.get('blocks'), list) else []
+    inner, clip, mask = ''.join(_mo_child(blk) for blk in blocks), '', ''
+    if shape in ('blob', 'circle'):
+        pts = []
+        for i in range(20):
+            rr, ang = (90 if shape == 'circle' else _MO_MASK_R[i]), i * 18
+            pts.append('calc(50% + ' + str(rr) + '% * var(--m) * cos(' + str(ang) + 'deg)) calc(50% + ' + str(rr) + '% * var(--m) * sin(' + str(ang) + 'deg))')
+        clip = 'polygon(' + ','.join(pts) + ')'
+    elif shape == 'diagonal':
+        clip = 'polygon(0 0,calc(var(--m)*140%) 0,calc(var(--m)*140% - 40%) 100%,0 100%)'
+    elif shape == 'rounded':
+        clip = 'inset(calc((1 - var(--m))*50%) round calc((1 - var(--m))*80px))'
+    else:
+        mask = 'repeating-linear-gradient(90deg,#000 0,#000 calc(var(--m)*10%),transparent calc(var(--m)*10%),transparent 10%)'
+    return ('<div style="--m:clamp(0,var(--p,1),1);position:relative;width:100%;height:100%;' + ('clip-path:' + clip + ';-webkit-clip-path:' + clip + ';' if clip else '')
+            + ('-webkit-mask-image:' + mask + ';mask-image:' + mask + ';' if mask else '') + '">' + inner + '</div>')
+
+
+_MO_STITCH = {'cut': 1, 'dissolve': 1, 'push': 1, 'zoom-through': 1, 'blur': 1, 'rise': 1, 'whip': 1, 'wipe': 1}
+_MO_STITCH_IN = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': 8}, 'zoom-through': {'opacity': 0, 'scale': 0.9, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': 6}, 'whip': {'opacity': 0, 'x': 18, 'blur': 22}, 'wipe': {'clip': 0}}
+_MO_STITCH_OUT = {'dissolve': {'opacity': 0}, 'push': {'opacity': 0, 'x': -8}, 'zoom-through': {'opacity': 0, 'scale': 1.12, 'blur': 10}, 'blur': {'opacity': 0, 'blur': 16}, 'rise': {'opacity': 0, 'y': -6}, 'whip': {'opacity': 0, 'x': -18, 'blur': 22}, 'wipe': {'opacity': 0}}
+_MO_REST = {'opacity': 1, 'x': 0, 'y': 0, 'scale': 1, 'blur': 0, 'clip': 1}
 
 
 def _mo_at(k, bpm, dur):
@@ -27546,6 +27647,9 @@ def _mo_stitch(b, ids, bpm, dur, st):
         if nxt:
             if fout == 'cut':
                 _mo_stitch_key(keys, nxt['t'], {'opacity': 0}, 'hold')
+            elif fout == 'wipe':  # the old scene stays until the new one has covered it
+                _mo_stitch_key(keys, nxt['t'], _MO_REST)
+                _mo_stitch_key(keys, nxt['t'] + ov, {'opacity': 0}, 'hold')
             else:
                 _mo_stitch_key(keys, nxt['t'], _MO_REST)
                 _mo_stitch_key(keys, nxt['t'] + ov, _MO_STITCH_OUT[fout], 'accelerate')
@@ -27569,7 +27673,8 @@ def _mo_stitch(b, ids, bpm, dur, st):
 
 
 for _mo_name, _mo_fn in (('motion_pill', _render_motion_pill), ('motion_checklist', _render_motion_checklist), ('motion_stepper', _render_motion_stepper),
-                         ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch)):
+                         ('motion_orbit', _render_motion_orbit), ('motion_code', _render_motion_code), ('motion_mark', _render_motion_mark), ('motion_browser', _render_motion_browser), ('motion_sketch', _render_motion_sketch),
+                         ('motion_leader', _render_motion_leader), ('motion_path', _render_motion_path), ('motion_mask', _render_motion_mask)):
     _RENDERERS[_mo_name] = _mo_fn
 
 # MUST stay the last statement that touches _RENDERERS: wraps every registered renderer so the generic `enter` prop works on any atom.

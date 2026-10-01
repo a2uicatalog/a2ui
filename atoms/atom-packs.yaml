@@ -329,6 +329,9 @@ a2ui-effects-v1:
 - motion_mark
 - motion_browser
 - motion_sketch
+- motion_leader
+- motion_path
+- motion_mask
 - motion_timeline
 - motion_group
 - motion_tokens
